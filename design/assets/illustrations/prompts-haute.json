@@ -1,0 +1,136 @@
+[
+  {
+    "id": "ILL-01",
+    "tool": "image_gen.imagegen",
+    "prompt": "Use case: illustration-story\nAsset type: Portfolio narrative illustration, assembly manual series\nPrimary request: A stack of hand-cut paper playing cards, a laminating pouch, scissors and a ruler on a table; one card is being slid into its clear plastic sleeve.\nComposition/framing: Use a tidy tabletop composition from an isometric elevated view. The sleeve is shown by outline alone. The cards are generic original cards with simple outlined geometric emblems, no characters or numbers. Keep all objects distinct.\nStyle/medium: Assembly-manual line illustration, single-weight black strokes on a pure white background, round caps, isometric or flat front view, no fill, no shading, no gradient, no text, no logos, generous margins.\nLine discipline: Clean vector-like engineering drawing. One consistent medium line weight throughout, approximately 8 pixels at a 2560-pixel-wide master (0.3% of the width), no pencil texture, hatching, sketch strokes, dense detail or filled black surfaces. White interiors remain white. The same line weight for foreground and background objects.\nOutput composition: Single illustration only. 4:3 landscape canvas, ideally 2560x1920 pixels. All shapes inside generous whitespace. No title, no border, no panel labels.\nConstraints: Only the objects requested. No letters, words, numbers, text, watermarks, logos, brand names, gradients or shadows. No copyrighted or trademarked characters, items or symbols.\nAll arrows, if explicitly requested above, must be open stroke arrowheads, never solid arrowheads. Do not add arrows or extra objects beyond the request.",
+    "edits": [
+      "Use case: precise-object-edit\nAsset type: assembly-manual portfolio illustration\nPrimary request: Remove the solid black directional arrow on the single card being slid into a clear sleeve. Leave that space white. Change nothing else.\nInput images: The attached image is the edit target, not merely a reference.\nConstraints: Preserve the exact composition, all five objects, thin uniform black outlines, white interiors, the geometry of the stack, pouches, scissors and ruler. Do not add any marks, objects, shadows, text or filled surfaces. Keep 4:3 canvas."
+    ],
+    "files": [
+      "1280x960_cartes-faites-main.png",
+      "1280x960_cartes-faites-main.webp",
+      "2560x1920_cartes-faites-main.png"
+    ],
+    "conversion": "magick rendu.png -colorspace gray -level 3%,92% -negate -alpha copy -fill black -colorize 100 ; redimensionnement proportionnel du rendu source sur canevas transparent",
+    "normalisation": "Harmonisation légère de l’alpha : mélange 18 % avec une dilatation maximale 3 × 3 avant redimensionnement."
+  },
+  {
+    "id": "ILL-02",
+    "tool": "image_gen.imagegen",
+    "prompt": "Use case: illustration-story\nAsset type: Portfolio narrative illustration, assembly manual series\nPrimary request: Three fans of playing cards side by side; in the third fan, exactly one card stands upside down, against the others.\nComposition/framing: Front view of exactly three groups, five generic cards in each fan. Use a deliberately asymmetrical outlined emblem, a small upright keyhole-shaped marker with a circular top and stem at the top of each card, so turning one card 180 degrees in the third fan is unmistakable. That one card has its marker at the bottom, inverted. All other cards have upright markers. No suits, letters or numbers. Three fans are separated by generous space.\nStyle/medium: Assembly-manual line illustration, single-weight black strokes on a pure white background, round caps, isometric or flat front view, no fill, no shading, no gradient, no text, no logos, generous margins.\nLine discipline: Clean vector-like engineering drawing. One consistent medium line weight throughout, approximately 8 pixels at a 2560-pixel-wide master (0.3% of the width), no pencil texture, hatching, sketch strokes, dense detail or filled black surfaces. White interiors remain white. The same line weight for foreground and background objects.\nOutput composition: Single illustration only. 4:3 landscape canvas, ideally 2560x1920 pixels. All shapes inside generous whitespace. No title, no border, no panel labels.\nConstraints: Only the objects requested. No letters, words, numbers, text, watermarks, logos, brand names, gradients or shadows. No copyrighted or trademarked characters, items or symbols.\nAll arrows, if explicitly requested above, must be open stroke arrowheads, never solid arrowheads. Do not add arrows or extra objects beyond the request.",
+    "edits": [],
+    "files": [
+      "1280x960_trois-decks.png",
+      "1280x960_trois-decks.webp",
+      "2560x1920_trois-decks.png"
+    ],
+    "conversion": "magick rendu.png -colorspace gray -level 3%,92% -negate -alpha copy -fill black -colorize 100 ; redimensionnement proportionnel du rendu source sur canevas transparent"
+  },
+  {
+    "id": "ILL-03",
+    "tool": "image_gen.imagegen",
+    "prompt": "Use case: illustration-story\nAsset type: Portfolio narrative illustration, assembly manual series\nPrimary request: Four closed doors in a row, each in a different style (a lecture-hall door, a laboratory door, a server-room door, a modern glass door); a path runs past them to an open gate on the right.\nComposition/framing: Exactly four closed doors and a distinct fifth passage: an open gate on the right, approached by a simple outlined path. Slight isometric perspective. Closed doors are easy to count, separate and visually distinct. No architecture extending beyond this small scene.\nStyle/medium: Assembly-manual line illustration, single-weight black strokes on a pure white background, round caps, isometric or flat front view, no fill, no shading, no gradient, no text, no logos, generous margins.\nLine discipline: Clean vector-like engineering drawing. One consistent medium line weight throughout, approximately 8 pixels at a 2560-pixel-wide master (0.3% of the width), no pencil texture, hatching, sketch strokes, dense detail or filled black surfaces. White interiors remain white. The same line weight for foreground and background objects.\nOutput composition: Single illustration only. 4:3 landscape canvas, ideally 2560x1920 pixels. All shapes inside generous whitespace. No title, no border, no panel labels.\nConstraints: Only the objects requested. No letters, words, numbers, text, watermarks, logos, brand names, gradients or shadows. No copyrighted or trademarked characters, items or symbols.\nAll arrows, if explicitly requested above, must be open stroke arrowheads, never solid arrowheads. Do not add arrows or extra objects beyond the request.",
+    "edits": [],
+    "files": [
+      "1280x960_portes-fermees.png",
+      "1280x960_portes-fermees.webp",
+      "2560x1920_portes-fermees.png"
+    ],
+    "conversion": "magick rendu.png -colorspace gray -level 3%,92% -negate -alpha copy -fill black -colorize 100 ; redimensionnement proportionnel du rendu source sur canevas transparent",
+    "normalisation": "Harmonisation légère de l’alpha : mélange 18 % avec une dilatation maximale 3 × 3 avant redimensionnement."
+  },
+  {
+    "id": "ILL-04",
+    "tool": "image_gen.imagegen",
+    "prompt": "Use case: illustration-story\nAsset type: Portfolio narrative illustration, assembly manual series\nPrimary request: A stopwatch resting on a stack of finished project folders, next to a rolled diploma tied with a ribbon.\nComposition/framing: Isometric tabletop objects, stopwatch face with only two hands and small unlabelled tick marks. Neatly completed folders, no labels or fake data. Diploma is an empty rolled sheet. Simple clean composition.\nStyle/medium: Assembly-manual line illustration, single-weight black strokes on a pure white background, round caps, isometric or flat front view, no fill, no shading, no gradient, no text, no logos, generous margins.\nLine discipline: Clean vector-like engineering drawing. One consistent medium line weight throughout, approximately 8 pixels at a 2560-pixel-wide master (0.3% of the width), no pencil texture, hatching, sketch strokes, dense detail or filled black surfaces. White interiors remain white. The same line weight for foreground and background objects.\nOutput composition: Single illustration only. 4:3 landscape canvas, ideally 2560x1920 pixels. All shapes inside generous whitespace. No title, no border, no panel labels.\nConstraints: Only the objects requested. No letters, words, numbers, text, watermarks, logos, brand names, gradients or shadows. No copyrighted or trademarked characters, items or symbols.\nAll arrows, if explicitly requested above, must be open stroke arrowheads, never solid arrowheads. Do not add arrows or extra objects beyond the request.",
+    "edits": [
+      "Use case: precise-object-edit\nAsset type: assembly-manual portfolio narrative illustration\nThe attached image is the edit target.\nPrimary request: Replace ONLY the stack of three bound books beneath the stopwatch with a neat stack of three thin finished paper project folders. These are office file folders, with clearly protruding staggered file tabs on their back edges. Show thin folded cardstock covers and a few loose sheets inside, never rounded bound book spines or thick blocks of book pages. Each file tab must be clearly recognizable as a folder tab. No writing or labels on the tabs.\nPreserve exactly the stopwatch, both hands, all unlabelled clock ticks, and the rolled diploma with ribbon, as well as their positions and scale. Preserve the same overall tabletop isometric composition and the 4:3 canvas. Generous white margins.\nStyle: Assembly-manual line illustration, one consistent thin black outline weight, white interiors, round caps, no fills, no shading, no gradient, no text, no logos. Do not add any objects, arrows, people or marks.",
+      "Use case: precise-object-edit\nThe attached illustration is the exact edit target.\nMake just one tiny cleanup: erase the short faint stray grey stroke floating in the white space immediately to the right of the middle folder's protruding file tab. It sits a few pixels below and to the right of the middle tab, outside every object, around image position x=1175, y=520. Make that isolated stroke pure white.\nPreserve absolutely every other pixel, object, outline, line weight, position and aspect ratio: the stopwatch, three project folders with tabs, and the rolled diploma tied with a ribbon must remain unchanged. Do not redraw the scene. Keep the white background and 4:3 canvas. No additions."
+    ],
+    "files": [
+      "1280x960_un-mois.png",
+      "1280x960_un-mois.webp",
+      "2560x1920_un-mois.png"
+    ],
+    "conversion": "magick rendu.png -colorspace gray -level 3%,92% -negate -alpha copy -fill black -colorize 100 ; redimensionnement proportionnel du rendu source sur canevas transparent"
+  },
+  {
+    "id": "ILL-05",
+    "tool": "image_gen.imagegen",
+    "prompt": "Use case: illustration-story\nAsset type: Portfolio narrative illustration, assembly manual series\nPrimary request: A classroom seen from behind the teacher's lectern: the lectern in the foreground, ten empty student desks facing it.\nComposition/framing: Exactly TEN student desks, each with one chair, clearly arranged in two columns of five desks; do not add any other desks. The viewer stands at the teacher's side behind the lectern, looking out toward the students' desk fronts. Minimal room, all ten desks visible and countable, no people.\nStyle/medium: Assembly-manual line illustration, single-weight black strokes on a pure white background, round caps, isometric or flat front view, no fill, no shading, no gradient, no text, no logos, generous margins.\nLine discipline: Clean vector-like engineering drawing. One consistent medium line weight throughout, approximately 8 pixels at a 2560-pixel-wide master (0.3% of the width), no pencil texture, hatching, sketch strokes, dense detail or filled black surfaces. White interiors remain white. The same line weight for foreground and background objects.\nOutput composition: Single illustration only. 4:3 landscape canvas, ideally 2560x1920 pixels. All shapes inside generous whitespace. No title, no border, no panel labels.\nConstraints: Only the objects requested. No letters, words, numbers, text, watermarks, logos, brand names, gradients or shadows. No copyrighted or trademarked characters, items or symbols.\nAll arrows, if explicitly requested above, must be open stroke arrowheads, never solid arrowheads. Do not add arrows or extra objects beyond the request.\nCRITICAL COMPOSITION: All desks must be comfortably inside the canvas, never cropped. Exactly FIVE horizontal rows, each row containing exactly TWO small student desks: 2+2+2+2+2=10 student desks in total. Use a modest perspective so the back row is only slightly smaller than the front row. Show all ten desktops separately and all ten chairs; do not omit the fifth row. The small teacher's lectern is in the lower foreground, entirely visible, with an angled top and a central stand, and is clearly different from a student desk. Leave white margins around the entire scene. No floor or room clutter. Make the scene smaller to fit, rather than omit or crop a desk.",
+    "edits": [
+      "Use case: precise-object-edit\nThe attached assembly-manual line illustration is the edit target.\nPrimary request: Keep the EIGHT existing student desks and the teacher's central lectern, and ADD exactly TWO more empty student desks with their chairs. Place one new desk in the open lower-left space beside the lectern, and the other in the open lower-right space beside it. There must be TEN student desks plus one teacher's lectern after the edit. Do not remove, merge or omit any of the eight existing desks. Make the new desks face the same way and use the exact same clean black-outline style as the others. Keep the lectern centered. All ten desks and the lectern entirely inside the image, no cropped objects. Uniform black line weight, white interiors, no fill, no shading, no gradient, no text, no logos, 4:3 canvas. Do not add any people."
+    ],
+    "files": [
+      "1280x960_cote-bureau.png",
+      "1280x960_cote-bureau.webp",
+      "2560x1920_cote-bureau.png"
+    ],
+    "conversion": "magick rendu.png -colorspace gray -level 3%,92% -negate -alpha copy -fill black -colorize 100 ; redimensionnement proportionnel du rendu source sur canevas transparent"
+  },
+  {
+    "id": "ILL-06",
+    "tool": "image_gen.imagegen",
+    "prompt": "Use case: illustration-story\nAsset type: Portfolio narrative illustration, assembly manual series\nPrimary request: Isometric technical drawing of a small software system: a browser window, an API server, a database cylinder, a stack of containers and a delivery pipeline drawn as a conveyor belt, all connected by dashed lines.\nComposition/framing: Five clearly differentiated units connected by sparse dashed links, arranged with clear negative space. Browser is an empty generic frame, server a small unlabeled rack, database an outlined cylinder, three stacked containers, delivery belt carries one generic package. No words or technology trademarks; this is a conceptual illustration, not a data chart.\nStyle/medium: Assembly-manual line illustration, single-weight black strokes on a pure white background, round caps, isometric or flat front view, no fill, no shading, no gradient, no text, no logos, generous margins.\nLine discipline: Clean vector-like engineering drawing. One consistent medium line weight throughout, approximately 8 pixels at a 2560-pixel-wide master (0.3% of the width), no pencil texture, hatching, sketch strokes, dense detail or filled black surfaces. White interiors remain white. The same line weight for foreground and background objects.\nOutput composition: Single illustration only. 4:3 landscape canvas, ideally 2560x1920 pixels. All shapes inside generous whitespace. No title, no border, no panel labels.\nConstraints: Only the objects requested. No letters, words, numbers, text, watermarks, logos, brand names, gradients or shadows. No copyrighted or trademarked characters, items or symbols.\nAll arrows, if explicitly requested above, must be open stroke arrowheads, never solid arrowheads. Do not add arrows or extra objects beyond the request.",
+    "edits": [],
+    "files": [
+      "1280x960_architecte.png",
+      "1280x960_architecte.webp",
+      "2560x1920_architecte.png"
+    ],
+    "conversion": "magick rendu.png -colorspace gray -level 3%,92% -negate -alpha copy -fill black -colorize 100 ; redimensionnement proportionnel du rendu source sur canevas transparent"
+  },
+  {
+    "id": "ILL-07",
+    "tool": "image_gen.imagegen",
+    "prompt": "Use case: illustration-story\nAsset type: Portfolio narrative illustration, assembly manual series\nPrimary request: A row of Victorian hand lanterns: the first one is lit and passes its flame to the second; the lanterns further down the row are still unlit.\nComposition/framing: Four original Victorian handheld lanterns with suspension rings, pointed roofs, thin cage posts and glass panes indicated by outlines. First lantern contains an outlined flame, a small curved directional arrow shows the flame passing to the second, second lantern a tiny outlined emerging flame, third and fourth lantern empty. Light is suggested by a few short straight line rays, never by shading or glow. No shape from any existing franchise.\nStyle/medium: Assembly-manual line illustration, single-weight black strokes on a pure white background, round caps, isometric or flat front view, no fill, no shading, no gradient, no text, no logos, generous margins.\nLine discipline: Clean vector-like engineering drawing. One consistent medium line weight throughout, approximately 8 pixels at a 2560-pixel-wide master (0.3% of the width), no pencil texture, hatching, sketch strokes, dense detail or filled black surfaces. White interiors remain white. The same line weight for foreground and background objects.\nOutput composition: Single illustration only. 4:3 landscape canvas, ideally 2560x1920 pixels. All shapes inside generous whitespace. No title, no border, no panel labels.\nConstraints: Only the objects requested. No letters, words, numbers, text, watermarks, logos, brand names, gradients or shadows. No copyrighted or trademarked characters, items or symbols.\nAll arrows, if explicitly requested above, must be open stroke arrowheads, never solid arrowheads. Do not add arrows or extra objects beyond the request.",
+    "edits": [],
+    "files": [
+      "1280x960_lanternes.png",
+      "1280x960_lanternes.webp",
+      "2560x1920_lanternes.png"
+    ],
+    "conversion": "magick rendu.png -colorspace gray -level 3%,92% -negate -alpha copy -fill black -colorize 100 ; redimensionnement proportionnel du rendu source sur canevas transparent"
+  },
+  {
+    "id": "COV-01",
+    "tool": "image_gen.imagegen",
+    "prompt": "Use case: illustration-story\nAsset type: Portfolio case study header, assembly manual series\nPrimary request: An open book whose two facing pages show columns of text lines linked by small arrows, as in a translation; check marks in the margin; a small group of people gathered around the book.\nComposition/framing: Wide horizontal header illustration, aspect ratio 12:5. Book in the middle, three simple people shown from the shoulders up around it. Written content is shown only by short abstract horizontal lines, never letters or words. Keep all essential subjects inside the central 60% of the image height, with the outer 20% at top and bottom blank, so cropping from 1200x500 to the centered 1200x300 loses nothing important. No characters or imagery from any game.\nStyle/medium: Assembly-manual line illustration, single-weight black strokes on a pure white background, round caps, isometric or flat front view, no fill, no shading, no gradient, no text, no logos, generous margins.\nLine discipline: Clean vector-like engineering drawing. One consistent medium line weight throughout, approximately 8 pixels at a 2560-pixel-wide master (0.3% of the width), no pencil texture, hatching, sketch strokes, dense detail or filled black surfaces. White interiors remain white. The same line weight for foreground and background objects.\nOutput composition: Single illustration only. 12:5 wide landscape canvas, ideally 2400x1000 pixels. All shapes inside generous whitespace. No title, no border, no panel labels.\nConstraints: Only the objects requested. No letters, words, numbers, text, watermarks, logos, brand names, gradients or shadows. No copyrighted or trademarked characters, items or symbols.\nAll arrows, if explicitly requested above, must be open stroke arrowheads, never solid arrowheads. Do not add arrows or extra objects beyond the request.",
+    "edits": [
+      "Use case: precise-object-edit\nThe attached assembly-manual line illustration is the edit target.\nPrimary request: Simplify only the three people into faceless generic instruction-manual people, with oval head outlines, necks and shoulders; keep their positions and the same overall size. Remove their eyes, eyebrows, noses, lips, and facial expressions. Use one consistent black outline weight and white interiors, with no filled areas. Preserve the open book, its lines, small open-stroke arrows, check marks and all spacing exactly. Keep the wide 12:5 canvas. No text, no logos, no shading, no gradients."
+    ],
+    "files": [
+      "1200x500_pvz-fusion.png",
+      "1200x500_pvz-fusion.webp",
+      "2400x1000_pvz-fusion.png"
+    ],
+    "conversion": "magick rendu.png -colorspace gray -level 3%,92% -negate -alpha copy -fill black -colorize 100 ; redimensionnement proportionnel du rendu source sur canevas transparent",
+    "composition": "Sujet entier contenu dans la bande centrale de 1200 × 300 px."
+  },
+  {
+    "id": "COV-02",
+    "tool": "image_gen.imagegen",
+    "prompt": "Use case: illustration-story\nAsset type: Portfolio case study header, assembly manual series\nPrimary request: On the left a hand-cut paper playing card, on the right a browser window showing the same card; between them, gears and a small server connected by two-way arrows.\nComposition/framing: Wide horizontal header illustration, aspect ratio 12:5. Left and right card share a simple original outlined geometric emblem. Browser empty apart from that card. Exactly two small gears and one compact server between them, sparse two-way arrows. Keep all essential subjects inside the central 60% of image height, with the outer 20% top and bottom blank for a centered 1200x300 crop. No text or borrowed game characters.\nStyle/medium: Assembly-manual line illustration, single-weight black strokes on a pure white background, round caps, isometric or flat front view, no fill, no shading, no gradient, no text, no logos, generous margins.\nLine discipline: Clean vector-like engineering drawing. One consistent medium line weight throughout, approximately 8 pixels at a 2560-pixel-wide master (0.3% of the width), no pencil texture, hatching, sketch strokes, dense detail or filled black surfaces. White interiors remain white. The same line weight for foreground and background objects.\nOutput composition: Single illustration only. 12:5 wide landscape canvas, ideally 2400x1000 pixels. All shapes inside generous whitespace. No title, no border, no panel labels.\nConstraints: Only the objects requested. No letters, words, numbers, text, watermarks, logos, brand names, gradients or shadows. No copyrighted or trademarked characters, items or symbols.\nAll arrows, if explicitly requested above, must be open stroke arrowheads, never solid arrowheads. Do not add arrows or extra objects beyond the request.",
+    "edits": [],
+    "files": [
+      "1200x500_omnicard.png",
+      "1200x500_omnicard.webp",
+      "2400x1000_omnicard.png"
+    ],
+    "conversion": "magick rendu.png -colorspace gray -level 3%,92% -negate -alpha copy -fill black -colorize 100 ; redimensionnement proportionnel du rendu source sur canevas transparent",
+    "composition": "Sujet entier contenu dans la bande centrale de 1200 × 300 px."
+  },
+  {
+    "id": "COV-03",
+    "tool": "image_gen.imagegen",
+    "prompt": "Use case: illustration-story\nAsset type: Portfolio case study header, assembly manual series\nPrimary request: A single terminal window issuing one command; around it, many small package boxes each with a circular update arrow, and three generic computers.\nComposition/framing: Wide horizontal header illustration, aspect ratio 12:5. One large central terminal with a single prompt chevron and short horizontal line, no letters or words. Six small packages around it, each with one circular update arrow, and exactly three generic computers, not operating system logos. Keep all subjects in the central 60% of image height, outer top/bottom 20% blank to allow a centered 1200x300 crop. Clear spacing and no tangled connections.\nStyle/medium: Assembly-manual line illustration, single-weight black strokes on a pure white background, round caps, isometric or flat front view, no fill, no shading, no gradient, no text, no logos, generous margins.\nLine discipline: Clean vector-like engineering drawing. One consistent medium line weight throughout, approximately 8 pixels at a 2560-pixel-wide master (0.3% of the width), no pencil texture, hatching, sketch strokes, dense detail or filled black surfaces. White interiors remain white. The same line weight for foreground and background objects.\nOutput composition: Single illustration only. 12:5 wide landscape canvas, ideally 2400x1000 pixels. All shapes inside generous whitespace. No title, no border, no panel labels.\nConstraints: Only the objects requested. No letters, words, numbers, text, watermarks, logos, brand names, gradients or shadows. No copyrighted or trademarked characters, items or symbols.\nAll arrows, if explicitly requested above, must be open stroke arrowheads, never solid arrowheads. Do not add arrows or extra objects beyond the request.",
+    "edits": [],
+    "files": [
+      "1200x500_gup.png",
+      "1200x500_gup.webp",
+      "2400x1000_gup.png"
+    ],
+    "conversion": "magick rendu.png -colorspace gray -level 3%,92% -negate -alpha copy -fill black -colorize 100 ; redimensionnement proportionnel du rendu source sur canevas transparent",
+    "composition": "Sujet entier contenu dans la bande centrale de 1200 × 300 px."
+  }
+]
