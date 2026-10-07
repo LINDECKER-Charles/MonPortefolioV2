@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <title>Pages d’un livre qui s’élèvent autour d’une flamme</title>
+  <path d="m7 50 25 7 25-7v6l-25 6-25-6ZM7 50c10-4 12-10 15-13m35 13c-9-4-14-7-16-12M32 49v8"/>
+  <circle cx="32" cy="7" r="3"/>
+  <path d="M32 10v3m-14 9 14-9 14 9Z"/>
+  <path class="flamme" fill="var(--flamme, none)" d="M32 47c-6 0-10-4-10-10 0-7 8-10 10-14 1 6 9 9 9 15 0 5-4 9-9 9Z"/>
+</svg>

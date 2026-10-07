@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+  <title>Livre fermé et flamme, version simplifiée</title>
+  <path d="M17 7h35v41H17ZM17 48a6 6 0 0 0 0 12h35M52 48v12M24 7v41"/>
+  <path class="flamme" fill="var(--flamme, none)" d="M36 40c-4 0-7-3-7-7 0-5 5-8 7-13 1 5 7 8 7 13 0 4-3 7-7 7Z"/>
+</svg>

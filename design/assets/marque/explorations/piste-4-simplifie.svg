@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+  <title>Livre et flamme décalée, version simplifiée</title>
+  <path d="M13 8h22v39H13ZM13 47a6 6 0 0 0 0 12h22M35 47v12M20 8v39"/>
+  <path class="flamme" fill="var(--flamme, none)" d="M49 55c-5 0-8-3-8-7 0-5 6-8 8-14 1 6 8 9 8 14 0 4-3 7-8 7Z"/>
+</svg>
