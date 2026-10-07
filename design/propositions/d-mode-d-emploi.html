@@ -1,0 +1,1445 @@
+<!doctype html>
+<html lang="fr" data-theme="jour">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charles Lindecker — Proposition D : Mode d'emploi</title>
+<meta name="description" content="Proposition D pour le portfolio V2 de Charles Lindecker : un mode d'emploi clair, éditorial, raconté avec des figures.">
+<link rel="icon" href="../assets/marque/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/marque/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="apple-touch-icon" href="../assets/marque/apple-touch-icon.png" sizes="180x180">
+<link rel="manifest" href="../assets/marque/site.webmanifest">
+<meta name="theme-color" content="#1F4FD1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,500;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+<script>
+/* Thème appliqué avant le rendu : jour par défaut, nuit si le lecteur l'a choisi (ou ?nuit pour les captures). */
+(function () {
+  var t = 'jour';
+  try { if (localStorage.getItem('cl-d-theme') === 'nuit') t = 'nuit'; } catch (e) {}
+  var q = location.search;
+  if (/[?&]nuit\b/.test(q)) t = 'nuit';
+  if (/[?&]jour\b/.test(q)) t = 'jour';
+  document.documentElement.setAttribute('data-theme', t);
+})();
+</script>
+<style>
+/* ===== Outillage des propositions — neutre, hors design system ===== */
+.pp-switch{position:fixed;left:12px;bottom:12px;z-index:9999;display:flex;flex-wrap:wrap;gap:2px;max-width:calc(100vw - 24px);padding:4px;border-radius:10px;background:rgba(18,18,20,.88);backdrop-filter:blur(6px);font:500 12px/1.2 system-ui,-apple-system,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.35)}
+.pp-switch a{color:#e8e8ea;text-decoration:none;padding:6px 9px;border-radius:7px}
+.pp-switch a:hover{background:rgba(255,255,255,.12)}
+.pp-switch a[aria-current="page"]{background:#e8e8ea;color:#121214}
+.pp-switch a:focus-visible{outline:2px solid #8ab4ff;outline-offset:1px}
+.pp-divider{margin:0;padding:28px 16px;background:repeating-linear-gradient(-45deg,#e9e9ec 0 12px,#dcdce1 12px 24px);color:#16161a;font:15px/1.5 system-ui,-apple-system,sans-serif;text-align:center}
+.pp-divider p{margin:0 auto;max-width:60ch}
+.pp-gen{position:absolute;top:8px;right:8px;z-index:3;padding:3px 7px;border:1px dashed currentColor;border-radius:6px;background:rgba(255,255,255,.88);color:#3a3a40;font:600 11px/1.2 system-ui,-apple-system,sans-serif;letter-spacing:0}
+@media (max-width:640px){.pp-switch a[href^="#"]{display:none}}
+
+/* ===== Tokens ===== */
+:root{
+  --papier:#F5F6F8; --blanc:#FFFFFF; --encre:#14161B; --graphite:#59606D;
+  --bleu:#1F4FD1; --bleu-survol:#173CA6; --sur-bleu:#FFFFFF;
+  --colza:#F5D33F; --sur-colza:#14161B;
+  --filet:#D8DDE5; --trait:#59606D; --trait-doux:#AAB2BF; --pointille:#B9C0CB;
+  --voile:rgba(245,246,248,.92);
+  --font-texte:"Atkinson Hyperlegible Next","Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-note:"Newsreader",Georgia,"Times New Roman",serif;
+  --font-code:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --t-display:clamp(2.75rem,1.15rem + 4.6vw,5.25rem);
+  --t-h2:clamp(2rem,1.4rem + 1.9vw,3rem);
+  --t-h3:1.5rem;
+  --t-chapeau:1.3125rem;
+  --t-corps:1.125rem;
+  --t-petit:1rem;
+  --t-etiquette:.875rem;
+  --t-note:1.0625rem;
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px; --s9:96px; --s10:128px;
+  --rayon:4px;
+  --gouttiere:clamp(16px,4vw,40px);
+  color-scheme:light;
+}
+html[data-theme="nuit"]{
+  --papier:#0E1424; --blanc:#151E33; --encre:#E6EAF2; --graphite:#A3ADBF;
+  --bleu:#8FB0FF; --bleu-survol:#B5CBFF; --sur-bleu:#0E1424;
+  --colza:#E2C044; --sur-colza:#14161B;
+  --filet:#26304A; --trait:#A3ADBF; --trait-doux:#4A5672; --pointille:#3A4664;
+  --voile:rgba(14,20,36,.92);
+  color-scheme:dark;
+}
+
+/* ===== Base ===== */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:96px}
+body{margin:0;background:var(--papier);color:var(--encre);font-family:var(--font-texte);font-size:var(--t-corps);line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
+img,svg{display:block;max-width:100%}
+.asset-trait{display:block;max-width:100%;flex-shrink:0;background:currentColor;-webkit-mask-image:var(--asset);mask-image:var(--asset);-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center}
+h1,h2,h3,h4{margin:0;font-weight:800;line-height:1.1;letter-spacing:-.01em;text-wrap:balance}
+p{margin:0;text-wrap:pretty}
+a{color:var(--bleu);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.22em}
+a:hover{text-decoration-thickness:2px}
+:focus-visible{outline:2px solid var(--bleu);outline-offset:3px;border-radius:2px}
+::selection{background:var(--colza);color:var(--sur-colza)}
+.sr{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.evitement{position:absolute;left:12px;top:-60px;z-index:100;background:var(--bleu);color:var(--sur-bleu);padding:12px 16px;border-radius:var(--rayon);font-weight:700}
+.evitement:focus{top:12px}
+.wrap{max-width:1280px;margin-inline:auto;padding-inline:var(--gouttiere)}
+.nuit-seul{display:none!important}
+html[data-theme="nuit"] .nuit-seul{display:revert!important}
+
+/* Surligneur : seulement des chiffres sourcés */
+.surligne{color:var(--sur-colza);background:linear-gradient(var(--colza),var(--colza)) no-repeat 0 62%/100% 74%;padding:0 .18em;margin:0 -.06em;border-radius:2px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+
+/* Note de l'auteur : le stylo bleu */
+.note{font-family:var(--font-note);font-style:italic;font-weight:400;font-size:var(--t-note);line-height:1.45;color:var(--bleu)}
+
+/* ===== Boutons ===== */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:11px 22px;border:2px solid var(--bleu);border-radius:var(--rayon);font:700 1rem/1.2 var(--font-texte);text-decoration:none;cursor:pointer;transition:background-color .15s ease,border-color .15s ease,color .15s ease}
+.btn--plein{background:var(--bleu);color:var(--sur-bleu)}
+.btn--plein:hover,.btn--plein.is-survol{background:var(--bleu-survol);border-color:var(--bleu-survol);color:var(--sur-bleu)}
+.btn--contour{background:transparent;color:var(--bleu)}
+.btn--contour:hover,.btn--contour.is-survol{background:color-mix(in srgb,var(--bleu) 9%,transparent)}
+.btn:focus-visible,.btn.is-focus{outline:2px solid var(--bleu);outline-offset:3px}
+.btn[aria-disabled="true"]{opacity:.42;cursor:not-allowed}
+.btn--petit{min-height:44px;padding:8px 16px;font-size:.9375rem}
+.actions{display:flex;flex-wrap:wrap;gap:var(--s3)}
+
+/* ===== En-tête ===== */
+.site-header{position:sticky;top:0;z-index:50;background:var(--voile);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--filet)}
+.site-header__in{display:flex;align-items:center;gap:var(--s5);min-height:72px}
+.marque{display:flex;align-items:baseline;gap:.55em;color:var(--encre);text-decoration:none;font-weight:700;font-size:1.0625rem;line-height:1.2}
+.marque:hover{text-decoration:none}
+.marque__sous{font-weight:400;color:var(--graphite)}
+.marque__lune{width:18px;height:18px;color:var(--bleu);align-self:center}
+.nav{margin-left:auto}
+.nav ul{list-style:none;margin:0;padding:0;display:flex;gap:2px}
+.nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;border-radius:var(--rayon);color:var(--encre);text-decoration:none;font-weight:500;font-size:1rem}
+.nav a:hover{text-decoration:underline;text-decoration-thickness:2px}
+.site-header__actions{display:flex;align-items:center;gap:var(--s2)}
+.lune{display:inline-grid;place-items:center;width:44px;height:44px;border:1px solid var(--filet);border-radius:var(--rayon);background:transparent;color:var(--encre);cursor:pointer;transition:border-color .15s ease,color .15s ease}
+.lune:hover{border-color:var(--bleu);color:var(--bleu)}
+.lune .asset-trait{width:20px;height:20px}
+.lune[aria-pressed="true"]{color:var(--bleu);border-color:var(--bleu)}
+
+/* ===== Hero ===== */
+.hero{padding-block:clamp(48px,7vw,104px) clamp(48px,6vw,88px)}
+.hero__in{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(32px,5vw,72px);align-items:center}
+.hero__couverture{display:flex;flex-direction:column;gap:2px;margin-bottom:var(--s6);font-size:var(--t-petit);line-height:1.35}
+.hero__nom{font-weight:700;color:var(--encre)}
+.hero__edition{color:var(--graphite)}
+.hero h1{font-size:var(--t-display);line-height:1;letter-spacing:-.028em;font-weight:800;max-width:13ch}
+.hero h1 span{display:block}
+.hero h1 span+span{margin-top:.2em}
+.hero__chapeau{font-size:var(--t-chapeau);line-height:1.5;max-width:34em;margin-top:var(--s6)}
+.hero .actions{margin-top:var(--s6)}
+
+.fig0{margin:0;justify-self:end;width:min(100%,440px)}
+.fig0__cadre{position:relative;aspect-ratio:768/1152}
+.fig0__cadre img{width:100%;height:100%;object-fit:cover;border-radius:var(--rayon)}
+.fig0__traits{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.fig0__traits line{stroke:var(--bleu);stroke-width:1.5;vector-effect:non-scaling-stroke}
+.fig0__traits circle{fill:var(--blanc);stroke:var(--bleu);stroke-width:2;vector-effect:non-scaling-stroke}
+.fig0__label{position:absolute;padding:3px 9px 4px;background:var(--blanc);border:1px solid var(--bleu);border-radius:3px;color:var(--bleu);font-family:var(--font-note);font-style:italic;font-size:1rem;line-height:1.25;white-space:nowrap}
+.fig0__label--bleu{left:6%;top:21.5%}
+.fig0__label--jaune{right:4%;top:90.4%}
+.legende{margin-top:var(--s3);font-size:.9375rem;line-height:1.45;color:var(--graphite)}
+.legende b{color:var(--encre);font-weight:700;margin-right:.3em}
+
+/* ===== Sommaire ===== */
+.sommaire{border-top:1px solid var(--filet);padding-block:var(--s8) var(--s7)}
+.sommaire__titre{font-size:var(--t-h3);font-weight:700;letter-spacing:0}
+.sommaire__liste{list-style:none;margin:var(--s4) 0 0;padding:0}
+.sommaire__liste a{display:grid;grid-template-columns:2.75rem auto minmax(2rem,1fr) auto;align-items:baseline;gap:var(--s3);min-height:56px;padding:10px 0;color:var(--encre);text-decoration:none}
+.sommaire__num{font-weight:500;color:var(--graphite);font-size:1.5rem;font-variant-numeric:tabular-nums}
+.sommaire__nom{font-weight:700;font-size:clamp(1.25rem,1rem + 1vw,1.75rem);line-height:1.2}
+.sommaire__points{border-bottom:2px dotted var(--pointille);transform:translateY(-.3em)}
+.sommaire__desc{color:var(--graphite);font-size:var(--t-petit)}
+.sommaire__liste a:hover .sommaire__nom{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.2em}
+.sommaire__liste a:hover .sommaire__points{border-color:var(--bleu)}
+
+/* ===== Corps du manuel ===== */
+.manuel{display:grid;grid-template-columns:minmax(0,1fr)}
+.reperes{display:none}
+.chapitre{position:relative;padding-block:var(--s9);border-top:1px solid var(--filet)}
+.chapitre__titre{display:flex;align-items:baseline;gap:.42em;font-size:var(--t-h2);line-height:1.05;letter-spacing:-.022em}
+.chapitre__num{font-weight:500;color:var(--graphite);font-variant-numeric:tabular-nums}
+.chapitre__intro{font-size:var(--t-chapeau);line-height:1.5;max-width:36em;margin-top:var(--s5)}
+
+/* Texte + marge de notes */
+.avec-marge{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s4)}
+.avec-marge>.note{padding-left:var(--s4);border-left:2px solid var(--bleu);align-self:start}
+.note__lien{display:block;margin-top:var(--s1)}
+
+/* Étapes de l'origine : une séquence */
+.etapes{list-style:none;margin:var(--s8) 0 0;padding:0}
+.etape{position:relative;display:grid;grid-template-columns:3.5rem minmax(0,1fr);column-gap:var(--s4);padding-bottom:var(--s8)}
+.etape::before{content:"";position:absolute;left:1.05rem;top:2.6rem;bottom:.75rem;width:1px;background:var(--trait-doux)}
+.etape:last-child{padding-bottom:0}
+.etape:last-child::before{display:none}
+.etape__num{font-weight:800;font-size:1.125rem;line-height:1.75;color:var(--graphite);font-variant-numeric:tabular-nums}
+.etape__quand{font-weight:700;font-size:var(--t-petit);color:var(--graphite)}
+.etape h3{font-size:var(--t-h3);line-height:1.25;margin:.2em 0 .55em;letter-spacing:-.01em}
+.etape__texte p{max-width:36rem}
+.eclate{position:relative;margin:0}
+.eclate .asset-trait{width:100%;max-width:240px;aspect-ratio:6/5;color:var(--bleu)}
+.eclate .legende{font-size:.875rem}
+.citation{margin:var(--s6) 0 0;font-family:var(--font-note);font-style:italic;font-weight:400;font-size:clamp(1.75rem,1.2rem + 1.6vw,2.5rem);line-height:1.2;color:var(--bleu);max-width:22ch;text-indent:-.42em}
+.etape .figure{grid-column:2 / -1;margin-top:var(--s7)}
+
+/* Figures */
+.figure{position:relative;margin:0}
+.figure__plan{background:var(--blanc);border:1px solid var(--filet);border-radius:var(--rayon);padding:clamp(10px,2.4vw,28px)}
+.figure__plan svg{width:100%;height:auto}
+.f1--compacte,.f2--compacte{display:none}
+.f-t{font:500 14px var(--font-texte);fill:var(--graphite)}
+.f-t--fort{font-weight:700;fill:var(--encre)}
+.f-note{font:italic 400 16px var(--font-note);fill:var(--bleu)}
+.f-axes{fill:none;stroke:var(--trait);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.f-seuil{stroke:var(--trait);stroke-width:1;stroke-dasharray:4 5}
+.courbe{fill:none;stroke:var(--bleu);stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.f-accolade{fill:none;stroke:var(--bleu);stroke-width:1.5;stroke-linejoin:round}
+.f-rappel{stroke:var(--bleu);stroke-width:1.25}
+.f-plein{fill:var(--bleu)}
+.f2-liens line{stroke:var(--trait-doux);stroke-width:1.2}
+.f2-plein circle{fill:var(--bleu)}
+.f2-vide circle{fill:var(--blanc);stroke:var(--bleu);stroke-width:1.75}
+.f2-moi{fill:var(--bleu)}
+.f2-halo{fill:none;stroke:var(--bleu);stroke-width:1.5}
+.f2-fleche{fill:none;stroke:var(--bleu);stroke-width:1.5;stroke-dasharray:5 6}
+.f2-pointe{fill:none;stroke:var(--bleu);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.figure__plan.est-pret .annot{opacity:0}
+.figure__plan.est-trace .annot{opacity:1;transition:opacity .45s ease}
+.figure__plan.est-trace .annot--1{transition-delay:1.45s}
+.figure__plan.est-trace .annot--3{transition-delay:1.7s}
+.figure__plan.est-trace .annot--2{transition-delay:1.95s}
+
+/* Les trois règles : une séquence */
+.regles{list-style:none;margin:var(--s8) 0 0;padding:0;display:grid;gap:var(--s7)}
+.regle{position:relative;display:grid;grid-template-columns:48px minmax(0,1fr);column-gap:var(--s4)}
+.regle:not(:last-child)::after{content:"";position:absolute;left:23px;top:48px;bottom:calc(-1 * var(--s7));width:2px;background:var(--bleu)}
+.regle__pastille{grid-row:1 / span 4;position:relative;z-index:1;display:grid;place-items:center;width:48px;height:48px;border:2px solid var(--bleu);border-radius:50%;background:var(--papier);color:var(--bleu);font-weight:800;font-size:1.25rem}
+.regle__ordre{font-size:var(--t-petit);font-weight:500;color:var(--graphite);padding-top:.7rem}
+.regle__ordre .note{margin-left:.25em;font-size:var(--t-note)}
+.regle h3{font-size:clamp(1.75rem,1.4rem + 1vw,2.25rem);margin-top:var(--s2);letter-spacing:-.02em}
+.regle__sens{font-size:1.1875rem;line-height:1.45;margin-top:var(--s2)}
+.preuves{list-style:none;padding:0;margin:var(--s5) 0 0;display:grid;gap:var(--s3)}
+.preuves li{position:relative;padding-left:1.25rem;max-width:34rem}
+.preuves li::before{content:"";position:absolute;left:0;top:.66em;width:7px;height:7px;background:var(--bleu)}
+
+/* Fiches techniques */
+.fiche{position:relative;margin-top:var(--s8);background:var(--blanc);border:1px solid var(--filet);border-radius:var(--rayon);padding:clamp(20px,3.6vw,44px)}
+.fiche__tete{display:flex;flex-direction:column;align-items:flex-start;gap:var(--s3)}
+.fiche h3{font-size:clamp(1.5rem,1.2rem + 1.1vw,2.125rem);letter-spacing:-.02em}
+.fiche__meta{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s3)}
+.puce{display:inline-flex;align-items:center;min-height:30px;padding:2px 10px;border:1px solid var(--trait-doux);border-radius:var(--rayon);font-size:var(--t-etiquette);font-weight:500;line-height:1.2;color:var(--graphite)}
+.fiche__regle{font-family:var(--font-note);font-style:italic;font-size:var(--t-note);display:inline-flex;align-items:center;min-height:44px}
+.fiche__spec{margin:var(--s6) 0 0;border-top:1px solid var(--filet)}
+.fiche__spec>div{display:grid;grid-template-columns:8.5rem minmax(0,1fr);gap:var(--s2) var(--s5);padding:var(--s4) 0;border-bottom:1px solid var(--filet)}
+.fiche__spec dt{font-weight:700;font-size:var(--t-petit);color:var(--graphite);padding-top:.12em}
+.fiche__spec dd{margin:0;max-width:40rem}
+.fiche__chiffres{list-style:none;padding:0;margin:var(--s6) 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:var(--s5) var(--s6)}
+.chiffre{display:block;font-weight:800;font-size:clamp(2rem,1.55rem + 1.5vw,2.75rem);line-height:1.1;letter-spacing:-.02em;font-variant-numeric:lining-nums tabular-nums}
+.chiffre .surligne{background-size:100% 44%;background-position:0 92%;padding:0 .12em}
+.chiffre--mot{font-size:clamp(1.5rem,1.3rem + .8vw,1.875rem);padding-top:.25em}
+.chiffre__legende{display:block;margin-top:var(--s2);font-size:var(--t-petit);line-height:1.4;color:var(--graphite);max-width:18ch}
+.fiche__bas{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:var(--s6) var(--s7);margin-top:var(--s7);align-items:start}
+.fiche__fig{margin:0}
+.fiche__fig img{width:100%;height:auto;border:1px solid var(--filet);border-radius:var(--rayon);background:var(--papier)}
+.fiche__voix .citation{margin:0;font-size:clamp(1.375rem,1.15rem + .7vw,1.75rem);max-width:none}
+.fiche__liens{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s5);margin-top:var(--s5)}
+.lien-fort{display:inline-flex;align-items:center;min-height:44px;font-weight:700}
+
+/* Annexe : en dehors du code */
+.annexe{position:relative;display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s7) var(--s7);margin-top:var(--s8)}
+.annexe>.pp-gen{top:-34px;right:0}
+.entree{display:grid;grid-template-columns:48px minmax(0,1fr);column-gap:var(--s5);align-items:start}
+.entree .picto{width:48px;height:48px;color:var(--bleu)}
+.entree h3{font-size:1.25rem;line-height:1.3;letter-spacing:0;padding-top:.25rem}
+.entree p{margin-top:var(--s2);max-width:30rem}
+.entree a{display:inline-flex;min-height:44px;align-items:center}
+.dehors__sommeil{margin-top:var(--s7)}
+
+/* Discutons */
+.contact{margin-top:var(--s7);background:var(--blanc);border:1px solid var(--filet);border-top:4px solid var(--bleu);border-radius:var(--rayon);padding:clamp(24px,4.4vw,60px)}
+.contact__texte{font-size:clamp(1.5rem,1.1rem + 1.4vw,2.25rem);line-height:1.25;font-weight:700;letter-spacing:-.015em;max-width:26ch}
+.contact .actions{margin-top:var(--s6)}
+.contact__reseaux{list-style:none;padding:0;margin:var(--s4) 0 0;display:flex;flex-wrap:wrap;gap:0 var(--s5)}
+.contact__reseaux a{display:inline-flex;align-items:center;min-height:44px;font-weight:500}
+.contact__clin{margin-top:var(--s6);padding-top:var(--s5);border-top:1px solid var(--filet)}
+
+/* Pied de page */
+.site-footer{border-top:1px solid var(--filet);padding-block:var(--s7) calc(var(--s9) + 24px)}
+.site-footer__in{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;gap:var(--s6);align-items:start}
+.site-footer__nom{font-weight:700}
+.site-footer__colophon{margin-top:var(--s2);font-size:var(--t-petit);color:var(--graphite)}
+.site-footer__nuit{margin-top:var(--s2)}
+.site-footer ul{list-style:none;margin:0;padding:0}
+.site-footer__liens a,.langues a{display:inline-flex;align-items:center;min-height:40px;font-size:var(--t-petit)}
+.langues ul{display:flex;gap:var(--s4)}
+.langues a{color:var(--graphite);text-decoration:none}
+.langues a:hover{color:var(--encre);text-decoration:underline}
+.langues a[aria-current="true"]{color:var(--encre);font-weight:700}
+
+/* ===== Annexes : design system et pourquoi ===== */
+.ds,.pourquoi{padding-block:var(--s9)}
+.pourquoi{border-top:1px solid var(--filet)}
+.ds__titre,.pourquoi__titre{font-size:clamp(2.5rem,1.6rem + 3vw,4rem);letter-spacing:-.03em;line-height:1}
+.ds__intro,.pourquoi__intro{font-size:var(--t-chapeau);line-height:1.5;max-width:38em;margin-top:var(--s5)}
+.ds-bloc{padding-block:var(--s8) 0}
+.ds-bloc>h3{display:flex;gap:.45em;align-items:baseline;font-size:clamp(1.5rem,1.25rem + .8vw,2rem);letter-spacing:-.02em;padding-top:var(--s7);border-top:1px solid var(--filet)}
+.ds-bloc__intro{margin-top:var(--s3);max-width:44rem;color:var(--graphite)}
+.ds h4{font-size:1.0625rem;font-weight:700;letter-spacing:0;line-height:1.3}
+
+.ds-principes{list-style:none;padding:0;margin:var(--s6) 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:var(--s6)}
+.ds-principes h4{font-size:1.25rem}
+.ds-principes p{margin-top:var(--s2);font-size:var(--t-petit);color:var(--graphite)}
+
+.ds-gamme{margin-top:var(--s6)}
+.ds-gamme+.ds-gamme{margin-top:var(--s7)}
+.ds-teintes{list-style:none;padding:0;margin:var(--s4) 0 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,13.5rem),1fr));gap:var(--s5)}
+.ds-teinte{display:flex;flex-direction:column;gap:2px;font-size:.9375rem;line-height:1.4}
+.ds-teinte__pastille{height:88px;border-radius:var(--rayon);border:1px solid rgba(20,22,27,.14);margin-bottom:var(--s2)}
+.ds-teinte__nom{font-weight:700;font-size:1rem}
+.ds-teinte code,.ds-code code,.ds code{font-family:var(--font-code);font-size:.8125rem}
+.ds-teinte__code{display:flex;flex-wrap:wrap;gap:0 .75em;color:var(--graphite);font-size:.875rem}
+.ds-teinte__role{color:var(--graphite)}
+.ds-teinte__ratio{color:var(--encre);font-weight:500}
+
+.ds-typo{list-style:none;padding:0;margin:var(--s6) 0 0;border-top:1px solid var(--filet)}
+.ds-typo li{display:grid;grid-template-columns:9rem minmax(0,1fr) 15rem;gap:var(--s2) var(--s5);align-items:baseline;padding:var(--s5) 0;border-bottom:1px solid var(--filet)}
+.ds-typo__niveau{font-size:var(--t-petit);font-weight:700;color:var(--graphite)}
+.ds-typo__mesure{font-size:.875rem;color:var(--graphite)}
+.ds-typo__specimen{min-width:0;overflow-wrap:anywhere}
+.ds-familles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr));gap:var(--s6);margin-top:var(--s6)}
+.ds-famille{background:var(--blanc);border:1px solid var(--filet);border-radius:var(--rayon);padding:var(--s5)}
+.ds-famille__echantillon{font-size:2.75rem;line-height:1.1;margin-block:var(--s3)}
+.ds-famille p{font-size:var(--t-petit);color:var(--graphite)}
+.ds-famille .ds-famille__echantillon{font-size:2.75rem;line-height:1.1;color:var(--encre)}
+.ds-famille .ds-famille__echantillon.note{color:var(--bleu)}
+
+.ds-espaces{list-style:none;padding:0;margin:var(--s5) 0 0;display:grid;gap:6px}
+.ds-espaces li{display:grid;grid-template-columns:4.5rem minmax(0,1fr);align-items:center;gap:var(--s4);font-size:.875rem;color:var(--graphite)}
+.ds-espaces span{display:block;height:12px;background:var(--bleu);border-radius:1px}
+.ds-grille{display:grid;grid-template-columns:184fr 24fr 576fr 48fr 208fr;margin-top:var(--s5);min-height:120px;font-size:.8125rem;color:var(--graphite)}
+.ds-grille div{border:1px dashed var(--trait-doux);border-radius:2px;padding:8px;display:flex;flex-direction:column;justify-content:flex-end}
+.ds-grille div:nth-child(2),.ds-grille div:nth-child(4){border:0;background:repeating-linear-gradient(90deg,transparent 0 3px,var(--filet) 3px 4px)}
+.ds-grille b{color:var(--encre)}
+.ds-formes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr));gap:var(--s5);margin-top:var(--s6)}
+.ds-forme{background:var(--blanc);border:1px solid var(--filet);border-radius:var(--rayon);padding:var(--s5);font-size:.9375rem;color:var(--graphite)}
+.ds-forme b{display:block;color:var(--encre);margin-bottom:var(--s2)}
+.ds-forme__demo{height:56px;margin-bottom:var(--s3);display:flex;align-items:center}
+
+.ds-comps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,26rem),1fr));gap:var(--s6);margin-top:var(--s6)}
+.ds-comp{position:relative;background:var(--blanc);border:1px solid var(--filet);border-radius:var(--rayon);padding:var(--s5)}
+.ds-comp>h4{margin-bottom:var(--s4)}
+.ds-comp__usage{margin-top:var(--s4);font-size:.9375rem;color:var(--graphite)}
+.ds-etats{display:flex;flex-wrap:wrap;gap:var(--s4) var(--s5);align-items:flex-start}
+.ds-etat{margin:0;display:flex;flex-direction:column;align-items:flex-start;gap:var(--s2)}
+.ds-etat figcaption{font-size:.8125rem;color:var(--graphite)}
+.ds-lien-demo{font-size:var(--t-corps)}
+.ds-lien-demo.is-survol{text-decoration-thickness:2px}
+.ds-lien-demo.is-focus{outline:2px solid var(--bleu);outline-offset:3px;border-radius:2px}
+.ds-nav-demo{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);padding:var(--s2) var(--s3);border:1px solid var(--filet);border-radius:var(--rayon);background:var(--papier)}
+.ds-nav-demo .marque{font-size:.9375rem}
+.ds-nav-demo .nav{margin-left:auto}
+.ds-reperes-demo{margin-top:var(--s4)}
+.ds-reperes-demo ol{list-style:none;margin:0;padding:0;border-left:1px solid var(--filet);max-width:16rem}
+.ds-reperes-demo a{display:flex;gap:.6em;align-items:center;min-height:40px;padding-left:14px;margin-left:-1px;border-left:2px solid transparent;color:var(--graphite);text-decoration:none;font-size:.9375rem}
+.ds-reperes-demo a[aria-current]{color:var(--encre);font-weight:700;border-left-color:var(--bleu)}
+.ds-mini-fiche{border:1px solid var(--filet);border-radius:var(--rayon);padding:var(--s4)}
+.ds-mini-fiche .fiche__spec{margin-top:var(--s3)}
+.ds-mini-fiche .fiche__spec>div{grid-template-columns:6.5rem minmax(0,1fr);font-size:.9375rem;padding:var(--s3) 0}
+
+.ds-pictos{list-style:none;padding:0;margin:var(--s5) 0 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(7.5rem,1fr));gap:var(--s4)}
+.ds-pictos li{display:flex;flex-direction:column;align-items:center;gap:var(--s2);padding:var(--s4) var(--s2);background:var(--blanc);border:1px solid var(--filet);border-radius:var(--rayon);font-size:.875rem;color:var(--graphite);text-align:center}
+.ds-pictos .picto{width:48px;height:48px;color:var(--bleu)}
+.ds-icono{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,17rem),1fr));gap:var(--s6);margin-top:var(--s6)}
+.ds-icono figure{position:relative;margin:0;background:var(--blanc);border:1px solid var(--filet);border-radius:var(--rayon);padding:var(--s5)}
+.ds-icono figure svg{margin-inline:auto;color:var(--bleu)}
+.ds-icono .asset-trait{width:160px;height:160px;margin-inline:auto;color:var(--bleu)}
+.ds-icono figcaption{margin-top:var(--s3);font-size:.9375rem;color:var(--graphite)}
+
+.ds-images{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:var(--s6);margin-top:var(--s6)}
+.ds-images figure{position:relative;margin:0}
+.ds-images img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:var(--rayon)}
+.bichromie{display:block;position:relative;border-radius:var(--rayon);overflow:hidden}
+.bichromie img{aspect-ratio:2/3;object-fit:contain;border-radius:0}
+.bichromie .bichromie__nuit{display:none}
+html[data-theme="nuit"] .bichromie__jour{display:none}
+html[data-theme="nuit"] .bichromie__nuit{display:block}
+.ds-images .ds-capture img{aspect-ratio:1051/625;object-fit:contain;background:#0b0b0c;border:1px solid var(--filet)}
+
+.ds-mouvement{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,20rem),1fr));gap:var(--s6);margin-top:var(--s6)}
+.ds-mouvement dl{margin:0}
+.ds-mouvement dt{font-weight:700;margin-top:var(--s4)}
+.ds-mouvement dt:first-child{margin-top:0}
+.ds-mouvement dd{margin:var(--s1) 0 0;color:var(--graphite);font-size:var(--t-petit)}
+
+.ds-table{width:100%;border-collapse:collapse;margin-top:var(--s5);font-size:.9375rem}
+.ds-table th,.ds-table td{text-align:left;padding:10px 12px 10px 0;border-bottom:1px solid var(--filet);vertical-align:top}
+.ds-table th{font-weight:700;color:var(--graphite);font-size:.875rem}
+.ds-echantillon{display:inline-block;min-width:3.6rem;padding:2px 8px;border-radius:3px;border:1px solid rgba(20,22,27,.12);font-weight:700}
+.ds-defile{overflow-x:auto}
+.ds-a11y-liste{margin:var(--s6) 0 0;padding-left:1.2rem;display:grid;gap:var(--s2);max-width:46rem}
+
+.ds-code{margin:var(--s5) 0 0;padding:var(--s5);background:var(--blanc);border:1px solid var(--filet);border-radius:var(--rayon);overflow-x:auto;font-family:var(--font-code);font-size:.8125rem;line-height:1.6;color:var(--encre)}
+.ds-code code{font-size:inherit}
+
+/* Pourquoi */
+.pourquoi__grille{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s7);margin-top:var(--s8)}
+.pourquoi__bloc h3{font-size:1.5rem;letter-spacing:-.01em}
+.pourquoi__bloc p,.pourquoi__bloc li{max-width:40rem}
+.pourquoi__bloc p{margin-top:var(--s3)}
+.pourquoi__bloc ul{margin:var(--s3) 0 0;padding-left:1.2rem;display:grid;gap:var(--s2)}
+.pourquoi__assets{width:100%;border-collapse:collapse;margin-top:var(--s4);font-size:.9375rem}
+.pourquoi__assets th,.pourquoi__assets td{text-align:left;vertical-align:top;padding:10px 14px 10px 0;border-bottom:1px solid var(--filet)}
+.pourquoi__assets th{font-size:.875rem;color:var(--graphite)}
+.pourquoi__assets td:first-child{font-weight:700;white-space:nowrap}
+
+/* ===== Points de rupture ===== */
+@media (min-width:700px){
+  .annexe{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (min-width:880px){
+  .regles{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s6)}
+  .regles::before{content:"";position:absolute;top:24px;left:24px;right:calc((100% - 2 * var(--s6)) / 3 - 24px);height:2px;background:var(--bleu)}
+  .regles{position:relative}
+  .regle{display:block}
+  .regle:not(:last-child)::after{display:none}
+  .regle__pastille{display:grid}
+  .regle__ordre{padding-top:var(--s4)}
+}
+@media (min-width:1100px){
+  .manuel{grid-template-columns:184px minmax(0,1fr);column-gap:56px}
+  .reperes{display:block;position:sticky;top:96px;align-self:start;padding-top:var(--s9)}
+  .reperes__titre{font-size:var(--t-petit);font-weight:700;margin-bottom:var(--s3)}
+  .reperes ol{list-style:none;margin:0;padding:0;border-left:1px solid var(--filet)}
+  .reperes a{display:flex;gap:.6em;align-items:center;min-height:44px;padding:6px 0 6px 16px;margin-left:-1px;border-left:2px solid transparent;color:var(--graphite);text-decoration:none;font-size:var(--t-petit);line-height:1.3}
+  .reperes a:hover{color:var(--encre)}
+  .reperes a[aria-current]{color:var(--encre);font-weight:700;border-left-color:var(--bleu)}
+  .avec-marge{grid-template-columns:minmax(0,36rem) 13rem;column-gap:var(--s7)}
+  .avec-marge>.note{border-left:0;padding-left:0;padding-top:2.1rem}
+  .pourquoi__grille{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s8)}
+  .pourquoi__bloc--large{grid-column:1 / -1}
+}
+@media (max-width:900px){
+  .fiche__bas{grid-template-columns:minmax(0,1fr)}
+  .site-footer__in{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:860px){
+  .hero__in{grid-template-columns:minmax(0,1fr)}
+  .fig0{justify-self:start;width:min(100%,420px)}
+  .ds-typo li{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:760px){
+  .site-header__in{flex-wrap:wrap;gap:0 var(--s3);padding-block:10px 4px;min-height:0}
+  .site-header__actions{margin-left:auto}
+  .nav{order:3;width:100%;margin-left:-12px}
+  .marque{flex-direction:column;gap:0}
+}
+@media (max-width:640px){
+  .sommaire__liste a{grid-template-columns:2.25rem minmax(0,1fr);row-gap:2px}
+  .sommaire__points{display:none}
+  .sommaire__desc{grid-column:2}
+  .f1--large,.f2--large{display:none}
+  .f1--compacte,.f2--compacte{display:block}
+  .f1--compacte .f-t,.f2--compacte .f-t{font-size:15px}
+  .f1--compacte .f-note,.f2--compacte .f-note{font-size:16px}
+  .etape .figure{grid-column:1 / -1}
+  .etape .figure .legende{position:relative;background:var(--papier);padding-bottom:var(--s2)}
+  .etape{grid-template-columns:2.6rem minmax(0,1fr);column-gap:var(--s3)}
+  .etape::before{left:.8rem}
+  .fiche__spec>div{grid-template-columns:minmax(0,1fr)}
+  .ds-grille{grid-template-columns:minmax(0,1fr);min-height:0;gap:6px}
+  .ds-grille div{min-height:44px}
+  .ds-grille div:nth-child(2),.ds-grille div:nth-child(4){display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<nav class="pp-switch" aria-label="Propositions de design">
+  <a href="index.html">Comparatif</a>
+  <a href="a-nocturne.html"><b>A</b> Nocturne</a>
+  <a href="b-clair-de-lune.html"><b>B</b> Clair de lune</a>
+  <a href="c-contre-jeu.html"><b>C</b> Contre-jeu</a>
+  <a href="d-mode-d-emploi.html" aria-current="page"><b>D</b> Mode d'emploi</a>
+  <a href="#design-system">Design system</a>
+  <a href="#pourquoi">Pourquoi</a>
+</nav>
+
+<a class="evitement" href="#contenu">Aller au contenu</a>
+
+<!-- ================= MAQUETTE ================= -->
+<header class="site-header">
+  <div class="wrap site-header__in">
+    <a class="marque" href="#contenu">
+      <span class="marque__nom">Charles Lindecker</span>
+      <span class="marque__sous">mode d'emploi</span>
+      <span class="asset-trait marque__lune nuit-seul" style="--asset:url('../assets/pictos/lune-mode-nuit.svg')" aria-hidden="true"></span>
+    </a>
+    <nav class="nav" aria-label="Navigation principale">
+      <ul>
+        <li><a href="#">Parcours</a></li>
+        <li><a href="#">Projets</a></li>
+        <li><a href="#">CV</a></li>
+      </ul>
+    </nav>
+    <div class="site-header__actions">
+      <a class="btn btn--contour btn--petit" href="mailto:charles.lindecker@outlook.fr">M'écrire</a>
+      <button class="lune" type="button" aria-pressed="false" aria-label="Mode nuit" title="Mode nuit">
+        <span class="asset-trait" style="--asset:url('../assets/pictos/lune-mode-nuit.svg')" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="contenu">
+  <section class="hero" aria-labelledby="titre">
+    <div class="wrap hero__in">
+      <div class="hero__texte">
+        <p class="hero__couverture"><span class="hero__nom">Charles Lindecker</span><span class="hero__edition">Mode d'emploi, version 2</span></p>
+        <h1 id="titre"><span>Je maîtrise d'abord les règles du jeu.</span> <span>Ensuite, je les réinvente.</span></h1>
+        <p class="hero__chapeau">Architecte logiciel, je code depuis mes 13&nbsp;ans. J'ai formé des développeurs jusqu'à leur titre, et je mène aujourd'hui le pôle francophone d'un projet open source.</p>
+        <div class="actions">
+          <a class="btn btn--plein" href="#discutons">Discutons</a>
+          <a class="btn btn--contour" href="#">Télécharger mon CV</a>
+        </div>
+      </div>
+      <figure class="fig0" id="fig-0">
+        <div class="fig0__cadre">
+          <img src="../assets/photos/sources/1536x2304_charles-4.webp" width="768" height="1152" alt="Charles Lindecker, chemise bleu roi et bretelles, debout dans un champ de colza en fleur sous un ciel bleu.">
+          <svg class="fig0__traits" viewBox="0 0 768 1152" preserveAspectRatio="none" aria-hidden="true">
+            <line x1="118" y1="306" x2="318" y2="716"/>
+            <circle cx="320" cy="720" r="9"/>
+            <line x1="690" y1="1040" x2="690" y2="968"/>
+            <circle cx="690" cy="960" r="9"/>
+          </svg>
+          <span class="fig0__label fig0__label--bleu">Le bleu de ce site</span>
+          <span class="fig0__label fig0__label--jaune">Le jaune des surlignages</span>
+        </div>
+        <figcaption class="legende"><b>Fig. 0</b> L'auteur, sur le terrain. La palette de ce site vient de cette photo.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <nav class="sommaire" aria-labelledby="sommaire-titre">
+    <div class="wrap">
+      <h2 id="sommaire-titre" class="sommaire__titre">Sommaire</h2>
+      <ol class="sommaire__liste">
+        <li><a href="#origine"><span class="sommaire__num">1</span><span class="sommaire__nom">L'origine</span><span class="sommaire__points" aria-hidden="true"></span><span class="sommaire__desc">cinq étapes, de mes 10&nbsp;ans à fin 2025</span></a></li>
+        <li><a href="#regles"><span class="sommaire__num">2</span><span class="sommaire__nom">Les trois règles</span><span class="sommaire__points" aria-hidden="true"></span><span class="sommaire__desc">maîtriser, réinventer, emmener</span></a></li>
+        <li><a href="#preuves"><span class="sommaire__num">3</span><span class="sommaire__nom">Les preuves</span><span class="sommaire__points" aria-hidden="true"></span><span class="sommaire__desc">trois fiches techniques</span></a></li>
+        <li><a href="#dehors"><span class="sommaire__num">4</span><span class="sommaire__nom">En dehors du code</span><span class="sommaire__points" aria-hidden="true"></span><span class="sommaire__desc">quatre entrées en annexe</span></a></li>
+        <li><a href="#discutons"><span class="sommaire__num">5</span><span class="sommaire__nom">Discutons</span><span class="sommaire__points" aria-hidden="true"></span><span class="sommaire__desc">une adresse</span></a></li>
+      </ol>
+    </div>
+  </nav>
+
+  <div class="wrap manuel">
+    <nav class="reperes" aria-label="Repère de lecture">
+      <p class="reperes__titre">Sommaire</p>
+      <ol>
+        <li><a href="#origine"><span>1</span> L'origine</a></li>
+        <li><a href="#regles"><span>2</span> Les trois règles</a></li>
+        <li><a href="#preuves"><span>3</span> Les preuves</a></li>
+        <li><a href="#dehors"><span>4</span> En dehors du code</a></li>
+        <li><a href="#discutons"><span>5</span> Discutons</a></li>
+      </ol>
+    </nav>
+
+    <div class="manuel__corps">
+      <!-- 1 · L'origine -->
+      <section id="origine" class="chapitre" aria-labelledby="origine-titre">
+        <h2 id="origine-titre" class="chapitre__titre"><span class="chapitre__num">1</span> L'origine</h2>
+        <p class="chapitre__intro">Mon parcours n'a rien d'une ligne droite. C'est en chemin que ma méthode s'est forgée.</p>
+
+        <ol class="etapes">
+          <li class="etape">
+            <span class="etape__num" aria-hidden="true">1.1</span>
+            <div class="avec-marge">
+              <div class="etape__texte">
+                <p class="etape__quand">Vers 10&nbsp;ans</p>
+                <h3>Le terrain de jeu</h3>
+                <p>Avec mon père, informaticien, je démonte de vieux PC hors service. À 13&nbsp;ans, j'apprends le C sur OpenClassrooms avec une idée fixe&nbsp;: coder mes propres jeux sur Unreal Engine. Avec mon cousin, on invente un jeu de cartes sur papier, dont on sort des éditions sans fin. On passe des après-midi entiers à plastifier les cartes à la main.</p>
+              </div>
+              <div class="note">
+                <p><span class="sr">Note de l'auteur&nbsp;: </span>Ce jeu de cartes deviendra Omnicard. <a href="#fiche-omnicard">Voir les preuves.</a></p>
+                <figure class="eclate" style="margin-top:var(--s5)">
+                  <span class="asset-trait" style="--asset:url('../assets/illustrations/pc-vue-eclatee.svg')" role="img" aria-label="Vue éclatée d’un PC tour : boîtier, panneau latéral, carte mère, disque dur, vis et repères de montage."></span>
+                  <figcaption class="legende">Un vieux PC, en vue éclatée.</figcaption>
+                </figure>
+              </div>
+            </div>
+          </li>
+
+          <li class="etape">
+            <span class="etape__num" aria-hidden="true">1.2</span>
+            <div class="avec-marge">
+              <div class="etape__texte">
+                <p class="etape__quand">Vers 17&nbsp;ans</p>
+                <h3>Gwent, la méthode</h3>
+                <p>Je découvre Gwent, un jeu de cartes en ligne. Pas d'excuse en cas de défaite pour jeter la faute sur un autre&nbsp;: juste moi et mes propres décisions. Je teste un deck, puis un deuxième, puis un troisième. Quand c'est un flop, j'apprends de ce flop et je comprends où mon instinct m'a trompé, ce qui l'aiguise.</p>
+                <p style="margin-top:1em">En un an, j'approche du classement mondial, puis je plafonne pendant quatre mois. Copier ce que jouent les meilleurs ne suffit plus. Alors je fais l'inverse&nbsp;: je construis un deck à contre-courant, et c'est lui qui me fait entrer dans le classement mondial.</p>
+                <blockquote class="citation"><p>«&nbsp;Juste moi et mes propres décisions.&nbsp;»</p></blockquote>
+              </div>
+              <p class="note"><span class="sr">Note de l'auteur&nbsp;: </span>Le plafond, puis le saut&nbsp;: <a href="#fig-1">voir la figure 1</a>.</p>
+            </div>
+
+            <figure class="figure" id="fig-1">
+              <div class="figure__plan">
+                <svg class="f1 f1--large" viewBox="0 0 760 368" role="img" aria-labelledby="f1-titre f1-desc">
+                  <title id="f1-titre">Figure 1 : le plafond</title>
+                  <desc id="f1-desc">Schéma de ma progression sur Gwent : une montée irrégulière pendant environ un an, un plafond de quatre mois, puis un saut jusqu'au classement mondial grâce à un deck à contre-courant.</desc>
+                  <g class="f-axes">
+                    <path d="M84 322V34"/><path d="M78 44L84 34L90 44"/>
+                    <path d="M84 322H732"/><path d="M722 316L732 322L722 328"/>
+                    <path d="M470 322v7M596 322v7"/>
+                  </g>
+                  <line class="f-seuil" x1="84" y1="72" x2="716" y2="72"/>
+                  <text class="f-t f-t--fort" x="98" y="61">Classement mondial</text>
+                  <text class="f-t" transform="translate(54 180) rotate(-90)" text-anchor="middle">Plus près du classement mondial</text>
+                  <text class="f-t" x="84" y="350">Vers 17 ans</text>
+                  <text class="f-t" x="470" y="350" text-anchor="middle">≈ 1 an</text>
+                  <text class="f-t" x="596" y="350" text-anchor="middle">+ 4 mois</text>
+                  <text class="f-t" x="732" y="350" text-anchor="end">Temps</text>
+                  <polyline class="courbe" points="84,300 110,284 128,292 156,262 176,270 204,240 224,249 252,218 272,226 300,196 320,204 348,176 368,183 396,156 416,163 440,142 470,138 488,129 504,141 522,128 540,140 558,129 576,141 596,132 612,64 632,58 652,64 676,57 700,62"/>
+                  <g class="annot annot--1">
+                    <path class="f-accolade" d="M470 154v8h126v-8"/>
+                    <text class="f-note" x="533" y="186" text-anchor="middle">4 mois de plafond</text>
+                  </g>
+                  <g class="annot annot--2">
+                    <path class="f-rappel" d="M590 97H601"/>
+                    <circle class="f-plein" cx="604" cy="98" r="3"/>
+                    <text class="f-note" x="584" y="102" text-anchor="end">Deck à contre-courant</text>
+                  </g>
+                  <g class="annot annot--3">
+                    <circle class="f-plein" cx="612" cy="64" r="6"/>
+                  </g>
+                </svg>
+                <svg class="f1 f1--compacte" viewBox="0 0 360 312" role="img" aria-labelledby="f1c-titre f1c-desc">
+                  <title id="f1c-titre">Figure 1 : le plafond</title>
+                  <desc id="f1c-desc">Schéma de ma progression sur Gwent : une montée irrégulière pendant environ un an, un plafond de quatre mois, puis un saut jusqu'au classement mondial grâce à un deck à contre-courant.</desc>
+                  <g class="f-axes">
+                    <path d="M44 272V30"/><path d="M39 39L44 30L49 39"/>
+                    <path d="M44 272H350"/><path d="M341 267L350 272L341 277"/>
+                    <path d="M223 272v6M282 272v6"/>
+                  </g>
+                  <line class="f-seuil" x1="44" y1="74" x2="344" y2="74"/>
+                  <text class="f-t f-t--fort" x="54" y="64">Classement mondial</text>
+                  <text class="f-t" transform="translate(20 152) rotate(-90)" text-anchor="middle">Plus près du classement</text>
+                  <text class="f-t" x="44" y="298">Vers 17 ans</text>
+                  <text class="f-t" x="223" y="298" text-anchor="middle">≈ 1 an</text>
+                  <text class="f-t" x="285" y="298" text-anchor="middle">+ 4 mois</text>
+                  <text class="f-t" x="350" y="258" text-anchor="end">Temps</text>
+                  <polyline class="courbe" points="44,250 56.1,237.6 64.4,243.8 77.4,220.6 86.7,226.8 99.7,203.6 109,210.5 122,186.6 131.3,192.7 144.3,169.5 153.6,175.7 166.6,154.1 175.9,159.5 188.9,138.6 198.1,144 209.3,127.8 223.2,124.7 231.6,117.7 239,127 247.4,116.9 255.7,126.2 264.1,117.7 272.4,127 281.7,120 289.1,67.4 298.4,62.8 307.7,67.4 318.9,62 330,65.9"/>
+                  <g class="annot annot--1">
+                    <path class="f-accolade" d="M223 138v6h59v-6"/>
+                    <text class="f-note" x="252" y="164" text-anchor="middle">4 mois de plafond</text>
+                  </g>
+                  <g class="annot annot--2">
+                    <path class="f-rappel" d="M278 95H283"/>
+                    <circle class="f-plein" cx="285" cy="95" r="2.5"/>
+                    <text class="f-note" x="274" y="100" text-anchor="end">Deck à contre-courant</text>
+                  </g>
+                  <g class="annot annot--3">
+                    <circle class="f-plein" cx="289.1" cy="67.4" r="5"/>
+                  </g>
+                </svg>
+              </div>
+              <figcaption class="legende"><b>Fig. 1</b> Le plafond. Ma progression sur Gwent&nbsp;; schéma, pas à l'échelle.</figcaption>
+            </figure>
+          </li>
+
+          <li class="etape">
+            <span class="etape__num" aria-hidden="true">1.3</span>
+            <div class="avec-marge">
+              <div class="etape__texte">
+                <p class="etape__quand">Avant 2025</p>
+                <h3>Les portes qui ne s'ouvrent pas</h3>
+                <p>BUT Informatique, fac de physique-chimie, BUT Réseaux &amp; Télécoms&nbsp;: trois années de filières classiques, une chacune. Puis la piscine de 42, sans admission. Ça n'a pas vraiment marché, mais je n'ai pas abandonné&nbsp;: j'ai recommencé jusqu'à réussir, et je me suis réorienté autant que nécessaire.</p>
+              </div>
+              <p class="note"><span class="sr">Note de l'auteur&nbsp;: </span>Quatre tentatives avant la bonne voie.</p>
+            </div>
+          </li>
+
+          <li class="etape">
+            <span class="etape__num" aria-hidden="true">1.4</span>
+            <div class="avec-marge">
+              <div class="etape__texte">
+                <p class="etape__quand">2025</p>
+                <h3>La voie qui marche</h3>
+                <p>Je passe le titre de Développeur web et web mobile chez Elan Formation. Je boucle le programme en <mark class="surligne">un mois</mark>, je mène des projets en parallèle et je couvre en bonus l'essentiel du niveau supérieur, Concepteur développeur d'applications. En stage chez ATIS, mes modules réduisent de <mark class="surligne">30&nbsp;%</mark> le temps de traitement administratif.</p>
+              </div>
+              <p class="note"><span class="sr">Note de l'auteur&nbsp;: </span>Un programme de niveau bac&nbsp;+&nbsp;2, bouclé en un mois.</p>
+            </div>
+          </li>
+
+          <li class="etape">
+            <span class="etape__num" aria-hidden="true">1.5</span>
+            <div class="avec-marge">
+              <div class="etape__texte">
+                <p class="etape__quand">Fin 2025</p>
+                <h3>De l'autre côté du bureau</h3>
+                <p>Deux mois après mon titre, l'école perd son formateur en fin de promotion. Des étudiants croisés pendant mon cursus donnent mon nom. Je reprends une dizaine d'apprenants, dont la moitié prépare le CDA, un niveau au-dessus de mon propre titre. Tous obtiennent leur titre.</p>
+              </div>
+              <p class="note"><span class="sr">Note de l'auteur&nbsp;: </span>Tous titrés, y compris au niveau supérieur.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <!-- 2 · Les trois règles -->
+      <section id="regles" class="chapitre" aria-labelledby="regles-titre">
+        <h2 id="regles-titre" class="chapitre__titre"><span class="chapitre__num">2</span> Les trois règles</h2>
+        <p class="chapitre__intro">Je suis architecte logiciel&nbsp;: développement web et DevOps. À côté, je suis lead et mainteneur du pôle francophone de PvZ Fusion, et je construis mes propres outils. Trois verbes résument ma façon de travailler.</p>
+
+        <ol class="regles">
+          <li class="regle" id="regle-1">
+            <span class="regle__pastille" aria-hidden="true">1</span>
+            <p class="regle__ordre">Règle 1 <span class="note">d'abord</span></p>
+            <h3>Maîtriser</h3>
+            <p class="regle__sens">S'approprier vite ce qui se fait.</p>
+            <ul class="preuves">
+              <li>Le programme de développeur web bouclé en <mark class="surligne">un mois</mark>.</li>
+              <li>À chaque mise à jour de Gwent, <mark class="surligne">deux jours</mark> pour maîtriser ce que jouent les autres.</li>
+            </ul>
+          </li>
+          <li class="regle" id="regle-2">
+            <span class="regle__pastille" aria-hidden="true">2</span>
+            <p class="regle__ordre">Règle 2 <span class="note">ensuite</span></p>
+            <h3>Réinventer</h3>
+            <p class="regle__sens">Sortir des sentiers battus.</p>
+            <ul class="preuves">
+              <li>Un deck à contre-courant pour percer le plafond du classement mondial.</li>
+              <li>Un moteur de jeu maison pour Omnicard, optimisé pour le navigateur.</li>
+            </ul>
+          </li>
+          <li class="regle" id="regle-3">
+            <span class="regle__pastille" aria-hidden="true">3</span>
+            <p class="regle__ordre">Règle 3 <span class="note">puis</span></p>
+            <h3>Emmener</h3>
+            <p class="regle__sens">Faire progresser les autres.</p>
+            <ul class="preuves">
+              <li><mark class="surligne">Une vingtaine</mark> de contributeurs formés sur PvZ Fusion, dix au plus fort.</li>
+              <li>Une promotion reprise en urgence&nbsp;: <mark class="surligne">tous titrés</mark>.</li>
+            </ul>
+          </li>
+        </ol>
+      </section>
+
+      <!-- 3 · Les preuves -->
+      <section id="preuves" class="chapitre" aria-labelledby="preuves-titre">
+        <h2 id="preuves-titre" class="chapitre__titre"><span class="chapitre__num">3</span> Les preuves</h2>
+        <p class="chapitre__intro">Trois projets menés au bout, racontés comme ils se sont passés&nbsp;: le problème, la décision, le résultat.</p>
+
+        <figure class="figure" id="fig-2" style="margin-top:var(--s8)">
+          <div class="figure__plan">
+            <svg class="f2 f2--large" viewBox="0 0 760 340" role="img" aria-labelledby="f2-titre f2-desc">
+              <title id="f2-titre">Figure 2 : du solo au collectif</title>
+              <desc id="f2-desc">À gauche, un seul point : moi sur Gwent, vers 17 ans. À droite, le pôle francophone de PvZ Fusion : une vingtaine de contributeurs formés, reliés autour de moi, dont dix actifs au plus fort.</desc>
+              <circle class="f2-halo" cx="110" cy="150" r="17"/>
+              <circle class="f2-moi" cx="110" cy="150" r="11"/>
+              <text class="f-t f-t--fort" x="110" y="190" text-anchor="middle">Gwent, vers 17 ans</text>
+              <text class="f-note" x="110" y="212" text-anchor="middle">juste moi</text>
+              <path class="f2-fleche" d="M142 150H330"/>
+              <path class="f2-pointe" d="M322 144L332 150L322 156"/>
+              <text class="f-note" x="236" y="138" text-anchor="middle">puis</text>
+              <text class="f-t f-t--fort" x="546" y="22" text-anchor="middle">PvZ Fusion, pôle francophone</text>
+              <g class="f2-liens"><line x1="540" y1="172" x2="618" y2="204.7"/><line x1="540" y1="172" x2="572.3" y2="232.6"/><line x1="540" y1="172" x2="508" y2="237.1"/><line x1="540" y1="172" x2="452.6" y2="202.3"/><line x1="540" y1="172" x2="458.6" y2="145.8"/><line x1="540" y1="172" x2="507.4" y2="109.2"/><line x1="540" y1="172" x2="579.6" y2="103.7"/><line x1="540" y1="172" x2="623.2" y2="148.1"/><line x1="720.2" y1="194.6" x2="618" y2="204.7"/><line x1="672.8" y1="260.4" x2="618" y2="204.7"/><line x1="596.6" y1="300.6" x2="572.3" y2="232.6"/><line x1="484.4" y1="294" x2="508" y2="237.1"/><line x1="420.8" y1="265.3" x2="452.6" y2="202.3"/><line x1="367.4" y1="206.3" x2="452.6" y2="202.3"/><line x1="373.4" y1="148.5" x2="458.6" y2="145.8"/><line x1="408.4" y1="79.2" x2="458.6" y2="145.8"/><line x1="500.4" y1="46.5" x2="507.4" y2="109.2"/><line x1="579.3" y1="45.8" x2="579.6" y2="103.7"/><line x1="667.1" y1="78.3" x2="623.2" y2="148.1"/><line x1="725.6" y1="140.7" x2="623.2" y2="148.1"/><line x1="720.2" y1="194.6" x2="672.8" y2="260.4"/><line x1="596.6" y1="300.6" x2="484.4" y2="294"/><line x1="420.8" y1="265.3" x2="367.4" y2="206.3"/><line x1="373.4" y1="148.5" x2="408.4" y2="79.2"/><line x1="500.4" y1="46.5" x2="579.3" y2="45.8"/><line x1="667.1" y1="78.3" x2="725.6" y2="140.7"/><line x1="618" y1="204.7" x2="572.3" y2="232.6"/><line x1="458.6" y1="145.8" x2="507.4" y2="109.2"/></g>
+              <g class="f2-plein"><circle cx="618" cy="204.7" r="7"/><circle cx="572.3" cy="232.6" r="7"/><circle cx="508" cy="237.1" r="7"/><circle cx="452.6" cy="202.3" r="7"/><circle cx="458.6" cy="145.8" r="7"/><circle cx="507.4" cy="109.2" r="7"/><circle cx="579.6" cy="103.7" r="7"/><circle cx="623.2" cy="148.1" r="7"/><circle cx="596.6" cy="300.6" r="7"/><circle cx="500.4" cy="46.5" r="7"/></g>
+              <g class="f2-vide"><circle cx="720.2" cy="194.6" r="7"/><circle cx="672.8" cy="260.4" r="7"/><circle cx="484.4" cy="294" r="7"/><circle cx="420.8" cy="265.3" r="7"/><circle cx="367.4" cy="206.3" r="7"/><circle cx="373.4" cy="148.5" r="7"/><circle cx="408.4" cy="79.2" r="7"/><circle cx="579.3" cy="45.8" r="7"/><circle cx="667.1" cy="78.3" r="7"/><circle cx="725.6" cy="140.7" r="7"/></g>
+              <circle class="f2-halo" cx="540" cy="172" r="17"/>
+              <circle class="f2-moi" cx="540" cy="172" r="11"/>
+              <g transform="translate(40 266)">
+                <circle class="f2-halo" cx="7" cy="0" r="9.5"/><circle class="f2-moi" cx="7" cy="0" r="5.5"/><text class="f-t" x="24" y="5">Moi</text>
+                <g transform="translate(0 24)"><circle cx="7" cy="0" r="7" class="f-plein"/><text class="f-t" x="24" y="5">Dix contributeurs actifs au plus fort</text></g>
+                <g transform="translate(0 48)"><circle cx="7" cy="0" r="6.2" fill="none" stroke="currentColor" style="stroke:var(--bleu);stroke-width:1.75"/><text class="f-t" x="24" y="5">Les autres formés : une vingtaine en tout</text></g>
+              </g>
+            </svg>
+            <svg class="f2 f2--compacte" viewBox="0 0 360 600" role="img" aria-labelledby="f2c-titre f2c-desc">
+              <title id="f2c-titre">Figure 2 : du solo au collectif</title>
+              <desc id="f2c-desc">En haut, un seul point : moi sur Gwent, vers 17 ans. En bas, le pôle francophone de PvZ Fusion : une vingtaine de contributeurs formés, reliés autour de moi, dont dix actifs au plus fort.</desc>
+              <circle class="f2-halo" cx="180" cy="44" r="17"/>
+              <circle class="f2-moi" cx="180" cy="44" r="11"/>
+              <text class="f-t f-t--fort" x="180" y="88" text-anchor="middle">Gwent, vers 17 ans</text>
+              <text class="f-note" x="180" y="110" text-anchor="middle">juste moi</text>
+              <path class="f2-fleche" d="M180 126V196"/>
+              <path class="f2-pointe" d="M174 188L180 198L186 188"/>
+              <text class="f-note" x="194" y="166">puis</text>
+              <text class="f-t f-t--fort" x="180" y="226" text-anchor="middle">PvZ Fusion, pôle francophone</text>
+              <g class="f2-liens"><line x1="180" y1="372" x2="239.7" y2="400.7"/><line x1="180" y1="372" x2="204.7" y2="428.2"/><line x1="180" y1="372" x2="155.5" y2="431.5"/><line x1="180" y1="372" x2="113.6" y2="399"/><line x1="180" y1="372" x2="117.9" y2="347.9"/><line x1="180" y1="372" x2="155.1" y2="314.2"/><line x1="180" y1="372" x2="210" y2="310.3"/><line x1="180" y1="372" x2="243.4" y2="349.6"/><line x1="328.1" y1="396.4" x2="239.7" y2="400.7"/><line x1="289" y1="457.8" x2="239.7" y2="400.7"/><line x1="225.6" y1="494.8" x2="204.7" y2="428.2"/><line x1="135.1" y1="490.1" x2="155.5" y2="431.5"/><line x1="80.7" y1="461.3" x2="113.6" y2="399"/><line x1="37.4" y1="404.8" x2="113.6" y2="399"/><line x1="41.7" y1="347" x2="117.9" y2="347.9"/><line x1="71.9" y1="283.1" x2="117.9" y2="347.9"/><line x1="146.6" y1="251.5" x2="155.1" y2="314.2"/><line x1="213.3" y1="250.9" x2="210" y2="310.3"/><line x1="284.9" y1="282.5" x2="243.4" y2="349.6"/><line x1="331.9" y1="341.3" x2="243.4" y2="349.6"/><line x1="328.1" y1="396.4" x2="289" y2="457.8"/><line x1="225.6" y1="494.8" x2="135.1" y2="490.1"/><line x1="80.7" y1="461.3" x2="37.4" y2="404.8"/><line x1="41.7" y1="347" x2="71.9" y2="283.1"/><line x1="146.6" y1="251.5" x2="213.3" y2="250.9"/><line x1="284.9" y1="282.5" x2="331.9" y2="341.3"/><line x1="239.7" y1="400.7" x2="204.7" y2="428.2"/><line x1="117.9" y1="347.9" x2="155.1" y2="314.2"/></g>
+              <g class="f2-plein"><circle cx="239.7" cy="400.7" r="7"/><circle cx="204.7" cy="428.2" r="7"/><circle cx="155.5" cy="431.5" r="7"/><circle cx="113.6" cy="399" r="7"/><circle cx="117.9" cy="347.9" r="7"/><circle cx="155.1" cy="314.2" r="7"/><circle cx="210" cy="310.3" r="7"/><circle cx="243.4" cy="349.6" r="7"/><circle cx="225.6" cy="494.8" r="7"/><circle cx="146.6" cy="251.5" r="7"/></g>
+              <g class="f2-vide"><circle cx="328.1" cy="396.4" r="7"/><circle cx="289" cy="457.8" r="7"/><circle cx="135.1" cy="490.1" r="7"/><circle cx="80.7" cy="461.3" r="7"/><circle cx="37.4" cy="404.8" r="7"/><circle cx="41.7" cy="347" r="7"/><circle cx="71.9" cy="283.1" r="7"/><circle cx="213.3" cy="250.9" r="7"/><circle cx="284.9" cy="282.5" r="7"/><circle cx="331.9" cy="341.3" r="7"/></g>
+              <circle class="f2-halo" cx="180" cy="372" r="17"/>
+              <circle class="f2-moi" cx="180" cy="372" r="11"/>
+              <g transform="translate(28 532)">
+                <circle class="f2-halo" cx="7" cy="0" r="9.5"/><circle class="f2-moi" cx="7" cy="0" r="5.5"/><text class="f-t" x="24" y="5">Moi</text>
+                <g transform="translate(0 25)"><circle cx="7" cy="0" r="7" class="f-plein"/><text class="f-t" x="24" y="5">Dix actifs au plus fort</text></g>
+                <g transform="translate(0 50)"><circle cx="7" cy="0" r="6.2" fill="none" style="stroke:var(--bleu);stroke-width:1.75"/><text class="f-t" x="24" y="5">Les autres formés, une vingtaine en tout</text></g>
+              </g>
+            </svg>
+          </div>
+          <figcaption class="legende"><b>Fig. 2</b> Du solo au collectif. Chaque point est une personne.</figcaption>
+        </figure>
+
+        <article class="fiche" id="fiche-pvz" aria-labelledby="fiche-pvz-titre">
+          <header class="fiche__tete">
+            <h3 id="fiche-pvz-titre">PvZ Fusion, le pôle francophone</h3>
+            <p class="fiche__meta"><span class="puce">Open source</span><span class="puce">Bénévole</span><a class="fiche__regle" href="#regle-3">Applique la règle 3&nbsp;: emmener</a></p>
+          </header>
+          <dl class="fiche__spec">
+            <div><dt>Problème</dt><dd>Une traduction française en retard de plusieurs années, pleine d'erreurs, et des bénévoles qui arrivent sans méthode.</dd></div>
+            <div><dt>Décision</dt><dd>Structurer le pôle&nbsp;: accueil et formation des nouveaux, revues systématiques, documentation, et des outils en Python pour repérer ce qui manque à chaque version.</dd></div>
+            <div><dt>Résultat</dt><dd>En dix mois, une version à jour et propre. Une vingtaine de contributeurs formés, dix au plus fort, et une nomination comme mainteneur du projet multilingue.</dd></div>
+          </dl>
+          <ul class="fiche__chiffres" aria-label="Chiffres clés">
+            <li><span class="chiffre"><mark class="surligne">≈&nbsp;20</mark></span><span class="chiffre__legende">contributeurs formés, dix au plus fort</span></li>
+            <li><span class="chiffre"><mark class="surligne">10&nbsp;mois</mark></span><span class="chiffre__legende">pour rattraper des années de retard</span></li>
+            <li><span class="chiffre"><mark class="surligne">317</mark></span><span class="chiffre__legende">commits sur le dépôt public</span></li>
+          </ul>
+          <div class="fiche__bas">
+            <figure class="fiche__fig">
+              <img src="assets/projets/pvzf-jeu.webp" width="1024" height="576" loading="lazy" alt="Capture du jeu Plants vs. Zombies Fusion : une pelouse couverte de plantes hybrides face à une file de zombies.">
+              <figcaption class="legende"><b>Fig. 3</b> PvZ Fusion, le jeu dont le pôle tient la traduction française.</figcaption>
+            </figure>
+            <div class="fiche__voix">
+              <blockquote class="citation"><p>«&nbsp;La qualité et la sincérité des échanges démultiplient les résultats.&nbsp;»</p></blockquote>
+              <div class="fiche__liens">
+                <a class="btn btn--contour btn--petit" href="https://github.com/LINDECKER-Charles/PVZF-Translation-fr">Voir le dépôt</a>
+                <a class="lien-fort" href="#">Lire l'étude de cas</a>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="fiche" id="fiche-omnicard" aria-labelledby="fiche-omnicard-titre">
+          <header class="fiche__tete">
+            <h3 id="fiche-omnicard-titre">Omnicard, du jeu papier au moteur maison</h3>
+            <p class="fiche__meta"><span class="puce">Projet personnel</span><a class="fiche__regle" href="#regle-2">Applique la règle 2&nbsp;: réinventer</a></p>
+          </header>
+          <dl class="fiche__spec">
+            <div><dt>Problème</dt><dd>Le jeu de cartes inventé avec mon cousin attend depuis des années de devenir un jeu vidéo. Le projet traîne.</dd></div>
+            <div><dt>Décision</dt><dd>Un moment, j'en ai eu marre&nbsp;: j'ai repris le projet seul. J'ai rééquilibré nos cartes et codé mon propre moteur de jeu sur une stack que je maîtrisais déjà, .NET et Angular, pour me lancer tout de suite.</dd></div>
+            <div><dt>Résultat</dt><dd>Un moteur de règles en temps réel qui tourne dans le navigateur, environ trois mois de travail cumulé. Ses limites m'ont forcé à apprendre SignalR, le cache, l'optimisation DevOps et le prérendu serveur.</dd></div>
+          </dl>
+          <ul class="fiche__chiffres" aria-label="Chiffres clés">
+            <li><span class="chiffre"><mark class="surligne">≈&nbsp;3&nbsp;mois</mark></span><span class="chiffre__legende">de travail cumulé</span></li>
+            <li><span class="chiffre chiffre--mot">Temps réel</span><span class="chiffre__legende">un moteur de règles maison</span></li>
+            <li><span class="chiffre chiffre--mot">Navigateur</span><span class="chiffre__legende">sans rien installer</span></li>
+          </ul>
+          <div class="fiche__bas">
+            <figure class="fiche__fig">
+              <img src="assets/projets/omnicard-deck.webp" width="1024" height="963" loading="lazy" alt="Écran de construction de deck d'Omnicard : la liste des cartes du deck à gauche, le catalogue filtrable à droite.">
+              <figcaption class="legende"><b>Fig. 4</b> Omnicard, la construction de deck servie par le moteur maison.</figcaption>
+            </figure>
+            <div class="fiche__voix">
+              <blockquote class="citation"><p>«&nbsp;Le projet qui m'a fait le plus apprendre.&nbsp;»</p></blockquote>
+              <div class="fiche__liens">
+                <a class="btn btn--contour btn--petit" href="https://test.omnicard.fr">Essayer la démo</a>
+                <a class="lien-fort" href="#">Lire l'étude de cas</a>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="fiche" id="fiche-gup" aria-labelledby="fiche-gup-titre">
+          <header class="fiche__tete">
+            <h3 id="fiche-gup-titre">gup, une commande pour tout mettre à jour</h3>
+            <p class="fiche__meta"><span class="puce">Open source</span><a class="fiche__regle" href="#regle-1">Applique la règle 1&nbsp;: maîtriser</a></p>
+          </header>
+          <dl class="fiche__spec">
+            <div><dt>Problème</dt><dd>Une machine de développeur accumule des dizaines de gestionnaires de paquets, chacun avec sa propre commande de mise à jour.</dd></div>
+            <div><dt>Décision</dt><dd>Une seule CLI qui détecte ce qui est installé et met tout à jour, sur Windows, macOS et Linux.</dd></div>
+            <div><dt>Résultat</dt><dd>153 sources prises en charge, et 447 téléchargements npm en un mois, du 5&nbsp;septembre au 4&nbsp;octobre 2026.</dd></div>
+          </dl>
+          <ul class="fiche__chiffres" aria-label="Chiffres clés">
+            <li><span class="chiffre"><mark class="surligne">153</mark></span><span class="chiffre__legende">sources prises en charge</span></li>
+            <li><span class="chiffre"><mark class="surligne">447</mark></span><span class="chiffre__legende">téléchargements npm en un mois</span></li>
+            <li><span class="chiffre"><mark class="surligne">3</mark></span><span class="chiffre__legende">systèmes&nbsp;: Windows, macOS, Linux</span></li>
+          </ul>
+          <div class="fiche__bas">
+            <figure class="fiche__fig">
+              <img src="assets/projets/gup-cli.webp" width="1051" height="625" loading="lazy" alt="La CLI gup dans un terminal : 21 sources détectées, 19 mises à jour disponibles et le menu des actions.">
+              <figcaption class="legende"><b>Fig. 5</b> gup dans un terminal&nbsp;: une commande, toutes les sources.</figcaption>
+            </figure>
+            <div class="fiche__voix">
+              <div class="fiche__liens" style="margin-top:0">
+                <a class="btn btn--contour btn--petit" href="https://www.npmjs.com/package/@charles_lindecker/gup">Voir sur npm</a>
+                <a class="lien-fort" href="https://github.com/LINDECKER-Charles/gup">Voir le dépôt</a>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- 4 · En dehors du code -->
+      <section id="dehors" class="chapitre" aria-labelledby="dehors-titre">
+        <h2 id="dehors-titre" class="chapitre__titre"><span class="chapitre__num">4</span> En dehors du code</h2>
+        <div class="annexe">
+          <article class="entree">
+            <span class="asset-trait picto" style="--asset:url('../assets/pictos/cartes.svg')" aria-hidden="true"></span>
+            <div>
+              <h3>Gwent</h3>
+              <p>Entré au classement mondial avec un deck à contre-courant, puis plusieurs passages dans le top&nbsp;500.</p>
+            </div>
+          </article>
+          <article class="entree">
+            <span class="asset-trait picto" style="--asset:url('../assets/pictos/lune.svg')" aria-hidden="true"></span>
+            <div>
+              <h3>Bloodborne</h3>
+              <p>Mon jeu préféré. Au point de lui coder une application compagnon&nbsp;: une API .NET, une appli Android et une constellation de succès à débloquer.</p>
+            </div>
+          </article>
+          <article class="entree">
+            <span class="asset-trait picto" style="--asset:url('../assets/pictos/saxophone.svg')" aria-hidden="true"></span>
+            <div>
+              <h3>Shreksophone</h3>
+              <p>Un clic, et l'interface laisse place à Shrek au saxophone. Volontairement absurde. <a href="https://shrek.charles-lindecker.com">Essayer Shreksophone</a></p>
+            </div>
+          </article>
+          <article class="entree">
+            <span class="asset-trait picto" style="--asset:url('../assets/pictos/cadenas.svg')" aria-hidden="true"></span>
+            <div>
+              <h3>Root Me</h3>
+              <p>Des challenges de sécurité offensive, en loisir.</p>
+            </div>
+          </article>
+        </div>
+        <p class="note dehors__sommeil">Remarque de l'auteur&nbsp;: je ne sais toujours pas ce qu'est le sommeil.</p>
+      </section>
+
+      <!-- 5 · Discutons -->
+      <section id="discutons" class="chapitre" aria-labelledby="discutons-titre">
+        <h2 id="discutons-titre" class="chapitre__titre"><span class="chapitre__num">5</span> Discutons</h2>
+        <div class="contact">
+          <p class="contact__texte">Une équipe à faire progresser, un problème qui résiste aux solutions habituelles&nbsp;: parlons-en.</p>
+          <div class="actions">
+            <a class="btn btn--plein" href="mailto:charles.lindecker@outlook.fr">M'écrire</a>
+            <a class="btn btn--contour" href="#">Télécharger mon CV</a>
+          </div>
+          <ul class="contact__reseaux">
+            <li><a href="https://www.linkedin.com/in/charles-lindecker/">LinkedIn</a></li>
+            <li><a href="https://github.com/LINDECKER-Charles">GitHub</a></li>
+          </ul>
+          <p class="note contact__clin">Pour toute question non couverte par ce mode d'emploi&nbsp;: <a href="mailto:charles.lindecker@outlook.fr">m'écrire</a>.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap site-footer__in">
+    <div>
+      <p class="site-footer__nom">Charles Lindecker, près de Mulhouse</p>
+      <p class="site-footer__colophon">Composé en Atkinson Hyperlegible Next et Newsreader.</p>
+      <p class="note site-footer__nuit nuit-seul">La nuit, la chasse aux bugs commence.</p>
+    </div>
+    <ul class="site-footer__liens">
+      <li><a href="https://www.linkedin.com/in/charles-lindecker/">LinkedIn</a></li>
+      <li><a href="https://github.com/LINDECKER-Charles">GitHub</a></li>
+      <li><a href="https://charles-lindecker.com">La première version de ce site</a></li>
+      <li><a href="#">Mentions légales</a></li>
+    </ul>
+    <nav class="langues" aria-label="Langue">
+      <ul>
+        <li><a href="#" lang="fr" aria-current="true">Français</a></li>
+        <li><a href="#" lang="en">English</a></li>
+        <li><a href="#" title="Langue fictive, pour le plaisir">regex</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+<div class="pp-divider" role="note">
+  <p><strong>Fin de la maquette.</strong> Ci-dessous : le design system de la proposition, puis pourquoi cette direction.</p>
+</div>
+
+<!-- ================= DESIGN SYSTEM ================= -->
+<div class="annexes">
+  <section id="design-system" class="ds" aria-labelledby="ds-titre">
+    <div class="wrap">
+      <h2 id="ds-titre" class="ds__titre">Design system</h2>
+      <p class="ds__intro">La notice de fabrication de la proposition D, «&nbsp;Mode d'emploi&nbsp;»&nbsp;: tout ce qui se réutilise d'une page à l'autre, du sommaire aux fiches techniques.</p>
+
+      <section class="ds-bloc" aria-labelledby="ds-1">
+        <h3 id="ds-1"><span class="chapitre__num">1</span> Principes</h3>
+        <ol class="ds-principes">
+          <li><h4>Montrer le mécanisme</h4><p>Chaque affirmation arrive avec sa figure, son chiffre ou sa citation. On ne dit pas «&nbsp;persévérant&nbsp;», on trace le plafond.</p></li>
+          <li><h4>Le bleu, c'est la voix de l'auteur</h4><p>Liens, tracés des figures, notes au stylo. Rien d'autre n'est bleu&nbsp;: ni les titres, ni les fonds.</p></li>
+          <li><h4>Le jaune, c'est la preuve</h4><p>Le surligneur ne marque que des chiffres sourcés, jamais un adjectif&nbsp;: un seul par preuve.</p></li>
+          <li><h4>Lisible d'abord</h4><p>Police hyperlisible, contrastes AA au minimum, aucune information portée par la seule couleur.</p></li>
+        </ol>
+      </section>
+
+      <section class="ds-bloc" aria-labelledby="ds-2">
+        <h3 id="ds-2"><span class="chapitre__num">2</span> Couleurs</h3>
+        <p class="ds-bloc__intro">Une palette tirée de la photo du champ de colza&nbsp;: la chemise bleu roi, le jaune des fleurs, et un papier froid. Ratios calculés selon WCAG&nbsp;2.2.</p>
+        <div class="ds-gamme">
+          <h4>Jour</h4>
+          <ul class="ds-teintes">
+            <li class="ds-teinte"><span class="ds-teinte__pastille" style="background:#F5F6F8"></span><span class="ds-teinte__nom">Papier</span><span class="ds-teinte__code"><code>--papier</code> <span>#F5F6F8</span></span><span class="ds-teinte__role">Fond de page. Un papier froid, jamais crème.</span></li>
+            <li class="ds-teinte"><span class="ds-teinte__pastille" style="background:#FFFFFF"></span><span class="ds-teinte__nom">Blanc</span><span class="ds-teinte__code"><code>--blanc</code> <span>#FFFFFF</span></span><span class="ds-teinte__role">Planches&nbsp;: figures, fiches, encarts.</span></li>
+            <li class="ds-teinte"><span class="ds-teinte__pastille" style="background:#14161B"></span><span class="ds-teinte__nom">Encre</span><span class="ds-teinte__code"><code>--encre</code> <span>#14161B</span></span><span class="ds-teinte__role">Texte et titres.</span><span class="ds-teinte__ratio">16,74:1 sur papier, 18,10:1 sur blanc</span></li>
+            <li class="ds-teinte"><span class="ds-teinte__pastille" style="background:#59606D"></span><span class="ds-teinte__nom">Graphite</span><span class="ds-teinte__code"><code>--graphite</code> <span>#59606D</span></span><span class="ds-teinte__role">Texte secondaire, numéros, axes des figures.</span><span class="ds-teinte__ratio">5,85:1 sur papier, 6,33:1 sur blanc</span></li>
+            <li class="ds-teinte"><span class="ds-teinte__pastille" style="background:#1F4FD1"></span><span class="ds-teinte__nom">Bleu roi</span><span class="ds-teinte__code"><code>--bleu</code> <span>#1F4FD1</span></span><span class="ds-teinte__role">La voix de l'auteur&nbsp;: liens, tracés, notes, bouton principal.</span><span class="ds-teinte__ratio">6,27:1 sur papier&nbsp;; blanc sur bleu 6,78:1</span></li>
+            <li class="ds-teinte"><span class="ds-teinte__pastille" style="background:#173CA6"></span><span class="ds-teinte__nom">Bleu appuyé</span><span class="ds-teinte__code"><code>--bleu-survol</code> <span>#173CA6</span></span><span class="ds-teinte__role">Survol du bouton principal.</span><span class="ds-teinte__ratio">blanc sur bleu appuyé 9,40:1</span></li>
+            <li class="ds-teinte"><span class="ds-teinte__pastille" style="background:#F5D33F"></span><span class="ds-teinte__nom">Colza</span><span class="ds-teinte__code"><code>--colza</code> <span>#F5D33F</span></span><span class="ds-teinte__role">Surligneur, sous les chiffres-preuves uniquement.</span><span class="ds-teinte__ratio">encre sur colza 12,30:1</span></li>
+            <li class="ds-teinte"><span class="ds-teinte__pastille" style="background:#D8DDE5"></span><span class="ds-teinte__nom">Filet</span><span class="ds-teinte__code"><code>--filet</code> <span>#D8DDE5</span></span><span class="ds-teinte__role">Filets et bordures. Décoratif, jamais porteur de sens.</span></li>
+          </ul>
+        </div>
+        <div class="ds-gamme">
+          <h4>Nuit, l'easter egg de la lune</h4>
+          <ul class="ds-teintes">
+            <li class="ds-teinte"><span class="ds-teinte__pastille" style="background:#0E1424"></span><span class="ds-teinte__nom">Papier de nuit</span><span class="ds-teinte__code"><code>--papier</code> <span>#0E1424</span></span><span class="ds-teinte__role">Le bleu roi plongé dans la nuit.</span></li>
+            <li class="ds-teinte"><span class="ds-teinte__pastille" style="background:#151E33"></span><span class="ds-teinte__nom">Planche de nuit</span><span class="ds-teinte__code"><code>--blanc</code> <span>#151E33</span></span><span class="ds-teinte__role">Figures et fiches.</span></li>
+            <li class="ds-teinte"><span class="ds-teinte__pastille" style="background:#E6EAF2"></span><span class="ds-teinte__nom">Encre de lune</span><span class="ds-teinte__code"><code>--encre</code> <span>#E6EAF2</span></span><span class="ds-teinte__role">Texte.</span><span class="ds-teinte__ratio">15,22:1 sur papier, 13,76:1 sur planche</span></li>
+            <li class="ds-teinte"><span class="ds-teinte__pastille" style="background:#A3ADBF"></span><span class="ds-teinte__nom">Graphite de nuit</span><span class="ds-teinte__code"><code>--graphite</code> <span>#A3ADBF</span></span><span class="ds-teinte__role">Texte secondaire.</span><span class="ds-teinte__ratio">8,12:1 sur papier, 7,34:1 sur planche</span></li>
+            <li class="ds-teinte"><span class="ds-teinte__pastille" style="background:#8FB0FF"></span><span class="ds-teinte__nom">Bleu de lune</span><span class="ds-teinte__code"><code>--bleu</code> <span>#8FB0FF</span></span><span class="ds-teinte__role">Liens, tracés, bouton (texte sombre).</span><span class="ds-teinte__ratio">8,58:1 sur papier&nbsp;; nuit sur bleu 8,58:1</span></li>
+            <li class="ds-teinte"><span class="ds-teinte__pastille" style="background:#E2C044"></span><span class="ds-teinte__nom">Colza de nuit</span><span class="ds-teinte__code"><code>--colza</code> <span>#E2C044</span></span><span class="ds-teinte__role">Surligneur, toujours avec texte sombre.</span><span class="ds-teinte__ratio">#14161B sur colza 10,22:1</span></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="ds-bloc" aria-labelledby="ds-3">
+        <h3 id="ds-3"><span class="chapitre__num">3</span> Typographie</h3>
+        <div class="ds-familles">
+          <div class="ds-famille">
+            <h4>Atkinson Hyperlegible Next</h4>
+            <p class="ds-famille__echantillon" style="font-weight:800">Il1 0O rn m</p>
+            <p>Tout le texte, des titres aux étiquettes, en 400, 500, 700 et 800. Dessinée pour le Braille Institute afin que les lecteurs malvoyants ne confondent plus les lettres&nbsp;: I, l et 1 se distinguent, le zéro est barré. Le choix dit l'exigence d'accessibilité sans l'écrire.</p>
+          </div>
+          <div class="ds-famille">
+            <h4>Newsreader, italique</h4>
+            <p class="ds-famille__echantillon note" style="font-size:2.75rem">Voir la figure&nbsp;1.</p>
+            <p>Uniquement la voix de l'auteur&nbsp;: notes en marge, citations, annotations des figures. Toujours en bleu, comme écrit au stylo dans la marge d'un manuel.</p>
+          </div>
+        </div>
+        <ul class="ds-typo">
+          <li><span class="ds-typo__niveau">Display</span><span class="ds-typo__specimen" style="font-size:var(--t-display);font-weight:800;line-height:1;letter-spacing:-.028em">Je maîtrise</span><span class="ds-typo__mesure">44 à 84 px, interligne 1,0, graisse 800, approche −2,8&nbsp;%</span></li>
+          <li><span class="ds-typo__niveau">Titre 2</span><span class="ds-typo__specimen" style="font-size:var(--t-h2);font-weight:800;line-height:1.05;letter-spacing:-.022em">Les trois règles</span><span class="ds-typo__mesure">32 à 48 px, interligne 1,05, graisse 800</span></li>
+          <li><span class="ds-typo__niveau">Titre 3</span><span class="ds-typo__specimen" style="font-size:1.5rem;font-weight:800;line-height:1.25">Le terrain de jeu</span><span class="ds-typo__mesure">24 px, interligne 1,25, graisse 800</span></li>
+          <li><span class="ds-typo__niveau">Chapeau</span><span class="ds-typo__specimen" style="font-size:var(--t-chapeau);line-height:1.5">Architecte logiciel, je code depuis mes 13&nbsp;ans.</span><span class="ds-typo__mesure">21 px, interligne 1,5, graisse 400</span></li>
+          <li><span class="ds-typo__niveau">Corps</span><span class="ds-typo__specimen">Avec mon père, informaticien, je démonte de vieux PC hors service.</span><span class="ds-typo__mesure">18 px, interligne 1,6, graisse 400&nbsp;; 36&nbsp;rem au plus, ≈ 64 signes</span></li>
+          <li><span class="ds-typo__niveau">Petit</span><span class="ds-typo__specimen" style="font-size:1rem;color:var(--graphite)">Légendes, méta, sommaire</span><span class="ds-typo__mesure">16 px, interligne 1,5, graisse 400</span></li>
+          <li><span class="ds-typo__niveau">Étiquette</span><span class="ds-typo__specimen" style="font-size:.875rem;font-weight:500"><span class="puce">Open source</span></span><span class="ds-typo__mesure">14 px, graisse 500, casse normale</span></li>
+          <li><span class="ds-typo__niveau">Note</span><span class="ds-typo__specimen note">Un mois pour tout le programme.</span><span class="ds-typo__mesure">Newsreader italique, 17 px, interligne 1,45</span></li>
+          <li><span class="ds-typo__niveau">Chiffre clé</span><span class="ds-typo__specimen"><span class="chiffre"><mark class="surligne">447</mark></span></span><span class="ds-typo__mesure">32 à 44 px, graisse 800, chiffres alignés</span></li>
+        </ul>
+      </section>
+
+      <section class="ds-bloc" aria-labelledby="ds-4">
+        <h3 id="ds-4"><span class="chapitre__num">4</span> Espacement, grille, formes</h3>
+        <p class="ds-bloc__intro">Une échelle de 4 en 4 jusqu'à 16, puis par paliers. Les chapitres respirent à 96&nbsp;px&nbsp;: un manuel aéré, pas un quotidien.</p>
+        <ul class="ds-espaces">
+          <li>4 px<span style="width:4px"></span></li>
+          <li>8 px<span style="width:8px"></span></li>
+          <li>12 px<span style="width:12px"></span></li>
+          <li>16 px<span style="width:16px"></span></li>
+          <li>24 px<span style="width:24px"></span></li>
+          <li>32 px<span style="width:32px"></span></li>
+          <li>48 px<span style="width:48px"></span></li>
+          <li>64 px<span style="width:64px"></span></li>
+          <li>96 px<span style="width:96px"></span></li>
+          <li>128 px<span style="width:128px"></span></li>
+        </ul>
+        <div class="ds-grille" aria-label="Grille bureau, de gauche à droite : repère de lecture 184 pixels, texte 36 rem, marge de notes 13 rem.">
+          <div><b>Repère</b>184 px, collant</div>
+          <div></div>
+          <div><b>Texte</b>36 rem, ≈ 64 signes par ligne</div>
+          <div></div>
+          <div><b>Marge</b>13 rem, notes au stylo</div>
+        </div>
+        <div class="ds-formes">
+          <div class="ds-forme"><div class="ds-forme__demo"><span style="display:block;width:100%;height:44px;background:var(--papier);border:1px solid var(--filet);border-radius:4px"></span></div><b>Un seul rayon&nbsp;: 4 px</b>Figures, fiches, encarts, boutons. Les pastilles de règle sont rondes, rien d'autre.</div>
+          <div class="ds-forme"><div class="ds-forme__demo"><span style="display:block;width:100%;border-top:1px solid var(--filet)"></span></div><b>Filet 1 px</b>Sépare les chapitres et les lignes des fiches.</div>
+          <div class="ds-forme"><div class="ds-forme__demo"><span style="display:block;width:100%;border-top:2px dotted var(--pointille)"></span></div><b>Pointillés de sommaire</b>Relient un titre à sa description, comme dans un vrai sommaire.</div>
+          <div class="ds-forme"><div class="ds-forme__demo"><span style="display:block;width:100%;height:44px;border:1px solid var(--filet);border-top:4px solid var(--bleu);border-radius:4px"></span></div><b>Planche d'appel</b>Le seul encart à bord bleu&nbsp;: «&nbsp;Discutons&nbsp;».</div>
+        </div>
+      </section>
+
+      <section class="ds-bloc" aria-labelledby="ds-5">
+        <h3 id="ds-5"><span class="chapitre__num">5</span> Composants</h3>
+        <div class="ds-comps">
+          <div class="ds-comp">
+            <h4>Bouton principal</h4>
+            <div class="ds-etats">
+              <figure class="ds-etat"><span class="btn btn--plein">Discutons</span><figcaption>Repos</figcaption></figure>
+              <figure class="ds-etat"><span class="btn btn--plein is-survol">Discutons</span><figcaption>Survol</figcaption></figure>
+              <figure class="ds-etat"><span class="btn btn--plein is-focus">Discutons</span><figcaption>Focus clavier</figcaption></figure>
+              <figure class="ds-etat"><span class="btn btn--plein" aria-disabled="true">Discutons</span><figcaption>Désactivé</figcaption></figure>
+            </div>
+            <p class="ds-comp__usage">Une seule action principale par écran&nbsp;: prendre contact. 48&nbsp;px de haut.</p>
+          </div>
+          <div class="ds-comp">
+            <h4>Bouton secondaire</h4>
+            <div class="ds-etats">
+              <figure class="ds-etat"><span class="btn btn--contour">Télécharger mon CV</span><figcaption>Repos</figcaption></figure>
+              <figure class="ds-etat"><span class="btn btn--contour is-survol">Télécharger mon CV</span><figcaption>Survol</figcaption></figure>
+              <figure class="ds-etat"><span class="btn btn--contour is-focus">Télécharger mon CV</span><figcaption>Focus clavier</figcaption></figure>
+            </div>
+            <p class="ds-comp__usage">Version compacte (44&nbsp;px) dans l'en-tête et les fiches.</p>
+          </div>
+          <div class="ds-comp">
+            <h4>Lien</h4>
+            <div class="ds-etats">
+              <figure class="ds-etat"><a class="ds-lien-demo" href="#ds-5" tabindex="-1">Voir le dépôt</a><figcaption>Repos&nbsp;: souligné 1 px</figcaption></figure>
+              <figure class="ds-etat"><a class="ds-lien-demo is-survol" href="#ds-5" tabindex="-1">Voir le dépôt</a><figcaption>Survol&nbsp;: 2 px</figcaption></figure>
+              <figure class="ds-etat"><a class="ds-lien-demo is-focus" href="#ds-5" tabindex="-1">Voir le dépôt</a><figcaption>Focus</figcaption></figure>
+            </div>
+            <p class="ds-comp__usage">Toujours souligné&nbsp;: le bleu seul ne suffit pas à dire «&nbsp;cliquable&nbsp;».</p>
+          </div>
+          <div class="ds-comp">
+            <h4>Navigation et repère de lecture</h4>
+            <div class="ds-nav-demo">
+              <span class="marque"><span>Charles Lindecker</span><span class="marque__sous">mode d'emploi</span></span>
+              <span class="nav"><span style="display:flex;gap:2px"><span class="btn btn--petit" style="border-color:transparent;color:var(--encre);font-weight:500">Parcours</span><span class="btn btn--petit" style="border-color:transparent;color:var(--encre);font-weight:500">Projets</span></span></span>
+            </div>
+            <div class="ds-reperes-demo">
+              <ol>
+                <li><a href="#ds-5" tabindex="-1"><span>1</span> L'origine</a></li>
+                <li><a href="#ds-5" tabindex="-1" aria-current="location"><span>2</span> Les trois règles</a></li>
+                <li><a href="#ds-5" tabindex="-1"><span>3</span> Les preuves</a></li>
+              </ol>
+            </div>
+            <p class="ds-comp__usage">Sur bureau, le sommaire devient un repère collant dans la marge gauche&nbsp;; le chapitre en cours est marqué en gras et d'un trait bleu.</p>
+          </div>
+          <div class="ds-comp">
+            <h4>Étiquette et chiffre clé</h4>
+            <p class="fiche__meta"><span class="puce">Open source</span><span class="puce">Bénévole</span><span class="puce">Projet personnel</span></p>
+            <div style="margin-top:var(--s5)"><span class="chiffre"><mark class="surligne">10&nbsp;mois</mark></span><span class="chiffre__legende">pour rattraper des années de retard</span></div>
+            <p class="ds-comp__usage">Le chiffre est toujours écrit en clair&nbsp;: le surligneur souligne, il ne remplace pas.</p>
+          </div>
+          <div class="ds-comp">
+            <h4>Citation et note de l'auteur</h4>
+            <blockquote class="citation" style="margin-top:0"><p>«&nbsp;Juste moi et mes propres décisions.&nbsp;»</p></blockquote>
+            <p class="note" style="margin-top:var(--s4);padding-left:var(--s4);border-left:2px solid var(--bleu)">Le plafond, puis le saut&nbsp;: voir la figure&nbsp;1.</p>
+            <p class="ds-comp__usage">Uniquement ses propres phrases. Le guillemet ouvrant déborde dans la marge.</p>
+          </div>
+          <div class="ds-comp">
+            <h4>Étape de parcours</h4>
+            <div class="etape" style="padding-bottom:0">
+              <span class="etape__num" aria-hidden="true">1.4</span>
+              <div>
+                <p class="etape__quand">2025</p>
+                <h3 style="font-size:1.25rem">La voie qui marche</h3>
+                <p style="font-size:1rem">Je boucle le programme en <mark class="surligne">un mois</mark>.</p>
+              </div>
+            </div>
+            <p class="ds-comp__usage">Numéro de section, repère de temps, titre, texte&nbsp;; un fil vertical relie les étapes, car c'est une séquence.</p>
+          </div>
+          <div class="ds-comp">
+            <h4>Fiche technique</h4>
+            <div class="ds-mini-fiche">
+              <p style="font-weight:800;font-size:1.125rem">PvZ Fusion, le pôle francophone</p>
+              <dl class="fiche__spec">
+                <div><dt>Problème</dt><dd>Une traduction en retard de plusieurs années.</dd></div>
+                <div><dt>Décision</dt><dd>Structurer le pôle.</dd></div>
+                <div><dt>Résultat</dt><dd>À jour en dix mois.</dd></div>
+              </dl>
+            </div>
+            <p class="ds-comp__usage">Le même gabarit pour chaque preuve&nbsp;: problème, décision, résultat, chiffres, figure, citation, liens.</p>
+          </div>
+          <div class="ds-comp">
+            <h4>Planche d'appel à l'action</h4>
+            <div class="contact" style="margin-top:0;padding:var(--s5)">
+              <p class="contact__texte" style="font-size:1.25rem">Une équipe à faire progresser&nbsp;: parlons-en.</p>
+              <div class="actions" style="margin-top:var(--s4)"><span class="btn btn--plein btn--petit">M'écrire</span><span class="btn btn--contour btn--petit">Télécharger mon CV</span></div>
+            </div>
+            <p class="ds-comp__usage">Répétée en fin de page&nbsp;; «&nbsp;M'écrire&nbsp;» reste aussi dans l'en-tête, à un clic de partout.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="ds-bloc" aria-labelledby="ds-6">
+        <h3 id="ds-6"><span class="chapitre__num">6</span> Iconographie et figures</h3>
+        <p class="ds-bloc__intro">Des pictogrammes au trait, comme dans une notice de montage&nbsp;: 48&nbsp;px, trait de 1,75&nbsp;px, extrémités arrondies, une seule couleur.</p>
+        <div style="position:relative">
+          <ul class="ds-pictos">
+            <li><span class="asset-trait picto" style="--asset:url('../assets/pictos/cartes.svg')" aria-hidden="true"></span>Carte à jouer</li>
+            <li><span class="asset-trait picto" style="--asset:url('../assets/pictos/plume.svg')" aria-hidden="true"></span>Plume</li>
+            <li><span class="asset-trait picto" style="--asset:url('../assets/pictos/pupitre.svg')" aria-hidden="true"></span>Pupitre</li>
+            <li><span class="asset-trait picto" style="--asset:url('../assets/pictos/groupe.svg')" aria-hidden="true"></span>Groupe</li>
+            <li><span class="asset-trait picto" style="--asset:url('../assets/pictos/saxophone.svg')" aria-hidden="true"></span>Saxophone</li>
+            <li><span class="asset-trait picto" style="--asset:url('../assets/pictos/cadenas.svg')" aria-hidden="true"></span>Cadenas</li>
+            <li><span class="asset-trait picto" style="--asset:url('../assets/pictos/lune.svg')" aria-hidden="true"></span>Lune</li>
+          </ul>
+        </div>
+        <div class="ds-icono">
+          <figure>
+            <span class="asset-trait" style="--asset:url('../assets/marque/monogramme-cl.svg')" role="img" aria-label="Monogramme CL au trait avec cercle de construction et ligne de cote."></span>
+            <figcaption>Monogramme «&nbsp;CL&nbsp;» au trait, façon plan technique&nbsp;: cercle de construction, axe, cote.</figcaption>
+          </figure>
+          <figure>
+            <span class="asset-trait" style="--asset:url('../assets/pictos/lune-mode-nuit.svg')" role="img" aria-label="Croissant de lune et étincelle au trait."></span>
+            <figcaption>La lune du mode nuit, au même trait que les pictogrammes. Aucun symbole tiré du jeu.</figcaption>
+          </figure>
+          <figure>
+            <svg viewBox="0 0 240 150" width="240" height="150" role="img" aria-label="Exemple de rappel : un point sur une image relié par un trait fin à une étiquette en italique bleu.">
+              <rect x="1" y="1" width="150" height="148" rx="4" fill="var(--papier)" stroke="var(--filet)"/>
+              <line x1="104" y1="96" x2="168" y2="44" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="104" cy="96" r="5" fill="var(--blanc)" stroke="currentColor" stroke-width="2"/>
+              <rect x="162" y="28" width="76" height="26" rx="3" fill="var(--blanc)" stroke="currentColor"/>
+              <text x="200" y="46" text-anchor="middle" class="f-note" style="font-size:14px">Le bleu</text>
+            </svg>
+            <figcaption>Rappel d'annotation&nbsp;: point cerclé, trait de 1,5&nbsp;px, étiquette blanche en italique bleu. Sert sur les photos et les figures.</figcaption>
+          </figure>
+        </div>
+        <p class="ds-bloc__intro" style="margin-top:var(--s5)">Les figures 1 et 2 sont codées en SVG (D-06)&nbsp;: rien à générer, mais deux versions par figure, bureau et mobile, pour garder des annotations lisibles à 14&nbsp;px.</p>
+      </section>
+
+      <section class="ds-bloc" aria-labelledby="ds-7">
+        <h3 id="ds-7"><span class="chapitre__num">7</span> Images</h3>
+        <div class="ds-images">
+          <figure>
+            <img src="../assets/photos/sources/1536x2304_charles-4.webp" width="768" height="1152" loading="lazy" alt="Photo d'origine : Charles dans le champ de colza.">
+            <figcaption class="legende"><b>Avant</b> La photo d'origine. Elle reste en couleur une seule fois, en figure&nbsp;0&nbsp;: c'est elle qui fournit la palette.</figcaption>
+          </figure>
+          <figure>
+            <span class="bichromie"><img class="bichromie__jour" src="../assets/photos/768x1152_charles-4-bichromie-jour.webp" srcset="../assets/photos/768x1152_charles-4-bichromie-jour.webp 768w, ../assets/photos/1200x1800_charles-4-bichromie-jour.webp 1200w" sizes="(max-width:640px) calc(100vw - 32px), (max-width:1000px) 45vw, 380px" width="768" height="1152" loading="lazy" alt="Charles Lindecker, détouré en bichromie bleue."><img class="bichromie__nuit" src="../assets/photos/768x1152_charles-4-bichromie-nuit.webp" srcset="../assets/photos/768x1152_charles-4-bichromie-nuit.webp 768w, ../assets/photos/1200x1800_charles-4-bichromie-nuit.webp 1200w" sizes="(max-width:640px) calc(100vw - 32px), (max-width:1000px) 45vw, 380px" width="768" height="1152" loading="lazy" alt="Charles Lindecker, détouré en bichromie bleue."></span>
+            <figcaption class="legende"><b>Après</b> Bichromie bleue détourée, sans le décor, pour se poser sur le papier. Une variante accompagne le mode nuit.</figcaption>
+          </figure>
+          <figure class="ds-capture">
+            <img src="assets/projets/gup-cli.webp" width="1051" height="625" loading="lazy" alt="Exemple de cadrage d'une capture : la CLI gup.">
+            <figcaption class="legende"><b>Captures</b> Dans une figure numérotée, filet de 1&nbsp;px, rayon de 4&nbsp;px, légende dessous. Jamais d'ombre ni de fausse fenêtre de navigateur.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="ds-bloc" aria-labelledby="ds-8">
+        <h3 id="ds-8"><span class="chapitre__num">8</span> Mouvement</h3>
+        <div class="ds-mouvement">
+          <dl>
+            <dt>Le moment&nbsp;: la figure 1 se trace</dt>
+            <dd>Une seule fois, quand elle entre à l'écran. La courbe se dessine en 1,8&nbsp;s (cubic-bezier(.4, 0, .2, 1)), puis les annotations apparaissent dans l'ordre de la lecture&nbsp;: le plafond, la percée, le deck.</dd>
+            <dt>Micro-interactions</dt>
+            <dd>Boutons&nbsp;: le fond change en 150&nbsp;ms. Liens&nbsp;: le soulignement s'épaissit. Repère de lecture&nbsp;: changement d'état, sans glissement.</dd>
+            <dt>Mouvement réduit</dt>
+            <dd>La figure arrive complète, sans fondu&nbsp;; le bouton ci-contre se contente d'y mener.</dd>
+          </dl>
+          <div>
+            <p style="font-size:var(--t-petit);color:var(--graphite);max-width:28rem">Tout autre mouvement répond à une action du lecteur. Rien ne bouge tout seul, à part cette figure.</p>
+            <div class="actions" style="margin-top:var(--s5)"><button class="btn btn--contour" type="button" data-rejouer>Rejouer le tracé de la figure&nbsp;1</button></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ds-bloc" aria-labelledby="ds-9">
+        <h3 id="ds-9"><span class="chapitre__num">9</span> Accessibilité</h3>
+        <div class="ds-defile">
+          <table class="ds-table">
+            <caption class="sr">Paires de contraste vérifiées</caption>
+            <thead><tr><th scope="col">Paire</th><th scope="col">Exemple</th><th scope="col">Ratio</th><th scope="col">Niveau</th></tr></thead>
+            <tbody>
+              <tr><td>Encre sur papier</td><td><span class="ds-echantillon" style="background:#F5F6F8;color:#14161B">Texte</span></td><td>16,74:1</td><td>AAA</td></tr>
+              <tr><td>Graphite sur papier</td><td><span class="ds-echantillon" style="background:#F5F6F8;color:#59606D">Légende</span></td><td>5,85:1</td><td>AA</td></tr>
+              <tr><td>Bleu sur papier (liens, notes)</td><td><span class="ds-echantillon" style="background:#F5F6F8;color:#1F4FD1">Lien</span></td><td>6,27:1</td><td>AA</td></tr>
+              <tr><td>Blanc sur bleu (bouton)</td><td><span class="ds-echantillon" style="background:#1F4FD1;color:#FFFFFF">Discutons</span></td><td>6,78:1</td><td>AA</td></tr>
+              <tr><td>Encre sur colza (surligneur)</td><td><span class="ds-echantillon" style="background:#F5D33F;color:#14161B">447</span></td><td>12,30:1</td><td>AAA</td></tr>
+              <tr><td>Nuit&nbsp;: encre de lune sur papier de nuit</td><td><span class="ds-echantillon" style="background:#0E1424;color:#E6EAF2">Texte</span></td><td>15,22:1</td><td>AAA</td></tr>
+              <tr><td>Nuit&nbsp;: bleu de lune sur papier de nuit</td><td><span class="ds-echantillon" style="background:#0E1424;color:#8FB0FF">Lien</span></td><td>8,58:1</td><td>AAA</td></tr>
+              <tr><td>Nuit&nbsp;: graphite sur planche</td><td><span class="ds-echantillon" style="background:#151E33;color:#A3ADBF">Légende</span></td><td>7,34:1</td><td>AAA</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <ul class="ds-a11y-liste">
+          <li>Focus clavier&nbsp;: contour de 2&nbsp;px bleu, décalé de 3&nbsp;px, visible sur tous les fonds, de jour comme de nuit.</li>
+          <li>Cibles&nbsp;: boutons de 48&nbsp;px (44&nbsp;px en version compacte), lignes du sommaire de 56&nbsp;px.</li>
+          <li>Les axes et les tracés des figures dépassent 3:1&nbsp;; chaque figure a un titre et une description textuelle.</li>
+          <li>Aucune information portée par la seule couleur&nbsp;: les liens sont soulignés, les points pleins et vides de la figure&nbsp;2 ont une légende.</li>
+          <li>Mouvement réduit respecté&nbsp;; le mode nuit est un choix du lecteur, mémorisé, avec les mêmes exigences de contraste.</li>
+          <li>Lien d'évitement «&nbsp;Aller au contenu&nbsp;», titres hiérarchisés, une description pour chaque image.</li>
+        </ul>
+      </section>
+
+      <section class="ds-bloc" aria-labelledby="ds-10">
+        <h3 id="ds-10"><span class="chapitre__num">10</span> Tokens</h3>
+<pre class="ds-code"><code>:root {
+  /* Couleurs — jour */
+  --papier: #F5F6F8;  --blanc: #FFFFFF;   --encre: #14161B;
+  --graphite: #59606D; --bleu: #1F4FD1;   --bleu-survol: #173CA6;
+  --sur-bleu: #FFFFFF; --colza: #F5D33F;  --sur-colza: #14161B;
+  --filet: #D8DDE5;    --trait: #59606D;  --trait-doux: #AAB2BF;
+
+  /* Typographie */
+  --font-texte: "Atkinson Hyperlegible Next", system-ui, sans-serif;
+  --font-note: "Newsreader", Georgia, serif; /* italique, bleu */
+  --t-display: clamp(2.75rem, 1.15rem + 4.6vw, 5.25rem);
+  --t-h2: clamp(2rem, 1.4rem + 1.9vw, 3rem);
+  --t-h3: 1.5rem;  --t-chapeau: 1.3125rem;  --t-corps: 1.125rem;
+  --t-petit: 1rem; --t-etiquette: .875rem;  --t-note: 1.0625rem;
+
+  /* Espacement et formes */
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px;
+  --s6: 32px; --s7: 48px; --s8: 64px; --s9: 96px; --s10: 128px;
+  --rayon: 4px;
+}
+
+[data-theme="nuit"] {
+  --papier: #0E1424;  --blanc: #151E33;   --encre: #E6EAF2;
+  --graphite: #A3ADBF; --bleu: #8FB0FF;   --bleu-survol: #B5CBFF;
+  --sur-bleu: #0E1424; --colza: #E2C044;  --sur-colza: #14161B;
+  --filet: #26304A;    --trait: #A3ADBF;  --trait-doux: #4A5672;
+}</code></pre>
+      </section>
+    </div>
+  </section>
+
+  <!-- ================= POURQUOI ================= -->
+  <section id="pourquoi" class="pourquoi" aria-labelledby="pourquoi-titre">
+    <div class="wrap">
+      <h2 id="pourquoi-titre" class="pourquoi__titre">Pourquoi cette direction</h2>
+      <p class="pourquoi__intro">Charles, voici ce que la proposition D fait de ton récit, et ce qu'elle risque.</p>
+      <div class="pourquoi__grille">
+        <div class="pourquoi__bloc pourquoi__bloc--large">
+          <h3>Ce qu'elle raconte</h3>
+          <p>Le site devient le manuel d'un homme qui aime comprendre comment les choses marchent, puis l'expliquer. Chaque affirmation arrive avec sa preuve&nbsp;: une figure, un chiffre surligné, une phrase à toi. Le lecteur n'a pas à te croire sur parole&nbsp;: il voit la courbe plafonner quatre mois, puis sauter grâce au deck à contre-courant. L'accroche se lit comme deux règles successives, et le reste du site les applique.</p>
+        </div>
+        <div class="pourquoi__bloc">
+          <h3>Pourquoi elle te ressemble</h3>
+          <ul>
+            <li>Ta culture de la documentation (direction artistique, post-mortems, rapports d'architecture de la V1) prouve déjà ta posture «&nbsp;transmettre&nbsp;». Ici, elle devient la forme du site.</li>
+            <li>Tu as été formateur&nbsp;: un manuel clair, c'est ton métier d'avant, mis en page.</li>
+            <li>La palette sort de ta propre photo&nbsp;: la chemise bleu roi que tu portes sur les quatre portraits, le champ de colza du quatrième. Personne d'autre n'a cette palette pour cette raison.</li>
+            <li>Atkinson Hyperlegible a été dessinée pour les lecteurs malvoyants. Ta V1 visait WCAG AA et un Lighthouse à 1,0&nbsp;: la police dit cette exigence sans l'écrire.</li>
+            <li>La figure du plafond montre ta méthode (tester, échouer, comprendre, réinventer) au lieu de l'affirmer.</li>
+            <li>L'humour de notice («&nbsp;mode d'emploi&nbsp;», «&nbsp;pour toute question non couverte…&nbsp;») reste à ta mesure&nbsp;: un sourire, pas un sketch.</li>
+          </ul>
+        </div>
+        <div class="pourquoi__bloc">
+          <h3>Le dosage du jeu</h3>
+          <ul>
+            <li>Le jeu vit dans le récit (Gwent, le jeu de cartes en papier) et dans le mot «&nbsp;règles&nbsp;», jamais dans le décor.</li>
+            <li>Bloodborne n'apparaît qu'en mode nuit&nbsp;: une lune dans l'en-tête et une ligne au pied de page, «&nbsp;La nuit, la chasse aux bugs commence.&nbsp;» Un recruteur non joueur voit un mode sombre soigné&nbsp;; un joueur reconnaît la nuit de la chasse.</li>
+            <li>Aucun asset du jeu, aucun mot de son lexique dans l'interface.</li>
+          </ul>
+          <h3 style="margin-top:var(--s7)">Ce qui change par rapport à la V1</h3>
+          <ul>
+            <li>Tout&nbsp;: fond clair, mise en page éditoriale, ni panneaux vitrés, ni accordéons, ni cinématique.</li>
+            <li>Les quatorze projets en constellation laissent place à trois fiches au même gabarit&nbsp;: problème, décision, résultat.</li>
+            <li>Les certifications quittent l'accueil&nbsp;; la page Parcours les garde en fin de liste.</li>
+          </ul>
+        </div>
+        <div class="pourquoi__bloc">
+          <h3>Risques et parades</h3>
+          <ul>
+            <li><strong>La moins «&nbsp;toi&nbsp;» émotionnellement.</strong> Un fan de Bloodborne peut la trouver sage. Parade&nbsp;: les figures, l'humour, le mode nuit, et une palette qui reste la tienne.</li>
+            <li><strong>Un manuel peut sembler froid.</strong> Parade&nbsp;: les notes au stylo bleu et la première personne partout.</li>
+            <li><strong>Les figures engagent ta crédibilité.</strong> Schémas annoncés comme tels, chiffres sourcés seulement&nbsp;; les dates de PvZ Fusion restent hors des figures tant qu'elles ne sont pas confirmées.</li>
+            <li><strong>Le surligneur s'use vite.</strong> Un seul chiffre surligné par preuve, sinon plus rien ne ressort.</li>
+          </ul>
+        </div>
+        <div class="pourquoi__bloc">
+          <h3>Encore à arbitrer</h3>
+          <p>La troisième fiche&nbsp;: gup (usage public chiffré, montré ici) ou le portfolio V1 (le souci du détail&nbsp;: Lighthouse ≈&nbsp;1,0, accessibilité AA). Le gabarit de fiche accepte l'un comme l'autre.</p>
+          <p>Le mode nuit&nbsp;: easter egg déclenché par la lune (choix actuel), ou suivi automatique de la préférence système au premier passage.</p>
+        </div>
+        <div class="pourquoi__bloc pourquoi__bloc--large">
+          <h3>Assets à générer</h3>
+          <p>Détail, formats et prompts dans <code>docs/assets-a-generer.md</code>.</p>
+          <div class="ds-defile">
+            <table class="pourquoi__assets">
+              <thead><tr><th scope="col">ID</th><th scope="col">Asset</th><th scope="col">Remarque</th></tr></thead>
+              <tbody>
+                <tr><td>D-01</td><td>Monogramme «&nbsp;CL&nbsp;» au trait, façon plan technique, une couleur.</td><td>Remplace l'hexagone de la V1&nbsp;; sert aussi de favicon.</td></tr>
+                <tr><td>D-02</td><td>Portrait détouré en bichromie bleue, d'après la photo du champ de colza.</td><td>Détourage d'une vraie photo, pas une image inventée.</td></tr>
+                <tr><td>D-03</td><td>Vue éclatée d'un vieux PC tour, au trait bleu, style notice de montage.</td><td>Illustre l'étape 1.1, les PC démontés avec ton père.</td></tr>
+                <tr><td>D-04</td><td>Pictogrammes au trait&nbsp;: carte à jouer, plume, pupitre, groupe, saxophone, cadenas, lune.</td><td>Une série homogène, 48&nbsp;px, trait de 1,75&nbsp;px.</td></tr>
+                <tr><td>D-05</td><td>Lune au trait pour le mode nuit.</td><td>Aucun symbole tiré du jeu.</td></tr>
+                <tr><td>D-06</td><td>Figures 1 et 2.</td><td>À coder en SVG, rien à générer.</td></tr>
+                <tr><td>D-07</td><td>Image de partage (1200 × 630)&nbsp;: la couverture du mode d'emploi.</td><td>Titre, monogramme, palette bleu et colza.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+
+  /* Mode nuit : un choix du lecteur, mémorisé */
+  var lune = document.querySelector('.lune');
+  function appliquer(nuit) {
+    root.setAttribute('data-theme', nuit ? 'nuit' : 'jour');
+    if (lune) lune.setAttribute('aria-pressed', nuit ? 'true' : 'false');
+  }
+  appliquer(root.getAttribute('data-theme') === 'nuit');
+  if (lune) lune.addEventListener('click', function () {
+    var nuit = root.getAttribute('data-theme') !== 'nuit';
+    appliquer(nuit);
+    try { localStorage.setItem('cl-d-theme', nuit ? 'nuit' : 'jour'); } catch (e) {}
+  });
+
+  /* Le moment : la figure 1 se trace une fois, à son arrivée à l'écran */
+  var reduit = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var plan = document.querySelector('#fig-1 .figure__plan');
+  function svgVisible() {
+    if (!plan) return null;
+    var s = plan.querySelectorAll('svg');
+    for (var i = 0; i < s.length; i++) { if (s[i].getBoundingClientRect().width > 0) return s[i]; }
+    return null;
+  }
+  function preparer(svg) {
+    var c = svg.querySelector('.courbe');
+    var l = c.getTotalLength();
+    c.style.transition = 'none';
+    c.style.strokeDasharray = l;
+    c.style.strokeDashoffset = l;
+    plan.classList.remove('est-trace');
+    plan.classList.add('est-pret');
+  }
+  function tracer(svg) {
+    var c = svg.querySelector('.courbe');
+    c.getBoundingClientRect();
+    c.style.transition = 'stroke-dashoffset 1.8s cubic-bezier(.4,0,.2,1)';
+    c.style.strokeDashoffset = '0';
+    plan.classList.add('est-trace');
+  }
+  if (plan && !reduit && 'IntersectionObserver' in window) {
+    var haut = plan.getBoundingClientRect().top;
+    var svg = svgVisible();
+    if (svg && haut > window.innerHeight) {
+      preparer(svg);
+      var io = new IntersectionObserver(function (entrees) {
+        entrees.forEach(function (e) {
+          if (e.isIntersecting) { io.disconnect(); tracer(svgVisible() || svg); }
+        });
+      }, { threshold: 0.45 });
+      io.observe(plan);
+    }
+  }
+  var rejouer = document.querySelector('[data-rejouer]');
+  if (rejouer && plan) rejouer.addEventListener('click', function () {
+    plan.scrollIntoView({ behavior: reduit ? 'auto' : 'smooth', block: 'center' });
+    if (reduit) return;
+    var s = svgVisible();
+    if (!s) return;
+    preparer(s);
+    setTimeout(function () { tracer(s); }, 700);
+  });
+
+  /* Repère de lecture : le chapitre en cours */
+  var liens = Array.prototype.slice.call(document.querySelectorAll('.reperes a'));
+  if (liens.length && 'IntersectionObserver' in window) {
+    var cibles = liens.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+    var obs = new IntersectionObserver(function (entrees) {
+      entrees.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var i = cibles.indexOf(e.target);
+        liens.forEach(function (l, j) { if (j === i) l.setAttribute('aria-current', 'location'); else l.removeAttribute('aria-current'); });
+      });
+    }, { rootMargin: '-35% 0px -60% 0px' });
+    cibles.forEach(function (c) { if (c) obs.observe(c); });
+  }
+})();
+</script>
+</body>
+</html>

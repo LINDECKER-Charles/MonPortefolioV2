@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 40" fill="none">
+  <title>La grille d’Oedon</title>
+  <g stroke="currentColor" stroke-width="1.2" stroke-linejoin="miter">
+    <path d="M8 27h93m38 0h93M22 31h77m42 0h77"/>
+    <path d="M32 27V16m18 11V12m18 15V10m18 17V7m68 20V7m18 20V10m18 17V12m18 15V16"/>
+    <path d="M32 25q2-7 9-10 7 3 9 10m0 0q2-8 9-12 7 4 9 12m0 0q2-9 9-14 7 5 9 14m68 0q2-9 9-14 7 5 9 14m0 0q2-8 9-12 7 4 9 12m0 0q2-7 9-10 7 3 9 10"/>
+    <path d="M99 31V17l9-4V9l12-6 12 6v4l9 4v14M103 31V20l9-5V11l8-4 8 4v4l9 5v11"/>
+    <path d="M114 30V20q1-5 6-8 5 3 6 8v10m-10 4h8"/>
+  </g>
+  <g fill="currentColor">
+    <path d="m8 25-7 2 7 2Zm224 0 7 2-7 2ZM32 11l-2 5h4Zm18-4-2 5h4Zm18-2-2 5h4Zm18-3-2 5h4Zm68 0-2 5h4Zm18 3-2 5h4Zm18 2-2 5h4Zm18 4-2 5h4Z"/>
+    <path d="M118.6 23h2.8v8h-2.8Zm-2.6 2h8v1.5h-8Z"/>
+  </g>
+</svg>

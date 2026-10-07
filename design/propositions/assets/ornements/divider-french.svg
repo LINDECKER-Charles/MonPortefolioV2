@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 40" fill="none">
+  <title>Les cierges de l’autel de mémoire</title>
+  <g stroke="currentColor" stroke-width="1.2" stroke-linejoin="miter">
+    <path d="M4 30h88m56 0h88M30 33h49m82 0h49"/>
+    <path d="M120 13v19m-17-13v4c0 5 9 5 17 5s17 0 17-5v-4m-32 13h30m-26 3h22"/>
+    <path d="M87 22v8m-8-6v3q0 3 8 3t8-3v-3m58-2v8m-8-6v3q0 3 8 3t8-3v-3"/>
+    <path d="M57 30v-7h7v7m112 0v-7h7v7"/>
+    <path d="M117 13h6m-23 6h6m28 0h6m-56 3h6m60 0h6M77 24h4m12 0h4m46 0h4m14 0h4"/>
+  </g>
+  <g fill="currentColor">
+    <path d="M118.7 7h2.6v6h-2.6ZM101.8 13h2.4v6h-2.4Zm34 0h2.4v6h-2.4Zm-50 4h2.4v5h-2.4Zm66 0h2.4v5h-2.4Zm-74 3h2.4v4h-2.4Zm16 0h2.4v4h-2.4Zm50 0h2.4v4h-2.4Zm16 0h2.4v4h-2.4Z"/>
+    <path d="M120 1c-1 2-2 3-1 4s3 0 2-2Zm-17 6c-1 2-2 3-1 4s3 0 2-2Zm34 0c-1 2-2 3-1 4s3 0 2-2Zm-50 4c-1 2-2 3-1 4s3 0 2-2Zm66 0c-1 2-2 3-1 4s3 0 2-2Zm-74 3c-1 2-2 3-1 4s3 0 2-2Zm16 0c-1 2-2 3-1 4s3 0 2-2Zm50 0c-1 2-2 3-1 4s3 0 2-2Zm16 0c-1 2-2 3-1 4s3 0 2-2Z"/>
+    <path d="m4 28-3 2 3 2Zm232 0 3 2-3 2ZM117 32h6l2 3h-10Z"/>
+  </g>
+</svg>

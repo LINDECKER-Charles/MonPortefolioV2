@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 32" fill="none">
+  <title>Le fronton de l’atelier</title>
+  <g stroke="currentColor" stroke-width="1.2" stroke-linejoin="miter">
+    <path d="M3 22h86l6-5h10l15-13 15 13h10l6 5h86"/>
+    <path d="M22 26h65l10-5h9l14-12 14 12h9l10 5h65"/>
+    <path d="M99 17V9m42 8V9m-33 12v-3m24 3v-3m-18 9v-7q0-5 6-9 6 4 6 9v7"/>
+    <path d="M109 29h22m-11-12v10"/>
+  </g>
+  <g fill="currentColor">
+    <path d="M118.5 1h3v3h-3ZM99 3l3 4-3 3-3-3Zm42 0 3 4-3 3-3-3ZM51 20l6 2-6 2-6-2Zm138 0 6 2-6 2-6-2Z"/>
+  </g>
+</svg>

@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portfolio V2 — quatre directions visuelles</title>
+<meta name="robots" content="noindex">
+<style>
+:root{
+  --fond:#ECEDEF;--panneau:#FFFFFF;--texte:#17181C;--texte-2:#4F5560;--filet:#D3D6DC;
+  --sombre:#17181C;--focus:#2A5BD7;
+  --rayon:10px;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--fond);color:var(--texte);font-size:17px;line-height:1.55}
+a{color:inherit;text-underline-offset:3px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:4px}
+.page{max-width:1200px;margin:0 auto;padding:56px 24px 120px}
+@media (max-width:640px){.page{padding:32px 16px 96px}}
+
+/* En-tête */
+.tete{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:48px;align-items:end;padding-bottom:40px;border-bottom:1px solid var(--filet)}
+.tete h1{margin:0;font-size:clamp(34px,5vw,56px);line-height:1.05;letter-spacing:-.02em;font-weight:700}
+.tete .sur{margin:0 0 10px;color:var(--texte-2);font-size:16px}
+.tete .intro{margin:20px 0 0;max-width:60ch;font-size:19px;color:var(--texte)}
+.lecture{margin:0;padding:20px 22px;background:var(--panneau);border-radius:var(--rayon);font-size:15.5px;color:var(--texte-2)}
+.lecture h2{margin:0 0 8px;font-size:16px;color:var(--texte)}
+.lecture ol{margin:0;padding-left:20px}
+.lecture li+li{margin-top:4px}
+@media (max-width:860px){.tete{grid-template-columns:1fr;gap:24px}}
+
+/* Sections */
+section{margin-top:64px}
+section>h2{margin:0 0 6px;font-size:26px;letter-spacing:-.01em}
+section>.chapeau{margin:0 0 24px;color:var(--texte-2);max-width:68ch}
+
+.communs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 40px;margin:0;padding:0;list-style:none}
+.communs li{padding:12px 0;border-top:1px solid var(--filet)}
+.communs strong{display:block;font-size:16px}
+.communs span{color:var(--texte-2);font-size:15.5px}
+@media (max-width:760px){.communs{grid-template-columns:1fr}}
+
+/* Les quatre directions */
+.directions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
+@media (max-width:900px){.directions{grid-template-columns:1fr}}
+.direction{display:flex;flex-direction:column;background:var(--panneau);border-radius:var(--rayon);overflow:hidden}
+.direction .apercu{display:block;aspect-ratio:16/10;background:#1c1d21;overflow:hidden;border-bottom:1px solid var(--filet)}
+.direction .apercu img{display:block;width:100%;height:100%;object-fit:cover;object-position:top center;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.direction .apercu:hover img{transform:scale(1.02)}
+.direction .corps{display:flex;flex-direction:column;gap:14px;padding:22px 24px 24px;flex:1}
+.direction h3{margin:0;display:flex;align-items:baseline;gap:12px;font-size:24px;letter-spacing:-.01em}
+.direction h3 .lettre{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--sombre);color:#fff;font-size:16px;flex:none;transform:translateY(-3px)}
+.direction .idee{margin:0;font-size:17px}
+.direction h3 .retenue{margin-left:auto;align-self:center;padding:4px 10px;border-radius:999px;background:#1F4FD1;color:#fff;font-size:13px;font-weight:600;letter-spacing:0}
+.fiche{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin:0;font-size:15px}
+.fiche dt{color:var(--texte-2)}
+.fiche dd{margin:0}
+.nuancier{display:flex;gap:0;height:26px;border-radius:6px;overflow:hidden;border:1px solid rgba(0,0,0,.08)}
+.nuancier span{flex:1}
+.nuancier span.large{flex:3}
+.direction .actions{margin-top:auto;padding-top:6px}
+.bouton{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:8px;background:var(--sombre);color:#fff;text-decoration:none;font-weight:600;font-size:15.5px}
+.bouton:hover{background:#2c2e35}
+
+/* Tableau */
+.tableau{overflow-x:auto;background:var(--panneau);border-radius:var(--rayon)}
+table{width:100%;border-collapse:collapse;font-size:15px;min-width:820px}
+th,td{padding:14px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--filet)}
+thead th{font-size:15px;background:#F6F7F8}
+tbody th{font-weight:600;color:var(--texte-2);width:16%}
+tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
+
+/* Recommandation */
+.reco{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;background:var(--sombre);color:#F2F3F5;border-radius:var(--rayon);padding:32px}
+.reco h2{margin:0 0 12px;font-size:26px}
+.reco p{margin:0 0 12px;max-width:62ch}
+.reco ul{margin:0;padding-left:20px}
+.reco li+li{margin-top:8px}
+.reco .note{color:#B9BDC6;font-size:15px}
+@media (max-width:860px){.reco{grid-template-columns:1fr;padding:24px}}
+
+.colonnes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:32px}
+@media (max-width:760px){.colonnes{grid-template-columns:1fr}}
+.colonnes h3{margin:0 0 8px;font-size:18px}
+.colonnes p,.colonnes ul{margin:0 0 10px;color:var(--texte-2)}
+.colonnes ul{padding-left:20px}
+.colonnes li+li{margin-top:6px}
+code{font-size:.92em;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:4px}
+.visually-hidden{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+footer{margin-top:72px;padding-top:20px;border-top:1px solid var(--filet);color:var(--texte-2);font-size:14.5px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="tete">
+  <div>
+    <p class="sur">Portfolio V2, maquettes du 7 octobre 2026. Direction retenue&nbsp;: <a href="#recommandation">D, Mode d'emploi</a>.</p>
+    <h1>Quatre directions visuelles, un seul récit</h1>
+    <p class="intro">Même contenu, même structure, quatre partis pris. Chaque page montre la maquette de l'accueil, puis son design system, puis pourquoi cette direction te ressemble. Le texte est un premier jet tiré du récit validé&nbsp;: on le retravaillera à l'étape contenu.</p>
+  </div>
+  <aside class="lecture" aria-labelledby="comment-lire">
+    <h2 id="comment-lire">Comment les lire</h2>
+    <ol>
+      <li>Regarde d'abord le premier écran de chaque page, cinq secondes&nbsp;: c'est ce que voit un recruteur pressé.</li>
+      <li>Fais défiler la maquette jusqu'au bout, sur ordinateur puis sur téléphone.</li>
+      <li>Pour chacune, deux questions&nbsp;: est-ce que je m'y reconnais&nbsp;? Est-ce qu'un recruteur qui ne joue pas comprend tout&nbsp;?</li>
+    </ol>
+  </aside>
+</header>
+
+<section aria-labelledby="communs">
+  <h2 id="communs">Ce qui ne change pas d'une direction à l'autre</h2>
+  <p class="chapeau">Ces choix découlent du récit (brief, § 4 et § 5). Ils ne sont pas en jeu dans le choix du design.</p>
+  <ul class="communs">
+    <li><strong>Six chapitres sur l'accueil</strong><span>Accroche, l'origine, aujourd'hui, les preuves, en dehors du code, discutons.</span></li>
+    <li><strong>Aucun lexique de jeu dans l'interface</strong><span>Les boutons disent «&nbsp;M'écrire&nbsp;» et «&nbsp;Télécharger mon CV&nbsp;», jamais «&nbsp;Consulter le grimoire&nbsp;».</span></li>
+    <li><strong>Aucune intro bloquante</strong><span>Le contenu se lit dès le premier écran. Un seul moment animé par page&nbsp;; le reste répond à une action.</span></li>
+    <li><strong>Aucune propriété intellectuelle du jeu</strong><span>Pas de captures, de sons ni de symboles officiels. Uniquement des créations originales «&nbsp;dans l'esprit de&nbsp;».</span></li>
+    <li><strong>Des preuves plutôt que des adjectifs</strong><span>Chaque étude de cas suit problème, décision, résultat, avec ses chiffres.</span></li>
+    <li><strong>Le même plancher de qualité</strong><span>Responsive, contrastes AA calculés, focus visible, mouvement réduit respecté.</span></li>
+  </ul>
+</section>
+
+<section aria-labelledby="directions">
+  <h2 id="directions">Les quatre directions</h2>
+  <p class="chapeau">Deux axes les distinguent&nbsp;: la place de Bloodborne, et la place du jeu en général. Les étiquettes «&nbsp;À générer&nbsp;» dans les maquettes signalent un visuel provisoire, détaillé dans la liste des assets.</p>
+  <div class="directions">
+
+    <article class="direction" aria-labelledby="dir-a">
+      <a class="apercu" href="a-nocturne.html" tabindex="-1" aria-hidden="true"><img src="assets/apercus/a-nocturne.webp" alt="" loading="lazy" width="960" height="600"></a>
+      <div class="corps">
+        <h3 id="dir-a"><span class="lettre">A</span> Nocturne</h3>
+        <p class="idee">Bloodborne distillé&nbsp;: un livre de nuit qu'on lit à la lueur d'une lampe. Le clair-obscur, la typographie et l'ornement du jeu, sans un mot de son lexique.</p>
+        <div class="nuancier" aria-hidden="true"><span class="large" style="background:#131718"></span><span style="background:#1B2023"></span><span style="background:#DCD8CF"></span><span style="background:#B39260"></span><span style="background:#7E1416"></span><span style="background:#F0B062"></span></div>
+        <dl class="fiche">
+          <dt>Typographie</dt><dd>Shippori Mincho B1 et Spectral</dd>
+          <dt>Le moment</dt><dd>Les lanternes des chapitres s'allument au fil de la lecture.</dd>
+          <dt>Bloodborne</dt><dd>Fort, par l'atmosphère</dd>
+        </dl>
+        <p class="actions"><a class="bouton" href="a-nocturne.html">Ouvrir la proposition A</a></p>
+      </div>
+    </article>
+
+    <article class="direction" aria-labelledby="dir-b">
+      <a class="apercu" href="b-clair-de-lune.html" tabindex="-1" aria-hidden="true"><img src="assets/apercus/b-clair-de-lune.webp" alt="" loading="lazy" width="960" height="600"></a>
+      <div class="corps">
+        <h3 id="dir-b"><span class="lettre">B</span> Clair de lune</h3>
+        <p class="idee">Une nuit moderne&nbsp;: une interface sobre de niveau produit, éclairée par la lune. Ton bleu roi devient la couleur de la nuit, et ton parcours se dessine comme une constellation.</p>
+        <div class="nuancier" aria-hidden="true"><span class="large" style="background:#0D1424"></span><span style="background:#141D33"></span><span style="background:#E8EDF5"></span><span style="background:#BFD6F2"></span><span style="background:#2F5BEA"></span><span style="background:#F4F2EC"></span></div>
+        <dl class="fiche">
+          <dt>Typographie</dt><dd>Jost et Literata</dd>
+          <dt>Le moment</dt><dd>La constellation du parcours se trace, d'une étoile seule à une vingtaine.</dd>
+          <dt>Bloodborne</dt><dd>Léger&nbsp;: la lune, la brume, les fleurs blanches</dd>
+        </dl>
+        <p class="actions"><a class="bouton" href="b-clair-de-lune.html">Ouvrir la proposition B</a></p>
+      </div>
+    </article>
+
+    <article class="direction" aria-labelledby="dir-c">
+      <a class="apercu" href="c-contre-jeu.html" tabindex="-1" aria-hidden="true"><img src="assets/apercus/c-contre-jeu.webp" alt="" loading="lazy" width="960" height="600"></a>
+      <div class="corps">
+        <h3 id="dir-c"><span class="lettre">C</span> Contre-jeu</h3>
+        <p class="idee">La partie de cartes&nbsp;: ta méthode vient de Gwent, ta première création est un jeu de cartes plastifiées à la main. Le récit est distribué en cartes dont chaque détail porte une preuve.</p>
+        <div class="nuancier" aria-hidden="true"><span class="large" style="background:#1E1630"></span><span style="background:#F3EEE2"></span><span style="background:#C9A24D"></span><span style="background:#2F62A8"></span><span style="background:#B23A48"></span><span style="background:#2E7D57"></span></div>
+        <dl class="fiche">
+          <dt>Typographie</dt><dd>Brygada 1918 et Barlow Condensed</dd>
+          <dt>Le moment</dt><dd>La main des trois verbes se déploie en éventail, et chaque carte se retourne sur ses preuves.</dd>
+          <dt>Bloodborne</dt><dd>Absent&nbsp;; le jeu de cartes prend sa place</dd>
+        </dl>
+        <p class="actions"><a class="bouton" href="c-contre-jeu.html">Ouvrir la proposition C</a></p>
+      </div>
+    </article>
+
+    <article class="direction" aria-labelledby="dir-d">
+      <a class="apercu" href="d-mode-d-emploi.html" tabindex="-1" aria-hidden="true"><img src="assets/apercus/d-mode-d-emploi.webp" alt="" loading="lazy" width="960" height="600"></a>
+      <div class="corps">
+        <h3 id="dir-d"><span class="lettre">D</span> Mode d'emploi <span class="retenue">Retenue</span></h3>
+        <p class="idee">La seule direction claire&nbsp;: un manuel parfaitement composé, avec des figures qui montrent ta méthode au lieu de l'affirmer. La palette vient de ta photo dans le colza.</p>
+        <div class="nuancier" aria-hidden="true"><span class="large" style="background:#F5F6F8"></span><span style="background:#FFFFFF"></span><span style="background:#14161B"></span><span style="background:#59606D"></span><span style="background:#1F4FD1"></span><span style="background:#F5D33F"></span></div>
+        <dl class="fiche">
+          <dt>Typographie</dt><dd>Atkinson Hyperlegible Next et Newsreader</dd>
+          <dt>Le moment</dt><dd>La figure du plafond de Gwent se dessine quand on l'atteint.</dd>
+          <dt>Bloodborne</dt><dd>Un clin d'œil&nbsp;: le mode nuit, sous la lune</dd>
+        </dl>
+        <p class="actions"><a class="bouton" href="d-mode-d-emploi.html">Ouvrir la proposition D</a></p>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section aria-labelledby="comparatif">
+  <h2 id="comparatif">Comparatif</h2>
+  <p class="chapeau">Mon appréciation, à confronter à la tienne.</p>
+  <div class="tableau" role="region" aria-labelledby="comparatif" tabindex="0">
+    <table>
+      <thead>
+        <tr><th scope="col"><span class="visually-hidden">Critère</span></th><th scope="col">A Nocturne</th><th scope="col">B Clair de lune</th><th scope="col">C Contre-jeu</th><th scope="col">D Mode d'emploi</th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">Ce qu'un recruteur non joueur voit</th><td>Un beau livre de nuit, très soigné</td><td>Une interface moderne et calme, de nuit</td><td>Une table de jeu, des cartes à lire</td><td>Un manuel clair et précis, avec de l'humour</td></tr>
+        <tr><th scope="row">Ce qu'un joueur reconnaît</th><td>Les lanternes, la typo d'un studio japonais, l'ornement gravé</td><td>La lune, la brume, les fleurs blanches du rêve</td><td>Gwent, un deck à contre-courant, des factions</td><td>La lune du mode nuit, s'il la trouve</td></tr>
+        <tr><th scope="row">Ce qui te ressemble</th><td>Ton amour de Bloodborne et du détail</td><td>Ton bleu, ta constellation de BLR, l'arc du solo au collectif</td><td>Gwent, le jeu papier avec ton cousin, Omnicard</td><td>La transmission, la documentation, l'accessibilité</td></tr>
+        <tr><th scope="row">Assets à générer</th><td>Beaucoup&nbsp;: gravures, lanterne, lettrines</td><td>Une grande illustration, un portrait étalonné</td><td>Dos de carte, illustrations, textures</td><td>Peu&nbsp;: pictogrammes, une vue éclatée</td></tr>
+        <tr><th scope="row">Distance avec la V1</th><td>La plus proche (même univers, forme opposée)</td><td>Nette</td><td>Totale</td><td>Totale</td></tr>
+        <tr><th scope="row">Risque principal</th><td>Image de fan si l'ornement déborde</td><td>Paraître générique sans l'illustration finale</td><td>Paraître trop ludique pour un poste de lead</td><td>Paraître sage, moins émotionnelle</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="recommandation">
+  <div class="reco">
+    <div>
+      <h2 id="recommandation">La décision&nbsp;: D, Mode d'emploi</h2>
+      <p>Retenue le 7 octobre 2026. C'est la plus aboutie en UX, et sa simplicité en fait un meilleur terrain de jeu&nbsp;: l'audace se dépense dans des interactions qui portent du sens (démarrage rapide, glossaire, figures à explorer, historique des versions) plutôt que dans le décor.</p>
+      <p>Prochaine étape&nbsp;: le logo, un livre avec une lanterne dedans (<a href="../../docs/logo.md"><code>docs/logo.md</code></a>), et les assets en deux listes (<a href="../../docs/assets-a-generer.md"><code>docs/assets-a-generer.md</code></a>, <a href="../../docs/assets-complementaires.md"><code>docs/assets-complementaires.md</code></a>), puis le contenu.</p>
+    </div>
+    <div>
+      <p class="note">Ce que deviennent les autres</p>
+      <ul>
+        <li>A, Nocturne&nbsp;: écartée, jugée rétrograde pour un recruteur.</li>
+        <li>B, Clair de lune&nbsp;: «&nbsp;me correspond bien&nbsp;». Piste ouverte&nbsp;: lui confier l'atmosphère du mode nuit de D.</li>
+        <li>C, Contre-jeu&nbsp;: la touche Gwent et Omnicard, reconnue. Piste&nbsp;: ses cartes dans l'étude de cas Omnicard.</li>
+      </ul>
+      <p class="note" style="margin-top:20px">Pour mémoire</p>
+      <p>Ma recommandation initiale était A, enrichie des figures de D.</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="repondre">
+  <h2 id="repondre">Comment me répondre</h2>
+  <div class="colonnes">
+    <div>
+      <h3>Pas besoin de choisir en bloc</h3>
+      <p>Dis-moi ce que tu gardes et ce que tu jettes dans chacune&nbsp;: la typographie de l'une, la palette d'une autre, le moment mémorable d'une troisième. Je recompose une direction finale à partir de tes choix, puis on la décline sur les pages de profondeur (études de cas, parcours, projets).</p>
+      <p>Une réaction brute suffit («&nbsp;A me parle, mais trop sombre&nbsp;»)&nbsp;: c'est à moi de la traduire en décisions de design.</p>
+    </div>
+    <div>
+      <h3>Les assets</h3>
+      <ul>
+        <li>Repris&nbsp;: tes quatre photos et tes captures de projets (V1), les ornements au trait de Bloodborne Legendary Run, qui sont des dessins originaux.</li>
+        <li>Écartés&nbsp;: tout ce qui vient du jeu (captures, sons extraits, symboles officiels, icônes de la V1 qui reprennent l'écho de sang), et le logo hexagonal, trop générique.</li>
+        <li>À générer&nbsp;: la liste de la direction retenue, avec ses prompts et ses critères d'acceptation, est dans <a href="../../docs/assets-a-generer.md"><code>docs/assets-a-generer.md</code></a>.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Maquettes statiques&nbsp;: les polices viennent de Google Fonts pour l'aperçu et seront auto-hébergées en production. Les liens «&nbsp;Télécharger mon CV&nbsp;» et «&nbsp;Lire l'étude de cas&nbsp;» ne mènent encore nulle part.
+</footer>
+
+</div>
+</body>
+</html>
