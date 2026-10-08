@@ -57,8 +57,11 @@ navigateur. Le build vérifie les liens internes et la cohérence du sitemap. Le
 doivent faire 110 à 165 caractères, les titres 65 caractères au plus.
 
 Le blog est ouvert sans article. Son mode d’alimentation reste à décider ; aucun CMS ni contenu
-fictif n’est ajouté. Les figures de l’accueil se détaillent au clic ou au clavier, sans animation
-quand le navigateur demande de réduire le mouvement.
+fictif n’est ajouté. Les illustrations de l’accueil jouent une scène propre à leur sujet à leur
+première arrivée dans l’écran, puis la rejouent au clic sur le dessin ou au clavier. Le système
+d’architecture fait circuler des messages en boucle
+tant qu’il est visible ; les trois règles apparaissent dans l’ordre. Avec mouvement réduit,
+sans JavaScript ou à l’impression, les illustrations restent complètes.
 
 ## Mise en ligne
 
