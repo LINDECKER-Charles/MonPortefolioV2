@@ -1,0 +1,173 @@
+---
+import Parcours from '../../layouts/Parcours.astro';
+
+const titre = 'Formation et certifications · Charles Lindecker';
+const description = 'Du C appris en autodidacte au titre DWWM chez Elan Formation, les étapes de mon apprentissage et les certifications qui complètent la pratique.';
+const certifications = [
+  { titre: 'JavaScript', date: '2026-03', periode: 'Mars 2026', organisme: 'freeCodeCamp' },
+  { titre: 'Python', date: '2026-03', periode: 'Mars 2026', organisme: 'freeCodeCamp' },
+  { titre: 'B1 English for Developers', date: '2026-03', periode: 'Mars 2026', organisme: 'freeCodeCamp' },
+  { titre: 'Relational Database', date: '2026-03', periode: 'Mars 2026', organisme: 'freeCodeCamp' },
+  { titre: 'Relational Database V8', date: '2026-03', periode: 'Mars 2026', organisme: 'freeCodeCamp' },
+  { titre: 'A2 English for Developers', date: '2026-03', periode: 'Mars 2026', organisme: 'freeCodeCamp' },
+  { titre: 'Responsive Web Design', date: '2026-03', periode: 'Mars 2026', organisme: 'freeCodeCamp' },
+  { titre: 'Legacy JavaScript Algorithms and Data Structures V7', date: '2025-11', periode: 'Novembre 2025', organisme: 'freeCodeCamp' },
+  { titre: 'Foundational C# with Microsoft', date: '2025-11', periode: 'Novembre 2025', organisme: 'Microsoft et freeCodeCamp' },
+  { titre: 'Back End Development and APIs', date: '2025-06', periode: 'Juin 2025', organisme: 'freeCodeCamp' },
+  { titre: 'JavaScript Algorithms and Data Structures', date: '2025-06', periode: 'Juin 2025', organisme: 'freeCodeCamp' },
+  { titre: 'Responsive Web Design', date: '2024-11', periode: 'Novembre 2024', organisme: 'freeCodeCamp' },
+];
+---
+
+<Parcours
+  titre={titre}
+  description={description}
+  chemin="/parcours/formation"
+  courant="Formation et certifications"
+  introduction="J’ai commencé en autodidacte et changé de voie jusqu’à trouver une formation où la pratique me permettait d’avancer."
+>
+  <section class="formation-section" id="formation" tabindex="-1" aria-labelledby="formation-titre">
+    <header class="section-tete">
+      <h2 id="formation-titre">Trouver la voie qui marche</h2>
+      <p>De mes premiers jeux au titre professionnel.</p>
+    </header>
+
+    <ol class="chemin-formation" role="list">
+      <li>
+        <span class="chemin-formation__noeud" aria-hidden="true"></span>
+        <p class="formation-date">Vers 13&nbsp;ans</p>
+        <h3>Apprendre le C</h3>
+        <p>J’apprends sur OpenClassrooms, avec l’idée de passer au C++ et de créer mes propres jeux sur Unreal Engine.</p>
+        <details class="experience-detail">
+          <summary>Les premiers projets</summary>
+          <div class="prose">
+            <p>Vers 10&nbsp;ans, je démonte de vieux PC hors service avec mon père, informaticien. Quand j’ai une machine qui le permet, je commence à coder.</p>
+            <p>Avec mon cousin, j’invente aussi un jeu de cartes papier. On imprime, on plastifie et on recommence. Il deviendra <a href="/projets/omnicard">Omnicard</a>.</p>
+          </div>
+        </details>
+      </li>
+      <li>
+        <span class="chemin-formation__noeud" aria-hidden="true"></span>
+        <p class="formation-date">Avant le DWWM</p>
+        <h3>Changer de voie</h3>
+        <p>Informatique, physique-chimie, réseaux, puis la piscine de 42&nbsp;: plusieurs essais avant de trouver une formation adaptée.</p>
+        <details class="experience-detail">
+          <summary>Les réorientations</summary>
+          <div class="prose">
+            <p>Je passe par une première année de BUT Informatique, une année de physique-chimie, puis un BUT Réseaux &amp; Télécoms à Nancy-Brabois en <time datetime="2023">2023</time>–<time datetime="2024">2024</time>. Je tente ensuite la piscine de 42, sans être admis.</p>
+            <p>Je me réoriente autant que nécessaire, sans abandonner le développement, jusqu’à trouver une formation où la pratique prend la place qui me convient.</p>
+          </div>
+        </details>
+      </li>
+      <li class="chemin-formation__diplome">
+        <span class="chemin-formation__noeud" aria-hidden="true"></span>
+        <p class="formation-date"><time datetime="2025-04">Avril</time> à <time datetime="2025-10">octobre 2025</time></p>
+        <p class="diplome-statut">Titre professionnel obtenu</p>
+        <h3>Développeur Web et Web Mobile</h3>
+        <p class="diplome-repere">Elan Formation · Mulhouse</p>
+        <p class="diplome-niveau">RNCP · Niveau 5</p>
+        <p>Je termine le programme en <mark class="surligne">un mois</mark>, puis mène des projets en parallèle.</p>
+        <details class="experience-detail">
+          <summary>La formation et le programme CDA</summary>
+          <div class="prose">
+            <p>En complément du DWWM, j’étudie une grande partie du programme Concepteur Développeur d’Applications (CDA). Il s’agit d’un apprentissage complémentaire&nbsp;; mon titre obtenu est le DWWM.</p>
+            <p>Pendant la formation, je réalise un stage chez ATIS Solutions, en développement sur Dolibarr. <a href="/parcours/professionnel">Les expériences professionnelles racontent la suite.</a></p>
+          </div>
+        </details>
+      </li>
+    </ol>
+  </section>
+
+  <section class="formation-section certifications" id="certifications" tabindex="-1" aria-labelledby="certifications-titre">
+    <header class="section-tete">
+      <h2 id="certifications-titre">Continuer à apprendre</h2>
+      <p>Des certifications en complément des projets et du titre DWWM.</p>
+    </header>
+    <ul class="certifications-domaines" role="list">
+      <li><h3>Web et données</h3><p>freeCodeCamp · 2024–2026</p><p>JavaScript, Python, API, développement web adaptatif et bases de données relationnelles.</p></li>
+      <li><h3>C#</h3><p>Microsoft et freeCodeCamp · 2025</p><p>Les fondamentaux du langage, avec <span lang="en">Foundational C# with Microsoft</span>.</p></li>
+      <li><h3>Anglais A2 et B1</h3><p>freeCodeCamp · 2026</p><p>Les parcours <span lang="en">English for Developers</span>.</p></li>
+    </ul>
+
+    <details class="certifications-detail">
+      <summary>Voir les certifications par date</summary>
+      <ul role="list">
+        {certifications.map((certification) => <li>
+          <time datetime={certification.date}>{certification.periode}</time>
+          <div>
+            <p class="certifications-detail__titre" lang="en">{certification.titre}</p>
+            <p class="certifications-detail__organisme">{certification.organisme}</p>
+          </div>
+        </li>)}
+      </ul>
+    </details>
+  </section>
+</Parcours>
+
+<style>
+  .formation-section { padding-block: var(--s7) var(--s8); border-top: 1px solid var(--filet); }
+  .section-tete { display: flex; align-items: end; justify-content: space-between; gap: var(--s5); margin-bottom: var(--s7); }
+  .section-tete h2 { max-width: 23ch; font-size: clamp(1.8rem, 1.4rem + 1.5vw, 2.75rem); }
+  .section-tete > p { max-width: 34ch; color: var(--graphite); font-size: var(--t-petit); }
+  .chemin-formation { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.4fr); gap: var(--s6); padding: 0; margin: 0; list-style: none; }
+  .chemin-formation > li { position: relative; min-width: 0; padding-top: var(--s6); }
+  .chemin-formation > li::before { content: ''; position: absolute; top: 8px; left: 0; right: calc(-1 * var(--s6)); border-top: 2px solid var(--trait-doux); }
+  .chemin-formation > li:last-child::before { right: 0; border-color: var(--bleu); }
+  .chemin-formation__noeud { position: absolute; z-index: 1; top: 0; left: 0; width: 18px; height: 18px; border: 2px solid var(--bleu); border-radius: 50%; background: var(--papier); }
+  .formation-date { color: var(--graphite); font-size: var(--t-etiquette); margin-bottom: var(--s4); }
+  .chemin-formation h3 { font-size: 1.5rem; line-height: 1.2; margin-bottom: var(--s4); }
+  .chemin-formation > li > p:not([class]) { font-size: var(--t-petit); }
+  .chemin-formation .chemin-formation__diplome { padding: var(--s6) var(--s5) var(--s5); border: 2px solid var(--bleu); border-radius: var(--rayon); background: var(--blanc); }
+  .chemin-formation__diplome::before { display: none; }
+  .chemin-formation__diplome .chemin-formation__noeud { left: -11px; background: var(--bleu); }
+  .chemin-formation__diplome h3 { font-size: clamp(1.65rem, 1.35rem + 0.8vw, 2.1rem); letter-spacing: -0.02em; }
+  .diplome-statut { font-size: var(--t-etiquette); color: var(--bleu); font-weight: 700; margin-bottom: var(--s3); }
+  .diplome-repere { font-size: var(--t-petit); font-weight: 700; margin-bottom: var(--s3); }
+  .diplome-niveau { display: inline-flex; padding: var(--s1) var(--s3); border: 1px solid var(--bleu); border-radius: var(--rayon); font-size: var(--t-etiquette); color: var(--bleu); margin-bottom: var(--s5); }
+  .experience-detail { margin-top: var(--s5); border-top: 1px solid var(--filet); }
+  summary { min-height: 48px; padding-block: var(--s3); color: var(--bleu); font-weight: 700; font-size: var(--t-petit); cursor: pointer; }
+  .prose { padding-block: var(--s3); font-size: var(--t-petit); }
+  .prose p { max-width: 64ch; }
+  .prose p + p { margin-top: var(--s4); }
+  .certifications .section-tete { margin-bottom: var(--s5); }
+  .certifications .section-tete h2 { font-size: clamp(1.65rem, 1.35rem + 1vw, 2.25rem); }
+  .certifications-domaines { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s6); list-style: none; padding: 0; margin: 0; }
+  .certifications-domaines li { min-width: 0; border-left: 2px solid var(--trait-doux); padding-left: var(--s4); }
+  .certifications-domaines h3 { font-size: 1.25rem; line-height: 1.2; }
+  .certifications-domaines p { font-size: var(--t-petit); margin-top: var(--s3); }
+  .certifications-domaines h3 + p { color: var(--graphite); font-size: var(--t-etiquette); margin-top: var(--s2); }
+  .certifications-detail { margin-top: var(--s6); border-block: 1px solid var(--filet); }
+  .certifications-detail ul { padding: 0 0 var(--s4); margin: 0; list-style: none; }
+  .certifications-detail li { display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: var(--s5); padding-block: var(--s4); border-top: 1px solid var(--filet); font-size: var(--t-petit); }
+  .certifications-detail time, .certifications-detail__organisme { color: var(--graphite); font-size: var(--t-etiquette); }
+  .certifications-detail__titre { font-weight: 700; overflow-wrap: anywhere; }
+  .certifications-detail__organisme { margin-top: var(--s1); }
+
+  @media (max-width: 950px) {
+    .section-tete { display: grid; gap: var(--s3); margin-bottom: var(--s6); }
+    .section-tete > p { max-width: 55ch; }
+    .chemin-formation { grid-template-columns: minmax(0, 1fr); }
+    .chemin-formation > li { padding: 0 0 0 var(--s6); }
+    .chemin-formation > li::before { top: 0.25rem; bottom: calc(-1 * var(--s6)); left: 8px; right: auto; border-top: 0; border-left: 2px solid var(--trait-doux); }
+    .chemin-formation__noeud { top: 0.25rem; }
+    .chemin-formation .chemin-formation__diplome { margin-left: var(--s6); padding: var(--s5); }
+    .chemin-formation__diplome .chemin-formation__noeud { left: calc(-1 * var(--s6) - 2px); top: var(--s5); }
+  }
+  @media (max-width: 640px) {
+    .formation-section { padding-block: var(--s6) var(--s7); }
+    .certifications-domaines { grid-template-columns: minmax(0, 1fr); gap: var(--s5); }
+    .certifications-detail li { grid-template-columns: minmax(0, 1fr); gap: var(--s2); }
+  }
+  @media print {
+    .formation-section { padding-block: var(--s5) var(--s6); }
+    .section-tete { display: block; margin-bottom: var(--s5); }
+    .section-tete > p { max-width: none; margin-top: var(--s3); }
+    .chemin-formation { display: block; }
+    .chemin-formation > li { padding: 0 0 var(--s5); break-inside: avoid; }
+    .chemin-formation > li::before, .chemin-formation__noeud { display: none; }
+    .chemin-formation .chemin-formation__diplome { margin-left: 0; padding: var(--s5); }
+    .experience-detail > .prose, .certifications-detail > ul { display: block !important; }
+    .experience-detail::details-content, .certifications-detail::details-content { content-visibility: visible; }
+    .certifications-detail li { break-inside: avoid; }
+  }
+</style>

@@ -1,0 +1,206 @@
+---
+import Parcours from '../../layouts/Parcours.astro';
+import Picto from '../../components/ui/Picto.astro';
+import { SITE } from '../../config/site';
+
+const titre = `Parcours professionnel — ${SITE.nom}`;
+const description = 'Les expériences professionnelles et bénévoles de Charles Lindecker, entre architecture logicielle, Dev-Mates, ATIS et transmission en communauté.';
+---
+
+<Parcours
+  titre={titre}
+  description={description}
+  chemin="/parcours/professionnel"
+  courant="Parcours professionnel"
+  introduction="Développer, livrer et faire progresser les autres, dans mon métier comme dans mes engagements."
+>
+  <section class="page-section" aria-labelledby="metier-titre">
+    <div class="section-tete">
+      <h2 id="metier-titre">Métier et missions</h2>
+    </div>
+
+    <div class="experiences-techniques">
+      <article class="emploi-actuel" aria-labelledby="architecture-titre">
+        <div class="emploi-actuel__repere">
+          <span class="statut-actuel">Aujourd’hui</span>
+          <span>CDI</span>
+        </div>
+        <h3 id="architecture-titre">Architecte logiciel</h3>
+        <p>Je travaille sur le développement web et le DevOps.</p>
+      </article>
+
+      <div class="experiences-techniques__suite">
+        <article class="experience" aria-labelledby="devmates-titre">
+          <header>
+            <p class="experience__structure">Dev-Mates <span>Ma société</span></p>
+            <h3 id="devmates-titre">Développeur indépendant</h3>
+          </header>
+          <p class="experience__date">Activité commencée en <time datetime="2025-11">novembre 2025</time></p>
+          <p>Des applications sur mesure, de la conception à la mise en production.</p>
+          <details class="experience-detail">
+            <summary>Le travail chez Dev-Mates</summary>
+            <div class="prose">
+              <p>J’y ai développé des sites et des applications web. Le travail comprenait aussi le conseil et la relation client. La société reste ouverte&nbsp;; je n’ai pas de client actuellement.</p>
+            </div>
+          </details>
+        </article>
+
+        <article class="experience experience--stage" aria-labelledby="atis-titre">
+          <div>
+            <header>
+              <p class="experience__structure">ATIS Solutions <span>Sausheim</span></p>
+              <h3 id="atis-titre">Développeur full stack</h3>
+            </header>
+            <p class="experience__date"><time datetime="2025-08">Août</time> à <time datetime="2025-09">septembre 2025</time> · Stage terminé</p>
+          </div>
+          <p class="preuve-stage">
+            <strong><mark class="surligne">−30&nbsp;%</mark></strong>
+            <span>de temps de traitement administratif</span>
+          </p>
+          <details class="experience-detail">
+            <summary>Le contexte du stage</summary>
+            <div class="prose">
+              <p>Je développe des modules Dolibarr pour le suivi des temps et des contrats. Le cahier des charges est rédigé avec l’équipe.</p>
+            </div>
+          </details>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section" aria-labelledby="transmission-titre">
+    <div class="section-tete">
+      <h2 id="transmission-titre">Transmission et communauté</h2>
+    </div>
+
+    <div class="experiences-transmission">
+      <article class="experience experience--communaute" aria-labelledby="pvz-titre">
+        <div>
+          <header>
+            <p class="experience__structure">PvZ Fusion <span>Bénévolat en cours</span></p>
+            <h3 id="pvz-titre">Lead et mainteneur</h3>
+          </header>
+          <p class="experience__date">Contribution depuis <time datetime="2025-10">octobre 2025</time></p>
+          <ol class="evolution-role" aria-label="Évolution dans la communauté" role="list">
+            <li>Traducteur</li>
+            <li>Lead francophone</li>
+            <li>Mainteneur</li>
+          </ol>
+        </div>
+
+        <div class="communaute-equipe">
+          <div class="communaute-equipe__preuve">
+            <Picto nom="groupe" taille={64} />
+            <p class="preuve-communaute">
+              <strong><mark class="surligne">≈&nbsp;20</mark></strong>
+              <span>contributeurs formés</span>
+            </p>
+          </div>
+          <p>J’accueille les nouveaux, je documente et j’organise le travail.</p>
+          <a class="experience__lien" href="/projets/pvz-fusion">Voir le travail avec la communauté</a>
+        </div>
+      </article>
+
+      <div class="experiences-transmission__suite">
+        <article class="experience" aria-labelledby="elan-titre">
+          <header>
+            <p class="experience__structure">Elan Formation <span>Mulhouse</span></p>
+            <h3 id="elan-titre">Formateur en développement web</h3>
+          </header>
+          <p class="experience__date">Début en <time datetime="2025-12">décembre 2025</time> · Mission terminée</p>
+          <p class="preuve-formation">
+            <strong>Tous titrés.</strong>
+            <span>Une promotion DWWM et CDA reprise en urgence.</span>
+          </p>
+          <details class="experience-detail">
+            <summary>Le contexte chez Elan</summary>
+            <div class="prose">
+              <p>Deux mois après mon titre, Elan perd son formateur en fin de promotion. Des étudiants que j’ai croisés pendant ma formation donnent mon nom.</p>
+              <p>Je reprends une dizaine d’apprenants, dont environ la moitié prépare le CDA. Je les accompagne jusqu’à la soutenance.</p>
+            </div>
+          </details>
+        </article>
+
+        <article class="experience" aria-labelledby="mission-locale-titre">
+          <header>
+            <p class="experience__structure">Mission Locale <span>Altkirch</span></p>
+            <h3 id="mission-locale-titre">Mentor et animateur d’ateliers</h3>
+          </header>
+          <p class="experience__date">Début en <time datetime="2026-01">janvier 2026</time> · Bénévolat terminé</p>
+          <p>J’ai accompagné des jeunes vers les métiers du web et animé leurs premiers ateliers de code.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+</Parcours>
+
+<style>
+  .section-tete { margin-bottom: var(--s6); }
+  .section-tete h2 { max-width: 24ch; font-size: clamp(1.8rem, 1.4rem + 1.5vw, 2.75rem); }
+  .experiences-techniques { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: var(--s5); align-items: start; }
+  .emploi-actuel { padding: var(--s6); background: var(--bleu); color: var(--sur-bleu); border-radius: var(--rayon); }
+  .emploi-actuel__repere { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s4); font-size: var(--t-petit); }
+  .statut-actuel { display: inline-flex; align-items: center; gap: var(--s2); }
+  .statut-actuel::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .emploi-actuel h3 { max-width: 16ch; margin-block: var(--s6) var(--s5); font-size: clamp(2rem, 1.4rem + 1.8vw, 3rem); }
+  .emploi-actuel > p { max-width: 32ch; font-size: var(--t-petit); }
+  .experiences-techniques__suite, .experiences-transmission { display: grid; gap: var(--s5); }
+  .experiences-transmission__suite { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s5); align-items: start; }
+  .experience { min-width: 0; padding: var(--s5); background: var(--blanc); border: 1px solid var(--filet); border-radius: var(--rayon); }
+  .experience__structure { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s2) var(--s3); font-weight: 700; color: var(--bleu); font-size: var(--t-petit); }
+  .experience__structure span { font-size: var(--t-etiquette); font-weight: 400; color: var(--graphite); }
+  .experience h3 { margin-top: var(--s2); font-size: 1.5rem; line-height: 1.2; }
+  .experience__date { color: var(--graphite); font-size: var(--t-etiquette); margin-block: var(--s3) var(--s4); }
+  .experience > p:not([class]) { font-size: var(--t-petit); }
+  .experience-detail { margin-top: var(--s4); border-top: 1px solid var(--filet); }
+  .experience-detail summary { min-height: 48px; padding-block: var(--s3); color: var(--bleu); font-weight: 700; font-size: var(--t-petit); cursor: pointer; }
+  .experience-detail .prose { padding-block: var(--s3); font-size: var(--t-petit); }
+  .experience-detail .prose p + p { margin-top: var(--s4); }
+  .experience--stage { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.7fr); gap: 0 var(--s5); }
+  .experience--stage .experience-detail { grid-column: 1 / -1; }
+  .preuve-stage { align-self: center; display: grid; gap: var(--s2); }
+  .preuve-stage strong { font-size: 2.5rem; line-height: 1.1; }
+  .preuve-stage span { font-size: var(--t-etiquette); max-width: 22ch; }
+  .experience--communaute { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s6); padding: var(--s6); }
+  .evolution-role { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s4); padding: 0; margin: var(--s6) 0 0; list-style: none; }
+  .evolution-role li { position: relative; display: grid; justify-items: start; gap: var(--s3); align-content: start; font-size: var(--t-etiquette); }
+  .evolution-role li::before { content: ''; border: 2px solid var(--bleu); width: 14px; height: 14px; border-radius: 50%; background: var(--blanc); z-index: 1; }
+  .evolution-role li:last-child::before { background: var(--bleu); }
+  .evolution-role li:not(:last-child)::after { content: ''; position: absolute; left: 14px; right: calc(-1 * var(--s4)); top: 6px; border-top: 2px solid var(--bleu); }
+  .communaute-equipe { border-left: 1px solid var(--filet); padding-left: var(--s6); }
+  .communaute-equipe__preuve { display: flex; align-items: center; gap: var(--s5); margin-bottom: var(--s5); }
+  .communaute-equipe__preuve :global(svg) { color: var(--bleu); flex-shrink: 0; }
+  .preuve-communaute { display: grid; gap: var(--s2); }
+  .preuve-communaute strong { font-size: 2.75rem; line-height: 1.1; }
+  .preuve-communaute span, .communaute-equipe > p { font-size: var(--t-petit); }
+  .experience__lien { display: inline-flex; align-items: center; min-height: 48px; margin-top: var(--s4); font-size: var(--t-petit); font-weight: 700; }
+  .preuve-formation { display: grid; gap: var(--s2); }
+  .preuve-formation strong { font-size: 2rem; line-height: 1.2; }
+  .preuve-formation span { font-size: var(--t-petit); }
+  @media (max-width: 1050px) {
+    .experience--stage { grid-template-columns: minmax(0, 1fr); }
+    .preuve-stage { grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--s4); margin-top: var(--s2); }
+  }
+  @media (max-width: 760px) {
+    .experiences-techniques, .experiences-transmission__suite, .experience--communaute { grid-template-columns: minmax(0, 1fr); }
+    .experience--communaute { gap: var(--s5); }
+    .communaute-equipe { border-left: 0; border-top: 1px solid var(--filet); padding-left: 0; padding-top: var(--s5); }
+  }
+  @media (max-width: 440px) {
+    .emploi-actuel, .experience--communaute { padding: var(--s5); }
+    .evolution-role { gap: var(--s3); }
+    .evolution-role li:not(:last-child)::after { right: calc(-1 * var(--s3)); }
+    .communaute-equipe__preuve { gap: var(--s4); }
+  }
+  @media (forced-colors: active) {
+    .emploi-actuel { border: 1px solid CanvasText; }
+  }
+  @media print {
+    .emploi-actuel { background: var(--blanc); color: var(--encre); border: 1px solid var(--graphite); }
+    .experience, .emploi-actuel { break-inside: avoid; }
+    .experience-detail .prose { display: block; }
+    details::details-content { content-visibility: visible; }
+    .experience-detail summary { list-style: none; }
+    .communaute-equipe__preuve :global(svg) { display: none; }
+  }
+</style>
