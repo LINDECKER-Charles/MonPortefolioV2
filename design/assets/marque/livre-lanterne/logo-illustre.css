@@ -1,0 +1,23 @@
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  src: url("../../../../site/src/assets/fonts/atkinson-hyperlegible-next-latin-wght.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+:root { font-family: "Atkinson Hyperlegible Next", system-ui, sans-serif; color: #14161B; background: #F5F6F8; font-synthesis: none; }
+* { box-sizing: border-box; }
+body { margin: 0; font-size: 18px; line-height: 1.5; }
+main { width: min(1100px, 100%); margin: auto; padding: 36px 32px; }
+h1 { margin: 0; font-weight: 800; font-size: clamp(32px, 4vw, 48px); line-height: 1.1; letter-spacing: -.025em; }
+header p { margin: 12px 0 0; max-width: 64ch; }
+figure { margin: 28px 0 24px; }
+img { display: block; width: 100%; height: auto; }
+figcaption { margin-top: 16px; color: #59606D; font-size: 15px; }
+nav { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; }
+a { color: #1F4FD1; text-underline-offset: .2em; }
+.telecharger { display: inline-flex; align-items: center; padding: 12px 20px; min-height: 48px; border-radius: 4px; background: #1F4FD1; color: #FFF; font-weight: 700; text-decoration: none; }
+.telecharger:hover { background: #173CA6; }
+:focus-visible { outline: 2px solid #1F4FD1; outline-offset: 4px; }
+footer { margin-top: 24px; font-size: 15px; color: #59606D; }
+@media (max-width: 600px) { main { padding: 28px 20px; } figure { margin-top: 32px; } }

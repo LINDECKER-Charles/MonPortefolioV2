@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=1200, initial-scale=1">
-<title>Charles Lindecker, mode d'emploi — image de partage</title>
+<title>Charles Lindecker, mode d’emploi — image de partage</title>
 <style>
 /* Source de l’image de partage : rendu à 1200 × 630, ratio 40:21.
    Atkinson Hyperlegible Next, Google Fonts, licence SIL Open Font License 1.1.
@@ -38,14 +38,13 @@ body {
   text-rendering: optimizeLegibility;
 }
 .couverture { position: relative; width: 1200px; height: 630px; overflow: hidden; }
-.monogramme {
+.logo {
   position: absolute;
-  top: 52px;
+  top: 48px;
   left: 76px;
-  width: 112px;
-  height: 112px;
-  background: var(--bleu);
-  mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InNxdWFyZSI+CiAgPHRpdGxlPk1vbm9ncmFtbWUgQ0wgc3VyIHVuIHBsYW4gdGVjaG5pcXVlPC90aXRsZT4KICA8ZyBvcGFjaXR5PSIuNDUiPgogICAgPGNpcmNsZSBjeD0iMjQiIGN5PSIyOCIgcj0iMjAiIHN0cm9rZS1kYXNoYXJyYXk9IjIgNCIvPgogICAgPHBhdGggZD0iTTIxIDI4aDZtLTMtM3Y2TTggNTRoNDhNOCA1MXY2bTQ4LTZ2NiIvPgogIDwvZz4KICA8cGF0aCBkPSJNMzUuMzE0IDE2LjY4NmExNiAxNiAwIDEgMCAwIDIyLjYyOE00NCAxMnYzMmgxMiIvPgo8L3N2Zz4K") center / contain no-repeat;
+  width: 122px;
+  height: 85px;
+  object-fit: contain;
 }
 .rappel { position: absolute; color: var(--bleu); opacity: .6; }
 .rappel--haut { top: 106px; left: 236px; width: 880px; border-top: 1px solid; }
@@ -95,12 +94,12 @@ p span { display: block; }
 </head>
 <body>
 <main class="couverture" aria-label="Couverture du mode d’emploi de Charles Lindecker">
-  <span class="monogramme" aria-hidden="true"></span>
+  <img class="logo" src="../marque/logo-symbole.png" width="1176" height="820" alt="">
   <span class="rappel rappel--haut" aria-hidden="true"></span>
   <span class="rappel rappel--gauche" aria-hidden="true"></span>
   <span class="rappel rappel--bas" aria-hidden="true"></span>
-  <h1><span>Charles Lindecker,</span> <span class="surligne">mode d'emploi</span></h1>
-  <p><span>Je maîtrise d'abord les règles du jeu.</span> <span>Ensuite, je les réinvente.</span></p>
+  <h1><span>Charles Lindecker,</span> <span class="surligne">mode d’emploi</span></h1>
+  <p><span>Je maîtrise d’abord les règles du jeu.</span> <span>Ensuite, je les réinvente.</span></p>
 </main>
 </body>
 </html>

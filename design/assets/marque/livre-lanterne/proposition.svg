@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">
+  <title>Lanterne posée au creux d’un livre ouvert</title>
+  <path d="M5 35c7-3 14-1 20 5m14 0c6-6 13-8 20-5v18c-10-2-18 0-27 5-9-5-17-7-27-5V35"/>
+  <path d="M9 49c7-1 12 0 17 3m12 0c5-3 10-4 17-3M32 45v13"/>
+  <path d="M28.5 12V8.5a3.5 3.5 0 0 1 7 0V12M29 15v-3h6v3M23 22c0-3.5 3-7 9-7s9 3.5 9 7ZM22 22h20M24 22l2 18h12l2-18M24 43h16"/>
+  <path fill="var(--flamme, #F5D33F)" d="M32 36c-2.5 0-4-1.8-4-4 0-3 3-5 4-8 0 3 4 5 4 8 0 2.2-1.5 4-4 4Z"/>
+</svg>

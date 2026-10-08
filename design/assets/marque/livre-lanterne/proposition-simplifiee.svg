@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+  <title>Livre ouvert et lumière</title>
+  <path d="M6 34c7-2 14 0 19 4m14 0c5-4 12-6 19-4v20c-10-2-18 0-26 4-8-4-16-6-26-4V34ZM32 44v14"/>
+  <path stroke="none" fill="var(--flamme, #F5D33F)" d="M32 34c-5 0-8-3-8-7 0-6 6-10 8-17 0 7 8 11 8 17 0 4-3 7-8 7Z"/>
+</svg>

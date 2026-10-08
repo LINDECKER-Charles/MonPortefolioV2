@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Charles Lindecker — livre et lanterne</title>
+  <link rel="stylesheet" href="planche.css">
+  <script src="planche.js" defer></script>
+</head>
+<body>
+  <main>
+    <header class="introduction">
+      <h1>Un livre.<br>Une lumière.</h1>
+      <p>Un livre ouvert, une lanterne au creux des pages. La connaissance pour comprendre, la lumière pour avancer.</p>
+    </header>
+    <p data-erreur hidden>Le dessin n’a pas pu être chargé. <a href="proposition.svg">Ouvrir le SVG</a>.</p>
+    <noscript><p><a href="proposition.svg">Voir le dessin du livre et de la lanterne</a>.</p></noscript>
+    <div class="comparaison" aria-label="La proposition, de jour et de nuit">
+      <section class="palette vue" aria-label="Vue de jour">
+        <div class="legende"><strong>Le jour</strong><span>Bleu roi · lumière colza</span></div>
+        <div class="symbole" role="img" aria-label="Une lanterne allumée posée dans un livre ouvert, au trait bleu sur fond clair"><span data-logo="proposition.svg"></span></div>
+        <div class="identite">
+          <span data-logo="proposition.svg" style="--taille: 42px" aria-hidden="true"></span>
+          <p><strong>Charles Lindecker</strong><small>Mode d’emploi</small></p>
+        </div>
+      </section>
+      <section class="palette vue nuit" aria-label="Vue de nuit">
+        <div class="legende"><strong>La nuit</strong><span>Bleu clair · lumière colza</span></div>
+        <div class="symbole" role="img" aria-label="Le même livre et la même lanterne, au trait bleu clair sur fond de nuit"><span data-logo="proposition.svg"></span></div>
+        <div class="identite">
+          <span data-logo="proposition.svg" style="--taille: 42px" aria-hidden="true"></span>
+          <p><strong>Charles Lindecker</strong><small>Mode d’emploi</small></p>
+        </div>
+      </section>
+    </div>
+    <div class="lecture">
+      <section>
+        <h2>Le livre, la connaissance.</h2>
+        <p>Ouvert, avec des pages bien visibles. Il évoque ce que tu apprends, ce que tu comprends et ce que tu transmets.</p>
+      </section>
+      <section>
+        <h2>La lanterne, avancer.</h2>
+        <p>Une lumière pour continuer dans l’obscurité. Sa silhouette ancienne porte le clin d’œil à Bloodborne.</p>
+      </section>
+    </div>
+    <section class="details">
+      <h2>Le symbole à l’usage.</h2>
+      <p>La cage reste visible à 32 et 64 px. À 16 px, le dessin se concentre sur le livre et sa lumière.</p>
+      <div class="essais">
+        <div class="tailles palette">
+          <figure><span data-logo="proposition-simplifiee.svg" style="--taille: 16px" role="img" aria-label="Livre et lumière, version simplifiée à 16 pixels"></span><figcaption>16 px</figcaption></figure>
+          <figure><span data-logo="proposition.svg" style="--taille: 32px" role="img" aria-label="Logo à 32 pixels"></span><figcaption>32 px</figcaption></figure>
+          <figure><span data-logo="proposition.svg" style="--taille: 64px" role="img" aria-label="Logo à 64 pixels"></span><figcaption>64 px</figcaption></figure>
+        </div>
+        <div class="etats palette">
+          <figure class="mono"><span data-logo="proposition.svg" style="--taille: 64px" role="img" aria-label="Logo en une seule couleur"></span><figcaption>Une couleur</figcaption></figure>
+          <figure class="eteinte"><span data-logo="proposition.svg" style="--taille: 64px" role="img" aria-label="Lanterne éteinte, flamme au trait"></span><figcaption>Éteinte</figcaption></figure>
+        </div>
+      </div>
+    </section>
+    <footer class="footer">
+      <p>Proposition du 8 octobre 2026 · forme à valider</p>
+      <a href="proposition.svg">Voir le dessin SVG</a>
+    </footer>
+  </main>
+</body>
+</html>

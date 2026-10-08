@@ -1,22 +1,107 @@
-# Refonte du logo — un livre, une lanterne dedans
+# Refonte du logo — un livre et une lanterne
 
-> Brief du 2026-10-07. Le logo remplace le monogramme « CL » prévu pour la direction D et
+> Brief du 2026-10-07, sens précisé par Charles le 2026-10-08. Le logo remplace le monogramme « CL » prévu pour la direction D et
 > l'hexagone `</>#` de la V1. Il s'inscrit dans la [maquette D](../design/propositions/d-mode-d-emploi.html).
 > Les règles générales de production sont dans [assets-a-generer.md](assets-a-generer.md#règles).
 
+## Version retenue et intégration — 2026-10-08
+
+Charles valide la variante minimaliste gothique et demande son intégration au site. Le master
+est [logo-gothique.png](../design/assets/marque/livre-lanterne/logo-gothique.png). La silhouette
+et la typographie sont celles de cette image ; les exports ne les redessinent pas.
+
+- **En-tête** : emblème à côté du nom, avec le sous-titre du site. Sous 375 px, seul l’emblème
+  s’affiche pour garder de la place aux actions ; le lien conserve son nom accessible.
+- **Pied de page** : logo complet, emblème au-dessus du nom.
+- **Mode nuit** : l’alpha du PNG sert de masque pour l’encre claire ; trois zones de la lanterne
+  conservent les couleurs dorées du même fichier. Aucune nouvelle forme n’est générée.
+- **Icônes** : favicon PNG 64 px et ICO 16/32/48 px sur fond transparent, conformément à la
+  demande de Charles. Le PNG possède une version claire sélectionnée selon la préférence
+  sombre du navigateur. Apple 180 px, application 192/512 px et variante maskable avec une
+  marge adaptée à la zone sûre. Toutes utilisent l’emblème seul.
+- **Partage** : l’image 1200 × 630 reprend le livre et la lanterne.
+
+Les exports web résident dans `site/src/assets/marque/`. Les sources PNG cadrées et les icônes
+résident dans `design/assets/marque/`. Le symbole clair `logo-symbole-nuit.png` est un export
+du masque du composant en mode nuit, sur fond transparent. Pour reproduire les exports depuis
+ces PNG de référence :
+
+```sh
+cd site
+node tools/preparer-logo.mjs
+```
+
+L’image de partage est un rendu de `design/assets/partage/og-mode-d-emploi.html` à 1200 × 630 px,
+copié vers `site/public/og/accueil.png`. Aucun événement de mesure n’est ajouté.
+
 ## L'idée
 
-Un livre, et une lanterne dedans.
+Un livre ouvert avec une lanterne gothique en son creux. La composition est validée.
 
-- **Le livre**, c'est le mode d'emploi : la direction du site, la documentation, la transmission
-  (le formateur), et « je maîtrise d'abord les règles du jeu » — un livre de règles.
-- **La lanterne**, c'est la lumière qu'on apporte aux autres (« emmener »), et la nuit du site.
-  Pour qui connaît Bloodborne, ce sont aussi les lanternes où l'on revient pour progresser.
+- **Le livre**, c’est d’abord **la connaissance** (précision de Charles du 2026-10-08). Il rejoint
+  le mode d’emploi, la documentation et la transmission, sans se limiter au rôle de formateur.
+- **La lanterne**, c’est **la lumière qui avance dans l’obscurité**, et un clin d’œil à son amour
+  de Bloodborne. Elle évoque le fait d’avancer dans l’inconnu, d’apprendre et de persévérer.
 
-La double lecture est voulue : un recruteur y voit « éclairer, transmettre » ; un joueur y voit
-le clin d'œil. C'est la touche Bloodborne du site, et elle tient dans un symbole.
+La double lecture est voulue : le livre et la lumière se comprennent sans connaître le jeu ;
+un joueur peut y retrouver le clin d’œil. C’est la touche Bloodborne du site, dans un symbole.
 
-## Contraintes de dessin
+### Reprise du 2026-10-08 — le livre ouvert et la lanterne
+
+Le site affiche encore « cl. » ; les six premières pistes sont restées des explorations.
+Charles n’est pas convaincu du logo affiché et précise le sens du livre et de la lanterne.
+
+La [planche au trait](../design/assets/marque/livre-lanterne/planche-trait.html) propose une composition
+unique : **une lanterne posée au creux d’un livre ouvert**. Le livre reste ample et reconnaissable ;
+la poignée, le toit bombé et la cage distinguent la lanterne d’une simple flamme. Le trait garde
+la géométrie de la direction D ; le jaune est réservé à la lumière. Le dessin est original.
+
+Les vues jour, nuit, monochrome, éteinte, les petites tailles et une simulation d’en-tête servent
+à juger cette proposition avant la finalisation. Source :
+`design/assets/marque/livre-lanterne/proposition.svg` ; version simplifiée pour 16 px :
+`proposition-simplifiee.svg`. **Proposition à valider, pas un logo final intégré au site.**
+
+### Retour sur le dessin au trait — logo complet en image
+
+Charles précise ensuite : « J’aimerai plutôt que tu me fasses un vrai logo complet pas un SVG ».
+Cette demande remplace les contraintes de production SVG ci-dessous, conservées comme historique
+des premières explorations.
+
+La nouvelle proposition est **un logo illustré en PNG, sur fond transparent**, composé d’un
+emblème et du nom « Charles Lindecker ». Le livre ouvert a une couverture bleu roi et des pages
+ivoire ; la lanterne ancienne est travaillée, avec une lumière dorée. Des aplats et des détails
+de gravure suggèrent le volume. Le symbole garde une silhouette compacte et claire. Aucun slogan
+n’est ajouté.
+
+Le nom peut être inclus dans ce logo complet ; la demande de Charles prime sur la règle
+générale « pas de texte dans les visuels ». Les déclinaisons et l’intégration suivent le choix
+de cette nouvelle forme.
+
+**Livrable** : [logo illustré complet](../design/assets/marque/livre-lanterne/logo-illustre.png),
+PNG RGBA de 1536 × 1024 px, fond transparent vérifié et nom relu. Généré avec ImageGen intégré ;
+[prompt exact](../design/assets/marque/livre-lanterne/prompt-logo.txt).
+La [planche illustrée](../design/assets/marque/livre-lanterne/planche-illustree.html) affiche l’image sur fond clair
+et permet de télécharger le PNG. Cette proposition reste à évaluer par Charles.
+
+### Affinement — minimalisme et caractère gothique
+
+Charles juge la version illustrée « pas mal », mais trouve qu’elle manque de caractère. Il
+demande « plus minimaliste et une touche gothique pour le côté bloodborne ».
+
+La nouvelle variante garde le livre, la lanterne et le nom, en réduisant les textures, les
+reflets métalliques et les détails des pages. Le caractère vient des masses, des espaces vides,
+du toit pointu de la lanterne et d’une typographie à empattements anguleux. La palette se
+concentre sur l’encre bleu nuit et la lumière dorée. Le logo reste livré en PNG sur fond
+transparent. La touche gothique concerne cette marque ; la direction du site demeure D,
+« Mode d’emploi ».
+
+**Livrable actuel** : [logo minimaliste gothique](../design/assets/marque/livre-lanterne/logo-gothique.png),
+PNG RGBA de 1536 × 1024 px, fond transparent vérifié et nom relu. ImageGen intégré a transformé
+le logo illustré de référence ; [prompt exact](../design/assets/marque/livre-lanterne/prompt-logo-gothique.txt).
+La [planche actuelle](../design/assets/marque/livre-lanterne/planche.html) affiche cette variante
+sur fond clair, avec un lien vers la version précédente. **Variante validée par Charles.**
+
+## Historique — contraintes des explorations SVG
 
 1. **Lanterne originale** : une lanterne victorienne à main (toit en pointe, anneau de suspension,
    cage à montants fins, vitres). Pas une lanterne de camping, et aucune forme reprise d'un jeu
@@ -31,7 +116,7 @@ le clin d'œil. C'est la touche Bloodborne du site, et elle tient dans un symbol
 5. **Pas de texte dans le symbole.** Le nom vient à côté, dans les déclinaisons avec le nom.
 6. **Une couleur possible** : le logo doit tenir en une seule couleur, flamme comprise.
 
-## Étape 1 — Explorations (s'arrêter ensuite et montrer la planche)
+## Historique — premières explorations SVG
 
 Dessiner six pistes en SVG (grille 64), chacune avec une phrase d'intention :
 
@@ -71,7 +156,7 @@ centred in a square, no text. »*
    Victorian lantern. »*
 5. *« An open book in side view whose rising pages curve into a flame. »*
 
-## Étape 2 — Finalisation (après le choix de Charles)
+## Historique — finalisation envisagée pour les SVG
 
 Dans `design/assets/marque/` :
 
