@@ -7,104 +7,211 @@ import { SITE } from '../../config/site';
 import capture from '../../assets/captures/pvz-fusion.webp';
 import '../../styles/profondeur.css';
 
-const titre = `PvZ Fusion, le pôle francophone — ${SITE.nom}`;
-const description = 'De traducteur à lead et mainteneur de PvZ Fusion. Charles Lindecker raconte la formation des contributeurs et le travail du pôle francophone.';
+const titre = `PVZF Translation — ${SITE.nom}`;
+const description = 'Comprendre les plantes, leurs fusions et les commandes de PvZ Fusion en français. Découvrez la traduction et le travail du pôle francophone.';
+const commandes = [
+  { origine: '选择你的植物', francais: 'Choisissez Vos Plantes' },
+  { origine: '一起摇滚吧！', francais: 'C’est Parti\u00a0!' },
+  { origine: '查看图鉴', francais: 'Voir l’Almanach' },
+  { origine: '返回游戏', francais: 'Reprendre' },
+  { origine: '重新开始', francais: 'Recommencer' },
+];
 ---
 
 <Base titre={titre} description={description} chemin="/projets/pvz-fusion">
   <article class="wrap profondeur cas-pvz">
-    <FilAriane courant="PvZ Fusion" projet />
-    <header class="page-hero">
-      <h1>PvZ Fusion, faire avancer le collectif.</h1>
-      <p class="page-hero__intro">
-        Je suis arrivé pour traduire un jeu. Progressivement, mon travail a aussi consisté à accueillir les contributeurs,
-        les former et organiser le pôle francophone. Le titre est venu après le rôle.
-      </p>
-      <p class="page-hero__meta">Traduction, développement et transmission</p>
+    <FilAriane courant="PVZF Translation" projet />
+    <header class="page-hero pvz-hero">
+      <h1>PVZF Translation</h1>
+      <div>
+        <p class="page-hero__intro">Dans Plants vs. Zombies Fusion, on combine des plantes pour défendre son jardin contre les zombies. La traduction du chinois vers le français permet aux joueurs francophones de comprendre les menus et les capacités de chaque fusion, pour choisir quelles plantes utiliser.</p>
+        <p class="page-hero__meta">La traduction française de Plants vs. Zombies Fusion</p>
+      </div>
     </header>
 
     <div class="pvz-ouverture">
       <figure class="page-capture">
-        <Picture src={capture} formats={['avif']} fallbackFormat="webp" widths={[480, 768, 1080, 1440]} sizes="(min-width: 900px) 65vw, calc(100vw - 48px)" alt="Plants vs. Zombies Fusion, un jeu où les plantes fusionnées défendent le jardin." loading="eager" />
-        <figcaption class="legende">Le jeu autour duquel s’est construite la communauté. Le projet présenté ici est le travail de traduction et d’organisation du pôle francophone.</figcaption>
+        <Picture src={capture} formats={['avif']} fallbackFormat="webp" widths={[480, 768, 1080, 1440]} sizes="(min-width: 900px) 60vw, calc(100vw - 48px)" alt="Une partie de Plants vs. Zombies Fusion, avec des plantes fusionnées qui défendent le jardin contre les zombies." loading="eager" />
+        <figcaption class="legende">Le jeu PvZ Fusion. Mon travail porte sur sa traduction et sur l’équipe francophone.</figcaption>
       </figure>
-      <aside class="pvz-chiffre" aria-label="Contributeurs formés">
-        <span class="pvz-chiffre__nombre">Environ <mark class="surligne">20</mark></span>
-        <p>contributeurs formés, jusqu’à dix actifs en même temps.</p>
-        <p class="page-repere">Traduction et développement</p>
-      </aside>
+      <div class="pvz-besoin prose">
+        <h2>Lire pour décider.</h2>
+        <p>Dans PvZ Fusion, on combine des plantes pour défendre son jardin. Comprendre ce qu’une fusion fait, comment elle s’obtient et quelle commande choisir fait partie du jeu.</p>
+        <p>La traduction française rend ces informations accessibles aux joueurs francophones, des menus aux descriptions des plantes et des zombies.</p>
+      </div>
     </div>
 
-    <section class="page-section pvz-chapitre" aria-labelledby="point-depart-titre">
-      <h2 id="point-depart-titre">Le texte n’était qu’une partie du problème.</h2>
-      <div class="prose">
-        <p>La traduction française avait plusieurs années de retard et contenait des erreurs. Rattraper le travail demandait des traductions, mais aussi des personnes capables de contribuer dans la durée.</p>
-        <p>J’ai commencé comme traducteur et développeur. Puis j’ai pris en charge la gestion du projet, l’accueil des nouveaux et leur formation. Quand le titre de lead est arrivé, ce travail était déjà en place.</p>
-        <blockquote class="page-citation"><p>«&nbsp;La seule chose qui a changé, c’est le titre.&nbsp;»</p></blockquote>
+    <section class="page-section pvz-demonstration" aria-labelledby="traduction-titre">
+      <div class="pvz-demonstration__intro">
+        <h2 id="traduction-titre">Les mêmes commandes.<br />Un autre accès au jeu.</h2>
+        <p>Quelques mots suffisent à montrer la différence. Passez d’une langue à l’autre pour voir ces commandes telles qu’elles sont traduites dans le projet.</p>
+      </div>
+
+      <div class="pvz-demo" data-pvz-traduction>
+        <div class="pvz-demo__entete">
+          <h3 id="extraits-titre">Extraits de la traduction française</h3>
+          <div class="pvz-langues" role="group" aria-label="Langue des extraits">
+            <button type="button" data-langue="origine" aria-pressed="false" aria-controls="extraits-origine">Texte d’origine</button>
+            <button type="button" data-langue="francais" aria-pressed="true" aria-controls="extraits-francais">Français</button>
+          </div>
+        </div>
+        <div class="pvz-demo__contenu" aria-live="polite" aria-atomic="true">
+          <ul class="pvz-extraits" id="extraits-origine" data-extraits="origine" lang="zh-CN" aria-label="Commandes dans le texte chinois d’origine" hidden>
+            {commandes.map((commande) => <li>{commande.origine}</li>)}
+          </ul>
+          <ul class="pvz-extraits" id="extraits-francais" data-extraits="francais" lang="fr" aria-label="Commandes traduites en français">
+            {commandes.map((commande) => <li>{commande.francais}</li>)}
+          </ul>
+          <p class="pvz-demo__note" data-langue-affichee>Les commandes en français.</p>
+        </div>
+        <p class="pvz-demo__legende">Démonstration textuelle d’extraits des menus. Les commandes présentées sont des exemples à lire&nbsp;; elles ne lancent pas le jeu.</p>
       </div>
     </section>
 
-    <section class="page-section" aria-labelledby="transmission-titre">
-      <div class="transmission-tete">
-        <h2 id="transmission-titre">De l’arrivée à la contribution</h2>
-        <p>Le passage au collectif se joue dans le travail quotidien. Une nouvelle personne doit pouvoir comprendre le projet, essayer et progresser avec les autres.</p>
+    <section class="page-section pvz-equipe" aria-labelledby="equipe-titre">
+      <div>
+        <h2 id="equipe-titre">Derrière les mots,<br />une équipe.</h2>
+        <p class="pvz-equipe__note">Traduire, relire, transmettre.</p>
       </div>
-      <ol class="transmission">
-        <li><span>1</span><h3>Accueillir</h3><p>Intégrer les nouveaux contributeurs et leur donner des repères dans le projet, y compris quand ils arrivent sans compétences techniques.</p></li>
-        <li><span>2</span><h3>Former et relire</h3><p>Accompagner la traduction et le développement, documenter le travail et faire des revues pour que chacun puisse comprendre les décisions.</p></li>
-        <li><span>3</span><h3>Faire place aux autres</h3><p>Permettre aux contributeurs de prendre davantage de place. Certains sont devenus des piliers de la communauté et ont beaucoup progressé sur la technique.</p></li>
-      </ol>
-    </section>
-
-    <section class="page-section pvz-chapitre" aria-labelledby="outils-titre">
-      <h2 id="outils-titre">Outiller le travail de l’équipe</h2>
       <div class="prose">
-        <p>Les premiers outils internes ont accompagné le développement du pôle. Le Console Manager, écrit en Python, détecte les traductions manquantes selon les versions du jeu.</p>
-        <p>FusionDocs prolonge ce travail avec une plateforme de modding&nbsp;: des tutoriels versionnés, un forum modéré et une messagerie en temps réel. La documentation devient un moyen de transmettre au-delà des échanges individuels.</p>
+        <p>Je suis arrivé pour traduire le jeu et développer des outils. J’ai progressivement pris en charge l’accueil des nouveaux, leur formation et la relecture des contributions.</p>
+        <p>Environ <mark class="surligne">20</mark> contributeurs ont été formés, dont certains arrivaient sans compétences techniques. Je suis aujourd’hui lead du pôle francophone et mainteneur du projet multilingue.</p>
+        <p>Le travail continue à chaque version&nbsp;: traduire les nouveautés, garder des termes cohérents et donner aux prochains contributeurs les moyens de participer.</p>
         <div class="page-liens">
-          <a href="https://github.com/LINDECKER-Charles/PVZ-Fuzion-ConsolManager" data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="preuves">Le Console Manager</a>
-          <a href="https://github.com/LINDECKER-Charles/PVZ-Modding-Tutorial-Web" data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="preuves">Le code de FusionDocs</a>
+          <a href="https://github.com/LINDECKER-Charles/PVZF-Translation-fr" data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="preuves">Voir le projet francophone</a>
         </div>
       </div>
     </section>
 
-    <section class="page-section pvz-chapitre" aria-labelledby="resultat-titre">
-      <h2 id="resultat-titre">Ce que le collectif a changé</h2>
+    <details class="pvz-sources">
+      <summary>Sources des extraits et du projet</summary>
       <div class="prose">
-        <p>En dix mois, le pôle a travaillé à rattraper des années de retard. Une vingtaine de contributeurs ont été formés, avec jusqu’à dix personnes en même temps. Le résultat compte autant dans le travail produit que dans la progression de ceux qui y participent.</p>
-        <p>Je suis aujourd’hui lead du pôle francophone et mainteneur du projet multilingue. Le travail continue&nbsp;: traduire, développer et garder le projet accessible aux prochains contributeurs.</p>
+        <p>Les textes chinois et leurs traductions françaises sont issus du fichier de traduction des menus. Leur mise en forme a été adaptée pour cette démonstration.</p>
         <div class="page-liens">
-          <a href="https://github.com/LINDECKER-Charles/PVZF-Translation-fr" data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="preuves">Le dépôt francophone</a>
+          <a href="https://github.com/LINDECKER-Charles/PVZF-Translation-fr/blob/french-translation/PvZ_Fusion_Translator/Localization/French/Strings/translation_strings.json" data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="preuves">Lire les textes de traduction</a>
           <a href="https://github.com/Teyliu/PVZF-Translation" data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="preuves">Le projet multilingue</a>
         </div>
       </div>
-    </section>
+    </details>
 
     <ContinuerLecture liens={[
       { href: '/projets/omnicard', titre: 'Omnicard', detail: 'Une autre façon de faire évoluer un jeu.' },
-      { href: '/parcours', titre: 'Le parcours', detail: 'La transmission, de la formation à l’open source.' },
+      { href: '/projets/gup', titre: 'GUP', detail: 'Une commande pour faire ses mises à jour.' },
       { href: '/projets', titre: 'Tous les projets', detail: 'Revenir aux réalisations.' },
-      { href: '/contact', titre: 'Discutons', detail: 'Parlons de travail collectif.' },
+      { href: '/contact', titre: 'Discutons', detail: 'Parlons de votre projet.' },
     ]} />
   </article>
 </Base>
 
+<script>
+  document.querySelectorAll<HTMLElement>('[data-pvz-traduction]').forEach((demo) => {
+    const boutons = demo.querySelectorAll<HTMLButtonElement>('[data-langue]');
+    const extraits = demo.querySelectorAll<HTMLElement>('[data-extraits]');
+    const note = demo.querySelector<HTMLElement>('[data-langue-affichee]');
+
+    boutons.forEach((bouton) => {
+      bouton.addEventListener('click', () => {
+        const langue = bouton.dataset.langue;
+        boutons.forEach((choix) => choix.setAttribute('aria-pressed', String(choix === bouton)));
+        extraits.forEach((extrait) => { extrait.hidden = extrait.dataset.extraits !== langue; });
+        if (note) note.textContent = langue === 'francais'
+          ? 'Les commandes en français.'
+          : 'Les commandes dans le texte chinois d’origine.';
+      });
+    });
+  });
+</script>
+
 <style>
-  .pvz-ouverture { display: grid; grid-template-columns: minmax(0, 2.3fr) minmax(0, 1fr); gap: var(--s7); align-items: center; padding-bottom: var(--s8); }
-  .pvz-chiffre { border-left: 3px solid var(--bleu); padding-left: var(--s5); }
-  .pvz-chiffre__nombre { display: block; font-weight: 700; font-size: clamp(1.2rem, 0.7rem + 1.2vw, 1.8rem); line-height: 1.1; }
-  .pvz-chiffre__nombre mark { display: block; width: fit-content; margin-top: var(--s3); font-size: clamp(4rem, 2.5rem + 5vw, 7rem); font-weight: 800; letter-spacing: -0.06em; }
-  .pvz-chiffre > p { margin-top: var(--s5); max-width: 24ch; }
-  .pvz-chapitre { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: var(--s8); }
-  .pvz-chapitre h2 { max-width: 16ch; }
-  .pvz-chapitre .page-citation { margin-top: var(--s7); }
-  .transmission-tete { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: var(--s8); }
-  .transmission-tete > p { max-width: 57ch; }
-  .transmission { padding: 0; margin: var(--s7) 0 0; list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s6); }
-  .transmission li { border-top: 2px solid var(--bleu); padding-top: var(--s5); }
-  .transmission li > span { display: block; color: var(--bleu); font-family: var(--font-note); font-style: italic; font-size: 2rem; }
-  .transmission h3 { margin-top: var(--s3); font-size: 1.5rem; }
-  .transmission li > p { margin-top: var(--s4); font-size: var(--t-petit); max-width: 36ch; }
-  @media (max-width: 900px) { .pvz-ouverture { grid-template-columns: minmax(0, 1fr); } .pvz-chiffre { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s4); align-items: center; } .pvz-chiffre__nombre mark { display: inline; margin-left: 0.15em; font-size: 4rem; } .pvz-chiffre > p { margin-top: 0; } .pvz-chiffre .page-repere { grid-column: 1 / -1; } .pvz-chapitre, .transmission-tete { grid-template-columns: minmax(0, 1fr); gap: var(--s6); } .pvz-chapitre h2 { max-width: 24ch; } }
-  @media (max-width: 640px) { .transmission { grid-template-columns: minmax(0, 1fr); gap: var(--s6); } .transmission li { display: grid; grid-template-columns: 2rem minmax(0, 1fr); gap: var(--s2) var(--s4); } .transmission li > span { grid-row: 1 / 3; } .transmission h3 { margin-top: 0; } .transmission li > p { margin-top: var(--s2); } .pvz-chiffre { grid-template-columns: minmax(0, 1fr); } }
+  .profondeur .pvz-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: var(--s7);
+    align-items: end;
+    padding-bottom: var(--s7);
+  }
+  .pvz-hero h1 { max-width: 12ch; }
+  .profondeur .pvz-hero .page-hero__intro {
+    margin-top: 0;
+    font-size: clamp(1.6rem, 1.2rem + 1vw, 2.3rem);
+    line-height: 1.25;
+    font-weight: 700;
+    max-width: 24ch;
+  }
+  .pvz-hero .page-hero__meta { margin-top: var(--s4); max-width: 36ch; }
+  .pvz-ouverture {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    gap: var(--s7);
+    align-items: center;
+    padding-bottom: var(--s8);
+  }
+  .pvz-besoin h2 { font-size: clamp(1.8rem, 1.4rem + 1.1vw, 2.6rem); }
+  .pvz-besoin p { font-size: var(--t-petit); }
+  .pvz-demonstration__intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: var(--s7);
+    align-items: end;
+  }
+  .pvz-demonstration__intro p { max-width: 49ch; }
+  .pvz-demo { margin-top: var(--s7); border: 1px solid var(--filet); background: var(--blanc); border-radius: var(--rayon); }
+  .pvz-demo__entete {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--s5);
+    padding: var(--s5) var(--s6);
+    border-bottom: 1px solid var(--filet);
+  }
+  .pvz-demo__entete h3 { font-size: var(--t-corps); line-height: 1.35; max-width: 29ch; }
+  .pvz-langues { display: flex; gap: var(--s2); flex-wrap: wrap; }
+  .pvz-langues button {
+    min-height: 48px;
+    padding: var(--s2) var(--s4);
+    border: 1px solid var(--filet);
+    border-radius: var(--rayon);
+    background: var(--papier);
+    font-weight: 700;
+    font-size: var(--t-petit);
+    cursor: pointer;
+  }
+  .pvz-langues button[aria-pressed='true'] { background: var(--bleu); color: var(--sur-bleu); border-color: var(--bleu); }
+  .pvz-langues button:hover { border-color: var(--bleu); }
+  .pvz-demo__contenu { padding: var(--s7) var(--s6) var(--s6); }
+  .pvz-extraits { padding: 0; margin: 0 auto; list-style: none; max-width: 610px; display: grid; gap: var(--s3); }
+  .pvz-extraits[hidden] { display: none; }
+  .pvz-extraits li {
+    padding: var(--s3) var(--s5);
+    border: 1px solid var(--filet);
+    border-radius: var(--rayon);
+    background: var(--papier);
+    font-size: clamp(1.25rem, 1.05rem + 0.6vw, 1.7rem);
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+  .pvz-demo__note { margin-top: var(--s5); color: var(--graphite); font-size: var(--t-petit); text-align: center; }
+  .pvz-demo__legende { border-top: 1px solid var(--filet); padding: var(--s4) var(--s6); font-size: var(--t-etiquette); color: var(--graphite); }
+  .pvz-equipe { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: var(--s7); }
+  .pvz-equipe__note { margin-top: var(--s5); color: var(--bleu); font-family: var(--font-note); font-size: 1.5rem; font-style: italic; }
+  .pvz-sources { padding-block: var(--s4); border-top: 1px solid var(--filet); color: var(--graphite); font-size: var(--t-petit); }
+  .pvz-sources summary { cursor: pointer; padding-block: var(--s3); }
+  .pvz-sources .prose { padding-top: var(--s4); color: var(--encre); }
+  @media (max-width: 900px) {
+    .profondeur .pvz-hero, .pvz-ouverture, .pvz-demonstration__intro, .pvz-equipe { grid-template-columns: minmax(0, 1fr); gap: var(--s6); }
+    .pvz-besoin { max-width: 62ch; }
+    .pvz-demo__entete, .pvz-demo__contenu, .pvz-demo__legende { padding-inline: var(--s5); }
+  }
+  @media (max-width: 640px) {
+    .pvz-demo__entete { align-items: flex-start; }
+    .pvz-demo__entete, .pvz-demo__contenu, .pvz-demo__legende { padding-inline: var(--s4); }
+    .pvz-demo__contenu { padding-top: var(--s6); }
+    .pvz-langues { width: 100%; }
+    .pvz-langues button { flex: 1; padding-inline: var(--s3); }
+    .pvz-extraits li { padding-inline: var(--s3); }
+    .pvz-demonstration__intro h2 br { display: none; }
+  }
 </style>

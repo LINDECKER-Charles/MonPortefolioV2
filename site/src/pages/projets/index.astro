@@ -1,154 +1,121 @@
 ---
-import { Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import FilAriane from '../../components/pages/FilAriane.astro';
-import ContinuerLecture from '../../components/pages/ContinuerLecture.astro';
+import ProjetALaUne from '../../components/projets/ProjetALaUne.astro';
+import ApercuProjet from '../../components/projets/ApercuProjet.astro';
+import DecouverteProjets from '../../components/projets/DecouverteProjets.astro';
 import { SITE } from '../../config/site';
-import capturePvz from '../../assets/captures/pvz-fusion.webp';
-import captureOmnicard from '../../assets/captures/omnicard.webp';
-import captureGup from '../../assets/captures/gup.webp';
+import { PROJETS_ACTIFS, PROJETS_ARCHIVES, PROJET_A_LA_UNE, THEMES_PROJETS } from '../../config/projets';
 import '../../styles/profondeur.css';
 
 const titre = `Projets de ${SITE.nom}`;
-const description = 'Traduction communautaire, moteur de jeu de cartes et outils de développement. Les projets de Charles Lindecker, avec leurs choix et leurs résultats.';
-
-const outils = [
-  {
-    nom: 'FusionDocs',
-    texte: 'Une plateforme de modding pour PvZ Fusion, avec des tutoriels versionnés, un forum et une messagerie en temps réel.',
-    href: 'https://github.com/LINDECKER-Charles/PVZ-Modding-Tutorial-Web',
-    nature: 'Documentation et communauté',
-  },
-  {
-    nom: 'PVZ Fuzion Console Manager',
-    texte: 'Un outil Python pour détecter les traductions manquantes d’une version du jeu à l’autre.',
-    href: 'https://github.com/LINDECKER-Charles/PVZ-Fuzion-ConsolManager',
-    nature: 'Localisation',
-  },
-  {
-    nom: 'img-convertor',
-    texte: 'Convertir des images en WebP ou AVIF et produire leurs déclinaisons pour les différentes tailles d’écran.',
-    href: 'https://github.com/LINDECKER-Charles/Web-Image-Formateur',
-    nature: 'Outil de développement',
-  },
-  {
-    nom: 'MaVeille',
-    texte: 'Une veille technologique automatisée, avec des rapports quotidiens versionnés et une application statique pour les lire.',
-    href: 'https://github.com/LINDECKER-Charles/MaVeille',
-    nature: 'Veille technologique',
-  },
-  {
-    nom: 'Blender Collection',
-    texte: 'Des collections d’extensions Blender à partager, avec des traitements asynchrones et un déploiement automatisé.',
-    href: 'https://github.com/LINDECKER-Charles/BlenderAdd-OnListe',
-    nature: 'Projet personnel',
-  },
-  {
-    nom: 'GlossaireQuest',
-    texte: 'Des quiz pédagogiques, une authentification et des statistiques pour suivre la progression.',
-    href: 'https://github.com/LINDECKER-Charles/GlossaireQuest',
-    nature: 'Apprentissage',
-  },
-];
+const description = 'Explorez les projets de Charles Lindecker selon vos envies : un compagnon de jeu, des outils du quotidien et une traduction communautaire.';
+const vedette = PROJETS_ACTIFS.find((projet) => projet.id === PROJET_A_LA_UNE)!;
 ---
 
 <Base titre={titre} description={description} chemin="/projets">
-  <div class="wrap profondeur projets">
+  <div class="wrap profondeur projets-hub" data-project-hub>
     <FilAriane courant="Projets" />
-    <header class="page-hero">
-      <h1>Des idées qui deviennent des outils.</h1>
-      <p class="page-hero__intro">
-        Un jeu inventé sur papier, une traduction qui prend une autre ampleur, une machine de développement à entretenir.
-        Mes projets partent de là&nbsp;: quelque chose que j’ai envie de faire fonctionner.
-      </p>
-      <a class="index-raccourci" href="#autres-projets">Voir aussi les autres projets</a>
+    <header class="hub-intro">
+      <h1>Quel projet allez-vous explorer&nbsp;?</h1>
+      <p>Suivre une partie, jouer en français, mettre à jour ses logiciels.
+        Découvrez ce que ces projets changent dans leur utilisation.</p>
     </header>
 
-    <section class="realisations" aria-labelledby="realisations-titre">
-      <h2 id="realisations-titre">Trois projets, trois façons d’avancer</h2>
+    <ProjetALaUne projet={vedette} />
 
-      <article class="projet-ligne">
-        <a href="/projets/pvz-fusion" class="projet-ligne__image" aria-label="Découvrir le projet PvZ Fusion">
-          <Picture src={capturePvz} formats={['avif']} fallbackFormat="webp" widths={[480, 768, 1080]} sizes="(min-width: 850px) 45vw, calc(100vw - 48px)" alt="Une partie de Plants vs. Zombies Fusion, avec des plantes fusionnées." loading="lazy" />
-        </a>
-        <div class="projet-ligne__texte">
-          <p class="page-repere">Open source et collectif</p>
-          <h3><a href="/projets/pvz-fusion">PvZ Fusion</a></h3>
-          <p>D’abord traducteur, puis lead du pôle francophone et mainteneur du projet multilingue. Le travail dépasse le texte&nbsp;: accueillir, former, documenter et faire avancer l’équipe.</p>
-          <a class="projet-ligne__lien" href="/projets/pvz-fusion">Du traducteur au collectif</a>
-        </div>
-      </article>
-
-      <article class="projet-ligne projet-ligne--omnicard">
-        <a href="/projets/omnicard" class="projet-ligne__image" aria-label="Découvrir le projet Omnicard">
-          <Picture src={captureOmnicard} formats={['avif']} fallbackFormat="webp" widths={[480, 768, 1080]} sizes="(min-width: 850px) 45vw, calc(100vw - 48px)" alt="Omnicard, son catalogue de cartes et la composition d’un deck." loading="lazy" />
-        </a>
-        <div class="projet-ligne__texte">
-          <p class="page-repere">Jeu de cartes et moteur maison</p>
-          <h3><a href="/projets/omnicard">Omnicard</a></h3>
-          <p>Le jeu de cartes inventé avec mon cousin devient un jeu dans le navigateur. Je choisis une stack que je connais, puis je travaille ses limites pour construire mon propre moteur.</p>
-          <a class="projet-ligne__lien" href="/projets/omnicard">Du papier au navigateur</a>
-        </div>
-      </article>
-
-      <article class="projet-ligne projet-ligne--gup">
-        <a href="/projets/gup" class="projet-ligne__image" aria-label="Découvrir le projet gup">
-          <Picture src={captureGup} formats={['avif']} fallbackFormat="webp" widths={[480, 768, 1080]} sizes="(min-width: 850px) 45vw, calc(100vw - 48px)" alt="Le terminal de gup, avec les mises à jour détectées et les actions disponibles." loading="lazy" />
-        </a>
-        <div class="projet-ligne__texte">
-          <p class="page-repere">Outil de développement</p>
-          <h3><a href="/projets/gup">gup</a></h3>
-          <p>Les outils s’installent de plusieurs façons, et chacun a sa commande de mise à jour. gup rassemble ces sources dans une interface en ligne de commande, sur Windows, macOS et Linux.</p>
-          <a class="projet-ligne__lien" href="/projets/gup">Une machine, plusieurs sources</a>
-        </div>
-      </article>
-    </section>
-
-    <section class="page-section autres-projets" id="autres-projets" aria-labelledby="autres-titre">
-      <div class="autres-projets__intro">
-        <h2 id="autres-titre">Autour de ces projets</h2>
-        <p>Des outils, de la documentation et des expériences qui prolongent les mêmes sujets. Leurs dépôts publics permettent d’aller voir le travail.</p>
+    <section class="orientation" aria-labelledby="orientation-titre">
+      <div class="orientation__tete">
+        <h2 id="orientation-titre">Suivez ce qui vous intéresse.</h2>
+        <p>Des projets différents, un point commun&nbsp;: répondre à un besoin concret.</p>
       </div>
-      <ul class="inventaire">
-        {outils.map((outil) => <li>
-          <div>
-            <h3><a href={outil.href} data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="preuves">{outil.nom}</a></h3>
-            <p>{outil.texte}</p>
-          </div>
-          <span class="page-repere">{outil.nature}</span>
-        </li>)}
-      </ul>
+      <nav class="themes" aria-label="Explorer par centre d’intérêt">
+        {THEMES_PROJETS.map((theme) => <a class:list={['theme', `theme--${theme.id}`]} href={`#theme-${theme.id}`} data-project-theme={theme.id}>
+          <span class="theme__icone" aria-hidden="true">{theme.id === 'jeux' ? <svg viewBox="0 0 64 64"><path d="M15 43 9 25l15-10 22 6 9 18-17 13Z"/><path d="m9 25 24 7 13-11M33 32l5 20M15 43l18-11"/><circle cx="24" cy="24" r="2"/><circle cx="44" cy="38" r="2"/></svg> : <svg viewBox="0 0 64 64"><rect x="9" y="13" width="46" height="36" rx="5"/><path d="M9 23h46m-35 8 6 5-6 5m13 0h10"/><circle cx="17" cy="18" r="1"/><circle cx="22" cy="18" r="1"/></svg>}</span>
+          <span class="theme__contenu"><strong>{theme.nom}</strong><span>{theme.resume}</span></span>
+          <span class="theme__direction" aria-hidden="true">↘</span>
+        </a>)}
+      </nav>
     </section>
 
-    <ContinuerLecture liens={[
-      { href: '/parcours', titre: 'Le parcours', detail: 'Les détours qui ont conduit à ces projets.' },
-      { href: '/contact', titre: 'Discutons', detail: 'Parlons de technique et de travail collectif.' },
-      { href: '/', titre: 'Le récit', detail: 'Reprendre le fil depuis le début.' },
-    ]} />
+    {THEMES_PROJETS.map((theme) => {
+      const projets = PROJETS_ACTIFS.filter((projet) => (projet.categories as readonly string[]).includes(theme.id));
+      return <section class:list={['exploration', `exploration--${theme.id}`]} id={`theme-${theme.id}`} aria-labelledby={`titre-${theme.id}`} data-project-section={theme.id}>
+      <div class="exploration__tete">
+        <h2 id={`titre-${theme.id}`}>{theme.nom}</h2>
+        <p>{projets.length} projet{projets.length > 1 ? 's' : ''}</p>
+      </div>
+      <div class="exploration__grille">
+        {projets.map((projet) => <article class="projet-apercu" data-project-card={projet.id} data-project-categories={projet.categories.join(' ')}>
+          <a class="projet-apercu__visuel" href={projet.href} data-open-project={projet.id} aria-label={`Découvrir ${projet.nom}`}><ApercuProjet projet={projet} /></a>
+          <div class="projet-apercu__contenu">
+          <p class="projet-apercu__usage">{projet.usage}</p>
+          <h3>{projet.nom}</h3>
+          <p class="projet-apercu__promesse">{projet.promesse}</p>
+          <p class="projet-apercu__resume">{projet.resume}</p>
+          <div class="projet-apercu__actions"><a class="btn btn--contour" href={projet.href} data-open-project={projet.id}>Ouvrir l’aperçu<span class="sr"> de {projet.nom}</span></a><a href={projet.href}>Page du projet<span class="sr"> {projet.nom}</span></a></div>
+          </div>
+        </article>)}
+      </div>
+    </section>;})}
+    <noscript><p class="hub-sans-script">Les liens ouvrent directement les pages des projets.</p></noscript>
+
+    <details class="archives" id="projets-archives">
+      <summary>Projets archivés{PROJETS_ARCHIVES.length > 0 && <span> ({PROJETS_ARCHIVES.length})</span>}</summary>
+      {PROJETS_ARCHIVES.length === 0 ? <p>Aucun projet archivé pour le moment.</p> : <ul>
+        {PROJETS_ARCHIVES.map((projet) => <li><a href={projet.href}>{projet.nom}</a><p>{projet.resume}</p></li>)}
+      </ul>}
+    </details>
+
+    <div class="projets-suite"><p>Un projet commence souvent par une discussion.</p><a class="btn" href="/contact">Discutons</a></div>
   </div>
+  <DecouverteProjets />
 </Base>
 
 <style>
-  .index-raccourci { display: inline-flex; align-items: center; min-height: 44px; margin-top: var(--s5); font-size: var(--t-petit); }
-  .realisations > h2 { font-size: 1.5rem; margin-bottom: var(--s6); }
-  .projet-ligne { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 72px); align-items: center; border-top: 1px solid var(--filet); padding-block: var(--s7); }
-  .projet-ligne__image { display: block; background: color-mix(in srgb, var(--bleu) 6%, var(--papier)); padding: var(--s5); border-radius: var(--rayon); }
-  .projet-ligne__image :global(picture) { display: block; }
-  .projet-ligne__image :global(img) { width: 100%; aspect-ratio: 16 / 10; object-fit: contain; height: auto; border-radius: 2px; }
-  .projet-ligne--omnicard .projet-ligne__image :global(img) { aspect-ratio: 4 / 3; object-fit: cover; object-position: top; }
-  .projet-ligne--gup .projet-ligne__image { background: #0b0b0b; }
-  .projet-ligne h3 { margin-top: var(--s3); font-size: clamp(2.5rem, 1.5rem + 3vw, 4rem); letter-spacing: -0.04em; }
-  .projet-ligne h3 a { color: var(--encre); text-decoration: none; }
-  .projet-ligne h3 a:hover { text-decoration: underline; text-decoration-thickness: 2px; }
-  .projet-ligne__texte > p:not(.page-repere) { margin-top: var(--s5); max-width: 48ch; }
-  .projet-ligne__lien { display: inline-flex; align-items: center; min-height: 44px; margin-top: var(--s5); font-weight: 700; }
-  .autres-projets__intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s6); margin-bottom: var(--s7); }
-  .autres-projets__intro p { max-width: 50ch; }
-  .inventaire { list-style: none; padding: 0; margin: 0; }
-  .inventaire li { display: grid; grid-template-columns: minmax(0, 1fr) 13rem; gap: var(--s5); border-top: 1px solid var(--filet); padding-block: var(--s5); }
-  .inventaire h3 { font-size: 1.35rem; line-height: 1.3; }
-  .inventaire p { margin-top: var(--s2); max-width: 70ch; font-size: var(--t-petit); }
-  .inventaire .page-repere { text-align: right; }
-  @media (max-width: 849px) { .projet-ligne, .autres-projets__intro { grid-template-columns: minmax(0, 1fr); } .projet-ligne { gap: var(--s6); } .projet-ligne__image { padding: var(--s4); } .projet-ligne h3 { font-size: 2.75rem; } }
-  @media (max-width: 640px) { .inventaire li { grid-template-columns: minmax(0, 1fr); gap: var(--s3); } .inventaire .page-repere { text-align: left; } }
+  .hub-intro { display: grid; grid-template-columns: 1.15fr 1fr; align-items: end; gap: var(--s7); padding-block: var(--s5) var(--s6); }
+  .hub-intro h1 { font-size: clamp(2.3rem, 1.5rem + 1.8vw, 3.15rem); line-height: 1.04; letter-spacing: -.045em; max-width: 22ch; }
+  .hub-intro p { max-width: 46ch; font-size: 1.0625rem; color: var(--graphite); }
+  .orientation { padding-top: var(--s8); }
+  .orientation__tete { display: grid; grid-template-columns: 1fr 1fr; align-items: end; gap: var(--s6); margin-bottom: var(--s6); }
+  .orientation h2 { font-size: clamp(1.9rem, 1.35rem + 1.35vw, 2.6rem); line-height: 1.15; letter-spacing: -.03em; max-width: 23ch; }
+  .orientation__tete > p { font-size: var(--t-petit); color: var(--graphite); max-width: 43ch; }
+  .themes { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s5); }
+  .theme { position: relative; display: flex; align-items: center; gap: 20px; padding: 28px 24px; min-height: 150px; border-radius: 8px; border: 1px solid var(--filet); background: var(--blanc); color: var(--encre); text-decoration: none; }
+  .theme:hover { border-color: var(--bleu); }
+  .theme__icone { flex: 0 0 64px; width: 64px; height: 64px; color: var(--bleu); }
+  .theme__icone svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.7; }
+  .theme__contenu { display: grid; gap: 8px; padding-right: 15px; }
+  .theme__contenu strong { font-size: 1.375rem; letter-spacing: -.025em; line-height: 1.15; }
+  .theme__contenu > span { font-size: .9375rem; line-height: 1.45; color: var(--graphite); max-width: 37ch; }
+  .theme__direction { position: absolute; right: 18px; top: 18px; color: var(--bleu); font-size: 1.4rem; }
+  .exploration { margin-top: var(--s8); }
+  .exploration + .exploration { border-top: 1px solid var(--filet); padding-top: var(--s7); }
+  .exploration__tete { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s5); margin-bottom: var(--s6); }
+  .exploration__tete h2 { font-size: clamp(1.75rem, 1.4rem + .8vw, 2.2rem); line-height: 1.2; letter-spacing: -.03em; }
+  .exploration__tete > p { color: var(--graphite); font-size: .875rem; flex-shrink: 0; }
+  .exploration__grille { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s6); align-items: start; }
+  .exploration--outils .exploration__grille { grid-template-columns: minmax(0, 1fr); }
+  .exploration--outils .projet-apercu { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s6); align-items: center; }
+  .exploration--outils .projet-apercu__usage { margin-top: 0; }
+  .projet-apercu { min-width: 0; }
+  .projet-apercu__visuel { display: block; text-decoration: none; border-radius: 7px; }
+  .projet-apercu__usage { font-size: .8125rem; color: var(--graphite); margin-block: 20px 8px; }
+  .projet-apercu h3 { font-size: 1.7rem; letter-spacing: -.035em; line-height: 1.12; max-width: 22ch; }
+  .projet-apercu__promesse { margin-top: var(--s4); font-size: 1.0625rem; font-weight: 700; line-height: 1.35; }
+  .projet-apercu__resume { margin-top: var(--s2); font-size: .9375rem; color: var(--graphite); line-height: 1.5; max-width: 45ch; }
+  .projet-apercu__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin-top: 20px; }
+  .projet-apercu__actions .btn { min-height: 44px; padding: 8px 16px; font-size: .875rem; }
+  .projet-apercu__actions > a:not(.btn) { display: inline-flex; align-items: center; min-height: 44px; font-size: .8125rem; }
+  .archives { margin-top: var(--s8); border-top: 1px solid var(--filet); padding-top: var(--s4); color: var(--graphite); font-size: var(--t-petit); }
+  .archives summary { width: fit-content; min-height: 44px; cursor: pointer; padding-block: 9px; }
+  .archives p { margin-top: var(--s3); max-width: 65ch; }
+  .archives ul { padding-left: var(--s5); }
+  .archives li { padding-block: var(--s4); }
+  .projets-suite { display: flex; gap: var(--s5); align-items: center; justify-content: space-between; padding-block: var(--s7) var(--s8); }
+  .projets-suite p { font-family: var(--font-note); font-style: italic; font-size: 1.65rem; }
+  .hub-sans-script { margin-top: var(--s4); font-size: var(--t-petit); color: var(--graphite); }
+  @media (max-width: 1050px) { .theme { gap: 12px; padding: 24px 20px; } .theme__icone { flex-basis: 48px; width: 48px; height: 48px; } .theme__contenu strong { font-size: 1.2rem; } .exploration__grille { gap: var(--s5); } .projet-apercu h3 { font-size: 1.5rem; } }
+  @media (max-width: 849px) { .hub-intro, .orientation__tete { grid-template-columns: minmax(0, 1fr); gap: var(--s4); } .hub-intro { padding-top: var(--s4); } .hub-intro h1 { max-width: 20ch; } .themes { grid-template-columns: minmax(0, 1fr); gap: var(--s4); } .theme { min-height: 125px; } .theme__icone { flex-basis: 64px; width: 64px; height: 64px; } .exploration__grille { grid-template-columns: minmax(0, 1fr); gap: var(--s7); } .exploration--outils .projet-apercu { grid-template-columns: minmax(0, 1fr); gap: 20px; } .projet-apercu h3 { font-size: 1.8rem; } }
+  @media (max-width: 480px) { .projets-suite { flex-direction: column; align-items: flex-start; } .theme__contenu strong { font-size: 1.25rem; } .theme__icone { flex-basis: 48px; width: 48px; height: 48px; } .exploration__tete { align-items: flex-start; } }
 </style>

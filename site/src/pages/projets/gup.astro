@@ -1,81 +1,84 @@
 ---
-import { Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import FilAriane from '../../components/pages/FilAriane.astro';
 import ContinuerLecture from '../../components/pages/ContinuerLecture.astro';
+import DemoGup from '../../components/projets/DemoGup.astro';
 import { SITE } from '../../config/site';
-import capture from '../../assets/captures/gup.webp';
+import capture from '../../assets/projets/gup-selection.webp';
 import '../../styles/profondeur.css';
 
-const titre = `gup, mettre à jour sa machine — ${SITE.nom}`;
-const description = 'gup rassemble les mises à jour d’une machine de développement dans une CLI. Un projet open source de Charles Lindecker pour Windows, macOS et Linux.';
+const titre = `gup, les mises à jour au même endroit — ${SITE.nom}`;
+const description = 'Voir les mises à jour, choisir ses logiciels et les lancer au même endroit. Découvrez gup à travers une démonstration, sans rien installer.';
 ---
 
 <Base titre={titre} description={description} chemin="/projets/gup">
   <article class="wrap profondeur cas-gup">
     <FilAriane courant="gup" projet />
     <header class="page-hero gup-hero">
-      <div>
-        <h1>gup, une machine, plusieurs sources.</h1>
-        <p class="page-hero__intro">Un outil de développement ne s’installe pas toujours au même endroit que le suivant. Pour les mettre à jour ensemble, j’ai construit une interface en ligne de commande qui rassemble leurs sources.</p>
-        <p class="page-hero__meta">Open source, TypeScript et Node.js</p>
+      <div class="gup-introduction">
+        <p class="gup-nom">gup</p>
+        <h1>Les mises à jour, au même endroit.</h1>
+        <p class="page-hero__intro">Sur l’ordinateur d’un développeur, les logiciels et les outils de développement demandent souvent des commandes de mise à jour différentes. GUP rassemble les mises à jour disponibles dans une liste&nbsp;: on choisit celles que l’on veut lancer.</p>
+        <p class="gup-note note">Voir ce qui attend. Choisir. Mettre à jour.</p>
       </div>
-      <div class="gup-systemes" role="group" aria-label="Systèmes pris en charge">
-        <span>Windows</span><span>macOS</span><span>Linux</span>
-      </div>
+      <DemoGup />
     </header>
 
-    <figure class="page-capture gup-terminal">
-      <div class="gup-terminal__image">
-        <Picture src={capture} formats={['avif']} fallbackFormat="webp" widths={[480, 768, 1080, 1440]} sizes="(min-width: 1000px) 900px, calc(100vw - 48px)" alt="Un scan dans gup, avec les sources détectées, les mises à jour disponibles et le menu des actions." loading="eager" />
+    <section class="page-section gup-usage" aria-labelledby="besoin-titre">
+      <div class="gup-recit prose">
+        <h2 id="besoin-titre">Faire le tour de sa machine, en un passage.</h2>
+        <p>Sur une machine de développement, les logiciels viennent de plusieurs sources. Chacune propose sa propre façon de vérifier les mises à jour. C’est une tâche répétitive, et il est facile d’en oublier une.</p>
+        <p>gup rassemble ce qui est disponible dans une même liste. Je peux cocher un logiciel, plusieurs ou l’ensemble, puis suivre leurs mises à jour depuis l’interface.</p>
+        <p>Pour les outils que je mets à jour régulièrement, je peux aussi choisir les logiciels et leur programmer un rendez-vous.</p>
+        <p class="page-repere">Disponible sur Windows, macOS et Linux.</p>
       </div>
-      <figcaption class="legende">Le menu de gup après un scan&nbsp;: inspecter les mises à jour, choisir des paquets ou mettre à jour l’ensemble.</figcaption>
-    </figure>
-
-    <section class="page-section gup-explication" aria-labelledby="besoin-titre">
-      <h2 id="besoin-titre">Un point d’entrée pour les mises à jour</h2>
-      <div class="prose">
-        <p>Une machine de développement accumule des outils installés avec plusieurs gestionnaires de paquets. Les commandes et les habitudes changent d’une source à l’autre.</p>
-        <p>gup les rassemble dans une CLI. Le projet couvre 153&nbsp;sources sur Windows, macOS et Linux. L’interface permet de voir ce qui a été détecté, de consulter les mises à jour et de choisir ce qu’on lance.</p>
-      </div>
+      <figure class="page-capture gup-capture">
+        <img src={capture.src} width={capture.width} height={capture.height} alt="L’interface de gup affiche les logiciels par source, leurs versions et une case pour choisir chacun d’eux." loading="lazy" />
+        <figcaption class="legende">La vraie interface de gup. Cette capture utilise des données d’exemple, comme la démonstration ci-dessus.</figcaption>
+      </figure>
     </section>
 
-    <section class="page-section gup-explication" aria-labelledby="usage-titre">
-      <div>
-        <h2 id="usage-titre">Un outil publié et utilisé</h2>
-        <p class="gup-mesure"><mark class="surligne">447</mark><span>téléchargements npm</span></p>
-        <p class="page-repere">Du 5&nbsp;septembre au 4&nbsp;octobre 2026</p>
-      </div>
+    <details class="gup-details">
+      <summary>Le code et les détails techniques</summary>
       <div class="prose">
-        <p>Le paquet est publié sur npm et son code est public. Sur la période du 5&nbsp;septembre au 4&nbsp;octobre 2026, npm a enregistré 447&nbsp;téléchargements.</p>
-        <p>Le projet est écrit en TypeScript et Node.js, avec Vitest pour les tests. Il continue à évoluer dans son dépôt public.</p>
+        <p>gup est un projet open source écrit en TypeScript et Node.js. Il utilise les gestionnaires déjà présents sur la machine pour mettre à jour les logiciels installés globalement. Le code, la documentation et le paquet sont publics.</p>
         <div class="page-liens">
+          <a href="https://github.com/LINDECKER-Charles/gup" data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="preuves">Le code et la documentation</a>
           <a href="https://www.npmjs.com/package/@charles_lindecker/gup" data-umami-event="lien-sortant" data-umami-event-domaine="www.npmjs.com" data-umami-event-emplacement="preuves">Le paquet sur npm</a>
-          <a href="https://github.com/LINDECKER-Charles/gup" data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="preuves">Le code de gup</a>
         </div>
       </div>
-    </section>
+    </details>
 
     <ContinuerLecture liens={[
-      { href: '/projets/omnicard', titre: 'Omnicard', detail: 'Travailler les contraintes d’une autre stack.' },
-      { href: '/projets/pvz-fusion', titre: 'PvZ Fusion', detail: 'Des outils au service d’un collectif.' },
+      { href: '/projets/bloodborne-legendary-run', titre: 'Bloodborne Legendary Run', detail: 'Se donner une nouvelle façon de parcourir un jeu.' },
+      { href: '/projets/pvz-fusion', titre: 'PVZF Translation', detail: 'Comprendre le jeu dans sa langue.' },
+      { href: '/projets/omnicard', titre: 'Omnicard', detail: 'D’un jeu papier à un jeu dans le navigateur.' },
       { href: '/projets', titre: 'Tous les projets', detail: 'Revenir aux réalisations.' },
-      { href: '/contact', titre: 'Discutons', detail: 'Parlons de nos outils de développement.' },
     ]} />
   </article>
 </Base>
 
 <style>
-  .gup-hero { display: grid; grid-template-columns: minmax(0, 1fr) 12rem; gap: var(--s7); align-items: end; }
-  .gup-systemes { display: grid; border-left: 2px solid var(--bleu); padding-left: var(--s5); margin-bottom: 0.3rem; gap: var(--s3); color: var(--graphite); font-size: 1.1875rem; }
-  .gup-terminal { padding-bottom: var(--s8); }
-  .gup-terminal__image { background: #0b0b0b; padding: clamp(16px, 3vw, 40px); border-radius: var(--rayon); }
-  .gup-terminal__image :global(picture) { max-width: 950px; margin-inline: auto; }
-  .gup-explication { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: var(--s8); }
-  .gup-explication h2 { max-width: 18ch; }
-  .gup-mesure { margin-top: var(--s7); line-height: 1.1; }
-  .gup-mesure mark { display: block; width: fit-content; font-size: clamp(4rem, 2rem + 5vw, 6.5rem); font-weight: 800; letter-spacing: -0.055em; }
-  .gup-mesure span { display: block; margin-top: var(--s4); font-size: 1.1875rem; }
-  .gup-mesure + .page-repere { margin-top: var(--s3); }
-  @media (max-width: 900px) { .gup-hero { grid-template-columns: minmax(0, 1fr); gap: var(--s6); } .gup-systemes { display: flex; flex-wrap: wrap; gap: var(--s5); font-size: var(--t-petit); } .gup-explication { grid-template-columns: minmax(0, 1fr); gap: var(--s6); } .gup-explication h2 { max-width: 25ch; } }
+  .gup-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(40px, 6vw, 88px); align-items: center; }
+  .gup-nom { margin-bottom: var(--s4); color: var(--bleu); font-size: 1.5rem; font-weight: 800; line-height: 1; }
+  .gup-introduction h1 { max-width: 15ch; }
+  .gup-introduction .page-hero__intro { max-width: 41ch; }
+  .gup-note { margin-top: var(--s5); font-size: 1.25rem; }
+  .gup-usage { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: clamp(32px, 6vw, 80px); align-items: start; }
+  .gup-recit h2 { max-width: 20ch; }
+  .gup-recit .page-repere { margin-top: var(--s5); }
+  .gup-capture { margin-top: var(--s1); }
+  .gup-capture img { border: 1px solid #30363d; background: #0d1117; }
+  .gup-capture .legende { max-width: 64ch; }
+  .gup-details { border-top: 1px solid var(--filet); border-bottom: 1px solid var(--filet); padding-block: var(--s5); }
+  .gup-details summary { width: fit-content; min-height: 44px; padding-block: var(--s2); color: var(--bleu); font-weight: 700; cursor: pointer; }
+  .gup-details .prose { padding-top: var(--s5); max-width: 70ch; }
+  @media (max-width: 1000px) {
+    .gup-hero { grid-template-columns: minmax(0, 1fr); gap: var(--s7); }
+    .gup-introduction h1 { max-width: 19ch; }
+    .gup-introduction .page-hero__intro { max-width: 56ch; }
+    .gup-usage { grid-template-columns: minmax(0, 1fr); gap: var(--s6); }
+    .gup-recit h2 { max-width: 24ch; }
+    .gup-capture { max-width: 860px; }
+  }
 </style>
