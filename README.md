@@ -48,7 +48,8 @@ docker compose up --build    # l'image de production, http://127.0.0.1:4000
 
 L’accueil garde le récit. Les pages `/projets`, `/parcours`, `/contact` et `/blog` sont accessibles
 depuis la navigation et reliées entre elles. Les premières études de cas ont chacune un fichier
-Astro dans `site/src/pages/projets/` : `pvz-fusion.astro`, `omnicard.astro` et `gup.astro`. Leur
+Astro dans `site/src/pages/projets/` : `pvz-fusion.astro`, `omnicard.astro`, `gup.astro` et
+`bloodborne-legendary-run.astro`. Leur
 mise en page reste indépendante ; elles partagent seulement le cadre et les composants utiles.
 
 Pour ajouter un projet, créer sa page statique, l’inscrire dans l’index des projets et dans
@@ -59,6 +60,24 @@ doivent faire 110 à 165 caractères, les titres 65 caractères au plus.
 Le blog est ouvert sans article. Son mode d’alimentation reste à décider ; aucun CMS ni contenu
 fictif n’est ajouté. Les figures de l’accueil se détaillent au clic ou au clavier, sans animation
 quand le navigateur demande de réduire le mouvement.
+
+Le hub `/projets` commence par un projet à la une, puis oriente vers « Jouer et explorer » ou
+« Simplifier le quotidien » par des ancres vers deux sections toujours visibles. Sa sélection comprend GUP, Bloodborne Legendary Run et PVZF
+Translation. Les données de la sélection et le choix éditorial de la vedette se règlent dans
+`site/src/config/projets.ts`. Les aperçus ouvrent des fenêtres de découverte propres aux projets,
+avec une explication du besoin, des captures et un accès à leurs pages complètes. L’exemple
+interactif GUP est dans le volet « Essayer un exemple » ; la traduction PVZF se compare
+côte à côte. Sans JavaScript, les liens ouvrent directement les pages des projets.
+Les démonstrations sont locales au navigateur : GUP utilise les données d’exemple de son dépôt,
+Bloodborne montre de vraies captures et PVZF présente des extraits authentiques de la traduction.
+La vedette reste statique, avec un bouton pour ouvrir la découverte. Les nouvelles captures
+Bloodborne et GUP proviennent de leurs interfaces locales sur données d’exemple ; leur
+provenance est détaillée dans `site/src/assets/projets/README.md`.
+
+Le volet « Projets archivés » est replié par défaut et vide pour l’instant. Pour déplacer un projet
+hors de la vitrine, ajouter son nom, son adresse et son résumé dans
+`site/src/config/projets.ts`, puis retirer son entrée de la sélection. Conserver sa page et son
+entrée dans le sitemap pour que les liens existants continuent à fonctionner.
 
 ## Mise en ligne
 
