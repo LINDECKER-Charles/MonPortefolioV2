@@ -12,6 +12,28 @@ permissions:
   contents: read
 
 jobs:
+  backend:
+    name: API (Rust)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Installation Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.98.0
+          components: rustfmt, clippy
+      - name: Formatage
+        run: cargo fmt --all -- --check
+      - name: Analyse statique
+        run: cargo clippy --locked --all-targets --all-features -- -D warnings
+      - name: Tests API et livraison SMTP locale
+        run: cargo test --locked
+
   front:
     name: Application (Astro)
     runs-on: ubuntu-latest
@@ -123,6 +145,8 @@ jobs:
           # .env de l'hote.
           CADDY_DOMAINS: exemple.test
           COMPOSE_PROJECT_NAME: portfolio-ci
+          CONTACT_EMAIL: contact@example.test
+          BACKEND_PROXY_TOKEN: ci-contact-proxy-token-at-least-thirty-two-characters
           UMAMI_SITE_DOMAIN: exemple.test
           UMAMI_SITE_NAME: Portfolio (ci)
         run: |
@@ -138,6 +162,10 @@ jobs:
           jq -e '.services.web.labels
             | (keys | map(select(. == "caddy.import" or startswith("umami."))) | length == 0)
               and .["caddy.header.X-Robots-Tag"] == "noindex"' "$RUNNER_TEMP/base.json"
+          jq -e '.services.backend
+            | (.ports // [] | length == 0)
+              and (.networks | has("edge") | not)
+              and (.labels // {} | has("caddy") | not)' "$RUNNER_TEMP/base.json"
           echo "— avec la mesure d'audience"
           UMAMI_WEBSITE_ID="$id" docker compose "${base[@]}" "${mesure[@]}" \
             config --format json > "$RUNNER_TEMP/pile.json"
@@ -170,3 +198,12 @@ jobs:
           load: false
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Construction de l'image Rust (sans publication)
+        uses: docker/build-push-action@v7
+        with:
+          context: backend
+          push: false
+          load: false
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,scope=backend,mode=max

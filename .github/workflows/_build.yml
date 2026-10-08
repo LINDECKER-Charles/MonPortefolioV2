@@ -25,6 +25,16 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - service: web
+            context: site
+            suffix: ""
+          - service: backend
+            context: backend
+            suffix: -backend
     steps:
       - name: Checkout ${{ inputs.ref }}
         uses: actions/checkout@v7
@@ -34,7 +44,7 @@ jobs:
       - name: Prefixe d'image (proprietaire en minuscules)
         # GHCR refuse une majuscule dans un nom d'image, et le proprietaire du
         # depot en contient. `${VAR,,}` est une expansion bash, d'ou le shell.
-        run: echo "IMG=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/monportefoliov2" >> "$GITHUB_ENV"
+        run: echo "IMG=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/monportefoliov2${{ matrix.suffix }}" >> "$GITHUB_ENV"
 
       - name: Setup Buildx
         uses: docker/setup-buildx-action@v4
@@ -52,10 +62,11 @@ jobs:
           # Le contexte est le dossier de l'application, pas la racine : la
           # documentation, les maquettes et l'orchestration n'ont aucun role
           # dans la compilation et ne doivent donc pas pouvoir invalider le cache.
-          context: site
+          context: ${{ matrix.context }}
           push: true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=${{ matrix.service }}
+          cache-to: type=gha,scope=${{ matrix.service }},mode=max
+          labels: org.opencontainers.image.revision=${{ github.sha }}
           tags: |
             ${{ env.IMG }}:${{ github.sha }}
             ${{ env.IMG }}:${{ inputs.moving_tag }}
