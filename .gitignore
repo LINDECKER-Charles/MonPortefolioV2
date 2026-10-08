@@ -1,0 +1,12 @@
+# Environnements : seuls les modèles sont versionnés. Les vrais .env des
+# environnements servis vivent dans les secrets GitHub (docs/secrets.md).
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Système et éditeurs.
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
