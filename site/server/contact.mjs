@@ -1,8 +1,12 @@
 import { isIP } from 'node:net';
+import { request as requestHttp } from 'node:http';
+import { request as requestHttps } from 'node:https';
+import { Readable } from 'node:stream';
 
 /** Marqueur du build : remplacé au démarrage dans toutes les pages HTML. */
 export const EMAIL_CONTACT_MARQUEUR = 'contact@portfolio.invalid';
 const TAILLE_MAX = 24 * 1024;
+const TAILLE_REPONSE_PRIVEE = 4 * 1024 * 1024;
 const DELAI_API = 20_000;
 
 export function lireEmailContact(env) {
@@ -97,41 +101,96 @@ async function lireCorps(req) {
   });
 }
 
-async function lireReponse(reponse) {
+async function lireReponse(reponse, maximum = TAILLE_MAX) {
   const morceaux = [];
   let taille = 0;
   for await (const morceau of reponse.body ?? []) {
     taille += morceau.length;
-    if (taille > TAILLE_MAX) throw new Error('réponse trop grande');
+    if (taille > maximum) throw new Error('réponse trop grande');
     morceaux.push(morceau);
   }
   return Buffer.concat(morceaux).toString('utf8');
 }
 
-/** Relais borné : deux routes exactes, aucune URL fournie par un visiteur. */
-export async function relayerApi(req, res, chemin, config, communs) {
+/** Adresse persistée : bornée, validée avant toute insertion dans le HTML. */
+export async function chargerEmailContact(config) {
+  const reponse = await fetch(`${config.origine}/api/config/contact`, {
+    signal: AbortSignal.timeout(2000), redirect: 'error', headers: { Accept: 'application/json' },
+  });
+  if (!reponse.ok) throw new Error('configuration indisponible');
+  const donnees = JSON.parse(await lireReponse(reponse));
+  const email = lireEmailContact({ CONTACT_EMAIL: donnees.email });
+  if (!email) throw new Error('adresse absente');
+  return email;
+}
+
+/** Le client HTTP natif conserve l’hôte public pour la vérification d’origine Rust. */
+function requeteBackend(url, options) {
+  return new Promise((resolve, reject) => {
+    const request = (url.startsWith('https:') ? requestHttps : requestHttp)(url, {
+      method: options.method, headers: options.headers, signal: options.signal,
+    }, (response) => {
+      if (response.statusCode >= 300 && response.statusCode < 400) {
+        response.resume();
+        reject(new Error('redirection interdite'));
+        return;
+      }
+      const headers = new Headers();
+      for (const [name, value] of Object.entries(response.headers)) {
+        for (const entry of Array.isArray(value) ? value : value === undefined ? [] : [value]) headers.append(name, entry);
+      }
+      const empty = [202, 204, 304].includes(response.statusCode);
+      if (empty) response.resume();
+      resolve(new Response(empty ? null : Readable.toWeb(response), { status: response.statusCode, headers }));
+    });
+    request.once('error', reject);
+    request.end(options.body);
+  });
+}
+
+/** Routes explicites : aucune URL de destination fournie par un visiteur. */
+export async function relayerApi(req, res, chemin, config, communs, recherche = '') {
   const contact = chemin === '/api/contact';
   const sante = chemin === '/api/health';
+  const configuration = chemin === '/api/config/contact';
+  const mcp = chemin === '/mcp';
+  const prive = chemin.startsWith('/api/backoffice/');
+  const routes = new Map([
+    ['/api/backoffice/login', ['POST']], ['/api/backoffice/logout', ['POST']],
+    ['/api/backoffice/2fa/setup', ['POST']], ['/api/backoffice/2fa/verify', ['POST']],
+    ['/api/backoffice/session', ['GET', 'HEAD']], ['/api/backoffice/settings', ['GET', 'HEAD', 'PUT']],
+    ['/api/backoffice/contacts', ['GET', 'HEAD']], ['/api/backoffice/links', ['GET', 'HEAD', 'POST']],
+    ['/api/backoffice/tokens', ['GET', 'HEAD', 'POST']],
+  ]);
+  let methodes = contact ? ['POST'] : sante || configuration ? ['GET', 'HEAD'] : mcp ? ['POST'] : routes.get(chemin);
+  if (/^\/api\/backoffice\/contacts\/[1-9]\d*$/.test(chemin)) methodes = ['PATCH', 'DELETE'];
+  if (/^\/api\/backoffice\/links\/[1-9]\d*$/.test(chemin)) methodes = ['PUT', 'DELETE'];
+  if (/^\/api\/backoffice\/tokens\/[1-9]\d*$/.test(chemin)) methodes = ['DELETE'];
+  const mutation = !['GET', 'HEAD', 'DELETE'].includes(req.method);
   const erreur = (statut, code, message, supplement = {}) => repondreJson(req, res, statut, { code, message }, communs, supplement);
-  if (!contact && !sante) {
+  if (!methodes) {
     erreur(404, 'not_found', 'Cette adresse n’existe pas.');
     return;
   }
-  if (contact ? req.method !== 'POST' : !['GET', 'HEAD'].includes(req.method)) {
-    erreur(405, 'method_not_allowed', 'Cette méthode n’est pas disponible.', { Allow: contact ? 'POST' : 'GET, HEAD' });
+  if (!methodes.includes(req.method)) {
+    erreur(405, 'method_not_allowed', 'Cette méthode n’est pas disponible.', { Allow: methodes.join(', ') });
     return;
   }
-  if (contact) {
+  if (contact || prive || mcp) {
     const origine = req.headers.origin;
     if (origine) {
       let url;
       try { url = new URL(origine); } catch { /* origine invalide */ }
       if (!url || !['http:', 'https:'].includes(url.protocol) || url.host.toLowerCase() !== String(req.headers.host ?? '').toLowerCase()) {
-        erreur(403, 'forbidden_origin', 'Le formulaire doit être envoyé depuis ce site.');
+        erreur(403, 'forbidden_origin', 'La requête doit provenir de ce site.');
         return;
       }
     }
-    if (!/^application\/json(?:\s*;|$)/i.test(String(req.headers['content-type'] ?? ''))) {
+    if (prive && !['GET', 'HEAD'].includes(req.method) && req.headers['x-backoffice-request'] !== '1') {
+      erreur(403, 'forbidden_request', 'Rechargez le backoffice avant de réessayer.');
+      return;
+    }
+    if (mutation && !/^application\/json(?:\s*;|$)/i.test(String(req.headers['content-type'] ?? ''))) {
       erreur(415, 'unsupported_media_type', 'Le formulaire doit être envoyé au format JSON.');
       return;
     }
@@ -145,7 +204,7 @@ export async function relayerApi(req, res, chemin, config, communs) {
     return;
   }
   let corps;
-  try { corps = contact ? await lireCorps(req) : undefined; } catch (incident) {
+  try { corps = mutation ? await lireCorps(req) : undefined; } catch (incident) {
     erreur(incident.message === 'delai' ? 408 : 413, incident.message === 'delai' ? 'request_timeout' : 'payload_too_large', incident.message === 'delai' ? 'L’envoi du formulaire a pris trop de temps.' : 'Le message est trop volumineux.', { Connection: 'close' });
     return;
   }
@@ -154,23 +213,42 @@ export async function relayerApi(req, res, chemin, config, communs) {
   const annuler = () => { if (!res.writableEnded) controleur.abort(); };
   res.once('close', annuler);
   try {
-    const headers = { Accept: 'application/json', 'X-Contact-Client-IP': adresseClient(req, config) };
-    if (contact) headers['Content-Type'] = 'application/json';
+    const headers = { Accept: mcp ? String(req.headers.accept ?? 'application/json, text/event-stream') : 'application/json', 'X-Contact-Client-IP': adresseClient(req, config) };
+    if (mutation) headers['Content-Type'] = 'application/json';
     if (config.token) headers['X-Contact-Proxy-Token'] = config.token;
-    const reponse = await fetch(`${config.origine}${chemin}`, {
+    if (prive || mcp) {
+      for (const nom of ['host', 'origin', ...(prive ? ['cookie', 'x-backoffice-request'] : ['authorization', 'mcp-protocol-version', 'mcp-method', 'mcp-name'])]) {
+        if (typeof req.headers[nom] === 'string') headers[nom] = req.headers[nom];
+      }
+    }
+    const query = chemin === '/api/backoffice/contacts' ? new URLSearchParams(recherche) : null;
+    const suffixe = query ? '?' + ['status', 'limit', 'offset'].filter((cle) => query.has(cle)).map((cle) => `${cle}=${encodeURIComponent(query.get(cle))}`).join('&') : '';
+    const reponse = await requeteBackend(`${config.origine}${chemin}${suffixe}`, {
       method: req.method === 'HEAD' ? 'GET' : req.method,
       headers,
       body: corps,
       signal: controleur.signal,
       redirect: 'error',
     });
+    const supplement = {};
+    const retry = reponse.headers.get('retry-after');
+    if (retry && /^\d+$/.test(retry)) supplement['Retry-After'] = retry;
+    if (prive) {
+      const cookies = reponse.headers.getSetCookie();
+      if (cookies.length) supplement['Set-Cookie'] = cookies;
+    }
+    if (mcp && reponse.headers.has('www-authenticate')) supplement['WWW-Authenticate'] = reponse.headers.get('www-authenticate');
+    if ([202, 204].includes(reponse.status)) {
+      res.writeHead(reponse.status, { ...communs, ...supplement, 'Cache-Control': 'no-store' });
+      res.end();
+      return;
+    }
     if (!/^application\/json(?:\s*;|$)/i.test(reponse.headers.get('content-type') ?? '')) {
       throw new Error('réponse invalide');
     }
-    const contenu = await lireReponse(reponse);
+    const contenu = await lireReponse(reponse, prive || mcp ? TAILLE_REPONSE_PRIVEE : TAILLE_MAX);
     const donnees = JSON.parse(contenu);
-    const retry = reponse.headers.get('retry-after');
-    repondreJson(req, res, reponse.status, donnees, communs, retry && /^\d+$/.test(retry) ? { 'Retry-After': retry } : {});
+    repondreJson(req, res, reponse.status, donnees, communs, supplement);
   } catch {
     if (!res.destroyed) erreur(503, 'service_unavailable', 'L’envoi est momentanément indisponible. Vous pouvez me contacter par e-mail.');
   } finally {

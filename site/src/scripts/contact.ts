@@ -1,4 +1,4 @@
-/** Formulaire de contact : le succès suit la confirmation du serveur SMTP. */
+/** Formulaire de contact : le succès confirme l’enregistrement de la demande. */
 const CHAMPS = ['name', 'email', 'subject', 'message'] as const;
 type Champ = (typeof CHAMPS)[number];
 type Saisie = HTMLInputElement | HTMLTextAreaElement;

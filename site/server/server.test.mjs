@@ -8,7 +8,7 @@
 import { test, describe, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises';
-import { request } from 'node:http';
+import { createServer, request } from 'node:http';
 import { spawn } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -733,6 +733,29 @@ describe('exécution directe', () => {
     const { sortie, fin } = lancer({ CONTACT_EMAIL: '' });
     assert.equal((await fin).code, 1);
     assert.match(sortie.stderr, /CONTACT_EMAIL est obligatoire/);
+  });
+
+  test('une adresse conservée par le backend permet de démarrer sans CONTACT_EMAIL', async () => {
+    const backend = createServer((_req, res) => {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end('{"email":"persisted@example.test"}');
+    });
+    await new Promise((ok) => backend.listen(0, '127.0.0.1', ok));
+    const { enfant, sortie, fin } = lancer({ CONTACT_EMAIL: '', BACKEND_URL: `http://127.0.0.1:${backend.address().port}` });
+    try {
+      await new Promise((ok, ko) => {
+        const minuterie = setTimeout(() => ko(new Error(`pas de démarrage : ${sortie.stderr}`)), 10_000);
+        enfant.stdout.on('data', () => {
+          if (sortie.stdout.includes('servi sur http://')) { clearTimeout(minuterie); ok(); }
+        });
+      });
+    } finally {
+      enfant.kill('SIGTERM');
+      await fin;
+      backend.closeAllConnections();
+      await new Promise((ok) => backend.close(ok));
+    }
+    assert.doesNotMatch(sortie.stderr, /démarrage refusé/);
   });
 
   test('le serveur annonce sa configuration, sert le chargeur et s’arrête proprement sur SIGTERM', async () => {

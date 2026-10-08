@@ -3,7 +3,7 @@ import { defineConfig, fontProviders } from 'astro/config';
 import { existsSync } from 'node:fs';
 import { loadEnvFile } from 'node:process';
 import { fileURLToPath } from 'node:url';
-import { lireEmailContact, lireConfigBackend } from './server/contact.mjs';
+import { lireConfigBackend } from './server/contact.mjs';
 
 /**
  * Aucun <script> exécutable en ligne : la CSP envoyée par server/server.mjs
@@ -48,14 +48,13 @@ export default defineConfig({
         if (command !== 'dev' || process.env.VITEST) return;
         const environnement = fileURLToPath(new URL('../.env', import.meta.url));
         if (existsSync(environnement)) loadEnvFile(environnement);
-        const email = lireEmailContact(process.env);
         const backend = lireConfigBackend({ ...process.env, BACKEND_URL: process.env.BACKEND_URL || 'http://127.0.0.1:8080' });
         updateConfig({
           vite: {
-            define: { 'import.meta.env.PUBLIC_CONTACT_EMAIL': JSON.stringify(email ?? '') },
+            define: { 'import.meta.env.PUBLIC_CONTACT_EMAIL': JSON.stringify('') },
             server: {
               proxy: {
-                '^/api/(contact|health)$': {
+                '^/(api/(contact|health|config/contact|backoffice/((login|logout|session|settings|contacts|links|tokens)(/[1-9][0-9]*)?|2fa/(setup|verify)))|mcp)$': {
                   target: backend?.origine,
                   timeout: 20_000,
                   proxyTimeout: 20_000,
@@ -68,10 +67,6 @@ export default defineConfig({
             },
           },
         });
-      },
-      'astro:server:setup': () => {
-        if (process.env.VITEST) return;
-        if (!lireEmailContact(process.env)) throw new Error('CONTACT_EMAIL est obligatoire. Copier .env.example vers .env avant npm run dev.');
       },
     },
   }],
@@ -120,7 +115,7 @@ export default defineConfig({
 
   vite: {
     // Le build conserve le marqueur, quelle que soit la machine : le mail
-    // définitif est injecté par Node depuis CONTACT_EMAIL, sans reconstruction.
+    // définitif est injecté depuis la configuration persistée, sans reconstruction.
     define: { 'import.meta.env.PUBLIC_CONTACT_EMAIL': JSON.stringify('') },
     build: { assetsInlineLimit: jamaisDeScriptEnLigne },
   },

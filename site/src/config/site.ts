@@ -19,7 +19,7 @@ export const SITE = {
 } as const;
 
 export const CONTACT = {
-  /** Le serveur remplace ce marqueur depuis CONTACT_EMAIL ; Astro dev lit le .env racine. */
+  /** Le serveur remplace ce marqueur par l’adresse persistée du backoffice. */
   email: import.meta.env.PUBLIC_CONTACT_EMAIL || 'contact@portfolio.invalid',
   linkedin: 'https://www.linkedin.com/in/charles-lindecker/',
   github: 'https://github.com/LINDECKER-Charles',
