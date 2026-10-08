@@ -107,6 +107,18 @@ if [ -z "$(printf '%s' "${domaines}" | tr -d '[:space:]')" ]; then
   exit 1
 fi
 
+# Seul le poste local peut dispenser de 2FA. Une variable recopiee du modele
+# local sur le VPS doit faire echouer le deploiement avant toute mutation.
+environnement_app="$(lire_env APP_ENV)"
+case "${environnement_app}" in
+  ""|test|production) ;;
+  *)
+    echo "APP_ENV doit valoir test ou production sur un environnement servi." >&2
+    echo "development est reserve au poste local (2FA desactivee)." >&2
+    exit 1
+    ;;
+esac
+
 # --- Calques Compose ---------------------------------------------------------
 # Choisis APRES lecture du .env, parce qu'ils en dependent : la mesure
 # d'audience n'existe que sur un environnement qui la demande. Poses ici et pas
@@ -221,7 +233,7 @@ docker compose up -d --remove-orphans
 # --- Sante des deux services -------------------------------------------------
 # Les deux images sont inseparables : un serveur web sain avec une API arretee
 # ne constitue pas un deploiement reussi. La sante Rust est une liveness ; le
-# formulaire reste explicitement indisponible tant que SMTP n'est pas configure.
+# formulaire conserve les demandes meme sans notification SMTP.
 log "Attente de l'etat healthy (web et backend)"
 attendre_sante() {
   local service="$1" cid etat sante=""

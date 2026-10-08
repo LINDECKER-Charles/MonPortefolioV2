@@ -15,8 +15,9 @@ RUN apt-get update \
     && useradd --system --uid 10001 --create-home portfolio
 WORKDIR /app
 COPY --from=build /app/target/release/portfolio-backend /usr/local/bin/portfolio-backend
+RUN mkdir /data && chown portfolio:portfolio /data
 USER portfolio
-ENV BACKEND_ADDR=0.0.0.0:8080
+ENV BACKEND_ADDR=0.0.0.0:8080 DATABASE_PATH=/data/portfolio.sqlite3
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl --fail --silent http://127.0.0.1:8080/api/health >/dev/null || exit 1

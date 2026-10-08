@@ -36,7 +36,7 @@ import { isIP } from 'node:net';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { trouverRedirection } from './redirections.mjs';
-import { lireEmailContact, lireConfigBackend, remplacerEmailContact, relayerApi } from './contact.mjs';
+import { lireEmailContact, lireConfigBackend, remplacerEmailContact, relayerApi, chargerEmailContact } from './contact.mjs';
 
 const ICI = path.dirname(fileURLToPath(import.meta.url));
 
@@ -324,7 +324,7 @@ export function creerServeur({ dossier, env = process.env } = {}) {
   const page404 = path.join(racine, '404.html');
   const mesure = lireConfigMesure(env);
   const hoteCanonique = lireConfigHoteCanonique(env);
-  const emailContact = lireEmailContact(env);
+  let emailContact = lireEmailContact(env);
   const backend = lireConfigBackend(env);
 
   // Le chargeur ne dépend que de l'environnement, fixé pour la vie du
@@ -376,6 +376,9 @@ export function creerServeur({ dossier, env = process.env } = {}) {
   async function envoyer(req, res, chemin, statut, cheminUrl) {
     const extension = path.extname(chemin).toLowerCase();
     const infos = await stat(chemin);
+    if (extension === '.html' && backend) {
+      try { emailContact = await chargerEmailContact(backend); } catch { /* Dernière adresse connue si l’API redémarre. */ }
+    }
     const corpsHtml = extension === '.html' && emailContact
       ? Buffer.from(remplacerEmailContact(await readFile(chemin, 'utf8'), emailContact))
       : null;
@@ -385,7 +388,8 @@ export function creerServeur({ dossier, env = process.env } = {}) {
     const enTetes = {
       ...EN_TETES_COMMUNS,
       'Content-Type': TYPES.get(extension) ?? 'application/octet-stream',
-      'Cache-Control': statut === 200 ? regimeDeCache(cheminUrl, extension) : 'no-cache',
+      'Cache-Control': cheminUrl === '/backoffice' ? 'no-store' : statut === 200 ? regimeDeCache(cheminUrl, extension) : 'no-cache',
+      ...(cheminUrl === '/backoffice' ? { 'X-Robots-Tag': 'noindex, nofollow' } : {}),
       ETag: etag,
     };
     // Un 304 affirme que la ressource existe : jamais en réponse à une adresse inconnue.
@@ -432,8 +436,8 @@ export function creerServeur({ dossier, env = process.env } = {}) {
 
     // Routes API exactes avant les redirections des fichiers et des hôtes :
     // une soumission POST ne doit jamais devenir une navigation GET en 301.
-    if (cible.pathname === '/api' || cible.pathname.startsWith('/api/')) {
-      await relayerApi(req, res, cible.pathname, backend, EN_TETES_COMMUNS);
+    if (cible.pathname === '/mcp' || cible.pathname === '/api' || cible.pathname.startsWith('/api/')) {
+      await relayerApi(req, res, cible.pathname, backend, EN_TETES_COMMUNS, cible.search);
       return;
     }
     if (!METHODES.has(req.method)) {
@@ -527,7 +531,11 @@ export function creerServeur({ dossier, env = process.env } = {}) {
 
   serveur.mesure = mesure;
   serveur.hoteCanonique = hoteCanonique;
-  serveur.emailContact = emailContact;
+  Object.defineProperty(serveur, 'emailContact', { get: () => emailContact });
+  serveur.actualiserEmailContact = async () => {
+    if (backend) emailContact = await chargerEmailContact(backend);
+    return emailContact;
+  };
   serveur.racine = racine;
   return serveur;
 }
@@ -540,6 +548,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   let serveur;
   try {
     serveur = creerServeur();
+    if (!serveur.emailContact) await serveur.actualiserEmailContact();
     if (!serveur.emailContact) throw new Error('CONTACT_EMAIL est obligatoire. Copier .env.example vers .env et renseigner cette adresse.');
   } catch (erreur) {
     // Message seul, sans pile : c'est lui que le déploiement affiche quand le

@@ -29,5 +29,7 @@ services:
       context: ./backend
     pull_policy: build
     environment:
+      APP_ENV: development
+      BACKOFFICE_COOKIE_SECURE: "false"
       CONTACT_EMAIL: ${CONTACT_EMAIL:-charles.lindecker@outlook.fr}
       BACKEND_PROXY_TOKEN: ${BACKEND_PROXY_TOKEN:-local-development-contact-proxy-token}

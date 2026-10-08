@@ -66,7 +66,7 @@ Ce sont des secrets **multi-lignes**, et c'est volontaire : les pousser en un bl
 dix secrets à garder synchronisés, et le fichier arrive sur l'hôte en `chmod 600`.
 
 Les modèles versionnés sont [`.env.test.example`](../.env.test.example) et
-[`.env.prod.example`](../.env.prod.example), commentés ligne à ligne. Le modèle de test est
+[`.env.prod.example`](../.env.prod.example), commentés ligne à ligne. Le modèle de test
 contient les valeurs publiques ; chaque environnement demande son jeton de relais et sa
 configuration SMTP pour l’envoi réel. Récapitulatif :
 
@@ -77,9 +77,14 @@ configuration SMTP pour l’envoi réel. Récapitulatif :
 | `WEB_IMAGE` | non | `ghcr.io/lindecker-charles/monportefoliov2` | idem | image publiée par la CI |
 | `BACKEND_IMAGE` | non | `ghcr.io/lindecker-charles/monportefoliov2-backend` | idem | image Rust publiée avec le site |
 | `IMAGE_TAG` | oui | `staging` | `prod` | étiquette mobile déployée |
-| `CONTACT_EMAIL` | oui | adresse de contact | adresse de contact | adresse affichée et destinataire du formulaire, lue au démarrage |
+| `CONTACT_EMAIL` | base neuve | adresse initiale | adresse initiale | initialisation seulement ; ensuite l’adresse est modifiée dans le backoffice |
+| `APP_ENV` | non | `test` | `production` | `production` par défaut ; seule la valeur `development` dispense de 2FA, réservée au poste local |
+| `BACKOFFICE_EMAIL` | pour administrer | adresse de connexion | adresse de connexion | identifiant indépendant de l’adresse publique de contact |
+| `BACKOFFICE_PASSWORD` | pour administrer | secret propre au test | secret propre à la production | au moins 12 octets, entre apostrophes dans `.env` ; le backend calcule l’empreinte Argon2id |
+| `BACKOFFICE_TOTP_ENCRYPTION_KEY` | pour administrer hors dev | clé propre au test | clé propre à la production | `openssl rand -hex 32` ; chiffre le secret TOTP en SQLite et accompagne les sauvegardes |
+| `BACKOFFICE_COOKIE_SECURE` | non | `true` | `true` | cookie sécurisé sur HTTPS ; `false` réservé au HTTP local |
 | `BACKEND_PROXY_TOKEN` | oui | secret propre au test | secret propre à la production | protège la transmission de l’IP entre Node et Rust ; `openssl rand -hex 32` |
-| `SMTP_HOST` | pour envoyer | relais SMTP | relais SMTP | absent : API active, envoi indisponible (`503`) |
+| `SMTP_HOST` | pour notifier | relais SMTP | relais SMTP | absent : demandes conservées sans notification e-mail |
 | `SMTP_FROM` | avec le relais | expéditeur autorisé | expéditeur autorisé | adresse acceptée par le fournisseur SMTP ; le visiteur reste dans `Reply-To` |
 | `SMTP_PORT`, `SMTP_TLS` | non | `587`, `starttls` | idem | STARTTLS obligatoire ou TLS direct (`465`, `tls`) ; `none` seulement sur boucle locale |
 | `SMTP_USERNAME`, `SMTP_PASSWORD` | ensemble si nécessaires | compte SMTP | compte SMTP | identifiants du relais, uniquement dans le backend |
@@ -94,16 +99,29 @@ configuration SMTP pour l’envoi réel. Récapitulatif :
 
 Points à lire avant de remplir :
 
-- **Le mail est configuré au démarrage.** Modifier `CONTACT_EMAIL` puis redéployer met à
-  jour les pages, les liens et le destinataire sans reconstruire les images. `BACKEND_URL`
-  sert seulement en local à joindre Rust ; Compose fixe la destination à `http://backend:8080`.
+- **L’adresse est gérée dans le backoffice.** `CONTACT_EMAIL` initialise une base neuve ;
+  modifier ensuite le destinataire dans `/backoffice` met à jour les pages, les liens et les
+  prochaines notifications sans redémarrage. Les autres réglages SMTP restent des secrets
+  d’environnement. `BACKEND_URL` sert seulement en local à joindre Rust ; Compose fixe la
+  destination à `http://backend:8080`.
   Le jeton partagé accepte 32 à 256 caractères ASCII imprimables sans espace. Il doit être
   différent entre test et production ; aucune valeur remplie ne doit être versionnée.
 
 - **Le relais SMTP doit autoriser `SMTP_FROM`.** Utiliser les identifiants et l’adresse fournis
   par le service de messagerie. Une adresse publique en Outlook ne signifie pas que le
-  compte autorise automatiquement SMTP. Le succès indique l’acceptation par le relais ;
-  une erreur de livraison n’est jamais présentée comme un message envoyé.
+  compte autorise automatiquement SMTP. Le succès du formulaire confirme l’enregistrement
+  de la demande ; le statut de notification indique séparément l’acceptation par le relais ou
+  l’échec. Une panne SMTP ne fait pas perdre le message.
+
+- **Les identifiants et la clé 2FA restent des secrets.** Mettre `BACKOFFICE_PASSWORD` entre
+  apostrophes dans `ENV_TEST` ou `ENV_PROD` pour préserver ses `$`, `#` et espaces. Utiliser des
+  mots de passe et des clés `BACKOFFICE_TOTP_ENCRYPTION_KEY` différents par environnement.
+  Hors développement, la première connexion configure TOTP ; conserver les huit codes de
+  secours affichés une seule fois. La clé de chiffrement doit être sauvegardée avec la base :
+  une base seule ne permet pas de récupérer le secret TOTP. Récupération d’accès et contrat :
+  [`backend/README.md`](../backend/README.md). Les jetons MCP sont créés et révoqués dans le
+  backoffice ; leurs empreintes vivent dans SQLite, leurs secrets dans les clients choisis,
+  jamais dans le dépôt.
 
 - **La production attend le départ de la V1.** Tant que la V1 déclare `charles-lindecker.com` et
   `www.` sur l'edge, le déploiement de production refuse de démarrer (domaine déjà déclaré par un

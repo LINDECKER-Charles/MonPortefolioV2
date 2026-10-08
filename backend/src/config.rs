@@ -4,9 +4,33 @@ use lettre::{Address, message::Mailbox};
 
 pub struct Config {
     pub address: SocketAddr,
-    pub recipient: Address,
+    pub recipient: Option<Address>,
     pub smtp: Option<SmtpConfig>,
     pub proxy_token: Option<String>,
+    pub database_path: PathBuf,
+    pub backoffice: Option<BackofficeConfig>,
+    pub secure_cookie: bool,
+}
+
+#[derive(Clone)]
+pub struct BackofficeConfig {
+    pub email: String,
+    pub password: String,
+    pub environment: AppEnvironment,
+    pub totp_encryption_key: Option<[u8; 32]>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum AppEnvironment {
+    Development,
+    Test,
+    Production,
+}
+
+impl AppEnvironment {
+    pub fn requires_two_factor(self) -> bool {
+        self != Self::Development
+    }
 }
 
 pub struct SmtpConfig {
@@ -37,11 +61,70 @@ impl Config {
             .unwrap_or_else(|| "127.0.0.1:8080".into())
             .parse()
             .map_err(|_| "BACKEND_ADDR doit être une adresse IP avec un port".to_owned())?;
-        let recipient: Address = value("CONTACT_EMAIL")
-            .ok_or("CONTACT_EMAIL est obligatoire")?
-            .trim()
-            .parse()
-            .map_err(|_| "CONTACT_EMAIL doit être une adresse e-mail valide".to_owned())?;
+        let recipient = value("CONTACT_EMAIL")
+            .map(|email| {
+                if !valid_contact_email(email.trim()) {
+                    return Err(
+                        "CONTACT_EMAIL doit être une adresse e-mail simple et valide".to_owned(),
+                    );
+                }
+                email
+                    .trim()
+                    .parse::<Address>()
+                    .map_err(|_| "CONTACT_EMAIL doit être une adresse e-mail valide".to_owned())
+            })
+            .transpose()?;
+        let database_path = PathBuf::from(
+            value("DATABASE_PATH").unwrap_or_else(|| "data/portfolio.sqlite3".into()),
+        );
+        let environment = match value("APP_ENV").as_deref().unwrap_or("production") {
+            "development" => AppEnvironment::Development,
+            "test" => AppEnvironment::Test,
+            "production" => AppEnvironment::Production,
+            _ => return Err("APP_ENV doit valoir development, test ou production".into()),
+        };
+        let email = value("BACKOFFICE_EMAIL");
+        // Conserver le mot de passe exactement tel qu’il est injecté, sans le normaliser.
+        let password = lookup("BACKOFFICE_PASSWORD").filter(|password| !password.is_empty());
+        let backoffice = match (email, password) {
+            (None, None) => None,
+            (Some(email), Some(password)) => {
+                if !valid_contact_email(email.trim()) {
+                    return Err("BACKOFFICE_EMAIL doit être une adresse e-mail valide".into());
+                }
+                if !(12..=1_024).contains(&password.len()) {
+                    return Err("BACKOFFICE_PASSWORD doit contenir 12 à 1 024 octets".into());
+                }
+                let key = value("BACKOFFICE_TOTP_ENCRYPTION_KEY")
+                    .map(|value| parse_encryption_key(&value))
+                    .transpose()?;
+                if environment.requires_two_factor() && key.is_none() {
+                    return Err(
+                        "BACKOFFICE_TOTP_ENCRYPTION_KEY est obligatoire hors développement".into(),
+                    );
+                }
+                Some(BackofficeConfig {
+                    email: email.trim().to_ascii_lowercase(),
+                    password,
+                    environment,
+                    totp_encryption_key: key,
+                })
+            }
+            _ => {
+                return Err(
+                    "BACKOFFICE_EMAIL et BACKOFFICE_PASSWORD doivent être renseignés ensemble"
+                        .into(),
+                );
+            }
+        };
+        let secure_cookie = match value("BACKOFFICE_COOKIE_SECURE")
+            .as_deref()
+            .unwrap_or("true")
+        {
+            "true" => true,
+            "false" => false,
+            _ => return Err("BACKOFFICE_COOKIE_SECURE doit valoir true ou false".into()),
+        };
         let proxy_token = lookup("BACKEND_PROXY_TOKEN").filter(|token| !token.is_empty());
         if proxy_token.as_ref().is_some_and(|token| {
             !(32..=256).contains(&token.len()) || !token.bytes().all(|byte| byte.is_ascii_graphic())
@@ -106,8 +189,54 @@ impl Config {
             recipient,
             smtp,
             proxy_token,
+            database_path,
+            backoffice,
+            secure_cookie,
         })
     }
+}
+
+fn parse_encryption_key(value: &str) -> Result<[u8; 32], String> {
+    let invalid =
+        || "BACKOFFICE_TOTP_ENCRYPTION_KEY doit contenir 64 caractères hexadécimaux".to_owned();
+    if value.len() != 64 || !value.bytes().all(|byte| byte.is_ascii_hexdigit()) {
+        return Err(invalid());
+    }
+    let mut key = [0; 32];
+    for (index, byte) in key.iter_mut().enumerate() {
+        *byte = u8::from_str_radix(&value[index * 2..index * 2 + 2], 16).map_err(|_| invalid())?;
+    }
+    Ok(key)
+}
+
+/// Le destinataire est aussi interpolé dans les pages publiques du serveur statique.
+pub fn valid_contact_email(email: &str) -> bool {
+    if email.len() > 254 || email.contains("..") || email != email.trim() {
+        return false;
+    }
+    let Some((local, domain)) = email.split_once('@') else {
+        return false;
+    };
+    if local.is_empty()
+        || !local
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || b"._%+-".contains(&byte))
+    {
+        return false;
+    }
+    if !domain
+        .bytes()
+        .all(|byte| byte.is_ascii_alphanumeric() || b".-".contains(&byte))
+    {
+        return false;
+    }
+    let Some((before, tld)) = domain.rsplit_once('.') else {
+        return false;
+    };
+    !before.is_empty()
+        && tld.len() >= 2
+        && tld.bytes().all(|byte| byte.is_ascii_alphabetic())
+        && email.parse::<Address>().is_ok()
 }
 
 fn is_loopback_host(host: &str) -> bool {
@@ -149,8 +278,59 @@ mod tests {
     }
 
     #[test]
-    fn starts_without_smtp_but_requires_recipient() {
-        assert!(parse(&[]).is_err());
+    fn validates_email_password_environment_and_two_factor_key() {
+        let credentials = [
+            ("BACKOFFICE_EMAIL", "admin@example.org"),
+            ("BACKOFFICE_PASSWORD", "long enough password"),
+        ];
+        assert!(parse(&credentials).is_err());
+        assert!(parse(&[("BACKOFFICE_EMAIL", "admin@example.org")]).is_err());
+        assert!(parse(&[("BACKOFFICE_PASSWORD", "long enough password")]).is_err());
+        assert!(parse(&[("APP_ENV", "dev")]).is_err());
+        for environment in ["production", "test"] {
+            let config = parse(&[
+                credentials[0],
+                credentials[1],
+                ("APP_ENV", environment),
+                ("BACKOFFICE_TOTP_ENCRYPTION_KEY", &"42".repeat(32)),
+            ])
+            .unwrap();
+            assert!(config.backoffice.unwrap().environment.requires_two_factor());
+        }
+        let development =
+            parse(&[credentials[0], credentials[1], ("APP_ENV", "development")]).unwrap();
+        assert!(
+            !development
+                .backoffice
+                .unwrap()
+                .environment
+                .requires_two_factor()
+        );
+        for key in ["42".repeat(31), "x".repeat(64)] {
+            assert!(
+                parse(&[
+                    credentials[0],
+                    credentials[1],
+                    ("BACKOFFICE_TOTP_ENCRYPTION_KEY", &key)
+                ])
+                .is_err()
+            );
+        }
+        let default = parse(&[
+            credentials[0],
+            credentials[1],
+            ("BACKOFFICE_TOTP_ENCRYPTION_KEY", &"42".repeat(32)),
+        ])
+        .unwrap();
+        assert_eq!(
+            default.backoffice.unwrap().environment,
+            AppEnvironment::Production
+        );
+    }
+
+    #[test]
+    fn starts_without_smtp_and_can_reuse_an_existing_database_recipient() {
+        assert!(parse(&[]).unwrap().recipient.is_none());
         let config = parse(&[("CONTACT_EMAIL", "owner@example.org")]).unwrap();
         assert!(config.smtp.is_none());
         assert_eq!(config.address.to_string(), "127.0.0.1:8080");

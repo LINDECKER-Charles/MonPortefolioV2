@@ -8,5 +8,6 @@
 # Système et éditeurs.
 .DS_Store
 Thumbs.db
+/data/
 .idea/
 .vscode/

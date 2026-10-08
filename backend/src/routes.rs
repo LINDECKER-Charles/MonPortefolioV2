@@ -19,6 +19,9 @@ pub fn router(state: AppState) -> Router {
     Router::new()
         .route("/api/health", get(health))
         .route("/api/contact", post(contact))
+        .route("/api/config/contact", get(contact_config))
+        .merge(crate::admin::routes(state.clone()))
+        .merge(crate::mcp::routes())
         .fallback(|| async {
             ApiError::new(
                 StatusCode::NOT_FOUND,
@@ -40,6 +43,12 @@ pub fn router(state: AppState) -> Router {
 
 async fn health() -> Json<Value> {
     Json(json!({ "status": "ok", "service": "portfolio-backend" }))
+}
+
+async fn contact_config(State(state): State<AppState>) -> Result<Json<Value>, ApiError> {
+    Ok(Json(
+        json!({"email":state.store.contact_email().map_err(crate::admin::storage_error)?}),
+    ))
 }
 
 async fn contact(
@@ -75,30 +84,54 @@ async fn contact(
             }
         })?;
     let message = payload.validate()?;
-    let delivery = state.delivery.as_ref().ok_or_else(|| {
-        ApiError::new(
-            StatusCode::SERVICE_UNAVAILABLE,
-            "CONTACT_UNAVAILABLE",
-            "Le formulaire est temporairement indisponible. Vous pouvez me contacter par e-mail.",
+    let recipient: Option<lettre::Address> = if state.delivery.is_some() {
+        Some(
+            state
+                .store
+                .contact_email()
+                .map_err(crate::admin::storage_error)?
+                .parse()
+                .map_err(|_| crate::admin::storage_error(crate::storage::StoreError))?,
         )
-    })?;
-    let _permit = state
-        .mail_slots
-        .try_acquire()
-        .map_err(|_| ApiError::rate_limited(10))?;
-    delivery.deliver(message).await.map_err(|_| {
-        ApiError::new(
-            StatusCode::BAD_GATEWAY,
-            "DELIVERY_FAILED",
-            "Le message n’a pas pu être envoyé. Réessayez plus tard ou contactez-moi par e-mail.",
-        )
-    })?;
+    } else {
+        None
+    };
+    let initial_status = if state.delivery.is_some() {
+        "pending"
+    } else {
+        "unconfigured"
+    };
+    let id = state
+        .store
+        .save_contact(&message, initial_status)
+        .map_err(crate::admin::storage_error)?;
+    if let (Some(delivery), Some(recipient)) = (state.delivery.as_ref(), recipient) {
+        // La persistance précède toujours la notification, y compris si SMTP est indisponible.
+        let store = state.store.clone();
+        let delivery = delivery.clone();
+        let permit = state.mail_slots.clone().try_acquire_owned();
+        // L’envoi et sa mise à jour continuent même si le client ferme sa connexion.
+        let notification = tokio::spawn(async move {
+            let sent = match permit {
+                Ok(_permit) => delivery.deliver(message, recipient).await.is_ok(),
+                Err(_) => false,
+            };
+            store.set_delivery_status(id, if sent { "sent" } else { "failed" })
+        });
+        if !matches!(notification.await, Ok(Ok(()))) {
+            eprintln!("Le statut de notification d’une demande n’a pas pu être enregistré.");
+        }
+    }
     Ok(Json(json!({
-        "message": "Votre message a bien été envoyé. Merci pour votre prise de contact."
+        "message": "Votre message a bien été enregistré. Merci pour votre prise de contact."
     })))
 }
 
-fn client_ip(peer: SocketAddr, headers: &HeaderMap, expected_token: Option<&str>) -> IpAddr {
+pub(crate) fn client_ip(
+    peer: SocketAddr,
+    headers: &HeaderMap,
+    expected_token: Option<&str>,
+) -> IpAddr {
     let peer_ip = normalize_ip(peer.ip());
     let trusted_peer = match peer_ip {
         IpAddr::V4(address) => address.is_loopback() || address.is_private(),

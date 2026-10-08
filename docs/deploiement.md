@@ -62,14 +62,17 @@ depuis l'environnement du conteneur.
 
 Chaque pile possède aussi un service `backend:8080`, sur son réseau Compose seulement :
 aucun port publié, aucune étiquette Caddy et aucune connexion au réseau `edge`. Le serveur
-Node relaie uniquement `POST /api/contact` et `GET /api/health` en même origine, avec un
-corps limité à 24 Kio et un délai de 20 secondes. Le réseau bridge permet au backend de
-joindre le relais SMTP. `CONTACT_EMAIL` est lu par les deux services ; Node remplace le
-marqueur du build dans les pages HTML, sans script et sans reconstruire l’image.
+Node relaie les routes publiques de contact et de santé, les routes explicitement autorisées
+du backoffice et `/mcp`, en même origine. Les corps sont limités à 24 Kio et le délai à
+20 secondes. Le réseau bridge permet au backend de joindre le relais SMTP. `CONTACT_EMAIL`
+initialise seulement une base neuve ; l’adresse enregistrée dans SQLite pilote ensuite le
+destinataire et les pages HTML sans script ni reconstruction. Le volume `portfolio-data`,
+propre à chaque nom de projet Compose, conserve les demandes et les réglages au déploiement.
+Sauvegarde et connexion au backoffice : [`backend/README.md`](../backend/README.md).
 
 En ligne, Node utilise l’adresse ajoutée par Caddy dans `X-Forwarded-For` et transmet
 `X-Contact-Client-IP` avec le secret `BACKEND_PROXY_TOKEN`. Rust ignore une IP transmise
-sans ce jeton. Le backend compte cinq tentatives par IP sur dix minutes ; son état reste en
+sans ce jeton. Le formulaire compte deux tentatives par IP sur une heure ; son état reste en
 mémoire et se réinitialise au redémarrage. Le contrôle de santé confirme que le processus
 répond, y compris lorsque SMTP n’est pas encore renseigné.
 
@@ -323,8 +326,16 @@ npx playwright test               # navigateur
 `server/server.mjs` : ni CSP, ni redirections, ni vraie 404, et `/mesure.js` y est le fichier sans
 effet de `public/`. Le serveur de production sert exactement ce qui part en ligne.
 Le proxy Vite joint Rust sur `BACKEND_URL` (`http://127.0.0.1:8080` par défaut).
-Renseigner les variables SMTP du `.env` pour envoyer ; sans relais, le formulaire reste
-accessible et explique l’indisponibilité. Les tests utilisent exclusivement des relais locaux.
+Renseigner les variables SMTP du `.env` pour recevoir les notifications e-mail. Sans relais,
+le formulaire conserve les demandes dans le backoffice. Activer son accès avec
+`BACKOFFICE_EMAIL` et `BACKOFFICE_PASSWORD` (au moins 12 octets, entre apostrophes dans `.env`).
+Le modèle local fixe `APP_ENV=development` et dispense de 2FA. Le calque Compose local impose
+également ce mode. Les environnements servis utilisent `APP_ENV=test` ou `production` ; la
+première connexion y impose la configuration TOTP et affiche les codes de secours. Fournir
+`BACKOFFICE_TOTP_ENCRYPTION_KEY` (`openssl rand -hex 32`) et garder
+`BACKOFFICE_COOKIE_SECURE=true` sur HTTPS. Sauvegarder la clé avec la base SQLite.
+Les tests utilisent exclusivement des relais locaux. Ne jamais supprimer le volume de données
+pendant un déploiement ; prévoir sa sauvegarde indépendamment des images.
 
 Pour vérifier l'image elle-même :
 
