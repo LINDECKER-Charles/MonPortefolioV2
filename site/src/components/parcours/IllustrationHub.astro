@@ -1,0 +1,204 @@
+---
+interface Props {
+  scene: 'professionnel' | 'competences' | 'formation';
+  class?: string;
+}
+
+const { scene, class: classe } = Astro.props;
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 440 260"
+  width="440"
+  height="260"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.7"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  class:list={['illustration-hub', classe]}
+  aria-hidden="true"
+  focusable="false"
+>
+  {scene === 'professionnel' && (
+    <>
+      <g class="illustration-hub__secondaire">
+        <path d="M22 216h396M34 224h372M55 224v20m341-20v20" />
+        <path d="M274 80h18v-18h14M350 101v24M274 147h35v10h8" />
+        <path d="m347 120 3 5 3-5" />
+      </g>
+
+      <rect class="illustration-hub__papier" x="48" y="34" width="226" height="148" rx="7" />
+      <rect class="illustration-hub__teinte" x="57" y="43" width="208" height="19" rx="3" />
+      <path d="M58 65h206M151 181v22h20v-22M136 203h50l9 7h-68l9-7" />
+      <circle class="illustration-hub__plein" cx="64" cy="53" r="2" />
+      <circle class="illustration-hub__plein" cx="74" cy="53" r="2" />
+      <circle class="illustration-hub__plein" cx="84" cy="53" r="2" />
+      <path d="M68 77v91m77-91v91" class="illustration-hub__secondaire" />
+
+      <path d="m84 91-7 7 7 7m40-14 7 7-7 7m-13-18-6 22M87 121h39M87 132h28M87 143h35M98 154h28" />
+      <path d="M87 121h11M98 132h14" class="illustration-hub__accent" />
+      <rect class="illustration-hub__teinte" x="169" y="82" width="64" height="27" rx="3" />
+      <rect x="169" y="82" width="64" height="27" rx="3" />
+      <path d="M178 92h14m-14 7h30M201 109v16m-29 0h58m-58 0v8m58-8v8" />
+      <rect x="158" y="133" width="28" height="23" rx="3" />
+      <rect x="216" y="133" width="28" height="23" rx="3" />
+      <path d="M165 144h14m-7-7v14M224 144h12" />
+
+      <rect class="illustration-hub__papier" x="306" y="36" width="88" height="64" rx="5" />
+      <path d="M306 51h88" />
+      <path d="M316 44h14" class="illustration-hub__accent" />
+      <rect class="illustration-hub__teinte" x="317" y="62" width="24" height="26" rx="3" />
+      <rect x="317" y="62" width="24" height="26" rx="3" />
+      <rect x="359" y="62" width="24" height="26" rx="3" />
+      <path d="M341 75h18m-7-4 4 4-4 4" />
+
+      <path class="illustration-hub__papier" d="M318 139v38c0 6 15 11 33 11s33-5 33-11v-38" />
+      <ellipse class="illustration-hub__papier" cx="351" cy="139" rx="33" ry="11" />
+      <path d="M318 152c0 6 15 11 33 11s33-5 33-11M318 165c0 6 15 11 33 11s33-5 33-11" />
+      <ellipse class="illustration-hub__teinte" cx="351" cy="139" rx="26" ry="6" />
+      <path d="M326 177h8" class="illustration-hub__accent" />
+
+      <path class="illustration-hub__papier" d="m90 219 145-1 13 17-172 1 14-17Z" />
+      <path class="illustration-hub__secondaire" d="m94 225 137-1M91 230l144-1M109 221l-3 10m25-10-1 10m25-10v10m23-10 1 10m23-10 3 10M120 235h81" />
+      <path class="illustration-hub__papier" d="m285 209 59-17 47 23-61 17-45-23Z" />
+      <path d="m308 210 16-5 14 7-16 5-14-7Zm31 9 13-4 12 6-14 4-11-6M322 217v4l17 2M338 212l11-3 12 6" />
+      <path d="m397 182 15 27-5 3-15-27 5-3Zm-5 3-1-7 6 4m10 30 6 4-1-7" />
+      <path d="M21 82h11m-5-5v10M410 126h8" class="illustration-hub__secondaire" />
+    </>
+  )}
+
+  {scene === 'competences' && (
+    <>
+      <g class="illustration-hub__secondaire" stroke-dasharray="3 6">
+        <path d="M105 43v177M340 45v177M224 70v177" />
+      </g>
+      <path class="illustration-hub__secondaire" d="M377 36v186m-7-186h14m-14 62h14m-14 61h14m-14 63h14" />
+
+      <path class="illustration-hub__teinte" d="m105 220 116-24 119 26-116 25-119-27Z" />
+      <path class="illustration-hub__papier" d="m105 220 116-24 119 26-116 25-119-27Z" />
+      <path d="M105 220v7l119 27 116-25v-7M224 247v7" class="illustration-hub__accent" />
+      <path d="m157 222 17-4 16 4 31-7 19 4 29-6M174 218v-8m47 5v-9m48 7v-9" />
+      <circle class="illustration-hub__plein" cx="174" cy="210" r="3" />
+      <circle class="illustration-hub__plein" cx="221" cy="206" r="3" />
+      <circle class="illustration-hub__plein" cx="269" cy="204" r="3" />
+      <path d="m291 218 6 6 14-14" class="illustration-hub__accent" />
+
+      <path class="illustration-hub__papier" d="m105 159 116-24 119 26-116 25-119-27Z" />
+      <path d="M105 159v7l119 27 116-25v-7M224 186v7" />
+      <path class="illustration-hub__teinte" d="m106 160 118 26v7l-118-27v-6Z" />
+      <path class="illustration-hub__papier" d="M191 149v21c0 4 14 8 31 8s31-4 31-8v-21" />
+      <ellipse class="illustration-hub__papier" cx="222" cy="149" rx="31" ry="8" />
+      <ellipse class="illustration-hub__teinte" cx="222" cy="149" rx="24" ry="4" />
+      <path d="M191 159c0 4 14 8 31 8s31-4 31-8M262 161l18-4 13 3" />
+
+      <path class="illustration-hub__papier" d="m105 98 116-24 119 26-116 25-119-27Z" />
+      <path d="M105 98v7l119 27 116-25v-7M224 125v7" />
+      <path class="illustration-hub__teinte" d="m106 99 118 26v7l-118-27v-6Z" />
+      <path class="illustration-hub__plein" d="m190 98 31-7 33 7-31 7-33-7Z" />
+      <path d="m221 91-1-9m3 23v11m-33-18-23-5m87 5 22-5M193 90l-16-4m17 20-18 5m73-3 17 4m-20-23 17-5" />
+      <path d="m143 99 13-3 14 3-14 3-13-3Zm132 6 14-3 14 3-14 3-14-3Z" />
+      <circle class="illustration-hub__plein" cx="167" cy="93" r="2" />
+      <circle class="illustration-hub__plein" cx="276" cy="93" r="2" />
+
+      <path class="illustration-hub__papier" d="m105 36 116-24 119 26-116 25-119-27Z" />
+      <path d="M105 36v7l119 27 116-25v-7M224 63v7" class="illustration-hub__accent" />
+      <path class="illustration-hub__teinte" d="m106 37 118 26v7L106 43v-6Z" />
+      <path d="m148 35 67-14 89 20-67 14-89-20Zm9 2 67-14m-61 15 21-4 16 4-21 4-16-4Zm35 8 20-4 17 4-21 4-16-4Zm36-12 45 10m-34-2 23 5" />
+      <path d="m171 30 6-1m5 0 6-1m5-1 6-1" class="illustration-hub__accent" />
+      <path class="illustration-hub__secondaire" d="M60 57h18m-9-9v18M63 184h18M393 121h17m-8-8v16" />
+    </>
+  )}
+
+  {scene === 'formation' && (
+    <>
+      <path class="illustration-hub__secondaire" d="M24 229h386M31 237h372" />
+      <path class="illustration-hub__teinte" d="M42 70c61-17 111-18 163 4 55-21 106-21 168-3v148c-63-17-113-17-168 5-53-21-104-21-163-4V70Z" />
+      <path d="M42 70v150c60-17 110-17 163 4 55-22 105-22 168-5V71M48 217c59-14 108-14 157 7m0 0c53-20 102-20 162-6" />
+      <path class="illustration-hub__papier" d="M51 61c58-17 105-14 154 6v144c-48-19-97-19-154-4V61Z" />
+      <path class="illustration-hub__papier" d="M205 67c48-20 99-24 158-8v148c-58-16-108-16-158 4V67Z" />
+      <path d="M205 72v134M198 72c-2 42-2 86 0 129M213 72c2 42 2 86 0 129" class="illustration-hub__secondaire" />
+      <path d="M199 83h12m-12 26h12m-12 27h12m-12 28h12m-12 27h12" />
+
+      <path d="M84 111v10c0 10 30 1 30 16v12c0 13 39 1 39 17" class="illustration-hub__secondaire" />
+      <circle class="illustration-hub__papier" cx="84" cy="99" r="12" />
+      <circle class="illustration-hub__papier" cx="114" cy="149" r="12" />
+      <circle class="illustration-hub__plein" cx="153" cy="180" r="12" />
+      <path d="m79 99 4 4 7-8m19 54 4 4 7-8" class="illustration-hub__accent" />
+      <path class="illustration-hub__secondaire" d="M105 91c20-2 40 0 60 6m-60 2c15-1 29 1 42 4M66 145c8-1 16-1 23-1m-23 8h19M72 175c16-3 30-3 44 0m-44 8c14-3 27-3 38-1" />
+      <path class="illustration-hub__papier" d="m194 215 2 24 10-7 10 6-2-27" />
+      <path class="illustration-hub__teinte" d="m194 215 2 24 10-7 10 6-2-27-20 4Z" />
+
+      <path class="illustration-hub__papier" d="m241 47 140 9-7 111-140-9 7-111Z" />
+      <path d="m251 59 119 7-5 90-120-8 6-89Z" />
+      <path class="illustration-hub__secondaire" d="m270 82 77 5m-65 5 51 3M260 110l24 2m-24 6 39 3" />
+      <path class="illustration-hub__teinte" d="m316 137-4 33 13-6 10 8 2-34-21-1Z" />
+      <path d="m318 137-6 33 13-6 10 8 2-33" />
+      <path class="illustration-hub__papier" d="m327 111 5 4 7-1 2 7 5 4-3 6v7l-7 2-4 5-6-3-7 1-2-7-5-4 3-6v-7l7-2 5-5Z" />
+      <circle cx="328" cy="128" r="10" />
+      <path d="m323 128 4 4 7-8" class="illustration-hub__accent" />
+      <path class="illustration-hub__secondaire" d="m228 181 72-2m-72 10 87-1M345 181v13l-13-1" />
+
+      <path class="illustration-hub__papier" d="m390 179 15 40-7 3-15-40 7-3Z" />
+      <path d="m383 182-1-11 8 8m8 43 7 10 0-13M387 182l14 38" />
+      <path d="M22 108h11m-5-5v10M404 64h12m-6-6v12" class="illustration-hub__secondaire" />
+    </>
+  )}
+</svg>
+
+<style>
+  .illustration-hub {
+    display: block;
+    width: 100%;
+    height: auto;
+    color: inherit;
+  }
+
+  .illustration-hub path,
+  .illustration-hub rect,
+  .illustration-hub circle,
+  .illustration-hub ellipse {
+    vector-effect: non-scaling-stroke;
+  }
+
+  .illustration-hub__papier {
+    fill: var(--hub-illustration-paper, transparent);
+  }
+
+  .illustration-hub__teinte {
+    fill: currentColor;
+    fill-opacity: 0.12;
+    stroke: none;
+  }
+
+  .illustration-hub__plein {
+    fill: currentColor;
+    stroke: none;
+  }
+
+  .illustration-hub__accent {
+    stroke-width: 2.2;
+  }
+
+  .illustration-hub__secondaire {
+    opacity: 0.65;
+    stroke-width: 1.35;
+  }
+
+  @media (max-width: 640px) {
+    .illustration-hub__secondaire {
+      display: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .illustration-hub__papier {
+      fill: Canvas;
+    }
+
+    .illustration-hub__teinte {
+      fill-opacity: 0.2;
+    }
+  }
+</style>

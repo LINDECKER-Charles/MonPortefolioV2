@@ -8,6 +8,24 @@ const rubriques = [
   ['Formation et certifications', '/parcours/formation'],
 ] as const;
 
+test('chaque illustration du hub ouvre la page de son panneau', async ({ page }) => {
+  await page.goto('/parcours');
+  for (const [nom, chemin] of rubriques) {
+    const entree = page.getByRole('navigation', { name: 'Explorer le parcours', exact: true }).getByRole('link', { name: nom, exact: true });
+    const illustration = entree.locator('svg').first();
+    await illustration.scrollIntoViewIfNeeded();
+    const cadre = await illustration.boundingBox();
+    if (!cadre) throw new Error(`Illustration absente pour ${nom}`);
+
+    // Le centre du dessin appartient au lien, même si le SVG ignore les événements de pointeur.
+    await page.mouse.click(cadre.x + cadre.width / 2, cadre.y + cadre.height / 2);
+    await expect(page).toHaveURL(new RegExp(`${chemin}$`));
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(nom);
+    await page.getByRole('navigation', { name: 'Navigation du parcours', exact: true }).getByRole('link', { name: 'Vue d’ensemble', exact: true }).click();
+    await expect(page).toHaveURL(/\/parcours$/);
+  }
+});
+
 test.describe('navigation sans JavaScript', () => {
   test.use({ javaScriptEnabled: false });
 
@@ -81,6 +99,23 @@ test('les pages du parcours restent contrastées à l’impression depuis le mod
     await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
     const titre = await page.getByRole('heading', { level: 1 }).evaluate((element) => getComputedStyle(element).color);
     expect(contrasteSurBlanc(titre)).toBeGreaterThanOrEqual(7);
+    if (chemin === '/parcours') {
+      const hub = page.getByRole('navigation', { name: 'Explorer le parcours', exact: true });
+      for (const [nom] of rubriques) {
+        const panneau = hub.getByRole('link', { name: nom, exact: true });
+        await expect(panneau).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+        const descriptionId = await panneau.getAttribute('aria-describedby');
+        if (!descriptionId) throw new Error(`Description absente pour ${nom}`);
+        const description = page.locator(`[id="${descriptionId}"]`);
+        await expect(description).toBeVisible();
+        const [couleurTitre, couleurDescription] = await Promise.all([
+          panneau.getByRole('heading', { level: 2 }).evaluate((element) => getComputedStyle(element).color),
+          description.evaluate((element) => getComputedStyle(element).color),
+        ]);
+        expect(contrasteSurBlanc(couleurTitre)).toBeGreaterThanOrEqual(4.5);
+        expect(contrasteSurBlanc(couleurDescription)).toBeGreaterThanOrEqual(4.5);
+      }
+    }
   }
   const date = await page.locator('#formation .formation-date').last().evaluate((element) => getComputedStyle(element).color);
   expect(contrasteSurBlanc(date)).toBeGreaterThanOrEqual(4.5);

@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import FilAriane from '../components/pages/FilAriane.astro';
-import Picto from '../components/ui/Picto.astro';
+import IllustrationHub from '../components/parcours/IllustrationHub.astro';
 import { PAGES_PARCOURS } from '../config/parcours';
 import { SITE } from '../config/site';
 import '../styles/profondeur.css';
@@ -14,42 +14,220 @@ const description = 'Découvrez le parcours de Charles Lindecker à travers ses 
     <FilAriane courant="Parcours" />
     <header class="page-hero">
       <h1>Mon parcours</h1>
-      <p class="page-hero__intro">Mes expériences, mes compétences et les étapes de ma formation.</p>
+      <div class="parcours-hub__introduction">
+        <p class="parcours-hub__note">Apprendre, construire, transmettre.</p>
+        <p class="page-hero__intro">Je code depuis mes 13 ans. Voici les expériences, les savoir-faire et les apprentissages qui ont suivi.</p>
+      </div>
     </header>
     <nav class="entrees-parcours" aria-label="Explorer le parcours">
       <ul role="list">
-        {PAGES_PARCOURS.map((page, index) => <li>
+        {PAGES_PARCOURS.map((page, index) => <li class:list={['entrees-parcours__entree', { 'entrees-parcours__entree--metier': index === 0 }]}>
           <a href={page.href} aria-labelledby={`entree-parcours-${index}`} aria-describedby={`description-parcours-${index}`}>
-            <span class="entrees-parcours__picto"><Picto nom={page.picto} taille={56} /></span>
-            <h2 id={`entree-parcours-${index}`}>{page.titre}</h2>
-            <p id={`description-parcours-${index}`}>{page.description}</p>
-            <span class="entrees-parcours__repere">{page.repere}</span>
-            <span class="entrees-parcours__action" aria-hidden="true">Ouvrir la page</span>
+            <div class="entrees-parcours__texte">
+              <h2 id={`entree-parcours-${index}`}>{page.titre}</h2>
+              <p id={`description-parcours-${index}`}>{page.description}</p>
+            </div>
+            <div class="entrees-parcours__dessin" aria-hidden="true">
+              <IllustrationHub scene={page.illustration} />
+            </div>
+            <span class="entrees-parcours__action" aria-hidden="true">
+              {page.action}
+              <span class="entrees-parcours__fleche">↗</span>
+            </span>
           </a>
         </li>)}
       </ul>
     </nav>
-    <p class="parcours-hub__suite">Les projets montrent ce que ce parcours a fait naître. <a href="/projets">Voir les projets</a></p>
+    <div class="parcours-hub__suite">
+      <p>Et pour voir ce que j’en fais…</p>
+      <a href="/projets">Mes projets <span aria-hidden="true">↗</span></a>
+    </div>
   </div>
 </Base>
 
 <style>
-  .parcours-hub { padding-bottom: var(--s8); }
-  .parcours-hub .page-hero { padding-block: var(--s5) var(--s7); }
-  .parcours-hub .page-hero h1 { font-size: clamp(2.5rem, 1.8rem + 3vw, 4.5rem); }
-  .parcours-hub .page-hero__intro { margin-top: var(--s4); font-size: var(--t-corps); max-width: 60ch; }
-  .entrees-parcours ul { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s5); padding: 0; margin: 0; list-style: none; }
-  .entrees-parcours li { min-width: 0; }
-  .entrees-parcours a { display: flex; flex-direction: column; align-items: start; height: 100%; padding: var(--s6); border: 1px solid var(--filet); border-radius: var(--rayon); background: var(--blanc); color: var(--encre); text-decoration: none; }
+  .parcours-hub { padding-bottom: var(--s7); }
+  .parcours-hub .page-hero {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: var(--s7);
+    align-items: center;
+    padding-block: var(--s4) var(--s6);
+  }
+  .parcours-hub .page-hero h1 {
+    max-width: 8ch;
+    font-size: clamp(3rem, 2rem + 3.6vw, 5.5rem);
+    letter-spacing: -.055em;
+  }
+  .parcours-hub__note {
+    color: var(--bleu);
+    font-family: var(--font-note);
+    font-style: italic;
+    font-size: clamp(1.5rem, 1rem + 1vw, 2rem);
+    line-height: 1.25;
+  }
+  .parcours-hub .page-hero__intro {
+    max-width: 47ch;
+    margin-top: var(--s3);
+    color: var(--graphite);
+    font-size: var(--t-petit);
+    line-height: 1.5;
+  }
+  .entrees-parcours ul {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: var(--s4);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  .entrees-parcours__entree { min-width: 0; }
+  .entrees-parcours__entree--metier { grid-row: span 2; }
+  .entrees-parcours a {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(130px, .7fr);
+    grid-template-rows: 1fr auto;
+    align-items: center;
+    gap: var(--s4) var(--s3);
+    min-height: 204px;
+    height: 100%;
+    padding: var(--s5) var(--s6);
+    border: 1px solid var(--filet);
+    border-radius: var(--rayon);
+    background: var(--blanc);
+    --hub-illustration-paper: var(--blanc);
+    color: var(--encre);
+    text-decoration: none;
+  }
   .entrees-parcours a:hover { border-color: var(--bleu); }
-  .entrees-parcours__picto { color: var(--bleu); margin-bottom: var(--s5); }
-  .entrees-parcours h2 { font-size: clamp(1.4rem, 1.1rem + 0.7vw, 1.75rem); line-height: 1.2; margin-bottom: var(--s4); }
-  .entrees-parcours p { font-size: var(--t-petit); max-width: 30ch; }
-  .entrees-parcours__repere { display: block; margin-top: var(--s4); font-size: var(--t-etiquette); color: var(--graphite); line-height: 1.5; }
-  .entrees-parcours__action { display: flex; align-items: center; gap: var(--s2); padding-top: var(--s6); margin-top: auto; color: var(--bleu); font-size: var(--t-petit); font-weight: 700; text-decoration: underline; text-underline-offset: 0.2em; }
-  .parcours-hub__suite { margin-top: var(--s6); color: var(--graphite); font-size: var(--t-petit); }
-  .parcours-hub__suite a { display: inline-flex; align-items: center; min-height: 44px; }
-  @media (max-width: 900px) { .entrees-parcours ul { grid-template-columns: minmax(0, 1fr); } .entrees-parcours a { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 0 var(--s5); padding: var(--s5); } .entrees-parcours__picto { grid-row: span 4; margin-bottom: 0; } .entrees-parcours h2, .entrees-parcours p, .entrees-parcours__repere, .entrees-parcours__action { grid-column: 2; } .entrees-parcours h2 { margin-bottom: var(--s3); } .entrees-parcours__repere { margin-top: var(--s3); } .entrees-parcours__action { padding-top: var(--s4); } }
-  @media (max-width: 440px) { .entrees-parcours a { grid-template-columns: 36px minmax(0, 1fr); gap: 0 var(--s4); padding: var(--s4); } .entrees-parcours__picto :global(svg) { width: 36px; height: 36px; } }
-  @media print { .entrees-parcours a { break-inside: avoid; } }
+  .entrees-parcours a:focus-visible {
+    outline: 3px solid var(--bleu);
+    outline-offset: 5px;
+  }
+  .entrees-parcours__texte { position: relative; z-index: 1; }
+  .entrees-parcours h2 {
+    max-width: 18ch;
+    margin-bottom: var(--s3);
+    font-size: clamp(1.5rem, 1.2rem + .6vw, 1.8rem);
+    line-height: 1.15;
+    letter-spacing: -.025em;
+  }
+  .entrees-parcours p {
+    max-width: 30ch;
+    color: var(--graphite);
+    font-size: var(--t-petit);
+    line-height: 1.5;
+  }
+  .entrees-parcours__dessin { color: var(--bleu); }
+  .entrees-parcours__dessin :global(svg) { display: block; width: 100%; height: auto; }
+  .entrees-parcours__action {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s4);
+    padding-top: var(--s3);
+    border-top: 1px solid var(--filet);
+    color: var(--bleu);
+    font-size: var(--t-petit);
+    font-weight: 600;
+  }
+  .entrees-parcours a:hover .entrees-parcours__action {
+    text-decoration: underline;
+    text-underline-offset: .2em;
+  }
+  .entrees-parcours__fleche { font-size: 1.5rem; line-height: 1; }
+  .entrees-parcours__entree--metier a {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr auto;
+    gap: var(--s4);
+    background: var(--bleu);
+    --hub-illustration-paper: var(--bleu);
+    border-color: var(--bleu);
+    color: var(--sur-bleu);
+  }
+  .entrees-parcours__entree--metier h2 {
+    max-width: 17ch;
+    font-size: clamp(1.9rem, 1.3rem + 1.2vw, 2.6rem);
+  }
+  .entrees-parcours__entree--metier p,
+  .entrees-parcours__entree--metier .entrees-parcours__dessin,
+  .entrees-parcours__entree--metier .entrees-parcours__action { color: inherit; }
+  .entrees-parcours__entree--metier p { max-width: 35ch; }
+  .entrees-parcours__entree--metier .entrees-parcours__dessin {
+    width: min(100%, 390px);
+    justify-self: center;
+  }
+  .entrees-parcours__entree--metier .entrees-parcours__action { border-color: currentColor; }
+  .entrees-parcours__entree--metier a:hover { background: var(--bleu-survol); --hub-illustration-paper: var(--bleu-survol); }
+  .parcours-hub__suite {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--s5);
+    margin-top: var(--s5);
+    padding-top: var(--s3);
+    border-top: 1px solid var(--filet);
+    font-size: var(--t-petit);
+  }
+  .parcours-hub__suite p { color: var(--graphite); }
+  .parcours-hub__suite a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s7);
+    min-height: 44px;
+    font-weight: 600;
+  }
+  @media (max-width: 1000px) {
+    .entrees-parcours a { padding: var(--s5); grid-template-columns: minmax(0, 1fr) 100px; }
+    .entrees-parcours__entree--metier a { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 760px) {
+    .parcours-hub .page-hero { grid-template-columns: minmax(0, 1fr); gap: var(--s5); }
+    .parcours-hub .page-hero h1 { max-width: none; font-size: clamp(3rem, 10vw, 4.5rem); }
+    .parcours-hub .page-hero__intro { max-width: 45ch; }
+    .entrees-parcours ul { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; }
+    .entrees-parcours__entree--metier { grid-row: auto; }
+    .entrees-parcours a { grid-template-columns: minmax(0, 1fr) 115px; min-height: 206px; }
+    .entrees-parcours__entree--metier a {
+      grid-template-columns: minmax(0, 1fr) 115px;
+      grid-template-rows: 1fr auto;
+    }
+    .entrees-parcours__entree--metier h2 { font-size: 1.75rem; }
+    .entrees-parcours__entree--metier .entrees-parcours__dessin { width: 100%; }
+    .entrees-parcours__texte { grid-column: 1; }
+    .entrees-parcours__dessin { grid-column: 2; grid-row: 1; }
+    .parcours-hub__suite { align-items: start; }
+  }
+  @media (max-width: 420px) {
+    .entrees-parcours a,
+    .entrees-parcours__entree--metier a { grid-template-columns: minmax(0, 1fr) 76px; padding: var(--s5) var(--s4); column-gap: var(--s2); }
+    .entrees-parcours h2 { font-size: 1.5rem; }
+    .entrees-parcours__entree--metier h2 { font-size: 1.6rem; }
+    .entrees-parcours__action { font-size: .9375rem; }
+    .parcours-hub__suite { flex-wrap: wrap; gap: 0; }
+  }
+  @media print {
+    .parcours-hub .page-hero { grid-template-columns: minmax(0, 1fr); gap: var(--s3); }
+    .parcours-hub .page-hero h1 { font-size: 32pt; }
+    .entrees-parcours ul { grid-template-columns: minmax(0, 1fr); }
+    .entrees-parcours__entree--metier { grid-row: auto; }
+    .entrees-parcours a,
+    .entrees-parcours__entree--metier a {
+      break-inside: avoid;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto auto;
+      min-height: 0;
+      background: #fff;
+      color: #14161b;
+      border-color: #59606d;
+    }
+    .entrees-parcours h2,
+    .entrees-parcours__entree--metier h2 { font-size: 18pt; }
+    .entrees-parcours__dessin { display: none; }
+    .entrees-parcours__entree--metier .entrees-parcours__action { color: #1f4fd1; }
+  }
 </style>
