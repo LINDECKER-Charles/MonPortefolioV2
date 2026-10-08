@@ -711,7 +711,7 @@ describe('exécution directe', () => {
   /** Lance `node server/server.mjs` avec un environnement maîtrisé. */
   function lancer(env) {
     const enfant = spawn(process.execPath, [path.join(ICI, 'server.mjs')], {
-      env: { PATH: process.env.PATH, HOST: '127.0.0.1', PORT: '0', ...env },
+      env: { PATH: process.env.PATH, HOST: '127.0.0.1', PORT: '0', CONTACT_EMAIL: 'contact@example.test', ...env },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
     const sortie = { stdout: '', stderr: '' };
@@ -727,6 +727,12 @@ describe('exécution directe', () => {
     assert.equal(code, 1);
     assert.match(sortie.stderr, /démarrage refusé : UMAMI_WEBSITE_ID et UMAMI_SITE_DOMAIN se posent ensemble/);
     assert.doesNotMatch(sortie.stderr, /at creerServeur/, 'pas de pile, seulement le message');
+  });
+
+  test('une adresse de contact absente refuse le démarrage', async () => {
+    const { sortie, fin } = lancer({ CONTACT_EMAIL: '' });
+    assert.equal((await fin).code, 1);
+    assert.match(sortie.stderr, /CONTACT_EMAIL est obligatoire/);
   });
 
   test('le serveur annonce sa configuration, sert le chargeur et s’arrête proprement sur SIGTERM', async () => {

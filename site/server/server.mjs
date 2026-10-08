@@ -30,16 +30,17 @@
 
 import { createServer } from 'node:http';
 import { createReadStream } from 'node:fs';
-import { stat } from 'node:fs/promises';
+import { readFile, stat } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { isIP } from 'node:net';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { trouverRedirection } from './redirections.mjs';
+import { lireEmailContact, lireConfigBackend, remplacerEmailContact, relayerApi } from './contact.mjs';
 
 const ICI = path.dirname(fileURLToPath(import.meta.url));
 
-/** Seules méthodes servies : le site est entièrement statique. */
+/** Méthodes des fichiers statiques ; le relais API vérifie les siennes. */
 const METHODES = new Set(['GET', 'HEAD']);
 
 const TYPES = new Map([
@@ -261,8 +262,8 @@ function nomHoteDemande(entete) {
  * `/u/api/send` sont tous en même origine (l'edge relaie `/u/` vers Umami) :
  * `'self'` suffit, sans aucun nom de domaine propre à un environnement.
  *
- * `form-action 'self'` : le site n'a pas de formulaire. Le contact passe par un
- * lien `mailto:`, une navigation que `form-action` ne régit pas.
+ * Le formulaire contacte `/api/contact` en même origine ; les liens `mailto:`
+ * restent disponibles lorsque l'envoi est indisponible.
  */
 export const POLITIQUE_CSP = [
   "default-src 'self'",
@@ -323,6 +324,8 @@ export function creerServeur({ dossier, env = process.env } = {}) {
   const page404 = path.join(racine, '404.html');
   const mesure = lireConfigMesure(env);
   const hoteCanonique = lireConfigHoteCanonique(env);
+  const emailContact = lireEmailContact(env);
+  const backend = lireConfigBackend(env);
 
   // Le chargeur ne dépend que de l'environnement, fixé pour la vie du
   // processus : il est écrit une fois, avec son empreinte.
@@ -367,14 +370,18 @@ export function creerServeur({ dossier, env = process.env } = {}) {
   }
 
   /**
-   * Envoie un fichier de dist/ tel quel, HTML compris : rien n'est réécrit, et
-   * l'ETag faible vient de la taille et de la date du fichier, comme pour tout
-   * le reste. Le contenu de l'image est immuable : rien à invalider.
+   * Seul le marqueur de l'adresse est remplacé dans le HTML. L'image reste
+   * identique entre test et production ; l'ETag reflète les octets envoyés.
    */
   async function envoyer(req, res, chemin, statut, cheminUrl) {
     const extension = path.extname(chemin).toLowerCase();
     const infos = await stat(chemin);
-    const etag = `W/"${infos.size.toString(16)}-${Math.trunc(infos.mtimeMs).toString(16)}"`;
+    const corpsHtml = extension === '.html' && emailContact
+      ? Buffer.from(remplacerEmailContact(await readFile(chemin, 'utf8'), emailContact))
+      : null;
+    const etag = corpsHtml
+      ? `"${createHash('sha256').update(corpsHtml).digest('base64url')}"`
+      : `W/"${infos.size.toString(16)}-${Math.trunc(infos.mtimeMs).toString(16)}"`;
     const enTetes = {
       ...EN_TETES_COMMUNS,
       'Content-Type': TYPES.get(extension) ?? 'application/octet-stream',
@@ -387,10 +394,14 @@ export function creerServeur({ dossier, env = process.env } = {}) {
       res.end();
       return;
     }
-    enTetes['Content-Length'] = infos.size;
+    enTetes['Content-Length'] = corpsHtml?.length ?? infos.size;
     res.writeHead(statut, enTetes);
     if (req.method === 'HEAD') {
       res.end();
+      return;
+    }
+    if (corpsHtml) {
+      res.end(corpsHtml);
       return;
     }
     const flux = createReadStream(chemin);
@@ -408,14 +419,6 @@ export function creerServeur({ dossier, env = process.env } = {}) {
   }
 
   async function traiter(req, res) {
-    if (!METHODES.has(req.method)) {
-      // Une méthode inattendue (TRACE, POST...) n'a rien à faire ici : 405
-      // immédiat, sans toucher au disque.
-      res.writeHead(405, { ...EN_TETES_COMMUNS, Allow: 'GET, HEAD' });
-      res.end();
-      return;
-    }
-
     // Cible d'origine (`/chemin?requête`) ; une forme absolue est ramenée à son chemin.
     const brut = req.url ?? '/';
     let cible;
@@ -426,6 +429,18 @@ export function creerServeur({ dossier, env = process.env } = {}) {
       return;
     }
     const requete = cible.search;
+
+    // Routes API exactes avant les redirections des fichiers et des hôtes :
+    // une soumission POST ne doit jamais devenir une navigation GET en 301.
+    if (cible.pathname === '/api' || cible.pathname.startsWith('/api/')) {
+      await relayerApi(req, res, cible.pathname, backend, EN_TETES_COMMUNS);
+      return;
+    }
+    if (!METHODES.has(req.method)) {
+      res.writeHead(405, { ...EN_TETES_COMMUNS, Allow: 'GET, HEAD' });
+      res.end();
+      return;
+    }
 
     // Avant tout le reste : sur l'hôte secondaire, même une adresse inconnue
     // part vers l'hôte canonique, qui en jugera. `pathname` et `search` sont
@@ -508,9 +523,11 @@ export function creerServeur({ dossier, env = process.env } = {}) {
   // encore utilisables : la requête suivante part sur une socket morte.
   serveur.keepAliveTimeout = 125_000;
   serveur.headersTimeout = 126_000;
+  serveur.requestTimeout = 30_000;
 
   serveur.mesure = mesure;
   serveur.hoteCanonique = hoteCanonique;
+  serveur.emailContact = emailContact;
   serveur.racine = racine;
   return serveur;
 }
@@ -523,6 +540,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   let serveur;
   try {
     serveur = creerServeur();
+    if (!serveur.emailContact) throw new Error('CONTACT_EMAIL est obligatoire. Copier .env.example vers .env et renseigner cette adresse.');
   } catch (erreur) {
     // Message seul, sans pile : c'est lui que le déploiement affiche quand le
     // conteneur ne devient jamais healthy.

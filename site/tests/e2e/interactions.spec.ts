@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { fileDeMesure } from './support/navigateur';
+import { CONTACT_EMAIL } from './support/serveurs.mjs';
 
 /**
  * Les interactions qui portent du sens : le mode nuit, le glossaire, la copie
@@ -121,7 +122,7 @@ test('« Copier l’adresse » copie, le dit, puis revient', async ({ page, cont
   await bouton.click();
   await expect(bouton).toHaveText(/Adresse copiée/);
   await expect(page.locator('[data-copier-statut]')).toHaveText('Adresse copiée');
-  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('charles.lindecker@outlook.fr');
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(CONTACT_EMAIL);
   expect(await fileDeMesure(page)).toContainEqual(['contact-copie', { emplacement: 'discutons' }]);
   await expect(bouton).toHaveText(/Copier l’adresse/, { timeout: 4_000 });
 });

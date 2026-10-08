@@ -8,42 +8,79 @@ import { CONTACT, MAILTO, SITE } from '../config/site';
 import '../styles/profondeur.css';
 
 const titre = `Contact — ${SITE.nom}`;
-const description = 'Contacter Charles Lindecker par e-mail ou retrouver ses profils LinkedIn et GitHub. Pour parler de développement, d’architecture et de travail collectif.';
+const description = 'Un projet, une question technique ou une idée à partager ? Écrire à Charles Lindecker par le formulaire de contact ou directement par e-mail.';
 ---
 
 <Base titre={titre} description={description} chemin="/contact">
   <div class="wrap profondeur page-contact">
     <FilAriane courant="Contact" />
-    <header class="page-hero">
-      <h1>Une conversation pour commencer.</h1>
-      <p class="page-hero__intro">Parlons de technique, d’un projet ou de ce qu’on peut construire à plusieurs. Le plus simple pour me joindre reste l’e-mail.</p>
-    </header>
-
-    <section class="correspondance" aria-labelledby="email-titre">
-      <div class="correspondance__envoi">
-        <h2 id="email-titre">Par e-mail</h2>
-        <a class="adresse-email" href={MAILTO} data-umami-event="contact-email" data-umami-event-emplacement="contact">
-          <span data-adresse>{CONTACT.email}</span>
-          <Picto nom="interface/email" />
-        </a>
-        <p>Le lien ouvre votre messagerie. L’adresse est aussi disponible en clair pour la copier.</p>
-        <div class="correspondance__copie"><CopierAdresse adresse={CONTACT.email} emplacement="contact" /></div>
+    <div class="contact-grille">
+      <header class="contact-intro">
+        <h1>Une conversation pour commencer.</h1>
+        <p>Un projet, une question technique ou une idée à partager&nbsp;? Parlons de ce qu’on peut construire à plusieurs.</p>
+      </header>
+      <section class="contact-lettre" aria-labelledby="formulaire-titre">
+        <div class="contact-lettre__entete">
+          <div><h2 id="formulaire-titre">M’écrire</h2><p>Quelques mots suffisent pour commencer.</p></div>
+          <Picto nom="plume" />
+        </div>
+        <form method="post" action="/api/contact" data-contact-form aria-labelledby="formulaire-titre">
+          <p class="contact-obligatoire">Tous les champs sont nécessaires.</p>
+          <fieldset class="contact-champs">
+            <legend class="sr">Votre message</legend>
+            <div class="contact-identite">
+              <div class="contact-champ">
+                <label for="contact-name">Votre nom</label>
+                <input id="contact-name" name="name" autocomplete="name" minlength="2" maxlength="100" required aria-describedby="contact-name-error" />
+                <p class="contact-erreur" id="contact-name-error" hidden></p>
+              </div>
+              <div class="contact-champ">
+                <label for="contact-email">Votre e-mail</label>
+                <input id="contact-email" name="email" type="email" autocomplete="email" maxlength="254" required aria-describedby="contact-email-error" />
+                <p class="contact-erreur" id="contact-email-error" hidden></p>
+              </div>
+            </div>
+            <div class="contact-champ">
+              <label for="contact-subject">Le sujet</label>
+              <input id="contact-subject" name="subject" minlength="3" maxlength="160" required aria-describedby="contact-subject-error" />
+              <p class="contact-erreur" id="contact-subject-error" hidden></p>
+            </div>
+            <div class="contact-champ">
+              <label for="contact-message">Votre message</label>
+              <textarea id="contact-message" name="message" rows="7" minlength="10" maxlength="5000" required aria-describedby="contact-message-aide contact-message-error"></textarea>
+              <p class="contact-aide" id="contact-message-aide">Ce que vous avez en tête, et ce que vous aimeriez qu’on en fasse.</p>
+              <p class="contact-erreur" id="contact-message-error" hidden></p>
+            </div>
+            <div class="contact-piege" aria-hidden="true">
+              <label for="contact-website">Laissez ce champ vide</label>
+              <input id="contact-website" name="website" tabindex="-1" aria-hidden="true" autocomplete="off" />
+            </div>
+          </fieldset>
+          <div class="contact-envoi">
+            <button class="btn btn--plein" type="submit" disabled><span data-contact-submit-label>Envoyer le message</span><Picto nom="interface/email" /></button>
+            <p class="contact-confidentialite">Vos coordonnées et votre message servent à vous répondre. <a href="/mentions-legales#donnees">À propos de vos données</a>.</p>
+          </div>
+          <p class="contact-statut" role="status" tabindex="-1" data-contact-status hidden></p>
+          <noscript><p class="contact-sans-js">Activez JavaScript pour utiliser le formulaire, ou <a href={MAILTO}>écrivez-moi directement par e-mail</a>.</p></noscript>
+        </form>
+      </section>
+      <div class="contact-conversation">
+        <section class="contact-direct" aria-labelledby="email-titre">
+          <h2 id="email-titre">Vous préférez l’e-mail&nbsp;?</h2>
+          <a class="adresse-email" href={MAILTO} data-umami-event="contact-email" data-umami-event-emplacement="contact">
+            <Picto nom="interface/email" /><span data-adresse>{CONTACT.email}</span>
+          </a>
+          <CopierAdresse adresse={CONTACT.email} emplacement="contact" />
+        </section>
+        <section class="contact-profils" aria-labelledby="profils-titre">
+          <h2 id="profils-titre">Retrouvons-nous aussi ici</h2>
+          <ul>
+            <li><a href={CONTACT.github} data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="contact"><Picto nom="reseaux/github" /><span><strong>GitHub</strong><span>Les projets et les contributions.</span></span></a></li>
+            <li><a href={CONTACT.linkedin} data-umami-event="lien-sortant" data-umami-event-domaine="www.linkedin.com" data-umami-event-emplacement="contact"><Picto nom="reseaux/linkedin" /><span><strong>LinkedIn</strong><span>Le parcours professionnel.</span></span></a></li>
+          </ul>
+        </section>
       </div>
-      <div class="correspondance__identite">
-        <p>{SITE.nom}</p>
-        <span>{SITE.metier}</span>
-        <span>{SITE.lieu}</span>
-      </div>
-    </section>
-
-    <section class="profils" aria-labelledby="profils-titre">
-      <h2 id="profils-titre">Retrouver le travail et le parcours</h2>
-      <ul>
-        <li><a href={CONTACT.github} data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="contact"><Picto nom="reseaux/github" /><span><strong>GitHub</strong><span>Les projets et les contributions publiques.</span></span></a></li>
-        <li><a href={CONTACT.linkedin} data-umami-event="lien-sortant" data-umami-event-domaine="www.linkedin.com" data-umami-event-emplacement="contact"><Picto nom="reseaux/linkedin" /><span><strong>LinkedIn</strong><span>Le parcours professionnel.</span></span></a></li>
-      </ul>
-    </section>
-
+    </div>
     <ContinuerLecture liens={[
       { href: '/projets', titre: 'Les projets', detail: 'Des réalisations et les décisions derrière.' },
       { href: '/parcours', titre: 'Le parcours', detail: 'Du développement à la transmission.' },
@@ -52,25 +89,69 @@ const description = 'Contacter Charles Lindecker par e-mail ou retrouver ses pro
   </div>
 </Base>
 
+<script>
+  import { brancherContact } from '../scripts/contact';
+  brancherContact();
+</script>
+
 <style>
-  .correspondance { display: grid; grid-template-columns: minmax(0, 1fr) 15rem; align-items: end; gap: var(--s7); padding: clamp(24px, 4vw, 56px); border: 1px solid var(--filet); border-top: 4px solid var(--bleu); background: var(--blanc); }
-  .correspondance h2 { font-size: 1.25rem; color: var(--graphite); margin-bottom: var(--s5); }
-  .adresse-email { display: flex; align-items: center; justify-content: space-between; gap: var(--s5); font-size: clamp(1.35rem, 1rem + 2.1vw, 2.8rem); line-height: 1.2; font-weight: 700; text-decoration-thickness: 2px; padding-block: var(--s2); }
-  .adresse-email > span { overflow-wrap: anywhere; min-width: 0; user-select: all; }
-  .adresse-email :global(svg) { width: 28px; height: 28px; flex-shrink: 0; }
-  .correspondance__envoi > p { margin-top: var(--s5); font-size: var(--t-petit); color: var(--graphite); max-width: 52ch; }
-  .correspondance__copie { margin-top: var(--s5); }
-  .correspondance__identite { display: grid; gap: var(--s2); padding-left: var(--s5); border-left: 1px solid var(--filet); font-size: var(--t-petit); }
-  .correspondance__identite > p { font-weight: 700; }
-  .correspondance__identite > span { color: var(--graphite); }
-  .profils { margin-top: var(--s8); }
-  .profils > h2 { font-size: 1.5rem; }
-  .profils ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s6); list-style: none; margin: var(--s6) 0 0; padding: 0; }
-  .profils a { display: flex; align-items: flex-start; gap: var(--s5); border-top: 1px solid var(--filet); padding-block: var(--s5); text-decoration: none; }
-  .profils a :global(svg) { width: 30px; height: 30px; margin-top: 0.2rem; }
-  .profils strong { display: block; font-size: 1.5rem; text-decoration: underline; text-underline-offset: 0.2em; }
-  .profils a > span > span { display: block; color: var(--graphite); font-size: var(--t-petit); margin-top: var(--s2); }
-  .profils a:hover strong { text-decoration-thickness: 2px; }
-  @media (max-width: 900px) { .correspondance { grid-template-columns: minmax(0, 1fr); gap: var(--s7); } .correspondance__identite { padding-left: 0; padding-top: var(--s5); border-left: none; border-top: 1px solid var(--filet); } }
-  @media (max-width: 640px) { .profils ul { grid-template-columns: minmax(0, 1fr); gap: var(--s3); } .adresse-email { gap: var(--s3); } }
+  .contact-grille { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); column-gap: clamp(40px, 6vw, 88px); row-gap: var(--s7); grid-template-rows: auto 1fr; align-items: start; padding-block: var(--s6) var(--s8); }
+  .contact-intro { grid-column: 1; grid-row: 1; }
+  .contact-conversation { grid-column: 1; grid-row: 2; }
+  .contact-lettre { grid-column: 2; grid-row: 1 / span 2; }
+  .contact-intro h1 { font-size: clamp(2.8rem, 1.9rem + 3.3vw, 5.1rem); line-height: 1.04; letter-spacing: -0.045em; max-width: 12ch; }
+  .contact-intro > p { margin-top: var(--s6); max-width: 37ch; font-size: var(--t-chapeau); line-height: 1.5; }
+  .contact-direct { padding-top: var(--s6); border-top: 1px solid var(--filet); }
+  .contact-direct h2, .contact-profils h2 { font-size: 1.125rem; font-weight: 700; letter-spacing: 0; }
+  .adresse-email { display: flex; align-items: center; gap: var(--s3); padding-block: var(--s4); font-size: clamp(1.1rem, 1rem + 0.35vw, 1.4rem); font-weight: 700; }
+  .adresse-email span { overflow-wrap: anywhere; min-width: 0; user-select: all; }
+  .adresse-email :global(svg) { width: 22px; height: 22px; flex-shrink: 0; }
+  .contact-profils { margin-top: var(--s7); }
+  .contact-profils ul { padding: 0; margin: var(--s4) 0 0; list-style: none; }
+  .contact-profils a { display: flex; align-items: center; gap: var(--s4); min-height: 72px; padding-block: var(--s3); text-decoration: none; }
+  .contact-profils a :global(svg) { width: 24px; height: 24px; flex-shrink: 0; }
+  .contact-profils strong { display: block; font-size: 1.125rem; text-decoration: underline; text-underline-offset: 0.22em; }
+  .contact-profils a > span > span { display: block; color: var(--graphite); font-size: var(--t-petit); }
+  .contact-profils a:hover strong { text-decoration-thickness: 2px; }
+  .contact-lettre { position: relative; padding: clamp(24px, 3.5vw, 48px); border: 1px solid var(--filet); border-top: 4px solid var(--bleu); border-radius: var(--rayon); background: var(--blanc); }
+  .contact-lettre__entete { display: flex; justify-content: space-between; align-items: start; gap: var(--s5); }
+  .contact-lettre__entete h2 { font-size: 2rem; letter-spacing: -0.03em; }
+  .contact-lettre__entete p { color: var(--bleu); font-family: var(--font-note); font-style: italic; font-size: 1.25rem; margin-top: var(--s2); }
+  .contact-lettre__entete > :global(svg) { color: var(--bleu); width: 38px; height: 38px; flex-shrink: 0; }
+  .contact-obligatoire { margin-block: var(--s6) var(--s5); color: var(--graphite); font-size: 0.9375rem; }
+  .contact-champs { display: grid; gap: var(--s5); border: 0; padding: 0; margin: 0; min-width: 0; }
+  .contact-identite { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s4); }
+  .contact-champ label { display: block; font-size: var(--t-petit); font-weight: 700; margin-bottom: var(--s2); }
+  .contact-champ input, .contact-champ textarea { display: block; width: 100%; min-height: 48px; border: 1px solid var(--trait); border-radius: var(--rayon); background: var(--papier); color: var(--encre); font: inherit; font-size: var(--t-petit); line-height: 1.5; padding: 12px 14px; }
+  .contact-champ textarea { resize: vertical; min-height: 176px; }
+  .contact-champ input:focus, .contact-champ textarea:focus { outline: 2px solid var(--bleu); outline-offset: 2px; }
+  .contact-aide { margin-top: var(--s2); font-size: 0.9375rem; line-height: 1.4; color: var(--graphite); }
+  .contact-erreur { color: #a62929; margin-top: var(--s2); font-size: var(--t-petit); line-height: 1.4; }
+  .contact-champ [aria-invalid='true'] { border-color: #a62929; }
+  :global([data-theme='nuit']) .contact-erreur { color: #ffaaaa; }
+  :global([data-theme='nuit']) .contact-champ [aria-invalid='true'] { border-color: #ffaaaa; }
+  .contact-piege { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .contact-envoi { display: grid; justify-items: start; gap: var(--s4); margin-top: var(--s6); }
+  .contact-envoi button { gap: var(--s3); }
+  .contact-envoi button :global(svg) { width: 20px; height: 20px; }
+  .contact-envoi button:disabled { cursor: wait; opacity: 0.65; }
+  .contact-confidentialite { color: var(--graphite); font-size: 0.9375rem; line-height: 1.5; max-width: 48ch; }
+  .contact-statut { margin-top: var(--s5); padding: var(--s4); border-left: 3px solid var(--bleu); background: var(--papier); font-size: var(--t-petit); overflow-wrap: anywhere; }
+  .contact-sans-js { margin-top: var(--s5); font-size: var(--t-petit); }
+  @media (max-width: 1050px) { .contact-identite { grid-template-columns: minmax(0, 1fr); gap: var(--s5); } }
+  @media (max-width: 800px) {
+    .contact-grille { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; gap: var(--s7); padding-bottom: var(--s7); }
+    .contact-intro, .contact-lettre, .contact-conversation { grid-column: auto; grid-row: auto; }
+    .contact-intro h1 { max-width: 17ch; }
+    .contact-intro > p { max-width: 48ch; }
+    .contact-profils ul { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s6); }
+    .contact-identite { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 540px) {
+    .contact-lettre { padding: var(--s5); }
+    .contact-identite { grid-template-columns: minmax(0, 1fr); }
+    .contact-envoi button { width: 100%; }
+    .contact-profils ul { display: block; }
+  }
+  @media (prefers-reduced-motion: reduce) { .contact-envoi button { transition: none; } }
 </style>
