@@ -42,7 +42,10 @@ impl RateLimiter {
         if let Some(bucket) = clients.get_mut(&address) {
             if bucket.count >= ATTEMPTS {
                 let remaining = WINDOW.saturating_sub(now.duration_since(bucket.started));
-                return Err(remaining.as_secs().saturating_add(1));
+                let seconds = remaining
+                    .as_secs()
+                    .saturating_add(u64::from(remaining.subsec_nanos() > 0));
+                return Err(seconds);
             }
             bucket.count += 1;
             return Ok(());
@@ -73,13 +76,54 @@ mod tests {
         for _ in 0..ATTEMPTS {
             assert_eq!(limiter.check_at(address, now), Ok(()));
         }
-        assert!(limiter.check_at(address, now).is_err());
-        assert!(
-            limiter
-                .check_at(address, now + Duration::from_secs(599))
-                .is_err()
+        assert_eq!(limiter.check_at(address, now), Err(600));
+        assert_eq!(
+            limiter.check_at(address, now + Duration::from_secs(599)),
+            Err(1)
         );
         assert_eq!(limiter.check_at(address, now + WINDOW), Ok(()));
+    }
+
+    #[test]
+    fn retry_after_rounds_up_only_a_remaining_fractional_second() {
+        let limiter = RateLimiter::default();
+        let address = "192.0.2.1".parse().unwrap();
+        let now = Instant::now();
+        for _ in 0..ATTEMPTS {
+            assert_eq!(limiter.check_at(address, now), Ok(()));
+        }
+        assert_eq!(
+            limiter.check_at(address, now + Duration::from_millis(598_999)),
+            Err(2)
+        );
+        assert_eq!(
+            limiter.check_at(address, now + Duration::from_millis(599_999)),
+            Err(1)
+        );
+        assert_eq!(limiter.check_at(address, now + WINDOW), Ok(()));
+    }
+
+    #[test]
+    fn concurrent_attempts_cannot_exceed_the_per_client_limit() {
+        let limiter = RateLimiter::default();
+        let barrier = std::sync::Barrier::new(20);
+        let address = "192.0.2.1".parse().unwrap();
+        let accepted = std::thread::scope(|scope| {
+            let attempts: Vec<_> = (0..20)
+                .map(|_| {
+                    scope.spawn(|| {
+                        barrier.wait();
+                        limiter.check(address).is_ok()
+                    })
+                })
+                .collect();
+            attempts
+                .into_iter()
+                .map(|attempt| attempt.join().unwrap())
+                .filter(|accepted| *accepted)
+                .count()
+        });
+        assert_eq!(accepted, ATTEMPTS as usize);
     }
 
     #[test]

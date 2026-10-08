@@ -25,30 +25,31 @@ const description = 'Un projet, une question technique ou une idée à partager 
           <Picto nom="plume" />
         </div>
         <form method="post" action="/api/contact" data-contact-form aria-labelledby="formulaire-titre">
-          <p class="contact-obligatoire">Tous les champs sont nécessaires.</p>
+          <p class="contact-obligatoire"><span class="contact-requis" aria-hidden="true">*</span> Tous les champs sont obligatoires.</p>
           <fieldset class="contact-champs">
             <legend class="sr">Votre message</legend>
             <div class="contact-identite">
               <div class="contact-champ">
-                <label for="contact-name">Votre nom</label>
-                <input id="contact-name" name="name" autocomplete="name" minlength="2" maxlength="100" required aria-describedby="contact-name-error" />
+                <label for="contact-name">Votre nom <span class="contact-requis" aria-hidden="true">*</span><span class="sr"> (obligatoire)</span></label>
+                <input id="contact-name" name="name" autocomplete="name" required aria-describedby="contact-name-error" />
                 <p class="contact-erreur" id="contact-name-error" hidden></p>
               </div>
               <div class="contact-champ">
-                <label for="contact-email">Votre e-mail</label>
+                <label for="contact-email">Votre e-mail <span class="contact-requis" aria-hidden="true">*</span><span class="sr"> (obligatoire)</span></label>
                 <input id="contact-email" name="email" type="email" autocomplete="email" maxlength="254" required aria-describedby="contact-email-error" />
                 <p class="contact-erreur" id="contact-email-error" hidden></p>
               </div>
             </div>
             <div class="contact-champ">
-              <label for="contact-subject">Le sujet</label>
-              <input id="contact-subject" name="subject" minlength="3" maxlength="160" required aria-describedby="contact-subject-error" />
+              <label for="contact-subject">Le sujet <span class="contact-requis" aria-hidden="true">*</span><span class="sr"> (obligatoire)</span></label>
+              <input id="contact-subject" name="subject" required aria-describedby="contact-subject-error" />
               <p class="contact-erreur" id="contact-subject-error" hidden></p>
             </div>
             <div class="contact-champ">
-              <label for="contact-message">Votre message</label>
-              <textarea id="contact-message" name="message" rows="7" minlength="10" maxlength="5000" required aria-describedby="contact-message-aide contact-message-error"></textarea>
+              <label for="contact-message">Votre message <span class="contact-requis" aria-hidden="true">*</span><span class="sr"> (obligatoire)</span></label>
+              <textarea id="contact-message" name="message" rows="7" required aria-describedby="contact-message-aide contact-message-longueur contact-message-count contact-message-error"></textarea>
               <p class="contact-aide" id="contact-message-aide">Ce que vous avez en tête, et ce que vous aimeriez qu’on en fasse.</p>
+              <div class="contact-longueur"><span id="contact-message-longueur">10 caractères minimum</span><span id="contact-message-count" data-contact-count>0 / 5&#8239;000 caractères</span></div>
               <p class="contact-erreur" id="contact-message-error" hidden></p>
             </div>
             <div class="contact-piege" aria-hidden="true">
@@ -57,7 +58,7 @@ const description = 'Un projet, une question technique ou une idée à partager 
             </div>
           </fieldset>
           <div class="contact-envoi">
-            <button class="btn btn--plein" type="submit" disabled><span data-contact-submit-label>Envoyer le message</span><Picto nom="interface/email" /></button>
+            <button class="btn btn--plein" type="submit" disabled><span class="contact-attente" data-contact-spinner aria-hidden="true" hidden></span><span data-contact-submit-label>Envoyer le message</span><Picto nom="interface/email" /></button>
             <p class="contact-confidentialite">Vos coordonnées et votre message servent à vous répondre. <a href="/mentions-legales#donnees">À propos de vos données</a>.</p>
           </div>
           <p class="contact-statut" role="status" tabindex="-1" data-contact-status hidden></p>
@@ -119,24 +120,39 @@ const description = 'Un projet, une question technique ou une idée à partager 
   .contact-lettre__entete p { color: var(--bleu); font-family: var(--font-note); font-style: italic; font-size: 1.25rem; margin-top: var(--s2); }
   .contact-lettre__entete > :global(svg) { color: var(--bleu); width: 38px; height: 38px; flex-shrink: 0; }
   .contact-obligatoire { margin-block: var(--s6) var(--s5); color: var(--graphite); font-size: 0.9375rem; }
+  .contact-requis { color: var(--bleu); font-weight: 700; }
   .contact-champs { display: grid; gap: var(--s5); border: 0; padding: 0; margin: 0; min-width: 0; }
   .contact-identite { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s4); }
   .contact-champ label { display: block; font-size: var(--t-petit); font-weight: 700; margin-bottom: var(--s2); }
-  .contact-champ input, .contact-champ textarea { display: block; width: 100%; min-height: 48px; border: 1px solid var(--trait); border-radius: var(--rayon); background: var(--papier); color: var(--encre); font: inherit; font-size: var(--t-petit); line-height: 1.5; padding: 12px 14px; }
+  .contact-champ input, .contact-champ textarea { display: block; width: 100%; min-height: 48px; border: 1px solid var(--trait); border-radius: var(--rayon); background: var(--papier); color: var(--encre); font: inherit; font-size: var(--t-petit); line-height: 1.5; padding: 12px 14px; transition: border-color 150ms ease, background-color 150ms ease; }
   .contact-champ textarea { resize: vertical; min-height: 176px; }
-  .contact-champ input:focus, .contact-champ textarea:focus { outline: 2px solid var(--bleu); outline-offset: 2px; }
+  .contact-champ input:focus, .contact-champ textarea:focus { outline: 2px solid var(--bleu); outline-offset: 2px; background: var(--blanc); }
+  .contact-champ:focus-within label { color: var(--bleu); }
+  .contact-champ [data-valid='true'] { border-color: var(--bleu); }
   .contact-aide { margin-top: var(--s2); font-size: 0.9375rem; line-height: 1.4; color: var(--graphite); }
+  .contact-longueur { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--s2) var(--s4); margin-top: var(--s3); color: var(--graphite); font-size: 0.875rem; font-variant-numeric: tabular-nums; }
+  .contact-longueur [data-state='limite'] { color: var(--encre); font-weight: 700; }
+  .contact-longueur [data-state='error'] { color: #a62929; font-weight: 700; }
   .contact-erreur { color: #a62929; margin-top: var(--s2); font-size: var(--t-petit); line-height: 1.4; }
   .contact-champ [aria-invalid='true'] { border-color: #a62929; }
   :global([data-theme='nuit']) .contact-erreur { color: #ffaaaa; }
+  :global([data-theme='nuit']) .contact-longueur [data-state='error'] { color: #ffaaaa; }
   :global([data-theme='nuit']) .contact-champ [aria-invalid='true'] { border-color: #ffaaaa; }
   .contact-piege { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
   .contact-envoi { display: grid; justify-items: start; gap: var(--s4); margin-top: var(--s6); }
   .contact-envoi button { gap: var(--s3); }
   .contact-envoi button :global(svg) { width: 20px; height: 20px; }
   .contact-envoi button:disabled { cursor: wait; opacity: 0.65; }
+  form[data-contact-cooldown] .contact-envoi button { cursor: not-allowed; }
+  form[aria-busy='true'] .contact-envoi button :global(svg) { display: none; }
+  .contact-attente { width: 18px; height: 18px; flex-shrink: 0; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: contact-tour 800ms linear infinite; }
+  .contact-attente[hidden] { display: none; }
+  @keyframes contact-tour { to { transform: rotate(360deg); } }
   .contact-confidentialite { color: var(--graphite); font-size: 0.9375rem; line-height: 1.5; max-width: 48ch; }
   .contact-statut { margin-top: var(--s5); padding: var(--s4); border-left: 3px solid var(--bleu); background: var(--papier); font-size: var(--t-petit); overflow-wrap: anywhere; }
+  .contact-statut[data-state='success'] { border-left-width: 5px; font-weight: 700; }
+  .contact-statut[data-state='error'] { border-color: #a62929; color: #a62929; }
+  :global([data-theme='nuit']) .contact-statut[data-state='error'] { border-color: #ffaaaa; color: #ffaaaa; }
   .contact-sans-js { margin-top: var(--s5); font-size: var(--t-petit); }
   @media (max-width: 1050px) { .contact-identite { grid-template-columns: minmax(0, 1fr); gap: var(--s5); } }
   @media (max-width: 800px) {
@@ -153,5 +169,8 @@ const description = 'Un projet, une question technique ou une idée à partager 
     .contact-envoi button { width: 100%; }
     .contact-profils ul { display: block; }
   }
-  @media (prefers-reduced-motion: reduce) { .contact-envoi button { transition: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .contact-envoi button, .contact-champ input, .contact-champ textarea { transition: none; }
+    .contact-attente { animation: none; }
+  }
 </style>

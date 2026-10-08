@@ -204,6 +204,110 @@ async fn authenticated_proxy_keeps_client_limits_separate() {
 }
 
 #[tokio::test]
+async fn sixth_valid_submission_is_rejected_before_delivery() {
+    let delivery = Arc::new(TestDelivery::default());
+    let app = routes::router(AppState::new(Some(delivery.clone()), None));
+    for _ in 0..5 {
+        let response = app
+            .clone()
+            .oneshot(request(valid_form().to_string()))
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+    }
+    for _ in 0..2 {
+        let response = app
+            .clone()
+            .oneshot(request(valid_form().to_string()))
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::TOO_MANY_REQUESTS);
+        let retry_after = response.headers()["retry-after"]
+            .to_str()
+            .unwrap()
+            .parse::<u64>()
+            .unwrap();
+        assert!((1..=600).contains(&retry_after));
+        assert_eq!(json_body(response).await["code"], "RATE_LIMITED");
+    }
+    assert_eq!(delivery.sent.lock().unwrap().len(), 5);
+}
+
+#[tokio::test]
+async fn authenticated_proxy_enforces_each_real_client_threshold() {
+    let token = "a".repeat(64);
+    let delivery = Arc::new(TestDelivery::default());
+    let app = routes::router(AppState::new(Some(delivery.clone()), Some(token.clone())));
+    let attempt_for = |client: &str| {
+        let mut attempt = request(valid_form().to_string());
+        attempt.extensions_mut().insert(ConnectInfo(
+            "172.18.0.2:4321".parse::<SocketAddr>().unwrap(),
+        ));
+        attempt
+            .headers_mut()
+            .insert("x-contact-proxy-token", token.parse().unwrap());
+        attempt
+            .headers_mut()
+            .insert("x-contact-client-ip", client.parse().unwrap());
+        attempt
+    };
+    for _ in 0..5 {
+        let response = app
+            .clone()
+            .oneshot(attempt_for("203.0.113.1"))
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+    }
+    let response = app
+        .clone()
+        .oneshot(attempt_for("203.0.113.1"))
+        .await
+        .unwrap();
+    assert_eq!(response.status(), StatusCode::TOO_MANY_REQUESTS);
+    let response = app
+        .clone()
+        .oneshot(attempt_for("::ffff:203.0.113.1"))
+        .await
+        .unwrap();
+    assert_eq!(response.status(), StatusCode::TOO_MANY_REQUESTS);
+    let response = app.oneshot(attempt_for("203.0.113.2")).await.unwrap();
+    assert_eq!(response.status(), StatusCode::OK);
+    assert_eq!(delivery.sent.lock().unwrap().len(), 6);
+}
+
+#[tokio::test]
+async fn failed_delivery_attempts_still_consume_the_limit() {
+    for delivery in [
+        None,
+        Some(Arc::new(TestDelivery {
+            reject: true,
+            ..Default::default()
+        }) as Arc<dyn MailDelivery>),
+    ] {
+        let expected = if delivery.is_some() {
+            StatusCode::BAD_GATEWAY
+        } else {
+            StatusCode::SERVICE_UNAVAILABLE
+        };
+        let app = routes::router(AppState::new(delivery, None));
+        for _ in 0..5 {
+            let response = app
+                .clone()
+                .oneshot(request(valid_form().to_string()))
+                .await
+                .unwrap();
+            assert_eq!(response.status(), expected);
+        }
+        let response = app
+            .oneshot(request(valid_form().to_string()))
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::TOO_MANY_REQUESTS);
+    }
+}
+
+#[tokio::test]
 async fn health_and_unknown_routes_use_consistent_responses() {
     let app = routes::router(AppState::new(None, None));
     let response = app
