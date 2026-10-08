@@ -90,7 +90,7 @@ describe('relais API vers Rust', () => {
         res.end();
         return;
       }
-      res.writeHead(donnees.mode === 'rate' ? 429 : 200, { 'Content-Type': 'application/json', 'Retry-After': '600', 'Set-Cookie': 'backend=secret' });
+      res.writeHead(donnees.mode === 'rate' ? 429 : 200, { 'Content-Type': 'application/json', 'Retry-After': '3600', 'Set-Cookie': 'backend=secret' });
       res.end(JSON.stringify(donnees.mode === 'large' ? { message: 'x'.repeat(30_000) } : donnees.mode === 'rate' ? { code: 'rate_limited', message: 'Attendre' } : { status: 'ok' }));
     });
     const url = await ecouter(backend);
@@ -135,7 +135,7 @@ describe('relais API vers Rust', () => {
   test('les erreurs backend et Retry-After arrivent au formulaire', async () => {
     const reponse = await fetch(`${site.base}/api/contact`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{"mode":"rate"}' });
     assert.equal(reponse.status, 429);
-    assert.equal(reponse.headers.get('retry-after'), '600');
+    assert.equal(reponse.headers.get('retry-after'), '3600');
     assert.equal((await reponse.json()).code, 'rate_limited');
   });
 

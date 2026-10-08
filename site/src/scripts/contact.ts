@@ -174,7 +174,7 @@ export function brancherContact(): void {
           premierInvalide = CHAMPS.find((nom) => typeof corps.fields?.[nom] === 'string' && corps.fields[nom]);
         }
         const defaut = reponse.status === 429
-          ? 'Trop de messages ont été envoyés. Patientez quelques minutes avant de réessayer.'
+          ? 'Trop de messages ont été envoyés. Patientez avant de réessayer.'
           : 'Le message n’a pas pu être envoyé. Réessayez dans un instant ou écrivez-moi directement par e-mail.';
         if (reponse.status === 429) respecterDelai(reponse.headers.get('Retry-After'));
         annoncer(typeof corps.message === 'string' && corps.message ? corps.message : defaut, 'error');

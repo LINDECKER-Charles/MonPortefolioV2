@@ -77,8 +77,8 @@ reprennent ni contenu du formulaire, ni coordonnées du visiteur, ni détails SM
 
 ## Protection et limites
 
-Cinq tentatives par adresse IP sont autorisées dans une fenêtre de dix minutes ouverte par
-la première tentative. Une tentative refusée ne prolonge pas cette fenêtre. Dès la sixième,
+Deux tentatives par adresse IP sont autorisées dans une fenêtre d’une heure ouverte par
+la première tentative. Une tentative refusée ne prolonge pas cette fenêtre. Dès la troisième,
 l’API répond `429` et indique le temps restant dans `Retry-After`, en secondes arrondies au
 supérieur. Cette limite compte aussi les tentatives invalides et les échecs SMTP.
 Les fenêtres expirent et la table est bornée à

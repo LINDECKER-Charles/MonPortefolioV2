@@ -46,15 +46,19 @@ fn valid_form() -> Value {
 }
 
 fn request(body: String) -> Request<Body> {
+    request_from(body, "192.0.2.10:1234")
+}
+
+fn request_from(body: String, peer: &str) -> Request<Body> {
     let mut request = Request::builder()
         .method("POST")
         .uri("/api/contact")
         .header("content-type", "application/json")
         .body(Body::from(body))
         .unwrap();
-    request.extensions_mut().insert(ConnectInfo(
-        "192.0.2.10:1234".parse::<SocketAddr>().unwrap(),
-    ));
+    request
+        .extensions_mut()
+        .insert(ConnectInfo(peer.parse::<SocketAddr>().unwrap()));
     request
 }
 
@@ -98,12 +102,15 @@ async fn rejects_missing_fields_header_injection_and_honeypot_without_sending() 
         assert!(body["fields"][field].is_string());
     }
 
-    for field in ["name", "email", "subject"] {
+    for (index, field) in ["name", "email", "subject"].into_iter().enumerate() {
         let mut form = valid_form();
         form[field] = "Injected\r\nBcc: attacker@example.org".into();
         let response = app
             .clone()
-            .oneshot(request(form.to_string()))
+            .oneshot(request_from(
+                form.to_string(),
+                &format!("192.0.2.{}:1234", index + 11),
+            ))
             .await
             .unwrap();
         assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
@@ -111,7 +118,10 @@ async fn rejects_missing_fields_header_injection_and_honeypot_without_sending() 
     }
     let mut form = valid_form();
     form["website"] = "https://spam.example".into();
-    let response = app.oneshot(request(form.to_string())).await.unwrap();
+    let response = app
+        .oneshot(request_from(form.to_string(), "192.0.2.14:1234"))
+        .await
+        .unwrap();
     assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
     assert_eq!(json_body(response).await["code"], "INVALID_FORM");
     assert!(delivery.sent.lock().unwrap().is_empty());
@@ -158,7 +168,7 @@ async fn bounds_json_body_and_returns_structured_parse_errors() {
 #[tokio::test]
 async fn rate_limits_invalid_attempts_and_does_not_trust_spoofed_forwarding() {
     let app = routes::router(AppState::new(None, Some("secret".repeat(8))));
-    for index in 0..5 {
+    for index in 0..2 {
         let mut attempt = request("{".into());
         attempt.headers_mut().insert(
             "x-contact-client-ip",
@@ -169,14 +179,12 @@ async fn rate_limits_invalid_attempts_and_does_not_trust_spoofed_forwarding() {
     }
     let response = app.oneshot(request("{".into())).await.unwrap();
     assert_eq!(response.status(), StatusCode::TOO_MANY_REQUESTS);
-    assert!(
-        response.headers()["retry-after"]
-            .to_str()
-            .unwrap()
-            .parse::<u64>()
-            .unwrap()
-            > 0
-    );
+    let retry_after = response.headers()["retry-after"]
+        .to_str()
+        .unwrap()
+        .parse::<u64>()
+        .unwrap();
+    assert!((1..=3_600).contains(&retry_after));
     assert_eq!(json_body(response).await["code"], "RATE_LIMITED");
 }
 
@@ -184,7 +192,7 @@ async fn rate_limits_invalid_attempts_and_does_not_trust_spoofed_forwarding() {
 async fn authenticated_proxy_keeps_client_limits_separate() {
     let token = "a".repeat(64);
     let app = routes::router(AppState::new(None, Some(token.clone())));
-    for index in 0..6 {
+    for index in 0..3 {
         let mut attempt = request("{".into());
         attempt
             .extensions_mut()
@@ -204,10 +212,10 @@ async fn authenticated_proxy_keeps_client_limits_separate() {
 }
 
 #[tokio::test]
-async fn sixth_valid_submission_is_rejected_before_delivery() {
+async fn third_valid_submission_is_rejected_before_delivery() {
     let delivery = Arc::new(TestDelivery::default());
     let app = routes::router(AppState::new(Some(delivery.clone()), None));
-    for _ in 0..5 {
+    for _ in 0..2 {
         let response = app
             .clone()
             .oneshot(request(valid_form().to_string()))
@@ -227,10 +235,10 @@ async fn sixth_valid_submission_is_rejected_before_delivery() {
             .unwrap()
             .parse::<u64>()
             .unwrap();
-        assert!((1..=600).contains(&retry_after));
+        assert!((1..=3_600).contains(&retry_after));
         assert_eq!(json_body(response).await["code"], "RATE_LIMITED");
     }
-    assert_eq!(delivery.sent.lock().unwrap().len(), 5);
+    assert_eq!(delivery.sent.lock().unwrap().len(), 2);
 }
 
 #[tokio::test]
@@ -251,7 +259,7 @@ async fn authenticated_proxy_enforces_each_real_client_threshold() {
             .insert("x-contact-client-ip", client.parse().unwrap());
         attempt
     };
-    for _ in 0..5 {
+    for _ in 0..2 {
         let response = app
             .clone()
             .oneshot(attempt_for("203.0.113.1"))
@@ -273,7 +281,7 @@ async fn authenticated_proxy_enforces_each_real_client_threshold() {
     assert_eq!(response.status(), StatusCode::TOO_MANY_REQUESTS);
     let response = app.oneshot(attempt_for("203.0.113.2")).await.unwrap();
     assert_eq!(response.status(), StatusCode::OK);
-    assert_eq!(delivery.sent.lock().unwrap().len(), 6);
+    assert_eq!(delivery.sent.lock().unwrap().len(), 3);
 }
 
 #[tokio::test]
@@ -291,7 +299,7 @@ async fn failed_delivery_attempts_still_consume_the_limit() {
             StatusCode::SERVICE_UNAVAILABLE
         };
         let app = routes::router(AppState::new(delivery, None));
-        for _ in 0..5 {
+        for _ in 0..2 {
             let response = app
                 .clone()
                 .oneshot(request(valid_form().to_string()))

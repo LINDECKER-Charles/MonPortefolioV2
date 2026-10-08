@@ -5,8 +5,8 @@ use std::{
     time::{Duration, Instant},
 };
 
-const ATTEMPTS: u32 = 5;
-const WINDOW: Duration = Duration::from_secs(10 * 60);
+const ATTEMPTS: u32 = 2;
+const WINDOW: Duration = Duration::from_secs(60 * 60);
 const MAX_CLIENTS: usize = 10_000;
 
 struct Bucket {
@@ -15,7 +15,7 @@ struct Bucket {
 }
 
 /// Limite les tentatives, y compris les requêtes invalides et les échecs SMTP.
-/// Les entrées expirent au bout de dix minutes ; la mémoire reste bornée.
+/// Les entrées expirent au bout d’une heure ; la mémoire reste bornée.
 pub struct RateLimiter {
     clients: Mutex<HashMap<IpAddr, Bucket>>,
 }
@@ -76,9 +76,9 @@ mod tests {
         for _ in 0..ATTEMPTS {
             assert_eq!(limiter.check_at(address, now), Ok(()));
         }
-        assert_eq!(limiter.check_at(address, now), Err(600));
+        assert_eq!(limiter.check_at(address, now), Err(3600));
         assert_eq!(
-            limiter.check_at(address, now + Duration::from_secs(599)),
+            limiter.check_at(address, now + Duration::from_secs(3599)),
             Err(1)
         );
         assert_eq!(limiter.check_at(address, now + WINDOW), Ok(()));
@@ -93,11 +93,11 @@ mod tests {
             assert_eq!(limiter.check_at(address, now), Ok(()));
         }
         assert_eq!(
-            limiter.check_at(address, now + Duration::from_millis(598_999)),
+            limiter.check_at(address, now + WINDOW - Duration::from_millis(1001)),
             Err(2)
         );
         assert_eq!(
-            limiter.check_at(address, now + Duration::from_millis(599_999)),
+            limiter.check_at(address, now + WINDOW - Duration::from_millis(1)),
             Err(1)
         );
         assert_eq!(limiter.check_at(address, now + WINDOW), Ok(()));
