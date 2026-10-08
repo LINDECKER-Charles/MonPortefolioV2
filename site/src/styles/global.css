@@ -325,28 +325,12 @@ button {
   height: 22px;
 }
 
-/* Rejouer le dessin sans ajouter de texte ni modifier la mise en page. */
-.commande-figure {
-  display: none;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
-  border: 1px solid var(--filet);
-  border-radius: 50%;
-  background: var(--papier);
-  color: var(--bleu);
-  font: 400 1.5rem/1 var(--font-texte);
-  cursor: pointer;
-  padding: 0;
+/* Les scènes sont leurs propres commandes ; le contour n’apparaît qu’au clavier. */
+.js [data-rejouer] { cursor: pointer; }
+[data-rejouer]:focus-visible { outline: 2px solid var(--bleu); outline-offset: 5px; border-radius: var(--rayon); }
+@media print {
+  [data-figure-animation] * { animation: none !important; transition: none !important; }
 }
-
-.js .commande-figure { display: inline-grid; }
-.commande-figure:hover,
-.commande-figure:focus-visible {
-  border-color: var(--bleu);
-}
-@media print { .js .commande-figure { display: none; } }
 
 /* ===== La voix de l'auteur : le stylo bleu ===== */
 .note {
@@ -488,9 +472,7 @@ button {
   flex-shrink: 0;
 }
 
-/* ===== Mouvement réduit =====
-   Le seul mouvement qui part tout seul est le tracé de la figure 1 ; il est
-   coupé ici comme tout le reste. */
+/* ===== Mouvement réduit : scènes, tracé et révélations restent complets ===== */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

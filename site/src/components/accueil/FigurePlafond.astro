@@ -15,7 +15,8 @@ const description =
 ---
 
 <figure class="figure fig1" id="fig-1">
-  <div class="figure__plan" data-plafond data-figure-animation>
+  <button type="button" class="figure__plan" data-plafond data-figure-animation data-rejouer
+    aria-label="Rejouer l’animation : le plafond sur Gwent">
     <svg class="figure--large" viewBox="0 0 760 368" role="img" aria-labelledby="f1-titre f1-desc">
       <title id="f1-titre">Figure 1 : le plafond</title>
       <desc id="f1-desc">{description}</desc>
@@ -84,10 +85,7 @@ const description =
         <circle class="f-plein" cx="289.1" cy="67.4" r="5"></circle>
       </g>
     </svg>
-    <button type="button" class="commande-figure" data-rejouer aria-label="Rejouer l’animation : le plafond sur Gwent">
-      <span aria-hidden="true">↻</span>
-    </button>
-  </div>
+  </button>
   <figcaption class="legende"><b>Fig. 1</b> Le plafond. Ma progression sur Gwent&nbsp;; schéma, pas à l’échelle.</figcaption>
 </figure>
 
@@ -97,8 +95,7 @@ const description =
 </script>
 
 <style>
-  .figure__plan { position: relative; display: block; padding-bottom: 52px; }
-  .figure__plan .commande-figure { position: absolute; right: 8px; bottom: 4px; }
+  .figure__plan { position: relative; display: block; width: 100%; text-align: left; color: inherit; }
 
   .courbe {
     fill: none;
@@ -141,5 +138,10 @@ const description =
 
   .figure__plan:global(.est-trace) .annot--2 {
     transition-delay: 1.95s;
+  }
+
+  @media print {
+    .courbe { stroke-dasharray: none !important; stroke-dashoffset: 0 !important; }
+    .annot { opacity: 1 !important; transition: none !important; }
   }
 </style>

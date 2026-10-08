@@ -1,0 +1,87 @@
+<svg class="suite" viewBox="0 0 320 240" aria-hidden="true" focusable="false">
+      <path class="suite__repere" d="M22 203h276M32 198v10m64-10v10m64-10v10m64-10v10m64-10v10" />
+      <g class="suite__liaisons">
+        <path d="M78 142h28v-32h37M174 110h35v32h30M169 80V50h62M267 68v33h-58" />
+        <path class="suite__retour" d="M239 156h-41v-31h-24M143 125h-25v32H78" />
+      </g>
+      <g class="suite__client">
+        <path class="suite__papier" d="M29 119h49v38H29zM24 164h59l-5-7H29z" />
+        <path d="m43 131-7 6 7 6m19-12 7 6-7 6m-10-15-5 18M46 161h15" />
+        <circle class="suite__accent" cx="72" cy="124" r="1.5" />
+      </g>
+      <g class="suite__service">
+        <path class="suite__papier" d="m143 78 31-8 17 10v79l-31 8-17-10z" />
+        <path d="m143 78 17 10 31-8m-31 8v79m7-66 17-4m-17 15 17-4m-17 15 17-4m-17 15 17-4M149 96v39" />
+        <circle class="suite__accent suite__signal" cx="177" cy="150" r="3" />
+        <path class="suite__repere" d="m132 175 30 17 42-12" />
+      </g>
+      <g class="suite__stockage">
+        <path class="suite__papier" d="M239 128c0-12 49-12 49 0v37c0 12-49 12-49 0z" />
+        <ellipse cx="263.5" cy="128" rx="24.5" ry="9" />
+        <path d="M239 141c0 12 49 12 49 0m-49 13c0 12 49 12 49 0" />
+        <path class="suite__repere" d="M254 162v4m8-3v4m8-4v4" />
+      </g>
+      <g class="suite__livraison">
+        <path class="suite__papier" d="M231 28h56v40h-56z" />
+        <path d="M231 38h56m-50-5h1m5 0h1m5 0h1m-1 18 7 7 15-15" />
+      </g>
+      <g class="suite__paquets">
+        <circle class="suite__paquet suite__paquet--requete" r="3.5" />
+        <circle class="suite__paquet suite__paquet--donnees" r="3.5" />
+        <circle class="suite__paquet suite__paquet--reponse" r="3.5" />
+        <circle class="suite__paquet suite__paquet--livraison" r="3.5" />
+      </g>
+</svg>
+
+<style>
+  .suite { fill: none; stroke: currentColor; stroke-width: 1.65; stroke-linecap: round; stroke-linejoin: round; }
+  .suite__papier { fill: var(--papier); }
+  .suite__repere { stroke: var(--trait-doux); stroke-width: 1.15; }
+  .suite__liaisons { stroke-width: 1.35; }
+  .suite__retour { stroke: var(--trait-doux); stroke-dasharray: 3 5; stroke-width: 1.1; }
+  .suite__accent, .suite__paquet { fill: currentColor; stroke: none; }
+  .suite__paquet { opacity: 0; }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.est-visible) .suite__paquet { animation: suite-requete 5.6s linear infinite; }
+    :global(.est-visible) .suite__paquet--donnees { animation-name: suite-donnees; }
+    :global(.est-visible) .suite__paquet--reponse { animation-name: suite-reponse; }
+    :global(.est-visible) .suite__paquet--livraison { animation-name: suite-livraison; }
+    :global(.est-visible) .suite__signal { animation: suite-signal 5.6s ease infinite; }
+    @keyframes suite-requete {
+      0%, 5% { transform: translate(78px, 142px); opacity: 0; }
+      6% { opacity: 1; }
+      12% { transform: translate(106px, 142px); }
+      19% { transform: translate(106px, 110px); }
+      27% { transform: translate(143px, 110px); opacity: 1; }
+      30%, 100% { transform: translate(143px, 110px); opacity: 0; }
+    }
+    @keyframes suite-donnees {
+      0%, 29% { transform: translate(174px, 110px); opacity: 0; }
+      30% { opacity: 1; }
+      38% { transform: translate(209px, 110px); }
+      45% { transform: translate(209px, 142px); }
+      51% { transform: translate(239px, 142px); opacity: 1; }
+      54%, 100% { transform: translate(239px, 142px); opacity: 0; }
+    }
+    @keyframes suite-reponse {
+      0%, 53% { transform: translate(239px, 156px); opacity: 0; }
+      54% { opacity: 1; }
+      61% { transform: translate(198px, 156px); }
+      66% { transform: translate(198px, 125px); }
+      70% { transform: translate(143px, 125px); }
+      75% { transform: translate(118px, 125px); }
+      81% { transform: translate(118px, 157px); }
+      88% { transform: translate(78px, 157px); opacity: 1; }
+      91%, 100% { transform: translate(78px, 157px); opacity: 0; }
+    }
+    @keyframes suite-livraison {
+      0%, 69% { transform: translate(169px, 80px); opacity: 0; }
+      70% { opacity: 1; }
+      77% { transform: translate(169px, 50px); }
+      89% { transform: translate(231px, 50px); opacity: 1; }
+      92%, 100% { transform: translate(231px, 50px); opacity: 0; }
+    }
+    @keyframes suite-signal { 0%, 25%, 100% { opacity: 1; } 28%, 52%, 69% { opacity: .25; } 31%, 55%, 73% { opacity: 1; } }
+  }
+  @media print { .suite__paquet { display: none; } }
+</style>

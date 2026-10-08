@@ -13,7 +13,8 @@ const DUREE = '1.8s';
 export function brancherPlafond(): void {
   const plan = document.querySelector<HTMLElement>('[data-plafond]');
   if (!plan) return;
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const mouvementReduit = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (mouvementReduit.matches) return;
   if (!('IntersectionObserver' in window)) return;
   if (plan.getBoundingClientRect().top < window.innerHeight) return;
 
@@ -42,7 +43,7 @@ export function brancherPlafond(): void {
       observateur.disconnect();
       for (const courbe of courbes) {
         courbe.getBoundingClientRect();
-        courbe.style.transition = `stroke-dashoffset ${DUREE} cubic-bezier(.4, 0, .2, 1)`;
+        courbe.style.transition = mouvementReduit.matches ? 'none' : `stroke-dashoffset ${DUREE} cubic-bezier(.4, 0, .2, 1)`;
         courbe.style.strokeDashoffset = '0';
       }
       plan.classList.add('est-trace');

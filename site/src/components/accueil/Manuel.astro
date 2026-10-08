@@ -44,4 +44,7 @@ const minutes = minutesDeLecture(chapitres);
       column-gap: 48px;
     }
   }
+
+  /* Le repère n’est pas imprimé : le récit doit reprendre toute la largeur. */
+  @media print { .manuel { display: block; } }
 </style>
