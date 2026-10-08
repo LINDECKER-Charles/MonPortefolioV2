@@ -44,22 +44,36 @@ jobs:
           TARGET_TAGS: ${{ inputs.target_tags }}
         run: |
           set -euo pipefail
-          img="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/monportefoliov2"
+          prefix="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/monportefoliov2"
+          images=("${prefix}" "${prefix}-backend")
+          sources=()
+          revision=""
 
           # Echec explicite plutot qu'une erreur de registre obscure : au tout
           # premier passage sur main, l'etiquette source n'existe pas encore
           # parce qu'aucun deploiement de test n'a eu lieu.
-          if ! docker buildx imagetools inspect "${img}:${SOURCE_TAG}" >/dev/null 2>&1; then
-            echo "L'image ${img}:${SOURCE_TAG} n'existe pas." >&2
-            echo "Passer d'abord par la branche dev : c'est elle qui construit et deploie en test." >&2
-            exit 1
-          fi
-
-          args=""
-          for tag in ${TARGET_TAGS}; do
-            args="${args} --tag ${img}:${tag}"
+          for img in "${images[@]}"; do
+            if ! digest="$(docker buildx imagetools inspect "${img}:${SOURCE_TAG}" --format '{{.Manifest.Digest}}')"; then
+              echo "L'image ${img}:${SOURCE_TAG} n'existe pas. Passer d'abord par dev." >&2
+              exit 1
+            fi
+            source="${img}@${digest}"
+            sha="$(docker buildx imagetools inspect "$source" --format '{{json .Image}}' \
+              | jq -r '[.. | objects | .config?.Labels?["org.opencontainers.image.revision"] // empty] | unique | if length == 1 then .[0] else "" end')"
+            if [[ ! "$sha" =~ ^[0-9a-f]{40}$ ]] || { [ -n "$revision" ] && [ "$sha" != "$revision" ]; }; then
+              echo "Les images web/backend ne portent pas la meme revision valide. Rejouer le build dev." >&2
+              exit 1
+            fi
+            revision="$sha"
+            sources+=("$source")
           done
-          # shellcheck disable=SC2086  # $args est une liste d'options, volontairement non citee
-          docker buildx imagetools create ${args} "${img}:${SOURCE_TAG}"
 
-          echo "Promue : ${img}:${SOURCE_TAG} -> ${TARGET_TAGS}"
+          for i in "${!images[@]}"; do
+            img="${images[$i]}"
+            args=()
+            for tag in ${TARGET_TAGS}; do
+              args+=(--tag "${img}:${tag}")
+            done
+            docker buildx imagetools create "${args[@]}" "${sources[$i]}"
+            echo "Promue : ${sources[$i]} -> ${TARGET_TAGS} (revision ${revision})"
+          done

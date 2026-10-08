@@ -67,14 +67,22 @@ dix secrets à garder synchronisés, et le fichier arrive sur l'hôte en `chmod 
 
 Les modèles versionnés sont [`.env.test.example`](../.env.test.example) et
 [`.env.prod.example`](../.env.prod.example), commentés ligne à ligne. Le modèle de test est
-complet tel quel ; celui de production aussi, mesure d'audience en commentaire. Récapitulatif :
+contient les valeurs publiques ; chaque environnement demande son jeton de relais et sa
+configuration SMTP pour l’envoi réel. Récapitulatif :
 
 | Clé | Obligatoire | Test | Production | Rôle |
 |---|---|---|---|---|
 | `COMPOSE_PROJECT_NAME` | oui | `portfolio-test` | `portfolio-prod` | isole les piles sur la même machine |
 | `COMPOSE_FILE` | non | `compose.yaml:compose.deploy.yaml:compose.umami.yaml` | `compose.yaml:compose.deploy.yaml` | confort : un `docker compose` lancé à la main dans le dossier charge les bons calques. Le déploiement choisit les siens et signale un écart |
 | `WEB_IMAGE` | non | `ghcr.io/lindecker-charles/monportefoliov2` | idem | image publiée par la CI |
+| `BACKEND_IMAGE` | non | `ghcr.io/lindecker-charles/monportefoliov2-backend` | idem | image Rust publiée avec le site |
 | `IMAGE_TAG` | oui | `staging` | `prod` | étiquette mobile déployée |
+| `CONTACT_EMAIL` | oui | adresse de contact | adresse de contact | adresse affichée et destinataire du formulaire, lue au démarrage |
+| `BACKEND_PROXY_TOKEN` | oui | secret propre au test | secret propre à la production | protège la transmission de l’IP entre Node et Rust ; `openssl rand -hex 32` |
+| `SMTP_HOST` | pour envoyer | relais SMTP | relais SMTP | absent : API active, envoi indisponible (`503`) |
+| `SMTP_FROM` | avec le relais | expéditeur autorisé | expéditeur autorisé | adresse acceptée par le fournisseur SMTP ; le visiteur reste dans `Reply-To` |
+| `SMTP_PORT`, `SMTP_TLS` | non | `587`, `starttls` | idem | STARTTLS obligatoire ou TLS direct (`465`, `tls`) ; `none` seulement sur boucle locale |
+| `SMTP_USERNAME`, `SMTP_PASSWORD` | ensemble si nécessaires | compte SMTP | compte SMTP | identifiants du relais, uniquement dans le backend |
 | `CADDY_DOMAINS` | **oui** | `test.v2.charles-lindecker.com` (proposé) | `charles-lindecker.com, www.charles-lindecker.com` | domaines servis par l'edge partagé |
 | `ROBOTS_TAG` | non | `noindex` | `all` | en-tête `X-Robots-Tag` posé par l'edge |
 | `REDIRECT_HOSTS` | non | — | `www.charles-lindecker.com` | hôtes renvoyés en 301 vers `CANONICAL_ORIGIN` par le serveur du site |
@@ -85,6 +93,17 @@ complet tel quel ; celui de production aussi, mesure d'audience en commentaire. 
 | `TLS_ASSERT` | non | `1` | `1` | échec du déploiement si un domaine ne sert pas un certificat valide |
 
 Points à lire avant de remplir :
+
+- **Le mail est configuré au démarrage.** Modifier `CONTACT_EMAIL` puis redéployer met à
+  jour les pages, les liens et le destinataire sans reconstruire les images. `BACKEND_URL`
+  sert seulement en local à joindre Rust ; Compose fixe la destination à `http://backend:8080`.
+  Le jeton partagé accepte 32 à 256 caractères ASCII imprimables sans espace. Il doit être
+  différent entre test et production ; aucune valeur remplie ne doit être versionnée.
+
+- **Le relais SMTP doit autoriser `SMTP_FROM`.** Utiliser les identifiants et l’adresse fournis
+  par le service de messagerie. Une adresse publique en Outlook ne signifie pas que le
+  compte autorise automatiquement SMTP. Le succès indique l’acceptation par le relais ;
+  une erreur de livraison n’est jamais présentée comme un message envoyé.
 
 - **La production attend le départ de la V1.** Tant que la V1 déclare `charles-lindecker.com` et
   `www.` sur l'edge, le déploiement de production refuse de démarrer (domaine déjà déclaré par un

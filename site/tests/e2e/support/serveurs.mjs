@@ -40,6 +40,9 @@ export const SKIP_BUILD = Boolean(process.env.E2E_SKIP_BUILD);
 export const MESURE_SITE_ID = '00000000-0000-4000-8000-0000000e2e00';
 export const MESURE_DOMAINE = 'mesure.charles-lindecker.test';
 
+/** Adresse de test, distincte de l’adresse publique et sans boîte réelle. */
+export const CONTACT_EMAIL = 'e2e-contact@example.test';
+
 /** Variables posées à vide : celles du poste ne doivent pas fuiter dans les tests. */
 const ENV_HERMETIQUE = {
   HOST: '127.0.0.1',
@@ -47,6 +50,8 @@ const ENV_HERMETIQUE = {
   UMAMI_SITE_DOMAIN: '',
   REDIRECT_HOSTS: '',
   CANONICAL_ORIGIN: '',
+  CONTACT_EMAIL,
+  BACKEND_URL: '',
 };
 
 export const SITE = {

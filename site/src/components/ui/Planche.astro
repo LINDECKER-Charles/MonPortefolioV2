@@ -20,8 +20,6 @@ import { typo } from '../../lib/typo';
 interface Props {
   src: ImageMetadata;
   legende?: string;
-  /** Un bouton permet de rejouer l’animation du dessin. */
-  anime?: boolean;
   /** Largeur d'affichage maximale, en pixels CSS : choisit les fichiers produits. */
   largeur?: number;
   /**
@@ -33,7 +31,7 @@ interface Props {
   class?: string;
 }
 
-const { src, legende, anime = false, largeur: largeurMax = 240, hauteur, class: classe } = Astro.props;
+const { src, legende, largeur: largeurMax = 240, hauteur, class: classe } = Astro.props;
 const largeur = hauteur ? Math.min(largeurMax, Math.round((hauteur * src.width) / src.height)) : largeurMax;
 
 const vectoriel = src.format === 'svg';
@@ -51,15 +49,7 @@ const style = [
 ---
 
 <figure class:list={['planche', classe]} style={style}>
-  {anime ? (
-    <div class="planche__animation" data-figure-animation>
-      <span class="planche__dessin" aria-hidden="true"></span>
-      <button type="button" class="commande-figure planche__rejouer" data-rejouer
-        aria-label={legende ? `Rejouer l’animation : ${typo(legende)}` : 'Rejouer l’animation de l’illustration'}>
-        <span aria-hidden="true">↻</span>
-      </button>
-    </div>
-  ) : <span class="planche__dessin" aria-hidden="true"></span>}
+  <span class="planche__dessin" aria-hidden="true"></span>
   {legende && <figcaption class="legende">{typo(legende)}</figcaption>}
 </figure>
 
@@ -81,22 +71,6 @@ const style = [
     mask-image: image-set(var(--planche-1x) 1x, var(--planche-2x) 2x);
   }
 
-  .planche__animation {
-    position: relative;
-    display: block;
-  }
-
-  .planche__rejouer { position: absolute; top: 0; right: 0; }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .planche__animation:global(.animation-en-cours) .planche__dessin { animation: planche-deployer .65s ease both; }
-    @keyframes planche-deployer {
-      0% { transform: scale(1); }
-      55% { transform: scale(1.045); }
-      100% { transform: scale(1); }
-    }
-  }
-
   /* Avec JavaScript, rien n'est téléchargé avant l'approche : la place est
      réservée par le ratio, le dessin arrive avant que le lecteur l'atteigne. */
   :global(.js) .planche__dessin:not(.est-proche) {
@@ -106,7 +80,6 @@ const style = [
   }
 
   @media print {
-    .planche__rejouer { display: none; }
     .planche__dessin {
       print-color-adjust: exact;
       -webkit-print-color-adjust: exact;

@@ -30,7 +30,15 @@ consultées : [Price of Power](https://www.playgwent.com/en/updates/price-of-pow
 Les cartes racontent le raisonnement de Charles, sans lui attribuer de carte ni de deck précis.
 
 `FigureCollectif.astro` remplace le graphe de personnes par trois actions explicites du pôle
-francophone. Les deux figures utilisent des éléments `details` natifs : clic et clavier révèlent
-le texte, et le mouvement répond seulement à l’ouverture. `Planche.astro` peut aussi recevoir un
-texte `detail`. Tous ces détails restent consultables sans JavaScript ; le mouvement réduit
-supprime les animations.
+francophone. Le SVG de chaque carte ou étape est directement enveloppé dans une commande native
+accessible au clic, à Entrée et à Espace ; aucun bouton de rejeu séparé ni texte à ouvrir.
+
+Les scènes du récit sont désormais des SVG en plusieurs pièces dans `ScenesOrigine.astro` et
+`ScenesSuite.astro` et `SceneLanternes.astro`, affichés par `Illustration.astro`. Leurs animations montrent le démontage du
+PC, la plastification d’une carte, l’ouverture du portail, le diplôme, le pupitre et la transmission
+d’une flamme. Les scènes se jouent à leur première arrivée dans l’écran puis se rejouent sur le
+dessin. Le diplôme reprend la composition d’origine : chronomètre, dossiers et rouleau noué.
+Le système d’architecture fait circuler des messages tant qu’il est visible et que
+l’onglet est actif. Les anciens masques restent disponibles ; `Planche.astro` sert aux couvertures
+statiques des projets. Sans JavaScript, avec mouvement réduit ou à l’impression, tous les dessins
+et tous les textes sont complets.

@@ -1,5 +1,9 @@
 // @ts-check
 import { defineConfig, fontProviders } from 'astro/config';
+import { existsSync } from 'node:fs';
+import { loadEnvFile } from 'node:process';
+import { fileURLToPath } from 'node:url';
+import { lireEmailContact, lireConfigBackend } from './server/contact.mjs';
 
 /**
  * Aucun <script> exécutable en ligne : la CSP envoyée par server/server.mjs
@@ -34,6 +38,43 @@ export default defineConfig({
   // Pas de barre d'outils de développement : elle masquerait le pied de page
   // pendant les relectures, et le site n'en a pas l'usage.
   devToolbar: { enabled: false },
+
+  integrations: [{
+    name: 'contact-local',
+    hooks: {
+      'astro:config:setup': ({ command, updateConfig }) => {
+        // getViteConfig monte aussi un serveur Vite pour Vitest ; les tests
+        // n'ont besoin ni des coordonnées locales ni d'un backend personnel.
+        if (command !== 'dev' || process.env.VITEST) return;
+        const environnement = fileURLToPath(new URL('../.env', import.meta.url));
+        if (existsSync(environnement)) loadEnvFile(environnement);
+        const email = lireEmailContact(process.env);
+        const backend = lireConfigBackend({ ...process.env, BACKEND_URL: process.env.BACKEND_URL || 'http://127.0.0.1:8080' });
+        updateConfig({
+          vite: {
+            define: { 'import.meta.env.PUBLIC_CONTACT_EMAIL': JSON.stringify(email ?? '') },
+            server: {
+              proxy: {
+                '^/api/(contact|health)$': {
+                  target: backend?.origine,
+                  timeout: 20_000,
+                  proxyTimeout: 20_000,
+                  headers: {
+                    'X-Contact-Client-IP': '127.0.0.1',
+                    ...(backend?.token ? { 'X-Contact-Proxy-Token': backend.token } : {}),
+                  },
+                },
+              },
+            },
+          },
+        });
+      },
+      'astro:server:setup': () => {
+        if (process.env.VITEST) return;
+        if (!lireEmailContact(process.env)) throw new Error('CONTACT_EMAIL est obligatoire. Copier .env.example vers .env avant npm run dev.');
+      },
+    },
+  }],
 
   image: {
     // Les images déclarent elles-mêmes leurs largeurs (photo de la couverture) :
@@ -78,6 +119,9 @@ export default defineConfig({
   ],
 
   vite: {
+    // Le build conserve le marqueur, quelle que soit la machine : le mail
+    // définitif est injecté par Node depuis CONTACT_EMAIL, sans reconstruction.
+    define: { 'import.meta.env.PUBLIC_CONTACT_EMAIL': JSON.stringify('') },
     build: { assetsInlineLimit: jamaisDeScriptEnLigne },
   },
 });

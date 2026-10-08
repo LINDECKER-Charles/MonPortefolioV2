@@ -1,0 +1,31 @@
+---
+import ScenesOrigine from './ScenesOrigine.astro';
+import ScenesSuite from './ScenesSuite.astro';
+import SceneLanternes from './SceneLanternes.astro';
+import { typo } from '../../lib/typo';
+
+interface Props {
+  scene: 'pc' | 'cartes' | 'portes' | 'diplome' | 'pupitre' | 'architecte' | 'lanternes';
+  legende: string;
+  largeur?: number;
+  hauteur?: number;
+}
+
+const { scene, legende, largeur = 240, hauteur } = Astro.props;
+const largeurScene = hauteur ? Math.min(largeur, hauteur * 4 / 3) : largeur;
+---
+
+<figure class="illustration" data-scene={scene} style={`--illustration-largeur:${largeurScene}px`}>
+  <button type="button" class="illustration__scene" data-rejouer data-figure-animation
+    data-animation-continue={scene === 'architecte' || undefined}
+    aria-label={`Rejouer l’animation : ${typo(legende)}`}>
+    {scene === 'architecte' ? <ScenesSuite /> : scene === 'lanternes' ? <SceneLanternes /> : <ScenesOrigine scene={scene} />}
+  </button>
+  <figcaption class="legende">{typo(legende)}</figcaption>
+</figure>
+
+<style>
+  .illustration { width: min(100%, var(--illustration-largeur)); color: var(--bleu); }
+  .illustration__scene { display: block; width: 100%; aspect-ratio: 4 / 3; padding: 0; border: 0; background: transparent; color: inherit; }
+  .illustration__scene :global(svg) { display: block; width: 100%; height: auto; overflow: visible; }
+</style>
