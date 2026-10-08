@@ -1,0 +1,172 @@
+name: _tests
+
+# Reutilisable : tout ce qui se verifie sans hote. Trois responsabilites
+# separees en trois jobs paralleles — l'application, son comportement dans un
+# navigateur, et ce qui la met en ligne — pour qu'un echec designe tout de suite
+# laquelle des trois est cassee.
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  front:
+    name: Application (Astro)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          # Meme majeure que l'image de production (site/Dockerfile) : tester
+          # sur un moteur different de celui qui servira le site, c'est tester
+          # autre chose.
+          node-version: 24
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Installation des dependances
+        run: npm ci
+
+      - name: Verification des types (astro check)
+        run: npm run check
+
+      - name: Tests (dont ceux du serveur)
+        # `node --test` pour server/server.mjs : le serveur de production se
+        # teste sans navigateur ni dependance.
+        run: npm test
+
+      - name: Build de production
+        # Ce qui casse ici casse avant la construction de l'image, pas en ligne.
+        run: npm run build
+
+  e2e:
+    name: Navigateur (Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Installation des dependances
+        run: npm ci
+
+      - name: Chromium
+        # La version suit @playwright/test, epingle dans package-lock.json.
+        # Pas de cache : Playwright le deconseille, restaurer coute autant que
+        # telecharger et les bibliotheques systeme ne se mettent pas en cache.
+        # `--only-shell` : les tests tournent sans fenetre, le Chromium complet
+        # ne serait qu'un telechargement de plus.
+        run: npx playwright install --with-deps --only-shell chromium
+
+      - name: Tests de bout en bout
+        # Le webServer de playwright.config.ts construit le site puis lance le
+        # serveur de production : c'est ce qui partira en ligne qui est teste,
+        # en-tetes, statuts, redirections et chargeur de mesure compris.
+        run: npx playwright test
+
+      - name: Rapport en cas d'echec
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: rapport-playwright
+          path: |
+            site/playwright-report/
+            site/test-results/
+          retention-days: 7
+
+  infra:
+    name: Mise en ligne (Docker, Compose, scripts)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Shellcheck du script de deploiement
+        # Ce script tourne en `set -euo pipefail` sur le VPS de production : une
+        # variable mal citee y coute un deploiement a moitie applique.
+        run: shellcheck scripts/deploy-remote.sh
+
+      - name: Actionlint sur les workflows
+        # Un contrat de workflow reutilisable casse (secret non declare, entree
+        # inexistante, action mal referencee) ne se voit sinon qu'a l'execution,
+        # c'est-a-dire au moment du deploiement. SC2029 est ignore : l'expansion
+        # cote runner des secrets dans les commandes ssh est deliberee.
+        run: |
+          docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:latest \
+            -ignore 'SC2029'
+
+      - name: Validation des fichiers Compose
+        env:
+          # Valeurs factices : `config` resout les substitutions et echouerait
+          # sur les `${VAR:?}` obligatoires. Ce qu'on teste ici, c'est la
+          # structure des fichiers et de leurs combinaisons, pas le contenu du
+          # .env de l'hote.
+          CADDY_DOMAINS: exemple.test
+          COMPOSE_PROJECT_NAME: portfolio-ci
+          UMAMI_SITE_DOMAIN: exemple.test
+          UMAMI_SITE_NAME: Portfolio (ci)
+        run: |
+          set -euo pipefail
+          id=00000000-0000-4000-8000-0000000000c1
+          base=(-f compose.yaml -f compose.deploy.yaml)
+          mesure=(-f compose.umami.yaml)
+          echo "— pile servie (base + calque de deploiement)"
+          docker compose "${base[@]}" config --format json > "$RUNNER_TEMP/base.json"
+          # Sans le calque de mesure, aucune etiquette Umami : un import vide
+          # ferait refuser la configuration de tout l'edge. Et un environnement
+          # qui oublie ROBOTS_TAG n'est pas indexe.
+          jq -e '.services.web.labels
+            | (keys | map(select(. == "caddy.import" or startswith("umami."))) | length == 0)
+              and .["caddy.header.X-Robots-Tag"] == "noindex"' "$RUNNER_TEMP/base.json"
+          echo "— avec la mesure d'audience"
+          UMAMI_WEBSITE_ID="$id" docker compose "${base[@]}" "${mesure[@]}" \
+            config --format json > "$RUNNER_TEMP/pile.json"
+          # Une etiquette vide ferait refuser la configuration de tout l'edge.
+          jq -e '[.services.web.labels | to_entries[] | select((.value | tostring) == "")] | length == 0' \
+            "$RUNNER_TEMP/pile.json"
+          jq -e --arg id "$id" '.services.web.labels["caddy.import"] == "umami"
+            and .services.web.labels["umami.website"] == $id
+            and (.services.web.labels | has("umami.team") | not)
+            and .services.web.environment.UMAMI_WEBSITE_ID == $id' "$RUNNER_TEMP/pile.json"
+          echo "— garde-fou : calque de mesure sans UMAMI_WEBSITE_ID (doit echouer)"
+          if docker compose "${base[@]}" "${mesure[@]}" config -q 2>/dev/null; then
+            echo "compose.umami.yaml accepte un UMAMI_WEBSITE_ID absent." >&2
+            exit 1
+          fi
+          echo "— pile de developpement (base + override, chargement implicite)"
+          docker compose config -q
+
+      - name: Setup Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Construction de l'image (sans publication)
+        # Le job _build ne tourne que sur la branche dev. Sans cette etape, une
+        # PR pourrait casser le Dockerfile sans que rien ne le voie avant la
+        # fusion — et le premier a s'en apercevoir serait le deploiement.
+        uses: docker/build-push-action@v7
+        with:
+          context: site
+          push: false
+          load: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
