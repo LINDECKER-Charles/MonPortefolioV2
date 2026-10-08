@@ -26,6 +26,7 @@ export function fileDeMesure(page: Page): Promise<[string, Record<string, unknow
 /** Les pages du site, telles que le build les produit. */
 export const PAGES = [
   '/', '/projets', '/projets/pvz-fusion', '/projets/omnicard', '/projets/gup',
+  '/projets/bloodborne-legendary-run',
   '/parcours', '/parcours/professionnel', '/parcours/competences', '/parcours/formation',
   '/contact', '/blog', '/mentions-legales',
 ] as const;

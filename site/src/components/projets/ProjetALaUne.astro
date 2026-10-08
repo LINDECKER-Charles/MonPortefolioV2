@@ -1,0 +1,50 @@
+---
+import { Picture } from 'astro:assets';
+import type { ProjetActif } from '../../config/projets';
+import VisuelBloodborne from './VisuelBloodborne.astro';
+import gup from '../../assets/projets/gup-selection.webp';
+import pvz from '../../assets/captures/pvz-fusion.webp';
+interface Props { projet: ProjetActif }
+const { projet } = Astro.props;
+---
+
+<section class="vedette" aria-labelledby="vedette-nom" data-featured-project={projet.id}>
+  <div class="vedette__texte">
+    <p class="vedette__repere">À la une <span>{projet.usage}</span></p>
+    <h2 id="vedette-nom">{projet.nom}</h2>
+    <p class="vedette__promesse">{projet.promesse}</p>
+    <p class="vedette__resume">{projet.resume}</p>
+    <div class="vedette__actions">
+      <a class="btn btn--plein" href={projet.href} data-open-project={projet.id} aria-haspopup="dialog">Ouvrir l’aperçu</a>
+      <a class="vedette__page" href={projet.href}>Page du projet</a>
+    </div>
+  </div>
+  <figure class="vedette__visuel" data-featured-image="overview">
+    {projet.id === 'bloodborne' ? <VisuelBloodborne prioritaire /> : <Picture src={projet.id === 'gup' ? gup : pvz} formats={['avif']} fallbackFormat="webp" widths={[640, 1080]} sizes="(min-width: 850px) 48vw, 100vw" alt={projet.resume} loading="eager" />}
+    <figcaption class="sr">Captures prises dans l’application, sur un parcours d’exemple.</figcaption>
+  </figure>
+</section>
+
+<style>
+  .vedette { display: grid; grid-template-columns: .95fr 1.05fr; border: 1px solid var(--filet); border-radius: 10px; overflow: hidden; background: var(--blanc); }
+  .vedette__texte { padding: clamp(28px, 3vw, 40px); align-self: center; }
+  .vedette__repere { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; color: var(--bleu); font-size: .875rem; font-weight: 700; margin-bottom: 20px; }
+  .vedette__repere span { padding-left: 16px; border-left: 1px solid var(--filet); font-weight: 400; color: var(--graphite); }
+  .vedette h2 { font-size: clamp(1.9rem, 1.25rem + 1.5vw, 2.6rem); max-width: 18ch; line-height: 1.05; letter-spacing: -.035em; }
+  .vedette__promesse { font-size: 1.125rem; font-weight: 700; line-height: 1.35; margin-top: 20px; }
+  .vedette__resume { margin-top: 10px; color: var(--graphite); font-size: 1rem; line-height: 1.5; max-width: 44ch; }
+  .vedette__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 24px; margin-top: 24px; }
+  .vedette__actions .btn { font-size: .9375rem; padding: 10px 18px; }
+  .vedette__page { display: inline-flex; align-items: center; min-height: 44px; font-size: .875rem; }
+  .vedette__visuel { min-width: 0; }
+  .vedette__visuel > :global(picture), .vedette__visuel > :global(picture img) { display: block; width: 100%; height: 100%; object-fit: contain; }
+  @media (max-width: 849px) {
+    .vedette { grid-template-columns: minmax(0, 1fr); }
+    .vedette__visuel { grid-row: 1; height: 260px; }
+    .vedette__texte { grid-row: 2; padding: 24px; }
+    .vedette__repere { margin-bottom: 16px; }
+    .vedette h2 { font-size: 2rem; max-width: 20ch; }
+    .vedette__promesse { font-size: 1.0625rem; margin-top: 16px; }
+    .vedette__actions { margin-top: 20px; }
+  }
+</style>
