@@ -1,0 +1,121 @@
+---
+/**
+ * La planche d'appel : le seul encart à bord bleu du site. Une invitation
+ * discrète — jamais « je recherche un poste » — et tout ce
+ * qu'il faut pour écrire : le lien, l'adresse en clair, sa copie, les réseaux.
+ */
+import CopierAdresse from '../ui/CopierAdresse.astro';
+import Picto from '../ui/Picto.astro';
+import { CONTACT, CV, MAILTO } from '../../config/site';
+---
+
+<div class="contact">
+  <p class="contact__texte">
+    Parlons de technique et de ce qu’on peut construire à plusieurs.
+  </p>
+  <div class="actions contact__actions">
+    <a
+      class="contact__ecrire"
+      href={MAILTO}
+      data-umami-event="contact-email"
+      data-umami-event-emplacement="discutons"
+    >
+      <Picto nom="interface/email" />
+      Envoyer un e-mail
+    </a>
+    <CopierAdresse adresse={CONTACT.email} emplacement="discutons" />
+    {
+      CV && (
+        <a class="btn btn--contour" href={CV} download data-cv-telechargement="discutons">
+          <Picto nom="interface/telecharger" />
+          Télécharger mon CV
+        </a>
+      )
+    }
+  </div>
+  <p class="contact__adresse">
+    <span class="sr">Adresse&nbsp;: </span><span data-adresse>{CONTACT.email}</span>
+  </p>
+  <p class="contact__page"><a href="/contact">Tous mes moyens de contact</a></p>
+  <ul class="contact__reseaux">
+    <li>
+      <a href={CONTACT.linkedin} data-umami-event="lien-sortant" data-umami-event-domaine="www.linkedin.com" data-umami-event-emplacement="discutons">LinkedIn</a>
+    </li>
+    <li>
+      <a href={CONTACT.github} data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="discutons">GitHub</a>
+    </li>
+  </ul>
+</div>
+
+<script>
+  import { brancherCv } from '../../scripts/cv';
+  brancherCv();
+</script>
+
+<style>
+  .contact {
+    margin-top: var(--s7);
+    background: var(--bleu);
+    color: var(--sur-bleu);
+    padding: clamp(28px, 5vw, 72px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .contact__texte {
+    font-size: clamp(2rem, 3.6vw, 3.5rem);
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    max-width: 25ch;
+    text-wrap: balance;
+  }
+
+  .contact__actions {
+    margin-top: var(--s6);
+    align-items: center;
+    gap: var(--s5);
+  }
+
+  .contact__ecrire { display: inline-flex; align-items: center; gap: 12px; min-height: 48px; color: var(--sur-bleu); font-size: 1.25rem; font-weight: 700; text-underline-offset: .35em; }
+  .contact__ecrire :global(svg) { width: 24px; height: 24px; }
+  .contact__page { margin-top: var(--s2); }
+  .contact__page a { display: inline-flex; align-items: center; min-height: 44px; color: var(--sur-bleu); font-size: var(--t-petit); }
+
+  .contact__adresse {
+    margin-top: var(--s4);
+    font-size: var(--t-petit);
+    color: var(--sur-bleu);
+  }
+
+  .contact__adresse [data-adresse] {
+    color: var(--sur-bleu);
+    font-weight: 500;
+    user-select: all;
+  }
+
+  .contact__reseaux {
+    list-style: none;
+    padding: 0;
+    margin: var(--s3) 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--s5);
+  }
+
+  .contact__reseaux a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-weight: 500;
+    color: var(--sur-bleu);
+  }
+
+  .contact :global(.btn--plein) { background: var(--sur-bleu); color: var(--bleu); border-color: var(--sur-bleu); }
+  .contact :global(.btn--plein:hover) { background: color-mix(in srgb, var(--sur-bleu) 85%, var(--bleu)); }
+  .contact :global(.btn--contour) { color: var(--sur-bleu); border-color: color-mix(in srgb, var(--sur-bleu) 55%, transparent); }
+  .contact :global(.btn--contour:hover) { background: color-mix(in srgb, var(--sur-bleu) 12%, transparent); }
+  .contact :global(:focus-visible) { outline-color: var(--sur-bleu); }
+  .contact__adresse { margin-top: 24px; overflow-wrap: anywhere; }
+  .contact__reseaux { border-top: 1px solid color-mix(in srgb, var(--sur-bleu) 30%, transparent); padding-top: 18px; margin-top: 28px; }
+</style>

@@ -1,0 +1,49 @@
+---
+import Base from '../layouts/Base.astro';
+import FilAriane from '../components/pages/FilAriane.astro';
+import ContinuerLecture from '../components/pages/ContinuerLecture.astro';
+import { SITE } from '../config/site';
+import '../styles/profondeur.css';
+
+const titre = `Blog de ${SITE.nom}`;
+const description = 'Le blog de Charles Lindecker accueillera ses articles. En attendant la première publication, découvrez ses projets, son parcours et sa méthode de travail.';
+---
+
+<Base titre={titre} description={description} chemin="/blog">
+  <div class="wrap profondeur blog">
+    <FilAriane courant="Blog" />
+    <header class="page-hero">
+      <h1>Le blog.</h1>
+      <p class="page-hero__intro">Un espace pour prendre le temps d’expliquer ce que j’apprends et ce que je construis.</p>
+    </header>
+
+    <section class="premiere-page" aria-labelledby="premiere-page-titre">
+      <div class="premiere-page__texte">
+        <h2 id="premiere-page-titre">Le premier article reste à écrire.</h2>
+        <p>Aucun article n’est publié pour le moment. En attendant, les pages de projets racontent déjà les problèmes, les décisions et les résultats.</p>
+        <div class="page-liens"><a href="/projets">Lire les projets</a></div>
+      </div>
+      <div class="premiere-page__feuille" aria-hidden="true">
+        <span>Le prochain chapitre</span>
+        <i></i><i></i><i></i><i></i>
+      </div>
+    </section>
+
+    <ContinuerLecture liens={[
+      { href: '/projets/omnicard', titre: 'Omnicard', detail: 'Le jeu papier devenu moteur dans le navigateur.' },
+      { href: '/parcours', titre: 'Le parcours', detail: 'Apprendre, construire et transmettre.' },
+      { href: '/contact', titre: 'Discutons', detail: 'Poursuivre l’échange par e-mail.' },
+    ]} />
+  </div>
+</Base>
+
+<style>
+  .premiere-page { border-top: 1px solid var(--filet); padding-block: var(--s8); display: grid; grid-template-columns: minmax(0, 1fr) 19rem; gap: var(--s8); align-items: center; }
+  .premiere-page h2 { font-size: clamp(1.8rem, 1.2rem + 2vw, 3rem); max-width: 20ch; line-height: 1.1; letter-spacing: -0.03em; }
+  .premiere-page__texte > p { margin-top: var(--s5); max-width: 56ch; }
+  .premiere-page__feuille { background: var(--blanc); border: 1px solid var(--filet); padding: var(--s6); aspect-ratio: 4 / 5; display: flex; flex-direction: column; justify-content: center; gap: var(--s5); }
+  .premiere-page__feuille > span { font: italic 1.5rem/1.2 var(--font-note); color: var(--bleu); margin-bottom: var(--s5); }
+  .premiere-page__feuille i { height: 1px; width: 100%; background: var(--filet); }
+  .premiere-page__feuille i:last-child { width: 60%; }
+  @media (max-width: 760px) { .premiere-page { grid-template-columns: minmax(0, 1fr); gap: var(--s7); padding-block: var(--s7); } .premiere-page__feuille { width: min(70%, 220px); padding: var(--s5); aspect-ratio: 4 / 3; justify-self: end; gap: var(--s4); } .premiere-page__feuille > span { margin-bottom: var(--s2); font-size: 1.25rem; } }
+</style>

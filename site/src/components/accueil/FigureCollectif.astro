@@ -1,0 +1,121 @@
+---
+/**
+ * Figure 2 : rendre concret le travail du pôle, sans fabriquer de réseau
+ * individuel. Les gestes et les deux ordres de grandeur viennent des
+ * réponses C6 et C7 du questionnaire. Le bouton rejoue seulement le dessin.
+ */
+const etapes = [
+  {
+    titre: 'Accueillir',
+    resume: 'Donner une place aux nouveaux.',
+  },
+  {
+    titre: 'Former et relire',
+    resume: 'Apprendre en contribuant.',
+  },
+  {
+    titre: 'Contribuer en autonomie',
+    resume: 'Devenir un pilier du pôle.',
+  },
+];
+---
+
+<figure class="figure collectif" id="fig-2">
+  <div class="figure__plan">
+    <div class="collectif__entete">
+      <p class="collectif__titre">Comment le pôle francophone avance</p>
+    </div>
+    <ol class="collectif__etapes">
+      {etapes.map((etape, i) => (
+        <li>
+          <div class="collectif__etape" data-figure-animation>
+            <div class="collectif__contenu">
+              <span class="collectif__rang">{i + 1}</span>
+              <span class="collectif__visuel">
+              <svg class="collectif__dessin" viewBox="0 0 220 146" aria-hidden="true" focusable="false">
+                {i === 0 && (
+                  <>
+                    <path class="collectif__doux" d="M23 124H197M48 124V24h73v100M56 116V32h57" />
+                    <path class="collectif__trait" d="M66 124V40l35-9v93M94 81h2" />
+                    <g class="collectif__personne">
+                      <circle class="collectif__trait" cx="154" cy="52" r="12" />
+                      <path class="collectif__trait" d="M138 89V76q0-9 16-9t16 9v22M144 94v30M163 94v30M133 81l-21 4" />
+                    </g>
+                    <path class="collectif__papier" d="M176 80h23v32h-23zM181 87h13M181 94h10M181 101h13" />
+                    <path class="collectif__mouvement" d="M23 81h24m-8-8 8 8-8 8" />
+                  </>
+                )}
+                {i === 1 && (
+                  <>
+                    <path class="collectif__doux" d="M20 124H201M49 101v23M173 101v23M37 99h147" />
+                    <circle class="collectif__trait" cx="56" cy="41" r="11" />
+                    <circle class="collectif__trait" cx="170" cy="41" r="11" />
+                    <path class="collectif__trait" d="M39 88V65q0-10 17-10t17 10v12l27 13M188 88V65q0-10-18-10t-18 10v12l-18 13" />
+                    <path class="collectif__papier" d="m93 65 34-4 5 34-34 4zM101 72l18-2M102 80l13-2" />
+                    <path class="collectif__mouvement" d="m111 87 5 4 10-11" />
+                    <path class="collectif__doux" d="M83 27h57M84 21l-6 6 6 6M139 21l6 6-6 6" />
+                  </>
+                )}
+                {i === 2 && (
+                  <>
+                    <path class="collectif__doux" d="M17 124H203M52 119h116M164 32v72M49 99V46h54" />
+                    <path class="collectif__papier" d="M28 27h43v53H28zM37 40h25M37 49h21M37 58h25" />
+                    <path class="collectif__papier" d="M91 54h43v53H91zM100 67h25M100 76h21M100 85h25" />
+                    <path class="collectif__papier" d="M153 18h43v53h-43zM162 31h25M162 40h21M162 49h25" />
+                    <path class="collectif__mouvement" d="m37 68 4 4 8-9m51 32 4 4 8-9m52-32 4 4 8-9M72 54h17m-6-6 6 6-6 6M135 81h12l17-9m-7-2 7 2-2 7" />
+                  </>
+                )}
+              </svg>
+                <button type="button" class="commande-figure" data-rejouer aria-label={`Rejouer l’animation : ${etape.titre}`}><span aria-hidden="true">↻</span></button>
+              </span>
+              <span class="collectif__nom">{etape.titre}</span>
+              <span class="collectif__resume">{etape.resume}</span>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ol>
+    <p class="collectif__bilan"><strong>Une vingtaine de contributeurs formés.</strong> Jusqu’à dix en même temps.</p>
+  </div>
+  <figcaption class="legende"><b>Fig. 2</b> Accueillir, transmettre, puis laisser contribuer en autonomie. Schéma de fonctionnement du pôle.</figcaption>
+</figure>
+
+<style>
+  .collectif__entete { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+  .collectif__titre { font-size: 1.125rem; font-weight: 700; margin: 0; }
+  .collectif__etapes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; padding: 0; margin: 24px 0; list-style: none; }
+  .collectif__etapes li { position: relative; min-width: 0; }
+  .collectif__etapes li + li { border-left: 1px solid var(--filet); }
+  .collectif__etapes li + li::before { content: '→'; position: absolute; top: 65px; left: -12px; background: var(--blanc); color: var(--bleu); font-size: 1.25rem; line-height: 24px; width: 24px; text-align: center; }
+  .collectif__etape { padding: 0 18px; }
+  .collectif__contenu { position: relative; display: flex; flex-direction: column; align-items: flex-start; }
+  .collectif__rang { font: italic 1.25rem var(--font-note); color: var(--bleu); }
+  .collectif__visuel { position: relative; display: block; width: 100%; margin: 6px 0 12px; }
+  .collectif__dessin { color: var(--bleu); overflow: visible; }
+  .collectif__visuel .commande-figure { position: absolute; top: -28px; right: 0; cursor: pointer; }
+  .collectif__trait, .collectif__papier, .collectif__mouvement, .collectif__doux { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .collectif__doux { stroke: var(--trait-doux); stroke-width: 1.5; }
+  .collectif__papier { fill: var(--blanc); }
+  .collectif__nom { font-size: 1rem; font-weight: 700; }
+  .collectif__resume { margin-top: 4px; font-size: .875rem; color: var(--graphite); }
+  .collectif__bilan { margin: 0; padding-top: 20px; border-top: 1px solid var(--filet); font-size: 1rem; color: var(--graphite); }
+  .collectif__bilan strong { color: var(--encre); }
+  @media (prefers-reduced-motion: no-preference) {
+    .collectif__etape:global(.animation-en-cours) .collectif__mouvement { stroke-dasharray: 220; animation: collectif-tracer .7s ease both; }
+    .collectif__etape:global(.animation-en-cours) .collectif__personne { animation: collectif-avancer .6s ease both; }
+    @keyframes collectif-tracer { from { stroke-dashoffset: 220; } to { stroke-dashoffset: 0; } }
+    @keyframes collectif-avancer { from { transform: translateX(7px); } to { transform: translateX(0); } }
+  }
+  @media (max-width: 640px) {
+    .collectif__etapes { grid-template-columns: minmax(0, 1fr); margin-block: 20px; }
+    .collectif__etape { padding: 20px 0; }
+    .collectif__etapes li + li { border-left: 0; border-top: 1px solid var(--filet); }
+    .collectif__etapes li + li::before { content: '↓'; top: -12px; left: 67px; }
+    .collectif__contenu { display: grid; grid-template-columns: 130px minmax(0, 1fr); column-gap: 20px; align-items: center; }
+    .collectif__rang { grid-column: 2; grid-row: 1; align-self: end; }
+    .collectif__visuel { grid-column: 1; grid-row: 1 / 4; margin: 0; }
+    .collectif__visuel .commande-figure { top: auto; right: auto; left: -6px; bottom: -20px; }
+    .collectif__nom, .collectif__resume { grid-column: 2; }
+  }
+  @media print { .commande-figure { display: none; } }
+</style>

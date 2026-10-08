@@ -1,0 +1,110 @@
+---
+import { Picture } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import FilAriane from '../../components/pages/FilAriane.astro';
+import ContinuerLecture from '../../components/pages/ContinuerLecture.astro';
+import { SITE } from '../../config/site';
+import capture from '../../assets/captures/pvz-fusion.webp';
+import '../../styles/profondeur.css';
+
+const titre = `PvZ Fusion, le pôle francophone — ${SITE.nom}`;
+const description = 'De traducteur à lead et mainteneur de PvZ Fusion. Charles Lindecker raconte la formation des contributeurs et le travail du pôle francophone.';
+---
+
+<Base titre={titre} description={description} chemin="/projets/pvz-fusion">
+  <article class="wrap profondeur cas-pvz">
+    <FilAriane courant="PvZ Fusion" projet />
+    <header class="page-hero">
+      <h1>PvZ Fusion, faire avancer le collectif.</h1>
+      <p class="page-hero__intro">
+        Je suis arrivé pour traduire un jeu. Progressivement, mon travail a aussi consisté à accueillir les contributeurs,
+        les former et organiser le pôle francophone. Le titre est venu après le rôle.
+      </p>
+      <p class="page-hero__meta">Traduction, développement et transmission</p>
+    </header>
+
+    <div class="pvz-ouverture">
+      <figure class="page-capture">
+        <Picture src={capture} formats={['avif']} fallbackFormat="webp" widths={[480, 768, 1080, 1440]} sizes="(min-width: 900px) 65vw, calc(100vw - 48px)" alt="Plants vs. Zombies Fusion, un jeu où les plantes fusionnées défendent le jardin." loading="eager" />
+        <figcaption class="legende">Le jeu autour duquel s’est construite la communauté. Le projet présenté ici est le travail de traduction et d’organisation du pôle francophone.</figcaption>
+      </figure>
+      <aside class="pvz-chiffre" aria-label="Contributeurs formés">
+        <span class="pvz-chiffre__nombre">Environ <mark class="surligne">20</mark></span>
+        <p>contributeurs formés, jusqu’à dix actifs en même temps.</p>
+        <p class="page-repere">Traduction et développement</p>
+      </aside>
+    </div>
+
+    <section class="page-section pvz-chapitre" aria-labelledby="point-depart-titre">
+      <h2 id="point-depart-titre">Le texte n’était qu’une partie du problème.</h2>
+      <div class="prose">
+        <p>La traduction française avait plusieurs années de retard et contenait des erreurs. Rattraper le travail demandait des traductions, mais aussi des personnes capables de contribuer dans la durée.</p>
+        <p>J’ai commencé comme traducteur et développeur. Puis j’ai pris en charge la gestion du projet, l’accueil des nouveaux et leur formation. Quand le titre de lead est arrivé, ce travail était déjà en place.</p>
+        <blockquote class="page-citation"><p>«&nbsp;La seule chose qui a changé, c’est le titre.&nbsp;»</p></blockquote>
+      </div>
+    </section>
+
+    <section class="page-section" aria-labelledby="transmission-titre">
+      <div class="transmission-tete">
+        <h2 id="transmission-titre">De l’arrivée à la contribution</h2>
+        <p>Le passage au collectif se joue dans le travail quotidien. Une nouvelle personne doit pouvoir comprendre le projet, essayer et progresser avec les autres.</p>
+      </div>
+      <ol class="transmission">
+        <li><span>1</span><h3>Accueillir</h3><p>Intégrer les nouveaux contributeurs et leur donner des repères dans le projet, y compris quand ils arrivent sans compétences techniques.</p></li>
+        <li><span>2</span><h3>Former et relire</h3><p>Accompagner la traduction et le développement, documenter le travail et faire des revues pour que chacun puisse comprendre les décisions.</p></li>
+        <li><span>3</span><h3>Faire place aux autres</h3><p>Permettre aux contributeurs de prendre davantage de place. Certains sont devenus des piliers de la communauté et ont beaucoup progressé sur la technique.</p></li>
+      </ol>
+    </section>
+
+    <section class="page-section pvz-chapitre" aria-labelledby="outils-titre">
+      <h2 id="outils-titre">Outiller le travail de l’équipe</h2>
+      <div class="prose">
+        <p>Les premiers outils internes ont accompagné le développement du pôle. Le Console Manager, écrit en Python, détecte les traductions manquantes selon les versions du jeu.</p>
+        <p>FusionDocs prolonge ce travail avec une plateforme de modding&nbsp;: des tutoriels versionnés, un forum modéré et une messagerie en temps réel. La documentation devient un moyen de transmettre au-delà des échanges individuels.</p>
+        <div class="page-liens">
+          <a href="https://github.com/LINDECKER-Charles/PVZ-Fuzion-ConsolManager" data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="preuves">Le Console Manager</a>
+          <a href="https://github.com/LINDECKER-Charles/PVZ-Modding-Tutorial-Web" data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="preuves">Le code de FusionDocs</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="page-section pvz-chapitre" aria-labelledby="resultat-titre">
+      <h2 id="resultat-titre">Ce que le collectif a changé</h2>
+      <div class="prose">
+        <p>En dix mois, le pôle a travaillé à rattraper des années de retard. Une vingtaine de contributeurs ont été formés, avec jusqu’à dix personnes en même temps. Le résultat compte autant dans le travail produit que dans la progression de ceux qui y participent.</p>
+        <p>Je suis aujourd’hui lead du pôle francophone et mainteneur du projet multilingue. Le travail continue&nbsp;: traduire, développer et garder le projet accessible aux prochains contributeurs.</p>
+        <div class="page-liens">
+          <a href="https://github.com/LINDECKER-Charles/PVZF-Translation-fr" data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="preuves">Le dépôt francophone</a>
+          <a href="https://github.com/Teyliu/PVZF-Translation" data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="preuves">Le projet multilingue</a>
+        </div>
+      </div>
+    </section>
+
+    <ContinuerLecture liens={[
+      { href: '/projets/omnicard', titre: 'Omnicard', detail: 'Une autre façon de faire évoluer un jeu.' },
+      { href: '/parcours', titre: 'Le parcours', detail: 'La transmission, de la formation à l’open source.' },
+      { href: '/projets', titre: 'Tous les projets', detail: 'Revenir aux réalisations.' },
+      { href: '/contact', titre: 'Discutons', detail: 'Parlons de travail collectif.' },
+    ]} />
+  </article>
+</Base>
+
+<style>
+  .pvz-ouverture { display: grid; grid-template-columns: minmax(0, 2.3fr) minmax(0, 1fr); gap: var(--s7); align-items: center; padding-bottom: var(--s8); }
+  .pvz-chiffre { border-left: 3px solid var(--bleu); padding-left: var(--s5); }
+  .pvz-chiffre__nombre { display: block; font-weight: 700; font-size: clamp(1.2rem, 0.7rem + 1.2vw, 1.8rem); line-height: 1.1; }
+  .pvz-chiffre__nombre mark { display: block; width: fit-content; margin-top: var(--s3); font-size: clamp(4rem, 2.5rem + 5vw, 7rem); font-weight: 800; letter-spacing: -0.06em; }
+  .pvz-chiffre > p { margin-top: var(--s5); max-width: 24ch; }
+  .pvz-chapitre { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: var(--s8); }
+  .pvz-chapitre h2 { max-width: 16ch; }
+  .pvz-chapitre .page-citation { margin-top: var(--s7); }
+  .transmission-tete { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: var(--s8); }
+  .transmission-tete > p { max-width: 57ch; }
+  .transmission { padding: 0; margin: var(--s7) 0 0; list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s6); }
+  .transmission li { border-top: 2px solid var(--bleu); padding-top: var(--s5); }
+  .transmission li > span { display: block; color: var(--bleu); font-family: var(--font-note); font-style: italic; font-size: 2rem; }
+  .transmission h3 { margin-top: var(--s3); font-size: 1.5rem; }
+  .transmission li > p { margin-top: var(--s4); font-size: var(--t-petit); max-width: 36ch; }
+  @media (max-width: 900px) { .pvz-ouverture { grid-template-columns: minmax(0, 1fr); } .pvz-chiffre { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s4); align-items: center; } .pvz-chiffre__nombre mark { display: inline; margin-left: 0.15em; font-size: 4rem; } .pvz-chiffre > p { margin-top: 0; } .pvz-chiffre .page-repere { grid-column: 1 / -1; } .pvz-chapitre, .transmission-tete { grid-template-columns: minmax(0, 1fr); gap: var(--s6); } .pvz-chapitre h2 { max-width: 24ch; } }
+  @media (max-width: 640px) { .transmission { grid-template-columns: minmax(0, 1fr); gap: var(--s6); } .transmission li { display: grid; grid-template-columns: 2rem minmax(0, 1fr); gap: var(--s2) var(--s4); } .transmission li > span { grid-row: 1 / 3; } .transmission h3 { margin-top: 0; } .transmission li > p { margin-top: var(--s2); } .pvz-chiffre { grid-template-columns: minmax(0, 1fr); } }
+</style>

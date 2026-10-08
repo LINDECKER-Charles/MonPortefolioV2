@@ -1,0 +1,72 @@
+---
+/**
+ * Une étape numérotée (1.1, 1.2…). Son contenu est une suite de blocs (texte
+ * et marge) ; le premier commence par <TeteEtape>, pour que la marge s'aligne
+ * sur le haut de l'étape et non sous son titre.
+ *
+ * En liste ordonnée (`as="li"`), un fil vertical relie les étapes, parce que
+ * c'est une séquence ; en partie de chapitre (`as="div"`), le numéro reste,
+ * le fil disparaît.
+ */
+interface Props {
+  num: string;
+  id?: string;
+  as?: 'li' | 'div';
+}
+
+const { num, id, as: Element = 'li' } = Astro.props;
+---
+
+<Element class:list={['etape', { 'etape--fil': Element === 'li' }]} id={id}>
+  <span class="etape__num" aria-hidden="true">{num}</span>
+  <div class="etape__corps">
+    <slot />
+  </div>
+</Element>
+
+<style>
+  .etape {
+    position: relative;
+    display: grid;
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+    column-gap: var(--s4);
+    padding-bottom: var(--s8);
+  }
+
+  .etape--fil::before {
+    content: '';
+    position: absolute;
+    left: 1.05rem;
+    top: 2.6rem;
+    bottom: 0.75rem;
+    width: 1px;
+    background: var(--trait-doux);
+  }
+
+  .etape:last-child {
+    padding-bottom: 0;
+  }
+
+  .etape--fil:last-child::before {
+    display: none;
+  }
+
+  .etape__num {
+    font-weight: 800;
+    font-size: 1.125rem;
+    line-height: 1.75;
+    color: var(--graphite);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 640px) {
+    .etape {
+      grid-template-columns: 2.6rem minmax(0, 1fr);
+      column-gap: var(--s3);
+    }
+
+    .etape--fil::before {
+      left: 0.8rem;
+    }
+  }
+</style>

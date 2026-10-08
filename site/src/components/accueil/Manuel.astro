@@ -1,0 +1,47 @@
+---
+/**
+ * Le corps du mode d'emploi : le sommaire, puis les chapitres, avec le repère
+ * de lecture dans la marge gauche sur bureau.
+ *
+ * Les chapitres sont rendus d'abord, en texte, pour compter leurs mots : la
+ * durée de lecture affichée au sommaire suit le texte réel, sans chiffre à
+ * tenir à jour à la main.
+ */
+import Reperes from './Reperes.astro';
+import Sommaire from './Sommaire.astro';
+import { minutesDeLecture } from '../../lib/lecture';
+
+const chapitres = await Astro.slots.render('default');
+const minutes = minutesDeLecture(chapitres);
+---
+
+<Sommaire minutes={minutes} />
+<div class="wrap manuel">
+  <Reperes />
+  <div class="manuel__corps">
+    <Fragment set:html={chapitres} />
+  </div>
+</div>
+
+<script>
+  import { brancherLecture } from '../../scripts/lecture';
+  import { brancherPlanches } from '../../scripts/planches';
+  import { brancherAnimationsFigures } from '../../scripts/figure-animations';
+  brancherLecture();
+  brancherPlanches();
+  brancherAnimationsFigures();
+</script>
+
+<style>
+  .manuel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  @media (min-width: 1100px) {
+    .manuel {
+      grid-template-columns: 152px minmax(0, 1fr);
+      column-gap: 48px;
+    }
+  }
+</style>

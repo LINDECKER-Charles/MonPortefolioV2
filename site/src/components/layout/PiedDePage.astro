@@ -1,0 +1,111 @@
+---
+/**
+ * Pied de page : qui, où, avec quelles polices ; les liens de toujours. La
+ * nuit, une ligne de plus : le clin d'œil Bloodborne du site, lisible par un
+ * non-joueur comme une simple formule.
+ */
+import Picto from '../ui/Picto.astro';
+import Logo from '../ui/Logo.astro';
+import { ARCHIVE_V1, CONTACT, SITE } from '../../config/site';
+---
+
+<footer class="pied">
+  <div class="wrap pied__in">
+    <div>
+      <Logo complet />
+      <p class="pied__nom">{SITE.lieu}</p>
+      <p class="pied__colophon">Composé en Atkinson Hyperlegible Next et Newsreader.</p>
+      <p class="note pied__nuit nuit-seul">La nuit, la chasse aux bugs commence.</p>
+    </div>
+    <nav class="pied__pages" aria-label="Explorer le site">
+      <a href="/">Accueil</a>
+      <a href="/projets">Projets</a>
+      <a href="/parcours">Parcours</a>
+      <a href="/blog">Blog</a>
+      <a href="/contact">Contact</a>
+    </nav>
+    <ul class="pied__liens">
+      <li>
+        <a href={CONTACT.linkedin} data-umami-event="lien-sortant" data-umami-event-domaine="www.linkedin.com" data-umami-event-emplacement="pied-de-page">LinkedIn</a>
+      </li>
+      <li>
+        <a href={CONTACT.github} data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="pied-de-page">GitHub</a>
+      </li>
+      {
+        ARCHIVE_V1 && (
+          <li>
+            <a href={ARCHIVE_V1}>La première version de ce site</a>
+          </li>
+        )
+      }
+      <li><a href="/mentions-legales">Mentions légales</a></li>
+    </ul>
+    <a class="pied__haut ne-pas-imprimer" href="#top">
+      <Picto nom="interface/haut-de-page" />
+      Haut de page
+    </a>
+  </div>
+</footer>
+
+<style>
+  .pied {
+    border-top: 1px solid var(--filet);
+    padding-block: var(--s7) var(--s8);
+  }
+
+  .pied__in {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, .65fr) minmax(0, 1fr) auto;
+    gap: var(--s6);
+    align-items: start;
+  }
+
+  .pied__nom {
+    font-weight: 700;
+    margin-top: var(--s4);
+  }
+
+  .pied__colophon {
+    margin-top: var(--s2);
+    font-size: var(--t-petit);
+    color: var(--graphite);
+  }
+
+  .pied__nuit {
+    margin-top: var(--s2);
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .pied__liens a,
+  .pied__pages a,
+  .pied__haut {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: var(--t-petit);
+  }
+  .pied__pages { display: grid; }
+
+  .pied__haut {
+    gap: 0.5em;
+    color: var(--encre);
+  }
+
+  .pied__haut :global(svg) {
+    width: 20px;
+    height: 20px;
+    color: var(--bleu);
+  }
+
+  @media (max-width: 900px) {
+    .pied__in {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s5);
+    }
+  }
+</style>

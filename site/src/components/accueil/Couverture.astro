@@ -1,0 +1,95 @@
+---
+import { Picture } from 'astro:assets';
+import photo from '../../assets/photos/charles-4.webp';
+import { SITE } from '../../config/site';
+---
+
+<section class="couverture" aria-labelledby="titre">
+  <div class="wrap">
+    <div class="couverture__ligne">
+      <p>Architecte logiciel, développeur, mainteneur open source</p>
+      <p class="couverture__lieu">Près de Mulhouse, France</p>
+    </div>
+    <p class="couverture__signature">Charles Lindecker<span aria-hidden="true">.</span></p>
+    <div class="couverture__in">
+      <div class="couverture__texte">
+        <h1 id="titre">
+          <span>Je maîtrise d’abord les règles du jeu.</span>
+          <span>Ensuite, je les réinvente.</span>
+        </h1>
+        <p class="couverture__chapeau">
+          Je code depuis mes 13&nbsp;ans. Un jeu de cartes m’a appris à remettre mes décisions en question.
+          Depuis, je construis des logiciels, j’ai accompagné des développeurs jusqu’à leur titre et je fais avancer des projets à plusieurs.
+        </p>
+        <div class="actions couverture__actions">
+          <a class="btn btn--plein" href="#discutons">Discutons <span aria-hidden="true">↗</span></a>
+          <a class="couverture__lire" href="#origine">Lire mon histoire <span aria-hidden="true">↓</span></a>
+        </div>
+      </div>
+
+      <figure class="fig0" id="fig-0">
+        <div class="fig0__cadre">
+          <Picture
+            src={photo}
+            formats={['avif']}
+            fallbackFormat="webp"
+            widths={[360, 480, 720, 960]}
+            sizes="(max-width: 760px) calc(100vw - 48px), (max-width: 1100px) 42vw, 480px"
+            alt="Charles Lindecker dans un champ de colza, en chemise bleu roi et bretelles."
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+        </div>
+        <figcaption>
+          <span>{SITE.nom}</span>
+          <a class="fig0__note" href="#collectif">Du solo au collectif</a>
+        </figcaption>
+      </figure>
+    </div>
+    <div class="couverture__suite">
+      <p>Un parcours, une méthode, des réalisations.</p>
+      <a href="#preuves">Entrer par les projets <span aria-hidden="true">↘</span></a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .couverture { padding-block: 36px 0; }
+  .couverture__ligne { display: flex; justify-content: space-between; gap: 20px; font-size: .9375rem; color: var(--graphite); }
+  .couverture__signature { font-size: clamp(3.5rem, 10vw, 9rem); font-weight: 800; line-height: 1.1; letter-spacing: -.055em; margin: 16px 0 38px -0.055em; white-space: nowrap; }
+  .couverture__signature span { color: var(--bleu); }
+  .couverture__in { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: clamp(36px, 6vw, 88px); align-items: center; padding-bottom: 54px; }
+  h1 { font-size: clamp(2.4rem, 4.15vw, 3.75rem); line-height: 1.045; letter-spacing: -.035em; max-width: 18ch; text-wrap: initial; }
+  h1 span { display: block; }
+  h1 span + span { margin-top: .18em; }
+  .couverture__chapeau { font-size: 1.125rem; line-height: 1.6; max-width: 46ch; margin-top: 28px; color: var(--graphite); }
+  .couverture__actions { margin-top: 30px; align-items: center; gap: 26px; }
+  .couverture__actions .btn { min-width: 160px; justify-content: space-between; }
+  .couverture__actions .btn span { font-size: 1.3em; font-weight: 400; }
+  .couverture__lire { display: inline-flex; align-items: center; justify-content: space-between; gap: 18px; min-height: 48px; color: var(--encre); font-weight: 500; }
+  .fig0 { position: relative; width: 100%; max-width: 480px; justify-self: end; padding: 12px 12px 0; }
+  .fig0::before { content: ''; position: absolute; inset: 0 0 50px; border: 1px solid var(--filet); pointer-events: none; }
+  .fig0__cadre { position: relative; aspect-ratio: .96; overflow: hidden; background: var(--filet); }
+  .fig0__cadre :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: 50% 65%; transform: scale(1.13); transform-origin: 50% 70%; }
+  .fig0__cadre :global(picture) { display: contents; }
+  .fig0 figcaption { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 16px; padding-top: 16px; font-size: .875rem; }
+  .fig0__note { font-family: var(--font-note); font-style: italic; color: var(--bleu); font-size: 1.0625rem; }
+  .couverture__suite { display: flex; align-items: center; justify-content: space-between; gap: 16px; border-top: 1px solid var(--filet); padding: 18px 0; font-size: .9375rem; }
+  .couverture__suite p { color: var(--graphite); }
+  .couverture__suite a { display: inline-flex; align-items: center; gap: 28px; min-height: 44px; font-weight: 500; color: var(--encre); }
+  @media (max-width: 1100px) { .couverture__lieu { display: none; } }
+  @media (max-width: 760px) {
+    .couverture { padding-top: 24px; }
+    .couverture__ligne { font-size: .8125rem; max-width: 32ch; }
+    .couverture__signature { white-space: normal; max-width: 9ch; line-height: .95; font-size: clamp(3.75rem, 15vw, 7rem); margin-block: 24px 32px; letter-spacing: -.06em; }
+    .couverture__in { grid-template-columns: minmax(0, 1fr); gap: 40px; padding-bottom: 24px; }
+    h1 { font-size: clamp(2.25rem, 7vw, 3.25rem); max-width: 22ch; }
+    .couverture__chapeau { margin-top: 22px; font-size: 1.0625rem; }
+    .couverture__actions { gap: 22px; margin-top: 24px; }
+    .fig0 { justify-self: start; max-width: none; padding: 8px 8px 0; }
+    .fig0__cadre { aspect-ratio: 1.12; }
+    .couverture__suite { flex-wrap: wrap; gap: 2px; padding-block: 14px; }
+  }
+  @media print { .couverture__signature { font-size: 54pt; } .couverture__in { gap: 24px; } h1 { font-size: 24pt; } }
+</style>

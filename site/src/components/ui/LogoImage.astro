@@ -1,0 +1,44 @@
+---
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src: ImageMetadata;
+  lumieres?: string[];
+}
+
+const { src, lumieres = [] } = Astro.props;
+---
+
+<span class="logo-image" style={`--image-logo: url('${src.src}'); aspect-ratio: ${src.width} / ${src.height}`}>
+  <img class="logo-image__jour" src={src.src} width={src.width} height={src.height} alt="" decoding="async" />
+  <span class="logo-image__nuit" aria-hidden="true">
+    <span class="logo-image__encre"></span>
+    {lumieres.map((clip) => (
+      <img class="logo-image__lumiere" src={src.src} width={src.width} height={src.height} alt="" style={`clip-path: ${clip}`} decoding="async" />
+    ))}
+  </span>
+</span>
+
+<style>
+  .logo-image { position: relative; display: block; width: 100%; }
+  .logo-image__jour { width: 100%; height: auto; }
+  .logo-image__nuit { display: none; position: absolute; inset: 0; }
+  .logo-image__encre {
+    position: absolute;
+    inset: 0;
+    background: var(--encre);
+    -webkit-mask: var(--image-logo) center / 100% 100% no-repeat;
+    mask: var(--image-logo) center / 100% 100% no-repeat;
+  }
+  .logo-image__lumiere { position: absolute; inset: 0; width: 100%; height: 100%; }
+  :global(:root[data-theme='nuit']) .logo-image__jour { visibility: hidden; }
+  :global(:root[data-theme='nuit']) .logo-image__nuit { display: block; }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme])) .logo-image__jour { visibility: hidden; }
+    :global(:root:not([data-theme])) .logo-image__nuit { display: block; }
+  }
+  @media print {
+    .logo-image__jour { visibility: visible !important; }
+    .logo-image__nuit { display: none !important; }
+  }
+</style>

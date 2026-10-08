@@ -1,0 +1,36 @@
+import { expect, test } from '@playwright/test';
+import { PAGES, surveillerConsole } from './support/navigateur';
+
+const nouvellesPages = PAGES.filter((chemin) => chemin !== '/' && chemin !== '/mentions-legales');
+
+for (const chemin of nouvellesPages) {
+  test(`page statique et maillage : ${chemin}`, async ({ page }) => {
+    const erreurs = surveillerConsole(page);
+    const reponse = await page.goto(chemin);
+    expect(reponse?.status()).toBe(200);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://charles-lindecker.com${chemin}`);
+    await expect(page.getByRole('contentinfo').getByRole('link', { name: 'Projets', exact: true })).toHaveAttribute('href', '/projets');
+    await expect(page.getByRole('banner').getByRole('link', { name: 'Contact', exact: true })).toHaveAttribute('href', '/contact');
+    await expect(page.locator('main a[href="/"]').first()).toBeVisible();
+    await page.waitForLoadState('networkidle');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
+    expect(erreurs).toEqual([]);
+  });
+}
+
+test('les preuves mènent à des projets qui se répondent', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('#fiche-pvz a[href="/projets/pvz-fusion"]').click();
+  await expect(page).toHaveURL(/\/projets\/pvz-fusion$/);
+  await page.locator('main a[href="/projets/omnicard"]').first().click();
+  await expect(page).toHaveURL(/\/projets\/omnicard$/);
+  await page.locator('main a[href="/projets/gup"]').first().click();
+  await expect(page).toHaveURL(/\/projets\/gup$/);
+});
+
+test('le blog ne publie aucun article fictif', async ({ page }) => {
+  await page.goto('/blog');
+  await expect(page.locator('main')).toContainText(/aucun article|pas encore d’article/i);
+  await expect(page.locator('main time')).toHaveCount(0);
+});

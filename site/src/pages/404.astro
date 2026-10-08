@@ -1,0 +1,108 @@
+---
+/**
+ * Page introuvable, servie avec le vrai statut 404 par server/server.mjs. Elle
+ * dit ce qui s'est passé et où aller ; elle mesure d'où venait le lien cassé
+ * (événement `erreur-404`), pour réparer ce qui peut l'être.
+ */
+import Base from '../layouts/Base.astro';
+import { CHAPITRES } from '../config/chapitres';
+---
+
+<Base
+  titre="Page introuvable, Charles Lindecker"
+  description="Cette adresse ne mène à aucune page du site. Le sommaire du mode d’emploi recense tout ce qu’on peut y lire, chapitre par chapitre."
+  chemin="/404"
+  horsIndex
+>
+  <section class="wrap introuvable" aria-labelledby="introuvable-titre">
+    <p class="introuvable__code">Erreur 404</p>
+    <h1 id="introuvable-titre">Cette page ne figure pas dans ce mode d’emploi.</h1>
+    <p class="introuvable__texte">
+      L’adresse est peut-être mal recopiée, ou la page a changé de place. Tout ce que le site raconte part du sommaire.
+    </p>
+    <nav class="introuvable__sommaire" aria-label="Sommaire">
+      <ol>
+        {
+          CHAPITRES.map((c) => (
+            <li>
+              <a href={`/#${c.id}`}>
+                <span class="introuvable__num">{c.num}</span> {c.titre}
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+    <div class="actions">
+      <a class="btn btn--plein" href="/">Revenir à l’accueil</a>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { mesurer } from '../scripts/mesure';
+
+  let origine = 'directe';
+  try {
+    if (document.referrer) origine = new URL(document.referrer).host === window.location.host ? 'interne' : 'externe';
+  } catch {
+    origine = 'externe';
+  }
+  mesurer('erreur-404', { origine });
+</script>
+
+<style>
+  .introuvable {
+    padding-block: clamp(48px, 9vw, 128px);
+    max-width: 52rem;
+    margin-inline: auto;
+  }
+
+  .introuvable__code {
+    font-weight: 700;
+    color: var(--graphite);
+    font-variant-numeric: tabular-nums;
+  }
+
+  h1 {
+    margin-top: var(--s3);
+    font-size: var(--t-h2);
+    line-height: 1.05;
+    letter-spacing: -0.022em;
+  }
+
+  .introuvable__texte {
+    margin-top: var(--s5);
+    font-size: var(--t-chapeau);
+    line-height: 1.5;
+    max-width: 34em;
+  }
+
+  .introuvable__sommaire ol {
+    list-style: none;
+    margin: var(--s6) 0 var(--s7);
+    padding: 0;
+    border-left: 1px solid var(--filet);
+  }
+
+  .introuvable__sommaire a {
+    display: flex;
+    gap: 0.6em;
+    align-items: center;
+    min-height: 44px;
+    padding-left: 16px;
+    color: var(--encre);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .introuvable__sommaire a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+  }
+
+  .introuvable__num {
+    color: var(--graphite);
+    font-variant-numeric: tabular-nums;
+  }
+</style>

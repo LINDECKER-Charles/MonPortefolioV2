@@ -1,0 +1,75 @@
+---
+interface Lien {
+  href: string;
+  titre: string;
+  detail: string;
+}
+
+interface Props {
+  liens: Lien[];
+}
+
+const { liens } = Astro.props;
+---
+
+<nav class="suite-lecture" aria-label="Continuer la lecture">
+  <p class="suite-lecture__titre">Pour continuer</p>
+  <ul>
+    {liens.map((lien) => <li>
+      <a href={lien.href}>
+        <span class="suite-lecture__nom">{lien.titre}</span>
+        <span class="suite-lecture__detail">{lien.detail}</span>
+      </a>
+    </li>)}
+  </ul>
+</nav>
+
+<style>
+  .suite-lecture {
+    padding-block: var(--s7) var(--s8);
+    margin-top: var(--s8);
+    border-top: 1px solid var(--filet);
+  }
+
+  .suite-lecture__titre {
+    color: var(--graphite);
+    font-size: var(--t-petit);
+    margin-bottom: var(--s5);
+  }
+
+  ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    gap: var(--s5) var(--s7);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  a {
+    display: block;
+    min-height: 68px;
+    text-decoration: none;
+  }
+
+  .suite-lecture__nom {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .suite-lecture__detail {
+    display: block;
+    margin-top: var(--s2);
+    font-size: var(--t-petit);
+    color: var(--graphite);
+    max-width: 35ch;
+  }
+
+  a:hover .suite-lecture__nom {
+    text-decoration-thickness: 2px;
+  }
+</style>

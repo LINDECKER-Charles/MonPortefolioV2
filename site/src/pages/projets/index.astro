@@ -1,0 +1,154 @@
+---
+import { Picture } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import FilAriane from '../../components/pages/FilAriane.astro';
+import ContinuerLecture from '../../components/pages/ContinuerLecture.astro';
+import { SITE } from '../../config/site';
+import capturePvz from '../../assets/captures/pvz-fusion.webp';
+import captureOmnicard from '../../assets/captures/omnicard.webp';
+import captureGup from '../../assets/captures/gup.webp';
+import '../../styles/profondeur.css';
+
+const titre = `Projets de ${SITE.nom}`;
+const description = 'Traduction communautaire, moteur de jeu de cartes et outils de développement. Les projets de Charles Lindecker, avec leurs choix et leurs résultats.';
+
+const outils = [
+  {
+    nom: 'FusionDocs',
+    texte: 'Une plateforme de modding pour PvZ Fusion, avec des tutoriels versionnés, un forum et une messagerie en temps réel.',
+    href: 'https://github.com/LINDECKER-Charles/PVZ-Modding-Tutorial-Web',
+    nature: 'Documentation et communauté',
+  },
+  {
+    nom: 'PVZ Fuzion Console Manager',
+    texte: 'Un outil Python pour détecter les traductions manquantes d’une version du jeu à l’autre.',
+    href: 'https://github.com/LINDECKER-Charles/PVZ-Fuzion-ConsolManager',
+    nature: 'Localisation',
+  },
+  {
+    nom: 'img-convertor',
+    texte: 'Convertir des images en WebP ou AVIF et produire leurs déclinaisons pour les différentes tailles d’écran.',
+    href: 'https://github.com/LINDECKER-Charles/Web-Image-Formateur',
+    nature: 'Outil de développement',
+  },
+  {
+    nom: 'MaVeille',
+    texte: 'Une veille technologique automatisée, avec des rapports quotidiens versionnés et une application statique pour les lire.',
+    href: 'https://github.com/LINDECKER-Charles/MaVeille',
+    nature: 'Veille technologique',
+  },
+  {
+    nom: 'Blender Collection',
+    texte: 'Des collections d’extensions Blender à partager, avec des traitements asynchrones et un déploiement automatisé.',
+    href: 'https://github.com/LINDECKER-Charles/BlenderAdd-OnListe',
+    nature: 'Projet personnel',
+  },
+  {
+    nom: 'GlossaireQuest',
+    texte: 'Des quiz pédagogiques, une authentification et des statistiques pour suivre la progression.',
+    href: 'https://github.com/LINDECKER-Charles/GlossaireQuest',
+    nature: 'Apprentissage',
+  },
+];
+---
+
+<Base titre={titre} description={description} chemin="/projets">
+  <div class="wrap profondeur projets">
+    <FilAriane courant="Projets" />
+    <header class="page-hero">
+      <h1>Des idées qui deviennent des outils.</h1>
+      <p class="page-hero__intro">
+        Un jeu inventé sur papier, une traduction qui prend une autre ampleur, une machine de développement à entretenir.
+        Mes projets partent de là&nbsp;: quelque chose que j’ai envie de faire fonctionner.
+      </p>
+      <a class="index-raccourci" href="#autres-projets">Voir aussi les autres projets</a>
+    </header>
+
+    <section class="realisations" aria-labelledby="realisations-titre">
+      <h2 id="realisations-titre">Trois projets, trois façons d’avancer</h2>
+
+      <article class="projet-ligne">
+        <a href="/projets/pvz-fusion" class="projet-ligne__image" aria-label="Découvrir le projet PvZ Fusion">
+          <Picture src={capturePvz} formats={['avif']} fallbackFormat="webp" widths={[480, 768, 1080]} sizes="(min-width: 850px) 45vw, calc(100vw - 48px)" alt="Une partie de Plants vs. Zombies Fusion, avec des plantes fusionnées." loading="lazy" />
+        </a>
+        <div class="projet-ligne__texte">
+          <p class="page-repere">Open source et collectif</p>
+          <h3><a href="/projets/pvz-fusion">PvZ Fusion</a></h3>
+          <p>D’abord traducteur, puis lead du pôle francophone et mainteneur du projet multilingue. Le travail dépasse le texte&nbsp;: accueillir, former, documenter et faire avancer l’équipe.</p>
+          <a class="projet-ligne__lien" href="/projets/pvz-fusion">Du traducteur au collectif</a>
+        </div>
+      </article>
+
+      <article class="projet-ligne projet-ligne--omnicard">
+        <a href="/projets/omnicard" class="projet-ligne__image" aria-label="Découvrir le projet Omnicard">
+          <Picture src={captureOmnicard} formats={['avif']} fallbackFormat="webp" widths={[480, 768, 1080]} sizes="(min-width: 850px) 45vw, calc(100vw - 48px)" alt="Omnicard, son catalogue de cartes et la composition d’un deck." loading="lazy" />
+        </a>
+        <div class="projet-ligne__texte">
+          <p class="page-repere">Jeu de cartes et moteur maison</p>
+          <h3><a href="/projets/omnicard">Omnicard</a></h3>
+          <p>Le jeu de cartes inventé avec mon cousin devient un jeu dans le navigateur. Je choisis une stack que je connais, puis je travaille ses limites pour construire mon propre moteur.</p>
+          <a class="projet-ligne__lien" href="/projets/omnicard">Du papier au navigateur</a>
+        </div>
+      </article>
+
+      <article class="projet-ligne projet-ligne--gup">
+        <a href="/projets/gup" class="projet-ligne__image" aria-label="Découvrir le projet gup">
+          <Picture src={captureGup} formats={['avif']} fallbackFormat="webp" widths={[480, 768, 1080]} sizes="(min-width: 850px) 45vw, calc(100vw - 48px)" alt="Le terminal de gup, avec les mises à jour détectées et les actions disponibles." loading="lazy" />
+        </a>
+        <div class="projet-ligne__texte">
+          <p class="page-repere">Outil de développement</p>
+          <h3><a href="/projets/gup">gup</a></h3>
+          <p>Les outils s’installent de plusieurs façons, et chacun a sa commande de mise à jour. gup rassemble ces sources dans une interface en ligne de commande, sur Windows, macOS et Linux.</p>
+          <a class="projet-ligne__lien" href="/projets/gup">Une machine, plusieurs sources</a>
+        </div>
+      </article>
+    </section>
+
+    <section class="page-section autres-projets" id="autres-projets" aria-labelledby="autres-titre">
+      <div class="autres-projets__intro">
+        <h2 id="autres-titre">Autour de ces projets</h2>
+        <p>Des outils, de la documentation et des expériences qui prolongent les mêmes sujets. Leurs dépôts publics permettent d’aller voir le travail.</p>
+      </div>
+      <ul class="inventaire">
+        {outils.map((outil) => <li>
+          <div>
+            <h3><a href={outil.href} data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="preuves">{outil.nom}</a></h3>
+            <p>{outil.texte}</p>
+          </div>
+          <span class="page-repere">{outil.nature}</span>
+        </li>)}
+      </ul>
+    </section>
+
+    <ContinuerLecture liens={[
+      { href: '/parcours', titre: 'Le parcours', detail: 'Les détours qui ont conduit à ces projets.' },
+      { href: '/contact', titre: 'Discutons', detail: 'Parlons de technique et de travail collectif.' },
+      { href: '/', titre: 'Le récit', detail: 'Reprendre le fil depuis le début.' },
+    ]} />
+  </div>
+</Base>
+
+<style>
+  .index-raccourci { display: inline-flex; align-items: center; min-height: 44px; margin-top: var(--s5); font-size: var(--t-petit); }
+  .realisations > h2 { font-size: 1.5rem; margin-bottom: var(--s6); }
+  .projet-ligne { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 72px); align-items: center; border-top: 1px solid var(--filet); padding-block: var(--s7); }
+  .projet-ligne__image { display: block; background: color-mix(in srgb, var(--bleu) 6%, var(--papier)); padding: var(--s5); border-radius: var(--rayon); }
+  .projet-ligne__image :global(picture) { display: block; }
+  .projet-ligne__image :global(img) { width: 100%; aspect-ratio: 16 / 10; object-fit: contain; height: auto; border-radius: 2px; }
+  .projet-ligne--omnicard .projet-ligne__image :global(img) { aspect-ratio: 4 / 3; object-fit: cover; object-position: top; }
+  .projet-ligne--gup .projet-ligne__image { background: #0b0b0b; }
+  .projet-ligne h3 { margin-top: var(--s3); font-size: clamp(2.5rem, 1.5rem + 3vw, 4rem); letter-spacing: -0.04em; }
+  .projet-ligne h3 a { color: var(--encre); text-decoration: none; }
+  .projet-ligne h3 a:hover { text-decoration: underline; text-decoration-thickness: 2px; }
+  .projet-ligne__texte > p:not(.page-repere) { margin-top: var(--s5); max-width: 48ch; }
+  .projet-ligne__lien { display: inline-flex; align-items: center; min-height: 44px; margin-top: var(--s5); font-weight: 700; }
+  .autres-projets__intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s6); margin-bottom: var(--s7); }
+  .autres-projets__intro p { max-width: 50ch; }
+  .inventaire { list-style: none; padding: 0; margin: 0; }
+  .inventaire li { display: grid; grid-template-columns: minmax(0, 1fr) 13rem; gap: var(--s5); border-top: 1px solid var(--filet); padding-block: var(--s5); }
+  .inventaire h3 { font-size: 1.35rem; line-height: 1.3; }
+  .inventaire p { margin-top: var(--s2); max-width: 70ch; font-size: var(--t-petit); }
+  .inventaire .page-repere { text-align: right; }
+  @media (max-width: 849px) { .projet-ligne, .autres-projets__intro { grid-template-columns: minmax(0, 1fr); } .projet-ligne { gap: var(--s6); } .projet-ligne__image { padding: var(--s4); } .projet-ligne h3 { font-size: 2.75rem; } }
+  @media (max-width: 640px) { .inventaire li { grid-template-columns: minmax(0, 1fr); gap: var(--s3); } .inventaire .page-repere { text-align: left; } }
+</style>

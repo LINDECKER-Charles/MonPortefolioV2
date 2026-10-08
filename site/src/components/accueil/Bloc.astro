@@ -1,0 +1,73 @@
+---
+/**
+ * Un paragraphe et sa marge, comme sur la page d'un manuel annoté : à gauche
+ * le texte (36 rem, ≈ 64 signes par ligne), à droite les notes au stylo et les
+ * petites planches qui l'accompagnent. Sous 1100 px, la marge passe sous le
+ * texte.
+ */
+interface Props {
+  class?: string;
+}
+
+const { class: classe } = Astro.props;
+const avecMarge = Astro.slots.has('marge');
+---
+
+<div class:list={['bloc', { 'bloc--seul': !avecMarge }, classe]}>
+  <div class="bloc__texte"><slot /></div>
+  {
+    avecMarge && (
+      <aside class="bloc__marge">
+        <slot name="marge" />
+      </aside>
+    )
+  }
+</div>
+
+<style>
+  .bloc {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s5);
+  }
+
+  .bloc + .bloc {
+    margin-top: var(--s5);
+  }
+
+  .bloc__texte {
+    max-width: 36rem;
+  }
+
+  .bloc__texte > :global(p + p) {
+    margin-top: 1em;
+  }
+
+  .bloc__marge {
+    display: grid;
+    gap: var(--s5);
+    align-content: start;
+    justify-items: start;
+  }
+
+  .bloc__marge > :global(.note) {
+    padding-left: var(--s4);
+    border-left: 2px solid var(--bleu);
+  }
+
+  @media (min-width: 1100px) {
+    .bloc {
+      grid-template-columns: minmax(0, 36rem) minmax(13rem, 1fr);
+      column-gap: var(--s7);
+    }
+
+    .bloc__marge {
+      padding-top: 0.3rem;
+    }
+
+    .bloc__marge > :global(.note) {
+      padding-left: 0;
+      border-left: 0;
+    }
+  }
+</style>

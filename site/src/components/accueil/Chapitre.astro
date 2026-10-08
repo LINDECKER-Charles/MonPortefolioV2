@@ -1,0 +1,56 @@
+---
+/**
+ * Un chapitre du mode d'emploi : numéro et titre, chapeau facultatif, puis son
+ * contenu. `data-chapitre` alimente le repère de lecture et la mesure de
+ * lecture (src/scripts/lecture.ts).
+ */
+import { chapitre, type Chapitre } from '../../config/chapitres';
+
+interface Props {
+  id: Chapitre['id'];
+}
+
+const c = chapitre(Astro.props.id);
+---
+
+<section id={c.id} class="chapitre" aria-labelledby={`${c.id}-titre`} data-chapitre={c.id}>
+  <h2 id={`${c.id}-titre`} class="chapitre__titre">
+    <span class="chapitre__num" aria-hidden="true">0{c.num}</span>
+    {c.titre}
+  </h2>
+  <slot />
+</section>
+
+<style>
+  .chapitre {
+    position: relative;
+    padding-block: var(--s9);
+    border-top: 1px solid var(--filet);
+  }
+
+  .chapitre__titre {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    font-size: var(--t-h2);
+    line-height: 1.05;
+    letter-spacing: -0.022em;
+  }
+
+  .chapitre__num {
+    font-weight: 400;
+    color: var(--graphite);
+    font-variant-numeric: tabular-nums;
+    font-size: 1rem;
+    letter-spacing: 0;
+    padding-top: 9px;
+    min-width: 34px;
+    border-top: 2px solid var(--bleu);
+  }
+
+  @media (max-width: 640px) {
+    .chapitre {
+      padding-block: var(--s8);
+    }
+  }
+</style>

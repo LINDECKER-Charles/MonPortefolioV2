@@ -1,0 +1,162 @@
+---
+/** Les pages restent à portée de main ; le sommaire appartient au récit de l’accueil. */
+import Picto from '../ui/Picto.astro';
+import Logo from '../ui/Logo.astro';
+import MenuMobile from './MenuMobile.astro';
+import { SITE } from '../../config/site';
+import '../../styles/theme-transition.css';
+
+interface Props {
+  accueil?: boolean;
+  chemin?: string;
+}
+
+const { accueil = false, chemin = Astro.url.pathname } = Astro.props;
+const pages = [
+  { href: '/', titre: 'Accueil' },
+  { href: '/projets', titre: 'Projets' },
+  { href: '/parcours', titre: 'Parcours' },
+  { href: '/blog', titre: 'Blog' },
+  { href: '/contact', titre: 'Contact' },
+];
+const actif = (href: string) => href === '/' ? chemin === '/' : chemin === href || chemin.startsWith(`${href}/`);
+---
+
+<header class="entete">
+  <div class="wrap entete__in">
+    <a class="marque" href={accueil ? '#top' : '/'} aria-label={`${SITE.nom}, ${SITE.sousTitre}`}>
+      <Logo sousTitre decoratif />
+    </a>
+    <nav class="entete__nav" aria-label="Navigation principale">
+      {pages.map(({ href, titre }) => <a href={href} aria-current={actif(href) ? 'page' : undefined}>{titre}</a>)}
+    </nav>
+    <div class="entete__actions">
+      <a class="entete__contact-mobile" href="/contact" aria-current={actif('/contact') ? 'page' : undefined}>Contact</a>
+      <button class="theme" type="button" aria-label="Mode nuit" aria-pressed="false" title="Passer en mode nuit" data-theme-bascule>
+        <span class="theme__choix theme__jour" aria-hidden="true"><Picto nom="interface/soleil" />Jour</span>
+        <span class="theme__choix theme__nuit" aria-hidden="true"><Picto nom="interface/lune" />Nuit</span>
+      </button>
+      <MenuMobile pages={pages} chemin={chemin} />
+    </div>
+  </div>
+</header>
+
+<script>
+  import { brancherTheme } from '../../scripts/theme';
+  brancherTheme();
+</script>
+
+<style>
+  .entete {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--voile);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--filet);
+  }
+
+  .entete__in {
+    display: flex;
+    align-items: center;
+    gap: var(--s5);
+    min-height: var(--hauteur-entete);
+  }
+
+  .marque {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    color: var(--encre);
+    text-decoration: none;
+    line-height: 1.2;
+  }
+
+  .entete__nav { display: flex; align-self: stretch; margin-left: auto; gap: clamp(16px, 2vw, 28px); }
+  .entete__nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-top: 2px;
+    border-bottom: 2px solid transparent;
+    color: var(--graphite);
+    text-decoration: none;
+    font-size: .9375rem;
+    white-space: nowrap;
+  }
+  .entete__nav a:hover { color: var(--encre); }
+  .entete__nav a[aria-current] { border-color: var(--bleu); color: var(--encre); font-weight: 700; }
+
+  .entete__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--s4);
+  }
+  .entete__contact-mobile { display: none; color: var(--encre); min-height: 44px; align-items: center; font-size: .9375rem; text-decoration: none; }
+  .entete__contact-mobile:hover, .entete__contact-mobile[aria-current] { text-decoration: underline; }
+
+  .theme {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    width: 132px;
+    padding: 4px;
+    isolation: isolate;
+    border: 1px solid var(--filet);
+    border-radius: 22px;
+    background: transparent;
+    color: var(--graphite);
+    cursor: pointer;
+  }
+  .theme::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 4px auto 4px 4px;
+    width: calc(50% - 4px);
+    border-radius: 18px;
+    background: var(--blanc);
+    box-shadow: 0 1px 3px rgb(14 20 36 / .12);
+    transform: translateX(0);
+    transition: transform .28s cubic-bezier(.2, .8, .2, 1);
+  }
+  .theme:hover { border-color: var(--trait-doux); }
+  .theme__choix { display: inline-flex; align-items: center; justify-content: center; gap: 5px; width: 50%; font-size: .8125rem; line-height: 1; }
+  .theme__choix :global(svg) { width: 16px; height: 16px; }
+  .theme__jour { color: var(--encre); font-weight: 700; }
+  :global(:root[data-theme='nuit']) .theme::before { transform: translateX(100%); }
+  :global(:root[data-theme='nuit']) .theme__jour { color: var(--graphite); font-weight: 400; }
+  :global(:root[data-theme='nuit']) .theme__nuit { color: var(--encre); font-weight: 700; }
+
+  @media (max-width: 1099px) {
+    .entete__nav { display: none; }
+    .entete__actions { margin-left: auto; }
+    .entete__contact-mobile { display: inline-flex; }
+  }
+
+  @media (max-width: 760px) {
+    .entete__in { gap: var(--s2); }
+    .entete__actions { gap: var(--s2); }
+    .marque :global(.logo__symbole) { width: 34px; }
+    .marque :global(.logo__identite) { display: none; }
+    .entete__contact-mobile { font-size: .8125rem; }
+    .theme { width: 108px; }
+    .theme__choix { gap: 3px; font-size: .75rem; }
+    .theme__choix :global(svg) { width: 14px; height: 14px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .theme::before { transition: none; }
+  }
+  @media print {
+    .entete {
+      position: static;
+      backdrop-filter: none;
+    }
+
+    .entete__actions, .entete__nav {
+      display: none;
+    }
+  }
+</style>

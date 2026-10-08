@@ -1,0 +1,397 @@
+---
+/**
+ * L'accueil raconte, de haut en bas (brief § 5) : l'accroche, l'origine,
+ * aujourd'hui, les preuves, ce qui fait que c'est lui, un seul appel à
+ * l'action. Les textes reprennent les phrases de Charles (brief § 4, « Écrire
+ * avec sa voix ») ; chaque chiffre surligné est sourcé dans
+ * docs/matiere-premiere.md.
+ */
+import Base from '../layouts/Base.astro';
+import Bloc from '../components/accueil/Bloc.astro';
+import Chapitre from '../components/accueil/Chapitre.astro';
+import Couverture from '../components/accueil/Couverture.astro';
+import Dehors from '../components/accueil/Dehors.astro';
+import Discutons from '../components/accueil/Discutons.astro';
+import Etape from '../components/accueil/Etape.astro';
+import Fiche from '../components/accueil/Fiche.astro';
+import FigureCollectif from '../components/accueil/FigureCollectif.astro';
+import FigureGwent from '../components/accueil/FigureGwent.astro';
+import FigurePlafond from '../components/accueil/FigurePlafond.astro';
+import Manuel from '../components/accueil/Manuel.astro';
+import Regles from '../components/accueil/Regles.astro';
+import TeteEtape from '../components/accueil/TeteEtape.astro';
+import Planche from '../components/ui/Planche.astro';
+import Terme from '../components/ui/Terme.astro';
+import { GLOSSAIRE } from '../config/glossaire';
+import { DEMOS } from '../config/site';
+
+import vueEclatee from '../assets/illustrations/pc-vue-eclatee.svg';
+import cartesFaitesMain from '../assets/illustrations/cartes-faites-main.png';
+import portesFermees from '../assets/illustrations/portes-fermees.png';
+import unMois from '../assets/illustrations/un-mois.png';
+import coteBureau from '../assets/illustrations/cote-bureau.png';
+import architecte from '../assets/illustrations/architecte.png';
+import lanternes from '../assets/illustrations/lanternes.png';
+import couverturePvz from '../assets/etudes-de-cas/pvz-fusion.png';
+import couvertureOmnicard from '../assets/etudes-de-cas/omnicard.png';
+import couvertureGup from '../assets/etudes-de-cas/gup.png';
+import capturePvz from '../assets/captures/pvz-fusion.webp';
+import captureOmnicard from '../assets/captures/omnicard.webp';
+import captureGup from '../assets/captures/gup.webp';
+
+const titre = 'Charles Lindecker, mode d’emploi';
+const description =
+  'Architecte logiciel, je code depuis mes 13 ans. Mon parcours, ma méthode et mes réalisations, du jeu de cartes aux projets open source.';
+---
+
+<Base titre={titre} description={description} chemin="/" accueil>
+  <Couverture />
+
+  <Manuel>
+    <!-- 1 · L'origine -->
+    <Chapitre id="origine">
+      <p class="chapitre__intro">Avant d’en faire mon métier, j’ai appris à coder pour fabriquer mes propres jeux. La suite a demandé quelques détours.</p>
+
+      <ol class="etapes">
+        <Etape num="1.1">
+          <Bloc>
+            <TeteEtape quand="Vers 10 ans" titre="Le terrain de jeu" />
+            <p>
+              Avec mon père, informaticien, je démonte de vieux PC hors service. Vers 13&nbsp;ans, j’apprends le C sur
+              OpenClassrooms avec une idée fixe&nbsp;: coder mes propres jeux sur Unreal Engine.
+            </p>
+            <p>
+              Avec mon cousin, on invente un jeu de cartes sur papier, dont on sort des éditions sans fin. On passe des
+              après-midi entiers à imprimer les cartes et à les plastifier à la main.
+            </p>
+            <div class="plateau">
+              <Planche src={vueEclatee} largeur={280} legende="Un vieux PC, en vue éclatée." anime />
+              <Planche src={cartesFaitesMain} largeur={280} legende="Les cartes, plastifiées à la main." anime />
+            </div>
+            <Fragment slot="marge">
+              <p class="note">
+                <span class="sr">Note de l’auteur&nbsp;: </span>Ce jeu de cartes deviendra Omnicard.
+                <a href="#fiche-omnicard">Voir sa fiche.</a>
+              </p>
+            </Fragment>
+          </Bloc>
+        </Etape>
+
+        <Etape num="1.2">
+          <Bloc>
+            <TeteEtape quand="Vers 17 ans" titre="Gwent, la méthode" />
+            <p>
+              Je découvre Gwent, un jeu de cartes en ligne. Pas d’excuse en cas de défaite pour jeter la faute sur un
+              autre&nbsp;: juste moi et mes propres décisions. Je teste un <Terme t={GLOSSAIRE.deck}>deck</Terme>, puis un
+              deuxième, puis un troisième. Parfois, c’est un flop. Mais j’apprends de ce flop et je comprends où mon
+              instinct m’a trompé, ce qui l’aiguise.
+            </p>
+            <div class="bande">
+              <FigureGwent />
+            </div>
+            <Fragment slot="marge">
+              <p class="note">
+                <span class="sr">Note de l’auteur&nbsp;: </span>Juste moi et mes propres décisions.
+              </p>
+            </Fragment>
+          </Bloc>
+          <Bloc>
+            <p>
+              En un an, j’approche du <Terme t={GLOSSAIRE.classementMondial}>classement mondial</Terme>, puis je plafonne
+              pendant quatre mois. Copier ce que jouent les meilleurs ne suffit plus. Alors je fais l’inverse&nbsp;: je
+              construis un deck à contre-courant, et c’est lui qui me fait entrer dans le classement mondial.
+            </p>
+            <Fragment slot="marge">
+              <p class="note">
+                <span class="sr">Note de l’auteur&nbsp;: </span>Le plafond, puis le saut&nbsp;: <a href="#fig-1"
+                  >voir la figure&nbsp;1</a
+                >.
+              </p>
+            </Fragment>
+          </Bloc>
+          <div class="etape__figure">
+            <FigurePlafond />
+          </div>
+          <Bloc>
+            <p>
+              Depuis, à chaque mise à jour du jeu, je passe deux jours à jouer la <Terme t={GLOSSAIRE.meta}>méta</Terme>,
+              puis je la réinvente. J’aborde tout ce qui est nouveau de la même façon&nbsp;: d’abord maîtriser ce qui se
+              fait, ensuite le réinventer.
+            </p>
+            <Fragment slot="marge">
+              <p class="note">
+                <span class="sr">Note de l’auteur&nbsp;: </span>C’est la règle de la couverture.
+                <a href="#regles">Voir les trois règles.</a>
+              </p>
+            </Fragment>
+          </Bloc>
+        </Etape>
+
+        <Etape num="1.3">
+          <Bloc>
+            <TeteEtape quand="Avant 2025" titre="Les portes qui ne s’ouvrent pas" />
+            <p>
+              BUT Informatique, fac de physique-chimie, BUT Réseaux &amp; Télécoms&nbsp;: trois années de filières
+              classiques, une chacune. Puis la piscine de 42, sans admission. Ça n’a pas vraiment marché. Mais je n’ai
+              pas abandonné, et je me suis réorienté autant que nécessaire.
+            </p>
+            <blockquote class="citation">
+              <p>«&nbsp;J’ai recommencé jusqu’à réussir.&nbsp;»</p>
+            </blockquote>
+            <Fragment slot="marge">
+              <p class="note"><span class="sr">Note de l’auteur&nbsp;: </span>Quatre tentatives avant la bonne voie.</p>
+              <Planche src={portesFermees} hauteur={150} legende="Des voies essayées, puis une réorientation." anime />
+            </Fragment>
+          </Bloc>
+        </Etape>
+
+        <Etape num="1.4">
+          <Bloc>
+            <TeteEtape quand="2025" titre="La voie qui marche" />
+            <p>
+              Je passe le titre de <Terme t={GLOSSAIRE.dwwm}>développeur web et web mobile</Terme> chez Elan Formation.
+              Je boucle le programme en <mark class="surligne">un mois</mark>, je mène des projets en parallèle et je
+              couvre en bonus l’essentiel du niveau supérieur, concepteur développeur d’applications. En stage chez ATIS
+              Solutions, mes modules réduisent de <mark class="surligne">30&nbsp;%</mark> le temps de traitement
+              administratif.
+            </p>
+            <Fragment slot="marge">
+              <p class="note">
+                <span class="sr">Note de l’auteur&nbsp;: </span>Un programme de niveau bac&nbsp;+&nbsp;2, bouclé en un
+                mois.
+              </p>
+              <Planche src={unMois} hauteur={170} legende="Un mois pour parcourir le programme DWWM." anime />
+            </Fragment>
+          </Bloc>
+        </Etape>
+
+        <Etape num="1.5">
+          <Bloc>
+            <TeteEtape quand="Fin 2025" titre="De l’autre côté du bureau" />
+            <p>
+              Deux mois après mon titre, l’école perd son formateur en fin de promotion. Des étudiants croisés pendant
+              mon cursus donnent mon nom. Je reprends une dizaine d’apprenants, dont la moitié prépare le <Terme
+                t={GLOSSAIRE.cda}>CDA</Terme
+              >, un niveau au-dessus de mon propre titre. Tous obtiennent leur titre.
+            </p>
+            <Fragment slot="marge">
+              <p class="note">
+                <span class="sr">Note de l’auteur&nbsp;: </span>Un début intimidant. Une expérience très formatrice.
+              </p>
+              <Planche src={coteBureau} hauteur={170} legende="Passer de l’apprenant au formateur." anime />
+            </Fragment>
+          </Bloc>
+        </Etape>
+      </ol>
+      <p class="lien-profondeur"><a href="/parcours">Retrouver les expériences et les formations dans mon parcours.</a></p>
+    </Chapitre>
+
+    <!-- 2 · Aujourd'hui -->
+    <Chapitre id="aujourdhui">
+      <Bloc>
+        <p class="chapitre__intro">
+          Je suis architecte logiciel&nbsp;: développement web et DevOps. À côté, je mène le pôle francophone de <Terme
+            t={GLOSSAIRE.pvzFusion}>PvZ Fusion</Terme
+          >, un projet open source, et je construis mes propres outils.
+        </p>
+        <Fragment slot="marge">
+          <Planche src={architecte} hauteur={170} legende="Un petit système, en plan." anime />
+        </Fragment>
+      </Bloc>
+
+      <div class="parties">
+        <Etape as="div" num="2.1" id="collectif">
+          <Bloc>
+            <TeteEtape titre="Du solo au collectif" />
+            <p>
+              À l’automne 2025, je rejoins comme traducteur le pôle francophone de PvZ Fusion. J’accueille les nouveaux, je les
+              forme, j’organise le travail. Quand le titre de lead arrive, je tenais déjà le rôle&nbsp;: la seule chose
+              qui a changé, c’est le titre. Je suis ensuite nommé mainteneur du projet multilingue.
+            </p>
+            <p>
+              Une vingtaine de contributeurs formés, jusqu’à dix en même temps. Certains, arrivés sans compétences, sont
+              devenus des piliers de la communauté.
+            </p>
+            <Fragment slot="marge">
+              <p class="note">
+                <span class="sr">Note de l’auteur&nbsp;: </span>La seule chose qui a changé, c’est le titre.
+              </p>
+              <Planche src={lanternes} hauteur={150} legende="Une lanterne allumée en allume d’autres." anime />
+            </Fragment>
+          </Bloc>
+          <div class="etape__figure">
+            <FigureCollectif />
+          </div>
+        </Etape>
+
+        <Etape as="div" num="2.2" id="regles">
+          <Bloc>
+            <TeteEtape titre="Les trois règles" />
+            <p>Trois verbes résument ma façon de travailler. On les retrouve dans le jeu, en formation et dans mes projets.</p>
+          </Bloc>
+          <Regles />
+        </Etape>
+      </div>
+    </Chapitre>
+
+    <!-- 3 · Les preuves -->
+    <Chapitre id="preuves">
+      <p class="chapitre__intro">
+        Un moteur de jeu, une communauté de contributeurs, un outil pour les développeurs. Trois problèmes différents, et les décisions que j’ai prises pour y répondre.
+      </p>
+      <nav class="preuves__index" aria-label="Choisir une réalisation">
+        <a href="#fiche-pvz">PvZ Fusion</a>
+        <a href="#fiche-omnicard">Omnicard</a>
+        <a href="#fiche-gup">gup</a>
+      </nav>
+
+      <Fiche
+        id="fiche-pvz"
+        pageProjet="/projets/pvz-fusion"
+        titre="PvZ Fusion"
+        puces={['Open source', 'Bénévole']}
+        regle={{ num: 3, verbe: 'emmener' }}
+        probleme="Une traduction française en retard de plusieurs années, pleine d’erreurs. Des bénévoles motivés, mais certains sans compétences ni habitude du travail en groupe."
+        decision="Structurer le pôle : accueillir et former les nouveaux, relire chaque contribution, documenter, et outiller en Python la détection de ce qui manque à chaque version."
+        resultat="Une vingtaine de contributeurs formés, jusqu’à dix en même temps. Des relectures, une documentation et des outils de suivi qui permettent au pôle de travailler dans la durée. Je suis ensuite nommé mainteneur du projet multilingue."
+        chiffres={[
+          { valeur: '≈ 20', legende: 'contributeurs formés, dix au plus fort' },
+          { valeur: '10 mois', legende: 'pour rattraper des années de retard' },
+          { valeur: '317', legende: 'commits sur le dépôt public' },
+        ]}
+        planche={couverturePvz}
+        capture={capturePvz}
+        captureAlt="Une partie de Plants vs Zombies Fusion."
+        figure="<b>PvZ Fusion</b> Le jeu. Mon travail porte sur la traduction, les outils et l’équipe."
+        citation="La qualité et la sincérité des échanges démultiplient les résultats."
+        liens={[{ texte: 'Voir le dépôt', href: 'https://github.com/LINDECKER-Charles/PVZF-Translation-fr', principal: true }]}
+      />
+
+      <Fiche
+        id="fiche-omnicard"
+        pageProjet="/projets/omnicard"
+        titre="Omnicard"
+        puces={['Projet personnel']}
+        regle={{ num: 2, verbe: 'réinventer' }}
+        probleme="Le jeu de cartes inventé avec mon cousin attend depuis des années de devenir un jeu vidéo. Le projet traîne."
+        decision="Un moment, j’en ai eu marre : j’ai repris le projet seul. J’ai rééquilibré nos cartes et codé mon propre moteur de jeu, sur une stack que je maîtrisais déjà, .NET et Angular. Je voulais me lancer tout de suite, sans perdre de temps."
+        resultat="Un moteur de règles en temps réel qui tourne dans le navigateur, en environ trois mois de travail cumulé. Ses limites m’ont forcé à apprendre SignalR, la gestion du cache, l’optimisation DevOps et le prérendu serveur."
+        chiffres={[
+          { valeur: '≈ 3 mois', legende: 'de travail cumulé' },
+          { valeur: 'Temps réel', legende: 'un moteur de règles maison', mot: true },
+          { valeur: 'Navigateur', legende: 'sans rien installer', mot: true },
+        ]}
+        planche={couvertureOmnicard}
+        capture={captureOmnicard}
+        captureAlt="Omnicard : l’éditeur de deck et le catalogue de cartes du jeu."
+        figure="<b>Omnicard</b> L’éditeur de deck, dans le navigateur. Le jeu reste en développement."
+        citation="Le projet qui m’a fait le plus apprendre."
+        liens={DEMOS.omnicard ? [{ texte: 'Essayer la démo', href: DEMOS.omnicard, principal: true }] : []}
+      />
+
+      <Fiche
+        id="fiche-gup"
+        pageProjet="/projets/gup"
+        titre="gup"
+        puces={['Open source']}
+        regle={{ num: 1, verbe: 'maîtriser' }}
+        probleme="Une machine de développeur accumule des dizaines de gestionnaires de paquets, chacun avec sa propre commande de mise à jour."
+        decision="Une seule CLI qui détecte ce qui est installé et met tout à jour, sur Windows, macOS et Linux."
+        resultat="153 sources prises en charge, et 447 téléchargements npm en un mois, du 5 septembre au 4 octobre 2026."
+        chiffres={[
+          { valeur: '153', legende: 'sources prises en charge' },
+          { valeur: '447', legende: 'téléchargements npm en un mois' },
+          { valeur: '3', legende: 'systèmes : Windows, macOS, Linux' },
+        ]}
+        planche={couvertureGup}
+        capture={captureGup}
+        captureAlt="gup dans un terminal : détection des gestionnaires de paquets et suivi des mises à jour."
+        figure="<b>gup</b> La détection et la mise à jour des outils, depuis une seule commande."
+        liens={[
+          { texte: 'Voir sur npm', href: 'https://www.npmjs.com/package/@charles_lindecker/gup', principal: true },
+          { texte: 'Voir le dépôt', href: 'https://github.com/LINDECKER-Charles/gup' },
+        ]}
+      />
+    </Chapitre>
+
+    <p class="lien-profondeur"><a href="/projets">Explorer les autres projets.</a></p>
+
+    <!-- 4 · En dehors du code -->
+    <Chapitre id="dehors">
+      <Dehors />
+    </Chapitre>
+
+    <!-- 5 · Discutons -->
+    <Chapitre id="discutons">
+      <Discutons />
+    </Chapitre>
+  </Manuel>
+</Base>
+
+<style>
+  .lien-profondeur { margin-block: var(--s6); }
+  .lien-profondeur a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 500; }
+  .preuves__index { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-top: 24px; }
+  .preuves__index a { display: inline-flex; align-items: center; min-height: 44px; font-size: 1rem; font-weight: 500; }
+  .chapitre__intro {
+    font-size: var(--t-chapeau);
+    line-height: 1.5;
+    max-width: 36rem;
+    margin-top: var(--s5);
+  }
+
+  .etapes {
+    list-style: none;
+    margin: var(--s8) 0 0;
+    padding: 0;
+  }
+
+  .etape__figure {
+    position: relative;
+    margin-block: var(--s7);
+  }
+
+  /* Planches côte à côte sous le texte : deux dessins qui vont ensemble. */
+  .plateau {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s5);
+    align-items: end;
+    margin-top: var(--s6);
+  }
+
+  /* Une planche en bande, sur toute la largeur du texte. */
+  .bande {
+    margin-top: var(--s5);
+  }
+
+  .parties {
+    margin-top: var(--s8);
+    display: grid;
+    gap: var(--s8);
+  }
+
+  .parties > :global(.etape) {
+    padding-bottom: 0;
+  }
+
+  @media (max-width: 640px) {
+    /* Les figures prennent toute la largeur, sous le numéro de l'étape ; leur
+       légende masque le fil des étapes qui passe derrière. */
+    .etape__figure {
+      margin-left: calc(-2.6rem - var(--s3));
+    }
+
+    .etape__figure :global(.legende) {
+      position: relative;
+      margin-top: 0;
+      padding-top: var(--s3);
+      padding-bottom: var(--s2);
+      background: var(--papier);
+    }
+
+    .plateau {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

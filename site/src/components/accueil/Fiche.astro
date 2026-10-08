@@ -1,0 +1,392 @@
+---
+/**
+ * Une étude de cas : le projet visible, puis les décisions qui l'ont fait
+ * avancer. Une seule métrique porte le surligneur ; les autres complètent
+ * la lecture. Une capture réelle remplace la gravure lorsqu'elle existe.
+ */
+import type { ImageMetadata } from 'astro';
+import { Picture } from 'astro:assets';
+import Planche from '../ui/Planche.astro';
+import Picto from '../ui/Picto.astro';
+import { typo } from '../../lib/typo';
+
+interface Chiffre {
+  valeur: string;
+  legende: string;
+  /** Un mot plutôt qu'un nombre : pas de surligneur. */
+  mot?: boolean;
+}
+
+interface Lien {
+  texte: string;
+  href: string;
+  principal?: boolean;
+}
+
+interface Props {
+  id: string;
+  titre: string;
+  puces: string[];
+  regle: { num: 1 | 2 | 3; verbe: string };
+  probleme: string;
+  decision: string;
+  resultat: string;
+  chiffres: Chiffre[];
+  planche: ImageMetadata;
+  capture?: ImageMetadata;
+  captureAlt?: string;
+  figure: string;
+  citation?: string;
+  liens: Lien[];
+  pageProjet?: string;
+}
+
+const {
+  id, titre, puces, regle, probleme, decision, resultat, chiffres,
+  planche, capture, captureAlt, figure, citation, liens, pageProjet,
+} = Astro.props;
+const domaine = (href: string) => new URL(href).hostname;
+const chiffrePrincipal = chiffres.findIndex((c) => !c.mot);
+---
+
+<article class="fiche" id={id} aria-labelledby={`${id}-titre`}>
+  <figure class:list={['fiche__visuel', { 'fiche__visuel--capture': capture }]}>
+    <div class="fiche__media">
+      {
+        capture ? (
+          <Picture
+            class="fiche__capture"
+            src={capture}
+            formats={['avif']}
+            fallbackFormat="webp"
+            widths={[480, 768, 1080, 1440]}
+            sizes="(max-width: 640px) calc(100vw - 48px), (max-width: 1100px) calc(100vw - 96px), 960px"
+            alt={captureAlt ?? `Extrait de l’interface de ${titre}.`}
+            loading="lazy"
+            decoding="async"
+          />
+        ) : (
+          <Planche src={planche} largeur={780} />
+        )
+      }
+    </div>
+    <figcaption class="legende" set:html={figure} />
+  </figure>
+
+  <header class="fiche__tete">
+    <h3 id={`${id}-titre`}>{titre}</h3>
+    <div class="fiche__meta">
+      <p class="fiche__statut">{puces.map((puce) => <span class="puce">{puce}</span>)}</p>
+      <a class="fiche__regle" href={`#regle-${regle.num}`}>
+        {regle.verbe.charAt(0).toUpperCase() + regle.verbe.slice(1)} — voir la méthode
+      </a>
+    </div>
+  </header>
+
+  <dl class="fiche__spec">
+    <div><dt>Problème</dt><dd>{typo(probleme)}</dd></div>
+    <div><dt>Décision</dt><dd>{typo(decision)}</dd></div>
+    <div><dt>Résultat</dt><dd>{typo(resultat)}</dd></div>
+  </dl>
+
+  <div class="fiche__bas">
+    <ul class="fiche__chiffres" aria-label="Chiffres clés">
+      {
+        chiffres.map((c, i) => (
+          <li class:list={{ 'chiffre-principal': i === chiffrePrincipal }}>
+            <span class:list={['chiffre', { 'chiffre--mot': c.mot }]}>
+              {i === chiffrePrincipal ? <mark class="surligne">{c.valeur}</mark> : c.valeur}
+            </span>
+            <span class="chiffre__legende">{typo(c.legende)}</span>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="fiche__voix">
+      {
+        citation && (
+          <blockquote class="citation">
+            <p>«&nbsp;{typo(citation)}&nbsp;»</p>
+          </blockquote>
+        )
+      }
+      {(pageProjet || liens.length > 0) && <div class="fiche__liens">
+        {pageProjet && <a class="lien-fort fiche__lien--principal" href={pageProjet}>Lire l’histoire du projet</a>}
+        {
+          liens.map((lien) => (
+            <a
+              class:list={['lien-fort', { 'fiche__lien--principal': lien.principal }]}
+              href={lien.href}
+              data-umami-event="lien-sortant"
+              data-umami-event-domaine={domaine(lien.href)}
+              data-umami-event-emplacement="preuves"
+            >
+              {lien.texte}
+              <Picto nom="interface/lien-externe" class="fiche__externe" />
+            </a>
+          ))
+        }
+      </div>}
+    </div>
+  </div>
+</article>
+
+<style>
+  .fiche {
+    position: relative;
+    margin-top: var(--s8);
+  }
+
+  .fiche + .fiche {
+    padding-top: var(--s8);
+    border-top: 1px solid var(--filet);
+  }
+
+  .fiche__visuel {
+    margin: 0;
+  }
+
+  .fiche__media {
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    padding: clamp(24px, 4vw, 48px);
+    min-height: 280px;
+    color: var(--bleu);
+    background: color-mix(in srgb, var(--bleu) 7%, var(--papier));
+    border-radius: 6px;
+  }
+
+  .fiche__visuel--capture .fiche__media {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    max-height: 520px;
+    min-height: 0;
+    padding: var(--s5);
+  }
+
+  .fiche__media :global(picture) {
+    display: block;
+    width: 100%;
+  }
+
+  .fiche__media :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 3px;
+  }
+
+  .fiche__visuel--capture :global(picture) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .fiche__media :global(.fiche__capture) {
+    height: 100%;
+    min-height: 0;
+    object-fit: contain;
+  }
+
+  .fiche__media :global(.planche) {
+    margin-inline: auto;
+  }
+
+  .fiche__visuel .legende {
+    margin-top: var(--s3);
+    max-width: 70ch;
+  }
+
+  .fiche__tete {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s3) var(--s6);
+    margin-top: var(--s6);
+    align-items: start;
+  }
+
+  h3 {
+    font-size: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+    line-height: 1.06;
+    letter-spacing: -0.035em;
+    max-width: 20ch;
+    text-wrap: balance;
+  }
+
+  .fiche__meta {
+    padding-top: 0.2rem;
+  }
+
+  .fiche__statut {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2) var(--s4);
+  }
+
+  .puce {
+    color: var(--graphite);
+    font-size: var(--t-petit);
+    line-height: 1.4;
+  }
+
+  .fiche__regle {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-family: var(--font-note);
+    font-style: italic;
+    font-size: var(--t-note);
+  }
+
+  .fiche__spec {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s5) var(--s6);
+    margin-top: var(--s6);
+  }
+
+  .fiche__spec > div {
+    border-top: 1px solid var(--filet);
+    padding-top: var(--s4);
+  }
+
+  dt {
+    margin-bottom: var(--s3);
+    font-size: var(--t-petit);
+    font-weight: 700;
+    color: var(--graphite);
+  }
+
+  dd {
+    max-width: 62ch;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+
+  .fiche__bas {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s6) var(--s7);
+    margin-top: var(--s7);
+    align-items: start;
+  }
+
+  .fiche__chiffres {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: baseline;
+    gap: var(--s5);
+  }
+
+  .chiffre-principal {
+    grid-column: 1 / -1;
+  }
+
+  .chiffre {
+    display: block;
+    font-weight: 700;
+    font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    font-variant-numeric: lining-nums tabular-nums;
+    color: var(--graphite);
+  }
+
+  .chiffre-principal .chiffre {
+    font-weight: 800;
+    font-size: clamp(2.75rem, 2rem + 2vw, 4rem);
+    color: var(--encre);
+    --surligne-h: 46%;
+    --surligne-y: 90%;
+  }
+
+  .chiffre :global(.surligne) {
+    padding: 0 0.12em;
+  }
+
+  .chiffre--mot {
+    font-size: 1.5rem;
+  }
+
+  .chiffre__legende {
+    display: block;
+    margin-top: var(--s2);
+    font-size: var(--t-petit);
+    line-height: 1.4;
+    color: var(--graphite);
+    max-width: 24ch;
+  }
+
+  .fiche__voix .citation {
+    margin: 0;
+    font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+    line-height: 1.3;
+    max-width: 30ch;
+  }
+
+  .fiche__liens {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2) var(--s5);
+    margin-top: var(--s4);
+  }
+
+  .fiche__voix > .fiche__liens:first-child {
+    margin-top: 0;
+  }
+
+  .lien-fort {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    min-height: 44px;
+    font-weight: 500;
+    font-size: var(--t-petit);
+  }
+
+  .fiche__lien--principal {
+    font-weight: 700;
+    font-size: var(--t-corps);
+  }
+
+  .fiche__liens :global(.fiche__externe) {
+    width: 16px;
+    height: 16px;
+  }
+
+  @media (min-width: 800px) {
+    .fiche__tete {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .fiche__meta {
+      max-width: 18rem;
+    }
+
+    .fiche__spec {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .fiche__bas {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .fiche__media {
+      padding: var(--s4);
+      min-height: 180px;
+    }
+
+    .fiche__visuel--capture .fiche__media {
+      padding: var(--s3);
+    }
+  }
+</style>

@@ -1,0 +1,145 @@
+---
+/**
+ * Figure 1 — le plafond. Ma progression sur Gwent : une montée irrégulière
+ * pendant environ un an, quatre mois de plafond, puis le saut grâce au deck à
+ * contre-courant. Un schéma, pas une mesure : aucune valeur sur l'axe
+ * vertical, seules les durées sont sourcées (questionnaire C8).
+ *
+ * Le moment du site : la courbe se trace une fois, à son arrivée à l'écran,
+ * puis les annotations apparaissent dans l'ordre de lecture
+ * (src/scripts/figure-plafond.ts). Mouvement réduit : la figure arrive
+ * complète.
+ */
+const description =
+  'Schéma de ma progression sur Gwent : une montée irrégulière pendant environ un an, un plafond de quatre mois, puis un saut jusqu’au classement mondial grâce à un deck à contre-courant.';
+---
+
+<figure class="figure fig1" id="fig-1">
+  <div class="figure__plan" data-plafond data-figure-animation>
+    <svg class="figure--large" viewBox="0 0 760 368" role="img" aria-labelledby="f1-titre f1-desc">
+      <title id="f1-titre">Figure 1 : le plafond</title>
+      <desc id="f1-desc">{description}</desc>
+      <g class="f-axes">
+        <path d="M84 322V34"></path>
+        <path d="M78 44L84 34L90 44"></path>
+        <path d="M84 322H732"></path>
+        <path d="M722 316L732 322L722 328"></path>
+        <path d="M470 322v7M596 322v7"></path>
+      </g>
+      <line class="f-seuil" x1="84" y1="72" x2="716" y2="72"></line>
+      <text class="f-t f-t--fort" x="98" y="61">Classement mondial</text>
+      <text class="f-t" transform="translate(54 180) rotate(-90)" text-anchor="middle">Plus près du classement mondial</text>
+      <text class="f-t" x="84" y="350">Vers 17 ans</text>
+      <text class="f-t" x="470" y="350" text-anchor="middle">≈ 1 an</text>
+      <text class="f-t" x="596" y="350" text-anchor="middle">+ 4 mois</text>
+      <text class="f-t" x="732" y="350" text-anchor="end">Temps</text>
+      <polyline
+        class="courbe"
+        points="84,300 110,284 128,292 156,262 176,270 204,240 224,249 252,218 272,226 300,196 320,204 348,176 368,183 396,156 416,163 440,142 470,138 488,129 504,141 522,128 540,140 558,129 576,141 596,132 612,64 632,58 652,64 676,57 700,62"
+      ></polyline>
+      <g class="annot annot--1">
+        <path class="f-accolade" d="M470 154v8h126v-8"></path>
+        <text class="f-note" x="533" y="186" text-anchor="middle">4 mois de plafond</text>
+      </g>
+      <g class="annot annot--2">
+        <path class="f-rappel" d="M590 97H601"></path>
+        <circle class="f-plein" cx="604" cy="98" r="3"></circle>
+        <text class="f-note" x="584" y="102" text-anchor="end">Deck à contre-courant</text>
+      </g>
+      <g class="annot annot--3">
+        <circle class="f-plein" cx="612" cy="64" r="6"></circle>
+      </g>
+    </svg>
+    <svg class="figure--compacte" viewBox="0 0 360 312" role="img" aria-labelledby="f1c-titre f1c-desc">
+      <title id="f1c-titre">Figure 1 : le plafond</title>
+      <desc id="f1c-desc">{description}</desc>
+      <g class="f-axes">
+        <path d="M44 272V30"></path>
+        <path d="M39 39L44 30L49 39"></path>
+        <path d="M44 272H350"></path>
+        <path d="M341 267L350 272L341 277"></path>
+        <path d="M223 272v6M282 272v6"></path>
+      </g>
+      <line class="f-seuil" x1="44" y1="74" x2="344" y2="74"></line>
+      <text class="f-t f-t--fort" x="54" y="64">Classement mondial</text>
+      <text class="f-t" transform="translate(20 152) rotate(-90)" text-anchor="middle">Plus près du classement</text>
+      <text class="f-t" x="44" y="298">Vers 17 ans</text>
+      <text class="f-t" x="223" y="298" text-anchor="middle">≈ 1 an</text>
+      <text class="f-t" x="285" y="298" text-anchor="middle">+ 4 mois</text>
+      <text class="f-t" x="350" y="258" text-anchor="end">Temps</text>
+      <polyline
+        class="courbe"
+        points="44,250 56.1,237.6 64.4,243.8 77.4,220.6 86.7,226.8 99.7,203.6 109,210.5 122,186.6 131.3,192.7 144.3,169.5 153.6,175.7 166.6,154.1 175.9,159.5 188.9,138.6 198.1,144 209.3,127.8 223.2,124.7 231.6,117.7 239,127 247.4,116.9 255.7,126.2 264.1,117.7 272.4,127 281.7,120 289.1,67.4 298.4,62.8 307.7,67.4 318.9,62 330,65.9"
+      ></polyline>
+      <g class="annot annot--1">
+        <path class="f-accolade" d="M223 138v6h59v-6"></path>
+        <text class="f-note" x="252" y="164" text-anchor="middle">4 mois de plafond</text>
+      </g>
+      <g class="annot annot--2">
+        <path class="f-rappel" d="M278 95H283"></path>
+        <circle class="f-plein" cx="285" cy="95" r="2.5"></circle>
+        <text class="f-note" x="274" y="100" text-anchor="end">Deck à contre-courant</text>
+      </g>
+      <g class="annot annot--3">
+        <circle class="f-plein" cx="289.1" cy="67.4" r="5"></circle>
+      </g>
+    </svg>
+    <button type="button" class="commande-figure" data-rejouer aria-label="Rejouer l’animation : le plafond sur Gwent">
+      <span aria-hidden="true">↻</span>
+    </button>
+  </div>
+  <figcaption class="legende"><b>Fig. 1</b> Le plafond. Ma progression sur Gwent&nbsp;; schéma, pas à l’échelle.</figcaption>
+</figure>
+
+<script>
+  import { brancherPlafond } from '../../scripts/figure-plafond';
+  brancherPlafond();
+</script>
+
+<style>
+  .figure__plan { position: relative; display: block; padding-bottom: 52px; }
+  .figure__plan .commande-figure { position: absolute; right: 8px; bottom: 4px; }
+
+  .courbe {
+    fill: none;
+    stroke: var(--bleu);
+    stroke-width: 3;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  .f-accolade {
+    fill: none;
+    stroke: var(--bleu);
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+  }
+
+  .f-rappel {
+    stroke: var(--bleu);
+    stroke-width: 1.25;
+  }
+
+  /* Préparé par le script : la courbe est cachée par son tiret, les
+     annotations attendent la fin du tracé, dans l'ordre de la lecture. */
+  .figure__plan:global(.est-pret) .annot {
+    opacity: 0;
+  }
+
+  .figure__plan:global(.est-trace) .annot {
+    opacity: 1;
+    transition: opacity 0.45s ease;
+  }
+
+  .figure__plan:global(.est-trace) .annot--1 {
+    transition-delay: 1.45s;
+  }
+
+  .figure__plan:global(.est-trace) .annot--3 {
+    transition-delay: 1.7s;
+  }
+
+  .figure__plan:global(.est-trace) .annot--2 {
+    transition-delay: 1.95s;
+  }
+</style>

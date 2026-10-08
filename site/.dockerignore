@@ -1,0 +1,43 @@
+# Contexte de build de l'image web. Un fichier exclu ne peut pas invalider le
+# cache de `COPY . .`, et un contexte plus petit s'envoie plus vite au démon.
+#
+# Les motifs sans `**/` ne visent que la racine de site/ : c'est voulu.
+
+# Artefacts locaux : `dist` masquerait le build de l'image, `node_modules`
+# écraserait celui, résolu pour linux/alpine, de l'étape `deps`.
+node_modules
+dist
+.astro
+test-results
+playwright-report
+
+# Tests : ils tournent en CI, jamais dans l'image. Exclus du contexte, ils ne
+# relancent pas la compilation quand on les modifie, et le serveur copié dans
+# l'image se réduit aux modules qu'il exécute. `.gitignore` reste, lui : des
+# outils du build (la détection des sources de Tailwind, par exemple) s'en
+# servent pour écarter dist/ et .astro/.
+tests
+playwright.config.*
+vitest.config.*
+server/*.test.mjs
+
+# Outillage d'édition et historique.
+.git
+.idea
+.vscode
+.editorconfig
+
+# Documentation de site/ (README…) : sans rôle dans la compilation. Le motif ne
+# vise que la racine : les contenus Markdown de src/ restent dans le contexte.
+*.md
+
+# Bruit de plateforme.
+.DS_Store
+Thumbs.db
+npm-debug.log*
+
+# Rien ici ne doit jamais entrer dans une image publiée sur un registre.
+.env
+.env.*
+*.pem
+*.key

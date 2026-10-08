@@ -1,0 +1,109 @@
+---
+/**
+ * Gabarit racine : balises de partage et JSON-LD, icônes, polices, thème
+ * appliqué avant le rendu, chargeur de mesure, lien d'évitement, en-tête et
+ * pied de page.
+ *
+ * Aucun script en ligne : /theme.js et /mesure.js sont des fichiers (le
+ * second est écrit au démarrage du serveur selon l'environnement), et les
+ * scripts des composants sont des modules construits par Astro.
+ */
+import { Font, getImage } from 'astro:assets';
+import Entete from '../components/layout/Entete.astro';
+import PiedDePage from '../components/layout/PiedDePage.astro';
+import photo from '../assets/photos/charles-4.webp';
+import { SITE } from '../config/site';
+import { absolue, jsonLd, noeudPage, noeudPersonne } from '../lib/seo';
+import '../styles/global.css';
+
+interface Props {
+  titre: string;
+  description: string;
+  /** Chemin canonique ('/' pour l'accueil). */
+  chemin: string;
+  /** Page d'erreur ou utilitaire : hors index, sans canonical ni JSON-LD. */
+  horsIndex?: boolean;
+  /** Accueil : la marque de l'en-tête ramène en haut de page au lieu de recharger. */
+  accueil?: boolean;
+}
+
+const { titre, description, chemin, horsIndex = false, accueil = false } = Astro.props;
+const canonique = absolue(chemin);
+const imagePartage = {
+  url: absolue('/og/accueil.png'),
+  largeur: 1200,
+  hauteur: 630,
+  alt: 'Charles Lindecker, mode d’emploi. Je maîtrise d’abord les règles du jeu. Ensuite, je les réinvente.',
+};
+
+let donnees: string | undefined;
+if (!horsIndex) {
+  const portrait = await getImage({ src: photo, width: 800, format: 'jpg', quality: 80 });
+  donnees = jsonLd([
+    noeudPage({ chemin, titre, description }),
+    noeudPersonne({ url: absolue(portrait.src), largeur: 800, hauteur: Math.round((800 * photo.height) / photo.width) }),
+  ]);
+}
+---
+
+<!doctype html>
+<html lang={SITE.langue}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titre}</title>
+    <meta name="description" content={description} />
+    {
+      horsIndex ? (
+        <meta name="robots" content="noindex, follow" />
+      ) : (
+        <>
+          <link rel="canonical" href={canonique} />
+          <meta name="robots" content="index, follow, max-image-preview:large" />
+        </>
+      )
+    }
+    <meta name="author" content={SITE.nom} />
+    <meta name="theme-color" content={SITE.couleurTheme} />
+    <meta property="og:type" content={chemin === '/' ? 'profile' : 'website'} />
+    <meta property="og:site_name" content={SITE.nom} />
+    <meta property="og:locale" content={SITE.locale} />
+    <meta property="og:title" content={titre} />
+    <meta property="og:description" content={description} />
+    {!horsIndex && <meta property="og:url" content={canonique} />}
+    <meta property="og:image" content={imagePartage.url} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content={String(imagePartage.largeur)} />
+    <meta property="og:image:height" content={String(imagePartage.hauteur)} />
+    <meta property="og:image:alt" content={imagePartage.alt} />
+    {chemin === '/' && <meta property="profile:first_name" content="Charles" />}
+    {chemin === '/' && <meta property="profile:last_name" content="Lindecker" />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="/favicon.ico?v=20261008-transparent" sizes="16x16 32x32 48x48" />
+    <link rel="icon" href="/favicon.png?v=20261008-transparent" type="image/png" sizes="64x64" media="(prefers-color-scheme: light)" />
+    <link rel="icon" href="/favicon-nuit.png?v=20261008-transparent" type="image/png" sizes="64x64" media="(prefers-color-scheme: dark)" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    {/* Synchrone, avant les styles : le thème est posé avant le premier rendu. */}
+    <script is:inline src="/theme.js"></script>
+    {/* Seule la police du texte est préchargée : c'est elle qui compose le premier écran. */}
+    <Font cssVariable="--police-texte" preload />
+    <Font cssVariable="--police-note" />
+    <script is:inline defer src="/mesure.js"></script>
+    {donnees && <script type="application/ld+json" set:html={donnees} />}
+  </head>
+  <body id="top">
+    <a class="evitement" href="#contenu">Aller au contenu</a>
+    <Entete accueil={accueil} chemin={chemin} />
+    <main id="contenu" tabindex="-1">
+      <slot />
+    </main>
+    <PiedDePage />
+  </body>
+</html>
+
+<style>
+  main:focus {
+    outline: none;
+  }
+</style>

@@ -1,0 +1,76 @@
+---
+import Base from '../layouts/Base.astro';
+import FilAriane from '../components/pages/FilAriane.astro';
+import ContinuerLecture from '../components/pages/ContinuerLecture.astro';
+import CopierAdresse from '../components/ui/CopierAdresse.astro';
+import Picto from '../components/ui/Picto.astro';
+import { CONTACT, MAILTO, SITE } from '../config/site';
+import '../styles/profondeur.css';
+
+const titre = `Contact — ${SITE.nom}`;
+const description = 'Contacter Charles Lindecker par e-mail ou retrouver ses profils LinkedIn et GitHub. Pour parler de développement, d’architecture et de travail collectif.';
+---
+
+<Base titre={titre} description={description} chemin="/contact">
+  <div class="wrap profondeur page-contact">
+    <FilAriane courant="Contact" />
+    <header class="page-hero">
+      <h1>Une conversation pour commencer.</h1>
+      <p class="page-hero__intro">Parlons de technique, d’un projet ou de ce qu’on peut construire à plusieurs. Le plus simple pour me joindre reste l’e-mail.</p>
+    </header>
+
+    <section class="correspondance" aria-labelledby="email-titre">
+      <div class="correspondance__envoi">
+        <h2 id="email-titre">Par e-mail</h2>
+        <a class="adresse-email" href={MAILTO} data-umami-event="contact-email" data-umami-event-emplacement="contact">
+          <span data-adresse>{CONTACT.email}</span>
+          <Picto nom="interface/email" />
+        </a>
+        <p>Le lien ouvre votre messagerie. L’adresse est aussi disponible en clair pour la copier.</p>
+        <div class="correspondance__copie"><CopierAdresse adresse={CONTACT.email} emplacement="contact" /></div>
+      </div>
+      <div class="correspondance__identite">
+        <p>{SITE.nom}</p>
+        <span>{SITE.metier}</span>
+        <span>{SITE.lieu}</span>
+      </div>
+    </section>
+
+    <section class="profils" aria-labelledby="profils-titre">
+      <h2 id="profils-titre">Retrouver le travail et le parcours</h2>
+      <ul>
+        <li><a href={CONTACT.github} data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="contact"><Picto nom="reseaux/github" /><span><strong>GitHub</strong><span>Les projets et les contributions publiques.</span></span></a></li>
+        <li><a href={CONTACT.linkedin} data-umami-event="lien-sortant" data-umami-event-domaine="www.linkedin.com" data-umami-event-emplacement="contact"><Picto nom="reseaux/linkedin" /><span><strong>LinkedIn</strong><span>Le parcours professionnel.</span></span></a></li>
+      </ul>
+    </section>
+
+    <ContinuerLecture liens={[
+      { href: '/projets', titre: 'Les projets', detail: 'Des réalisations et les décisions derrière.' },
+      { href: '/parcours', titre: 'Le parcours', detail: 'Du développement à la transmission.' },
+      { href: '/', titre: 'Le récit', detail: 'Découvrir ma façon de travailler.' },
+    ]} />
+  </div>
+</Base>
+
+<style>
+  .correspondance { display: grid; grid-template-columns: minmax(0, 1fr) 15rem; align-items: end; gap: var(--s7); padding: clamp(24px, 4vw, 56px); border: 1px solid var(--filet); border-top: 4px solid var(--bleu); background: var(--blanc); }
+  .correspondance h2 { font-size: 1.25rem; color: var(--graphite); margin-bottom: var(--s5); }
+  .adresse-email { display: flex; align-items: center; justify-content: space-between; gap: var(--s5); font-size: clamp(1.35rem, 1rem + 2.1vw, 2.8rem); line-height: 1.2; font-weight: 700; text-decoration-thickness: 2px; padding-block: var(--s2); }
+  .adresse-email > span { overflow-wrap: anywhere; min-width: 0; user-select: all; }
+  .adresse-email :global(svg) { width: 28px; height: 28px; flex-shrink: 0; }
+  .correspondance__envoi > p { margin-top: var(--s5); font-size: var(--t-petit); color: var(--graphite); max-width: 52ch; }
+  .correspondance__copie { margin-top: var(--s5); }
+  .correspondance__identite { display: grid; gap: var(--s2); padding-left: var(--s5); border-left: 1px solid var(--filet); font-size: var(--t-petit); }
+  .correspondance__identite > p { font-weight: 700; }
+  .correspondance__identite > span { color: var(--graphite); }
+  .profils { margin-top: var(--s8); }
+  .profils > h2 { font-size: 1.5rem; }
+  .profils ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s6); list-style: none; margin: var(--s6) 0 0; padding: 0; }
+  .profils a { display: flex; align-items: flex-start; gap: var(--s5); border-top: 1px solid var(--filet); padding-block: var(--s5); text-decoration: none; }
+  .profils a :global(svg) { width: 30px; height: 30px; margin-top: 0.2rem; }
+  .profils strong { display: block; font-size: 1.5rem; text-decoration: underline; text-underline-offset: 0.2em; }
+  .profils a > span > span { display: block; color: var(--graphite); font-size: var(--t-petit); margin-top: var(--s2); }
+  .profils a:hover strong { text-decoration-thickness: 2px; }
+  @media (max-width: 900px) { .correspondance { grid-template-columns: minmax(0, 1fr); gap: var(--s7); } .correspondance__identite { padding-left: 0; padding-top: var(--s5); border-left: none; border-top: 1px solid var(--filet); } }
+  @media (max-width: 640px) { .profils ul { grid-template-columns: minmax(0, 1fr); gap: var(--s3); } .adresse-email { gap: var(--s3); } }
+</style>

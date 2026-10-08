@@ -1,0 +1,550 @@
+/*
+ * Socle du site « Mode d'emploi » : jetons, base typographique et composants
+ * partagés. Source : le design system de la maquette retenue
+ * (design/propositions/d-mode-d-emploi.html). Les styles propres à un bloc
+ * vivent dans son composant.
+ *
+ * Trois principes à garder en tête en modifiant ce fichier :
+ *   - le bleu, c'est la voix de l'auteur (liens, tracés, notes au stylo) ;
+ *   - le jaune, c'est la preuve : il ne surligne que des chiffres sourcés ;
+ *   - lisible d'abord : contrastes AA au minimum, de jour comme de nuit.
+ */
+
+/* ===== Jetons — jour ===== */
+:root {
+  --papier: #f3f5f7;
+  --blanc: #ffffff;
+  --encre: #14161b;
+  --graphite: #59606d;
+  --bleu: #1f4fd1;
+  --bleu-survol: #173ca6;
+  --sur-bleu: #ffffff;
+  --colza: #f5d33f;
+  --sur-colza: #14161b;
+  --filet: #d8dde5;
+  --trait: #59606d;
+  --trait-doux: #aab2bf;
+  --pointille: #b9c0cb;
+  --voile: rgb(245 246 248 / 0.92);
+
+  /* Trace de surligneur à main levée (design/assets/annotations/surligneur-3.svg),
+     étirée sous le texte ; une variante par thème, la couleur étant dans le fichier. */
+  --trace: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 208 24' preserveAspectRatio='none'%3E%3Cpath fill='%23F5D33F' d='M1.5 6.7 22 5.4 43 6.1 63 4.8 84 5.5 105 4.2 127 4.8 149 3.9 174 4.4 206 3.9 205 18.3 186 19 164 18.6 140 19.8 116 19.1 92 20.2 66 19.5 43 20.3 19 19.7 2.5 20.5Z'/%3E%3C/svg%3E");
+
+  --font-texte: var(--police-texte, 'Atkinson Hyperlegible Next', system-ui, sans-serif);
+  --font-note: var(--police-note, 'Newsreader', Georgia, serif);
+
+  --t-display: clamp(2.75rem, 1.15rem + 4.6vw, 5.25rem);
+  --t-h2: clamp(2.5rem, 1.2rem + 4vw, 4.5rem);
+  --t-h3: 1.5rem;
+  --t-chapeau: 1.3125rem;
+  --t-corps: 1.125rem;
+  --t-petit: 1rem;
+  --t-etiquette: 0.875rem;
+  --t-note: 1.0625rem;
+
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+  --s7: 48px;
+  --s8: 64px;
+  --s9: 96px;
+  --s10: 128px;
+
+  --rayon: 4px;
+  --gouttiere: clamp(24px, 4vw, 56px);
+  --hauteur-entete: 72px;
+
+  color-scheme: light;
+}
+
+/* ===== Jetons — nuit =====
+   Deux portes d'entrée, mêmes valeurs : le choix du lecteur (data-theme, posé
+   par /theme.js avant le premier rendu), sinon la préférence du système quand
+   le script n'a pas tourné. */
+:root[data-theme='nuit'] {
+  --papier: #0e1424;
+  --blanc: #151e33;
+  --encre: #e6eaf2;
+  --graphite: #a3adbf;
+  --bleu: #8fb0ff;
+  --bleu-survol: #b5cbff;
+  --sur-bleu: #0e1424;
+  --colza: #e2c044;
+  --sur-colza: #14161b;
+  --filet: #26304a;
+  --trait: #a3adbf;
+  --trait-doux: #4a5672;
+  --pointille: #3a4664;
+  --voile: rgb(14 20 36 / 0.92);
+  --trace: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 208 24' preserveAspectRatio='none'%3E%3Cpath fill='%23E2C044' d='M1.5 6.7 22 5.4 43 6.1 63 4.8 84 5.5 105 4.2 127 4.8 149 3.9 174 4.4 206 3.9 205 18.3 186 19 164 18.6 140 19.8 116 19.1 92 20.2 66 19.5 43 20.3 19 19.7 2.5 20.5Z'/%3E%3C/svg%3E");
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --papier: #0e1424;
+    --blanc: #151e33;
+    --encre: #e6eaf2;
+    --graphite: #a3adbf;
+    --bleu: #8fb0ff;
+    --bleu-survol: #b5cbff;
+    --sur-bleu: #0e1424;
+    --colza: #e2c044;
+    --sur-colza: #14161b;
+    --filet: #26304a;
+    --trait: #a3adbf;
+    --trait-doux: #4a5672;
+    --pointille: #3a4664;
+    --voile: rgb(14 20 36 / 0.92);
+    --trace: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 208 24' preserveAspectRatio='none'%3E%3Cpath fill='%23E2C044' d='M1.5 6.7 22 5.4 43 6.1 63 4.8 84 5.5 105 4.2 127 4.8 149 3.9 174 4.4 206 3.9 205 18.3 186 19 164 18.6 140 19.8 116 19.1 92 20.2 66 19.5 43 20.3 19 19.7 2.5 20.5Z'/%3E%3C/svg%3E");
+    color-scheme: dark;
+  }
+}
+
+/* ===== Base ===== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Une ancre ne disparaît jamais sous l'en-tête collant. */
+  scroll-padding-top: calc(var(--hauteur-entete) + var(--s5));
+  scroll-behavior: smooth;
+  background: var(--papier);
+}
+
+body {
+  margin: 0;
+  background: var(--papier);
+  color: var(--encre);
+  font-family: var(--font-texte);
+  font-size: var(--t-corps);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-kerning: normal;
+  overflow-x: hidden;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+p,
+blockquote,
+figure,
+dl,
+dd {
+  margin: 0;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--bleu);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--bleu);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+::selection {
+  background: var(--colza);
+  color: var(--sur-colza);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+/* ===== Utilitaires ===== */
+.sr {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.wrap {
+  max-width: 1360px;
+  margin-inline: auto;
+  padding-inline: var(--gouttiere);
+}
+
+.evitement {
+  position: absolute;
+  left: 12px;
+  top: -80px;
+  z-index: 100;
+  padding: 12px 16px;
+  border-radius: var(--rayon);
+  background: var(--bleu);
+  color: var(--sur-bleu);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.evitement:focus {
+  top: 12px;
+}
+
+/* Ce qui n'existe que la nuit : une lune dans l'en-tête, une ligne au pied de page. */
+.nuit-seul {
+  display: none !important;
+}
+
+:root[data-theme='nuit'] .nuit-seul {
+  display: revert !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .nuit-seul {
+    display: revert !important;
+  }
+}
+
+/* ===== Boutons ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  min-height: 48px;
+  padding: 11px 22px;
+  border: 1px solid var(--bleu);
+  border-radius: var(--rayon);
+  font: 700 1rem/1.2 var(--font-texte);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.btn--plein {
+  background: var(--bleu);
+  color: var(--sur-bleu);
+}
+
+.btn--plein:hover {
+  background: var(--bleu-survol);
+  border-color: var(--bleu-survol);
+  color: var(--sur-bleu);
+}
+
+.btn--contour {
+  background: transparent;
+  color: var(--bleu);
+}
+
+.btn--contour:hover {
+  background: color-mix(in srgb, var(--bleu) 9%, transparent);
+}
+
+.btn--petit {
+  min-height: 44px;
+  padding: 8px 16px;
+  font-size: 0.9375rem;
+}
+
+.btn svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s3);
+}
+
+/* Bouton carré à pictogramme (sommaire, mode nuit). */
+.bouton-icone {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--filet);
+  border-radius: var(--rayon);
+  background: transparent;
+  color: var(--encre);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.bouton-icone:hover {
+  border-color: var(--bleu);
+  color: var(--bleu);
+}
+
+.bouton-icone svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Rejouer le dessin sans ajouter de texte ni modifier la mise en page. */
+.commande-figure {
+  display: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border: 1px solid var(--filet);
+  border-radius: 50%;
+  background: var(--papier);
+  color: var(--bleu);
+  font: 400 1.5rem/1 var(--font-texte);
+  cursor: pointer;
+  padding: 0;
+}
+
+.js .commande-figure { display: inline-grid; }
+.commande-figure:hover,
+.commande-figure:focus-visible {
+  border-color: var(--bleu);
+}
+@media print { .js .commande-figure { display: none; } }
+
+/* ===== La voix de l'auteur : le stylo bleu ===== */
+.note {
+  font-family: var(--font-note);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--t-note);
+  line-height: 1.45;
+  color: var(--bleu);
+}
+
+.citation {
+  margin: var(--s6) 0 0;
+  font-family: var(--font-note);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem);
+  line-height: 1.2;
+  color: var(--bleu);
+  max-width: 22ch;
+  /* Le guillemet ouvrant déborde dans la marge : le texte reste aligné. */
+  text-indent: -0.42em;
+}
+
+/* ===== La preuve : le surligneur =====
+   Uniquement sous des chiffres sourcés, un seul par preuve. Le chiffre reste
+   écrit en clair : le surligneur souligne, il ne remplace pas. */
+.surligne {
+  color: var(--sur-colza);
+  background: var(--trace) no-repeat 0 var(--surligne-y, 62%) / 100% var(--surligne-h, 78%);
+  padding: 0 0.2em;
+  margin: 0 -0.08em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* La nuit, le texte sombre du surligneur ne doit jamais déborder sur le fond
+   sombre : le trait couvre toute la hauteur des lettres. */
+:root[data-theme='nuit'] .surligne {
+  --surligne-y: 50%;
+  --surligne-h: 150%;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .surligne {
+    --surligne-y: 50%;
+    --surligne-h: 150%;
+  }
+}
+
+/* ===== Légendes de figures ===== */
+.legende {
+  margin-top: var(--s3);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--graphite);
+}
+
+.legende b {
+  color: var(--encre);
+  font-weight: 700;
+  margin-right: 0.3em;
+}
+
+/* ===== Figures dessinées (SVG codés, figures 1 et 2) =====
+   Une planche blanche, un filet ; des étiquettes en Atkinson, des annotations
+   en italique bleu. Deux versions par figure, bureau et mobile, pour garder
+   des étiquettes lisibles à 14 px. */
+.figure {
+  position: relative;
+}
+
+.figure__plan {
+  background: var(--blanc);
+  border: 1px solid var(--filet);
+  border-radius: var(--rayon);
+  padding: clamp(10px, 2.4vw, 28px);
+}
+
+.figure__plan svg {
+  width: 100%;
+  height: auto;
+}
+
+.figure--compacte {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .figure--large {
+    display: none;
+  }
+
+  .figure--compacte {
+    display: block;
+  }
+}
+
+.f-t {
+  font: 500 14px var(--font-texte);
+  fill: var(--graphite);
+}
+
+.figure--compacte .f-t {
+  font-size: 15px;
+}
+
+.f-t--fort {
+  font-weight: 700;
+  fill: var(--encre);
+}
+
+.f-note {
+  font: italic 400 16px var(--font-note);
+  fill: var(--bleu);
+}
+
+.f-axes {
+  fill: none;
+  stroke: var(--trait);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.f-seuil {
+  stroke: var(--trait);
+  stroke-width: 1;
+  stroke-dasharray: 4 5;
+}
+
+.f-plein {
+  fill: var(--bleu);
+}
+
+/* ===== Pictogrammes au trait (SVG en ligne, currentColor) ===== */
+.picto {
+  display: block;
+  flex-shrink: 0;
+}
+
+/* ===== Mouvement réduit =====
+   Le seul mouvement qui part tout seul est le tracé de la figure 1 ; il est
+   coupé ici comme tout le reste. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* ===== Impression : un mode d'emploi se lit aussi sur papier ===== */
+@media print {
+  :root {
+    --papier: #ffffff;
+    --blanc: #ffffff;
+    --encre: #000000;
+    --graphite: #333a45;
+    --bleu: #1f4fd1;
+  }
+
+  html,
+  body {
+    background: #ffffff;
+    font-size: 11pt;
+  }
+
+  .ne-pas-imprimer {
+    display: none !important;
+  }
+
+  a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.85em;
+    color: var(--graphite);
+    word-break: break-all;
+  }
+
+  figure,
+  .fiche,
+  .etape,
+  .regle {
+    break-inside: avoid;
+  }
+
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  .surligne {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

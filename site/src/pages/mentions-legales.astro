@@ -1,0 +1,202 @@
+---
+/**
+ * Mentions légales et confidentialité, en une page : qui publie, qui héberge,
+ * ce qui est mesuré et comment s'y opposer (cadre CNIL de la mesure
+ * d'audience exemptée de consentement, docs/mesure-audience.md). Les faits
+ * d'hébergement viennent des mentions de la V1 ; la durée des journaux, du
+ * dépôt infra-vps.
+ *
+ * Texte à relire par Charles avant la mise en production.
+ */
+import Base from '../layouts/Base.astro';
+import { CONTACT, SITE } from '../config/site';
+
+const majour = '7 octobre 2026';
+---
+
+<Base
+  titre="Mentions légales, Charles Lindecker"
+  description="Qui publie ce site, qui l’héberge, ce qui est mesuré et comment s’y opposer. Ni cookie, ni traceur publicitaire, ni donnée revendue."
+  chemin="/mentions-legales"
+>
+  <article class="wrap document" aria-labelledby="document-titre">
+    <h1 id="document-titre">Mentions légales</h1>
+    <p class="document__maj">Dernière mise à jour&nbsp;: {majour}</p>
+
+    <p class="document__resume">
+      En bref&nbsp;: ce site personnel ne dépose aucun cookie et n’affiche aucune publicité. Il compte ses visites avec
+      un outil hébergé sur son propre serveur, sans vous identifier, et vous pouvez vous y opposer d’un clic.
+    </p>
+
+    <section aria-labelledby="editeur">
+      <h2 id="editeur">Éditeur</h2>
+      <p>
+        Ce site est édité par {SITE.nom}, à titre personnel, qui en est aussi le directeur de la publication. Contact&nbsp;:
+        <a href={`mailto:${CONTACT.email}`} data-umami-event="contact-email" data-umami-event-emplacement="mentions"
+          >{CONTACT.email}</a
+        >.
+      </p>
+    </section>
+
+    <section aria-labelledby="hebergement">
+      <h2 id="hebergement">Hébergement</h2>
+      <p>
+        Le site est servi par un serveur privé virtuel loué à Hostinger International Ltd., 61 Lordou Vironos Street,
+        6023 Larnaca, Chypre (<a href="https://www.hostinger.fr">hostinger.fr</a>). Le logiciel du serveur, du site
+        aux certificats de sécurité, est administré par l’éditeur.
+      </p>
+    </section>
+
+    <section aria-labelledby="mesure-audience">
+      <h2 id="mesure-audience">Mesure d’audience</h2>
+      <p>
+        Le site compte ses visites avec Umami, un outil installé sur le même serveur que lui. Il sert à savoir quelles
+        pages sont lues, jusqu’où le récit est lu et quels liens sont suivis&nbsp;: jamais à vous identifier, ni à vous
+        suivre d’un site à l’autre.
+      </p>
+      <ul>
+        <li>
+          <strong>Ce qui est compté</strong>&nbsp;: les pages vues et leur provenance (réduite au nom du site
+          d’origine), les chapitres atteints, les clics sur les liens de contact et vers d’autres sites, l’ouverture du
+          glossaire, le passage en mode nuit, les temps de chargement, ainsi que le type d’appareil, le navigateur, la
+          langue et le pays.
+        </li>
+        <li>
+          <strong>Ce qui ne l’est pas</strong>&nbsp;: ni cookie, ni adresse IP conservée, ni paramètre de campagne, ni
+          enregistrement de votre navigation. Les statistiques sont agrégées et conservées 25&nbsp;mois au plus.
+        </li>
+        <li>
+          <strong>Ce qui est respecté sans rien faire</strong>&nbsp;: les signaux Global Privacy Control et Do Not
+          Track de votre navigateur.
+        </li>
+      </ul>
+      <div class="opposition">
+        <p class="opposition__etat" role="status" data-opposition-etat>
+          Avec JavaScript désactivé, aucune mesure n’a lieu.
+        </p>
+        <button class="btn btn--contour" type="button" data-opposition hidden>Ne plus être mesuré</button>
+        <p class="opposition__aide">
+          Votre choix est gardé dans ce navigateur, sans date d’expiration. Il vaut pour ce site seulement.
+        </p>
+      </div>
+    </section>
+
+    <section aria-labelledby="donnees">
+      <h2 id="donnees">Données personnelles</h2>
+      <ul>
+        <li>
+          Si vous m’écrivez, votre adresse et votre message servent uniquement à vous répondre. Ils ne sont transmis à
+          personne.
+        </li>
+        <li>
+          Comme tout serveur, celui-ci tient un journal des requêtes (adresse IP, page demandée, navigateur), conservé
+          90&nbsp;jours pour sa sécurité et le diagnostic des pannes.
+        </li>
+        <li>
+          Vous pouvez demander l’accès à vos données, leur correction ou leur effacement en écrivant à
+          <a href={`mailto:${CONTACT.email}`} data-umami-event="contact-email" data-umami-event-emplacement="mentions"
+          >{CONTACT.email}</a
+        >. En cas de désaccord, vous pouvez saisir la
+          <a href="https://www.cnil.fr/fr/plaintes">CNIL</a>.
+        </li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="stockage">
+      <h2 id="stockage">Stockage dans votre navigateur</h2>
+      <p>Aucun cookie. Deux préférences seulement, gardées dans le stockage local de votre navigateur&nbsp;:</p>
+      <ul>
+        <li><code>cl-theme</code>&nbsp;: votre choix entre le mode jour et le mode nuit, si vous en faites un&nbsp;;</li>
+        <li><code>umami.disabled</code>&nbsp;: votre refus de la mesure d’audience, si vous l’exprimez.</li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="credits">
+      <h2 id="credits">Propriété intellectuelle et crédits</h2>
+      <p>
+        Les textes, photographies et illustrations du site appartiennent à {SITE.nom}, sauf mention contraire. Les
+        polices Atkinson Hyperlegible Next (Braille Institute) et Newsreader (Production Type) sont distribuées sous
+        licence SIL Open Font License&nbsp;1.1. Les noms de jeux et de logiciels cités appartiennent à leurs détenteurs.
+      </p>
+    </section>
+  </article>
+</Base>
+
+<script>
+  import { brancherOpposition } from '../scripts/opposition';
+  brancherOpposition();
+</script>
+
+<style>
+  .document {
+    max-width: 48rem;
+    padding-block: clamp(48px, 7vw, 96px);
+  }
+
+  h1 {
+    font-size: var(--t-h2);
+    line-height: 1.05;
+    letter-spacing: -0.022em;
+  }
+
+  .document__maj {
+    margin-top: var(--s3);
+    font-size: var(--t-petit);
+    color: var(--graphite);
+  }
+
+  .document__resume {
+    margin-top: var(--s6);
+    font-size: var(--t-chapeau);
+    line-height: 1.5;
+  }
+
+  section {
+    margin-top: var(--s8);
+    padding-top: var(--s6);
+    border-top: 1px solid var(--filet);
+  }
+
+  h2 {
+    font-size: var(--t-h3);
+    line-height: 1.25;
+  }
+
+  section > p,
+  section > ul {
+    margin-top: var(--s4);
+    max-width: 40rem;
+  }
+
+  ul {
+    padding-left: 1.2rem;
+    display: grid;
+    gap: var(--s3);
+  }
+
+  code {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.875em;
+  }
+
+  .opposition {
+    margin-top: var(--s6);
+    padding: var(--s5);
+    background: var(--blanc);
+    border: 1px solid var(--filet);
+    border-top: 4px solid var(--bleu);
+    border-radius: var(--rayon);
+    display: grid;
+    gap: var(--s4);
+    justify-items: start;
+  }
+
+  .opposition__etat {
+    font-weight: 700;
+  }
+
+  .opposition__aide {
+    font-size: var(--t-petit);
+    color: var(--graphite);
+  }
+</style>

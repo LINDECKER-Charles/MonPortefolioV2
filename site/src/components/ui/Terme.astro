@@ -1,0 +1,85 @@
+---
+/**
+ * Un mot du glossaire, dans le texte : souligné en pointillés, il ouvre sa
+ * définition au clic (bulle de l'API Popover, fermée par Échap, par un clic
+ * ailleurs ou au défilement). Le lecteur non joueur n'a pas à deviner ce
+ * qu'est un deck ; le lecteur pressé n'a rien à ouvrir.
+ *
+ * Sans Popover, la bulle reste fermée et le mot se lit comme du texte.
+ */
+import type { Terme } from '../../config/glossaire';
+import { typo } from '../../lib/typo';
+
+interface Props {
+  t: Terme;
+}
+
+const { t } = Astro.props;
+const id = `terme-${t.id}`;
+---
+
+<button type="button" class="terme" popovertarget={id} data-terme={t.id}><slot /></button><span
+  class="terme__bulle"
+  id={id}
+  popover
+  ><strong>{t.mot}</strong>&nbsp;: {typo(t.definition)}</span
+>
+
+<script>
+  import { brancherGlossaire } from '../../scripts/glossaire';
+  brancherGlossaire();
+</script>
+
+<style>
+  .terme {
+    display: inline;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: inherit;
+    text-align: inherit;
+    cursor: help;
+    text-decoration: underline dotted var(--bleu);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.25em;
+  }
+
+  .terme:hover,
+  .terme[aria-expanded='true'] {
+    color: var(--bleu);
+  }
+
+  /* Sans API Popover, la bulle n'existe pas : le mot se lit comme du texte. */
+  .terme__bulle {
+    display: none;
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    width: max-content;
+    max-width: min(22rem, calc(100vw - 24px));
+    padding: var(--s3) var(--s4);
+    border: 1px solid var(--bleu);
+    border-radius: var(--rayon);
+    background: var(--blanc);
+    color: var(--encre);
+    font-family: var(--font-texte);
+    font-style: normal;
+    font-size: var(--t-petit);
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: left;
+    text-indent: 0;
+    box-shadow: 0 8px 24px rgb(20 22 27 / 0.14);
+  }
+
+  @supports selector(:popover-open) {
+    .terme__bulle:popover-open {
+      display: block;
+    }
+  }
+
+  .terme__bulle strong {
+    font-weight: 700;
+  }
+</style>

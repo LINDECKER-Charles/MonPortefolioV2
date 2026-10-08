@@ -1,0 +1,46 @@
+---
+interface Props {
+  courant: string;
+  projet?: boolean;
+}
+
+const { courant, projet = false } = Astro.props;
+---
+
+<nav class="fil-ariane" aria-label="Fil d’Ariane">
+  <ol>
+    <li><a href="/">Accueil</a></li>
+    {projet && <li><a href="/projets">Projets</a></li>}
+    <li aria-current="page">{courant}</li>
+  </ol>
+</nav>
+
+<style>
+  .fil-ariane {
+    padding-block: var(--s5);
+    font-size: var(--t-petit);
+    color: var(--graphite);
+  }
+
+  ol {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: var(--s2) var(--s3);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  li + li::before {
+    content: '/';
+    padding-right: var(--s3);
+    color: var(--trait-doux);
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+</style>

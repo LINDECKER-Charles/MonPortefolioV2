@@ -1,0 +1,87 @@
+---
+/**
+ * Repère de lecture (bureau, à partir de 1100 px) : le sommaire devient une
+ * colonne collante dans la marge gauche ; le chapitre en cours est marqué en
+ * gras et d'un trait bleu (src/scripts/lecture.ts). Changement d'état, sans
+ * glissement : rien ne bouge tout seul.
+ */
+import { CHAPITRES } from '../../config/chapitres';
+---
+
+<nav class="reperes" aria-label="Repère de lecture">
+  <p class="reperes__titre" aria-hidden="true">Sommaire</p>
+  <ol>
+    {
+      CHAPITRES.map((c) => (
+        <li>
+          <a href={`#${c.id}`} data-repere={c.id}>
+            <span class="reperes__num">{c.num}</span> {c.titre}
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+</nav>
+
+<style>
+  .reperes {
+    display: none;
+  }
+
+  @media (min-width: 1100px) {
+    .reperes {
+      display: block;
+      position: sticky;
+      top: calc(var(--hauteur-entete) + var(--s5));
+      align-self: start;
+      padding-top: var(--s9);
+    }
+  }
+
+  .reperes__titre {
+    font-size: var(--t-petit);
+    font-weight: 700;
+    margin-bottom: var(--s3);
+  }
+
+  ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--filet);
+  }
+
+  a {
+    display: flex;
+    gap: 0.6em;
+    align-items: center;
+    min-height: 44px;
+    padding: 6px 0 6px 16px;
+    margin-left: -1px;
+    border-left: 2px solid transparent;
+    color: var(--graphite);
+    text-decoration: none;
+    font-size: var(--t-petit);
+    line-height: 1.3;
+  }
+
+  a:hover {
+    color: var(--encre);
+  }
+
+  a[aria-current] {
+    color: var(--encre);
+    font-weight: 700;
+    border-left-color: var(--bleu);
+  }
+
+  .reperes__num {
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media print {
+    .reperes {
+      display: none;
+    }
+  }
+</style>

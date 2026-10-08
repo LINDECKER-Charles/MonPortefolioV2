@@ -1,0 +1,64 @@
+---
+/**
+ * Le sommaire, comme dans un vrai manuel : numéro, chapitre, pointillés,
+ * contenu. Il annonce aussi la durée de lecture, calculée sur le texte réel
+ * des chapitres (voir Manuel.astro) : le lecteur sait ce qu'il engage.
+ */
+import { CHAPITRES } from '../../config/chapitres';
+
+interface Props {
+  minutes: number;
+}
+
+const { minutes } = Astro.props;
+---
+
+<nav class="sommaire" id="sommaire" aria-labelledby="sommaire-titre">
+  <div class="wrap">
+    <div class="sommaire__tete">
+      <h2 id="sommaire-titre" class="sommaire__titre">Sommaire</h2>
+      <p class="sommaire__duree">Lecture complète&nbsp;: {minutes}&nbsp;minutes</p>
+    </div>
+    <ol class="sommaire__liste">
+      {
+        CHAPITRES.map((c) => (
+          <li>
+            <a href={`#${c.id}`}>
+              <span class="sommaire__num">{c.num}</span>
+              <span class="sommaire__nom">{c.titre}</span>
+              <span class="sommaire__points" aria-hidden="true" />
+              <span class="sommaire__desc">{c.resume}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</nav>
+
+<style>
+  .sommaire { padding-block: 32px 56px; }
+  .sommaire__tete { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; align-items: baseline; }
+  .sommaire__titre { font-size: 1rem; font-weight: 500; letter-spacing: 0; }
+  .sommaire__duree { font-size: .875rem; color: var(--graphite); }
+  .sommaire__liste { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); list-style: none; margin: 22px 0 0; padding: 0; }
+  .sommaire__liste li { border-top: 1px solid var(--filet); border-left: 1px solid var(--filet); }
+  .sommaire__liste li:first-child { border-left: 0; }
+  .sommaire__liste a { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; height: 100%; padding: 20px 22px 8px; color: var(--encre); text-decoration: none; transition: background-color .15s ease; }
+  .sommaire__liste li:first-child a { padding-left: 0; }
+  .sommaire__num { color: var(--bleu); font-size: .875rem; font-variant-numeric: tabular-nums; }
+  .sommaire__nom { font-size: 1.25rem; font-weight: 700; line-height: 1.2; letter-spacing: -.015em; }
+  .sommaire__points { display: none; }
+  .sommaire__desc { font-size: .875rem; color: var(--graphite); line-height: 1.5; max-width: 22ch; }
+  .sommaire__liste a:hover { background: color-mix(in srgb, var(--bleu) 5%, transparent); }
+  .sommaire__liste a:hover .sommaire__nom { color: var(--bleu); text-decoration: underline; text-underline-offset: .25em; }
+  @media (max-width: 760px) {
+    .sommaire { padding-block: 26px 40px; }
+    .sommaire__liste { grid-template-columns: 1fr; margin-top: 16px; }
+    .sommaire__liste li { border-left: 0; }
+    .sommaire__liste a, .sommaire__liste li:first-child a { display: grid; grid-template-columns: 24px 1fr; gap: 4px 16px; padding: 14px 0; }
+    .sommaire__num { grid-row: 1 / 3; padding-top: 2px; }
+    .sommaire__nom { font-size: 1.125rem; }
+    .sommaire__desc { max-width: none; }
+  }
+</style>
