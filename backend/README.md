@@ -77,8 +77,11 @@ reprennent ni contenu du formulaire, ni coordonnées du visiteur, ni détails SM
 
 ## Protection et limites
 
-Cinq tentatives par adresse IP sont autorisées sur dix minutes. Cette limite compte aussi
-les tentatives invalides et les échecs SMTP. Les fenêtres expirent et la table est bornée à
+Cinq tentatives par adresse IP sont autorisées dans une fenêtre de dix minutes ouverte par
+la première tentative. Une tentative refusée ne prolonge pas cette fenêtre. Dès la sixième,
+l’API répond `429` et indique le temps restant dans `Retry-After`, en secondes arrondies au
+supérieur. Cette limite compte aussi les tentatives invalides et les échecs SMTP.
+Les fenêtres expirent et la table est bornée à
 10 000 adresses ; les envois simultanés sont bornés à 16. La limite vit en mémoire et se
 réinitialise au redémarrage ; plusieurs réplicas auraient besoin d’un stockage partagé.
 
