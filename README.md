@@ -38,15 +38,35 @@ Première exécution des tests navigateur : `npx playwright install chromium`.
 docker compose up --build    # les deux services, http://127.0.0.1:4000
 ```
 
-`CONTACT_EMAIL` dans le `.env` racine pilote l’adresse affichée et le destinataire du
-formulaire. Le serveur remplace l’adresse dans le HTML avant de le servir : les liens e-mail,
-la copie et les mentions légales fonctionnent aussi sans JavaScript. Redémarrer après un
-changement d’adresse suffit ; l’image Astro n’a pas besoin d’être reconstruite.
+Les demandes du formulaire sont conservées dans une base SQLite persistante, puis notifiées
+par e-mail si le relais SMTP est configuré. Un succès confirme leur enregistrement ; une panne
+SMTP ne fait pas perdre la demande. Renseigner `SMTP_HOST`, `SMTP_FROM` et les réglages du relais
+pour activer les notifications.
 
-Pour activer l’envoi, renseigner `SMTP_HOST`, `SMTP_FROM` et les réglages du relais dans
-`.env`. Sans SMTP, le backend démarre et le formulaire affiche une indisponibilité avec le
-lien e-mail. Le formulaire ne confirme un succès qu’après acceptation par le relais SMTP.
-Contrat de l’API et commandes Rust : [`backend/README.md`](backend/README.md).
+Le **backoffice `/backoffice`** rassemble les demandes (nouvelles, lues, archivées), leur état de
+notification, l’adresse de contact, les liens de la boîte à outils et les jetons MCP. L’adresse
+modifiée est utilisée par le formulaire et les liens e-mail des pages sans redémarrage ni rebuild.
+`CONTACT_EMAIL` initialise seulement une base neuve ; une base existante conserve sa valeur.
+
+Pour activer la connexion, renseigner `BACKOFFICE_EMAIL` et `BACKOFFICE_PASSWORD` dans `.env`.
+Le mot de passe doit faire au moins 12 octets ; le mettre **entre apostrophes** pour conserver
+ses caractères. Le backend en calcule l’empreinte Argon2id. Les identifiants d’administration
+sont indépendants de l’adresse de contact publique.
+
+Avec `APP_ENV=production` (valeur par défaut) ou `APP_ENV=test`, la première connexion demande
+la configuration d’une application d’authentification par QR code, puis un code à six chiffres.
+Les connexions suivantes demandent ce code. Huit codes de secours à conserver sont affichés une
+seule fois. Renseigner également `BACKOFFICE_TOTP_ENCRYPTION_KEY` avec `openssl rand -hex 32`.
+Cette clé protège le secret 2FA en base et doit accompagner ses sauvegardes.
+`APP_ENV=development`, fixé par le modèle local et le calque Compose local, dispense de 2FA.
+En HTTP local seulement, poser `BACKOFFICE_COOKIE_SECURE=false` ; garder `true` sur HTTPS.
+Sans identifiants, l’administration est désactivée. Configuration et récupération d’accès :
+[`backend/README.md`](backend/README.md).
+
+Depuis le backoffice, créer un jeton par client pour consulter les demandes via le MCP distant
+`https://<domaine>/mcp`. Il expose uniquement des outils de lecture et ne marque aucune demande
+comme lue. Les jetons peuvent être révoqués individuellement. Connexion Claude/Codex, contrat de
+l’API et sauvegarde de la base : [`backend/README.md`](backend/README.md).
 
 ## Carte du dépôt
 
@@ -56,8 +76,8 @@ Contrat de l’API et commandes Rust : [`backend/README.md`](backend/README.md)
 | `design/` | maquettes et assets sources (logo, pictogrammes, illustrations, photos) |
 | `site/` | le site Astro ; son `Dockerfile` produit l'image publiée |
 | `site/src/` | pages, composants, scripts, styles, configuration du contenu |
-| `site/server/` | serveur de production : 301 de la V1, 404, cache, en-têtes, mesure `/mesure.js`, configuration de l’adresse et relais API |
-| `backend/` | API Rust (Axum), formulaire de contact et livraison SMTP ; image Docker indépendante |
+| `site/server/` | serveur de production : 301 de la V1, 404, cache, en-têtes, mesure `/mesure.js`, adresse persistée et relais API/MCP |
+| `backend/` | API Rust (Axum), SQLite, contacts, administration, notifications SMTP et MCP ; image Docker indépendante |
 | `site/tools/` | contrôles du site construit (SEO, CSP, ancres, typographie française, budgets) |
 | `site/tests/` | `unit/` (Vitest) et `e2e/` (Playwright) |
 | `compose*.yaml`, `.env*.example` | piles Compose et modèles d'environnement |
