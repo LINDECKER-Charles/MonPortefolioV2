@@ -25,7 +25,7 @@ struct TestDelivery {
 }
 
 impl MailDelivery for TestDelivery {
-    fn deliver(&self, contact: ContactMessage) -> DeliveryFuture<'_> {
+    fn deliver(&self, contact: ContactMessage, _recipient: lettre::Address) -> DeliveryFuture<'_> {
         Box::pin(async move {
             if self.reject {
                 return Err(DeliveryError);
@@ -78,7 +78,7 @@ async fn validates_and_delivers_trimmed_form_before_confirming_success() {
     assert_eq!(response.status(), StatusCode::OK);
     assert_eq!(response.headers()["cache-control"], "no-store");
     let body = json_body(response).await;
-    assert!(body["message"].as_str().unwrap().contains("envoyé"));
+    assert!(body["message"].as_str().unwrap().contains("enregistré"));
     let sent = delivery.sent.lock().unwrap();
     assert_eq!(sent.len(), 1);
     assert_eq!(sent[0].name, "Une personne");
@@ -128,14 +128,13 @@ async fn rejects_missing_fields_header_injection_and_honeypot_without_sending() 
 }
 
 #[tokio::test]
-async fn unavailable_or_rejected_delivery_never_returns_success() {
+async fn unavailable_or_rejected_delivery_keeps_the_request_and_returns_success() {
     let app = routes::router(AppState::new(None, None));
     let response = app
         .oneshot(request(valid_form().to_string()))
         .await
         .unwrap();
-    assert_eq!(response.status(), StatusCode::SERVICE_UNAVAILABLE);
-    assert_eq!(json_body(response).await["code"], "CONTACT_UNAVAILABLE");
+    assert_eq!(response.status(), StatusCode::OK);
 
     let delivery = Arc::new(TestDelivery {
         reject: true,
@@ -146,8 +145,7 @@ async fn unavailable_or_rejected_delivery_never_returns_success() {
         .oneshot(request(valid_form().to_string()))
         .await
         .unwrap();
-    assert_eq!(response.status(), StatusCode::BAD_GATEWAY);
-    assert_eq!(json_body(response).await["code"], "DELIVERY_FAILED");
+    assert_eq!(response.status(), StatusCode::OK);
     assert!(delivery.sent.lock().unwrap().is_empty());
 }
 
@@ -293,11 +291,7 @@ async fn failed_delivery_attempts_still_consume_the_limit() {
             ..Default::default()
         }) as Arc<dyn MailDelivery>),
     ] {
-        let expected = if delivery.is_some() {
-            StatusCode::BAD_GATEWAY
-        } else {
-            StatusCode::SERVICE_UNAVAILABLE
-        };
+        let expected = StatusCode::OK;
         let app = routes::router(AppState::new(delivery, None));
         for _ in 0..2 {
             let response = app
@@ -386,31 +380,21 @@ async fn smtp_acceptance_uses_fixed_recipient_sender_and_visitor_reply_to() {
             }
             transcript
         });
-        let delivery = SmtpDelivery::new(
-            SmtpConfig {
-                host: "127.0.0.1".into(),
-                port,
-                username: None,
-                password: None,
-                from: "sender@example.org".parse().unwrap(),
-                tls: SmtpTls::None,
-            },
-            "owner@example.org".parse().unwrap(),
-        )
+        let delivery = SmtpDelivery::new(SmtpConfig {
+            host: "127.0.0.1".into(),
+            port,
+            username: None,
+            password: None,
+            from: "sender@example.org".parse().unwrap(),
+            tls: SmtpTls::None,
+        })
         .unwrap();
         let app = routes::router(AppState::new(Some(Arc::new(delivery)), None));
         let response = app
             .oneshot(request(valid_form().to_string()))
             .await
             .unwrap();
-        assert_eq!(
-            response.status(),
-            if accept {
-                StatusCode::OK
-            } else {
-                StatusCode::BAD_GATEWAY
-            }
-        );
+        assert_eq!(response.status(), StatusCode::OK);
         let transcript = relay.await.unwrap();
         assert!(transcript.contains("MAIL FROM:<sender@example.org>"));
         assert!(transcript.contains("RCPT TO:<owner@example.org>"));
