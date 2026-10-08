@@ -71,6 +71,8 @@ services:
     init: true
     logging: *default-logging
     read_only: true
+    volumes:
+      - portfolio-data:/data
     tmpfs:
       - /tmp
     security_opt:
@@ -81,6 +83,12 @@ services:
     # bridge conserve la sortie SMTP vers le relais de messagerie.
     environment:
       BACKEND_ADDR: 0.0.0.0:8080
+      DATABASE_PATH: /data/portfolio.sqlite3
+      APP_ENV: ${APP_ENV:-production}
+      BACKOFFICE_EMAIL: ${BACKOFFICE_EMAIL:-}
+      BACKOFFICE_PASSWORD: ${BACKOFFICE_PASSWORD:-}
+      BACKOFFICE_TOTP_ENCRYPTION_KEY: ${BACKOFFICE_TOTP_ENCRYPTION_KEY:-}
+      BACKOFFICE_COOKIE_SECURE: ${BACKOFFICE_COOKIE_SECURE:-true}
       CONTACT_EMAIL: ${CONTACT_EMAIL:-}
       BACKEND_PROXY_TOKEN: ${BACKEND_PROXY_TOKEN:-}
       SMTP_HOST: ${SMTP_HOST:-}
@@ -89,3 +97,7 @@ services:
       SMTP_USERNAME: ${SMTP_USERNAME:-}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       SMTP_FROM: ${SMTP_FROM:-}
+
+volumes:
+  # Nommé par projet Compose : test et production gardent leurs propres données.
+  portfolio-data:

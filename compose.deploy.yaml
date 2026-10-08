@@ -46,7 +46,7 @@ services:
       - default
       - edge
     environment:
-      CONTACT_EMAIL: ${CONTACT_EMAIL:?CONTACT_EMAIL est obligatoire}
+      CONTACT_EMAIL: ${CONTACT_EMAIL:-}
       BACKEND_PROXY_TOKEN: ${BACKEND_PROXY_TOKEN:?BACKEND_PROXY_TOKEN est obligatoire}
       # Caddy ajoute l'adresse du client ; Node ignore toute autre identité
       # fournie par le navigateur avant de la transmettre avec le jeton privé.
@@ -96,7 +96,10 @@ services:
 
   backend:
     environment:
-      CONTACT_EMAIL: ${CONTACT_EMAIL:?CONTACT_EMAIL est obligatoire}
+      # Tout environnement servi conserve la 2FA ; development est réservé au poste.
+      APP_ENV: ${APP_ENV:-production}
+      BACKOFFICE_COOKIE_SECURE: "true"
+      CONTACT_EMAIL: ${CONTACT_EMAIL:-}
       BACKEND_PROXY_TOKEN: ${BACKEND_PROXY_TOKEN:?BACKEND_PROXY_TOKEN est obligatoire}
     deploy:
       resources:
