@@ -218,62 +218,58 @@ done
 log "Demarrage de ${projet}"
 docker compose up -d --remove-orphans
 
-# --- Sante du conteneur ------------------------------------------------------
-# Le HEALTHCHECK de l'image interroge la racine du site. Attendre qu'il passe
-# au vert evite d'annoncer un deploiement reussi sur une image qui ne demarre
-# pas : "up -d" rend la main des que le conteneur est cree, pas des qu'il sert.
-log "Attente de l'etat healthy"
-cid="$(docker compose ps -q web | head -n 1)"
-if [ -z "${cid}" ]; then
-  echo "Conteneur web introuvable apres up." >&2
-  exit 1
-fi
-
-sante=""
-for _ in $(seq 1 30); do   # jusqu'a 150 s
-  # Le serveur refuse de demarrer sur une configuration incoherente (variables
-  # de mesure ou d'hote canonique) : il sort aussitot, et restart le relance en
-  # boucle. Inutile d'attendre 150 s un etat healthy qui ne viendra pas.
-  etat="$(docker inspect -f '{{.State.Status}}' "${cid}")"
-  if [ "${etat}" = "restarting" ] || [ "${etat}" = "exited" ]; then
-    echo "Le conteneur web s'arrete des son demarrage (etat : ${etat})." >&2
-    docker compose logs --tail 80 web >&2 || true
+# --- Sante des deux services -------------------------------------------------
+# Les deux images sont inseparables : un serveur web sain avec une API arretee
+# ne constitue pas un deploiement reussi. La sante Rust est une liveness ; le
+# formulaire reste explicitement indisponible tant que SMTP n'est pas configure.
+log "Attente de l'etat healthy (web et backend)"
+attendre_sante() {
+  local service="$1" cid etat sante=""
+  cid="$(docker compose ps -q "$service" | head -n 1)"
+  if [ -z "$cid" ]; then
+    echo "Conteneur $service introuvable apres up." >&2
     exit 1
   fi
-  sante="$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}absent{{end}}' "${cid}")"
-  if [ "${sante}" = "healthy" ]; then
-    break
+  for _ in $(seq 1 30); do
+    etat="$(docker inspect -f '{{.State.Status}}' "$cid")"
+    if [ "$etat" = "restarting" ] || [ "$etat" = "exited" ]; then
+      echo "Le conteneur $service s'arrete des son demarrage (etat : $etat)." >&2
+      docker compose logs --tail 80 "$service" >&2 || true
+      exit 1
+    fi
+    sante="$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}absent{{end}}' "$cid")"
+    if [ "$sante" = "healthy" ]; then break; fi
+    if [ "$sante" = "absent" ]; then
+      echo "Image $service sans HEALTHCHECK : deploiement refuse." >&2
+      exit 1
+    fi
+    sleep 5
+  done
+  if [ "$sante" != "healthy" ]; then
+    echo "Le conteneur $service n'est pas devenu healthy (etat : $sante)." >&2
+    docker compose logs --tail 80 "$service" >&2 || true
+    exit 1
   fi
-  if [ "${sante}" = "absent" ]; then
-    echo "Image sans HEALTHCHECK, controle de sante saute." >&2
-    break
-  fi
-  sleep 5
-done
+  echo "$service : $sante"
+}
+attendre_sante backend
+attendre_sante web
 
-if [ "${sante}" = "unhealthy" ] || [ "${sante}" = "starting" ]; then
-  echo "Le conteneur web n'est pas devenu healthy (etat : ${sante})." >&2
-  docker compose logs --tail 80 web >&2 || true
-  exit 1
-fi
-echo "web : ${sante}"
-
-# Trace locale de ce qui tourne ici, lisible sans acces a GitHub ni au depot.
-# La ligne des calques est aussi celle a reprendre pour une commande lancee a la
-# main : COMPOSE_FILE=<calques> docker compose ps
+# Trace locale lisible sans acces a GitHub ni au depot.
 {
   echo "reference   : ${REFERENCE}"
   echo "deploye le  : $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
   echo "projet      : ${projet}"
   echo "calques     : ${calques}"
-  echo "image       : $(docker inspect -f '{{.Config.Image}}' "${cid}")"
+  for service in web backend; do
+    cid="$(docker compose ps -q "$service" | head -n 1)"
+    echo "image $service : $(docker inspect -f '{{.Config.Image}}' "$cid")"
+  done
 } > DEPLOIEMENT.txt
 
-# Nettoyage RESTREINT a nos propres images. Un "docker image prune -f" nu
-# supprimerait les images intermediaires de tous les autres projets de l'hote :
-# ce script n'a rien a faire dans leurs affaires, et une image dangling d'un
-# voisin est peut-etre son seul moyen de revenir en arriere.
+# Nettoyage restreint a nos deux images, jamais aux projets voisins.
 docker image prune -f --filter "label=${ETIQUETTE_IMAGE}" >/dev/null
+docker image prune -f --filter "label=org.opencontainers.image.title=monportefoliov2-backend" >/dev/null
 
 # --- Verification TLS publique et reprise du certificat ----------------------
 # L'edge partage emet les certificats Let's Encrypt a partir des etiquettes de

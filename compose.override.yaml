@@ -21,3 +21,13 @@ services:
     # ouvrirait le site a tout le reseau de la machine, pare-feu contourne.
     ports:
       - "127.0.0.1:4000:4000"
+    environment:
+      CONTACT_EMAIL: ${CONTACT_EMAIL:-charles.lindecker@outlook.fr}
+      BACKEND_PROXY_TOKEN: ${BACKEND_PROXY_TOKEN:-local-development-contact-proxy-token}
+  backend:
+    build:
+      context: ./backend
+    pull_policy: build
+    environment:
+      CONTACT_EMAIL: ${CONTACT_EMAIL:-charles.lindecker@outlook.fr}
+      BACKEND_PROXY_TOKEN: ${BACKEND_PROXY_TOKEN:-local-development-contact-proxy-token}
