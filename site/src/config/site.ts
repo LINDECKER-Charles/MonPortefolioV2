@@ -19,8 +19,8 @@ export const SITE = {
 } as const;
 
 export const CONTACT = {
-  /** Adresse de la V1. Une adresse en @charles-lindecker.com reste à décider (questionnaire G4). */
-  email: 'charles.lindecker@outlook.fr',
+  /** Le serveur remplace ce marqueur depuis CONTACT_EMAIL ; Astro dev lit le .env racine. */
+  email: import.meta.env.PUBLIC_CONTACT_EMAIL || 'contact@portfolio.invalid',
   linkedin: 'https://www.linkedin.com/in/charles-lindecker/',
   github: 'https://github.com/LINDECKER-Charles',
 } as const;
@@ -51,4 +51,4 @@ export const DEMOS: { omnicard: string | null; shreksophone: string | null } = {
 };
 
 /** Mailto de l'adresse de contact, avec un objet prérempli. */
-export const MAILTO = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discutons')}`;
+export const MAILTO = `mailto:${encodeURIComponent(CONTACT.email)}?subject=${encodeURIComponent('Discutons')}`;

@@ -46,6 +46,11 @@ services:
       - default
       - edge
     environment:
+      CONTACT_EMAIL: ${CONTACT_EMAIL:?CONTACT_EMAIL est obligatoire}
+      BACKEND_PROXY_TOKEN: ${BACKEND_PROXY_TOKEN:?BACKEND_PROXY_TOKEN est obligatoire}
+      # Caddy ajoute l'adresse du client ; Node ignore toute autre identité
+      # fournie par le navigateur avant de la transmettre avec le jeton privé.
+      TRUST_PROXY: "1"
       # Hote secondaire -> hote canonique, en 301, par le serveur du site (voir
       # docs/deploiement.md). Vides par defaut, et c'est sans risque : sans eux,
       # rien n'est redirige. Une seule des deux posee, ou une valeur invalide,
@@ -88,6 +93,15 @@ services:
     # Volontairement AUCUN plafond `cpus` : trop bas, il bride en silence et
     # declenche ConteneurCpuBride — des lenteurs qu'aucun graphe de charge de
     # l'hote ne montre.
+
+  backend:
+    environment:
+      CONTACT_EMAIL: ${CONTACT_EMAIL:?CONTACT_EMAIL est obligatoire}
+      BACKEND_PROXY_TOKEN: ${BACKEND_PROXY_TOKEN:?BACKEND_PROXY_TOKEN est obligatoire}
+    deploy:
+      resources:
+        limits:
+          memory: 128m
 
 networks:
   # Tissu d'ingress partage, cree une fois par hote par le depot infra-vps. Il

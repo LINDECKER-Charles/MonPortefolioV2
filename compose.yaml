@@ -1,6 +1,6 @@
 name: portfolio
 
-# Pile du portfolio V2. Un seul service : le site statique produit par Astro,
+# Pile du portfolio V2. Site statique Astro et API Rust de contact,
 # servi par un petit serveur Node sans dependance (site/server/server.mjs) qui
 # ajoute ce qu'un serveur de fichiers generique ne fait pas : 301 des anciennes
 # routes de la V1, vraie 404, chargeur de mesure d'audience ecrit au demarrage.
@@ -39,6 +39,13 @@ services:
     # surtout ce ne serait plus l'artefact qui a passe les tests.
     image: ${WEB_IMAGE:-ghcr.io/lindecker-charles/monportefoliov2}:${IMAGE_TAG:-dev}
     restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      CONTACT_EMAIL: ${CONTACT_EMAIL:-}
+      BACKEND_URL: http://backend:8080
+      BACKEND_PROXY_TOKEN: ${BACKEND_PROXY_TOKEN:-}
     # Docker injecte tini comme PID 1. Le serveur gere lui-meme SIGTERM et sort
     # sans attendre le sursis (verifie par site/server/server.test.mjs). tini
     # reste comme filet : Node en
@@ -57,3 +64,28 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
+
+  backend:
+    image: ${BACKEND_IMAGE:-ghcr.io/lindecker-charles/monportefoliov2-backend}:${IMAGE_TAG:-dev}
+    restart: unless-stopped
+    init: true
+    logging: *default-logging
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    # Aucun port ni réseau edge : seule la pile rejoint ce service. Le réseau
+    # bridge conserve la sortie SMTP vers le relais de messagerie.
+    environment:
+      BACKEND_ADDR: 0.0.0.0:8080
+      CONTACT_EMAIL: ${CONTACT_EMAIL:-}
+      BACKEND_PROXY_TOKEN: ${BACKEND_PROXY_TOKEN:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_TLS: ${SMTP_TLS:-starttls}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM: ${SMTP_FROM:-}

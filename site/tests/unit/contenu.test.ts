@@ -30,7 +30,7 @@ describe('glossaire', () => {
 
 describe('coordonnées', () => {
   it('le lien d’écriture vise l’adresse de contact, avec un objet', () => {
-    expect(MAILTO).toBe(`mailto:${CONTACT.email}?subject=Discutons`);
+    expect(MAILTO).toBe(`mailto:${encodeURIComponent(CONTACT.email)}?subject=Discutons`);
   });
 
   it('aucun lien vers ce qui n’existe pas encore', () => {

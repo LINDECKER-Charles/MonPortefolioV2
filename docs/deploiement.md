@@ -1,7 +1,7 @@
 # Déploiement
 
-Le portfolio est une image Docker unique — le site statique produit par Astro et le petit serveur
-Node qui le sert —, derrière l'**edge partagé** du VPS (dépôt `infra-vps`), le point d'entrée TLS
+Le portfolio utilise deux images Docker — le site Astro servi par Node et son API Rust —,
+derrière l'**edge partagé** du VPS (dépôt `infra-vps`), le point d'entrée TLS
 de tous les projets de l'hôte, V1 comprise. Ce document décrit l'architecture, la chaîne de mise en
 ligne, la bascule depuis la V1, les gestes courants et les pièges connus. Les valeurs à configurer
 sont dans [`secrets.md`](secrets.md) ; la mesure d'audience a son propre document,
@@ -60,6 +60,19 @@ secondaire vers l'hôte canonique, vraie 404 statique, trois régimes de cache, 
 (CSP stricte, sans aucune origine tierce) et le chargeur de mesure `/mesure.js`, écrit au démarrage
 depuis l'environnement du conteneur.
 
+Chaque pile possède aussi un service `backend:8080`, sur son réseau Compose seulement :
+aucun port publié, aucune étiquette Caddy et aucune connexion au réseau `edge`. Le serveur
+Node relaie uniquement `POST /api/contact` et `GET /api/health` en même origine, avec un
+corps limité à 24 Kio et un délai de 20 secondes. Le réseau bridge permet au backend de
+joindre le relais SMTP. `CONTACT_EMAIL` est lu par les deux services ; Node remplace le
+marqueur du build dans les pages HTML, sans script et sans reconstruire l’image.
+
+En ligne, Node utilise l’adresse ajoutée par Caddy dans `X-Forwarded-For` et transmet
+`X-Contact-Client-IP` avec le secret `BACKEND_PROXY_TOKEN`. Rust ignore une IP transmise
+sans ce jeton. Le backend compte cinq tentatives par IP sur dix minutes ; son état reste en
+mémoire et se réinitialise au redémarrage. Le contrôle de santé confirme que le processus
+répond, y compris lorsque SMTP n’est pas encore renseigné.
+
 ## 2. Chaîne de mise en ligne
 
 **Déclenchements automatiques suspendus pendant la transition avec la V1 (2026-10-08).**
@@ -73,16 +86,19 @@ push dev  ->  _tests  ->  fusion dev->test  ->  _build (:sha + :staging)  ->  _d
 push main ->  _promote (:staging -> :prod, :latest)                       ->  _deploy PROD
 ```
 
-`_tests` joue trois jobs en parallèle : l'application (`front` : `astro check`, tests dont ceux
+`_tests` joue quatre jobs en parallèle : l’API (`backend` : rustfmt, Clippy, tests dont SMTP
+local), l'application (`front` : `astro check`, tests dont ceux
 du serveur, build), le navigateur (`e2e` : Playwright sur le build servi par le serveur de
 production) et la mise en ligne (`infra` : shellcheck, actionlint, combinaisons Compose,
-construction de l'image sans publication). Une PR vers `dev` ne joue que `_tests`.
+construction des deux images sans publication). Une PR vers `dev` ne joue que `_tests`.
 
 `test` ne déclenche jamais la chaîne : c'est la CI elle-même qui y pousse. `main` n'est atteinte
 que par une fusion `test -> main` faite à la main : cette porte humaine est ce qui promeut en
 production.
 
-**La production ne reconstruit jamais.** Elle ré-étiquette l'image déjà déployée en test. Un
+**La production ne reconstruit jamais.** Elle ré-étiquette les deux images déployées en test.
+Chaque image porte le même SHA immuable et la même étiquette OCI de révision ; la promotion
+refuse une paire de révisions différentes, puis utilise les digests contrôlés. Un
 rebuild du même code produirait un binaire différent (dépendances résolues plus tard,
 horodatages, cache) : ce ne serait plus l'artefact validé. C'est aussi pourquoi tout ce qui
 distingue le test de la production — domaines, mesure d'audience, hôte canonique — arrive par
@@ -102,10 +118,10 @@ exécute ce dernier depuis le fichier. Le script :
    le `.env` est signalé ;
 3. vérifie que le réseau `edge` existe, puis **refuse de continuer si un conteneur d'un autre
    projet déclare déjà l'un de ses domaines** (étiquettes `caddy` et `caddy_N`) ;
-4. tire l'image, démarre la pile, attend l'état *healthy* — et échoue tout de suite si le
+4. tire les deux images, démarre la pile, attend leurs états *healthy* — et échoue si un
    conteneur s'arrête dès son démarrage (configuration refusée par le serveur), en affichant ses
    journaux ;
-5. écrit `DEPLOIEMENT.txt` (référence, date, projet, calques, image) et ne nettoie que les images
+5. écrit `DEPLOIEMENT.txt` (référence, date, projet, calques, deux images) et ne nettoie que les images
    de ce projet ;
 6. vérifie le certificat et la réponse de chaque domaine public.
 
@@ -222,7 +238,7 @@ ssh root@<vps>
 cd /opt/portfolio-prod                    # ou /opt/portfolio-test
 cat DEPLOIEMENT.txt                       # référence, image et calques déployés
 docker compose ps
-docker compose logs -f --tail 100 web
+docker compose logs -f --tail 100 web backend
 ```
 
 Ces commandes chargent les calques du `COMPOSE_FILE` du `.env`, d'où l'alerte du déploiement quand
@@ -272,6 +288,7 @@ gh api /users/lindecker-charles/packages/container/monportefoliov2/versions \
   gh auth token | docker login ghcr.io -u LINDECKER-Charles --password-stdin
   IMG=ghcr.io/lindecker-charles/monportefoliov2
   docker buildx imagetools create --tag "$IMG:staging" "$IMG:<sha>"
+  docker buildx imagetools create --tag "$IMG-backend:staging" "$IMG-backend:<sha>"
   gh workflow run ci.yml --ref main
   ```
 
@@ -291,6 +308,9 @@ gh workflow run ci.yml --ref dev     # test (rejoue tests et build)
 ### Développer en local
 
 ```bash
+cp .env.example .env              # depuis la racine
+cargo run --manifest-path backend/Cargo.toml    # dans un premier terminal
+# Dans un second terminal :
 cd site
 npm ci
 npm run dev                       # Astro, rechargement à chaud : http://localhost:4321
@@ -302,6 +322,9 @@ npx playwright test               # navigateur
 `npm run dev` est le plus rapide pour travailler les pages, mais il ne passe pas par
 `server/server.mjs` : ni CSP, ni redirections, ni vraie 404, et `/mesure.js` y est le fichier sans
 effet de `public/`. Le serveur de production sert exactement ce qui part en ligne.
+Le proxy Vite joint Rust sur `BACKEND_URL` (`http://127.0.0.1:8080` par défaut).
+Renseigner les variables SMTP du `.env` pour envoyer ; sans relais, le formulaire reste
+accessible et explique l’indisponibilité. Les tests utilisent exclusivement des relais locaux.
 
 Pour vérifier l'image elle-même :
 
@@ -309,12 +332,12 @@ Pour vérifier l'image elle-même :
 docker compose up --build         # http://127.0.0.1:4000
 ```
 
-`compose.override.yaml` est chargé automatiquement : il construit l'image depuis `site/` et publie
-le port sur la boucle locale uniquement. Pour inspecter la pile servie, sans les conforts de
+`compose.override.yaml` est chargé automatiquement : il construit les images depuis `site/`
+et `backend/` et publie le port web sur la boucle locale uniquement. Pour inspecter la pile servie, sans les conforts de
 développement :
 
 ```bash
-CADDY_DOMAINS=exemple.test COMPOSE_FILE=compose.yaml:compose.deploy.yaml docker compose config
+CADDY_DOMAINS=exemple.test BACKEND_PROXY_TOKEN=exemple-token-local-de-trente-deux-caracteres CONTACT_EMAIL=contact@example.test COMPOSE_FILE=compose.yaml:compose.deploy.yaml docker compose config
 ```
 
 ---

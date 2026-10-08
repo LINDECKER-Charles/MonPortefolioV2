@@ -7,7 +7,16 @@ Node sans dépendance, en conteneur derrière l'edge TLS mutualisé du VPS.
 
 ## Démarrer
 
-Node 24 ou plus récent.
+Node 24 ou plus récent ; Rust 1.88 ou plus récent pour l’API.
+
+Depuis la racine, copier le modèle d’environnement puis lancer le backend dans un terminal :
+
+```bash
+cp .env.example .env
+cargo run --manifest-path backend/Cargo.toml    # http://127.0.0.1:8080
+```
+
+Dans un second terminal, lancer le site :
 
 ```bash
 cd site
@@ -26,8 +35,18 @@ npm run preview      # build + serveur de production, http://127.0.0.1:4000
 Première exécution des tests navigateur : `npx playwright install chromium`.
 
 ```bash
-docker compose up --build    # l'image de production, http://127.0.0.1:4000
+docker compose up --build    # les deux services, http://127.0.0.1:4000
 ```
+
+`CONTACT_EMAIL` dans le `.env` racine pilote l’adresse affichée et le destinataire du
+formulaire. Le serveur remplace l’adresse dans le HTML avant de le servir : les liens e-mail,
+la copie et les mentions légales fonctionnent aussi sans JavaScript. Redémarrer après un
+changement d’adresse suffit ; l’image Astro n’a pas besoin d’être reconstruite.
+
+Pour activer l’envoi, renseigner `SMTP_HOST`, `SMTP_FROM` et les réglages du relais dans
+`.env`. Sans SMTP, le backend démarre et le formulaire affiche une indisponibilité avec le
+lien e-mail. Le formulaire ne confirme un succès qu’après acceptation par le relais SMTP.
+Contrat de l’API et commandes Rust : [`backend/README.md`](backend/README.md).
 
 ## Carte du dépôt
 
@@ -37,7 +56,8 @@ docker compose up --build    # l'image de production, http://127.0.0.1:4000
 | `design/` | maquettes et assets sources (logo, pictogrammes, illustrations, photos) |
 | `site/` | le site Astro ; son `Dockerfile` produit l'image publiée |
 | `site/src/` | pages, composants, scripts, styles, configuration du contenu |
-| `site/server/` | serveur de production : 301 de la V1, 404, cache, en-têtes de sécurité, chargeur de mesure `/mesure.js` |
+| `site/server/` | serveur de production : 301 de la V1, 404, cache, en-têtes, mesure `/mesure.js`, configuration de l’adresse et relais API |
+| `backend/` | API Rust (Axum), formulaire de contact et livraison SMTP ; image Docker indépendante |
 | `site/tools/` | contrôles du site construit (SEO, CSP, ancres, typographie française, budgets) |
 | `site/tests/` | `unit/` (Vitest) et `e2e/` (Playwright) |
 | `compose*.yaml`, `.env*.example` | piles Compose et modèles d'environnement |
@@ -74,7 +94,8 @@ push dev  ->  tests  ->  fusion dev->test  ->  build (:sha + :staging)  ->  dép
 push main ->  promotion (:staging -> :prod)                             ->  déploiement PROD
 ```
 
-La production ne reconstruit jamais : elle ré-étiquette l'image validée en test. L'edge TLS
+La production ne reconstruit jamais : elle ré-étiquette les deux images validées en test,
+après vérification de leur révision commune. L'edge TLS
 (Caddy) et l'instance Umami appartiennent au dépôt `infra-vps` : ce dépôt ne fait que déclarer
 ses domaines et son site Umami en étiquettes. Détails :
 [`docs/deploiement.md`](docs/deploiement.md), [`docs/secrets.md`](docs/secrets.md),
