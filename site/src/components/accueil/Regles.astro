@@ -6,7 +6,7 @@
  */
 ---
 
-<ol class="regles">
+<ol class="regles" data-revelation-progressive>
   <li class="regle" id="regle-1">
     <span class="regle__pastille" aria-hidden="true">1</span>
     <p class="regle__ordre">Règle 1 <span class="note">d’abord</span></p>
@@ -133,6 +133,16 @@
     height: 7px;
     background: var(--bleu);
   }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .regles:global(.revelation-prepare):not(:global(.est-revele)) .regle { opacity: 0; }
+    .regles:global(.est-revele) .regle { animation: regle-apparaitre .55s ease both; }
+    .regles:global(.est-revele) .regle:nth-child(2) { animation-delay: .25s; }
+    .regles:global(.est-revele) .regle:nth-child(3) { animation-delay: .5s; }
+    @keyframes regle-apparaitre { from { opacity: 0; } to { opacity: 1; } }
+  }
+
+  @media print { .regles .regle { opacity: 1 !important; animation: none !important; } }
 
   @media (min-width: 880px) {
     .regles {

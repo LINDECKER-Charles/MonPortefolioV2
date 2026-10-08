@@ -15,60 +15,143 @@ async function verifierStabilite(zone: Locator, avant: Awaited<ReturnType<typeof
   expect(Math.abs(apres.hauteur - avant.hauteur)).toBeLessThanOrEqual(1);
 }
 
-/** Un vrai bouton rejoue le dessin ; aucune explication ne se déplie. */
-async function rejouerDeuxFois(page: Page, zone: Locator, dessin: Locator, animation: string) {
-  const bouton = zone.getByRole('button', { name: /^Rejouer l’animation\s*:/ });
-  await expect(bouton).toHaveAttribute('data-rejouer', '');
-  await expect(bouton).toHaveAttribute('type', 'button');
-  await expect(zone.locator('details, summary')).toHaveCount(0);
+function zoneAnimee(bouton: Locator) {
+  return bouton.locator('xpath=ancestor-or-self::*[@data-figure-animation][1]');
+}
+
+async function mouvements(zone: Locator) {
+  return zone.evaluate((element) => element.getAnimations({ subtree: true })
+    .filter((animation) => animation.playState === 'running')
+    .map((animation) => Number(animation.currentTime)));
+}
+
+/** Le dessin reçoit lui-même le clic, y compris quand la cible est un SVG. */
+async function cliquerDessin(bouton: Locator) {
   await bouton.scrollIntoViewIfNeeded();
-  const avant = await lireEtat(zone);
+  await bouton.locator('svg:visible').click();
+}
+
+async function verifierPremiereApparition(bouton: Locator, contenu: Locator) {
+  const zone = zoneAnimee(bouton);
+  const avant = await lireEtat(contenu);
+  await expect.poll(async () => (await mouvements(zone)).length).toBe(0);
+  await bouton.scrollIntoViewIfNeeded();
+  await expect(zone).toHaveClass(/animation-en-cours/);
+  await expect.poll(async () => (await mouvements(zone)).length > 0).toBe(true);
+  await verifierStabilite(contenu, avant);
+  await expect(zone).not.toHaveClass(/animation-en-cours/, { timeout: 4_000 });
+  await verifierStabilite(contenu, avant);
+}
+
+/** Laisse l’observateur recevoir le défilement, sans masquer un rejeu bref. */
+async function resteImmobile(zone: Locator, duree = 500) {
+  return zone.evaluate((element, attente) => new Promise<boolean>((resolve) => {
+    const fin = performance.now() + attente;
+    const observer = () => {
+      if (element.getAnimations({ subtree: true }).some((animation) => animation.playState === 'running')) {
+        resolve(false);
+      } else if (performance.now() >= fin) resolve(true);
+      else requestAnimationFrame(observer);
+    };
+    requestAnimationFrame(observer);
+  }), duree);
+}
+
+async function rejouerAuClavier(page: Page, bouton: Locator, contenu: Locator) {
+  const zone = zoneAnimee(bouton);
+  const avant = await lireEtat(contenu);
+  await expect(bouton).toHaveAttribute('type', 'button');
+  await expect(bouton).toHaveAccessibleName(/^Rejouer l’animation\s*:/);
+  await expect(contenu.locator('details, summary')).toHaveCount(0);
+  await bouton.scrollIntoViewIfNeeded();
 
   for (const touche of ['Enter', 'Space']) {
     await bouton.focus();
     await page.keyboard.press(touche);
     await expect(zone).toHaveClass(/animation-en-cours/);
-    await expect(dessin).toHaveCSS('animation-name', animation);
-    await verifierStabilite(zone, avant);
-    await expect(zone).not.toHaveClass(/animation-en-cours/, { timeout: 3_000 });
+    await expect.poll(async () => (await mouvements(zone)).length > 0).toBe(true);
+    await verifierStabilite(contenu, avant);
+    await expect(zone).not.toHaveClass(/animation-en-cours/, { timeout: 4_000 });
     await expect(bouton).toBeFocused();
-    await verifierStabilite(zone, avant);
+    await verifierStabilite(contenu, avant);
   }
 }
 
-test('le PC rejoue son animation au clavier sans modifier le contenu', async ({ page }) => {
+for (const scene of ['pc', 'cartes', 'portes', 'diplome', 'pupitre', 'lanternes']) {
+  test(`l’illustration ${scene} joue à son arrivée puis se rejoue avec Entrée et Espace`, async ({ page }) => {
+    await page.goto('/');
+    const illustration = page.locator(`.illustration[data-scene="${scene}"]`);
+    await verifierPremiereApparition(illustration.locator('[data-rejouer]'), illustration);
+    await rejouerAuClavier(page, illustration.locator('[data-rejouer]'), illustration);
+  });
+}
+
+test('le retour vers une illustration ne la rejoue pas et le clic reste disponible', async ({ page }) => {
   await page.goto('/');
-  const zone = page.locator('.planche [data-figure-animation]').first();
-  const dessin = zone.locator('.planche__dessin');
-  await rejouerDeuxFois(page, zone, dessin, 'planche-deployer');
-  await expect(dessin).toHaveClass(/est-proche/);
+  const illustration = page.locator('.illustration[data-scene="pc"]');
+  const bouton = illustration.locator('[data-rejouer]');
+  const zone = zoneAnimee(bouton);
+  await verifierPremiereApparition(bouton, illustration);
+
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+  await expect(bouton).not.toBeInViewport();
+  expect(await resteImmobile(zone, 250)).toBe(true);
+  await bouton.scrollIntoViewIfNeeded();
+  await expect(bouton).toBeInViewport();
+  expect(await resteImmobile(zone)).toBe(true);
+
+  await cliquerDessin(bouton);
+  await expect(zone).toHaveClass(/animation-en-cours/);
+  await expect.poll(async () => (await mouvements(zone)).length > 0).toBe(true);
+  await expect(zone).not.toHaveClass(/animation-en-cours/, { timeout: 4_000 });
 });
 
-test('les trois gestes de PvZ se rejouent sans ajouter de texte', async ({ page }) => {
+test('cliquer le PC pendant son animation la redémarre et revient au dessin complet', async ({ page }) => {
   await page.goto('/');
-  const figure = page.locator('#fig-2');
-  await expect(figure).toContainText('Une vingtaine');
-  await expect(figure).toContainText('Jusqu’à dix');
-  await expect(figure.locator('details, summary')).toHaveCount(0);
-  const zones = figure.locator('[data-figure-animation]');
-  await expect(zones).toHaveCount(3);
-  await expect(figure.getByRole('button', { name: /^Rejouer l’animation\s*:/ })).toHaveCount(3);
-  for (let i = 0; i < 3; i++) {
-    const zone = zones.nth(i);
-    await rejouerDeuxFois(page, zone, zone.locator('.collectif__mouvement').first(), 'collectif-tracer');
-  }
+  const illustration = page.locator('.illustration[data-scene="pc"]');
+  const bouton = illustration.locator('[data-rejouer]');
+  const zone = zoneAnimee(bouton);
+  const avant = await lireEtat(illustration);
+
+  await cliquerDessin(bouton);
+  await expect(zone).toHaveClass(/animation-en-cours/);
+  await expect.poll(async () => (await mouvements(zone)).some((temps) => temps > 350)).toBe(true);
+  await cliquerDessin(bouton);
+  await expect.poll(async () => (await mouvements(zone)).some((temps) => temps < 250)).toBe(true);
+  await expect(zone).not.toHaveClass(/animation-en-cours/, { timeout: 4_000 });
+  await verifierStabilite(illustration, avant);
+
+  await cliquerDessin(bouton);
+  await expect(zone).toHaveClass(/animation-en-cours/);
+  await expect(zone).not.toHaveClass(/animation-en-cours/, { timeout: 4_000 });
+  await verifierStabilite(illustration, avant);
 });
 
-test('les trois cartes de Gwent se rejouent au clavier', async ({ page }) => {
+for (const [id, nom] of [['fig-gwent', 'Gwent'], ['fig-2', 'PvZ']] as const) {
+  test(`les trois dessins de ${nom} se rejouent au clic et au clavier`, async ({ page }) => {
+    await page.goto('/');
+    const figure = page.locator(`#${id}`);
+    const boutons = figure.locator('[data-rejouer]');
+    await expect(boutons).toHaveCount(3);
+    await verifierPremiereApparition(boutons.first(), figure);
+    for (const bouton of await boutons.all()) {
+      const zone = zoneAnimee(bouton);
+      await cliquerDessin(bouton);
+      await expect(zone).toHaveClass(/animation-en-cours/);
+      await expect.poll(async () => (await mouvements(zone)).length > 0).toBe(true);
+      await expect(zone).not.toHaveClass(/animation-en-cours/, { timeout: 4_000 });
+      await rejouerAuClavier(page, bouton, zone);
+    }
+  });
+}
+
+test('les commandes de rejeu enveloppent les dessins sans bouton ajouté à côté', async ({ page }) => {
   await page.goto('/');
-  const figure = page.locator('#fig-gwent');
-  await expect(figure.locator('details, summary')).toHaveCount(0);
-  const zones = figure.locator('[data-figure-animation]');
-  await expect(zones).toHaveCount(3);
-  await expect(figure.getByRole('button', { name: /^Rejouer l’animation\s*:/ })).toHaveCount(3);
-  for (let i = 0; i < 3; i++) {
-    const zone = zones.nth(i);
-    await rejouerDeuxFois(page, zone, zone.locator('.gwent__carte'), 'gwent-sortir');
+  const boutons = page.locator('[data-rejouer]');
+  expect(await boutons.count()).toBeGreaterThan(0);
+  for (const bouton of await boutons.all()) {
+    await expect(bouton.locator('svg:visible')).toHaveCount(1);
+    await expect(bouton.locator('span').filter({ hasText: '↻' })).toHaveCount(0);
   }
 });
 
@@ -76,7 +159,7 @@ test('le graphique retrace le plafond puis interrompt le mouvement sur demande',
   await page.goto('/');
   const figure = page.locator('#fig-1');
   const plan = figure.locator('[data-plafond]');
-  const bouton = figure.getByRole('button', { name: /^Rejouer l’animation\s*:/ });
+  const bouton = figure.locator('[data-rejouer]');
   const courbe = plan.locator('svg:visible .courbe');
   const decalage = () => courbe.evaluate((c) => Number.parseFloat(getComputedStyle(c).strokeDashoffset));
   await expect(figure.locator('details, summary')).toHaveCount(0);
@@ -91,7 +174,7 @@ test('le graphique retrace le plafond puis interrompt le mouvement sur demande',
   await expect.poll(decalage, { timeout: 4_000 }).toBeLessThan(1);
   await verifierStabilite(figure, avant);
 
-  await page.keyboard.press('Space');
+  await cliquerDessin(bouton);
   await expect.poll(decalage).toBeGreaterThan(1);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(courbe).toHaveCSS('stroke-dashoffset', '0px');
@@ -100,32 +183,106 @@ test('le graphique retrace le plafond puis interrompt le mouvement sur demande',
   await verifierStabilite(figure, avant);
 });
 
+test('la communication joue dans l’écran et s’arrête hors écran ou dans un onglet masqué', async ({ page }) => {
+  await page.goto('/');
+  const bouton = page.locator('.illustration[data-scene="architecte"] [data-rejouer]');
+  const zone = zoneAnimee(bouton);
+  await expect(bouton).toHaveAttribute('data-animation-continue', /.*/);
+  await expect.poll(async () => (await mouvements(zone)).length).toBe(0);
+  await bouton.scrollIntoViewIfNeeded();
+  await expect.poll(async () => (await mouvements(zone)).length > 0).toBe(true);
+
+  await cliquerDessin(bouton);
+  await expect.poll(async () => (await mouvements(zone)).some((temps) => temps < 250)).toBe(true);
+
+  // Chromium sans fenêtre garde ses pages « visibles » : on simule le signal
+  // du navigateur pour vérifier le traitement de visibilitychange.
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'hidden', { configurable: true, value: true });
+    Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'hidden' });
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await expect.poll(async () => (await mouvements(zone)).length).toBe(0);
+  await page.evaluate(() => {
+    Reflect.deleteProperty(document, 'hidden');
+    Reflect.deleteProperty(document, 'visibilityState');
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await expect.poll(async () => (await mouvements(zone)).length > 0).toBe(true);
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect.poll(async () => (await mouvements(zone)).length).toBe(0);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await expect.poll(async () => (await mouvements(zone)).length > 0).toBe(true);
+
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+  await expect.poll(async () => (await mouvements(zone)).length).toBe(0);
+});
+
+test('les trois règles apparaissent dans l’ordre à leur arrivée dans l’écran', async ({ page }) => {
+  await page.goto('/');
+  const regles = page.locator('[data-revelation-progressive]');
+  await expect(regles.locator(':scope > li')).toHaveCount(3);
+  const apparitions = await regles.evaluate((element) => new Promise<number[]>((resolve) => {
+    const cartes = [...element.children];
+    const instants = cartes.map(() => -1);
+    const debut = performance.now();
+    element.scrollIntoView({ behavior: 'instant', block: 'start' });
+    const observer = () => {
+      const maintenant = performance.now();
+      for (const [i, carte] of cartes.entries()) {
+        if (instants[i] === -1 && Number.parseFloat(getComputedStyle(carte).opacity) > 0.95) {
+          instants[i] = maintenant - debut;
+        }
+      }
+      if (instants.every((instant) => instant >= 0) || performance.now() - debut > 4_000) resolve(instants);
+      else requestAnimationFrame(observer);
+    };
+    requestAnimationFrame(observer);
+  }));
+  expect(apparitions[0]).toBeGreaterThanOrEqual(0);
+  expect(apparitions[1]).toBeGreaterThan(apparitions[0]);
+  expect(apparitions[2]).toBeGreaterThan(apparitions[1]);
+  for (const regle of await regles.locator(':scope > li').all()) await expect(regle).toHaveCSS('opacity', '1');
+});
+
 test.describe('les gestes sans mouvement', () => {
   test.use({ reducedMotion: 'reduce' });
 
-  test('les planches et les trois cartes et gestes restent stables', async ({ page }) => {
+  test('tous les dessins restent complets au scroll, au clic et au clavier', async ({ page }) => {
     await page.goto('/');
-    const zones = [
-      page.locator('.planche [data-figure-animation]').first(),
-      ...await page.locator('#fig-gwent [data-figure-animation]').all(),
-      ...await page.locator('#fig-2 [data-figure-animation]').all(),
-    ];
-    expect(zones).toHaveLength(7);
-    for (const zone of zones) {
-      const bouton = zone.getByRole('button', { name: /^Rejouer l’animation\s*:/ });
-      await bouton.scrollIntoViewIfNeeded();
+    for (const bouton of await page.locator('[data-rejouer]').all()) {
+      const zone = zoneAnimee(bouton);
       const avant = await lireEtat(zone);
+      await bouton.scrollIntoViewIfNeeded();
+      expect(await resteImmobile(zone, 250)).toBe(true);
+      await expect(zone).not.toHaveClass(/animation-en-cours/);
+      await cliquerDessin(bouton);
       await bouton.focus();
       await page.keyboard.press('Enter');
       await expect(zone).not.toHaveClass(/animation-en-cours/);
-      // Les transitions globales réduites à 0,01 ms disparaissent au rendu suivant.
-      await expect.poll(() => zone.evaluate((element) => element.getAnimations({ subtree: true }).filter((animation) => animation.playState === 'running').length)).toBe(0);
-      const dessins = zone.locator('.planche__dessin, .gwent__carte, .gwent__anime, .collectif__mouvement, .collectif__personne');
-      for (const dessin of await dessins.all()) {
-        await expect(dessin).toHaveCSS('animation-name', 'none');
-        await expect(dessin).toHaveCSS('transform', 'none');
-      }
+      await expect.poll(async () => (await mouvements(zone)).length).toBe(0);
       await verifierStabilite(zone, avant);
     }
+    for (const regle of await page.locator('[data-revelation-progressive] > li').all()) {
+      await expect(regle).toHaveCSS('opacity', '1');
+    }
   });
+});
+
+test('l’impression conserve tous les dessins et toutes les règles sans mouvement', async ({ page }) => {
+  await page.goto('/');
+  await page.emulateMedia({ media: 'print' });
+  for (const bouton of await page.locator('[data-rejouer]').all()) {
+    await expect(bouton).toBeVisible();
+    await expect(bouton.locator('svg:visible')).toHaveCount(1);
+    await expect.poll(async () => (await mouvements(zoneAnimee(bouton))).length).toBe(0);
+  }
+  for (const regle of await page.locator('[data-revelation-progressive] > li').all()) {
+    await expect(regle).toHaveCSS('opacity', '1');
+  }
+  await expect(page.locator('[data-plafond] svg:visible .courbe')).toHaveCSS('stroke-dashoffset', '0px');
+  for (const annotation of await page.locator('[data-plafond] svg:visible .annot').all()) {
+    await expect(annotation).toHaveCSS('opacity', '1');
+  }
 });

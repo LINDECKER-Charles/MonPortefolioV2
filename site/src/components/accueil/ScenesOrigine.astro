@@ -1,0 +1,303 @@
+---
+/** Dessins de notice : les pièces du récit deviennent celles de l’animation. */
+interface Props {
+  scene: 'pc' | 'cartes' | 'portes' | 'diplome' | 'pupitre';
+}
+
+const { scene } = Astro.props;
+---
+
+<svg class:list={['scene-origine', `scene-origine--${scene}`]} viewBox="0 0 320 240" fill="none"
+  stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"
+  aria-hidden="true" focusable="false">
+  {scene === 'pc' && <>
+    <g class="origine-doux">
+      <path d="M14 211h289M31 216h26M265 216h25" />
+      <path class="pc-guides" d="M79 84l91-24M81 181l89-18M148 88l23-10M148 158l23-10M235 154l28 28M225 178l38 20M131 49l45-12" stroke-dasharray="3 5" />
+    </g>
+    <g class="origine-papier">
+      <path d="M172 53l39-23 54 31-39 23-54-31v123l54 31 39-23V61M226 84v123" />
+      <path class="origine-lavage" d="M178 64l41 24v102l-41-24V64Z" />
+      <path d="M178 64l41 24v102l-41-24V64ZM178 72l41 24M178 155l41 24M184 163l26 15" />
+      <path class="origine-doux" d="M183 83l26 15M183 89l26 15M214 105v47M211 103v47" />
+      <path d="M233 91l24-14v11l-24 14V91ZM233 111l24-14v7l-24 14v-7M237 94l16-9M237 113l16-9" />
+      <ellipse cx="244" cy="144" rx="10" ry="14" transform="rotate(29 244 144)" />
+      <ellipse cx="244" cy="144" rx="3" ry="4" transform="rotate(29 244 144)" />
+      <path d="M244 140l1-8c5-1 7 3 5 7l-4 3M247 145l7-4c2 4-1 9-5 9l-4-3M242 147l-1 9c-5 1-7-3-5-7l4-3M241 142l-7 3c-2-5 2-9 5-8l3 3" />
+      <path d="M233 169l24-14M233 174l24-14M233 179l24-14M233 184l24-14M233 189l24-14" />
+      <path d="M181 183v6l10 6v-6M251 192v6l9-5v-6" />
+    </g>
+    <g class="pc-carte-mere origine-papier">
+      <path d="M104 81l44 25v90l-44-25V81Z" />
+      <path class="origine-lavage" d="M111 113l19 11v24l-19-11v-24Z" />
+      <path d="M111 113l19 11v24l-19-11v-24ZM115 119l11 6v16l-11-6v-16" />
+      <path d="M115 115v-6M122 119v-6M115 140v6M122 144v6M111 120l-5-3M111 129l-5-3M130 127l5 3M130 137l5 3" />
+      <path d="M135 111l4 2v42l-4-2v-42M142 115l3 2v42l-3-2v-42M109 151l22 13v5l-22-13v-5M109 162l22 13v5l-22-13v-5" />
+      <path class="origine-doux" d="M109 95l10 6v8M128 107l4 2v7M136 165v13l7 4M109 140v5l7 4M119 169v9M128 179v9" />
+      <circle cx="109" cy="88" r="1.5" /><circle cx="143" cy="108" r="1.5" />
+      <circle cx="109" cy="166" r="1.5" /><circle cx="143" cy="188" r="1.5" />
+    </g>
+    <g class="pc-panneau origine-papier">
+      <path d="M24 79l53 31v101l-53-31V79ZM30 90l41 24v85l-41-24V90Z" />
+      <path class="origine-lavage" d="M30 90l41 24v85l-41-24V90Z" />
+      <path d="M64 127v17M38 154l24 14M38 160l24 14M38 166l24 14" />
+      <path class="origine-doux" d="M28 84l2 1M71 109l2 1M28 176l2 1M71 201l2 1" />
+    </g>
+    <g class="pc-disque origine-papier">
+      <path d="M242 189l22-13 42 25-22 13-42-25v7l42 25 22-13v-7M284 214v7" />
+      <path class="origine-lavage" d="M247 189l17-10 37 22-17 10-37-22Z" />
+      <ellipse cx="270" cy="195" rx="13" ry="5.8" transform="rotate(29 270 195)" />
+      <ellipse cx="270" cy="195" rx="3.8" ry="1.8" transform="rotate(29 270 195)" />
+      <path d="M274 195l16 9M289 200l3 5-6-1M290 216l11-6" />
+      <path class="origine-doux" d="M250 189h1M264 182h1M295 201h1M284 207h1" />
+    </g>
+    <g class="pc-vis origine-papier">
+      {[{ x: 112, y: 49 }, { x: 139, y: 61 }].map(({ x, y }) => (
+        <g transform={`translate(${x} ${y}) rotate(-32)`}>
+          <path d="M0-2h16l3 2-3 2H0zM5-2l2 4m2-4 2 4m2-4 2 4" />
+          <ellipse cx="0" cy="0" rx="3.5" ry="5.3" />
+          <path d="M0-3v6" />
+        </g>
+      ))}
+    </g>
+    <g class="origine-doux">
+      <path d="M25 35h18M34 26v18M285 119h14M292 112v14" />
+      <path d="M16 48v-9h9M286 28h9v9" />
+    </g>
+  </>}
+
+  {scene === 'cartes' && <>
+    <g class="origine-doux"><path d="M15 224h288M30 230h32M268 230h24" /></g>
+    <g transform="rotate(-17 76 117)" class="origine-papier">
+      <rect x="28" y="51" width="76" height="115" rx="5" />
+      <rect x="34" y="57" width="64" height="103" rx="2" />
+      <path class="origine-lavage" d="M40 65h52v70H40Z" />
+      <path d="M45 117l17-29 9 13 6-8 10 24H45ZM51 116l8-12M60 101l3-5 6 8M43 142h47M50 149h32" />
+      <circle cx="80" cy="77" r="5" />
+    </g>
+    <g transform="rotate(9 92 125)" class="origine-papier">
+      <rect x="62" y="64" width="75" height="114" rx="5" />
+      <rect x="68" y="70" width="63" height="102" rx="2" />
+      <path d="M77 133l20-10 20 10-20 12-20-12ZM83 129v-22l14-9 14 9v22M88 124v-14l9-6 9 6v14M73 155h46M81 162h30" />
+      <path class="origine-doux" d="M78 84h13M78 89h8M105 84h15M110 89h10" />
+    </g>
+    <g class="pochette-arriere">
+      <rect x="165" y="109" width="88" height="113" rx="5" class="origine-lavage" />
+      <path class="origine-doux" d="M170 104h78l5 5M165 109l5-5v113M170 217h78" />
+    </g>
+    <g class="carte-a-plastifier origine-papier">
+      <rect x="171" y="41" width="76" height="122" rx="4" />
+      <rect x="177" y="47" width="64" height="110" rx="1" />
+      <path class="origine-lavage" d="M183 53h52v78h-52Z" />
+      <path d="M187 121l9-8 3-17 12-11 12 9 7 28M197 113l11-11 8 3 4 14M202 88l-3-8 6 3 4-11 4 10 8-4-2 11M203 92l4 2 9-1M205 94l-1 7M215 96l3 9M188 69l3-8M225 62l6 8" />
+      <path class="origine-doux" d="M189 126h41M192 116l-3 7M224 114l5 9" />
+      <path d="M183 140h52M193 148h32" />
+    </g>
+    <g class="pochette-avant">
+      <path d="M165 109h88v108a5 5 0 0 1-5 5h-78a5 5 0 0 1-5-5V109Z" class="plastique" />
+      <path d="M165 109h88M171 114v101h75V114" class="origine-doux" />
+      <path d="M177 182l18-18M177 194l29-29M229 119l13-13M235 125l13-13" class="origine-reflet" />
+    </g>
+    <g class="origine-papier" transform="translate(59 188) rotate(35)">
+      <path d="M-10 12-3 0l17-32Q16-21 3 2l-7 15z" />
+      <path d="M10 12 3 0l-17-32Q-16-21-3 2l7 15z" />
+      <ellipse cx="-10" cy="20" rx="7" ry="9" />
+      <ellipse cx="10" cy="20" rx="7" ry="9" />
+      <circle cx="0" cy="0" r="2.2" />
+    </g>
+    <g class="origine-doux"><path d="M281 66v20M271 76h20M136 31v12M130 37h12M281 156v33M276 163l5-7 5 7" /></g>
+  </>}
+
+  {scene === 'portes' && <>
+    <g class="origine-doux">
+      <path d="M21 210h278M50 217h220M92 224h137" />
+      <path d="M72 202V86a88 88 0 0 1 176 0v116M64 202h192" />
+      <path d="M84 88h-12M248 88h-12M92 55l-8-6M229 55l8-6M114 32l-4-9M204 32l4-9M155 27v-9" />
+    </g>
+    <path class="origine-lavage" d="M91 201V90a69 69 0 0 1 138 0v111H91Z" />
+    <path d="M85 204V90a75 75 0 0 1 150 0v114M92 202V90a68 68 0 0 1 136 0v112M85 204h150" />
+    <g class="porte-horizon origine-doux">
+      <path d="M125 126h69M136 112h46M145 100h29M127 146h64M138 134h42M112 178l40-31M207 178l-40-31" />
+      <path d="M137 191l21-22 22 22M147 191l11-12 12 12" />
+    </g>
+    <g class="battant-gauche origine-papier">
+      <path d="M98 194V89a62 62 0 0 1 62-62v167H98Z" />
+      <path d="M107 181v-59h44v59h-44ZM107 111V89a53 53 0 0 1 44-52v74h-44Z" />
+      <path class="origine-doux" d="M115 171v-40h28v40M115 98V88a44 44 0 0 1 28-39v49h-28" />
+      <path d="M152 132v16M97 116h5M97 173h5" />
+      <circle cx="151" cy="140" r="2.5" />
+    </g>
+    <g class="battant-droit origine-papier">
+      <path d="M222 194V89a62 62 0 0 0-62-62v167h62Z" />
+      <path d="M213 181v-59h-44v59h44ZM213 111V89a53 53 0 0 0-44-52v74h44Z" />
+      <path class="origine-doux" d="M205 171v-40h-28v40M205 98V88a44 44 0 0 0-28-39v49h28" />
+      <path d="M168 132v16M223 116h-5M223 173h-5" />
+      <circle cx="169" cy="140" r="2.5" />
+    </g>
+    <path class="origine-doux" d="M98 194l-10 10M222 194l10 10M85 205l-18 5M235 205l18 5" />
+  </>}
+
+  {scene === 'diplome' && <>
+    <g transform="translate(14 -2) scale(.38)" stroke-width="4.1">
+      <g class="dossier dossier--1 origine-papier">
+        <g transform="translate(0 89)">
+          <path d="M34 299l357-143 124 40c8 3 10 2 17-4l6-5c4-3 8-3 13-1l68 26c6 2 8 5 9 11l3 15 26 9c8 3 8 9 0 12l-81 34c-6 2-8 6-9 12l-5 15c-1 6-4 9-10 12L295 435c-6 3-10 3-16 0L35 321c-13-6-12-17-1-22Z" />
+          <path d="M34 303l250 119c5 3 9 3 14 1l265-106M35 321l249 118c5 2 9 2 14 0l257-105" />
+          <path d="M41 303l-7 5 10 5-7 5M287 425c-3 3-2 9 3 11M566 304l63-27v-6" />
+          <path class="origine-doux" d="M48 319l210 98M303 429l246-102" />
+        </g>
+      </g>
+      <g class="dossier dossier--2 origine-papier">
+        <g transform="translate(0 45)">
+          <path d="M34 299l357-143 124 40c8 3 10 2 17-4l6-5c4-3 8-3 13-1l68 26c6 2 8 5 9 11l3 15 26 9c8 3 8 9 0 12l-81 34c-6 2-8 6-9 12l-5 15c-1 6-4 9-10 12L295 435c-6 3-10 3-16 0L35 321c-13-6-12-17-1-22Z" />
+          <path d="M34 303l250 119c5 3 9 3 14 1l265-106M35 321l249 118c5 2 9 2 14 0l257-105" />
+          <path d="M41 303l-7 5 10 5-7 5M287 425c-3 3-2 9 3 11M566 304l63-27v-6" />
+          <path class="origine-doux" d="M48 319l210 98M303 429l246-102" />
+        </g>
+      </g>
+      <g class="dossier dossier--3 origine-papier">
+        <path d="M34 299l357-143 124 40c8 3 10 2 17-4l6-5c4-3 8-3 13-1l68 26c6 2 8 5 9 11l3 15 26 9c8 3 8 9 0 12l-81 34c-6 2-8 6-9 12l-5 15c-1 6-4 9-10 12L295 435c-6 3-10 3-16 0L35 321c-13-6-12-17-1-22Z" />
+        <path d="M34 303l250 119c5 3 9 3 14 1l265-106M35 321l249 118c5 2 9 2 14 0l257-105" />
+        <path d="M41 303l-7 5 10 5-7 5M287 425c-3 3-2 9 3 11M566 304l63-27v-6" />
+        <path class="origine-doux" d="M48 319l210 98M303 429l246-102" />
+      </g>
+      <g class="diplome-chrono origine-papier">
+        <circle cx="299" cy="62" r="37" />
+        <circle cx="299" cy="62" r="29" />
+        <path d="M281 64v18c0 7 36 7 36 0V64M283 64c0-9 32-9 32 0s-32 9-32 0ZM289 85v17c0 6 20 6 20 0V85" />
+        <path d="M286 68v15M290 69v16M294 70v16M298 70v16M302 70v16M306 69v15M310 68v15M314 67v15" />
+        <g transform="rotate(34 374 108)">
+          <path d="M363 99v13c0 6 22 6 22 0V99M369 116v10h11v-10" />
+          <ellipse cx="374" cy="99" rx="11" ry="5" />
+        </g>
+        <circle cx="299" cy="211" r="111" />
+        <circle cx="299" cy="211" r="99" />
+        <circle cx="299" cy="211" r="87" />
+        <path d="M299 134v12M338 144l-6 11M366 172l-10 6M376 211h-12M366 250l-10-6M338 278l-6-11M299 288v-12M260 278l6-11M232 250l11-6M222 211h12M232 172l11 6M260 144l6 11" />
+        <g class="diplome-aiguilles">
+          <path d="M295 212l-34 27c-3 3-5 2-5-1l35-29M303 208l49-48c3-3 6-1 4 2l-49 48" />
+        </g>
+        <circle cx="299" cy="211" r="6" />
+      </g>
+      <g class="diplome-document origine-papier">
+        <path d="M309 505l387-151c19-8 36 11 44 39s8 49-12 57L343 607c-21 10-39-16-45-45s-3-49 11-57Z" />
+        <ellipse cx="328" cy="556" rx="28" ry="54" transform="rotate(-17 328 556)" />
+        <ellipse cx="328" cy="556" rx="20" ry="45" transform="rotate(-17 328 556)" />
+        <path d="M308 509c10-6 19-7 29-4M301 535c-2 14 6 41 12 50l11-5" />
+        <path d="M501 432c27 7 43 34 47 53l18-7c-3-20-12-42-28-57" />
+      </g>
+      <g class="diplome-ruban origine-papier">
+        <path d="M546 486c-17 2-27 18-34 47l-14 47 30-20 23 29c7-34 8-65 6-93M561 479c21-7 38 2 63 19l37 21-26 4 5 34-44-39-35-23" />
+        <path class="origine-doux" d="M536 509l-12 42M581 492l28 17" />
+      </g>
+      <g class="diplome-sceau origine-papier">
+        <path d="M541 479c0-10 32-21 34-7 2 11-5 22-14 24s-19-5-20-17Z" />
+      </g>
+    </g>
+  </>}
+
+  {scene === 'pupitre' && <>
+    <g class="origine-doux"><path d="M15 221h289M33 227h52M264 227h27" /></g>
+    <g class="scene-tableau origine-papier">
+      <rect x="68" y="26" width="180" height="98" rx="3" />
+      <rect x="74" y="32" width="168" height="84" rx="1" />
+      <path d="M64 124h188M78 124l-8 22M238 124l8 22" />
+      <path class="origine-doux" d="M89 49h42M89 55h29M89 61h37" />
+      <path d="M93 78l-8 7 8 7M122 78l8 7-8 7M112 76l-9 19" />
+      <rect x="156" y="44" width="21" height="17" rx="2" />
+      <rect x="202" y="44" width="21" height="17" rx="2" />
+      <rect x="179" y="83" width="21" height="17" rx="2" />
+      <path d="M177 52h25M212 61v12h-22v10M166 61v30h13M184 50l5 2-5 2M188 75l2 5 2-5" />
+      <path class="origine-doux" d="M158 109h38M97 109h28" />
+    </g>
+    <g class="scene-formateur origine-papier">
+      <circle cx="232" cy="105" r="10" />
+      <path d="M224 102c1-10 15-10 17 1M227 106h1M236 106h1M230 111h4M222 120l-11 8-18-11-5 7 23 16 14-8M226 120l6 9 6-9M238 120c15 1 17 13 17 31M232 129v19" />
+      <path class="origine-doux" d="M190 122l-9-7M181 115l-3-9" />
+    </g>
+    <g class="scene-pupitre origine-papier">
+      <path class="origine-lavage" d="M176 141l51-12 39 24-51 12-39-24ZM187 147v50l35 20v-56" />
+      <path d="M176 141l51-12 39 24-51 12-39-24ZM187 147v50l35 20 30-7v-54M222 161v56M182 199l39 23 36-9M214 169l-17-10v31l17 10v-31" />
+      <path class="origine-doux" d="M189 141l20 12 35-8M233 182v20M241 180v20" />
+      <path d="M204 143l12-3 12 7-12 3-12-7Z" />
+    </g>
+    <g class="scene-public scene-public--1 origine-papier">
+      <circle cx="59" cy="164" r="10" />
+      <path d="M50 161c2-9 15-10 18 0M42 191v-8c0-8 7-13 17-13s17 5 17 13v8" />
+      <rect x="43" y="183" width="32" height="24" rx="3" />
+      <path d="M47 207v13M71 207v13M49 190h20" />
+    </g>
+    <g class="scene-public scene-public--2 origine-papier">
+      <circle cx="105" cy="158" r="10" />
+      <path d="M96 155c2-9 15-10 18 0M88 185v-8c0-8 7-13 17-13s17 5 17 13v8" />
+      <rect x="89" y="177" width="32" height="24" rx="3" />
+      <path d="M93 201v13M117 201v13M95 184h20" />
+    </g>
+    <g class="scene-public scene-public--3 origine-papier">
+      <circle cx="151" cy="168" r="10" />
+      <path d="M142 165c2-9 15-10 18 0M134 195v-8c0-8 7-13 17-13s17 5 17 13v8" />
+      <rect x="135" y="187" width="32" height="24" rx="3" />
+      <path d="M139 211v10M163 211v10M141 194h20" />
+    </g>
+  </>}
+</svg>
+
+<style>
+  .scene-origine { display: block; width: 100%; height: auto; color: var(--bleu); }
+  .origine-papier { fill: var(--blanc); }
+  .origine-doux { stroke: var(--trait-doux); }
+  .origine-lavage { fill: color-mix(in srgb, var(--bleu) 7%, var(--blanc)); }
+  .plastique { fill: color-mix(in srgb, var(--bleu) 5%, transparent); }
+  .origine-reflet { stroke: var(--bleu); opacity: .36; }
+  .battant-gauche { transform-origin: 98px 194px; transform: skewY(12deg) scaleX(.42); }
+  .battant-droit { transform-origin: 222px 194px; transform: skewY(-12deg) scaleX(.42); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.animation-en-cours) .pc-panneau { animation: pc-panneau 2.2s cubic-bezier(.22,.61,.36,1) both; }
+    :global(.animation-en-cours) .pc-carte-mere { animation: pc-carte-mere 2.2s cubic-bezier(.22,.61,.36,1) both; }
+    :global(.animation-en-cours) .pc-disque { animation: pc-disque 2.2s cubic-bezier(.22,.61,.36,1) both; }
+    :global(.animation-en-cours) .pc-vis { animation: pc-vis 2.2s cubic-bezier(.22,.61,.36,1) both; }
+    :global(.animation-en-cours) .pc-guides { animation: pc-guides 2.2s ease both; }
+    :global(.animation-en-cours) .carte-a-plastifier { animation: carte-plastifier 2.1s cubic-bezier(.45,0,.2,1) both; }
+    :global(.animation-en-cours) .origine-reflet { animation: plastique-reflet 2.1s ease both; }
+    :global(.animation-en-cours) .battant-gauche { animation: ouvrir-gauche 1.8s cubic-bezier(.45,0,.2,1) both; }
+    :global(.animation-en-cours) .battant-droit { animation: ouvrir-droit 1.8s cubic-bezier(.45,0,.2,1) both; }
+    :global(.animation-en-cours) .porte-horizon { animation: porte-horizon 1.8s ease both; }
+    :global(.animation-en-cours) .dossier { animation: dossier-empiler 1.8s cubic-bezier(.22,.61,.36,1) both; }
+    :global(.animation-en-cours) .dossier--2 { animation-delay: .18s; }
+    :global(.animation-en-cours) .dossier--3 { animation-delay: .36s; }
+    :global(.animation-en-cours) .diplome-chrono { animation: chrono-poser 2.2s cubic-bezier(.22,.61,.36,1) both; }
+    :global(.animation-en-cours) .diplome-aiguilles { transform-origin: 299px 211px; animation: chrono-tourner 2.2s cubic-bezier(.45,0,.2,1) both; }
+    :global(.animation-en-cours) .diplome-document { animation: diplome-poser 2.2s cubic-bezier(.22,.61,.36,1) both; }
+    :global(.animation-en-cours) .diplome-ruban { transform-origin: 554px 482px; animation: ruban-derouler 2.2s cubic-bezier(.22,.61,.36,1) both; }
+    :global(.animation-en-cours) .diplome-sceau { transform-origin: 554px 482px; animation: sceau-nouer 2.2s cubic-bezier(.22,.61,.36,1) both; }
+    :global(.animation-en-cours) .scene-tableau { animation: tableau-monter 2.2s cubic-bezier(.22,.61,.36,1) both; }
+    :global(.animation-en-cours) .scene-pupitre { animation: pupitre-monter 2.2s cubic-bezier(.22,.61,.36,1) both; }
+    :global(.animation-en-cours) .scene-formateur { animation: formateur-monter 2.2s cubic-bezier(.22,.61,.36,1) both; }
+    :global(.animation-en-cours) .scene-public { animation: public-monter 1.7s cubic-bezier(.22,.61,.36,1) both; }
+    :global(.animation-en-cours) .scene-public--1 { animation-delay: .25s; }
+    :global(.animation-en-cours) .scene-public--2 { animation-delay: .4s; }
+    :global(.animation-en-cours) .scene-public--3 { animation-delay: .55s; }
+
+    @keyframes pc-panneau { 0%, 12% { transform: translate(146px, -25px); } 85%, 100% { transform: translate(0, 0); } }
+    @keyframes pc-carte-mere { 0%, 23% { transform: translate(74px, -17px); } 92%, 100% { transform: translate(0, 0); } }
+    @keyframes pc-disque { 0%, 18% { transform: translate(-60px, -69px); } 88%, 100% { transform: translate(0, 0); } }
+    @keyframes pc-vis { 0%, 5% { transform: translate(65px, 11px); } 78%, 100% { transform: translate(0, 0); } }
+    @keyframes pc-guides { 0%, 40% { opacity: 0; } 85%, 100% { opacity: 1; } }
+    @keyframes carte-plastifier { 0%, 12% { transform: translate(0, -39px); } 83%, 100% { transform: translate(0, 0); } }
+    @keyframes plastique-reflet { 0%, 62% { opacity: .06; } 82% { opacity: .65; } 100% { opacity: .36; } }
+    @keyframes ouvrir-gauche { 0%, 12% { transform: skewY(0deg) scaleX(1); } 90%, 100% { transform: skewY(12deg) scaleX(.42); } }
+    @keyframes ouvrir-droit { 0%, 12% { transform: skewY(0deg) scaleX(1); } 90%, 100% { transform: skewY(-12deg) scaleX(.42); } }
+    @keyframes porte-horizon { 0%, 18% { opacity: 0; } 95%, 100% { opacity: 1; } }
+    @keyframes dossier-empiler { 0%, 10% { opacity: 0; transform: translate(0, -25px); } 35% { opacity: 1; } 76%, 100% { opacity: 1; transform: translate(0, 0); } }
+    @keyframes chrono-poser { 0%, 22% { opacity: 0; transform: translate(0, -16px); } 62%, 100% { opacity: 1; transform: translate(0, 0); } }
+    @keyframes chrono-tourner { 0%, 22% { transform: rotate(-54deg); } 88%, 100% { transform: rotate(0deg); } }
+    @keyframes diplome-poser { 0%, 25% { opacity: 0; transform: translate(18px, 7px); } 66%, 100% { opacity: 1; transform: translate(0, 0); } }
+    @keyframes ruban-derouler { 0%, 42% { opacity: 0; transform: scaleY(.15); } 52% { opacity: 1; } 84%, 100% { opacity: 1; transform: scaleY(1); } }
+    @keyframes sceau-nouer { 0%, 50% { opacity: 0; transform: scale(.8); } 86%, 100% { opacity: 1; transform: scale(1); } }
+    @keyframes tableau-monter { 0% { opacity: 0; transform: translate(0, -22px); } 36%, 100% { opacity: 1; transform: translate(0, 0); } }
+    @keyframes pupitre-monter { 0%, 15% { opacity: 0; transform: translate(26px, 0); } 58%, 100% { opacity: 1; transform: translate(0, 0); } }
+    @keyframes formateur-monter { 0%, 32% { opacity: 0; transform: translate(12px, 0); } 74%, 100% { opacity: 1; transform: translate(0, 0); } }
+    @keyframes public-monter { 0%, 22% { opacity: 0; transform: translate(0, 19px); } 66%, 100% { opacity: 1; transform: translate(0, 0); } }
+  }
+</style>
