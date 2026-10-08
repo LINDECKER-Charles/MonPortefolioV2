@@ -1,0 +1,302 @@
+---
+import Parcours from '../../layouts/Parcours.astro';
+
+const domaines = [
+  {
+    nom: 'Interface',
+    competence: 'Développer les écrans et organiser les interactions avec l’application.',
+    outils: ['Angular', 'TypeScript'],
+    dessin: 'interface',
+  },
+  {
+    nom: 'Application',
+    competence: 'Concevoir les services web, les API et la logique métier.',
+    outils: ['C#', '.NET', 'ASP.NET Core'],
+    dessin: 'application',
+  },
+  {
+    nom: 'Données',
+    competence: 'Structurer les données et les échanges avec l’application.',
+    outils: ['PostgreSQL', 'MySQL'],
+    dessin: 'donnees',
+  },
+  {
+    nom: 'Production',
+    competence: 'Tester, automatiser les livraisons et faire fonctionner les applications.',
+    outils: ['Tests', 'Git', 'GitHub Actions', 'Docker', 'Linux', 'Documentation'],
+    dessin: 'production',
+  },
+];
+---
+
+<Parcours
+  titre="Compétences de Charles Lindecker"
+  description="Les compétences de Charles Lindecker en développement web, données et DevOps, organisées du navigateur à la production avec les outils associés."
+  chemin="/parcours/competences"
+  courant="Compétences"
+  introduction="Développer une application, c’est relier les interfaces, les services, les données et leur mise en production."
+>
+  <section class="competences-systeme" aria-labelledby="competences-systeme-titre">
+    <header class="competences-tete">
+      <h2 id="competences-systeme-titre">Du navigateur à la production</h2>
+    </header>
+    <dl class="competences-couches">
+      {domaines.map((domaine) => <div class="competences-couche">
+        <dt>
+          <span class="competences-glyphe">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              {domaine.dessin === 'interface' && <><rect x="4" y="7" width="40" height="31" rx="2"/><path d="M4 15h40M10 11h1m5 0h1M10 21h10v11H10m16-11h11m-11 5h11m-11 6h7"/></>}
+              {domaine.dessin === 'application' && <><rect x="5" y="5" width="38" height="38" rx="2"/><path d="m18 15-9 9 9 9m12-18 9 9-9 9m-4-21-4 24"/></>}
+              {domaine.dessin === 'donnees' && <><ellipse cx="24" cy="10" rx="17" ry="6"/><path d="M7 10v28c0 3.3 7.6 6 17 6s17-2.7 17-6V10M7 24c0 3.3 7.6 6 17 6s17-2.7 17-6"/></>}
+              {domaine.dessin === 'production' && <><path d="M9 16v19m0-11c0-7 30-1 30-12"/><circle cx="9" cy="10" r="5"/><circle cx="9" cy="40" r="5"/><circle cx="39" cy="7" r="5"/><path d="m27 33 4 4 9-10"/></>}
+            </svg>
+          </span>
+          <span>{domaine.nom}</span>
+        </dt>
+        <dd>
+          <p>{domaine.competence}</p>
+          <ul class="competences-outils" role="list" aria-label={`Outils associés au domaine ${domaine.nom.toLowerCase()}`}>
+            {domaine.outils.map((outil) => <li>{outil}</li>)}
+          </ul>
+        </dd>
+      </div>)}
+    </dl>
+  </section>
+
+  <section class="competences-complement" aria-labelledby="competences-complement-titre">
+    <h2 id="competences-complement-titre">Selon le besoin</h2>
+    <dl>
+      <div><dt>Échanges en temps réel</dt><dd>SignalR</dd></div>
+      <div><dt>Outillage et automatisation</dt><dd>Python</dd></div>
+      <div><dt>Développement web</dt><dd>PHP et Symfony</dd></div>
+    </dl>
+  </section>
+</Parcours>
+
+<style>
+  .competences-systeme,
+  .competences-complement {
+    min-width: 0;
+  }
+
+  .competences-tete {
+    margin-bottom: var(--s5);
+  }
+
+  .competences-tete h2 {
+    font-size: clamp(1.6rem, 1.3rem + 1vw, 2.25rem);
+    line-height: 1.2;
+    max-width: 30ch;
+  }
+
+  .competences-couches {
+    position: relative;
+    margin: 0;
+    border: 1px solid var(--filet);
+    border-radius: var(--rayon);
+    background: var(--blanc);
+  }
+
+  .competences-couche:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    top: 48px;
+    bottom: -48px;
+    left: 55px;
+    border-left: 1px solid var(--bleu);
+  }
+
+  .competences-couche {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(13rem, 0.75fr) minmax(0, 2fr);
+    align-items: start;
+    gap: var(--s6);
+    padding: var(--s5) var(--s6);
+  }
+
+  .competences-couche + .competences-couche {
+    border-top: 1px solid var(--filet);
+  }
+
+  .competences-couche dt {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    align-items: center;
+    gap: var(--s4);
+    min-width: 0;
+    color: var(--encre);
+    font-size: 1.375rem;
+    line-height: 1.25;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  .competences-glyphe {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    background: var(--blanc);
+    color: var(--bleu);
+  }
+
+  .competences-glyphe svg {
+    width: 40px;
+    height: 40px;
+  }
+
+  .competences-couche dd {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--s5);
+    min-width: 0;
+  }
+
+  .competences-couche dd > p {
+    max-width: 35ch;
+    font-size: var(--t-petit);
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+  }
+
+  .competences-outils {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--s2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .competences-outils li {
+    max-width: 100%;
+    padding: var(--s1) var(--s2);
+    border: 1px solid var(--filet);
+    border-radius: var(--rayon);
+    font-size: var(--t-etiquette);
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+
+  .competences-complement {
+    display: grid;
+    grid-template-columns: minmax(13rem, 0.75fr) minmax(0, 2fr);
+    gap: var(--s6);
+    padding: var(--s6);
+    margin-top: var(--s5);
+    border-top: 1px solid var(--filet);
+  }
+
+  .competences-complement h2 {
+    font-size: 1.25rem;
+    line-height: 1.3;
+  }
+
+  .competences-complement dl {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s5);
+    min-width: 0;
+  }
+
+  .competences-complement dt {
+    font-size: var(--t-petit);
+    line-height: 1.4;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  .competences-complement dd {
+    margin-top: var(--s2);
+    font-size: var(--t-petit);
+    color: var(--graphite);
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 1050px) {
+    .competences-couche {
+      grid-template-columns: minmax(12rem, 0.7fr) minmax(0, 1.3fr);
+    }
+
+    .competences-couche dd {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s3);
+    }
+
+    .competences-complement {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .competences-couche::before {
+      display: none;
+    }
+
+    .competences-couche {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s3);
+      padding: var(--s5) var(--s4);
+    }
+
+    .competences-couche dt {
+      gap: var(--s3);
+      font-size: 1.375rem;
+    }
+
+    .competences-couche dd > p {
+      max-width: 45ch;
+    }
+
+    .competences-complement {
+      padding: var(--s5) 0 0;
+      gap: var(--s5);
+    }
+
+    .competences-complement dl {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s5);
+    }
+
+    .competences-complement dl > div {
+      border-left: 2px solid var(--bleu);
+      padding-left: var(--s4);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .competences-couches,
+    .competences-couche,
+    .competences-outils li {
+      border-color: CanvasText;
+    }
+
+    .competences-couche::before,
+    .competences-complement dl > div {
+      border-color: CanvasText;
+    }
+  }
+
+  @media print {
+    .competences-couche::before {
+      display: none;
+    }
+
+    .competences-couche {
+      break-inside: avoid;
+    }
+
+    .competences-couche dd {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s3);
+    }
+
+    .competences-complement {
+      break-inside: avoid;
+    }
+  }
+</style>

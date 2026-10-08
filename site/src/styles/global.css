@@ -506,7 +506,9 @@ button {
 
 /* ===== Impression : un mode d'emploi se lit aussi sur papier ===== */
 @media print {
-  :root {
+  :root,
+  :root[data-theme],
+  :root:not([data-theme]) {
     --papier: #ffffff;
     --blanc: #ffffff;
     --encre: #000000;

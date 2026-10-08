@@ -1,0 +1,43 @@
+---
+import Base from './Base.astro';
+import FilAriane from '../components/pages/FilAriane.astro';
+import ContinuerLecture from '../components/pages/ContinuerLecture.astro';
+import NavigationParcours from '../components/parcours/NavigationParcours.astro';
+import { PAGES_PARCOURS } from '../config/parcours';
+import '../styles/profondeur.css';
+
+interface Props {
+  titre: string;
+  description: string;
+  chemin: string;
+  courant: string;
+  introduction: string;
+}
+const { titre, description, chemin, courant, introduction } = Astro.props;
+const suite = [
+  { href: '/parcours', titre: 'Vue d’ensemble', detail: 'Revenir au parcours.' },
+  ...PAGES_PARCOURS.filter((page) => page.href !== chemin).map((page) => ({
+    href: page.href, titre: page.titre, detail: page.description,
+  })),
+];
+---
+
+<Base titre={titre} description={description} chemin={chemin}>
+  <div class="wrap profondeur parcours-page">
+    <FilAriane courant={courant} parents={[{ href: '/parcours', titre: 'Parcours' }]} />
+    <header class="page-hero">
+      <h1>{courant}</h1>
+      <p class="page-hero__intro">{introduction}</p>
+    </header>
+    <NavigationParcours chemin={chemin} />
+    <slot />
+    <ContinuerLecture liens={suite} />
+  </div>
+</Base>
+
+<style>
+  .parcours-page > :global(section:first-of-type) { border-top: 0; padding-top: 0; }
+  .parcours-page .page-hero { padding-block: var(--s5) var(--s6); }
+  .parcours-page .page-hero h1 { max-width: 24ch; font-size: clamp(2.25rem, 1.6rem + 2.5vw, 4rem); }
+  .parcours-page .page-hero__intro { margin-top: var(--s4); max-width: 65ch; font-size: var(--t-corps); }
+</style>

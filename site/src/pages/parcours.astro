@@ -1,138 +1,55 @@
 ---
 import Base from '../layouts/Base.astro';
 import FilAriane from '../components/pages/FilAriane.astro';
-import ContinuerLecture from '../components/pages/ContinuerLecture.astro';
+import Picto from '../components/ui/Picto.astro';
+import { PAGES_PARCOURS } from '../config/parcours';
 import { SITE } from '../config/site';
 import '../styles/profondeur.css';
-
 const titre = `Parcours de ${SITE.nom}`;
-const description = 'Du C appris à 13 ans à l’architecture logicielle, en passant par la formation et l’open source. Le parcours de Charles Lindecker, avec ses détours.';
+const description = 'Découvrez le parcours de Charles Lindecker à travers ses expériences professionnelles, ses compétences, sa formation et ses certifications.';
 ---
 
 <Base titre={titre} description={description} chemin="/parcours">
-  <div class="wrap profondeur parcours">
+  <div class="wrap profondeur parcours-hub">
     <FilAriane courant="Parcours" />
-    <header class="page-hero parcours-hero">
-      <div>
-        <h1>Je n’ai pas suivi une ligne droite.</h1>
-        <p class="page-hero__intro">
-          Je code depuis mes 13&nbsp;ans. Trouver la voie pour en faire mon métier a pris plus de temps.
-          Aujourd’hui, je suis architecte logiciel et je continue à apprendre en construisant, puis en transmettant.
-        </p>
-      </div>
-      <aside class="parcours-present" aria-label="Aujourd’hui">
-        <p>Aujourd’hui</p>
-        <strong>{SITE.metier}</strong>
-        <span>Développement web et DevOps</span>
-        <span>Lead francophone et mainteneur sur PvZ Fusion</span>
-        <a href="/projets/pvz-fusion">Le travail avec la communauté</a>
-      </aside>
+    <header class="page-hero">
+      <h1>Mon parcours</h1>
+      <p class="page-hero__intro">Mes expériences, mes compétences et les étapes de ma formation.</p>
     </header>
-
-    <section class="parcours-histoire" aria-labelledby="histoire-titre">
-      <h2 id="histoire-titre">Les étapes qui comptent</h2>
-      <ol class="chronologie">
-        <li>
-          <div class="chronologie__repere">Vers 10 puis 13&nbsp;ans</div>
-          <div class="chronologie__contenu prose">
-            <h3>Comprendre ce qu’il y a dedans</h3>
-            <p>Avec mon père, informaticien, je démonte de vieux PC hors service. Quand j’ai une machine qui le permet, j’apprends le C sur OpenClassrooms, avec une idée en tête&nbsp;: passer au C++ et fabriquer mes propres jeux sur Unreal Engine.</p>
-            <p>Avec mon cousin, j’invente aussi un jeu de cartes papier. On imprime, on plastifie et on recommence. Ce jeu deviendra <a href="/projets/omnicard">Omnicard</a>.</p>
-          </div>
-        </li>
-        <li>
-          <div class="chronologie__repere">Les réorientations</div>
-          <div class="chronologie__contenu prose">
-            <h3>Chercher la voie qui marche</h3>
-            <p>Je passe par une première année de BUT Informatique, une année de physique-chimie, puis un BUT Réseaux &amp; Télécoms à Nancy-Brabois en 2023–2024. Ça ne fonctionne pas comme je l’espérais. Je tente ensuite la piscine de 42, sans être admis.</p>
-            <p>Je ne laisse pas tomber le développement. Je me réoriente autant que nécessaire, jusqu’à trouver une formation où la pratique prend enfin la place qui me convient.</p>
-          </div>
-        </li>
-        <li>
-          <div class="chronologie__repere">Avril à octobre 2025</div>
-          <div class="chronologie__contenu prose">
-            <h3>La formation devient un terrain de pratique</h3>
-            <p>Chez Elan Formation à Mulhouse, je prépare le titre Développeur Web et Web Mobile, de niveau RNCP&nbsp;5. Je termine le programme en <mark class="surligne">un mois</mark>, mène plusieurs projets en parallèle et couvre une grande partie du programme Concepteur Développeur d’Applications en complément.</p>
-            <p>Pendant mon stage en développement web, je travaille sur des modules Dolibarr pour le suivi des temps et des contrats. La rédaction du cahier des charges se fait avec l’équipe&nbsp;; le travail réduit de 30&nbsp;% le temps de traitement administratif.</p>
-          </div>
-        </li>
-        <li>
-          <div class="chronologie__repere">Après le titre</div>
-          <div class="chronologie__contenu prose">
-            <h3>Passer de l’autre côté du bureau</h3>
-            <p>Deux mois après mon titre, Elan perd son formateur en fin de promotion. Des étudiants que j’ai croisés pendant ma formation donnent mon nom. Je reprends une dizaine d’apprenants, dont environ la moitié prépare le CDA, un niveau au-dessus de mon propre titre.</p>
-            <p>Le début est intimidant. J’accompagne la promotion jusqu’à la soutenance, sur le front, le back, les bases de données et les API. Tous obtiennent leur titre.</p>
-          </div>
-        </li>
-        <li>
-          <div class="chronologie__repere">Depuis 2025</div>
-          <div class="chronologie__contenu prose">
-            <h3>Faire avancer un projet à plusieurs</h3>
-            <p>J’arrive sur PvZ Fusion comme traducteur. Progressivement, j’accueille les nouveaux, je les forme, je documente et j’organise le travail. Le titre de lead arrive quand je tiens déjà le rôle, puis je deviens mainteneur du projet multilingue.</p>
-            <p>Une vingtaine de contributeurs ont été formés. Certains ont commencé sans compétences techniques et sont devenus des piliers de la communauté. <a href="/projets/pvz-fusion">Le projet raconte ce passage au collectif.</a></p>
-          </div>
-        </li>
-        <li>
-          <div class="chronologie__repere">Aujourd’hui</div>
-          <div class="chronologie__contenu prose">
-            <h3>Relier la technique et la transmission</h3>
-            <p>Je suis architecte logiciel en CDI, avec du développement web et du DevOps. À côté, je continue le travail sur PvZ Fusion et mes projets personnels, notamment Omnicard et <a href="/projets/gup">gup</a>.</p>
-            <p>Ce qui revient dans ces expériences, c’est le besoin de comprendre comment les choses fonctionnent, de les faire évoluer et de permettre à d’autres de s’en emparer.</p>
-          </div>
-        </li>
-      </ol>
-    </section>
-
-    <section class="page-section reperes-techniques" aria-labelledby="techniques-titre">
-      <h2 id="techniques-titre">Les outils derrière le travail</h2>
-      <dl>
-        <div><dt>Développement web</dt><dd>C#, .NET, ASP.NET Core, Angular, TypeScript, PostgreSQL et MySQL.</dd></div>
-        <div><dt>Du code à la production</dt><dd>Tests, Git, GitHub Actions, Docker, Linux et documentation.</dd></div>
-        <div><dt>Selon le projet</dt><dd>SignalR pour le temps réel, Python pour l’outillage, PHP et Symfony pour le web.</dd></div>
-      </dl>
-      <p>Les projets montrent les choix en contexte, plutôt qu’une liste de technologies isolées.</p>
-      <div class="page-liens"><a href="/projets">Voir les projets</a></div>
-    </section>
-
-    <section class="page-section certifications" aria-labelledby="certifications-titre">
-      <h2 id="certifications-titre">Continuer à apprendre</h2>
-      <p>En complément des projets et de la formation, j’ai suivi des parcours de certification.</p>
-      <ul>
-        <li><span>2024–2026</span><p>freeCodeCamp&nbsp;: développement web adaptatif, JavaScript, API et back-end, Python, bases de données relationnelles.</p></li>
-        <li><span>2025</span><p>Foundational C# with Microsoft, avec Microsoft et freeCodeCamp.</p></li>
-        <li><span>2026</span><p>English for Developers, niveaux A2 et B1.</p></li>
+    <nav class="entrees-parcours" aria-label="Explorer le parcours">
+      <ul role="list">
+        {PAGES_PARCOURS.map((page, index) => <li>
+          <a href={page.href} aria-labelledby={`entree-parcours-${index}`} aria-describedby={`description-parcours-${index}`}>
+            <span class="entrees-parcours__picto"><Picto nom={page.picto} taille={56} /></span>
+            <h2 id={`entree-parcours-${index}`}>{page.titre}</h2>
+            <p id={`description-parcours-${index}`}>{page.description}</p>
+            <span class="entrees-parcours__repere">{page.repere}</span>
+            <span class="entrees-parcours__action" aria-hidden="true">Ouvrir la page</span>
+          </a>
+        </li>)}
       </ul>
-    </section>
-
-    <ContinuerLecture liens={[
-      { href: '/projets', titre: 'Les projets', detail: 'Voir ce que ce parcours a fait naître.' },
-      { href: '/contact', titre: 'Discutons', detail: 'La suite commence par une conversation.' },
-      { href: '/', titre: 'Le récit', detail: 'Les liens entre ces expériences.' },
-    ]} />
+    </nav>
+    <p class="parcours-hub__suite">Les projets montrent ce que ce parcours a fait naître. <a href="/projets">Voir les projets</a></p>
   </div>
 </Base>
 
 <style>
-  .parcours-hero { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(0, 0.8fr); gap: var(--s8); align-items: end; }
-  .parcours-present { border-left: 3px solid var(--bleu); padding-left: var(--s5); display: grid; gap: var(--s3); margin-bottom: 4px; }
-  .parcours-present > p { color: var(--graphite); font-size: var(--t-petit); }
-  .parcours-present strong { font-size: 1.5rem; line-height: 1.2; }
-  .parcours-present span { font-size: var(--t-petit); line-height: 1.45; }
-  .parcours-present a { font-size: var(--t-petit); display: inline-flex; align-items: center; min-height: 44px; }
-  .parcours-histoire > h2 { font-size: 1.5rem; margin-bottom: var(--s6); }
-  .chronologie { list-style: none; padding: 0; margin: 0; }
-  .chronologie li { display: grid; grid-template-columns: 13rem minmax(0, 1fr); gap: var(--s6) var(--s8); padding-block: var(--s7); border-top: 1px solid var(--filet); }
-  .chronologie__repere { font-size: var(--t-petit); color: var(--graphite); padding-top: 0.35em; }
-  .chronologie h3 { font-size: clamp(1.65rem, 1.3rem + 1.25vw, 2.5rem); letter-spacing: -0.025em; }
-  .reperes-techniques dl { margin-top: var(--s7); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s6); }
-  .reperes-techniques dt { font-weight: 700; margin-bottom: var(--s3); }
-  .reperes-techniques dd { max-width: 35ch; }
-  .reperes-techniques > p { margin-top: var(--s6); max-width: 65ch; color: var(--graphite); }
-  .certifications > p { margin-top: var(--s5); }
-  .certifications ul { margin: var(--s6) 0 0; padding: 0; list-style: none; }
-  .certifications li { display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: var(--s5); padding-block: var(--s4); border-top: 1px solid var(--filet); font-size: var(--t-petit); }
-  .certifications li > span { color: var(--graphite); }
-  .certifications li > p { max-width: 65ch; }
-  @media (max-width: 950px) { .parcours-hero { grid-template-columns: minmax(0, 1fr); gap: var(--s7); } .parcours-present { max-width: 32rem; } .chronologie li { grid-template-columns: 9rem minmax(0, 1fr); gap: var(--s5); } }
-  @media (max-width: 640px) { .chronologie li { grid-template-columns: minmax(0, 1fr); gap: var(--s4); } .reperes-techniques dl { grid-template-columns: minmax(0, 1fr); } .certifications li { grid-template-columns: minmax(0, 1fr); gap: var(--s2); } }
+  .parcours-hub { padding-bottom: var(--s8); }
+  .parcours-hub .page-hero { padding-block: var(--s5) var(--s7); }
+  .parcours-hub .page-hero h1 { font-size: clamp(2.5rem, 1.8rem + 3vw, 4.5rem); }
+  .parcours-hub .page-hero__intro { margin-top: var(--s4); font-size: var(--t-corps); max-width: 60ch; }
+  .entrees-parcours ul { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s5); padding: 0; margin: 0; list-style: none; }
+  .entrees-parcours li { min-width: 0; }
+  .entrees-parcours a { display: flex; flex-direction: column; align-items: start; height: 100%; padding: var(--s6); border: 1px solid var(--filet); border-radius: var(--rayon); background: var(--blanc); color: var(--encre); text-decoration: none; }
+  .entrees-parcours a:hover { border-color: var(--bleu); }
+  .entrees-parcours__picto { color: var(--bleu); margin-bottom: var(--s5); }
+  .entrees-parcours h2 { font-size: clamp(1.4rem, 1.1rem + 0.7vw, 1.75rem); line-height: 1.2; margin-bottom: var(--s4); }
+  .entrees-parcours p { font-size: var(--t-petit); max-width: 30ch; }
+  .entrees-parcours__repere { display: block; margin-top: var(--s4); font-size: var(--t-etiquette); color: var(--graphite); line-height: 1.5; }
+  .entrees-parcours__action { display: flex; align-items: center; gap: var(--s2); padding-top: var(--s6); margin-top: auto; color: var(--bleu); font-size: var(--t-petit); font-weight: 700; text-decoration: underline; text-underline-offset: 0.2em; }
+  .parcours-hub__suite { margin-top: var(--s6); color: var(--graphite); font-size: var(--t-petit); }
+  .parcours-hub__suite a { display: inline-flex; align-items: center; min-height: 44px; }
+  @media (max-width: 900px) { .entrees-parcours ul { grid-template-columns: minmax(0, 1fr); } .entrees-parcours a { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 0 var(--s5); padding: var(--s5); } .entrees-parcours__picto { grid-row: span 4; margin-bottom: 0; } .entrees-parcours h2, .entrees-parcours p, .entrees-parcours__repere, .entrees-parcours__action { grid-column: 2; } .entrees-parcours h2 { margin-bottom: var(--s3); } .entrees-parcours__repere { margin-top: var(--s3); } .entrees-parcours__action { padding-top: var(--s4); } }
+  @media (max-width: 440px) { .entrees-parcours a { grid-template-columns: 36px minmax(0, 1fr); gap: 0 var(--s4); padding: var(--s4); } .entrees-parcours__picto :global(svg) { width: 36px; height: 36px; } }
+  @media print { .entrees-parcours a { break-inside: avoid; } }
 </style>

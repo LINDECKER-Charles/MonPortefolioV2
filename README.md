@@ -51,6 +51,11 @@ depuis la navigation et reliées entre elles. Les premières études de cas ont 
 Astro dans `site/src/pages/projets/` : `pvz-fusion.astro`, `omnicard.astro` et `gup.astro`. Leur
 mise en page reste indépendante ; elles partagent seulement le cadre et les composants utiles.
 
+La page `/parcours` est un hub vers `/parcours/professionnel`, `/parcours/competences` et
+`/parcours/formation`. Ces trois pages partagent le gabarit `site/src/layouts/Parcours.astro`,
+une navigation locale et un retour au hub. Les compétences sont présentées par domaine ; leurs
+liens avec les projets seront ajoutés dans une prochaine étape.
+
 Pour ajouter un projet, créer sa page statique, l’inscrire dans l’index des projets et dans
 `site/src/pages/sitemap.xml.ts`, puis ajouter son adresse à `PAGES` dans le support des tests
 navigateur. Le build vérifie les liens internes et la cohérence du sitemap. Les descriptions

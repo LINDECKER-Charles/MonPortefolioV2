@@ -2,15 +2,17 @@
 interface Props {
   courant: string;
   projet?: boolean;
+  parents?: { href: string; titre: string }[];
 }
 
-const { courant, projet = false } = Astro.props;
+const { courant, projet = false, parents } = Astro.props;
+const liensParents = parents ?? (projet ? [{ href: '/projets', titre: 'Projets' }] : []);
 ---
 
 <nav class="fil-ariane" aria-label="Fil d’Ariane">
   <ol>
     <li><a href="/">Accueil</a></li>
-    {projet && <li><a href="/projets">Projets</a></li>}
+    {liensParents.map((parent) => <li><a href={parent.href}>{parent.titre}</a></li>)}
     <li aria-current="page">{courant}</li>
   </ol>
 </nav>
