@@ -99,11 +99,22 @@ jobs:
         # ne serait qu'un telechargement de plus.
         run: npx playwright install --with-deps --only-shell chromium
 
+      - name: Installation Rust pour le parcours complet
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.98.0
+
+      - name: Backend reel du backoffice
+        run: cargo build --manifest-path ../backend/Cargo.toml --locked
+
       - name: Tests de bout en bout
         # Le webServer de playwright.config.ts construit le site puis lance le
         # serveur de production : c'est ce qui partira en ligne qui est teste,
         # en-tetes, statuts, redirections et chargeur de mesure compris.
         run: npx playwright test
+
+      - name: Parcours reel du backoffice et du MCP
+        run: node ../scripts/test-backoffice.mjs
 
       - name: Rapport en cas d'echec
         if: failure()
