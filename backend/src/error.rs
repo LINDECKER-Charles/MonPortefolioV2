@@ -48,7 +48,7 @@ impl ApiError {
         let mut error = Self::new(
             StatusCode::TOO_MANY_REQUESTS,
             "RATE_LIMITED",
-            "Trop de tentatives. Attendez quelques minutes avant de réessayer.",
+            "Trop de tentatives. Patientez avant de réessayer.",
         );
         error.retry_after = Some(seconds);
         error
