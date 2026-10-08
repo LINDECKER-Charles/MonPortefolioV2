@@ -1,0 +1,39 @@
+# Calque de mesure d'audience : branche le site sur l'instance Umami partagee de
+# l'hote (pile `analytics` du depot infra-vps). Contrat : infra-vps
+# docs/APPLICATIONS.md section 6 ; plan de marquage : docs/mesure-audience.md.
+#
+# Ajoute au COMPOSE_FILE par scripts/deploy-remote.sh SI ET SEULEMENT SI le .env
+# de l'hote definit UMAMI_WEBSITE_ID. C'est la seule forme sure : un
+# `caddy.import` dont l'argument serait une variable vide ferait refuser la
+# configuration ENTIERE de l'edge, et couperait tous les sites du VPS, pas
+# seulement celui-ci. Hors de ce calque, l'etiquette n'existe tout simplement
+# pas.
+#
+# Meme raison pour les `:?` : une valeur manquante fait echouer le deploiement
+# (et `docker compose config`) au lieu de declarer un site vide.
+#
+# Une seule source par environnement : UMAMI_WEBSITE_ID alimente a la fois
+# l'etiquette lue par le reconciler d'Umami et la variable lue par le serveur,
+# qui ecrit /mesure.js au demarrage. Un ID DIFFERENT par environnement : le
+# test qui reprendrait celui de la production melangerait ses visites aux
+# siennes.
+#
+# Pas d'etiquette umami.team : les teams servent a ouvrir un site a un client,
+# et ce site n'en a pas. Sans elle, le reconciler ne touche pas au rangement du
+# site dans Umami.
+
+services:
+  web:
+    environment:
+      # Lus AU DEMARRAGE par site/server/server.mjs, jamais au build : l'image
+      # promue de test en production change ainsi de site Umami sans etre
+      # reconstruite.
+      UMAMI_WEBSITE_ID: ${UMAMI_WEBSITE_ID:?UMAMI_WEBSITE_ID est requis par compose.umami.yaml (UUID du site)}
+      UMAMI_SITE_DOMAIN: ${UMAMI_SITE_DOMAIN:?UMAMI_SITE_DOMAIN est requis par compose.umami.yaml (nom d hote nu)}
+    labels:
+      # /u/script.js et /u/api/send de CE site vont a Umami ; le reste de /u/
+      # reste au site.
+      caddy.import: umami
+      umami.website: ${UMAMI_WEBSITE_ID:?UMAMI_WEBSITE_ID est requis par compose.umami.yaml (UUID du site)}
+      umami.domain: ${UMAMI_SITE_DOMAIN:?UMAMI_SITE_DOMAIN est requis par compose.umami.yaml (nom d hote nu)}
+      umami.name: ${UMAMI_SITE_NAME:?UMAMI_SITE_NAME est requis par compose.umami.yaml (nom affiche dans Umami)}

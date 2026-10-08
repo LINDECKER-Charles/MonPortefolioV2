@@ -1,0 +1,23 @@
+# Confort de developpement. `docker compose` charge ce fichier AUTOMATIQUEMENT
+# quand COMPOSE_FILE n'est pas defini — donc sur le poste, et jamais sur l'hote
+# ou le job de deploiement selectionne explicitement
+# `compose.yaml:compose.deploy.yaml`.
+#
+# Rien ici ne doit exister en ligne : ni port publie, ni image construite sur
+# place, ni valeur de complaisance.
+
+services:
+  web:
+    # La recette de construction n'existe QUE dans ce fichier : c'est ce qui rend
+    # impossible, sur le serveur, de recompiler l'application au lieu de tirer
+    # l'image validee (voir le commentaire de compose.yaml).
+    #
+    # `pull_policy: build` empeche en plus Compose d'aller chercher au registre un
+    # tag `dev` qui n'existe pas, avant de se rabattre sur la construction.
+    build:
+      context: ./site
+    pull_policy: build
+    # Boucle locale uniquement. Sans l'adresse, Docker publierait sur 0.0.0.0 et
+    # ouvrirait le site a tout le reseau de la machine, pare-feu contourne.
+    ports:
+      - "127.0.0.1:4000:4000"
