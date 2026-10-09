@@ -66,7 +66,7 @@ Les fichiers sont inchangés, seul leur nom local est raccourci. Chemins dans le
 | `chartjs.svg` | `icons/chartjs/chartjs-original.svg` |
 
 La variante monochrome de Linux évite les 194 ko du SVG couleur pour une icône de 32 px.
-Les logos monochromes Linux, Symfony, Express, Rust, Tokio et xUnit sont adaptés au mode
+Les logos monochromes Linux, Symfony, Express, Rust, Tokio, xUnit et MCP sont adaptés au mode
 nuit par CSS. Bash, Leaflet, Photino.NET et OpenTelemetry conservent leurs couleurs
 sur un petit support blanc. Spring Boot utilise la marque Spring.
 
@@ -126,11 +126,39 @@ variante en texte seule ; la mascotte Webby, dont la reproduction exige une auto
 n’est pas incluse. Les directives DTD externes des SVG officiels sont supprimées, sans
 modifier leur dessin, pour garder des ressources entièrement autonomes.
 
-Axum, MCP, OpenTUI, SQLx, Make, Dompdf et le stockage compatible S3 restent présentés en texte :
-aucun logo distinct officiel n’est attribué par défaut. Le logo AWS S3 n’est pas utilisé
-pour représenter la compatibilité avec son protocole. Les logos Avalonia, MongoDB,
+Les logos Avalonia, MongoDB,
 Mongoose, Redis, Pandas, NumPy, D3.js, Bootstrap et Electron
 ne sont pas inclus, l’audit n’ayant pas établi leur pratique.
+
+## MCP
+
+`mcp.svg` reprend sans modification le
+[favicon officiel](https://github.com/modelcontextprotocol/docs/blob/573dc60c2e7aab2605b29d0bf27194aa7b02e4fb/favicon.svg)
+du dépôt `modelcontextprotocol/docs`, révision `573dc60c2e7aab2605b29d0bf27194aa7b02e4fb`.
+La [licence MIT de cette révision](https://github.com/modelcontextprotocol/docs/blob/573dc60c2e7aab2605b29d0bf27194aa7b02e4fb/LICENSE)
+est reproduite dans `MCP-LICENSE.txt`. Le logo est utilisé pour identifier le protocole.
+
+## Illustrations au trait
+
+`site/src/components/parcours/IllustrationStack.astro` contient les pictogrammes propres au
+portfolio. Ils représentent la fonction de l’outil et ne prétendent pas être des logos officiels.
+Leur couleur suit le thème jour/nuit.
+
+| Outil | Illustration | Source officielle |
+|---|---|---|
+| SQL | Base et syntaxe de requête | [ISO/IEC 9075](https://www.iso.org/standard/76583.html) |
+| Axum | Requête répartie vers des routes | [tokio-rs/axum](https://github.com/tokio-rs/axum) |
+| SQLx | Requête validée et base de données | [transact-rs/sqlx](https://github.com/transact-rs/sqlx) |
+| Stockage S3 compatible | Objets dans un compartiment | [API S3](https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html) |
+| Dompdf | Document et conversion | [Dompdf](https://dompdf.github.io/) |
+| OpenTUI | Interface dans un terminal | [OpenTUI](https://opentui.com/) |
+| Make | Sources assemblées en un résultat | [GNU Make](https://www.gnu.org/software/make/) |
+| axe-core | Accessibilité et vérification | [dequelabs/axe-core](https://github.com/dequelabs/axe-core) |
+
+Le logo AWS S3 n’est pas utilisé pour représenter la compatibilité avec son protocole.
+La référence S3 documente l’API ; elle n’ajoute pas AWS aux technologies pratiquées.
+Les liens vers les sites des éditeurs, mainteneurs et organismes de normalisation sont
+centralisés dans `site/src/config/competences.ts`, vérifiés le 2026-10-09.
 
 ## Composant
 
@@ -144,4 +172,6 @@ S’ajoutent Tailwind CSS, GSAP, Java, Spring, Nginx, Apache, Ionic, Capacitor, 
 L’audit ajoute HTML, CSS, JavaScript, Bash, C, Express, SQLite, Playwright, ESLint, Prettier,
 Twig, Doctrine, Leaflet, Caddy, Sass, RxJS, sharp, Rust, WebAssembly, Tauri, React,
 Vite, Go, Vue.js, xUnit, PHPUnit, Trello, Photino.NET, FastAPI, pytest, Tokio, OpenTelemetry,
-Prometheus, Karma, Jasmine, Pillow, API Platform, Spring Boot, GCC et Chart.js.
+Prometheus, Karma, Jasmine, Pillow, API Platform, Spring Boot, GCC, Chart.js et MCP.
+SQL, Axum, SQLx, Stockage S3 compatible, Dompdf, OpenTUI, Make et axe-core affichent les
+illustrations métier ci-dessus. Aucun outil de la page Compétences ne laisse de visuel vide.

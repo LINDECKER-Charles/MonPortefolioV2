@@ -62,6 +62,8 @@ import pillow from '../../assets/stacks/pillow.png?url';
 import apiPlatform from '../../assets/stacks/api-platform.svg?url';
 import gcc from '../../assets/stacks/gcc.svg?url';
 import chartjs from '../../assets/stacks/chartjs.svg?url';
+import mcp from '../../assets/stacks/mcp.svg?url';
+import IllustrationStack, { type OutilIllustre } from './IllustrationStack.astro';
 
 interface Props { nom: string; }
 const { nom } = Astro.props;
@@ -132,14 +134,17 @@ const logos: Record<string, string> = {
   'Spring Boot': spring,
   GCC: gcc,
   'Chart.js': chartjs,
+  MCP: mcp,
 };
 const src = logos[nom];
-if (!src) throw new Error(`Logo de stack inconnu : ${nom}`);
-const monochrome = ['Linux', 'Symfony', 'Express', 'Rust', 'Tokio', 'xUnit'].includes(nom);
+const outilsIllustres: OutilIllustre[] = ['SQL', 'Axum', 'SQLx', 'Stockage S3 compatible', 'Dompdf', 'OpenTUI', 'Make', 'axe-core'];
+const illustration = outilsIllustres.find((outil) => outil === nom);
+if (!src && !illustration) throw new Error(`Visuel de stack inconnu : ${nom}`);
+const monochrome = ['Linux', 'Symfony', 'Express', 'Rust', 'Tokio', 'xUnit', 'MCP'].includes(nom);
 const supportClair = ['Bash', 'Leaflet', 'Photino.NET', 'OpenTelemetry'].includes(nom);
 ---
 
-<img
+{illustration ? <IllustrationStack nom={illustration} /> : <img
   class:list={['logo-stack', {
     'logo-stack--monochrome': monochrome,
     'logo-stack--clair': nom === 'GSAP',
@@ -152,7 +157,7 @@ const supportClair = ['Bash', 'Leaflet', 'Photino.NET', 'OpenTelemetry'].include
   height="32"
   loading="lazy"
   decoding="async"
-/>
+/>}
 
 <style>
   .logo-stack { display: block; width: 32px; height: 32px; flex: 0 0 32px; object-fit: contain; }

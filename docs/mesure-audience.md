@@ -104,7 +104,7 @@ enregistre déjà le chemin de chaque événement. Une conversion n'a qu'une sou
 | `contact-email` | clic sur un lien `mailto:` | attributs `data-umami-event` | `emplacement` |
 | `contact-copie` | bouton « Copier l'adresse » | `mesurer()` | `emplacement` |
 | `cv-telechargement` | lien de téléchargement du CV (quand le CV existera) | `mesurer()` | `emplacement` |
-| `lien-sortant` | lien vers LinkedIn, GitHub, npm, une démo ou un dépôt | attributs | `domaine` (nom d'hôte de la cible), `emplacement` |
+| `lien-sortant` | lien vers un profil, une démo, un dépôt ou le site officiel d’une technologie | attributs | `domaine` (nom d'hôte de la cible), `emplacement` |
 | `lecture` | un chapitre de l'accueil atteint, une fois par chargement | `mesurer()` | `chapitre` = `origine` \| `aujourdhui` \| `discutons` |
 | `theme` | bascule jour/nuit par le visiteur | `mesurer()` | `choix` = `nuit` \| `jour` |
 | `glossaire` | ouverture d'une définition | `mesurer()` | `terme` (identifiant stable) |
@@ -127,7 +127,7 @@ Précisions :
 
 | Propriété | Valeurs |
 |---|---|
-| `emplacement` | `en-tete`, `sommaire`, `hero`, `preuves`, `discutons`, `contact`, `pied-de-page`, `page-404`, `mentions` |
+| `emplacement` | `en-tete`, `sommaire`, `hero`, `preuves`, `competences`, `discutons`, `contact`, `pied-de-page`, `page-404`, `mentions` |
 | `chapitre` | `origine`, `aujourdhui`, `discutons` |
 | `choix` | `nuit`, `jour` |
 | `origine` | `interne`, `externe`, `directe` |
@@ -152,6 +152,10 @@ utilise l’événement `contact-page`, avec `emplacement` = `discutons`. L’in
 restent des navigations ordinaires.
 
 L’emplacement `preuves` reste actif sur les pages de projets qui utilisent le composant `Fiche`.
+
+Depuis le 2026-10-09, les liens officiels des technologies et de Trello sur `/parcours/competences`
+utilisent `lien-sortant` avec l’emplacement `competences` et le seul nom d’hôte de leur cible.
+Ces clics indiquent une consultation technique, sans constituer un objectif de prise de contact.
 
 **Historique avant cet essai** : les valeurs de `chapitre` `preuves` et `dehors`, ainsi que
 l’emplacement `dehors`, ne font plus partie du plan courant. Les données déjà collectées sous

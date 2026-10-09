@@ -2,10 +2,7 @@
 import Parcours from '../../layouts/Parcours.astro';
 import LogoStack from '../../components/parcours/LogoStack.astro';
 import RepereCompetence from '../../components/parcours/RepereCompetence.astro';
-import { DOMAINES_TECHNIQUES, DOMAINES_QUALITE, COMPETENCES_HUMAINES } from '../../config/competences';
-
-// Outils sans marque graphique distincte ou sans logo réutilisable attesté.
-const sansLogo = new Set(['SQL', 'Axum', 'MCP', 'OpenTUI', 'Make', 'Dompdf', 'axe-core', 'SQLx', 'Stockage S3 compatible']);
+import { DOMAINES_TECHNIQUES, DOMAINES_QUALITE, COMPETENCES_HUMAINES, SITES_OFFICIELS } from '../../config/competences';
 ---
 
 <Parcours
@@ -42,9 +39,11 @@ const sansLogo = new Set(['SQL', 'Axum', 'MCP', 'OpenTUI', 'Make', 'Dompdf', 'ax
             <h3>{domaine.nom}</h3>
             <ul class="stack" role="list">
               {domaine.outils.map((outil) => (
-                <li class:list={{ 'outil-sans-logo': sansLogo.has(outil) }}>
-                  {!sansLogo.has(outil) && <LogoStack nom={outil} />}
-                  <span>{outil}</span>
+                <li>
+                  <a href={SITES_OFFICIELS[outil]} rel="external" title={`Site officiel de ${outil}`} data-umami-event="lien-sortant" data-umami-event-domaine={new URL(SITES_OFFICIELS[outil]).hostname} data-umami-event-emplacement="competences">
+                    <LogoStack nom={outil} />
+                    <span>{outil}</span>
+                  </a>
                 </li>
               ))}
             </ul>
@@ -71,9 +70,11 @@ const sansLogo = new Set(['SQL', 'Axum', 'MCP', 'OpenTUI', 'Make', 'Dompdf', 'ax
             <h3>{domaine.nom}</h3>
             <ul class="stack" role="list">
               {domaine.outils.map((outil) => (
-                <li class:list={{ 'outil-sans-logo': sansLogo.has(outil) }}>
-                  {!sansLogo.has(outil) && <LogoStack nom={outil} />}
-                  <span>{outil}</span>
+                <li>
+                  <a href={SITES_OFFICIELS[outil]} rel="external" title={`Site officiel de ${outil}`} data-umami-event="lien-sortant" data-umami-event-domaine={new URL(SITES_OFFICIELS[outil]).hostname} data-umami-event-emplacement="competences">
+                    <LogoStack nom={outil} />
+                    <span>{outil}</span>
+                  </a>
                 </li>
               ))}
             </ul>
@@ -111,7 +112,7 @@ const sansLogo = new Set(['SQL', 'Axum', 'MCP', 'OpenTUI', 'Make', 'Dompdf', 'ax
       <div class="organisation">
         <h3>Méthodes de travail</h3>
         <ul role="list">
-          <li><LogoStack nom="Trello" /><span>Trello</span></li>
+          <li><a href={SITES_OFFICIELS.Trello} rel="external" title="Site officiel de Trello" data-umami-event="lien-sortant" data-umami-event-domaine={new URL(SITES_OFFICIELS.Trello).hostname} data-umami-event-emplacement="competences"><LogoStack nom="Trello" /><span>Trello</span></a></li>
           <li>Agile / Scrum</li>
           <li>Cahiers des charges</li>
           <li>Documentation</li>
@@ -139,10 +140,12 @@ const sansLogo = new Set(['SQL', 'Axum', 'MCP', 'OpenTUI', 'Make', 'Dompdf', 'ax
   .domaine { min-width: 0; padding: var(--s6); border: 1px solid var(--filet); border-radius: 8px; background: var(--blanc); }
   .domaine h3 { margin-bottom: var(--s5); font-size: clamp(1.35rem, 1.1rem + 0.4vw, 1.6rem); line-height: 1.2; }
   .stack { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s3) var(--s4); margin: 0; padding: 0; list-style: none; }
-  .stack li { display: flex; align-items: center; gap: var(--s3); min-height: 56px; min-width: 0; font-size: var(--t-petit); line-height: 1.35; }
+  .stack li { min-width: 0; font-size: var(--t-petit); line-height: 1.35; }
+  .stack a { display: flex; align-items: center; gap: var(--s3); min-height: 56px; width: 100%; color: var(--encre); text-decoration: none; border-radius: 3px; }
+  .stack a:hover, .stack a:focus-visible { color: var(--bleu); }
+  .stack a:hover span, .stack a:focus-visible span { text-decoration: underline; text-underline-offset: 0.2em; }
   .stack :global(.logo-stack) { width: 36px; height: 36px; flex-basis: 36px; }
   .stack span { overflow-wrap: anywhere; }
-  .stack .outil-sans-logo { padding-left: 48px; }
   .schema-livraison { display: flex; flex-wrap: wrap; gap: var(--s3); margin: 0 0 var(--s7); padding: 0; list-style: none; font-size: var(--t-petit); }
   .schema-livraison li { display: flex; align-items: center; gap: var(--s3); }
   .schema-livraison li > span:first-child { padding: var(--s3) var(--s5); border: 1px solid var(--filet); border-radius: var(--rayon); font-weight: 700; background: var(--blanc); }
@@ -161,6 +164,7 @@ const sansLogo = new Set(['SQL', 'Axum', 'MCP', 'OpenTUI', 'Make', 'Dompdf', 'ax
   .organisation h3 { font-size: var(--t-petit); }
   .organisation ul { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s5) var(--s6); margin: 0; padding: 0; list-style: none; }
   .organisation li { display: flex; align-items: center; gap: var(--s3); font-size: var(--t-petit); }
+  .organisation a { display: flex; align-items: center; gap: var(--s3); min-height: 44px; }
 
   @media (max-width: 1050px) {
     .domaine { padding: var(--s5); }
@@ -187,9 +191,9 @@ const sansLogo = new Set(['SQL', 'Axum', 'MCP', 'OpenTUI', 'Make', 'Dompdf', 'ax
     .sommaire-competences { flex-direction: column; align-items: stretch; }
     .domaine { padding: var(--s5) var(--s4); }
     .stack { column-gap: var(--s3); }
-    .stack li { font-size: var(--t-etiquette); gap: var(--s2); }
+    .stack li { font-size: var(--t-etiquette); }
+    .stack a { gap: var(--s2); }
     .stack :global(.logo-stack) { width: 30px; height: 30px; flex-basis: 30px; }
-    .stack .outil-sans-logo { padding-left: 38px; }
     .schema-livraison { gap: var(--s1); font-size: 0.8125rem; }
     .schema-livraison li { gap: var(--s1); }
     .schema-livraison li > span:first-child { padding-inline: 6px; }
@@ -219,7 +223,8 @@ const sansLogo = new Set(['SQL', 'Axum', 'MCP', 'OpenTUI', 'Make', 'Dompdf', 'ax
     .volet-tete h2 { font-size: 26px; }
     .domaines { gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .domaine { padding: 16px; break-inside: avoid; }
-    .stack li { min-height: 36px; font-size: 12px; }
+    .stack li { font-size: 12px; }
+    .stack a { min-height: 36px; }
     .stack :global(.logo-stack) { width: 26px; height: 26px; flex-basis: 26px; }
     .soft-skills { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .soft-skill { break-inside: avoid; }
