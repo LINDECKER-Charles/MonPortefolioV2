@@ -1,0 +1,56 @@
+---
+const rituels = [
+  { id: 'boss', titre: 'Un boss vaincu', detail: 'La victoire devient une proclamation.', nom: 'Le Monstre clérical', equivalent: 'Un appui maintenu éveille l’étoile du Monstre clérical. Une proclamation annonce la victoire, puis la carte retrouve l’étoile allumée.' },
+  { id: 'decouverte', titre: 'Un lieu découvert', detail: 'Le paysage se révèle à l’encre.', nom: 'La lanterne de Yharnam', equivalent: 'Un appui maintenu éveille l’étoile de la lanterne de Yharnam. Le paysage se révèle à l’encre, puis la carte retrouve l’étoile allumée.' },
+  { id: 'rune', titre: 'Une rune obtenue', detail: 'Le symbole se grave sous vos yeux.', nom: 'Métamorphose horaire', equivalent: 'Un appui maintenu éveille une rune. Son symbole se grave au cours du rituel, puis la carte retrouve l’étoile allumée.' },
+  { id: 'gemme', titre: 'Une gemme trouvée', detail: 'Le cristal prend forme et s’illumine.', nom: 'Une gemme de sang', equivalent: 'Un appui maintenu éveille une gemme de sang. Le cristal prend forme et s’illumine, puis la carte retrouve l’étoile allumée.' },
+];
+---
+<section class="blr-section blr-rituels" id="la-constellation" aria-labelledby="constellation-titre">
+  <div class="blr-tete-section"><div><p class="blr-repere">02 · Marquer une réussite</p><h2 id="constellation-titre">Une étoile s’allume.<br />La victoire prend vie.</h2></div><p>Maintenir l’appui, voir le rituel, retrouver son étoile allumée. Chaque type d’objectif a sa propre mise en scène. Voici quatre allumages dans l’application.</p></div>
+  <fieldset class="blr-rituels__choix" data-blr-rituels>
+    <legend>Choisir un rituel à regarder</legend>
+    <div class="blr-rituels__grille">
+      <div class="blr-rituels__selection">
+        <p class="blr-note">Une réussite.<br />Quatre façons de la célébrer.</p>
+        <div class="blr-rituels__options">
+          {rituels.map((rituel, index) => <label for={`rituel-${rituel.id}`}>
+            <input class="blr-radio" type="radio" name="rituel-bloodborne" id={`rituel-${rituel.id}`} value={rituel.id} checked={index === 0} aria-controls={`video-${rituel.id}`} />
+            <img src={`/demos/bloodborne/${rituel.id}-poster.webp`} width="390" height="844" alt="" loading="lazy" />
+            <span><span class="blr-rituels__numero" aria-hidden="true">0{index + 1}</span><strong>{rituel.titre}</strong><span>{rituel.detail}</span></span>
+            <span class="blr-rituels__fleche" aria-hidden="true">↗</span>
+          </label>)}
+        </div>
+        <p class="blr-rituels__mode">Choisissez une scène, puis lancez la vidéo.<br />Capture mobile · environ 10 secondes · sans audio</p>
+      </div>
+      <div class="blr-rituels__lecteurs">
+        {rituels.map((rituel) => <figure data-blr-rituel={rituel.id} id={`video-${rituel.id}`}>
+          <div class="blr-rituels__telephone">
+            <video controls playsinline preload="none" poster={`/demos/bloodborne/${rituel.id}-poster.webp`} width="390" height="844" aria-label={`Voir le rituel : ${rituel.titre}`} aria-describedby={`rituel-description-${rituel.id}`}>
+              <source src={`/demos/bloodborne/${rituel.id}.webm`} type="video/webm" />
+              <source src={`/demos/bloodborne/${rituel.id}.mp4`} type="video/mp4" />
+              <p><a href={`/demos/bloodborne/${rituel.id}.mp4`}>Regarder la vidéo du rituel.</a></p>
+            </video>
+          </div>
+          <figcaption>{rituel.nom}<span>Un enregistrement de l’application.</span></figcaption>
+          <p class="sr" id={`rituel-description-${rituel.id}`}>{rituel.equivalent}</p>
+        </figure>)}
+      </div>
+    </div>
+  </fieldset>
+  <slot />
+</section>
+<script>
+  import '../../scripts/bloodborne-rituels';
+</script>
+
+<style>
+  /* Le focus natif reste à l’emplacement du choix, même sans JavaScript. */
+  .blr-rituels__options .blr-radio { top: 50%; left: 50%; }
+  .blr-rituels__options label:has(input:checked) { border-color: var(--bleu); box-shadow: inset 3px 0 var(--bleu); }
+  .blr-rituels__options label:has(input:focus-visible) { outline: 3px solid var(--bleu); outline-offset: 4px; }
+  .blr-rituels__choix:has(#rituel-boss:checked) [data-blr-rituel='boss'],
+  .blr-rituels__choix:has(#rituel-decouverte:checked) [data-blr-rituel='decouverte'],
+  .blr-rituels__choix:has(#rituel-rune:checked) [data-blr-rituel='rune'],
+  .blr-rituels__choix:has(#rituel-gemme:checked) [data-blr-rituel='gemme'] { display: block; }
+</style>

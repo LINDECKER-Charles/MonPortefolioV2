@@ -46,6 +46,9 @@ async function distFactice() {
     '_astro/app.Ab12Cd34.js': 'console.log(1)',
     '_astro/site.Ef56Gh78.css': 'body{margin:0}',
     'img/portrait.webp': 'RIFFxxxxWEBP',
+    'demos/exemple.mp4': '0123456789',
+    'demos/exemple.webm': 'abcdefghij',
+    'demos/vide.mp4': '',
     'favicon.ico': 'ICO',
     'favicon.svg': '<svg xmlns="http://www.w3.org/2000/svg"/>',
     'site.webmanifest': '{"name":"Portfolio"}',
@@ -283,6 +286,146 @@ describe('pages et fichiers', () => {
       assert.equal(res.headers.get('cache-control'), cache, cible);
       assert.equal(res.headers.get('content-type'), type, cible);
     }
+  });
+});
+
+describe('vidéos et lecture partielle', () => {
+  let site;
+  before(async () => (site = await demarrer()));
+  after(() => site.fermer());
+
+  test('MP4 et WebM annoncent leur type, leur taille et les plages disponibles', async () => {
+    for (const [extension, contenu] of [['mp4', '0123456789'], ['webm', 'abcdefghij']]) {
+      const res = await fetch(`${site.base}/demos/exemple.${extension}`);
+      assert.equal(res.status, 200);
+      assert.equal(res.headers.get('content-type'), `video/${extension}`);
+      assert.equal(res.headers.get('accept-ranges'), 'bytes');
+      assert.equal(res.headers.get('content-length'), '10');
+      assert.ok(Number.isFinite(Date.parse(res.headers.get('last-modified'))));
+      assert.equal(await res.text(), contenu);
+    }
+  });
+
+  test('une plage bornée sert exactement les octets demandés sur chaque format', async () => {
+    for (const [extension, attendu] of [['mp4', '2345'], ['webm', 'cdef']]) {
+      const res = await fetch(`${site.base}/demos/exemple.${extension}`, { headers: { Range: 'bytes=2-5' } });
+      assert.equal(res.status, 206);
+      assert.equal(res.headers.get('content-type'), `video/${extension}`);
+      assert.equal(res.headers.get('content-range'), 'bytes 2-5/10');
+      assert.equal(res.headers.get('accept-ranges'), 'bytes');
+      assert.equal(res.headers.get('content-length'), '4');
+      assert.equal(await res.text(), attendu);
+    }
+  });
+
+  test('borne ouverte, suffixe et borne dépassant la fin lisent la bonne partie', async () => {
+    for (const [range, contenu, plage] of [
+      ['bytes=7-', '789', '7-9'],
+      ['bytes=-3', '789', '7-9'],
+      ['bytes=8-999', '89', '8-9'],
+      ['bytes=-999999999999999999999999', '0123456789', '0-9'],
+    ]) {
+      const res = await fetch(`${site.base}/demos/exemple.mp4`, { headers: { Range: range } });
+      assert.equal(res.status, 206, range);
+      assert.equal(res.headers.get('content-range'), `bytes ${plage}/10`, range);
+      assert.equal(Number(res.headers.get('content-length')), contenu.length, range);
+      assert.equal(await res.text(), contenu, range);
+    }
+  });
+
+  test('une plage impossible renvoie 416 avec la taille réelle et aucun octet', async () => {
+    for (const [cible, range, taille] of [
+      ['/demos/exemple.mp4', 'bytes=10-', 10],
+      ['/demos/exemple.webm', 'bytes=999999999999999999999999-9999999999999999999999999', 10],
+      ['/demos/exemple.mp4', 'bytes=-0', 10],
+    ]) {
+      const res = await fetch(`${site.base}${cible}`, { headers: { Range: range } });
+      assert.equal(res.status, 416, `${cible} ${range}`);
+      assert.equal(res.headers.get('content-range'), `bytes */${taille}`);
+      assert.equal(res.headers.get('content-length'), '0');
+      assert.equal(res.headers.get('accept-ranges'), 'bytes');
+      assert.equal(await res.text(), '');
+    }
+  });
+
+  test('un fichier vide reste servi sans plage ni corps', async () => {
+    for (const range of ['bytes=0-', 'bytes=-1']) {
+      const res = await fetch(`${site.base}/demos/vide.mp4`, { headers: { Range: range } });
+      assert.equal(res.status, 200, range);
+      assert.equal(res.headers.get('content-length'), '0');
+      assert.equal(res.headers.get('content-range'), null);
+      assert.equal(await res.text(), '');
+    }
+  });
+
+  test('HEAD ignore Range et annonce le fichier entier sans corps', async () => {
+    for (const extension of ['mp4', 'webm']) {
+      const res = await brute(site.port, 'HEAD', `/demos/exemple.${extension}`, { Range: 'bytes=2-5' });
+      assert.equal(res.statut, 200);
+      assert.equal(res.enTetes['content-type'], `video/${extension}`);
+      assert.equal(res.enTetes['content-length'], '10');
+      assert.equal(res.enTetes['accept-ranges'], 'bytes');
+      assert.equal(res.enTetes['content-range'], undefined);
+      assert.equal(res.corps, '');
+    }
+  });
+
+  test('plages multiples, malformées ou inconnues sont ignorées', async () => {
+    for (const range of ['bytes=0-1,4-5', 'bytes=-', 'bytes=7-3', 'bytes=abc-5', 'items=0-1']) {
+      const res = await fetch(`${site.base}/demos/exemple.mp4`, { headers: { Range: range } });
+      assert.equal(res.status, 200, range);
+      assert.equal(res.headers.get('content-range'), null, range);
+      assert.equal(await res.text(), '0123456789', range);
+    }
+    const res = await fetch(`${site.base}/theme.js`, { headers: { Range: 'bytes=0-1' } });
+    assert.equal(res.status, 200);
+    assert.equal(res.headers.get('accept-ranges'), null);
+    assert.equal(await res.text(), "document.documentElement.dataset.theme = 'jour';");
+  });
+
+  test('If-Range refuse un ETag faible, même identique ou débarrassé de W/', async () => {
+    const premier = await fetch(`${site.base}/demos/exemple.mp4`);
+    const etag = premier.headers.get('etag');
+    await premier.arrayBuffer();
+    assert.match(etag, /^W\//);
+    for (const condition of [etag, etag.slice(2), '"autre-version"', 'date invalide']) {
+      const res = await fetch(`${site.base}/demos/exemple.mp4`, {
+        headers: { Range: 'bytes=2-5', 'If-Range': condition },
+      });
+      assert.equal(res.status, 200, condition);
+      assert.equal(res.headers.get('content-range'), null, condition);
+      assert.equal(await res.text(), '0123456789', condition);
+    }
+  });
+
+  test('If-Range accepte la date exacte et refuse une date ancienne ou future', async () => {
+    const premier = await fetch(`${site.base}/demos/exemple.mp4`);
+    const modification = premier.headers.get('last-modified');
+    await premier.arrayBuffer();
+    for (const [condition, statut, contenu] of [
+      [modification, 206, '2345'],
+      [new Date(Date.parse(modification) - 1000).toUTCString(), 200, '0123456789'],
+      [new Date(Date.parse(modification) + 1000).toUTCString(), 200, '0123456789'],
+    ]) {
+      const res = await fetch(`${site.base}/demos/exemple.mp4`, {
+        headers: { Range: 'bytes=2-5', 'If-Range': condition },
+      });
+      assert.equal(res.status, statut, condition);
+      assert.equal(res.headers.get('content-range'), statut === 206 ? 'bytes 2-5/10' : null, condition);
+      assert.equal(await res.text(), contenu, condition);
+    }
+  });
+
+  test('la revalidation If-None-Match précède une plage demandée', async () => {
+    const premier = await fetch(`${site.base}/demos/exemple.mp4`);
+    const etag = premier.headers.get('etag');
+    await premier.arrayBuffer();
+    const res = await fetch(`${site.base}/demos/exemple.mp4`, {
+      headers: { Range: 'bytes=2-5', 'If-None-Match': etag },
+    });
+    assert.equal(res.status, 304);
+    assert.equal(res.headers.get('content-range'), null);
+    assert.equal(await res.text(), '');
   });
 });
 

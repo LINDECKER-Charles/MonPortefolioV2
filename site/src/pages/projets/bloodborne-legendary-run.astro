@@ -3,244 +3,167 @@ import { Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import FilAriane from '../../components/pages/FilAriane.astro';
 import ContinuerLecture from '../../components/pages/ContinuerLecture.astro';
+import RituelsBloodborne from '../../components/projets/RituelsBloodborne.astro';
+import FabricationBloodborne from '../../components/projets/FabricationBloodborne.astro';
+import BoutiqueBloodborne from '../../components/projets/BoutiqueBloodborne.astro';
+import AccesBloodborne from '../../components/projets/AccesBloodborne.astro';
 import { SITE } from '../../config/site';
+import parcours from '../../assets/projets/bloodborne/parcours-desktop.webp';
 import atlas from '../../assets/projets/bloodborne/atlas.webp';
-import constellation from '../../assets/projets/bloodborne/constellation.webp';
+import fiche from '../../assets/projets/bloodborne/fiche-objectif.webp';
+import personnages from '../../assets/projets/bloodborne/personnages.webp';
 import guide from '../../assets/projets/bloodborne/guide.webp';
 import yharnam from '../../assets/projets/bloodborne/yharnam.webp';
+import amis from '../../assets/projets/bloodborne/social-amis.webp';
+import comparaison from '../../assets/projets/bloodborne/social-comparaison.webp';
+import objectifCompare from '../../assets/projets/bloodborne/social-objectif.webp';
+import boutiqueFonds from '../../assets/projets/bloodborne/boutique-fonds.webp';
+import boutiqueBannieres from '../../assets/projets/bloodborne/boutique-bannieres.webp';
+import boutiquePortraits from '../../assets/projets/bloodborne/boutique-portraits.webp';
+import ajoutAmi from '../../assets/projets/bloodborne/social-ajout.webp';
 import '../../styles/profondeur.css';
+import '../../styles/bloodborne.css';
 
 const titre = `Bloodborne Legendary Run — ${SITE.nom}`;
-const description = 'Un compagnon de Bloodborne pour retrouver ses objectifs, suivre sa progression et préparer ses combats. Découvrez son usage à travers de vraies captures.';
-const vues = [
-  {
-    id: 'progress',
-    choix: 'Suivre sa progression',
-    titre: 'Savoir où reprendre.',
-    texte: 'Une partie peut s’étaler sur des semaines. La carte rassemble les différents parcours et retrouve l’étape où reprendre la chasse.',
-    resultat: 'Ce qui est accompli reste visible. Ce qui attend encore aussi.',
-    capture: atlas,
-    alt: 'La carte des constellations avec une invitation à reprendre la chasse et la progression de chaque parcours.',
-    legende: 'La carte des parcours, avec les objectifs accomplis et ceux qui restent à découvrir.',
-  },
-  {
-    id: 'objectives',
-    choix: 'Explorer les objectifs',
-    titre: 'Donner une forme à son parcours.',
-    texte: 'Boss, armes, quêtes et découvertes deviennent des étoiles reliées entre elles. Chaque objectif a sa fiche et s’allume quand il est accompli.',
-    resultat: 'Une constellation qui se construit au fil de la partie, et qui se compare à celle de ses amis.',
-    capture: constellation,
-    alt: 'Les objectifs de l’Arsenal de Yharnam représentés par des étoiles reliées, consultés en vue d’ensemble.',
-    legende: 'La vue d’ensemble relie les combats, les armes et les découvertes de l’Arsenal de Yharnam.',
-  },
-  {
-    id: 'combat',
-    choix: 'Préparer un combat',
-    titre: 'Arriver avec quelques repères.',
-    texte: 'Le guide réunit les faiblesses d’un boss, ses récompenses et les conseils pour l’affronter. Les données suivent le cycle de la partie choisi.',
-    resultat: 'L’information utile au moment où l’on en a besoin, à côté de la manette.',
-    capture: guide,
-    alt: 'La fiche du Père Gascoigne avec le choix du cycle, sa faiblesse au feu et les conseils pour préparer le combat.',
-    legende: 'La fiche du Père Gascoigne, de ses caractéristiques aux conseils de combat.',
-  },
+const description = 'Un compagnon de Bloodborne où chaque objectif devient une étoile. Découvrez les constellations, le guide et les choix derrière ce projet web et Android.';
+const captures = [
+  { id: '0', image: parcours, titre: 'La carte des parcours', alt: 'La carte des parcours de Bloodborne Legendary Run, avec la progression du personnage Gehrman et une invitation à reprendre l’Arsenal de Yharnam.' },
+  { id: '1', image: atlas, titre: 'Retrouver sa progression sur mobile', alt: 'La carte des parcours sur téléphone, avec les objectifs accomplis et le parcours à reprendre.' },
+  { id: '2', image: fiche, titre: 'Un objectif dans la constellation', alt: 'Une étoile de la constellation avec la fiche de Rom, l’Araignée stupide, son objectif et le bouton pour l’éveiller.' },
+  { id: '3', image: guide, titre: 'Préparer le combat contre le Père Gascoigne', alt: 'La fiche du Père Gascoigne avec le choix du cycle de la partie, sa faiblesse au feu et les conseils de combat.' },
+  { id: '4', image: personnages, titre: 'Une progression pour chaque personnage', alt: 'Le profil avec les personnages Gehrman, Lady Maria et Eileen, leurs progressions et les emplacements pour créer un personnage.' },
+  { id: '5', image: amis, titre: 'Retrouver ses amis et leurs dernières chasses', alt: 'La liste des amis avec une demande reçue, le personnage actif de chaque ami et sa dernière chasse.' },
+  { id: '6', image: comparaison, titre: 'Comparer deux constellations', alt: 'La constellation comparée avec Eileen, ses étoiles signalées en turquoise et les progressions des deux personnages.' },
+  { id: '7', image: objectifCompare, titre: 'Un même objectif, deux parcours', alt: 'La fiche d’un objectif comparé, éteint pour son propre personnage et allumé pour Eileen.' },
+  { id: '8', image: ajoutAmi, titre: 'Partager son code et trouver un ami', alt: 'Le volet d’ajout d’un ami avec son code partageable, un champ de recherche par code et l’annuaire des chasseurs.' },
+  { id: 'boutique-fonds', image: boutiqueFonds, titre: 'Les fonds de constellation', alt: 'Le rayon des fonds de constellation dans la boutique, avec ses paysages et leurs prix en échos de sang.' },
+  { id: 'boutique-bannieres', image: boutiqueBannieres, titre: 'Les bannières de profil', alt: 'Le rayon des bannières dans la boutique, avec les décors de profil et leurs prix en échos de sang.' },
+  { id: 'boutique-portraits', image: boutiquePortraits, titre: 'Les portraits de chasseur', alt: 'Le rayon des portraits dans la boutique, avec les visages de chasseurs et leurs prix en échos de sang.' },
+];
+const reprise = [
+  { index: 4, titre: 'Votre personnage', detail: 'Chaque partie garde sa progression.', classe: 'personnages' },
+  { index: 1, titre: 'Votre parcours', detail: 'La carte retrouve la chasse à poursuivre.', classe: 'atlas' },
+  { index: 2, titre: 'Votre prochaine étape', detail: 'L’objectif à atteindre, à portée de main.', classe: 'objectif' },
+];
+const social = [
+  { index: 5, titre: 'Retrouver ses amis', detail: 'Un code ou l’annuaire, une invitation acceptée. Les dernières chasses donnent des nouvelles.', classe: 'amis' },
+  { index: 6, titre: 'Croiser les constellations', detail: 'Choisissez un personnage de chaque côté. Les étoiles de votre ami apparaissent en turquoise.', classe: 'comparaison' },
+  { index: 7, titre: 'Comparer une réussite', detail: 'Un même objectif peut être éteint chez vous et allumé chez votre ami. Chacun suit son chemin.', classe: 'objectif' },
 ];
 ---
 
 <Base titre={titre} description={description} chemin="/projets/bloodborne-legendary-run">
-  <article class="wrap profondeur cas-bloodborne">
-    <FilAriane courant="Bloodborne Legendary Run" projet />
-
-    <header class="page-hero bloodborne-hero">
-      <div>
-        <p class="bloodborne-nom">Bloodborne Legendary Run</p>
-        <h1>Retrouver le fil de sa chasse.</h1>
-        <p class="page-hero__intro">Bloodborne est un jeu d’action et d’exploration, avec des combats, des objets à trouver et des quêtes. J’ai créé un guide pour préparer ces étapes et permettre au joueur d’indiquer lui-même ce qu’il a accompli, afin de retrouver où reprendre sa partie.</p>
-        <a class="btn btn--plein" href="#bloodborne-tour">Voir comment ça s’utilise</a>
+  <article class="profondeur cas-bloodborne" data-bloodborne-page>
+    <div class="wrap"><FilAriane courant="Bloodborne Legendary Run" projet /></div>
+    <header class="blr-hero wrap">
+      <div class="blr-hero__titre">
+        <p class="blr-nom">Bloodborne Legendary Run</p>
+        <h1>Chaque chasse mérite sa constellation.</h1>
       </div>
-      <p class="bloodborne-note">Chaque victoire allume une étoile.</p>
+      <figure class="blr-hero__visuel">
+        <div class="blr-paysage" aria-hidden="true">
+          <Picture src={yharnam} formats={['avif']} fallbackFormat="webp" widths={[640, 1000, 1400]} sizes="(min-width: 900px) 700px, 100vw" alt="" loading="eager" />
+        </div>
+        <div class="blr-fenetre">
+          <div class="blr-fenetre__barre" aria-hidden="true"><span></span><span></span><span></span><p>La carte de votre chasse</p></div>
+          <a href={parcours.src} data-blr-capture="0" aria-label="Agrandir la carte des parcours">
+            <Picture src={parcours} formats={['avif']} fallbackFormat="webp" widths={[640, 1000, 1400, 2200]} sizes="(min-width: 900px) 630px, 90vw" alt={captures[0].alt} loading="eager" fetchpriority="high" />
+          </a>
+        </div>
+        <div class="blr-telephone">
+          <a href={atlas.src} data-blr-capture="1" aria-label="Agrandir la carte sur mobile">
+            <Picture src={atlas} formats={['avif']} fallbackFormat="webp" widths={[240, 390, 780]} sizes="(min-width: 900px) 180px, 120px" alt={captures[1].alt} loading="eager" />
+          </a>
+        </div>
+        <figcaption>Le jeu sur console. Le compagnon à côté.</figcaption>
+      </figure>
+      <div class="blr-hero__texte">
+        <p class="blr-intro">Vos objectifs deviennent des étoiles. Retrouvez votre partie, préparez vos combats et comparez votre ciel à celui de vos amis. Un compagnon pour Bloodborne, à côté de la manette.</p>
+        <div class="blr-actions">
+          <a class="btn btn--plein" href="#le-compagnon">Découvrir le compagnon</a>
+          <a class="blr-lien" href="https://bloodborne-legendary-run.com" data-umami-event="lien-sortant" data-umami-event-domaine="bloodborne-legendary-run.com" data-umami-event-emplacement="hero">Ouvrir l’application <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10" /></svg></a>
+        </div>
+        <dl class="blr-identite">
+          <div><dt>Un projet personnel</dt><dd>Conception et développement</dd></div>
+          <div><dt>À portée de main</dt><dd>Web et Android</dd></div>
+        </dl>
+      </div>
     </header>
+    <nav class="blr-sommaire" aria-label="Dans cette page">
+      <div class="wrap"><a href="#le-compagnon">Reprendre</a><a href="#la-constellation">Les rituels</a><a href="#le-guide">Le guide</a><a href="#entre-amis">Entre amis</a><a href="#acces-compagnon">Essayer</a><a href="#la-fabrication">La fabrication</a></div>
+    </nav>
+    <div class="wrap">
+      <section class="blr-section blr-reprise" id="le-compagnon" aria-labelledby="compagnon-titre">
+        <div class="blr-tete-section"><div><p class="blr-repere">01 · Retrouver le fil</p><h2 id="compagnon-titre">Où en étais-je,<br />déjà&nbsp;?</h2></div><p>J’ai créé ce compagnon pour retrouver mes repères entre deux sessions. Un personnage, un parcours, une prochaine étoile&nbsp;: la chasse peut reprendre.</p></div>
+        <ol class="blr-reprise__parcours">
+          {reprise.map((etape, position) => <li>
+            <a class={`blr-reprise__capture blr-reprise__capture--${etape.classe}`} href={captures[etape.index].image.src} data-blr-capture={etape.index} aria-label={`Agrandir : ${etape.titre}`}>
+              <Picture src={captures[etape.index].image} formats={['avif']} fallbackFormat="webp" widths={[390, 780]} sizes="(min-width: 800px) 330px, 280px" alt={captures[etape.index].alt} loading="lazy" />
 
-    <section class="bloodborne-tour" id="bloodborne-tour" aria-labelledby="tour-titre">
-      <div class="bloodborne-tour__tete">
-        <h2 id="tour-titre">À côté de la manette.</h2>
-        <p>Choisissez un usage pour découvrir les écrans de l’application.</p>
-      </div>
-
-      <div class="bloodborne-gallery" data-bloodborne-gallery>
-        <div class="bloodborne-paysage" aria-hidden="true">
-          <Picture src={yharnam} formats={['avif']} fallbackFormat="webp" widths={[780, 1280, 1600]} sizes="(min-width: 900px) 1100px, 100vw" alt="" loading="lazy" />
+            </a>
+            <div class="blr-reprise__legende"><span aria-hidden="true">0{position + 1}</span><div><h3>{etape.titre}</h3><p>{etape.detail}</p></div></div>
+          </li>)}
+        </ol>
+        <p class="blr-defiler">Faites défiler les trois étapes →</p>
+        <p class="blr-precision">Le joueur indique ses réussites dans le compagnon. La sauvegarde du jeu reste sur la console.</p>
+      </section>
+      <RituelsBloodborne><BoutiqueBloodborne /></RituelsBloodborne>
+      <section class="blr-section blr-guide" id="le-guide" aria-labelledby="guide-titre">
+        <div class="blr-guide__texte">
+          <p class="blr-repere">03 · Préparer la suite</p><h2 id="guide-titre">Ce boss vous arrête&nbsp;?<br />Ouvrez sa fiche.</h2>
+          <p>Avant le Père Gascoigne, le guide rassemble les repères utiles. Le cycle choisi adapte les données à votre partie.</p>
+          <ul class="blr-guide__repères">
+            <li><span aria-hidden="true">01</span><div><h3>Repérer sa faiblesse</h3><p>Ici, le feu.</p></div></li>
+            <li><span aria-hidden="true">02</span><div><h3>Préparer le combat</h3><p>Stratégie, parades et déroulé des phases.</p></div></li>
+            <li><span aria-hidden="true">03</span><div><h3>Voir ce qu’il rapporte</h3><p>Récompenses et suite de la chasse.</p></div></li>
+          </ul>
+          <p class="blr-guide__volume"><span class="surligne">864 fiches</span> dans 12 familles, sans compte.</p>
+          <p class="blr-guide__familles">Boss · armes · runes · objets · lieux · quêtes…</p>
         </div>
+        <figure class="blr-ecran-mobile blr-guide__capture">
+          <a href={guide.src} data-blr-capture="3" aria-label="Agrandir la fiche du Père Gascoigne">
+            <Picture src={guide} formats={['avif']} fallbackFormat="webp" widths={[320, 480, 780]} sizes="(min-width: 800px) 310px, 280px" alt={captures[3].alt} loading="lazy" />
 
-        <fieldset class="bloodborne-choix">
-          <legend class="sr">Découvrir un usage de Bloodborne Legendary Run</legend>
-          {vues.map((vue, index) => (
-            <label>
-              <input type="radio" name="bloodborne-view" value={vue.id} checked={index === 0} data-bloodborne-view={vue.id} />
-              <span>{vue.choix}</span>
-            </label>
-          ))}
-        </fieldset>
+          </a><figcaption>Le guide du compagnon, sur une première partie.</figcaption>
+        </figure>
+      </section>
+      <section class="blr-section blr-social" id="entre-amis" aria-labelledby="social-titre">
+        <div class="blr-tete-section"><div><p class="blr-repere">04 · Entre amis</p><h2 id="social-titre">Deux chasseurs.<br />Deux chemins à croiser.</h2></div><p>La progression devient une conversation. Retrouvez la dernière chasse d’un ami et regardez ce qu’il a découvert dans son ciel.</p></div>
+        <div class="blr-social__legende"><span class="blr-social__etoile" aria-hidden="true">✦</span> Turquoise&nbsp;: les réussites de votre ami.</div>
+        <div class="blr-social__ecrans">
+          {social.map((etape, position) => <figure>
+            <a href={captures[etape.index].image.src} data-blr-capture={etape.index} aria-label={`Agrandir : ${etape.titre}`}>
+              <Picture src={captures[etape.index].image} formats={['avif']} fallbackFormat="webp" widths={[390, 780]} sizes="(min-width: 800px) 280px, 260px" alt={captures[etape.index].alt} loading="lazy" />
 
-        <div class="bloodborne-panneaux">
-          {vues.map((vue) => (
-            <div class="bloodborne-panneau" data-bloodborne-panel={vue.id}>
-              <div class="bloodborne-explication">
-                <h3>{vue.titre}</h3>
-                <p>{vue.texte}</p>
-                <p class="bloodborne-resultat">{vue.resultat}</p>
-              </div>
-              <figure class="bloodborne-capture">
-                <a href={vue.capture.src} aria-label={`Agrandir la capture — ${vue.choix.toLowerCase()}`}>
-                  <Picture src={vue.capture} formats={['avif']} fallbackFormat="webp" widths={[390, 580, 780]} sizes="(min-width: 640px) 390px, calc(100vw - 32px)" alt={vue.alt} loading={vue.id === 'progress' ? 'eager' : 'lazy'} />
-                </a>
-                <figcaption>
-                  <p>{vue.legende}</p>
-                  <a class="bloodborne-agrandir" href={vue.capture.src}>Agrandir la capture</a>
-                </figcaption>
-              </figure>
-            </div>
-          ))}
+            </a>
+            <figcaption><span class="blr-social__numero" aria-hidden="true">0{position + 1}</span><h3>{etape.titre}</h3><p>{etape.detail}</p>{position === 0 && <a class="blr-lien-detail" href={ajoutAmi.src} data-blr-capture="8">Voir l’ajout d’un ami <span aria-hidden="true">↗</span></a>}</figcaption>
+          </figure>)}
         </div>
-      </div>
-      <p class="bloodborne-legende">Captures prises dans le compagnon, sur un parcours d’exemple. Le jeu se joue sur console, avec l’application à portée de main.</p>
-    </section>
+        <p class="blr-defiler">Sur téléphone, faites défiler les trois écrans →</p>
+        <p class="blr-precision">On partage sa progression. Les notes, les morts et les captures restent personnels. La comparaison peut se mettre à jour en direct lorsque les deux amis ont l’application ouverte.</p>
+      </section>
+      <AccesBloodborne />
+      <FabricationBloodborne />
 
-    <section class="page-section bloodborne-besoin" aria-labelledby="besoin-titre">
-      <h2 id="besoin-titre">Une chasse qui garde son histoire.</h2>
-      <div class="prose">
-        <p>Au fil d’une partie de Bloodborne, il y a des combats, des quêtes, des armes à trouver et des chemins à explorer. Le compagnon rassemble ces objectifs et garde la trace de ceux qui sont accomplis.</p>
-        <p>Le joueur peut conserver ses notes, ses morts et ses captures pour chaque personnage. Le guide prépare la suite, tandis que la constellation raconte le chemin déjà parcouru.</p>
-        <div class="page-liens">
-          <a class="btn btn--plein" href="https://bloodborne-legendary-run.com" data-umami-event="lien-sortant" data-umami-event-domaine="bloodborne-legendary-run.com" data-umami-event-emplacement="preuves">Ouvrir le compagnon</a>
-        </div>
-        <p class="bloodborne-acces">Le guide et les galaxies se consultent sans compte. Un compte permet de sauvegarder sa progression.</p>
-      </div>
-    </section>
-
-    <details class="bloodborne-fabrication">
-      <summary>Un peu de fabrication, pour les curieux</summary>
-      <div class="prose">
-        <p>J’ai construit le compagnon pour le navigateur et pour Android. Le même parcours relie la carte des objectifs, le guide et les souvenirs de chaque personnage.</p>
-        <p>Le client utilise Angular, Ionic et Capacitor. Une API ASP.NET Core et PostgreSQL conservent les comptes et la progression. Le contenu des constellations se gère depuis un panneau d’administration.</p>
-        <p class="bloodborne-credits">Projet de fan indépendant, sans affiliation à Sony Interactive Entertainment ni à FromSoftware. Vue de Yharnam&nbsp;: capture de MoonlightGhost, Bloodborne Wiki. Visuels du jeu © Sony Interactive Entertainment / FromSoftware.</p>
-      </div>
-    </details>
-
-    <ContinuerLecture liens={[
-      { href: '/projets/gup', titre: 'gup', detail: 'Retrouver un point d’entrée pour ses mises à jour.' },
-      { href: '/projets/pvz-fusion', titre: 'PVZF Translation', detail: 'Rendre un jeu accessible dans une autre langue.' },
-      { href: '/projets', titre: 'Les projets', detail: 'Revenir à la sélection.' },
-      { href: '/contact', titre: 'Discutons', detail: 'Parlons de ce que nous pourrions construire.' },
-    ]} />
+      <aside class="blr-credits" aria-label="À propos des captures et des visuels"><p>Écrans et vidéos de la véritable application, avec des personnages et des progressions d’exemple. Les rituels sont enregistrés sur mobile, sans piste audio. Les chiffres visibles ne mesurent pas l’adoption du projet.</p><p>Projet de fan indépendant, sans affiliation à Sony Interactive Entertainment ni à FromSoftware. Vue de Yharnam&nbsp;: capture de MoonlightGhost, Bloodborne Wiki. Visuels du jeu © Sony Interactive Entertainment / FromSoftware.</p><p><a href="https://angular.dev/press-kit" data-umami-event="lien-sortant" data-umami-event-domaine="angular.dev" data-umami-event-emplacement="preuves">Logo Angular</a> © Google / Angular team, utilisé sous <a href="https://creativecommons.org/licenses/by/4.0/" data-umami-event="lien-sortant" data-umami-event-domaine="creativecommons.org" data-umami-event-emplacement="preuves">CC BY 4.0</a>.</p></aside>
+      <ContinuerLecture liens={[
+        { href: '/projets/gup', titre: 'gup', detail: 'Retrouver un point d’entrée pour ses mises à jour.' },
+        { href: '/projets/pvz-fusion', titre: 'PVZF Translation', detail: 'Rendre un jeu accessible dans une autre langue.' },
+        { href: '/projets', titre: 'Les projets', detail: 'Revenir à la sélection.' },
+        { href: '/contact', titre: 'Discutons', detail: 'Parlons de ce que nous pourrions construire.' },
+      ]} />
+    </div>
+    <dialog class="blr-visionneuse" data-blr-dialog aria-labelledby="blr-capture-titre" aria-describedby="blr-capture-aide">
+      <h2 class="sr" id="blr-capture-titre" data-blr-caption>Les écrans du compagnon</h2>
+      <div class="blr-visionneuse__images">{captures.map((capture) => <div data-blr-full={capture.id} hidden>
+        <button class="blr-visionneuse__image" type="button" data-blr-close aria-label={`Fermer la capture : ${capture.titre}`}>
+          <Picture src={capture.image} formats={['avif']} fallbackFormat="webp" widths={[780, 1400, 2200]} sizes="(orientation: portrait) 95vw, 90vh" alt={capture.alt} loading="lazy" />
+        </button><p data-blr-image-title hidden>{capture.titre}</p>
+      </div>)}</div>
+      <p class="blr-visionneuse__aide" id="blr-capture-aide">Cliquez sur l’image ou appuyez sur Échap pour revenir.</p>
+    </dialog>
   </article>
 </Base>
-
-<style>
-  .bloodborne-hero {
-    display: grid;
-    grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
-    gap: var(--s8);
-    align-items: end;
-  }
-  .bloodborne-nom { color: var(--bleu); font-weight: 700; margin-bottom: var(--s5); }
-  .bloodborne-hero .btn { margin-top: var(--s6); }
-  .bloodborne-note {
-    max-width: 15ch;
-    margin: 0 0 var(--s6) auto;
-    color: var(--bleu);
-    font-family: var(--font-note);
-    font-size: clamp(2rem, 1.2rem + 2vw, 3.1rem);
-    font-style: italic;
-    line-height: 1.2;
-  }
-  .bloodborne-tour { padding-bottom: var(--s8); scroll-margin-top: var(--s5); }
-  .bloodborne-tour__tete { margin-bottom: var(--s6); }
-  .bloodborne-tour__tete h2 { font-size: clamp(1.8rem, 1.4rem + 1vw, 2.5rem); }
-  .bloodborne-tour__tete > p { margin-top: var(--s3); color: var(--graphite); }
-  .bloodborne-gallery {
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
-    padding: clamp(24px, 4vw, 48px);
-    border-radius: var(--rayon);
-    background: #101718;
-    color: #e6e9e4;
-  }
-  .bloodborne-paysage { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
-  .bloodborne-paysage :global(picture), .bloodborne-paysage :global(img) { width: 100%; height: 100%; }
-  .bloodborne-paysage :global(img) { object-fit: cover; opacity: 0.2; }
-  .bloodborne-paysage::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #101718 10%, transparent); }
-  .bloodborne-choix {
-    position: relative;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--s2);
-    margin: 0 0 var(--s7);
-    padding: 0 0 var(--s5);
-    border: 0;
-    border-bottom: 1px solid #546062;
-  }
-  .bloodborne-choix label {
-    display: flex;
-    align-items: center;
-    gap: var(--s3);
-    min-height: 56px;
-    padding: var(--s3) var(--s4);
-    border: 1px solid #738083;
-    border-radius: var(--rayon);
-    cursor: pointer;
-    font-size: var(--t-petit);
-    line-height: 1.3;
-  }
-  .bloodborne-choix label:hover { border-color: #e6e9e4; }
-  .bloodborne-choix label:has(input:checked) { background: #e6e9e4; border-color: #e6e9e4; color: #101718; }
-  .bloodborne-choix label:has(input:focus-visible) { outline: 3px solid #a8c0ff; outline-offset: 4px; }
-  .bloodborne-choix input { width: 18px; height: 18px; flex-shrink: 0; margin: 0; accent-color: #1f4fd1; }
-  .bloodborne-panneau { display: none; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s7); align-items: start; }
-  .bloodborne-gallery:has([value='progress']:checked) [data-bloodborne-panel='progress'],
-  .bloodborne-gallery:has([value='objectives']:checked) [data-bloodborne-panel='objectives'],
-  .bloodborne-gallery:has([value='combat']:checked) [data-bloodborne-panel='combat'] { display: grid; }
-  .bloodborne-explication { position: sticky; top: calc(var(--hauteur-entete) + var(--s6)); padding-top: var(--s8); }
-  .bloodborne-explication h3 { max-width: 15ch; font-size: clamp(2rem, 1.4rem + 1.6vw, 3rem); font-weight: 700; }
-  .bloodborne-explication > p { max-width: 34ch; margin-top: var(--s5); line-height: 1.65; }
-  .bloodborne-explication .bloodborne-resultat { padding-left: var(--s4); border-left: 2px solid #a8c0ff; color: #cbd8df; }
-  .bloodborne-capture { width: min(100%, 390px); margin-inline: auto; }
-  .bloodborne-capture > a { display: block; }
-  .bloodborne-capture :global(img) { width: 100%; height: auto; border: 1px solid #465253; border-radius: var(--rayon); }
-  .bloodborne-capture figcaption { margin-top: var(--s4); font-size: var(--t-etiquette); line-height: 1.5; color: #cbd8df; }
-  .bloodborne-gallery a { color: #a8c0ff; }
-  .bloodborne-gallery a:focus-visible { outline-color: #a8c0ff; }
-  .bloodborne-agrandir { display: inline-flex; align-items: center; min-height: 44px; }
-  .bloodborne-legende { margin-top: var(--s4); font-size: var(--t-petit); color: var(--graphite); }
-  .bloodborne-besoin { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); gap: var(--s8); }
-  .bloodborne-besoin h2 { max-width: 15ch; }
-  .bloodborne-besoin .bloodborne-acces { margin-top: var(--s3); color: var(--graphite); font-size: var(--t-petit); }
-  .bloodborne-fabrication { padding: var(--s5) 0; border-block: 1px solid var(--filet); }
-  .bloodborne-fabrication summary { width: fit-content; min-height: 44px; color: var(--bleu); cursor: pointer; font-weight: 700; }
-  .bloodborne-fabrication .prose { padding-top: var(--s4); }
-  .bloodborne-credits { color: var(--graphite); font-size: var(--t-petit); }
-  @media (max-width: 900px) {
-    .bloodborne-hero { grid-template-columns: minmax(0, 1fr); gap: var(--s6); }
-    .bloodborne-note { max-width: none; margin: 0; font-size: 1.7rem; }
-    .bloodborne-choix { grid-template-columns: minmax(0, 1fr); margin-bottom: var(--s6); }
-    .bloodborne-panneau { grid-template-columns: minmax(0, 1fr); gap: var(--s6); }
-    .bloodborne-explication { position: static; padding-top: 0; }
-    .bloodborne-explication h3, .bloodborne-explication > p { max-width: 42ch; }
-    .bloodborne-besoin { grid-template-columns: minmax(0, 1fr); gap: var(--s6); }
-    .bloodborne-besoin h2 { max-width: 22ch; }
-  }
-  @media (max-width: 640px) {
-    .bloodborne-gallery { margin-inline: calc(-1 * var(--gouttiere)); padding: var(--s5) var(--s4); border-radius: 0; }
-    .bloodborne-explication { padding-inline: var(--s2); }
-    .bloodborne-explication h3 { max-width: 20ch; }
-    .bloodborne-explication > p { font-size: var(--t-petit); }
-    .bloodborne-capture figcaption { padding-inline: var(--s2); }
-  }
-  @media print {
-    .bloodborne-choix, .bloodborne-paysage { display: none; }
-    .bloodborne-gallery { background: #fff; color: #000; padding: 0; }
-    .bloodborne-panneau { display: grid; margin-bottom: var(--s7); }
-    .bloodborne-explication .bloodborne-resultat, .bloodborne-capture figcaption { color: #333; }
-    .bloodborne-explication { position: static; }
-  }
-</style>
+<script>
+  import '../../scripts/bloodborne-captures';
+</script>
