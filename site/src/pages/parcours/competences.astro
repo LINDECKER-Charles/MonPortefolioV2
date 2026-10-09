@@ -2,12 +2,12 @@
 import Parcours from '../../layouts/Parcours.astro';
 import LogoStack from '../../components/parcours/LogoStack.astro';
 import RepereCompetence from '../../components/parcours/RepereCompetence.astro';
-import { DOMAINES_TECHNIQUES, DOMAINES_QUALITE, COMPETENCES_HUMAINES, SITES_OFFICIELS } from '../../config/competences';
+import { DOMAINES_TECHNIQUES, DOMAINES_IA, DOMAINES_QUALITE, COMPETENCES_HUMAINES, SITES_OFFICIELS } from '../../config/competences';
 ---
 
 <Parcours
   titre="Compétences de Charles Lindecker"
-  description="Les technologies pratiquées et les compétences humaines de Charles Lindecker : web, applications, données, tests, DevOps, pédagogie et coordination."
+  description="Les compétences de Charles Lindecker : web, applications, intégration IA, Claude, Codex, MCP, synthèse vocale, tests, DevOps et pédagogie."
   chemin="/parcours/competences"
   courant="Compétences"
   introduction="Les technologies que j’ai pratiquées et ma façon de travailler avec les autres."
@@ -15,6 +15,7 @@ import { DOMAINES_TECHNIQUES, DOMAINES_QUALITE, COMPETENCES_HUMAINES, SITES_OFFI
   <div class="competences-synthese">
     <nav class="sommaire-competences ne-pas-imprimer" aria-label="Sommaire des compétences">
       <a href="#technologies">Technologies pratiquées</a>
+      <a href="#ia">Intelligence artificielle</a>
       <a href="#qualite">Tests et livraison</a>
       <a href="#humaines">Compétences humaines</a>
     </nav>
@@ -46,6 +47,33 @@ import { DOMAINES_TECHNIQUES, DOMAINES_QUALITE, COMPETENCES_HUMAINES, SITES_OFFI
                   </a>
                 </li>
               ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </section>
+
+    <section class="volet" id="ia" aria-labelledby="ia-titre">
+      <header class="volet-tete">
+        <h2 id="ia-titre">Intelligence artificielle</h2>
+      </header>
+
+      <div class="domaines domaines-ia">
+        {DOMAINES_IA.map((domaine) => (
+          <section class="domaine" aria-label={domaine.nom}>
+            <h3>{domaine.nom}</h3>
+            <ul class="stack" role="list">
+              {domaine.outils.map((outil) => (
+                <li>
+                  <a href={SITES_OFFICIELS[outil]} rel="external" title={`Site officiel de ${outil}`} data-umami-event="lien-sortant" data-umami-event-domaine={new URL(SITES_OFFICIELS[outil]).hostname} data-umami-event-emplacement="competences">
+                    <LogoStack nom={outil} />
+                    <span>{outil}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <ul class="points-cles capacites-ia" role="list">
+              {domaine.points.map((point) => <li>{point}</li>)}
             </ul>
           </section>
         ))}
@@ -139,6 +167,9 @@ import { DOMAINES_TECHNIQUES, DOMAINES_QUALITE, COMPETENCES_HUMAINES, SITES_OFFI
   .domaines { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s6); align-items: start; }
   .domaine { min-width: 0; padding: var(--s6); border: 1px solid var(--filet); border-radius: 8px; background: var(--blanc); }
   .domaine h3 { margin-bottom: var(--s5); font-size: clamp(1.35rem, 1.1rem + 0.4vw, 1.6rem); line-height: 1.2; }
+  .domaines-ia { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .domaines-ia .domaine { align-self: stretch; }
+  .domaines-ia .capacites-ia { flex-direction: column; align-items: flex-start; padding-top: var(--s4); border-top: 1px solid var(--filet); }
   .stack { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s3) var(--s4); margin: 0; padding: 0; list-style: none; }
   .stack li { min-width: 0; font-size: var(--t-petit); line-height: 1.35; }
   .stack a { display: flex; align-items: center; gap: var(--s3); min-height: 56px; width: 100%; color: var(--encre); text-decoration: none; border-radius: 3px; }
@@ -167,6 +198,7 @@ import { DOMAINES_TECHNIQUES, DOMAINES_QUALITE, COMPETENCES_HUMAINES, SITES_OFFI
   .organisation a { display: flex; align-items: center; gap: var(--s3); min-height: 44px; }
 
   @media (max-width: 1050px) {
+    .domaines-ia { grid-template-columns: minmax(0, 1fr); }
     .domaine { padding: var(--s5); }
     .stack { column-gap: var(--s3); }
     .stack li { font-size: var(--t-etiquette); }

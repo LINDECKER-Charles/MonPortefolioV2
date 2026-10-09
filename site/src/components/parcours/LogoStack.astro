@@ -137,7 +137,7 @@ const logos: Record<string, string> = {
   MCP: mcp,
 };
 const src = logos[nom];
-const outilsIllustres: OutilIllustre[] = ['SQL', 'Axum', 'SQLx', 'Stockage S3 compatible', 'Dompdf', 'OpenTUI', 'Make', 'axe-core'];
+const outilsIllustres: OutilIllustre[] = ['SQL', 'Axum', 'SQLx', 'Stockage S3 compatible', 'Dompdf', 'OpenTUI', 'Make', 'axe-core', 'Claude', 'Codex', 'Kokoro', 'Piper'];
 const illustration = outilsIllustres.find((outil) => outil === nom);
 if (!src && !illustration) throw new Error(`Visuel de stack inconnu : ${nom}`);
 const monochrome = ['Linux', 'Symfony', 'Express', 'Rust', 'Tokio', 'xUnit', 'MCP'].includes(nom);

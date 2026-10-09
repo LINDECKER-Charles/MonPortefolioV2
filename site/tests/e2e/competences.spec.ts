@@ -6,6 +6,7 @@ test('les familles de stacks et les compétences humaines restent faciles à par
   await page.goto('/parcours/competences');
   const synthese = page.locator('.competences-synthese');
   const technologies = synthese.getByRole('region', { name: 'Technologies pratiquées' });
+  const ia = synthese.getByRole('region', { name: 'Intelligence artificielle', exact: true });
   const humaines = synthese.getByRole('region', { name: 'Compétences humaines' });
 
   await expect(technologies.getByText('Angular', { exact: true })).toBeVisible();
@@ -13,7 +14,9 @@ test('les familles de stacks et les compétences humaines restent faciles à par
   await expect(technologies.getByText('Rust', { exact: true })).toBeVisible();
   await expect(technologies.getByText('Photino.NET', { exact: true })).toBeVisible();
   await expect(technologies.getByRole('link', { name: 'Angular', exact: true })).toHaveAttribute('href', 'https://angular.dev/');
-  await expect(technologies.getByRole('link', { name: 'MCP', exact: true })).toHaveAttribute('href', 'https://modelcontextprotocol.io/');
+  await expect(ia.getByRole('link', { name: 'MCP', exact: true })).toHaveAttribute('href', 'https://modelcontextprotocol.io/');
+  await expect(ia.getByRole('link', { name: 'Claude', exact: true })).toHaveAttribute('href', 'https://claude.com/');
+  await expect(ia.getByRole('link', { name: 'Codex', exact: true })).toHaveAttribute('href', 'https://openai.com/codex/');
   await expect(humaines.getByRole('heading', { name: 'Pédagogie', exact: true })).toBeVisible();
   await expect(synthese.locator('a[href^="/projets"]')).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -32,6 +35,9 @@ test('les familles de stacks et les compétences humaines restent faciles à par
     }
   }
 
+  await synthese.getByRole('navigation', { name: 'Sommaire des compétences' }).getByRole('link', { name: 'Intelligence artificielle', exact: true }).click();
+  await expect(ia.getByRole('heading', { name: 'Intelligence artificielle', exact: true })).toBeInViewport();
+  await ia.screenshot({ path: testInfo.outputPath('competences-ia.png') });
   await synthese.getByRole('navigation', { name: 'Sommaire des compétences' }).getByRole('link', { name: 'Compétences humaines', exact: true }).click();
   await expect(humaines.getByRole('heading', { name: 'Compétences humaines', exact: true })).toBeInViewport();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

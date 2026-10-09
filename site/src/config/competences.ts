@@ -3,10 +3,16 @@
 export const DOMAINES_TECHNIQUES = [
   { nom: 'Langages', outils: ['TypeScript', 'JavaScript', 'C#', 'PHP', 'Java', 'Python', 'Rust', 'Go', 'C', 'SQL'] },
   { nom: 'Web et interfaces', outils: ['HTML', 'CSS', 'Angular', 'React', 'Vue.js', 'Tailwind CSS', 'Sass', 'RxJS', 'GSAP', 'Twig', 'Leaflet', 'Chart.js', 'WebAssembly'] },
-  { nom: 'Backend et API', outils: ['.NET', 'ASP.NET Core', 'Node.js', 'Express', 'Symfony', 'Spring Boot', 'FastAPI', 'Axum', 'Tokio', 'SignalR', 'API Platform', 'MCP'] },
+  { nom: 'Backend et API', outils: ['.NET', 'ASP.NET Core', 'Node.js', 'Express', 'Symfony', 'Spring Boot', 'FastAPI', 'Axum', 'Tokio', 'SignalR', 'API Platform'] },
   { nom: 'Données et persistance', outils: ['PostgreSQL', 'MySQL', 'SQLite', 'EF Core', 'Doctrine', 'SQLx', 'Stockage S3 compatible'] },
   { nom: 'Mobile et applications de bureau', outils: ['Ionic', 'Capacitor', 'Tauri', 'Photino.NET'] },
   { nom: 'Scripts, fichiers et outils en console', outils: ['Bash', 'sharp', 'Pillow', 'Dompdf', 'OpenTUI', 'Make', 'GCC'] },
+] as const;
+
+export const DOMAINES_IA = [
+  { nom: 'Assistants et agents', outils: ['Claude', 'Codex'], points: ['Développement assisté', 'Intégration CLI', 'Prompts et contexte', 'Veille automatisée'] },
+  { nom: 'Intégration aux applications', outils: ['MCP'], points: ['Serveurs et outils MCP', 'Schémas JSON', 'Permissions et quotas'] },
+  { nom: 'Synthèse vocale', outils: ['Kokoro', 'Piper'], points: ['Modèles auto-hébergés', 'Streaming audio', 'Cache des générations'] },
 ] as const;
 
 export const DOMAINES_QUALITE = [
@@ -14,7 +20,7 @@ export const DOMAINES_QUALITE = [
   { nom: 'Livraison et observabilité', outils: ['Git', 'GitHub Actions', 'Docker', 'Linux', 'Apache', 'Nginx', 'Caddy', 'Vite', 'OpenTelemetry', 'Prometheus'] },
 ] as const;
 
-type Technologie = (typeof DOMAINES_TECHNIQUES | typeof DOMAINES_QUALITE)[number]['outils'][number];
+type Technologie = (typeof DOMAINES_TECHNIQUES | typeof DOMAINES_IA | typeof DOMAINES_QUALITE)[number]['outils'][number];
 
 // Sites des éditeurs, mainteneurs ou organismes de normalisation vérifiés le 2026-10-09.
 export const SITES_OFFICIELS = {
@@ -53,6 +59,10 @@ export const SITES_OFFICIELS = {
   SignalR: 'https://learn.microsoft.com/aspnet/core/signalr/',
   'API Platform': 'https://api-platform.com/',
   MCP: 'https://modelcontextprotocol.io/',
+  Claude: 'https://claude.com/',
+  Codex: 'https://openai.com/codex/',
+  Kokoro: 'https://github.com/hexgrad/kokoro',
+  Piper: 'https://github.com/OHF-Voice/piper1-gpl',
   PostgreSQL: 'https://www.postgresql.org/',
   MySQL: 'https://www.mysql.com/',
   SQLite: 'https://sqlite.org/',

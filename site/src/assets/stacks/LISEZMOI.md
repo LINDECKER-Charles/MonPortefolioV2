@@ -154,6 +154,14 @@ Leur couleur suit le thème jour/nuit.
 | OpenTUI | Interface dans un terminal | [OpenTUI](https://opentui.com/) |
 | Make | Sources assemblées en un résultat | [GNU Make](https://www.gnu.org/software/make/) |
 | axe-core | Accessibilité et vérification | [dequelabs/axe-core](https://github.com/dequelabs/axe-core) |
+| Claude | Dialogue et suggestion | [Claude](https://claude.com/) |
+| Codex | Terminal et code | [Codex](https://openai.com/codex/) |
+| Kokoro | Haut-parleur et ondes sonores | [hexgrad/Kokoro](https://huggingface.co/hexgrad/Kokoro-82M) |
+| Piper | Texte transformé en voix | [OHF-Voice/piper1-gpl](https://github.com/OHF-Voice/piper1-gpl) |
+
+Les visuels Claude, Codex, Kokoro et Piper sont des illustrations créées pour le portfolio,
+pas des logos de ces produits. Ils utilisent `currentColor`, suivent les couleurs du thème
+et restent lisibles à l’impression ainsi qu’en mode de contraste forcé.
 
 Le logo AWS S3 n’est pas utilisé pour représenter la compatibilité avec son protocole.
 La référence S3 documente l’API ; elle n’ajoute pas AWS aux technologies pratiquées.
@@ -173,5 +181,6 @@ L’audit ajoute HTML, CSS, JavaScript, Bash, C, Express, SQLite, Playwright, ES
 Twig, Doctrine, Leaflet, Caddy, Sass, RxJS, sharp, Rust, WebAssembly, Tauri, React,
 Vite, Go, Vue.js, xUnit, PHPUnit, Trello, Photino.NET, FastAPI, pytest, Tokio, OpenTelemetry,
 Prometheus, Karma, Jasmine, Pillow, API Platform, Spring Boot, GCC, Chart.js et MCP.
-SQL, Axum, SQLx, Stockage S3 compatible, Dompdf, OpenTUI, Make et axe-core affichent les
+SQL, Axum, SQLx, Stockage S3 compatible, Dompdf, OpenTUI, Make, axe-core, Claude, Codex,
+Kokoro et Piper affichent les
 illustrations métier ci-dessus. Aucun outil de la page Compétences ne laisse de visuel vide.
