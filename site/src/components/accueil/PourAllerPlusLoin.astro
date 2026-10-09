@@ -1,0 +1,88 @@
+---
+const liens = [
+  { href: '/projets', titre: 'Projets', detail: 'Ce que je construis et les choix derrière.' },
+  { href: '/parcours', titre: 'Parcours', detail: 'Mes expériences, mes compétences et mes formations.' },
+  { href: '/blog', titre: 'Blog', detail: 'Ce que j’apprends et ce que je partage.' },
+];
+---
+
+<nav class="plus-loin" aria-label="Pour aller plus loin">
+  <h2>Pour aller plus loin</h2>
+  <ul>
+    {liens.map((lien) => (
+      <li>
+        <a href={lien.href}>
+          <span class="plus-loin__titre">{lien.titre}</span>
+          <span class="plus-loin__detail">{lien.detail}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<style>
+  .plus-loin {
+    padding-block: var(--s7) var(--s9);
+    border-top: 1px solid var(--filet);
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  ul {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s7);
+    list-style: none;
+    margin: var(--s6) 0 0;
+    padding: 0;
+  }
+
+  a {
+    display: block;
+    min-height: 76px;
+    text-decoration: none;
+  }
+
+  .plus-loin__titre {
+    display: block;
+    font-size: clamp(1.5rem, 2vw, 1.875rem);
+    font-weight: 700;
+    line-height: 1.2;
+    text-decoration: underline;
+    text-underline-offset: .25em;
+  }
+
+  .plus-loin__detail {
+    display: block;
+    max-width: 25ch;
+    margin-top: var(--s3);
+    color: var(--graphite);
+    font-size: var(--t-petit);
+    line-height: 1.5;
+  }
+
+  a:hover .plus-loin__titre {
+    text-decoration-thickness: 2px;
+  }
+
+  @media (max-width: 640px) {
+    .plus-loin {
+      padding-block: var(--s6) var(--s8);
+    }
+
+    ul {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s5);
+      margin-top: var(--s5);
+    }
+
+    .plus-loin__detail {
+      max-width: 35ch;
+      margin-top: var(--s2);
+    }
+  }
+</style>

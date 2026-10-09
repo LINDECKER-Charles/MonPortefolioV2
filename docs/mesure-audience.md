@@ -67,10 +67,14 @@ hors exemption), `data-distinct-id` (identifiant durable, hors exemption),
      data-umami-event="contact-email"
      data-umami-event-emplacement="contact">Envoyer un e-mail</a>
 
-  <a href="https://github.com/LINDECKER-Charles/gup"
+  <a href="/contact"
+     data-umami-event="contact-page"
+     data-umami-event-emplacement="discutons">Parlons de votre projet</a>
+
+  <a href="https://github.com/LINDECKER-Charles"
      data-umami-event="lien-sortant"
      data-umami-event-domaine="github.com"
-     data-umami-event-emplacement="preuves">…</a>
+     data-umami-event-emplacement="discutons">Contribuer à mes projets open source</a>
   ```
 
   Pour un lien ouvert dans le même onglet (`mailto:`, lien interne), le traceur **retient la
@@ -81,7 +85,7 @@ hors exemption), `data-distinct-id` (identifiant durable, hors exemption),
   attributs sont ignorés, le lien fonctionne.
 - **Tout le reste** : la fonction `mesurer(nom, données)` du site, qui dépose l'événement dans
   `window.clFile` et ne lève jamais d'exception. Exemple : `mesurer('lecture', { chapitre:
-  'preuves' })`.
+  'discutons' })`.
 
 Toutes les valeurs d'attributs partent en chaînes ; `mesurer()` peut envoyer nombres et booléens.
 
@@ -96,11 +100,12 @@ enregistre déjà le chemin de chaque événement. Une conversion n'a qu'une sou
 
 | Événement | Déclencheur | Moyen | Propriétés |
 |---|---|---|---|
+| `contact-page` | clic sur un appel à l’action vers la page Contact | attributs `data-umami-event` | `emplacement` |
 | `contact-email` | clic sur un lien `mailto:` | attributs `data-umami-event` | `emplacement` |
 | `contact-copie` | bouton « Copier l'adresse » | `mesurer()` | `emplacement` |
 | `cv-telechargement` | lien de téléchargement du CV (quand le CV existera) | `mesurer()` | `emplacement` |
 | `lien-sortant` | lien vers LinkedIn, GitHub, npm, une démo ou un dépôt | attributs | `domaine` (nom d'hôte de la cible), `emplacement` |
-| `lecture` | un chapitre de l'accueil atteint, une fois par chargement | `mesurer()` | `chapitre` = `origine` \| `aujourdhui` \| `preuves` \| `dehors` \| `discutons` |
+| `lecture` | un chapitre de l'accueil atteint, une fois par chargement | `mesurer()` | `chapitre` = `origine` \| `aujourdhui` \| `discutons` |
 | `theme` | bascule jour/nuit par le visiteur | `mesurer()` | `choix` = `nuit` \| `jour` |
 | `glossaire` | ouverture d'une définition | `mesurer()` | `terme` (identifiant stable) |
 | `erreur-404` | affichage de la page 404 | `mesurer()` | `origine` = `interne` \| `externe` \| `directe` |
@@ -122,8 +127,8 @@ Précisions :
 
 | Propriété | Valeurs |
 |---|---|
-| `emplacement` | `en-tete`, `sommaire`, `hero`, `preuves`, `dehors`, `discutons`, `contact`, `pied-de-page`, `page-404`, `mentions` |
-| `chapitre` | `origine`, `aujourdhui`, `preuves`, `dehors`, `discutons` |
+| `emplacement` | `en-tete`, `sommaire`, `hero`, `preuves`, `discutons`, `contact`, `pied-de-page`, `page-404`, `mentions` |
+| `chapitre` | `origine`, `aujourdhui`, `discutons` |
 | `choix` | `nuit`, `jour` |
 | `origine` | `interne`, `externe`, `directe` |
 | `domaine` | nom d'hôte exact de la cible (`github.com`, `www.linkedin.com`, `www.npmjs.com`…) |
@@ -135,9 +140,23 @@ saisie ; un nom qui commence par `=`, `+`, `-` ou `@` (Umami rejette la requête
 l'injection dans les exports CSV).
 
 Depuis le 2026-10-08, la page `/contact` utilise l’emplacement `contact` pour l’e-mail, la copie
-d’adresse et les liens vers les profils publics. Les liens internes du menu et des pages restent
+d’adresse et les liens vers les profils publics. Les autres liens internes du menu et des pages restent
 des navigations ordinaires : les pages vues permettent de lire ce parcours. Les ouvertures de
 détail des illustrations ne créent aucun événement supplémentaire.
+
+L’essai de conclusion de l’accueil du 2026-10-08 conserve l’ancre et la valeur `discutons` pour
+le chapitre 03 « La suite, à plusieurs ». Son action principale « Parlons de votre projet »
+utilise l’événement `contact-page`, avec `emplacement` = `discutons`. L’invitation
+« Contribuer à mes projets open source » utilise `lien-sortant`, `domaine` = `github.com` et
+`emplacement` = `discutons`. Les liens de « Pour aller plus loin » vers Projets, Parcours et Blog
+restent des navigations ordinaires.
+
+L’emplacement `preuves` reste actif sur les pages de projets qui utilisent le composant `Fiche`.
+
+**Historique avant cet essai** : les valeurs de `chapitre` `preuves` et `dehors`, ainsi que
+l’emplacement `dehors`, ne font plus partie du plan courant. Les données déjà collectées sous
+ces valeurs restent à lire dans le contexte de l’ancienne structure de l’accueil. L’emplacement
+`preuves` conserve son usage sur les pages de projets.
 
 ### Ce qui est vérifié automatiquement
 
@@ -158,18 +177,18 @@ les chemins comme sur les noms d'événements.
 
 | # | Nom | Valeur | Lecture |
 |---|---|---|---|
-| O1 | Contacts | événement `contact-*` | e-mail ouvert ou adresse copiée : la conversion principale |
+| O1 | Contacts | événement `contact-*` | page Contact ouverte depuis un CTA, e-mail ouvert ou adresse copiée : les intentions de contact |
 | O2 | Récit lu jusqu'au bout | `lecture` avec `chapitre` = `discutons` | le visiteur a atteint l'appel à l'action |
-| O3 | Preuves consultées | `lien-sortant` avec `emplacement` = `preuves` | les études de cas donnent envie d'aller voir |
+| O3 | Invitation open source suivie | `lien-sortant` avec `emplacement` = `discutons` et `domaine` = `github.com` | l’invitation finale donne envie de découvrir les projets publics |
 | O4 | Pages introuvables | événement `erreur-404` | qualité : liens cassés, anciennes adresses à rediriger |
 
-O2 et O3 portent sur une valeur de propriété. Si l'écran des objectifs ne filtre pas sur les
+O2 et O3 portent sur des valeurs de propriété. Si l'écran des objectifs ne filtre pas sur les
 propriétés, lire la même chose dans *Événements → Propriétés* (`lecture` par `chapitre`,
 `lien-sortant` par `emplacement`), ou dans un entonnoir dont l'étape porte le filtre.
 
 | # | Nom | Étapes | Fenêtre (proposée) |
 |---|---|---|---|
-| E1 | Lecture → contact | page `/` → `lecture` (`chapitre` = `preuves`) → `contact-*` | 30 min |
+| E1 | Lecture → contact | page `/` → `lecture` (`chapitre` = `discutons`) → `contact-*` | 30 min |
 
 La fenêtre est le délai maximal, en minutes, entre deux étapes consécutives. Un filtre d'étape
 n'accepte que `=`, `≠`, « contient » et « ne contient pas », combinés en ET.

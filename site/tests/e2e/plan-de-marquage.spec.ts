@@ -52,6 +52,8 @@ test('ce que la lecture envoie respecte le dictionnaire', async ({ page }) => {
   }
   await page.getByRole('button', { name: 'Mode nuit' }).click();
   const evenements = await fileDeMesure(page);
-  expect(evenements.length).toBeGreaterThan(5);
+  expect(evenements.filter(([nom]) => nom === 'lecture').map(([, donnees]) => donnees?.chapitre)).toEqual(['origine', 'aujourdhui', 'discutons']);
+  expect(evenements).toContainEqual(['theme', { choix: 'nuit' }]);
+  expect(evenements).toHaveLength(4);
   expect(evenements.flatMap(([nom, donnees]) => problemesEvenement(nom, donnees ?? {}))).toEqual([]);
 });

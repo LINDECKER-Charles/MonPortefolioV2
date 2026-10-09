@@ -7,7 +7,7 @@
  * (docs/mesure-audience.md) : le changer, c'est casser la série statistique.
  */
 export interface Chapitre {
-  id: 'origine' | 'aujourdhui' | 'preuves' | 'dehors' | 'discutons';
+  id: 'origine' | 'aujourdhui' | 'discutons';
   num: number;
   titre: string;
   /** Ligne du sommaire, après les pointillés. */
@@ -17,9 +17,7 @@ export interface Chapitre {
 export const CHAPITRES: readonly Chapitre[] = [
   { id: 'origine', num: 1, titre: 'L’origine', resume: 'du premier PC aux premières équipes' },
   { id: 'aujourdhui', num: 2, titre: 'Aujourd’hui', resume: 'comprendre, construire, transmettre' },
-  { id: 'preuves', num: 3, titre: 'Les preuves', resume: 'les projets et les décisions' },
-  { id: 'dehors', num: 4, titre: 'En dehors du code', resume: 'ce qui nourrit ma curiosité' },
-  { id: 'discutons', num: 5, titre: 'Discutons', resume: 'faire connaissance' },
+  { id: 'discutons', num: 3, titre: 'La suite, à plusieurs', resume: 'construire la suite ensemble' },
 ];
 
 export function chapitre(id: Chapitre['id']): Chapitre {

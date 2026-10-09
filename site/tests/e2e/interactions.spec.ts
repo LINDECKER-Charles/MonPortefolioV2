@@ -116,14 +116,14 @@ test.describe('glossaire', () => {
 test('« Copier l’adresse » copie, le dit, puis revient', async ({ page, context, browserName }) => {
   test.skip(browserName !== 'chromium', 'permissions du presse-papiers propres à Chromium');
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
-  await page.goto('/');
+  await page.goto('/contact');
   const bouton = page.locator('button[data-copier]');
   await bouton.scrollIntoViewIfNeeded();
   await bouton.click();
   await expect(bouton).toHaveText(/Adresse copiée/);
   await expect(page.locator('[data-copier-statut]')).toHaveText('Adresse copiée');
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(CONTACT_EMAIL);
-  expect(await fileDeMesure(page)).toContainEqual(['contact-copie', { emplacement: 'discutons' }]);
+  expect(await fileDeMesure(page)).toContainEqual(['contact-copie', { emplacement: 'contact' }]);
   await expect(bouton).toHaveText(/Copier l’adresse/, { timeout: 4_000 });
 });
 
@@ -140,7 +140,7 @@ test('chaque chapitre atteint est mesuré une fois, dans l’ordre de lecture', 
     }
   }
   const lectures = (await fileDeMesure(page)).filter(([nom]) => nom === 'lecture').map(([, donnees]) => donnees?.chapitre);
-  expect(lectures).toEqual(['origine', 'aujourdhui', 'preuves', 'dehors', 'discutons']);
+  expect(lectures).toEqual(['origine', 'aujourdhui', 'discutons']);
 });
 
 test.describe('bureau', () => {
@@ -151,8 +151,8 @@ test.describe('bureau', () => {
     const reperes = page.getByRole('navigation', { name: 'Repère de lecture' });
     await expect(reperes).toBeVisible();
     await expect(reperes.locator('[aria-current]')).toHaveCount(0);
-    await page.evaluate(() => document.getElementById('preuves')?.scrollIntoView({ behavior: 'instant' }));
-    await expect(reperes.locator('[aria-current]')).toHaveText(/Les preuves/);
+    await page.evaluate(() => document.getElementById('discutons')?.scrollIntoView({ behavior: 'instant' }));
+    await expect(reperes.locator('[aria-current]')).toHaveText(/La suite, à plusieurs/);
   });
 });
 

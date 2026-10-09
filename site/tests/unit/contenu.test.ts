@@ -6,13 +6,13 @@ import { jsonLd, noeudPage, noeudPersonne } from '../../src/lib/seo';
 
 describe('chapitres', () => {
   it('sont numérotés dans l’ordre, avec des identifiants uniques', () => {
-    expect(CHAPITRES.map((c) => c.num)).toEqual([1, 2, 3, 4, 5]);
+    expect(CHAPITRES.map((c) => c.num)).toEqual([1, 2, 3]);
     expect(new Set(CHAPITRES.map((c) => c.id)).size).toBe(CHAPITRES.length);
   });
 
   it('gardent les identifiants du plan de marquage', () => {
     // Changer un identifiant casse la série statistique de l'événement `lecture`.
-    expect(CHAPITRES.map((c) => c.id)).toEqual(['origine', 'aujourdhui', 'preuves', 'dehors', 'discutons']);
+    expect(CHAPITRES.map((c) => c.id)).toEqual(['origine', 'aujourdhui', 'discutons']);
   });
 });
 
