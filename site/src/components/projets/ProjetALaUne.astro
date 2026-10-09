@@ -15,8 +15,7 @@ const { projet } = Astro.props;
     <p class="vedette__promesse">{projet.promesse}</p>
     <p class="vedette__resume">{projet.resume}</p>
     <div class="vedette__actions">
-      <a class="btn btn--plein" href={projet.href} data-open-project={projet.id} aria-haspopup="dialog">Ouvrir l’aperçu</a>
-      <a class="vedette__page" href={projet.href}>Page du projet</a>
+      <a class="btn btn--plein" href={projet.href}>Page du projet</a>
     </div>
   </div>
   <figure class="vedette__visuel" data-featured-image="overview">
@@ -35,7 +34,6 @@ const { projet } = Astro.props;
   .vedette__resume { margin-top: 10px; color: var(--graphite); font-size: 1rem; line-height: 1.5; max-width: 44ch; }
   .vedette__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 24px; margin-top: 24px; }
   .vedette__actions .btn { font-size: .9375rem; padding: 10px 18px; }
-  .vedette__page { display: inline-flex; align-items: center; min-height: 44px; font-size: .875rem; }
   .vedette__visuel { min-width: 0; }
   .vedette__visuel > :global(picture), .vedette__visuel > :global(picture img) { display: block; width: 100%; height: 100%; object-fit: contain; }
   @media (max-width: 849px) {

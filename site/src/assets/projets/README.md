@@ -1,6 +1,6 @@
 # Captures des projets
 
-Captures utilisées dans le hub, les fenêtres de découverte et les pages dédiées.
+Captures utilisées dans le hub et les pages dédiées.
 Les cadres et la composition sont réalisés en CSS ; le contenu des interfaces n’est pas redessiné.
 
 ## Captures du 8 octobre 2026

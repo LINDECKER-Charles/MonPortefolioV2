@@ -3,7 +3,6 @@ import Base from '../../layouts/Base.astro';
 import FilAriane from '../../components/pages/FilAriane.astro';
 import ProjetALaUne from '../../components/projets/ProjetALaUne.astro';
 import ApercuProjet from '../../components/projets/ApercuProjet.astro';
-import DecouverteProjets from '../../components/projets/DecouverteProjets.astro';
 import { SITE } from '../../config/site';
 import { PROJETS_ACTIFS, PROJETS_ARCHIVES, PROJET_A_LA_UNE, THEMES_PROJETS } from '../../config/projets';
 import '../../styles/profondeur.css';
@@ -47,18 +46,17 @@ const vedette = PROJETS_ACTIFS.find((projet) => projet.id === PROJET_A_LA_UNE)!;
       </div>
       <div class="exploration__grille">
         {projets.map((projet) => <article class="projet-apercu" data-project-card={projet.id} data-project-categories={projet.categories.join(' ')}>
-          <a class="projet-apercu__visuel" href={projet.href} data-open-project={projet.id} aria-label={`Découvrir ${projet.nom}`}><ApercuProjet projet={projet} /></a>
+          <a class="projet-apercu__visuel" href={projet.href} aria-label={`Voir le projet ${projet.nom}`}><ApercuProjet projet={projet} /></a>
           <div class="projet-apercu__contenu">
           <p class="projet-apercu__usage">{projet.usage}</p>
           <h3>{projet.nom}</h3>
           <p class="projet-apercu__promesse">{projet.promesse}</p>
           <p class="projet-apercu__resume">{projet.resume}</p>
-          <div class="projet-apercu__actions"><a class="btn btn--contour" href={projet.href} data-open-project={projet.id}>Ouvrir l’aperçu<span class="sr"> de {projet.nom}</span></a><a href={projet.href}>Page du projet<span class="sr"> {projet.nom}</span></a></div>
+          <div class="projet-apercu__actions"><a class="btn btn--contour" href={projet.href}>Page du projet<span class="sr"> {projet.nom}</span></a></div>
           </div>
         </article>)}
       </div>
     </section>;})}
-    <noscript><p class="hub-sans-script">Les liens ouvrent directement les pages des projets.</p></noscript>
 
     <details class="archives" id="projets-archives">
       <summary>Projets archivés{PROJETS_ARCHIVES.length > 0 && <span> ({PROJETS_ARCHIVES.length})</span>}</summary>
@@ -69,7 +67,6 @@ const vedette = PROJETS_ACTIFS.find((projet) => projet.id === PROJET_A_LA_UNE)!;
 
     <div class="projets-suite"><p>Un projet commence souvent par une discussion.</p><a class="btn" href="/contact">Discutons</a></div>
   </div>
-  <DecouverteProjets />
 </Base>
 
 <style>
@@ -106,7 +103,6 @@ const vedette = PROJETS_ACTIFS.find((projet) => projet.id === PROJET_A_LA_UNE)!;
   .projet-apercu__resume { margin-top: var(--s2); font-size: .9375rem; color: var(--graphite); line-height: 1.5; max-width: 45ch; }
   .projet-apercu__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin-top: 20px; }
   .projet-apercu__actions .btn { min-height: 44px; padding: 8px 16px; font-size: .875rem; }
-  .projet-apercu__actions > a:not(.btn) { display: inline-flex; align-items: center; min-height: 44px; font-size: .8125rem; }
   .archives { margin-top: var(--s8); border-top: 1px solid var(--filet); padding-top: var(--s4); color: var(--graphite); font-size: var(--t-petit); }
   .archives summary { width: fit-content; min-height: 44px; cursor: pointer; padding-block: 9px; }
   .archives p { margin-top: var(--s3); max-width: 65ch; }
@@ -114,7 +110,6 @@ const vedette = PROJETS_ACTIFS.find((projet) => projet.id === PROJET_A_LA_UNE)!;
   .archives li { padding-block: var(--s4); }
   .projets-suite { display: flex; gap: var(--s5); align-items: center; justify-content: space-between; padding-block: var(--s7) var(--s8); }
   .projets-suite p { font-family: var(--font-note); font-style: italic; font-size: 1.65rem; }
-  .hub-sans-script { margin-top: var(--s4); font-size: var(--t-petit); color: var(--graphite); }
   @media (max-width: 1050px) { .theme { gap: 12px; padding: 24px 20px; } .theme__icone { flex-basis: 48px; width: 48px; height: 48px; } .theme__contenu strong { font-size: 1.2rem; } .exploration__grille { gap: var(--s5); } .projet-apercu h3 { font-size: 1.5rem; } }
   @media (max-width: 849px) { .hub-intro, .orientation__tete { grid-template-columns: minmax(0, 1fr); gap: var(--s4); } .hub-intro { padding-top: var(--s4); } .hub-intro h1 { max-width: 20ch; } .themes { grid-template-columns: minmax(0, 1fr); gap: var(--s4); } .theme { min-height: 125px; } .theme__icone { flex-basis: 64px; width: 64px; height: 64px; } .exploration__grille { grid-template-columns: minmax(0, 1fr); gap: var(--s7); } .exploration--outils .projet-apercu { grid-template-columns: minmax(0, 1fr); gap: 20px; } .projet-apercu h3 { font-size: 1.8rem; } }
   @media (max-width: 480px) { .projets-suite { flex-direction: column; align-items: flex-start; } .theme__contenu strong { font-size: 1.25rem; } .theme__icone { flex-basis: 48px; width: 48px; height: 48px; } .exploration__tete { align-items: flex-start; } }
