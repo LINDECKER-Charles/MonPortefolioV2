@@ -105,8 +105,9 @@ mise en page reste indépendante ; elles partagent seulement le cadre et les com
 
 La page `/parcours` est un hub vers `/parcours/professionnel`, `/parcours/competences` et
 `/parcours/formation`. Ces trois pages partagent le gabarit `site/src/layouts/Parcours.astro`,
-une navigation locale et un retour au hub. Les compétences sont présentées par domaine ; leurs
-liens avec les projets seront ajoutés dans une prochaine étape.
+une navigation locale et un retour au hub. Les compétences sont présentées par domaine,
+avec un logo ou une illustration et un lien officiel pour chaque technologie. Ces pages de
+consultation privilégient les faits et les visuels ; le récit reste sur l’accueil.
 
 La page Formation et certifications distingue une frise complète de formation (du DWWM
 aux premiers apprentissages, avec des étapes illustrées de taille variable), un catalogue de
@@ -158,13 +159,11 @@ sans JavaScript ou à l’impression, les illustrations restent complètes.
 Le hub `/projets` commence par un projet à la une, puis oriente vers « Jouer et explorer » ou
 « Simplifier le quotidien » par des ancres vers deux sections toujours visibles. Sa sélection comprend GUP, Bloodborne Legendary Run et PVZF
 Translation. Les données de la sélection et le choix éditorial de la vedette se règlent dans
-`site/src/config/projets.ts`. Les aperçus ouvrent des fenêtres de découverte propres aux projets,
-avec une explication du besoin, des captures et un accès à leurs pages complètes. L’exemple
-interactif GUP est dans le volet « Essayer un exemple » ; la traduction PVZF se compare
-côte à côte. Sans JavaScript, les liens ouvrent directement les pages des projets.
-Les démonstrations sont locales au navigateur : GUP utilise les données d’exemple de son dépôt,
-Bloodborne montre de vraies captures et PVZF présente des extraits authentiques de la traduction.
-La vedette reste statique, avec un bouton pour ouvrir la découverte. Les nouvelles captures
+`site/src/config/projets.ts`. La vedette et les cartes montrent des captures statiques et mènent
+directement aux pages des projets, sans fenêtre d’aperçu. Les démonstrations restent sur les
+pages dédiées : GUP utilise les données d’exemple de son dépôt et Bloodborne montre de vraies
+captures, agrandissables au clic. Les trois écrans de reprise de partie sont présentés entiers,
+sans recadrage, et occupent une ligne chacun sur téléphone. Les nouvelles captures
 Bloodborne et GUP proviennent de leurs interfaces locales sur données d’exemple ; leur
 provenance est détaillée dans `site/src/assets/projets/README.md`.
 
