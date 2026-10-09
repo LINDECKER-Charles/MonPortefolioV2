@@ -60,6 +60,8 @@ const TYPES = new Map([
   ['.webp', 'image/webp'],
   ['.avif', 'image/avif'],
   ['.gif', 'image/gif'],
+  ['.mp4', 'video/mp4'],
+  ['.webm', 'video/webm'],
   ['.ico', 'image/x-icon'],
   ['.woff2', 'font/woff2'],
   ['.woff', 'font/woff'],
@@ -70,6 +72,8 @@ const TYPES = new Map([
 const PREFIXE_EMPREINTE = '/_astro/';
 /** Ce qui pilote le rendu ou les robots : toujours revalidé. */
 const A_REVALIDER = new Set(['.html', '.xml', '.txt', '.webmanifest', '.json']);
+/** Les vidéos se lisent et se parcourent par plages d’octets. */
+const VIDEOS = new Set(['.mp4', '.webm']);
 
 /** Adresse du chargeur. Elle prime sur `public/mesure.js`, simple no-op pour `astro dev`. */
 const CHEMIN_MESURE = '/mesure.js';
@@ -305,6 +309,37 @@ function correspondEtag(entete, etag) {
   return entete.split(',').some((candidat) => sansFaible(candidat) === sansFaible(etag));
 }
 
+/** If-Range exige un validateur fort : l’ETag faible des fichiers ne suffit jamais. */
+function correspondIfRange(entete, etag, dateModification) {
+  if (entete === undefined) return true;
+  const valeur = entete.trim();
+  if (valeur.startsWith('"') || valeur.startsWith('W/')) {
+    return !etag.startsWith('W/') && valeur === etag;
+  }
+  // La date publiée, à la seconde, doit correspondre exactement (pas être ultérieure).
+  const date = Date.parse(valeur);
+  return Number.isFinite(date) && date === Math.floor(dateModification / 1000) * 1000;
+}
+
+/** Une plage simple ; undefined = ignorée, null = aucune partie disponible. */
+function lirePlage(entete, taille) {
+  const morceaux = /^bytes=(\d*)-(\d*)$/i.exec(entete.trim());
+  if (!morceaux || (!morceaux[1] && !morceaux[2])) return undefined;
+  // BigInt conserve les grandes bornes envoyées sans les arrondir ni les faire déborder.
+  const total = BigInt(taille);
+  if (total === 0n) return undefined;
+  if (!morceaux[1]) {
+    const longueur = BigInt(morceaux[2]);
+    if (longueur === 0n) return null;
+    return { debut: Number(longueur >= total ? 0n : total - longueur), fin: taille - 1 };
+  }
+  const debut = BigInt(morceaux[1]);
+  const fin = morceaux[2] ? BigInt(morceaux[2]) : total - 1n;
+  if (morceaux[2] && fin < debut) return undefined;
+  if (debut >= total) return null;
+  return { debut: Number(debut), fin: Number(fin >= total ? total - 1n : fin) };
+}
+
 async function estFichier(chemin) {
   try {
     return (await stat(chemin)).isFile();
@@ -376,6 +411,7 @@ export function creerServeur({ dossier, env = process.env } = {}) {
   async function envoyer(req, res, chemin, statut, cheminUrl) {
     const extension = path.extname(chemin).toLowerCase();
     const infos = await stat(chemin);
+    const video = statut === 200 && VIDEOS.has(extension);
     if (extension === '.html' && backend) {
       try { emailContact = await chargerEmailContact(backend); } catch { /* Dernière adresse connue si l’API redémarre. */ }
     }
@@ -390,6 +426,7 @@ export function creerServeur({ dossier, env = process.env } = {}) {
       'Content-Type': TYPES.get(extension) ?? 'application/octet-stream',
       'Cache-Control': cheminUrl === '/backoffice' ? 'no-store' : statut === 200 ? regimeDeCache(cheminUrl, extension) : 'no-cache',
       ...(cheminUrl === '/backoffice' ? { 'X-Robots-Tag': 'noindex, nofollow' } : {}),
+      ...(video ? { 'Accept-Ranges': 'bytes', 'Last-Modified': infos.mtime.toUTCString() } : {}),
       ETag: etag,
     };
     // Un 304 affirme que la ressource existe : jamais en réponse à une adresse inconnue.
@@ -398,8 +435,19 @@ export function creerServeur({ dossier, env = process.env } = {}) {
       res.end();
       return;
     }
-    enTetes['Content-Length'] = corpsHtml?.length ?? infos.size;
-    res.writeHead(statut, enTetes);
+    // Range ne s’applique qu’à GET ; HEAD annonce toujours le fichier entier.
+    const plage = video && req.method === 'GET' && req.headers.range
+      && correspondIfRange(req.headers['if-range'], etag, infos.mtimeMs)
+      ? lirePlage(req.headers.range, infos.size)
+      : undefined;
+    if (plage === null) {
+      res.writeHead(416, { ...enTetes, 'Content-Range': `bytes */${infos.size}`, 'Content-Length': 0 });
+      res.end();
+      return;
+    }
+    enTetes['Content-Length'] = plage ? plage.fin - plage.debut + 1 : corpsHtml?.length ?? infos.size;
+    if (plage) enTetes['Content-Range'] = `bytes ${plage.debut}-${plage.fin}/${infos.size}`;
+    res.writeHead(plage ? 206 : statut, enTetes);
     if (req.method === 'HEAD') {
       res.end();
       return;
@@ -408,8 +456,9 @@ export function creerServeur({ dossier, env = process.env } = {}) {
       res.end(corpsHtml);
       return;
     }
-    const flux = createReadStream(chemin);
+    const flux = createReadStream(chemin, plage ? { start: plage.debut, end: plage.fin } : undefined);
     flux.on('error', () => res.destroy());
+    if (video) res.once('close', () => flux.destroy());
     flux.pipe(res);
   }
 
