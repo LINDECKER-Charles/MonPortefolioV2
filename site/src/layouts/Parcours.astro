@@ -41,9 +41,22 @@ const suite = [
   .parcours-page .page-hero { padding-block: var(--s5) var(--s6); }
   .parcours-page .page-hero h1 { max-width: 24ch; font-size: clamp(2.25rem, 1.6rem + 2.5vw, 4rem); }
   .parcours-page .page-hero__intro { margin-top: var(--s4); max-width: 65ch; font-size: var(--t-corps); }
+  .parcours-page--compact .page-hero { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: center; gap: var(--s6); padding-block: var(--s3) var(--s5); }
+  .parcours-page--compact .page-hero h1 { font-size: clamp(2rem, 1.6rem + 1.7vw, 3.25rem); }
+  .parcours-page--compact .page-hero__intro { margin: 0; font-size: var(--t-petit); color: var(--graphite); max-width: 43ch; }
+  .parcours-page--compact :global(.navigation-parcours) { margin-bottom: var(--s6); }
+  @media (max-width: 900px) {
+    .parcours-page--compact .page-hero { display: block; }
+    .parcours-page--compact .page-hero__intro { margin-top: var(--s3); }
+  }
+  @media (max-width: 760px) {
+    .parcours-page--compact :global(.navigation-parcours) { margin-bottom: var(--s5); }
+    .parcours-page--compact :global(.navigation-parcours ul) { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: var(--s2); padding: var(--s1); }
+    .parcours-page--compact :global(.navigation-parcours li) { flex-shrink: 0; }
+    .parcours-page--compact :global(.navigation-parcours a) { min-height: 44px; font-size: .9375rem; white-space: nowrap; }
+  }
   @media (max-width: 700px) {
     .parcours-page--compact :global(.fil-ariane) { padding-block: var(--s4); font-size: var(--t-etiquette); }
     .parcours-page--compact .page-hero { padding-block: var(--s2) var(--s5); }
-    .parcours-page--compact :global(.navigation-parcours) { margin-bottom: var(--s5); }
   }
 </style>
