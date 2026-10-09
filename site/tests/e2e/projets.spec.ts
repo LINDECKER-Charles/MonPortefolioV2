@@ -35,6 +35,25 @@ test('GUP ne met à jour que les logiciels choisis et permet de recommencer', as
   expect(erreurs).toEqual([]);
 });
 
+test('les captures de reprise Bloodborne restent entières et lisibles', async ({ page }) => {
+  await page.goto('/projets/bloodborne-legendary-run');
+  const parcours = page.locator('.blr-reprise__parcours');
+  const captures = parcours.locator('.blr-reprise__capture img');
+  await expect(captures).toHaveCount(3);
+  for (const capture of await captures.all()) {
+    await capture.scrollIntoViewIfNeeded();
+    const dimensions = await capture.evaluate(async (image: HTMLImageElement) => {
+      await image.decode();
+      const cadre = image.getBoundingClientRect();
+      return { largeur: cadre.width, ratio: cadre.width / cadre.height, ratioSource: image.naturalWidth / image.naturalHeight };
+    });
+    expect(dimensions.ratio).toBeCloseTo(dimensions.ratioSource, 3);
+    const largeur = page.viewportSize()!.width;
+    expect(dimensions.largeur).toBeGreaterThan(largeur < 1101 ? Math.min(400, largeur * .75) : 320);
+  }
+  expect(await parcours.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
+});
+
 test('les vrais rituels Bloodborne se choisissent au clavier et se lisent sur demande', async ({ page }) => {
   const erreurs = surveillerConsole(page);
   await page.goto('/projets/bloodborne-legendary-run');

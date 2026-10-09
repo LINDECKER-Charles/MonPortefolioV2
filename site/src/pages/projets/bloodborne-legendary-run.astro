@@ -41,9 +41,9 @@ const captures = [
   { id: 'boutique-portraits', image: boutiquePortraits, titre: 'Les portraits de chasseur', alt: 'Le rayon des portraits dans la boutique, avec les visages de chasseurs et leurs prix en échos de sang.' },
 ];
 const reprise = [
-  { index: 4, titre: 'Votre personnage', detail: 'Chaque partie garde sa progression.', classe: 'personnages' },
-  { index: 1, titre: 'Votre parcours', detail: 'La carte retrouve la chasse à poursuivre.', classe: 'atlas' },
-  { index: 2, titre: 'Votre prochaine étape', detail: 'L’objectif à atteindre, à portée de main.', classe: 'objectif' },
+  { index: 4, titre: 'Votre personnage', detail: 'Chaque partie garde sa progression.' },
+  { index: 1, titre: 'Votre parcours', detail: 'La carte retrouve la chasse à poursuivre.' },
+  { index: 2, titre: 'Votre prochaine étape', detail: 'L’objectif à atteindre, à portée de main.' },
 ];
 const social = [
   { index: 5, titre: 'Retrouver ses amis', detail: 'Un code ou l’annuaire, une invitation acceptée. Les dernières chasses donnent des nouvelles.', classe: 'amis' },
@@ -97,14 +97,12 @@ const social = [
         <div class="blr-tete-section"><div><p class="blr-repere">01 · Retrouver le fil</p><h2 id="compagnon-titre">Où en étais-je,<br />déjà&nbsp;?</h2></div><p>J’ai créé ce compagnon pour retrouver mes repères entre deux sessions. Un personnage, un parcours, une prochaine étoile&nbsp;: la chasse peut reprendre.</p></div>
         <ol class="blr-reprise__parcours">
           {reprise.map((etape, position) => <li>
-            <a class={`blr-reprise__capture blr-reprise__capture--${etape.classe}`} href={captures[etape.index].image.src} data-blr-capture={etape.index} aria-label={`Agrandir : ${etape.titre}`}>
-              <Picture src={captures[etape.index].image} formats={['avif']} fallbackFormat="webp" widths={[390, 780]} sizes="(min-width: 800px) 330px, 280px" alt={captures[etape.index].alt} loading="lazy" />
-
-            </a>
             <div class="blr-reprise__legende"><span aria-hidden="true">0{position + 1}</span><div><h3>{etape.titre}</h3><p>{etape.detail}</p></div></div>
+            <a class="blr-reprise__capture" href={captures[etape.index].image.src} data-blr-capture={etape.index} aria-label={`Agrandir : ${etape.titre}`}>
+              <Picture src={captures[etape.index].image} formats={['avif']} fallbackFormat="webp" widths={[390, 780]} sizes="(min-width: 1101px) 375px, (min-width: 468px) 420px, calc(100vw - 48px)" alt={captures[etape.index].alt} loading="lazy" />
+            </a>
           </li>)}
         </ol>
-        <p class="blr-defiler">Faites défiler les trois étapes →</p>
         <p class="blr-precision">Le joueur indique ses réussites dans le compagnon. La sauvegarde du jeu reste sur la console.</p>
       </section>
       <RituelsBloodborne><BoutiqueBloodborne /></RituelsBloodborne>
