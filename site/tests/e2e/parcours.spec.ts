@@ -26,6 +26,42 @@ test('chaque illustration du hub ouvre la page de son panneau', async ({ page })
   }
 });
 
+test('le poste actuel apparaît dès l’ouverture et les repères suivent la navigation', async ({ page, isMobile }) => {
+  await page.goto('/parcours/professionnel');
+  const emploi = page.locator('#architecture');
+  const posteActuel = emploi.getByRole('heading', { name: 'Architecte logiciel', level: 3, exact: true });
+  await expect(posteActuel).toBeInViewport({ ratio: 1 });
+  await expect(emploi.getByText('Je travaille sur le développement web et le DevOps.', { exact: true })).toBeInViewport({ ratio: 1 });
+
+  const raccourcis = page.locator('details.raccourcis-mobile');
+  if (isMobile) {
+    await expect(raccourcis).not.toHaveAttribute('open', '');
+    await raccourcis.locator('summary', { hasText: /^Aller à une expérience$/ }).click();
+    await expect(raccourcis).toHaveAttribute('open', '');
+  }
+  const reperes = page.getByRole('navigation', { name: 'Repères chronologiques', exact: true });
+  const courant = reperes.locator('a[aria-current="location"]');
+  if (!isMobile) {
+    await expect(courant).toHaveCount(1);
+    await expect(courant).toHaveAttribute('href', '#architecture');
+  }
+  await reperes.locator('a[href="#elan"]').click();
+  await expect(page).toHaveURL(/#elan$/);
+  await expect(page.locator('#elan').getByRole('heading', { name: 'Formateur en développement web', level: 3, exact: true })).toBeInViewport({ ratio: 1 });
+
+  if (isMobile) {
+    await expect(raccourcis).not.toHaveAttribute('open', '');
+  } else {
+    await expect(courant).toHaveCount(1);
+    await expect(courant).toHaveAttribute('href', '#elan');
+    await page.mouse.wheel(0, -10_000);
+    await expect(posteActuel).toBeInViewport({ ratio: 1 });
+    await expect(courant).toHaveCount(1);
+    await expect(courant).toHaveAttribute('href', '#architecture');
+    await expect(page).toHaveURL(/#elan$/);
+  }
+});
+
 test.describe('navigation sans JavaScript', () => {
   test.use({ javaScriptEnabled: false });
 
@@ -51,6 +87,56 @@ test.describe('navigation sans JavaScript', () => {
       await expect(page).toHaveURL(/\/parcours$/);
       await expect(page.getByRole('heading', { level: 1 })).toHaveText('Mon parcours');
     }
+  });
+
+  test('les expériences se lisent de la plus récente à la plus ancienne, avec des repères accessibles au clavier', async ({ page }) => {
+    await page.goto('/parcours/professionnel');
+    await expect(page.getByRole('heading', { name: 'Expériences', level: 2, exact: true })).toBeVisible();
+    const emploi = page.locator('#architecture');
+    await expect(emploi.getByText('Août 2026', { exact: true })).toBeVisible();
+    await expect(emploi.getByRole('heading', { name: 'Architecte logiciel', level: 3, exact: true })).toBeVisible();
+    await expect(emploi.locator('.experience__structure')).toHaveText('B-Hive Mulhouse');
+
+    const parcours = [
+      { id: 'architecture', poste: 'Architecte logiciel', dates: ['2026-08'], statut: 'CDI' },
+      { id: 'mission-locale', poste: 'Mentor et animateur d’ateliers', dates: ['2026-01'], statut: 'Bénévolat terminé' },
+      { id: 'elan', poste: 'Formateur en développement web', dates: ['2025-12'], statut: 'Mission terminée' },
+      { id: 'devmates', poste: 'Développeur indépendant', dates: ['2025-11'], statut: 'Société ouverte' },
+      { id: 'pvz', poste: 'Lead et mainteneur', dates: ['2025-10'], statut: 'Bénévolat en cours' },
+      { id: 'atis', poste: 'Développeur full stack', dates: ['2025-08', '2025-09'], statut: 'Stage terminé' },
+    ];
+    const etapes = page.locator('ol.chronologie > li.chronologie__etape');
+    await expect(etapes).toHaveCount(parcours.length);
+    await expect(etapes.getByRole('heading', { level: 3 })).toHaveText(parcours.map(({ poste }) => poste));
+
+    const raccourcis = page.locator('details.raccourcis-mobile');
+    if (await raccourcis.isVisible()) {
+      await expect(raccourcis).not.toHaveAttribute('open', '');
+      await raccourcis.locator('summary', { hasText: /^Aller à une expérience$/ }).focus();
+      await page.keyboard.press('Enter');
+      await expect(raccourcis).toHaveAttribute('open', '');
+    }
+    const reperes = page.getByRole('navigation', { name: 'Repères chronologiques', exact: true });
+    const liens = reperes.getByRole('link');
+    await expect(liens).toHaveCount(parcours.length);
+    for (const [index, { id, poste, dates, statut }] of parcours.entries()) {
+      const etape = etapes.nth(index);
+      await expect(etape).toHaveAttribute('id', id);
+      const temps = etape.locator('time');
+      await expect(temps).toHaveCount(dates.length);
+      for (const [position, date] of dates.entries()) {
+        await expect(temps.nth(position)).toHaveAttribute('datetime', date);
+      }
+      await expect(etape.getByText(statut, { exact: true })).toBeVisible();
+
+      const repere = liens.nth(index);
+      await expect(repere).toHaveAttribute('href', `#${id}`);
+      await repere.focus();
+      await page.keyboard.press('Enter');
+      await expect(page).toHaveURL(new RegExp(`#${id}$`));
+      await expect(page.locator(`#${id}`).getByRole('heading', { name: poste, level: 3, exact: true })).toBeInViewport();
+    }
+    await expect(page.locator('#devmates').getByText(/sans client actuellement/)).toBeVisible();
   });
 
   test('les contextes professionnels et les certifications se déplient au clavier', async ({ page }) => {
