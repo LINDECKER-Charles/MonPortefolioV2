@@ -14,7 +14,6 @@ export const EMPLACEMENTS = [
   'sommaire',
   'hero',
   'preuves',
-  'dehors',
   'discutons',
   'contact',
   'pied-de-page',
@@ -26,6 +25,7 @@ export const EMPLACEMENTS = [
 export type Regle = readonly string[] | 'hote-du-lien';
 
 export const EVENEMENTS: Readonly<Record<string, Readonly<Record<string, Regle>>>> = {
+  'contact-page': { emplacement: EMPLACEMENTS },
   'contact-email': { emplacement: EMPLACEMENTS },
   'contact-copie': { emplacement: EMPLACEMENTS },
   'cv-telechargement': { emplacement: EMPLACEMENTS },

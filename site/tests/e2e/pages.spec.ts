@@ -19,9 +19,11 @@ for (const chemin of nouvellesPages) {
   });
 }
 
-test('les preuves mènent à des projets qui se répondent', async ({ page }) => {
+test('la fin du récit mène à la vitrine et à des projets qui se répondent', async ({ page }) => {
   await page.goto('/');
-  await page.locator('#fiche-pvz a[href="/projets/pvz-fusion"]').click();
+  await page.getByRole('navigation', { name: 'Pour aller plus loin', exact: true }).locator('a[href="/projets"]').click();
+  await expect(page).toHaveURL(/\/projets$/);
+  await page.locator('[data-project-card="pvz"]').getByRole('link', { name: 'Page du projet PVZF Translation', exact: true }).click();
   await expect(page).toHaveURL(/\/projets\/pvz-fusion$/);
   await page.locator('main a[href="/projets/omnicard"]').first().click();
   await expect(page).toHaveURL(/\/projets\/omnicard$/);

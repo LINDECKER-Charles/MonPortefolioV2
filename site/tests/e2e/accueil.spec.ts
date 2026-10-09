@@ -2,17 +2,15 @@ import { expect, test } from '@playwright/test';
 import { surveillerConsole } from './support/navigateur';
 
 /**
- * L'accueil se lit de haut en bas : couverture, sommaire, cinq chapitres dans
- * l'ordre, un seul appel principal. Sans erreur de console (une violation de
+ * L'accueil se lit de haut en bas : couverture, sommaire, trois chapitres dans
+ * l'ordre, une invitation puis des liens pour approfondir. Sans erreur de console (une violation de
  * la CSP en serait une), sans défilement horizontal, à chaque largeur.
  */
 
 const CHAPITRES = [
   ['origine', 'L’origine'],
   ['aujourdhui', 'Aujourd’hui'],
-  ['preuves', 'Les preuves'],
-  ['dehors', 'En dehors du code'],
-  ['discutons', 'Discutons'],
+  ['discutons', 'La suite, à plusieurs'],
 ] as const;
 
 test('la couverture dit qui, quoi, et comment écrire', async ({ page }) => {
@@ -28,7 +26,7 @@ test('la couverture dit qui, quoi, et comment écrire', async ({ page }) => {
   expect(await photo.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
 });
 
-test('le sommaire annonce les cinq chapitres, dans l’ordre, et une durée de lecture', async ({ page }) => {
+test('le sommaire annonce les trois chapitres, dans l’ordre, et une durée de lecture', async ({ page }) => {
   await page.goto('/');
   const sommaire = page.getByRole('navigation', { name: 'Sommaire', exact: true });
   const liens = sommaire.getByRole('link');
@@ -38,10 +36,28 @@ test('le sommaire annonce les cinq chapitres, dans l’ordre, et une durée de l
     await expect(liens.nth(i)).toContainText(titre);
     await expect(page.locator(`section#${id} h2`)).toContainText(titre);
   }
+  await expect(page.locator('section[data-chapitre]')).toHaveCount(3);
+  await expect(page.locator('#preuves, #dehors')).toHaveCount(0);
   const duree = await sommaire.getByText(/Lecture complète/).textContent();
   const minutes = Number(duree?.match(/(\d+)\s*minutes/)?.[1]);
   expect(minutes).toBeGreaterThanOrEqual(4);
   expect(minutes).toBeLessThanOrEqual(12);
+});
+
+test('la conclusion invite à échanger ou contribuer, puis à poursuivre la lecture', async ({ page }) => {
+  await page.goto('/');
+  const conclusion = page.locator('#discutons');
+  const contact = conclusion.getByRole('link', { name: 'Parlons de votre projet', exact: true });
+  await expect(contact).toHaveAttribute('href', '/contact');
+  await expect(conclusion.getByRole('link', { name: 'Contribuer à mes projets open source', exact: true })).toHaveAttribute('href', 'https://github.com/LINDECKER-Charles');
+  const suite = page.getByRole('navigation', { name: 'Pour aller plus loin', exact: true });
+  await expect(suite.getByRole('link')).toHaveCount(3);
+  for (const destination of ['projets', 'parcours', 'blog']) {
+    await expect(suite.locator(`a[href="/${destination}"]`)).toHaveCount(1);
+  }
+  await contact.click();
+  await expect(page).toHaveURL(/\/contact$/);
+  await expect(page.locator('[data-contact-form]')).toBeVisible();
 });
 
 test('les figures dessinées se décrivent', async ({ page }) => {
@@ -76,7 +92,7 @@ test('la page se parcourt sans erreur ni défilement horizontal', async ({ page 
 
 test('le contact est à un clic depuis n’importe où dans la page', async ({ page }) => {
   await page.goto('/');
-  await page.locator('#preuves').scrollIntoViewIfNeeded();
+  await page.locator('#discutons').scrollIntoViewIfNeeded();
   await expect(page.getByRole('banner').getByRole('link', { name: 'Contact', exact: true })).toBeInViewport();
 });
 

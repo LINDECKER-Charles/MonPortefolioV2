@@ -1,8 +1,9 @@
 # MonPortefolioV2
 
 Portfolio de Charles Lindecker, version 2 : un **mode d'emploi**. L'accueil raconte, de haut en
-bas, l'origine, aujourd'hui, les preuves et ce qui fait la personne, avec un seul appel à
-l'action. Site statique produit par [Astro](https://astro.build), servi par un petit serveur
+bas, l’origine, aujourd’hui, puis « La suite, à plusieurs » : une invitation au contact et à la
+contribution open source. Cette nouvelle conclusion est un essai autorisé le 2026-10-08,
+à évaluer. Site statique produit par [Astro](https://astro.build), servi par un petit serveur
 Node sans dépendance, en conteneur derrière l'edge TLS mutualisé du VPS.
 
 ## Démarrer
@@ -87,7 +88,14 @@ l’API et sauvegarde de la base : [`backend/README.md`](backend/README.md).
 ## Pages et contenu
 
 L’accueil garde le récit. Les pages `/projets`, `/parcours`, `/contact` et `/blog` sont accessibles
-depuis la navigation et reliées entre elles. Les premières études de cas ont chacune un fichier
+depuis la navigation et reliées entre elles. L’essai de conclusion conserve trois chapitres :
+`origine`, `aujourdhui` et `discutons` (03, « La suite, à plusieurs »). Les sections séparées de
+preuves et de loisirs sont retirées ; les réalisations continuent à étayer le récit. Le CTA
+principal « Parlons de votre projet » ouvre `/contact`, et « Contribuer à mes projets open source »
+ouvre le profil GitHub public en attendant un parcours de contribution sur Projets. La navigation
+finale « Pour aller plus loin » mène à Projets, Parcours et Blog.
+
+Les premières études de cas ont chacune un fichier
 Astro dans `site/src/pages/projets/` : `pvz-fusion.astro`, `omnicard.astro`, `gup.astro` et
 `bloodborne-legendary-run.astro`. Leur
 mise en page reste indépendante ; elles partagent seulement le cadre et les composants utiles.

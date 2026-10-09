@@ -319,7 +319,7 @@ test('le champ antispam reste hors du parcours clavier', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Envoyer le message', exact: true })).toBeFocused();
 });
 
-for (const chemin of ['/contact', '/', '/mentions-legales']) {
+for (const chemin of ['/contact', '/mentions-legales']) {
   test(`l’adresse configurée est utilisée sur ${chemin}`, async ({ page }) => {
     await page.goto(chemin);
     const adresses = page.locator('a[href^="mailto:"]');

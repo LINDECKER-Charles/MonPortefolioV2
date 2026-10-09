@@ -1,8 +1,8 @@
 ---
 /**
  * L'accueil raconte, de haut en bas (brief § 5) : l'accroche, l'origine,
- * aujourd'hui, les preuves, ce qui fait que c'est lui, un seul appel à
- * l'action. Les textes reprennent les phrases de Charles (brief § 4, « Écrire
+ * aujourd'hui, puis une invitation à construire la suite à plusieurs.
+ * Les textes reprennent les phrases de Charles (brief § 4, « Écrire
  * avec sa voix ») ; chaque chiffre surligné est sourcé dans
  * docs/matiere-premiere.md.
  */
@@ -10,27 +10,18 @@ import Base from '../layouts/Base.astro';
 import Bloc from '../components/accueil/Bloc.astro';
 import Chapitre from '../components/accueil/Chapitre.astro';
 import Couverture from '../components/accueil/Couverture.astro';
-import Dehors from '../components/accueil/Dehors.astro';
 import Discutons from '../components/accueil/Discutons.astro';
 import Etape from '../components/accueil/Etape.astro';
-import Fiche from '../components/accueil/Fiche.astro';
 import FigureCollectif from '../components/accueil/FigureCollectif.astro';
 import FigureGwent from '../components/accueil/FigureGwent.astro';
 import FigurePlafond from '../components/accueil/FigurePlafond.astro';
 import Manuel from '../components/accueil/Manuel.astro';
+import PourAllerPlusLoin from '../components/accueil/PourAllerPlusLoin.astro';
 import Regles from '../components/accueil/Regles.astro';
 import TeteEtape from '../components/accueil/TeteEtape.astro';
 import Illustration from '../components/accueil/Illustration.astro';
 import Terme from '../components/ui/Terme.astro';
 import { GLOSSAIRE } from '../config/glossaire';
-import { DEMOS } from '../config/site';
-
-import couverturePvz from '../assets/etudes-de-cas/pvz-fusion.png';
-import couvertureOmnicard from '../assets/etudes-de-cas/omnicard.png';
-import couvertureGup from '../assets/etudes-de-cas/gup.png';
-import capturePvz from '../assets/captures/pvz-fusion.webp';
-import captureOmnicard from '../assets/captures/omnicard.webp';
-import captureGup from '../assets/captures/gup.webp';
 
 const titre = 'Charles Lindecker, mode d’emploi';
 const description =
@@ -64,7 +55,7 @@ const description =
             <Fragment slot="marge">
               <p class="note">
                 <span class="sr">Note de l’auteur&nbsp;: </span>Ce jeu de cartes deviendra Omnicard.
-                <a href="#fiche-omnicard">Voir sa fiche.</a>
+                <a href="/projets/omnicard">Découvrir le projet.</a>
               </p>
             </Fragment>
           </Bloc>
@@ -227,105 +218,17 @@ const description =
       </div>
     </Chapitre>
 
-    <!-- 3 · Les preuves -->
-    <Chapitre id="preuves">
-      <p class="chapitre__intro">
-        Un moteur de jeu, une communauté de contributeurs, un outil pour les développeurs. Trois problèmes différents, et les décisions que j’ai prises pour y répondre.
-      </p>
-      <nav class="preuves__index" aria-label="Choisir une réalisation">
-        <a href="#fiche-pvz">PvZ Fusion</a>
-        <a href="#fiche-omnicard">Omnicard</a>
-        <a href="#fiche-gup">gup</a>
-      </nav>
-
-      <Fiche
-        id="fiche-pvz"
-        pageProjet="/projets/pvz-fusion"
-        titre="PvZ Fusion"
-        puces={['Open source', 'Bénévole']}
-        regle={{ num: 3, verbe: 'emmener' }}
-        probleme="Une traduction française en retard de plusieurs années, pleine d’erreurs. Des bénévoles motivés, mais certains sans compétences ni habitude du travail en groupe."
-        decision="Structurer le pôle : accueillir et former les nouveaux, relire chaque contribution, documenter, et outiller en Python la détection de ce qui manque à chaque version."
-        resultat="Une vingtaine de contributeurs formés, jusqu’à dix en même temps. Des relectures, une documentation et des outils de suivi qui permettent au pôle de travailler dans la durée. Je suis ensuite nommé mainteneur du projet multilingue."
-        chiffres={[
-          { valeur: '≈ 20', legende: 'contributeurs formés, dix au plus fort' },
-          { valeur: '10 mois', legende: 'pour rattraper des années de retard' },
-          { valeur: '317', legende: 'commits sur le dépôt public' },
-        ]}
-        planche={couverturePvz}
-        capture={capturePvz}
-        captureAlt="Une partie de Plants vs Zombies Fusion."
-        figure="<b>PvZ Fusion</b> Le jeu. Mon travail porte sur la traduction, les outils et l’équipe."
-        citation="La qualité et la sincérité des échanges démultiplient les résultats."
-        liens={[{ texte: 'Voir le dépôt', href: 'https://github.com/LINDECKER-Charles/PVZF-Translation-fr', principal: true }]}
-      />
-
-      <Fiche
-        id="fiche-omnicard"
-        pageProjet="/projets/omnicard"
-        titre="Omnicard"
-        puces={['Projet personnel']}
-        regle={{ num: 2, verbe: 'réinventer' }}
-        probleme="Le jeu de cartes inventé avec mon cousin attend depuis des années de devenir un jeu vidéo. Le projet traîne."
-        decision="Un moment, j’en ai eu marre : j’ai repris le projet seul. J’ai rééquilibré nos cartes et codé mon propre moteur de jeu, sur une stack que je maîtrisais déjà, .NET et Angular. Je voulais me lancer tout de suite, sans perdre de temps."
-        resultat="Un moteur de règles en temps réel qui tourne dans le navigateur, en environ trois mois de travail cumulé. Ses limites m’ont forcé à apprendre SignalR, la gestion du cache, l’optimisation DevOps et le prérendu serveur."
-        chiffres={[
-          { valeur: '≈ 3 mois', legende: 'de travail cumulé' },
-          { valeur: 'Temps réel', legende: 'un moteur de règles maison', mot: true },
-          { valeur: 'Navigateur', legende: 'sans rien installer', mot: true },
-        ]}
-        planche={couvertureOmnicard}
-        capture={captureOmnicard}
-        captureAlt="Omnicard : l’éditeur de deck et le catalogue de cartes du jeu."
-        figure="<b>Omnicard</b> L’éditeur de deck, dans le navigateur. Le jeu reste en développement."
-        citation="Le projet qui m’a fait le plus apprendre."
-        liens={DEMOS.omnicard ? [{ texte: 'Essayer la démo', href: DEMOS.omnicard, principal: true }] : []}
-      />
-
-      <Fiche
-        id="fiche-gup"
-        pageProjet="/projets/gup"
-        titre="gup"
-        puces={['Open source']}
-        regle={{ num: 1, verbe: 'maîtriser' }}
-        probleme="Une machine de développeur accumule des dizaines de gestionnaires de paquets, chacun avec sa propre commande de mise à jour."
-        decision="Une seule CLI qui détecte ce qui est installé et met tout à jour, sur Windows, macOS et Linux."
-        resultat="153 sources prises en charge, et 447 téléchargements npm en un mois, du 5 septembre au 4 octobre 2026."
-        chiffres={[
-          { valeur: '153', legende: 'sources prises en charge' },
-          { valeur: '447', legende: 'téléchargements npm en un mois' },
-          { valeur: '3', legende: 'systèmes : Windows, macOS, Linux' },
-        ]}
-        planche={couvertureGup}
-        capture={captureGup}
-        captureAlt="gup dans un terminal : détection des gestionnaires de paquets et suivi des mises à jour."
-        figure="<b>gup</b> La détection et la mise à jour des outils, depuis une seule commande."
-        liens={[
-          { texte: 'Voir sur npm', href: 'https://www.npmjs.com/package/@charles_lindecker/gup', principal: true },
-          { texte: 'Voir le dépôt', href: 'https://github.com/LINDECKER-Charles/gup' },
-        ]}
-      />
-    </Chapitre>
-
-    <p class="lien-profondeur"><a href="/projets">Explorer les autres projets.</a></p>
-
-    <!-- 4 · En dehors du code -->
-    <Chapitre id="dehors">
-      <Dehors />
-    </Chapitre>
-
-    <!-- 5 · Discutons -->
+    <!-- 3 · La suite, à plusieurs -->
     <Chapitre id="discutons">
       <Discutons />
     </Chapitre>
+    <PourAllerPlusLoin />
   </Manuel>
 </Base>
 
 <style>
   .lien-profondeur { margin-block: var(--s6); }
   .lien-profondeur a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 500; }
-  .preuves__index { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-top: 24px; }
-  .preuves__index a { display: inline-flex; align-items: center; min-height: 44px; font-size: 1rem; font-weight: 500; }
   .chapitre__intro {
     font-size: var(--t-chapeau);
     line-height: 1.5;

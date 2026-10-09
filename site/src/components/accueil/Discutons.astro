@@ -1,50 +1,56 @@
 ---
-/**
- * La planche d'appel : le seul encart à bord bleu du site. Une invitation
- * discrète — jamais « je recherche un poste » — et tout ce
- * qu'il faut pour écrire : le lien, l'adresse en clair, sa copie, les réseaux.
- */
-import CopierAdresse from '../ui/CopierAdresse.astro';
+/** La conclusion du récit ouvre deux façons de construire la suite ensemble. */
 import Picto from '../ui/Picto.astro';
-import { CONTACT, CV, MAILTO } from '../../config/site';
+import { CONTACT, CV } from '../../config/site';
 ---
 
-<div class="contact">
-  <p class="contact__texte">
-    Parlons de technique et de ce qu’on peut construire à plusieurs.
-  </p>
-  <div class="actions contact__actions">
-    <a
-      class="contact__ecrire"
-      href={MAILTO}
-      data-umami-event="contact-email"
-      data-umami-event-emplacement="discutons"
-    >
-      <Picto nom="interface/email" />
-      Envoyer un e-mail
-    </a>
-    <CopierAdresse adresse={CONTACT.email} emplacement="discutons" />
-    {
-      CV && (
-        <a class="btn btn--contour" href={CV} download data-cv-telechargement="discutons">
-          <Picto nom="interface/telecharger" />
-          Télécharger mon CV
-        </a>
-      )
-    }
+<p class="suite__intro">
+  J’ai commencé par fabriquer mes propres jeux. Depuis, j’ai appris à construire des outils, à transmettre et à faire
+  avancer des projets avec d’autres. C’est aussi comme ça que j’ai envie de continuer.
+</p>
+
+<div class="invitation">
+  <h3>Vous avez un projet auquel je pourrais contribuer&nbsp;?</h3>
+  <div class="invitation__suite">
+    <p>
+      Si ma façon de travailler rejoint ce que vous cherchez, parlons de ce que nous pourrions construire ensemble.
+    </p>
+    <div class="actions invitation__actions">
+      <a
+        class="btn invitation__contact"
+        href="/contact"
+        data-umami-event="contact-page"
+        data-umami-event-emplacement="discutons"
+      >
+        <Picto nom="interface/email" taille={22} />
+        Parlons de votre projet
+      </a>
+      {
+        CV && (
+          <a class="invitation__cv" href={CV} download data-cv-telechargement="discutons">
+            Télécharger mon CV
+          </a>
+        )
+      }
+    </div>
   </div>
-  <p class="contact__adresse">
-    <span class="sr">Adresse&nbsp;: </span><span data-adresse>{CONTACT.email}</span>
-  </p>
-  <p class="contact__page"><a href="/contact">Tous mes moyens de contact</a></p>
-  <ul class="contact__reseaux">
-    <li>
-      <a href={CONTACT.linkedin} data-umami-event="lien-sortant" data-umami-event-domaine="www.linkedin.com" data-umami-event-emplacement="discutons">LinkedIn</a>
-    </li>
-    <li>
-      <a href={CONTACT.github} data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="discutons">GitHub</a>
-    </li>
-  </ul>
+</div>
+
+<div class="contribution">
+  <h3>Ou faisons avancer un projet open source.</h3>
+  <div class="contribution__suite">
+    <p>
+      Code, traduction, documentation&nbsp;: il y a plusieurs façons de contribuer. Mes projets sont aussi des endroits
+      où l’on peut apprendre et construire à plusieurs.
+    </p>
+    <a
+      class="contribution__lien"
+      href={CONTACT.github}
+      data-umami-event="lien-sortant"
+      data-umami-event-domaine="github.com"
+      data-umami-event-emplacement="discutons"
+    >Contribuer à mes projets open source</a>
+  </div>
 </div>
 
 <script>
@@ -53,69 +59,150 @@ import { CONTACT, CV, MAILTO } from '../../config/site';
 </script>
 
 <style>
-  .contact {
-    margin-top: var(--s7);
+  .suite__intro {
+    margin-top: var(--s6);
+    max-width: 53ch;
+    font-size: var(--t-chapeau);
+    line-height: 1.6;
+  }
+
+  .invitation {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: var(--s7);
+    align-items: end;
+    margin-top: var(--s8);
+    padding: clamp(28px, 4vw, 56px);
     background: var(--bleu);
     color: var(--sur-bleu);
-    padding: clamp(28px, 5vw, 72px);
-    position: relative;
-    overflow: hidden;
   }
 
-  .contact__texte {
-    font-size: clamp(2rem, 3.6vw, 3.5rem);
-    line-height: 1.1;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    max-width: 25ch;
-    text-wrap: balance;
+  .invitation h3 {
+    font-size: clamp(1.875rem, 2.9vw, 2.75rem);
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    max-width: 20ch;
   }
 
-  .contact__actions {
+  .invitation__suite p {
+    max-width: 34ch;
+    line-height: 1.6;
+  }
+
+  .invitation__actions {
     margin-top: var(--s6);
-    align-items: center;
-    gap: var(--s5);
+    gap: var(--s4) var(--s5);
   }
 
-  .contact__ecrire { display: inline-flex; align-items: center; gap: 12px; min-height: 48px; color: var(--sur-bleu); font-size: 1.25rem; font-weight: 700; text-underline-offset: .35em; }
-  .contact__ecrire :global(svg) { width: 24px; height: 24px; }
-  .contact__page { margin-top: var(--s2); }
-  .contact__page a { display: inline-flex; align-items: center; min-height: 44px; color: var(--sur-bleu); font-size: var(--t-petit); }
+  .invitation__contact {
+    background: var(--sur-bleu);
+    color: var(--bleu);
+    border-color: var(--sur-bleu);
+    min-height: 52px;
+    padding: 14px 20px;
+    text-align: left;
+    justify-content: flex-start;
+  }
 
-  .contact__adresse {
-    margin-top: var(--s4);
-    font-size: var(--t-petit);
+  .invitation__contact :global(svg) {
+    flex-shrink: 0;
+  }
+
+  .invitation__contact:hover {
+    background: color-mix(in srgb, var(--sur-bleu) 90%, var(--bleu));
+  }
+
+  .invitation__cv {
     color: var(--sur-bleu);
-  }
-
-  .contact__adresse [data-adresse] {
-    color: var(--sur-bleu);
-    font-weight: 500;
-    user-select: all;
-  }
-
-  .contact__reseaux {
-    list-style: none;
-    padding: 0;
-    margin: var(--s3) 0 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0 var(--s5);
-  }
-
-  .contact__reseaux a {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
-    font-weight: 500;
-    color: var(--sur-bleu);
   }
 
-  .contact :global(.btn--plein) { background: var(--sur-bleu); color: var(--bleu); border-color: var(--sur-bleu); }
-  .contact :global(.btn--plein:hover) { background: color-mix(in srgb, var(--sur-bleu) 85%, var(--bleu)); }
-  .contact :global(.btn--contour) { color: var(--sur-bleu); border-color: color-mix(in srgb, var(--sur-bleu) 55%, transparent); }
-  .contact :global(.btn--contour:hover) { background: color-mix(in srgb, var(--sur-bleu) 12%, transparent); }
-  .contact :global(:focus-visible) { outline-color: var(--sur-bleu); }
-  .contact__adresse { margin-top: 24px; overflow-wrap: anywhere; }
-  .contact__reseaux { border-top: 1px solid color-mix(in srgb, var(--sur-bleu) 30%, transparent); padding-top: 18px; margin-top: 28px; }
+  .invitation :focus-visible {
+    outline-color: var(--sur-bleu);
+  }
+
+  .contribution {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: var(--s7);
+    margin-top: var(--s7);
+    padding-inline: clamp(28px, 4vw, 56px);
+  }
+
+  .contribution h3 {
+    max-width: 22ch;
+    font-size: clamp(1.5rem, 2vw, 1.875rem);
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+
+  .contribution__suite p {
+    max-width: 37ch;
+    color: var(--graphite);
+    font-size: var(--t-petit);
+  }
+
+  .contribution__lien {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-top: var(--s4);
+    font-weight: 700;
+    font-size: var(--t-petit);
+  }
+
+  @media (max-width: 900px) {
+    .invitation,
+    .contribution {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s5);
+    }
+
+    .invitation h3 {
+      max-width: 28ch;
+    }
+
+    .invitation__suite p,
+    .contribution h3,
+    .contribution__suite p {
+      max-width: 48ch;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .suite__intro {
+      font-size: 1.1875rem;
+      margin-top: var(--s5);
+    }
+
+    .invitation {
+      margin-top: var(--s7);
+    }
+
+    .invitation__actions {
+      margin-top: var(--s5);
+    }
+
+    .contribution {
+      padding-inline: 0;
+      gap: var(--s4);
+      margin-top: var(--s6);
+    }
+  }
+
+  @media print {
+    .invitation {
+      background: transparent;
+      color: var(--encre);
+      border: 1px solid var(--filet);
+      break-inside: avoid;
+    }
+
+    .contribution {
+      break-inside: avoid;
+    }
+  }
 </style>
