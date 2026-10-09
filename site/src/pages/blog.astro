@@ -4,9 +4,10 @@ import FilAriane from '../components/pages/FilAriane.astro';
 import ContinuerLecture from '../components/pages/ContinuerLecture.astro';
 import { SITE } from '../config/site';
 import '../styles/profondeur.css';
+import '../styles/blog.css';
 
 const titre = `Blog de ${SITE.nom}`;
-const description = 'Le blog de Charles Lindecker accueillera ses articles. En attendant la première publication, découvrez ses projets, son parcours et sa méthode de travail.';
+const description = 'Les articles de Charles Lindecker sur le développement, les projets et la transmission. Prendre le temps d’expliquer ce que j’apprends et ce que je construis.';
 ---
 
 <Base titre={titre} description={description} chemin="/blog">
@@ -17,6 +18,7 @@ const description = 'Le blog de Charles Lindecker accueillera ses articles. En a
       <p class="page-hero__intro">Un espace pour prendre le temps d’expliquer ce que j’apprends et ce que je construis.</p>
     </header>
 
+    <div id="blog-publications">
     <section class="premiere-page" aria-labelledby="premiere-page-titre">
       <div class="premiere-page__texte">
         <h2 id="premiere-page-titre">Le premier article reste à écrire.</h2>
@@ -28,6 +30,7 @@ const description = 'Le blog de Charles Lindecker accueillera ses articles. En a
         <i></i><i></i><i></i><i></i>
       </div>
     </section>
+    </div>
 
     <ContinuerLecture liens={[
       { href: '/projets/omnicard', titre: 'Omnicard', detail: 'Le jeu papier devenu moteur dans le navigateur.' },

@@ -1,7 +1,8 @@
 /** Espace privé. Les textes reçus de l’API sont toujours insérés comme texte. */
+import type { BlogWorkspace } from './blog-editor';
 type Statut = 'new' | 'read' | 'archived';
 type Filtre = Statut | 'all';
-type Rubrique = 'contacts' | 'settings' | 'links' | 'tokens';
+type Rubrique = 'contacts' | 'settings' | 'links' | 'tokens' | 'blog';
 interface Demande {
   id: number;
   name: string;
@@ -13,7 +14,7 @@ interface Demande {
   created_at: string;
 }
 interface Outil { id: number; label: string; url: string; description: string }
-interface Jeton { id: number; name: string; created_at: string; last_used_at: string | null }
+interface Jeton { id: number; name: string; created_at: string; last_used_at: string | null; scopes?: string[] }
 interface Boite { contacts: Demande[]; total: number; new_count: number }
 interface Session { authenticated: boolean; smtp_configured: boolean }
 interface Connexion extends Partial<Session> { two_factor_required?: boolean; enrollment_required?: boolean; recovery_codes?: string[] }
@@ -65,6 +66,13 @@ export function brancherBackoffice(): void {
   let total = 0;
   let requestSequence = 0;
   const limit = 50;
+  let blog: BlogWorkspace | undefined;
+  let chargementBlog: Promise<void> | undefined;
+  let navigationQueue = Promise.resolve();
+  let visibleURL = `${window.location.pathname}${window.location.search}`;
+  let historyPosition = typeof history.state?.backofficeIndex === 'number' ? history.state.backofficeIndex : 0;
+  let restoringHistory = false;
+  history.replaceState({ ...history.state, backofficeIndex: historyPosition }, '', visibleURL);
 
   function annoncer(message: string, etat: 'pending' | 'success' | 'error' = 'success'): void {
     notice.textContent = message;
@@ -104,7 +112,73 @@ export function brancherBackoffice(): void {
       element(`bo-panel-${tab.dataset.panel}`).hidden = !active;
       if (active && focus) tab.focus();
     }
+    if (rubrique === 'blog' && authenticated) document.body.dataset.blogWorkspace = 'true';
+    else delete document.body.dataset.blogWorkspace;
+    document.body.dataset.backofficePage = rubrique === 'blog' ? 'blog' : 'home';
+    if (rubrique !== 'blog') document.title = `${{ contacts: 'Demandes', settings: 'Destinataire', links: 'Boîte à outils', tokens: 'Accès MCP' }[rubrique]} — Backoffice`;
   }
+  function rubriqueURL(value: string): Rubrique {
+    const url = new URL(value, window.location.origin);
+    if (/^\/backoffice\/blog(?:\/|$)/.test(url.pathname)) return 'blog';
+    const rubrique = url.searchParams.get('rubrique');
+    return rubrique && ['contacts', 'settings', 'links', 'tokens', 'blog'].includes(rubrique) ? rubrique as Rubrique : 'contacts';
+  }
+  async function chargerBlog(): Promise<void> {
+    if (blog) return;
+    if (!chargementBlog) {
+      const sequence = authSequence;
+      chargementBlog = import('./blog-editor').then(({ brancherBlog }) => {
+        if (authenticated && sequence === authSequence) blog = brancherBlog({ api, isAuthenticated: () => authenticated, confirm: demanderConfirmation, navigate: naviguer });
+      }).finally(() => { chargementBlog = undefined; });
+    }
+    await chargementBlog;
+  }
+  function restaurerHistorique(targetPosition?: number): void {
+    if (targetPosition !== undefined && targetPosition !== historyPosition) {
+      restoringHistory = true;
+      history.go(historyPosition - targetPosition);
+    } else history.replaceState({ ...history.state, backofficeIndex: historyPosition }, '', visibleURL);
+  }
+  async function appliquerRoute(value: string, replace = false, popPosition?: number): Promise<void> {
+    const url = new URL(value, window.location.origin);
+    if (url.origin !== window.location.origin) return;
+    let destination = `${url.pathname}${url.search}`;
+    const rubrique = rubriqueURL(destination);
+    if (rubrique === 'blog' && !/^\/backoffice\/blog(?:\/|$)/.test(url.pathname)) destination = '/backoffice/blog';
+    if (!replace && authenticated && blog && !await blog.canNavigate(destination)) {
+      if (popPosition !== undefined) restaurerHistorique(popPosition);
+      return;
+    }
+    if (activePanel === 'blog' && rubrique !== 'blog') blog?.reset();
+    if (popPosition !== undefined) historyPosition = popPosition;
+    else if (replace || destination === visibleURL) history.replaceState({ ...history.state, backofficeIndex: historyPosition }, '', destination);
+    else {
+      historyPosition += 1;
+      history.pushState({ backofficeIndex: historyPosition }, '', destination);
+    }
+    visibleURL = destination;
+    choisirRubrique(rubrique);
+    if (rubrique === 'blog' && authenticated) {
+      await chargerBlog();
+      if (authenticated) await blog?.open(destination);
+    }
+  }
+  function naviguer(value: string, replace = false): Promise<void> {
+    const operation = navigationQueue.then(() => appliquerRoute(value, replace));
+    navigationQueue = operation.catch(erreur);
+    return navigationQueue;
+  }
+  function allerRubrique(rubrique: Rubrique, focus = false): void {
+    const url = rubrique === 'blog' ? '/backoffice/blog' : `/backoffice?rubrique=${rubrique}`;
+    void naviguer(url).then(() => { if (focus && activePanel === rubrique) tabs.find((tab) => tab.dataset.panel === rubrique)?.focus(); });
+  }
+  window.addEventListener('popstate', (event) => {
+    if (restoringHistory) { restoringHistory = false; return; }
+    const destination = `${window.location.pathname}${window.location.search}`;
+    const position = typeof event.state?.backofficeIndex === 'number' ? event.state.backofficeIndex : historyPosition;
+    const operation = navigationQueue.then(() => appliquerRoute(destination, false, position));
+    navigationQueue = operation.catch(erreur);
+  });
   function resetLinkForm(): void {
     editingLink = undefined;
     element<HTMLFormElement>('bo-link-form').reset();
@@ -112,9 +186,10 @@ export function brancherBackoffice(): void {
     texte('bo-link-submit', 'Ajouter l’outil');
     element('bo-link-cancel').hidden = true;
   }
-  function retourConnexion(): void {
+  function retourConnexion(preserveBlogDraft = false): void {
     authSequence += 1;
     authenticated = false;
+    blog?.reset(preserveBlogDraft);
     challenge = false;
     enrollment = false;
     password.value = '';
@@ -157,14 +232,18 @@ export function brancherBackoffice(): void {
     try {
       const headers: Record<string, string> = { Accept: 'application/json' };
       if (method !== 'GET') headers['X-Backoffice-Request'] = '1';
-      if (method !== 'GET' && method !== 'DELETE') headers['Content-Type'] = 'application/json';
+      if (corps !== undefined) headers['Content-Type'] = 'application/json';
       const reponse = await fetch(`/api/backoffice${chemin}`, {
         method, headers, credentials: 'same-origin', cache: 'no-store',
         ...(corps !== undefined ? { body: JSON.stringify(corps) } : {}), signal: controleur.signal,
       });
       const contenu = await reponse.json().catch(() => ({})) as { message?: string; code?: string };
       if (!reponse.ok) {
-        if (reponse.status === 401 && (authenticated || (challenge && contenu.code === 'CHALLENGE_EXPIRED'))) retourConnexion();
+        if (reponse.status === 401 && (authenticated || (challenge && contenu.code === 'CHALLENGE_EXPIRED'))) {
+          const draft = blog?.hasUnsavedChanges();
+          retourConnexion(true);
+          annoncer(draft ? 'La session a expiré. Reconnectez-vous pour retrouver votre rédaction conservée dans cet onglet.' : 'La session a expiré. Connectez-vous à nouveau.', 'error');
+        }
         throw new ErreurApi(
           typeof contenu.message === 'string' && contenu.message
             ? contenu.message
@@ -361,6 +440,7 @@ export function brancherBackoffice(): void {
       const item = creer('li', 'bo-token');
       const informations = creer('div');
       informations.append(creer('h3', '', jeton.name), creer('p', '', `Créé le ${date(jeton.created_at)}`), creer('p', '', jeton.last_used_at ? `Dernier accès le ${date(jeton.last_used_at)}` : 'Pas encore utilisé'));
+      informations.append(creer('p', '', jeton.scopes?.includes('blog:publish') ? 'Blog : rédaction et publication' : jeton.scopes?.includes('blog:write') ? 'Blog : rédaction et images' : 'Lecture seule'));
       item.append(informations, bouton('Révoquer', async (cible) => {
         const accord = await demanderConfirmation('Révoquer cet accès ?', `La connexion ${jeton.name} ne pourra plus consulter les demandes avec ce jeton.`, 'Révoquer l’accès');
         if (!accord) return;
@@ -393,6 +473,10 @@ export function brancherBackoffice(): void {
     if (!authenticated || sequence !== authSequence) return;
     element<HTMLInputElement>('bo-email').value = reglages.email;
     await Promise.all([chargerDemandes(), chargerOutils(), chargerJetons()]);
+    if (authenticated) {
+      blog?.restoreDraft();
+      await naviguer(`${window.location.pathname}${window.location.search}`, true);
+    }
     if (authenticated) notice.hidden = true;
   }
   async function preparerDeuxFacteurs(): Promise<void> {
@@ -454,7 +538,7 @@ export function brancherBackoffice(): void {
   }
 
   for (const tab of tabs) {
-    tab.addEventListener('click', () => choisirRubrique(tab.dataset.panel as Rubrique));
+    tab.addEventListener('click', (event) => { event.preventDefault(); allerRubrique(tab.dataset.panel as Rubrique); });
     tab.addEventListener('keydown', (event) => {
       const index = tabs.indexOf(tab);
       let destination: number | undefined;
@@ -462,7 +546,7 @@ export function brancherBackoffice(): void {
       else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') destination = (index + tabs.length - 1) % tabs.length;
       else if (event.key === 'Home') destination = 0;
       else if (event.key === 'End') destination = tabs.length - 1;
-      if (destination !== undefined) { event.preventDefault(); choisirRubrique(tabs[destination]!.dataset.panel as Rubrique, true); }
+      if (destination !== undefined) { event.preventDefault(); allerRubrique(tabs[destination]!.dataset.panel as Rubrique, true); }
     });
   }
   loginForm.addEventListener('submit', (event) => {
@@ -473,7 +557,7 @@ export function brancherBackoffice(): void {
       if (sequence !== authSequence) return;
       password.value = '';
       if (connexion.two_factor_required) await afficherDeuxFacteurs(Boolean(connexion.enrollment_required));
-      else if (connexion.authenticated) { await ouvrirWorkspace(); if (authenticated) tabs[0]!.focus(); }
+      else if (connexion.authenticated) { await ouvrirWorkspace(); if (authenticated && activePanel !== 'blog') tabs.find((tab) => tab.dataset.panel === activePanel)?.focus(); }
       else throw new ErreurApi('La connexion n’a pas abouti. Réessayez.', 502);
     }, 'Connexion…');
   });
@@ -488,7 +572,7 @@ export function brancherBackoffice(): void {
       if (!connexion.authenticated) throw new ErreurApi('Le code n’a pas pu être vérifié. Réessayez.', 502);
       authenticated = true;
       if (enrollment && connexion.recovery_codes?.length) afficherCodesSecours(connexion.recovery_codes);
-      else { await ouvrirWorkspace(); if (authenticated) tabs[0]!.focus(); }
+      else { await ouvrirWorkspace(); if (authenticated && activePanel !== 'blog') tabs.find((tab) => tab.dataset.panel === activePanel)?.focus(); }
     }, enrollment ? 'Activation de la vérification…' : 'Vérification du code…');
   });
   element('bo-two-factor-back').addEventListener('click', () => { retourConnexion(); notice.hidden = true; loginEmail.focus(); });
@@ -499,7 +583,7 @@ export function brancherBackoffice(): void {
     void action(event.currentTarget as HTMLButtonElement, async () => {
       effacerCodesSecours();
       await ouvrirWorkspace();
-      if (authenticated) tabs[0]!.focus();
+      if (authenticated && activePanel !== 'blog') tabs.find((tab) => tab.dataset.panel === activePanel)?.focus();
     }, 'Ouverture de l’atelier…');
   });
   element('bo-recovery-copy').addEventListener('click', (event) => {
@@ -511,12 +595,16 @@ export function brancherBackoffice(): void {
     }, 'Copie des codes…');
   });
   element<HTMLButtonElement>('bo-logout').addEventListener('click', (event) => {
-    void action(event.currentTarget as HTMLButtonElement, async () => {
+    const cible = event.currentTarget as HTMLButtonElement;
+    void (async () => {
+      if (blog && !await blog.confirmDiscard()) return;
+      await action(cible, async () => {
       await api('/logout', 'POST');
       retourConnexion();
       annoncer('Vous êtes déconnecté.');
       loginEmail.focus();
-    }, 'Déconnexion…');
+      }, 'Déconnexion…');
+    })();
   });
   filter.addEventListener('change', () => {
     offset = 0;
@@ -585,9 +673,11 @@ export function brancherBackoffice(): void {
   tokenForm.addEventListener('submit', (event) => {
     event.preventDefault();
     const name = element<HTMLInputElement>('bo-token-name').value.trim();
+    const permission = element<HTMLSelectElement>('bo-token-permissions').value;
+    const scopes = ['contacts:read', 'blog:read', ...(permission === 'write' || permission === 'publish' ? ['blog:write'] : []), ...(permission === 'publish' ? ['blog:publish'] : [])];
     void action(tokenForm, async () => {
       cacherSecret();
-      const jeton = await api<{ token: string }>('/tokens', 'POST', { name });
+      const jeton = await api<{ token: string }>('/tokens', 'POST', { name, scopes });
       if (authenticated && activePanel === 'tokens') {
         element<HTMLInputElement>('bo-token-secret').value = jeton.token;
         element('bo-secret').hidden = false;
@@ -622,7 +712,7 @@ export function brancherBackoffice(): void {
       }
     });
   }
-  window.addEventListener('pagehide', retourConnexion);
+  window.addEventListener('pagehide', () => retourConnexion());
   window.addEventListener('pageshow', (event) => { if (event.persisted) verifierSession(); });
   verifierSession();
 }

@@ -2,7 +2,7 @@
 /**
  * Intégration réelle du backend Rust, du relais Node et du MCP, sans mocks.
  * Prérequis : cargo build --manifest-path backend/Cargo.toml et build du site.
- * Usage : node scripts/test-backoffice.mjs [--screenshots]
+ * Usage : node scripts/test-backoffice.mjs [--screenshots] [--dev]
  * Les données, mots de passe et jetons sont factices ; aucun SMTP n’est utilisé.
  */
 import assert from 'node:assert/strict';
@@ -205,6 +205,7 @@ async function testerDoubleAuthentification(envBackend) {
 async function capturerInterface() {
   const require = createRequire(new URL('../site/package.json', import.meta.url));
   const { chromium } = require('@playwright/test');
+  const AxeBuilder = require('@axe-core/playwright').default;
   navigateur = await chromium.launch({ headless: true });
   const separateur = cookie.indexOf('=');
   const screenshots = [];
@@ -214,6 +215,15 @@ async function capturerInterface() {
       window.scrollTo(0, 0);
     });
     await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  };
+  const capturerBlog = async (page, nom, ecran) => {
+    await stabiliserCapture(page);
+    assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), `L’écran ${ecran} doit tenir dans la fenêtre ${nom}.`);
+    const audit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice']).analyze();
+    assert.deepEqual(audit.violations.map((violation) => ({ rule: violation.id, targets: violation.nodes.map((node) => node.target) })), [], `L’écran ${ecran} doit rester accessible à la largeur ${nom}.`);
+    const image = path.join(process.platform === 'win32' ? tmpdir() : '/tmp', `backoffice-blog-${ecran}-${nom}.png`);
+    await page.screenshot({ path: image, fullPage: true });
+    screenshots.push(image);
   };
   for (const [nom, largeur, hauteur] of [['desktop', 1440, 1000], ['mobile', 390, 844]]) {
     const contexte = await navigateur.newContext({ viewport: { width: largeur, height: hauteur }, locale: 'fr-FR', timezoneId: 'Europe/Paris', reducedMotion: 'reduce' });
@@ -242,6 +252,57 @@ async function capturerInterface() {
       const outils = path.join(dossierImages, `backoffice-tools-${nom}.png`);
       await page.screenshot({ path: outils, fullPage: true });
       screenshots.push(outils);
+      await page.getByRole('tab', { name: 'Blog', exact: true }).click();
+      await page.waitForURL('**/backoffice/blog');
+      await page.locator('#blog-new').click();
+      await page.waitForURL('**/backoffice/blog/redaction');
+      await page.locator('#blog-title').fill(`Comprendre les décisions de conception (${nom})`);
+      await page.locator('#blog-excerpt').fill('Expliquer une décision et les contraintes qui ont guidé sa mise en œuvre.');
+      await page.locator('.tiptap').fill('Une décision gagne à être expliquée à ceux qui devront la faire évoluer.');
+      await page.locator('.tiptap').press('ControlOrMeta+A');
+      await page.getByRole('button', { name: 'Lien', exact: true }).click();
+      await page.locator('#blog-link-url').fill('/projets');
+      await page.getByRole('button', { name: 'Appliquer le lien', exact: true }).click();
+      await page.locator('.tiptap').press('ControlOrMeta+End');
+      await page.locator('.tiptap').press('Enter');
+      await page.getByRole('button', { name: 'Tableau', exact: true }).click();
+      for (const [index, titre] of ['Choix', 'Contrainte', 'Conséquence'].entries()) {
+        await page.locator('.tiptap th p').nth(index).fill(titre);
+      }
+      for (const [index, contenu] of ['Séparer les responsabilités', 'Faire évoluer chaque partie', 'Une modification reste localisée'].entries()) {
+        await page.locator('.tiptap td p').nth(index).fill(contenu);
+      }
+      await page.locator('#blog-save').click();
+      await page.waitForFunction(() => document.querySelector('#blog-save-state')?.textContent === 'Enregistré');
+      const articleId = new URL(page.url()).searchParams.get('id');
+      assert(articleId && /^[1-9]\d*$/.test(articleId), 'La création doit inscrire l’identifiant dans l’adresse de rédaction.');
+      await capturerBlog(page, nom, 'redaction');
+      await page.locator('[data-blog-section-link="medias"]').click();
+      await page.waitForURL(`**/backoffice/blog/medias?id=${articleId}`);
+      await page.locator('#blog-tags').fill('Architecture, transmission');
+      await page.locator('#blog-save').click();
+      await page.waitForFunction(() => document.querySelector('#blog-save-state')?.textContent === 'Enregistré');
+      await capturerBlog(page, nom, 'medias');
+      await page.locator('[data-blog-section-link="seo"]').click();
+      await page.waitForURL(`**/backoffice/blog/seo?id=${articleId}`);
+      await page.locator('#blog-seo-title').fill('Comprendre et partager les décisions de conception');
+      await page.locator('#blog-seo-description').fill('Expliquer les contraintes qui ont guidé une décision de conception et partager les choix pour permettre à chacun de les comprendre.');
+      await page.locator('#blog-save').click();
+      await page.waitForFunction(() => document.querySelector('#blog-save-state')?.textContent === 'Enregistré');
+      await capturerBlog(page, nom, 'seo');
+      await page.locator('[data-blog-section-link="publication"]').click();
+      await page.waitForURL(`**/backoffice/blog/publication?id=${articleId}`);
+      await page.locator('#blog-scheduled-at').fill('2030-06-08T14:30');
+      await capturerBlog(page, nom, 'publication');
+      await page.locator('#blog-back').click();
+      await page.waitForURL('**/backoffice/blog');
+      await page.locator('#blog-post-list .blog-post-row').first().waitFor({ state: 'visible' });
+      await capturerBlog(page, nom, 'liste');
+      assert((await page.locator('#blog-post-list').innerText()).includes(`Comprendre les décisions de conception (${nom})`), 'La liste doit montrer l’article réellement enregistré.');
+      await page.goto(`${origine}/backoffice/blog/seo?id=${articleId}`);
+      await page.locator('#blog-seo-title').waitFor({ state: 'visible' });
+      await page.waitForFunction(() => document.querySelector('#blog-seo-title')?.value === 'Comprendre et partager les décisions de conception');
+      assert.equal(await page.locator('#blog-seo-title').inputValue(), 'Comprendre et partager les décisions de conception', 'L’accès direct doit retrouver les réglages SEO persistés.');
       assert.equal(erreurs.length, 0, 'L’interface réelle doit être sans exception JavaScript.');
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), 'L’interface doit tenir dans la largeur de la fenêtre.');
     } finally { await contexte.close(); }
@@ -277,6 +338,17 @@ async function main() {
   assert.equal(prive.reponse.headers.get('cache-control'), 'no-store');
   assert.equal(prive.reponse.headers.get('x-robots-tag'), 'noindex, nofollow');
   assert(!prive.texte.includes('/mesure.js'), 'Le backoffice doit rester hors mesure.');
+  for (const page of ['blog', 'blog/redaction', 'blog/medias', 'blog/seo', 'blog/publication']) {
+    await access(path.join(dist, `backoffice/${page}/index.html`));
+    const route = `/backoffice/${page}`;
+    const prive = await requete(route);
+    assert.equal(prive.reponse.headers.get('cache-control'), 'no-store', `${route} doit rester hors cache.`);
+    assert.equal(prive.reponse.headers.get('x-robots-tag'), 'noindex, nofollow', `${route} doit rester hors indexation.`);
+    assert(!prive.texte.includes('/mesure.js'), `${route} doit rester hors mesure.`);
+    const head = await requete(route, { method: 'HEAD' });
+    assert.equal(head.reponse.headers.get('cache-control'), 'no-store');
+    assert.equal(head.texte, '');
+  }
   await requete('/api/backoffice/session', { status: 401 });
   const connexion = await requete('/api/backoffice/login', { method: 'POST', data: { email: emailConnexion, password: motDePasse } });
   const setCookie = memoriserCookie(connexion.reponse, 'portfolio_backoffice');
@@ -312,7 +384,7 @@ async function main() {
   const initialise = await mcp('initialize', { protocolVersion: '2025-11-25', capabilities: {}, clientInfo: { name: 'integration-portfolio', version: '1.0' } }, { bearer: jeton.token });
   assert.equal(initialise.result.protocolVersion, '2025-11-25');
   const outils = await mcp('tools/list', {}, { bearer: jeton.token });
-  assert.deepEqual(outils.result.tools.map((outil) => outil.name).sort(), ['contacts_summary', 'get_contact_request', 'list_contact_requests', 'list_toolbox_links']);
+  assert.deepEqual(outils.result.tools.map((outil) => outil.name).sort(), ['blog_get_post', 'blog_list_media', 'blog_list_posts', 'blog_preview_post', 'blog_seo_audit', 'contacts_summary', 'get_contact_request', 'list_contact_requests', 'list_toolbox_links']);
   assert(outils.result.tools.every((outil) => outil.annotations.readOnlyHint), 'Les outils MCP doivent être déclarés en lecture seule.');
   const resume = await mcp('tools/call', { name: 'contacts_summary', arguments: {} }, { bearer: jeton.token });
   assert.equal(resume.result.structuredContent.new_count, 1);
@@ -324,6 +396,7 @@ async function main() {
   assert.equal(detail.result.structuredContent.contact.status, 'new', 'La lecture MCP ne doit pas marquer la demande comme lue.');
   const liens = await mcp('tools/call', { name: 'list_toolbox_links', arguments: {} }, { bearer: jeton.token });
   assert.equal(liens.result.structuredContent.links[0].id, lien.id);
+  await testerBlog(jeton.token);
   await mcp('tools/list', {}, { session: true, status: 401 });
   await requete('/api/backoffice/contacts', { bearer: jeton.token, status: 401 });
   await requete(`/api/backoffice/tokens/${jeton.id}`, { method: 'DELETE', session: true });
@@ -346,6 +419,92 @@ async function main() {
   if (process.argv.includes('--screenshots')) await capturerInterface();
   await testerDoubleAuthentification(envBackend);
   console.log('[integration] Tous les contrôles du backoffice passent.');
+}
+
+async function testerBlog(lecture) {
+  const jeton = (await requete('/api/backoffice/tokens', { method: 'POST', data: { name: 'Édition blog test', scopes: ['blog:read', 'blog:write', 'blog:publish'] }, session: true, status: 201 })).json;
+  const call = async (name, args, bearer = jeton.token) => (await mcp('tools/call', { name, arguments: args }, { bearer })).result;
+  const image = (await call('blog_upload_media', { filename: 'figure.png', content_type: 'image/png', data_base64: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aXioAAAAASUVORK5CYII=' })).structuredContent;
+  assert.equal(typeof image.url, 'string');
+  await requete(image.url, { status: 404 });
+  const privateImage = await requete(image.url.replace('/api/blog/', '/api/backoffice/blog/'), { session: true });
+  assert.equal(privateImage.reponse.headers.get('content-type'), 'image/png');
+  assert.equal(privateImage.reponse.headers.get('cache-control'), 'no-store');
+  const input = {
+    title: 'Comprendre les décisions de conception', slug: 'decisions-de-conception', excerpt: 'Expliquer une décision et les contraintes qui ont guidé sa mise en œuvre.',
+    content: { type: 'doc', content: [{ type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: 'Une décision expliquée' }] }, { type: 'paragraph', content: [{ type: 'text', text: 'Le premier contenu de la publication.' }] }] },
+    seo_title: 'Comprendre les décisions de conception', seo_description: 'Expliquer les choix de conception et les contraintes qui guident une décision pour permettre à chacun de comprendre et de la faire évoluer.',
+    tags: ['Architecture'],
+    cover_image: image.url, cover_alt: 'Figure de la décision de conception',
+  };
+  assert.equal((await call('blog_create_post', input, lecture)).isError, true, 'Un jeton de lecture ne doit pas rédiger.');
+  let post = (await call('blog_create_post', input)).structuredContent;
+  assert.equal(post.status, 'draft');
+  await requete(`/blog/${post.slug}`, { status: 404 });
+  await requete(`/api/backoffice/blog/preview/${post.id}`, { status: 401 });
+  const preview = await requete(`/api/backoffice/blog/preview/${post.id}`, { session: true });
+  assert(preview.texte.includes('Le premier contenu de la publication.'));
+  assert.equal(preview.reponse.headers.get('cache-control'), 'no-store');
+  assert.equal(preview.reponse.headers.get('x-robots-tag'), 'noindex, nofollow');
+  assert(!preview.texte.includes('/mesure.js'));
+  await requete(`/api/backoffice/blog/preview/${post.id}`, { session: true, method: 'HEAD' });
+  const seo = await call('blog_seo_audit', { id: post.id });
+  assert(Array.isArray(seo.structuredContent.checks));
+  post = (await call('blog_publish_post', { id: post.id, revision: post.revision })).structuredContent;
+  const html = (await requete(`/blog/${post.slug}`)).texte;
+  assert(html.includes('<h1>Comprendre les décisions de conception</h1>'));
+  assert(html.includes('BlogPosting') && html.includes('rel="canonical"'));
+  const publicImage = await requete(image.url);
+  assert.equal(publicImage.reponse.headers.get('content-type'), 'image/png');
+  assert.equal(publicImage.reponse.headers.get('x-robots-tag'), null, 'Une image publiée doit rester indexable.');
+  assert((await requete('/blog')).texte.includes(`/blog/${post.slug}`));
+  assert((await requete('/sitemap.xml')).texte.includes(`/blog/${post.slug}`));
+  if (process.argv.includes('--dev')) await testerRenduDeveloppement(post);
+  const revised = { ...input, content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'La version programmée pour la suite.' }] }] } };
+  post = (await call('blog_update_post', { ...revised, id: post.id, revision: post.revision })).structuredContent;
+  assert((await requete(`/blog/${post.slug}`)).texte.includes('Le premier contenu de la publication.'), 'Enregistrer doit conserver la version publique.');
+  assert.equal((await call('blog_publish_post', { id: post.id, revision: post.revision - 1 })).isError, true, 'Une ancienne révision doit être refusée.');
+  post = (await call('blog_schedule_post', { id: post.id, revision: post.revision, scheduled_at: Math.floor(Date.now() / 1000) + 2 })).structuredContent;
+  assert.equal(post.status, 'scheduled');
+  await attendre(2200);
+  assert((await requete(`/blog/${post.slug}`)).texte.includes('La version programmée pour la suite.'));
+  post = (await call('blog_get_post', { id: post.id })).structuredContent;
+  post = (await call('blog_unpublish_post', { id: post.id, revision: post.revision })).structuredContent;
+  await requete(`/blog/${post.slug}`, { status: 404 });
+  await requete(image.url, { status: 404 });
+  await requete(`/api/backoffice/blog/posts/${post.id}`, { method: 'DELETE', data: { revision: post.revision }, session: true });
+  await requete(`/api/backoffice/tokens/${jeton.id}`, { method: 'DELETE', session: true });
+  console.log('[integration] Blog réel : MCP, brouillon privé, SEO HTML, snapshots, programmation et dépublication : OK');
+}
+
+async function testerRenduDeveloppement(post) {
+  const port = await portLibre();
+  const dev = spawn(process.execPath, [path.join(racine, 'site/node_modules/astro/bin/astro.mjs'), 'dev', '--ignore-lock', '--host', '127.0.0.1', '--port', String(port)], {
+    cwd: path.join(racine, 'site'), env: { ...process.env, BACKEND_URL: backendOrigine, CONTACT_EMAIL: adresseFinale, UMAMI_WEBSITE_ID: '', UMAMI_SITE_DOMAIN: '' }, stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  dev.stdout.resume(); dev.stderr.resume();
+  try {
+    const url = `http://127.0.0.1:${port}`;
+    const started = Date.now();
+    while (true) {
+      try { if ((await fetch(`${url}/backoffice`, { signal: AbortSignal.timeout(1000) })).ok) break; } catch { /* Serveur de développement en démarrage. */ }
+      if (dev.exitCode !== null || Date.now() - started > 20_000) throw new Error('Le serveur Astro de développement n’a pas démarré.');
+      await attendre(100);
+    }
+    for (const route of ['/blog', `/blog/${post.slug}`, `/api/backoffice/blog/preview/${post.id}`]) {
+      const response = await fetch(`${url}${route}`, { headers: { Cookie: cookie }, signal: AbortSignal.timeout(15_000) });
+      assert.equal(response.status, 200, `Rendu Astro dev ${route}`);
+      const html = await response.text();
+      assert(html.includes(post.title), `Rendu Astro dev doit inclure l’article (${route}).`);
+    }
+    console.log('[integration] Astro dev : liste, article HTML et aperçu privé : OK');
+  } finally {
+    if (dev.exitCode === null && dev.signalCode === null) {
+      const finished = once(dev, 'exit'); dev.kill('SIGTERM');
+      const timer = setTimeout(() => dev.kill('SIGKILL'), 5000);
+      try { await finished; } finally { clearTimeout(timer); }
+    }
+  }
 }
 
 try {

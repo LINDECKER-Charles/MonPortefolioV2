@@ -1,8 +1,8 @@
 # Backend du portfolio
 
-API Rust/Axum avec stockage SQLite, notification SMTP, administration privée et MCP distant
-pour consulter les demandes. Le site Astro reste statique ; son serveur Node relaie les routes
-explicitement autorisées et remplace l’adresse de contact dans les pages HTML.
+API Rust/Axum avec stockage SQLite, notification SMTP, administration privée, blog et MCP distant.
+Le site Astro fournit la structure statique ; son serveur Node relaie les routes explicitement
+autorisées, remplace l’adresse de contact et rend les articles publiés avec leurs métadonnées SEO.
 
 ## Démarrer
 
@@ -153,35 +153,154 @@ Les routes suivantes nécessitent une session valide, à l’exception de `login
 | `/settings` | GET, PUT | consulter ou changer `{"email":"…"}` |
 | `/links`, `/links/{id}` | GET/POST, PUT/DELETE | gérer les raccourcis `label`, `url`, `description` |
 | `/tokens`, `/tokens/{id}` | GET/POST, DELETE | créer et révoquer les accès MCP |
+| `/blog/posts` | GET/POST | lister avec `status=draft\|scheduled\|published\|all`, `limit=1..100`, `offset` ; créer un brouillon |
+| `/blog/posts/{id}` | GET/PUT/DELETE | lire, remplacer les champs éditables avec `revision`, supprimer avec `{"revision":…}` |
+| `/blog/posts/{id}/preview`, `/blog/posts/{id}/seo` | GET | lire le brouillon ou son audit SEO |
+| `/blog/posts/{id}/publish`, `/blog/posts/{id}/unpublish` | POST | publier ou retirer avec `{"revision":…}` |
+| `/blog/posts/{id}/schedule` | POST | programmer avec `{"revision":…, "scheduled_at":…}` |
+| `/blog/media`, `/blog/media/{id}` | GET/POST, GET | lister/importer les images puis lire leurs octets avec la session |
 
 Toutes les mutations, y compris la connexion, exigent `X-Backoffice-Request: 1`. Les requêtes
 POST, PUT et PATCH utilisent `Content-Type: application/json`, même sans corps ; DELETE peut
 omettre cet en-tête. Les liens acceptent uniquement HTTP/HTTPS sans identifiants.
 Leur ouverture est une navigation normale vers le service, avec sa propre authentification.
 
+## Rédiger et publier le blog
+
+Le backoffice propose un éditeur Tiptap : titres H2 à H4, gras, italique, soulignement, texte
+barré, liens, listes, citations, code, séparateurs, alignement, tableaux et images. Le document
+JSON structuré est conservé en SQLite ; le serveur valide les types de nœuds, leur hiérarchie,
+les attributs et les URL avant de les enregistrer. Il refuse le HTML brut et les liens actifs
+`javascript:` ou `data:`. La profondeur est limitée à 20, le nombre de nœuds à 5 000 et le
+document sérialisé à 256 Kio.
+
+Un article possède `title` (1 à 160 caractères), `slug` (1 à 100 caractères minuscules ASCII,
+chiffres et tirets), `excerpt` (500 caractères au plus), `content`, `tags` (20 au plus, 50
+caractères chacun), `cover_image`, `cover_alt`, `seo_title` (120 caractères au plus),
+`seo_description` (320 caractères au plus), `canonical_url`, `og_image` et `noindex`.
+Les champs facultatifs ont une valeur vide, `null` ou `false` par défaut. Les images utilisent
+les URL importées `/api/blog/media/{id}` ou les assets locaux `/assets/`. L’URL canonique
+accepte une adresse HTTPS absolue sans identifiants.
+
+Exemple d’arguments pour `blog_create_post` :
+
+```json
+{
+  "title": "Expliquer une décision de conception",
+  "slug": "expliquer-une-decision-de-conception",
+  "excerpt": "Présenter le contexte, les choix possibles et les conséquences de la décision.",
+  "content": {
+    "type": "doc",
+    "content": [
+      { "type": "heading", "attrs": { "level": 2 }, "content": [{ "type": "text", "text": "Le contexte" }] },
+      { "type": "paragraph", "content": [{ "type": "text", "text": "Commencer par le problème à résoudre." }] }
+    ]
+  },
+  "tags": ["Architecture"]
+}
+```
+
+Créer ou modifier un article prépare le contenu editable. La création produit toujours un
+**brouillon**, et la modification d’un article publié conserve sa version publique jusqu’à
+une nouvelle publication explicite. Le lien **Aperçu** ouvre le rendu du brouillon sous
+`/api/backoffice/blog/preview/{id}`, avec une session backoffice valide. Cette page et ses
+images restent privées et hors indexation. L’API JSON correspondante est
+`GET /api/backoffice/blog/posts/{id}/preview`.
+
+Chaque réponse contient une `revision` entière. La transmettre lors d’une modification, d’une
+publication, d’une programmation, d’un retrait ou d’une suppression. Si une autre modification
+ou une publication programmée a eu lieu entre-temps, `REVISION_CONFLICT` empêche d’écraser son
+résultat : relire l’article et intégrer les changements avant de réessayer. Un slug déjà réservé
+produit `SLUG_CONFLICT`.
+
+**Publier** copie la version courante vers la version publique. Il faut un titre, un slug,
+un extrait et un contenu non vide ; une couverture doit avoir un texte alternatif. **Programmer**
+fige cette même version pour une date future, transmise en secondes Unix UTC dans `scheduled_at`
+(au plus cinq ans). Le formulaire convertit la date locale du navigateur en UTC. Les modifications
+suivantes ne changent pas la version programmée : reprogrammer après relecture pour les inclure.
+Le backend vérifie les échéances au démarrage puis chaque minute ; les lectures publiques
+vérifient aussi les échéances. Une échéance passée pendant un arrêt est donc reprise au redémarrage.
+Un retrait annule la programmation et retire la version publique, en conservant le brouillon.
+
+Les routes publiques sont `GET /api/blog/posts?limit=…&offset=…` (résumés publiés),
+`GET /api/blog/posts/{slug}` (version publiée) et `GET /api/blog/media/{id}`. Aucun brouillon
+ni article programmé sans version publiée n’y apparaît. Une image importée reste inaccessible
+par sa route publique tant qu’aucune version publiée ne la référence ; le backoffice peut la lire
+via sa route privée. Les octets des images PNG, JPEG, GIF et WebP sont enregistrés dans SQLite,
+avec vérification de leur signature et une limite de 4 Mio. L’import prend
+`{"filename":"…", "content_type":"image/png", "data_base64":"…"}`, sans préfixe `data:`.
+
+Le SEO se règle séparément du titre et de l’extrait : titre/description pour les moteurs,
+adresse canonique, image de partage et exclusion de l’index. En leur absence, les métadonnées
+reprennent le titre, l’extrait et la couverture. L’audit signale la longueur des métadonnées,
+les titres de section, les alternatives des images, le partage social et l’indexation. Son score
+sert à relire le contenu, sans promettre un classement dans les moteurs. Les versions publiques
+alimentent les pages du blog, leurs données structurées et le sitemap ; les brouillons
+et les aperçus restent hors de ces sorties.
+
 ## Connecter un client MCP
 
 Dans la rubrique « Accès MCP », créer un jeton nommé par appareil ou client. Le secret est
 affiché une seule fois ; seule son empreinte SHA-256 est conservée. Révoquer un accès le rend
 inutilisable immédiatement. Le mot de passe et le cookie du backoffice ne donnent pas accès au
-MCP. Les jetons peuvent lire les coordonnées et les messages : les réserver aux clients choisis.
+MCP. Choisir les permissions à la création ; le secret ne permet jamais de modifier les contacts,
+les réglages ou les autres jetons.
+
+| Permission | Accès |
+|---|---|
+| `contacts:read` | demandes de contact et liens ; contient des coordonnées et des messages privés |
+| `blog:read` | articles, brouillons, aperçus, audit SEO et liste des images |
+| `blog:write` | créer/modifier les brouillons et importer des images ; exige `blog:read` |
+| `blog:publish` | publier, programmer, retirer et supprimer les articles ; exige `blog:write` |
+
+Les jetons existants et les créations sans `scopes` gardent uniquement `contacts:read` et
+`blog:read`. Il faut créer un nouvel accès avec les permissions d’écriture voulues ; aucune
+migration ne leur donne le droit de publier. Les accès « Rédaction » ajoutent `blog:write`,
+et « Publication » ajoute aussi `blog:publish`. L’API autorise également des jetons limités au
+blog : `POST /api/backoffice/tokens` accepte par exemple
+`{"name":"Rédaction", "scopes":["blog:read", "blog:write"]}`. La liste des jetons expose leurs
+permissions, jamais leurs secrets. Le catalogue MCP ne montre que les outils autorisés, et
+chaque appel vérifie à nouveau la permission.
 
 Le serveur utilise Streamable HTTP à `https://<domaine>/mcp`, avec
 `Authorization: Bearer <jeton>` sur **chaque** requête. Il prend en charge la version MCP
 2026-07-28 et les handshakes 2025-11-25, 2025-06-18 et 2025-03-26. Les requêtes POST utilisent
 `Content-Type: application/json` et `Accept: application/json, text/event-stream`. Il répond en
 JSON, sans flux SSE ; GET et DELETE ne sont pas utilisés. Les appels sont limités à 120 par IP
-et par minute.
+et par minute. Un corps MCP accepte au plus 8 Mio pour permettre l’import d’images en base64 ;
+les limites du document et de l’image restent contrôlées séparément.
 
-| Outil | Rôle |
-|---|---|
-| `contacts_summary` | compter les demandes nouvelles, lues et archivées |
-| `list_contact_requests` | lister les résumés avec filtre et pagination, sans corps ni e-mail |
-| `get_contact_request` | lire le détail d’une demande par identifiant |
-| `list_toolbox_links` | retrouver les liens de la boîte à outils |
+| Outil | Permission | Rôle |
+|---|---|---|
+| `contacts_summary` | `contacts:read` | compter les demandes nouvelles, lues et archivées |
+| `list_contact_requests` | `contacts:read` | lister les résumés avec filtre et pagination, sans corps ni e-mail |
+| `get_contact_request` | `contacts:read` | lire le détail d’une demande par identifiant |
+| `list_toolbox_links` | `contacts:read` | retrouver les liens de la boîte à outils |
+| `blog_list_posts` | `blog:read` | lister les résumés de tous les états avec filtre et pagination ; document complet via `blog_get_post` |
+| `blog_get_post` | `blog:read` | lire le document editable et la revision |
+| `blog_preview_post` | `blog:read` | lire le brouillon et son URL d’aperçu privé |
+| `blog_seo_audit` | `blog:read` | vérifier le SEO de la version editable |
+| `blog_list_media` | `blog:read` | lister les images avec `limit` et `offset` |
+| `blog_create_post` | `blog:write` | créer un brouillon avec contenu et métadonnées |
+| `blog_update_post` | `blog:write` | remplacer les champs éditables avec `id` et `revision` |
+| `blog_upload_media` | `blog:write` | importer une image en base64 |
+| `blog_publish_post` | `blog:publish` | publier la version courante avec `id` et `revision` |
+| `blog_schedule_post` | `blog:publish` | figer/programmer avec `id`, `revision`, `scheduled_at` |
+| `blog_unpublish_post` | `blog:publish` | retirer et annuler la programmation |
+| `blog_delete_post` | `blog:publish` | supprimer définitivement avec `id` et `revision` |
 
 Aucun outil ne marque une demande comme lue, ne modifie la configuration ou n’envoie de message.
 Les contenus des visiteurs restent des données non fiables, jamais des instructions à exécuter.
+
+Pour rédiger avec un client IA : importer les images si nécessaire, créer le brouillon,
+relire `blog_preview_post` et `blog_seo_audit`, modifier avec la revision reçue, puis publier
+ou programmer seulement quand le contenu est validé. Les outils annoncent leurs effets via les
+annotations MCP : les lectures sont `readOnlyHint`, les créations/imports sont additifs, et
+les modifications, publications et suppressions signalent leur effet destructif. Les erreurs
+applicatives du blog sont des résultats `isError: true` avec `structuredContent.code` et
+`message` (`PERMISSION_DENIED`, `VALIDATION_ERROR`, `REVISION_CONFLICT`, `NOT_FOUND`…), permettant
+au client de corriger l’appel. Les requêtes JSON-RPC mal formées et les outils inconnus restent
+des erreurs de protocole. Voir la [spécification MCP des outils](https://modelcontextprotocol.io/specification/2026-07-28/server/tools).
 
 ### Codex
 

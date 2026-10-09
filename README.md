@@ -3,8 +3,9 @@
 Portfolio de Charles Lindecker, version 2 : un **mode d'emploi**. L'accueil raconte, de haut en
 bas, l’origine, aujourd’hui, puis « La suite, à plusieurs » : une invitation au contact et à la
 contribution open source. Cette nouvelle conclusion est un essai autorisé le 2026-10-08,
-à évaluer. Site statique produit par [Astro](https://astro.build), servi par un petit serveur
-Node sans dépendance, en conteneur derrière l'edge TLS mutualisé du VPS.
+à évaluer. Pages produites par [Astro](https://astro.build), servies par un petit serveur
+Node sans dépendance, en conteneur derrière l'edge TLS mutualisé du VPS. Les publications du blog
+sont rendues à la demande à partir des contenus persistés, sans reconstruction du site.
 
 ## Démarrer
 
@@ -45,7 +46,7 @@ SMTP ne fait pas perdre la demande. Renseigner `SMTP_HOST`, `SMTP_FROM` et les r
 pour activer les notifications.
 
 Le **backoffice `/backoffice`** rassemble les demandes (nouvelles, lues, archivées), leur état de
-notification, l’adresse de contact, les liens de la boîte à outils et les jetons MCP. L’adresse
+notification, le blog, l’adresse de contact, les liens de la boîte à outils et les jetons MCP. L’adresse
 modifiée est utilisée par le formulaire et les liens e-mail des pages sans redémarrage ni rebuild.
 `CONTACT_EMAIL` initialise seulement une base neuve ; une base existante conserve sa valeur.
 
@@ -64,9 +65,11 @@ En HTTP local seulement, poser `BACKOFFICE_COOKIE_SECURE=false` ; garder `true` 
 Sans identifiants, l’administration est désactivée. Configuration et récupération d’accès :
 [`backend/README.md`](backend/README.md).
 
-Depuis le backoffice, créer un jeton par client pour consulter les demandes via le MCP distant
-`https://<domaine>/mcp`. Il expose uniquement des outils de lecture et ne marque aucune demande
-comme lue. Les jetons peuvent être révoqués individuellement. Connexion Claude/Codex, contrat de
+Depuis le backoffice, créer un jeton par client pour consulter les demandes et gérer le blog via
+le MCP distant `https://<domaine>/mcp`. Choisir ses permissions : lecture, rédaction ou publication.
+Les jetons existants restent en lecture ; la rédaction et la publication sont des autorisations
+distinctes. La lecture des contacts ne marque aucune demande comme lue.
+Les jetons peuvent être révoqués individuellement. Connexion Claude/Codex, contrat de
 l’API et sauvegarde de la base : [`backend/README.md`](backend/README.md).
 
 ## Carte du dépôt
@@ -118,8 +121,35 @@ Pour ajouter un projet, créer sa page statique, l’inscrire dans l’index des
 navigateur. Le build vérifie les liens internes et la cohérence du sitemap. Les descriptions
 doivent faire 110 à 165 caractères, les titres 65 caractères au plus.
 
-Le blog est ouvert sans article. Son mode d’alimentation reste à décider ; aucun CMS ni contenu
-fictif n’est ajouté. Les illustrations de l’accueil jouent une scène propre à leur sujet à leur
+Le blog se gère dans **`/backoffice/blog`**, avec une liste filtrable et des liens vers chaque
+article. Quatre pages distinctes partagent la version de travail : **Rédaction**, **Images**,
+**Référencement** et **Publication**. Leurs adresses `/backoffice/blog/redaction?id=…`,
+`/backoffice/blog/medias?id=…`, `/backoffice/blog/seo?id=…` et
+`/backoffice/blog/publication?id=…` se rechargent directement. Changer de page dans l’article
+conserve les retouches ; quitter l’article demande confirmation si elles ne sont pas enregistrées.
+Les commandes **Enregistrer** et **Aperçu** restent accessibles pendant la rédaction.
+L’éditeur propose titres, listes, liens,
+citations, code, tableaux, alignements, images avec légendes et descriptions, couverture et image
+de partage. Les réglages SEO comprennent titre, description, slug, canonical, indexation et aperçu
+du résultat de recherche. Les images JPEG, PNG, WebP et GIF (4 Mio maximum) sont conservées dans
+la même base SQLite que les articles ; ses sauvegardes incluent donc les médias.
+
+Un article commence en brouillon. **Enregistrer** conserve la version de travail ; **Aperçu**
+ouvre la mise en page réelle dans une page privée, sans mesure ni indexation. **Publier** copie
+explicitement cette version sur `/blog/<slug>`. Modifier un article publié garde sa version
+publique jusqu’à sa nouvelle publication. **Programmer** capture la version enregistrée pour
+l’échéance choisie ; les retouches suivantes restent privées jusqu’à une nouvelle programmation.
+La date est saisie dans le fuseau affiché par l’interface puis enregistrée en UTC. Le backend
+rattrape les échéances au démarrage et les traite chaque minute ainsi qu’à la lecture publique.
+Il doit rester démarré pour assurer les publications à l’heure prévue.
+
+Les douze outils MCP du blog permettent les mêmes opérations, y compris les images, l’aperçu et
+l’audit SEO. Les révisions empêchent une IA et l’éditeur d’écraser leurs changements respectifs.
+Les articles publics contiennent leur texte et leurs métadonnées dans le HTML, avec balisage
+`BlogPosting` et sitemap actualisé. Aucun article fictif n’est publié. Contrat complet et exemple
+de document structuré : [`backend/README.md`](backend/README.md).
+
+Les illustrations de l’accueil jouent une scène propre à leur sujet à leur
 première arrivée dans l’écran, puis la rejouent au clic sur le dessin ou au clavier. Le système
 d’architecture fait circuler des messages en boucle
 tant qu’il est visible ; les trois règles apparaissent dans l’ordre. Avec mouvement réduit,

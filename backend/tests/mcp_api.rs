@@ -8,7 +8,13 @@ use axum::{
 };
 use base64::{Engine, engine::general_purpose::STANDARD};
 use http_body_util::BodyExt;
-use portfolio_backend::{AppState, contact::ContactMessage, mcp, storage::Store};
+use portfolio_backend::{
+    AppState, admin,
+    config::{AppEnvironment, BackofficeConfig},
+    contact::ContactMessage,
+    mcp,
+    storage::Store,
+};
 use serde_json::{Value, json};
 use tower::ServiceExt;
 
@@ -282,7 +288,7 @@ async fn advertises_supported_versions_for_unknown_versions() {
 }
 
 #[tokio::test]
-async fn exposes_only_four_read_only_tools_and_no_settings_or_tokens() {
+async fn read_only_tokens_advertise_only_reads_and_no_settings_or_tokens() {
     let fixture = fixture();
     let response = fixture
         .app
@@ -291,7 +297,7 @@ async fn exposes_only_four_read_only_tools_and_no_settings_or_tokens() {
         .unwrap();
     let data = body(response).await;
     let tools = data["result"]["tools"].as_array().unwrap();
-    assert_eq!(tools.len(), 4);
+    assert_eq!(tools.len(), 9);
     for tool in tools {
         assert_eq!(tool["annotations"]["readOnlyHint"], true);
         assert_eq!(tool["annotations"]["destructiveHint"], false);
@@ -300,6 +306,9 @@ async fn exposes_only_four_read_only_tools_and_no_settings_or_tokens() {
     let serialized = data.to_string();
     assert!(!serialized.contains(&fixture.token));
     assert!(!serialized.contains("owner@example.org"));
+    assert!(serialized.contains("blog_preview_post"));
+    assert!(!serialized.contains("blog_publish_post"));
+    assert!(!serialized.contains("blog_create_post"));
 }
 
 #[tokio::test]
@@ -531,7 +540,7 @@ async fn rejects_batches_null_ids_and_tool_notifications() {
         -32700
     );
     let mut request = legacy_request(Some(&fixture.token), json!({}));
-    *request.body_mut() = Body::from(" ".repeat(24 * 1024 + 1));
+    *request.body_mut() = Body::from(" ".repeat(8 * 1024 * 1024 + 1));
     assert_eq!(
         fixture.app.oneshot(request).await.unwrap().status(),
         StatusCode::PAYLOAD_TOO_LARGE
@@ -571,4 +580,356 @@ async fn bounds_authenticated_request_rate_separately_from_contact_submission() 
     let response = fixture.app.oneshot(request).await.unwrap();
     assert_eq!(response.status(), StatusCode::TOO_MANY_REQUESTS);
     assert!(response.headers().contains_key("retry-after"));
+}
+
+fn draft() -> Value {
+    json!({
+        "title": "Écrire un article avec un aperçu",
+        "slug": "article-avec-apercu",
+        "excerpt": "Un brouillon relu avant sa publication.",
+        "content": { "type": "doc", "content": [
+            { "type": "heading", "attrs": { "level": 2 }, "content": [{ "type": "text", "text": "Une méthode de rédaction" }] },
+            { "type": "paragraph", "content": [{ "type": "text", "text": "Le contenu préparé en brouillon reste privé jusqu’à la publication." }] }
+        ] },
+        "seo_title": "Une méthode de rédaction avec aperçu privé",
+        "seo_description": "Préparer le contenu, vérifier les métadonnées et relire la version prévue avant de publier un article depuis le backoffice."
+    })
+}
+
+fn blog_token(fixture: &Fixture, scopes: &[&str]) -> String {
+    fixture
+        .store
+        .create_token_with_scopes(
+            "Rédaction MCP",
+            &scopes
+                .iter()
+                .map(|scope| (*scope).into())
+                .collect::<Vec<_>>(),
+        )
+        .unwrap()
+        .1
+}
+
+async fn invoke(fixture: &Fixture, token: &str, name: &str, args: Value) -> Value {
+    let response = fixture
+        .app
+        .clone()
+        .oneshot(tool_request(token, name, args))
+        .await
+        .unwrap();
+    assert_eq!(response.status(), StatusCode::OK);
+    body(response).await["result"].clone()
+}
+
+#[tokio::test]
+async fn existing_read_only_tokens_never_gain_blog_write_or_publish_permissions() {
+    let fixture = fixture();
+    for (name, arguments) in [
+        ("blog_create_post", draft()),
+        (
+            "blog_upload_media",
+            json!({ "filename": "image.png", "content_type": "image/png", "data_base64": "AAAA" }),
+        ),
+        ("blog_publish_post", json!({ "id": 1, "revision": 1 })),
+        (
+            "blog_schedule_post",
+            json!({ "id": 1, "revision": 1, "scheduled_at": 4_102_444_800_i64 }),
+        ),
+        ("blog_unpublish_post", json!({ "id": 1, "revision": 1 })),
+        ("blog_delete_post", json!({ "id": 1, "revision": 1 })),
+    ] {
+        let result = invoke(&fixture, &fixture.token, name, arguments).await;
+        assert_eq!(result["isError"], true);
+        assert_eq!(result["structuredContent"]["code"], "PERMISSION_DENIED");
+    }
+    let listed = invoke(&fixture, &fixture.token, "blog_list_posts", json!({})).await;
+    assert_eq!(listed["structuredContent"]["total"], 0);
+    assert!(fixture.store.authenticate_token(&fixture.token).unwrap());
+}
+
+#[tokio::test]
+async fn draft_writers_can_preview_and_audit_but_publication_requires_its_own_scope() {
+    let fixture = fixture();
+    let writer = blog_token(&fixture, &["blog:read", "blog:write"]);
+    let publisher = blog_token(&fixture, &["blog:read", "blog:write", "blog:publish"]);
+    let created = invoke(&fixture, &writer, "blog_create_post", draft()).await;
+    assert_eq!(created["isError"], false);
+    let post = &created["structuredContent"];
+    assert_eq!(post["status"], "draft");
+    let identity = json!({ "id": post["id"] });
+    let action = json!({ "id": post["id"], "revision": post["revision"] });
+
+    let listed = invoke(&fixture, &writer, "blog_list_posts", json!({})).await;
+    assert_eq!(listed["structuredContent"]["posts"][0]["id"], post["id"]);
+    assert!(
+        listed["structuredContent"]["posts"][0]
+            .get("content")
+            .is_none()
+    );
+    let full = invoke(&fixture, &writer, "blog_get_post", identity.clone()).await;
+    assert_eq!(full["structuredContent"]["content"], draft()["content"]);
+
+    let preview = invoke(&fixture, &writer, "blog_preview_post", identity.clone()).await;
+    assert_eq!(preview["isError"], false);
+    assert_eq!(
+        preview["structuredContent"]["post"]["content"],
+        draft()["content"]
+    );
+    assert_eq!(
+        preview["structuredContent"]["requires_backoffice_session"],
+        true
+    );
+    assert_eq!(preview["structuredContent"]["indexable"], false);
+    assert_eq!(
+        preview["structuredContent"]["preview_url"],
+        format!("/api/backoffice/blog/preview/{}", post["id"])
+    );
+    let audit = invoke(&fixture, &writer, "blog_seo_audit", identity.clone()).await;
+    assert_eq!(audit["isError"], false);
+    assert!(audit["structuredContent"]["score"].is_number());
+
+    let denied = invoke(&fixture, &writer, "blog_publish_post", action.clone()).await;
+    assert_eq!(denied["structuredContent"]["code"], "PERMISSION_DENIED");
+    let denied_contact = invoke(&fixture, &writer, "contacts_summary", json!({})).await;
+    assert_eq!(
+        denied_contact["structuredContent"]["code"],
+        "PERMISSION_DENIED"
+    );
+    let published = invoke(&fixture, &publisher, "blog_publish_post", action.clone()).await;
+    assert_eq!(published["isError"], false);
+    assert_eq!(published["structuredContent"]["status"], "published");
+    let stale = invoke(&fixture, &publisher, "blog_unpublish_post", action).await;
+    assert_eq!(stale["isError"], true);
+    assert_eq!(stale["structuredContent"]["code"], "REVISION_CONFLICT");
+
+    let mut edit = draft();
+    edit["id"] = post["id"].clone();
+    edit["revision"] = published["structuredContent"]["revision"].clone();
+    edit["title"] = json!("Un autre titre gardé en brouillon");
+    let updated = invoke(&fixture, &writer, "blog_update_post", edit.clone()).await;
+    assert_eq!(updated["isError"], false);
+    assert_eq!(updated["structuredContent"]["title"], edit["title"]);
+    let stale_edit = invoke(&fixture, &writer, "blog_update_post", edit).await;
+    assert_eq!(stale_edit["structuredContent"]["code"], "REVISION_CONFLICT");
+    let unpublished = invoke(
+        &fixture,
+        &publisher,
+        "blog_unpublish_post",
+        json!({ "id": post["id"], "revision": updated["structuredContent"]["revision"] }),
+    )
+    .await;
+    assert_eq!(unpublished["isError"], false);
+    assert_eq!(unpublished["structuredContent"]["status"], "draft");
+}
+
+#[tokio::test]
+async fn publisher_can_schedule_and_delete_with_revision_checked_at_every_action() {
+    let fixture = fixture();
+    let publisher = blog_token(&fixture, &["blog:read", "blog:write", "blog:publish"]);
+    let created = invoke(&fixture, &publisher, "blog_create_post", draft()).await;
+    let post = &created["structuredContent"];
+    let future = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_secs()
+        + 3_600;
+    let scheduled = invoke(
+        &fixture,
+        &publisher,
+        "blog_schedule_post",
+        json!({ "id": post["id"], "revision": post["revision"], "scheduled_at": future }),
+    )
+    .await;
+    assert_eq!(scheduled["isError"], false);
+    assert_eq!(scheduled["structuredContent"]["status"], "scheduled");
+    let stale = invoke(
+        &fixture,
+        &publisher,
+        "blog_delete_post",
+        json!({ "id": post["id"], "revision": post["revision"] }),
+    )
+    .await;
+    assert_eq!(stale["structuredContent"]["code"], "REVISION_CONFLICT");
+    let deleted = invoke(
+        &fixture,
+        &publisher,
+        "blog_delete_post",
+        json!({ "id": post["id"], "revision": scheduled["structuredContent"]["revision"] }),
+    )
+    .await;
+    assert_eq!(deleted["structuredContent"]["deleted"], true);
+    let missing = invoke(
+        &fixture,
+        &publisher,
+        "blog_get_post",
+        json!({ "id": post["id"] }),
+    )
+    .await;
+    assert_eq!(missing["isError"], true);
+    assert_eq!(missing["structuredContent"]["code"], "NOT_FOUND");
+}
+
+#[tokio::test]
+async fn blog_argument_validation_errors_are_actionable_tool_results_and_never_mutate() {
+    let fixture = fixture();
+    let publisher = blog_token(&fixture, &["blog:read", "blog:write", "blog:publish"]);
+    let mut unsafe_draft = draft();
+    unsafe_draft["content"] = json!({ "type": "doc", "content": [{ "type": "html", "text": "<script>alert(1)</script>" }] });
+    for (name, arguments) in [
+        ("blog_create_post", unsafe_draft),
+        (
+            "blog_create_post",
+            json!({ "title": "Titre", "slug": "titre", "content": draft()["content"], "status": "published" }),
+        ),
+        (
+            "blog_create_post",
+            json!({ "title": "Titre", "slug": "titre", "content": draft()["content"], "revision": 1 }),
+        ),
+        ("blog_list_posts", json!({ "limit": 0 })),
+        ("blog_list_posts", json!({ "offset": -1 })),
+        ("blog_list_posts", json!({ "status": "hidden" })),
+        ("blog_get_post", json!({ "id": "1" })),
+        ("blog_list_media", json!({ "extra": true })),
+        (
+            "blog_update_post",
+            json!({ "id": 1, "title": "Titre", "slug": "titre", "content": draft()["content"] }),
+        ),
+        ("blog_publish_post", json!({ "id": 1, "revision": 0 })),
+        (
+            "blog_schedule_post",
+            json!({ "id": 1, "revision": 1, "scheduled_at": "demain" }),
+        ),
+        (
+            "blog_upload_media",
+            json!({ "filename": "script.svg", "content_type": "image/svg+xml", "data_base64": "PHN2Zz4=" }),
+        ),
+    ] {
+        let result = invoke(&fixture, &publisher, name, arguments).await;
+        assert_eq!(result["isError"], true, "{name}: {result}");
+        assert!(result["structuredContent"]["code"].is_string());
+    }
+    assert_eq!(
+        fixture.store.list_blog_posts("all", 20, 0).unwrap().total,
+        0
+    );
+}
+
+#[tokio::test]
+async fn catalog_scopes_and_annotations_describe_actual_blog_effects() {
+    let fixture = fixture();
+    let publisher = blog_token(&fixture, &["blog:read", "blog:write", "blog:publish"]);
+    let response = fixture
+        .app
+        .clone()
+        .oneshot(modern_request(&publisher, "tools/list", json!({})))
+        .await
+        .unwrap();
+    let result = body(response).await;
+    let tools = result["result"]["tools"].as_array().unwrap();
+    assert_eq!(tools.len(), 12);
+    for tool in tools {
+        let name = tool["name"].as_str().unwrap();
+        assert!(name.starts_with("blog_"));
+        assert_eq!(tool["inputSchema"]["additionalProperties"], false);
+        assert_eq!(tool["annotations"]["openWorldHint"], false);
+        if matches!(name, "blog_create_post" | "blog_upload_media") {
+            assert_eq!(tool["annotations"]["readOnlyHint"], false);
+            assert_eq!(tool["annotations"]["destructiveHint"], false);
+            assert_eq!(tool["annotations"]["idempotentHint"], false);
+        } else if matches!(
+            name,
+            "blog_update_post"
+                | "blog_publish_post"
+                | "blog_schedule_post"
+                | "blog_unpublish_post"
+                | "blog_delete_post"
+        ) {
+            assert_eq!(tool["annotations"]["readOnlyHint"], false);
+            assert_eq!(tool["annotations"]["destructiveHint"], true);
+            assert_eq!(tool["annotations"]["idempotentHint"], true);
+        } else {
+            assert_eq!(tool["annotations"]["readOnlyHint"], true);
+        }
+    }
+}
+
+#[tokio::test]
+async fn only_admin_sessions_can_create_tokens_with_explicit_consistent_permissions() {
+    let store = Arc::new(Store::in_memory("owner@example.org").unwrap());
+    let state = AppState::with_store(
+        None,
+        None,
+        store.clone(),
+        Some(BackofficeConfig {
+            email: "admin@example.org".into(),
+            password: "correct horse battery staple".into(),
+            environment: AppEnvironment::Development,
+            totp_encryption_key: None,
+        }),
+        false,
+    )
+    .unwrap();
+    let app = admin::routes(state.clone()).with_state(state);
+    let session = store.create_session(Duration::from_secs(60)).unwrap();
+    let request = |payload: Value, authenticated: bool| {
+        let mut builder = Request::builder()
+            .method("POST")
+            .uri("/api/backoffice/tokens")
+            .header("host", "portfolio.example.org")
+            .header("origin", "https://portfolio.example.org")
+            .header("content-type", "application/json")
+            .header("x-backoffice-request", "1");
+        if authenticated {
+            builder = builder.header("cookie", format!("portfolio_backoffice={session}"));
+        }
+        builder.body(Body::from(payload.to_string())).unwrap()
+    };
+    let full =
+        json!({ "name": "Publication", "scopes": ["blog:read", "blog:write", "blog:publish"] });
+    let denied = app
+        .clone()
+        .oneshot(request(full.clone(), false))
+        .await
+        .unwrap();
+    assert_eq!(denied.status(), StatusCode::UNAUTHORIZED);
+    for scopes in [
+        json!([]),
+        json!(["blog:write"]),
+        json!(["blog:read", "blog:publish"]),
+        json!(["contacts:write"]),
+        json!(["blog:read", "blog:read"]),
+    ] {
+        let response = app
+            .clone()
+            .oneshot(request(
+                json!({ "name": "Interdit", "scopes": scopes }),
+                true,
+            ))
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
+    }
+    assert!(store.list_tokens().unwrap().is_empty());
+    let read = app
+        .clone()
+        .oneshot(request(json!({ "name": "Lecture historique" }), true))
+        .await
+        .unwrap();
+    assert_eq!(read.status(), StatusCode::CREATED);
+    let read = body(read).await;
+    assert_eq!(read["scopes"], json!(["contacts:read", "blog:read"]));
+    let published = app.oneshot(request(full, true)).await.unwrap();
+    assert_eq!(published.status(), StatusCode::CREATED);
+    let published = body(published).await;
+    assert_eq!(
+        published["scopes"],
+        json!(["blog:read", "blog:write", "blog:publish"])
+    );
+    let scopes = store
+        .authenticate_token_scopes(published["token"].as_str().unwrap())
+        .unwrap()
+        .unwrap();
+    assert_eq!(scopes, vec!["blog:read", "blog:write", "blog:publish"]);
+    let listing = serde_json::to_string(&store.list_tokens().unwrap()).unwrap();
+    assert!(!listing.contains(published["token"].as_str().unwrap()));
 }

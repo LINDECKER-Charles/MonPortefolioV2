@@ -71,6 +71,7 @@ pub struct TokenRecord {
     pub name: String,
     pub created_at: String,
     pub last_used_at: Option<String>,
+    pub scopes: Vec<String>,
 }
 
 pub(crate) enum TwoFactorResult {
@@ -144,6 +145,16 @@ impl Store {
                created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
                last_used_at TEXT);"
         )?;
+        crate::blog::initialize(&connection)?;
+        let has_scopes = connection
+            .prepare("PRAGMA table_info(tokens)")?
+            .query_map([], |row| row.get::<_, String>(1))?
+            .collect::<Result<Vec<_>, _>>()?
+            .iter()
+            .any(|name| name == "scopes");
+        if !has_scopes {
+            connection.execute("ALTER TABLE tokens ADD COLUMN scopes TEXT NOT NULL DEFAULT '[\"contacts:read\",\"blog:read\"]'", [])?;
+        }
         let configured: bool = connection.query_row(
             "SELECT EXISTS(SELECT 1 FROM settings WHERE key='contact_email')",
             [],
@@ -170,7 +181,7 @@ impl Store {
         })
     }
 
-    fn connection(&self) -> Result<MutexGuard<'_, Connection>, StoreError> {
+    pub(crate) fn connection(&self) -> Result<MutexGuard<'_, Connection>, StoreError> {
         self.connection.lock().map_err(|_| StoreError)
     }
 
@@ -601,8 +612,9 @@ impl Store {
 
     pub fn list_tokens(&self) -> Result<Vec<TokenRecord>, StoreError> {
         let connection = self.connection()?;
-        let mut query = connection
-            .prepare("SELECT id,name,created_at,last_used_at FROM tokens ORDER BY id DESC")?;
+        let mut query = connection.prepare(
+            "SELECT id,name,created_at,last_used_at,scopes FROM tokens ORDER BY id DESC",
+        )?;
         Ok(query
             .query_map([], |row| {
                 Ok(TokenRecord {
@@ -610,12 +622,25 @@ impl Store {
                     name: row.get(1)?,
                     created_at: row.get(2)?,
                     last_used_at: row.get(3)?,
+                    scopes: serde_json::from_str(&row.get::<_, String>(4)?)
+                        .map_err(|_| rusqlite::Error::InvalidQuery)?,
                 })
             })?
             .collect::<Result<Vec<_>, _>>()?)
     }
 
     pub fn create_token(&self, name: &str) -> Result<(i64, String), StoreError> {
+        self.create_token_with_scopes(name, &["contacts:read".into(), "blog:read".into()])
+    }
+
+    pub fn create_token_with_scopes(
+        &self,
+        name: &str,
+        scopes: &[String],
+    ) -> Result<(i64, String), StoreError> {
+        if !crate::admin::valid_token_scopes(scopes) {
+            return Err(StoreError);
+        }
         let connection = self.connection()?;
         let count: u64 =
             connection.query_row("SELECT count(*) FROM tokens", [], |row| row.get(0))?;
@@ -624,20 +649,44 @@ impl Store {
         }
         let token = random_secret();
         connection.execute(
-            "INSERT INTO tokens(name,hash) VALUES(?1,?2)",
-            params![name, hash_secret(&token)],
+            "INSERT INTO tokens(name,hash,scopes) VALUES(?1,?2,?3)",
+            params![
+                name,
+                hash_secret(&token),
+                serde_json::to_string(scopes).map_err(|_| StoreError)?
+            ],
         )?;
         Ok((connection.last_insert_rowid(), token))
     }
 
     pub fn authenticate_token(&self, token: &str) -> Result<bool, StoreError> {
+        Ok(self.authenticate_token_scopes(token)?.is_some())
+    }
+
+    pub fn authenticate_token_scopes(
+        &self,
+        token: &str,
+    ) -> Result<Option<Vec<String>>, StoreError> {
         if token.len() != 64 {
-            return Ok(false);
+            return Ok(None);
         }
-        Ok(self.connection()?.execute(
+        let connection = self.connection()?;
+        let encoded: Option<String> = connection
+            .query_row(
+                "SELECT scopes FROM tokens WHERE hash=?1",
+                [hash_secret(token)],
+                |row| row.get(0),
+            )
+            .optional()?;
+        let Some(encoded) = encoded else {
+            return Ok(None);
+        };
+        let scopes: Vec<String> = serde_json::from_str(&encoded).map_err(|_| StoreError)?;
+        connection.execute(
             "UPDATE tokens SET last_used_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE hash=?1",
             [hash_secret(token)],
-        )? > 0)
+        )?;
+        Ok(Some(scopes))
     }
 
     pub fn delete_token(&self, id: i64) -> Result<bool, StoreError> {
@@ -940,6 +989,48 @@ mod tests {
         let (old_token, _) = store.create_token("Portable").unwrap();
         assert!(store.delete_token(old_token).unwrap());
         assert!(store.create_token("Portable").unwrap().0 > old_token);
+    }
+
+    #[test]
+    fn legacy_tokens_migrate_to_read_only_scopes_without_exposing_or_rotating_secrets() {
+        let path =
+            std::env::temp_dir().join(format!("portfolio-scopes-{}.sqlite3", random_secret()));
+        let token = random_secret();
+        {
+            let connection = Connection::open(&path).unwrap();
+            connection.execute_batch("CREATE TABLE tokens (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, hash TEXT NOT NULL UNIQUE, created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')), last_used_at TEXT);").unwrap();
+            connection
+                .execute(
+                    "INSERT INTO tokens(name,hash) VALUES(?1,?2)",
+                    params!["Ancien client", hash_secret(&token)],
+                )
+                .unwrap();
+        }
+        let store = Store::open(&path, Some("owner@example.org")).unwrap();
+        assert_eq!(
+            store.authenticate_token_scopes(&token).unwrap(),
+            Some(vec!["contacts:read".into(), "blog:read".into()])
+        );
+        let tokens = store.list_tokens().unwrap();
+        assert_eq!(tokens[0].id, 1);
+        assert_eq!(tokens[0].name, "Ancien client");
+        assert_eq!(tokens[0].scopes, vec!["contacts:read", "blog:read"]);
+        assert!(!serde_json::to_string(&tokens).unwrap().contains(&token));
+        drop(store);
+        let reopened = Store::open(&path, None).unwrap();
+        assert_eq!(
+            reopened.authenticate_token_scopes(&token).unwrap(),
+            Some(vec!["contacts:read".into(), "blog:read".into()])
+        );
+        assert!(reopened.delete_token(1).unwrap());
+        assert!(
+            reopened
+                .authenticate_token_scopes(&token)
+                .unwrap()
+                .is_none()
+        );
+        drop(reopened);
+        std::fs::remove_file(path).unwrap();
     }
 
     #[test]
