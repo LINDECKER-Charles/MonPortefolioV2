@@ -1,0 +1,78 @@
+<section class="bo-panel bo-blog" id="bo-panel-blog" role="tabpanel" aria-labelledby="bo-tab-blog" tabindex="0" hidden>
+  <header class="blog-workspace-header">
+    <div><h2 id="blog-workspace-title" tabindex="-1">Articles</h2><p id="blog-workspace-description">Préparez vos idées, relisez vos brouillons et choisissez quand les partager.</p></div>
+    <button class="bo-button bo-button--primary" id="blog-new" type="button">Nouvel article</button>
+  </header>
+  <p class="bo-notice" id="blog-notice" role="status" aria-live="polite" hidden></p>
+
+  <div id="blog-list-view">
+    <div class="blog-list-toolbar">
+      <div class="blog-search"><label for="blog-list-search">Rechercher dans cette page</label><input id="blog-list-search" type="search" placeholder="Titre, résumé ou sujet" autocomplete="off" /></div>
+      <div><label for="blog-filter">Afficher les articles</label><select id="blog-filter"><option value="all">Tous les articles</option><option value="draft">Brouillons</option><option value="scheduled">Programmés</option><option value="published">Publiés</option></select></div>
+      <button class="bo-button bo-button--quiet" id="blog-refresh" type="button">Actualiser les articles</button>
+    </div>
+    <p class="blog-results-count bo-muted" id="blog-results-count" role="status"></p>
+    <ul class="blog-post-list" id="blog-post-list" aria-label="Articles du blog"></ul>
+    <div class="blog-empty-state" id="blog-empty" hidden><h3>Votre premier article commence ici.</h3><p>Un sujet, quelques idées, une première version. Créez un article et prenez le temps de le relire avant de le publier.</p><p class="bo-help">Votre assistant peut aussi préparer un brouillon depuis son accès MCP.</p></div>
+    <p class="bo-empty" id="blog-search-empty" hidden>Aucun article ne correspond à cette recherche dans la page affichée.</p>
+    <div class="bo-pagination" id="blog-pagination" hidden><button class="bo-button" id="blog-previous" type="button">Articles précédents</button><span class="bo-muted" id="blog-page"></span><button class="bo-button" id="blog-next" type="button">Articles suivants</button></div>
+  </div>
+
+  <div id="blog-edit-view" hidden>
+    <div class="blog-document-bar">
+      <div class="blog-document-context"><a class="blog-return" id="blog-back" href="/backoffice/blog">Retour aux articles</a><strong id="blog-document-title">Nouvel article</strong><div class="blog-document-state"><span class="bo-state" id="blog-status">Brouillon</span><span class="bo-muted" id="blog-save-state" aria-live="polite">Non enregistré</span></div></div>
+      <div class="blog-save-actions"><button class="bo-button" id="blog-preview" type="button">Aperçu</button><button class="bo-button bo-button--primary" id="blog-save" type="submit" form="blog-form">Enregistrer</button></div>
+    </div>
+    <nav class="blog-article-nav" id="blog-article-nav" aria-label="Pages de l’article">
+      <a href="/backoffice/blog/redaction" data-blog-section-link="redaction" aria-current="page">Rédaction</a>
+      <a href="/backoffice/blog/medias" data-blog-section-link="medias">Images</a>
+      <a href="/backoffice/blog/seo" data-blog-section-link="seo">Référencement</a>
+      <a href="/backoffice/blog/publication" data-blog-section-link="publication">Publication</a>
+    </nav>
+    <p class="bo-help blog-publication-help" id="blog-publication-help">Un brouillon reste privé. L’aperçu utilise la dernière version enregistrée.</p>
+
+    <form id="blog-form" class="blog-form" novalidate><fieldset id="blog-fields"><legend class="bo-sr">Préparer l’article</legend>
+      <section class="blog-writing-sheet blog-page" data-blog-page="redaction" aria-label="Rédaction de l’article">
+        <div class="blog-field blog-title-field"><label for="blog-title">Titre de l’article</label><input id="blog-title" maxlength="160" required placeholder="Le sujet que vous voulez partager" /></div>
+
+        <div class="blog-field blog-content-field"><label id="blog-content-label">Contenu de l’article</label>
+          <div class="blog-editor-frame"><div class="blog-toolbar" role="group" aria-label="Mise en forme du texte">
+            <div class="blog-toolbar-group"><label for="blog-block" class="bo-sr">Style du paragraphe</label><select id="blog-block"><option value="paragraph">Paragraphe</option><option value="2">Titre 2</option><option value="3">Titre 3</option><option value="4">Titre 4</option><option value="code">Bloc de code</option></select></div>
+            <div class="blog-toolbar-group"><button type="button" data-editor="bold" aria-pressed="false" title="Gras"><b>Gras</b></button><button type="button" data-editor="italic" aria-pressed="false" title="Italique"><i>Italique</i></button><button type="button" data-editor="underline" aria-pressed="false" title="Souligner"><u>Souligné</u></button></div>
+            <div class="blog-toolbar-group"><button type="button" data-editor="bulletList" aria-pressed="false">Liste</button><button type="button" data-editor="orderedList" aria-pressed="false">Liste numérotée</button><button type="button" id="blog-link">Lien</button><button type="button" id="blog-insert-image">Image</button><button type="button" data-editor="table">Tableau</button></div>
+            <details class="blog-toolbar-more"><summary>Autres formats</summary><div class="blog-toolbar-menu"><button type="button" data-editor="strike" aria-pressed="false"><s>Barré</s></button><button type="button" data-editor="code" aria-pressed="false">Code</button><button type="button" data-editor="blockquote" aria-pressed="false">Citation</button><button type="button" data-editor="unlink">Retirer le lien</button><button type="button" data-editor="horizontalRule">Séparateur</button><label for="blog-align" class="bo-sr">Alignement du paragraphe</label><select id="blog-align"><option value="left">Aligner à gauche</option><option value="center">Centrer</option><option value="right">Aligner à droite</option><option value="justify">Justifier</option></select></div></details>
+            <details class="blog-toolbar-more"><summary>Modifier le tableau</summary><div class="blog-toolbar-menu"><button type="button" data-editor="addRowAfter">Ajouter une ligne</button><button type="button" data-editor="addColumnAfter">Ajouter une colonne</button><button type="button" data-editor="deleteRow">Retirer la ligne</button><button type="button" data-editor="deleteColumn">Retirer la colonne</button><button type="button" data-editor="deleteTable">Retirer le tableau</button></div></details>
+            <div class="blog-toolbar-group blog-toolbar-history"><button type="button" data-editor="undo">Annuler</button><button type="button" data-editor="redo">Rétablir</button></div>
+          </div><div id="blog-editor"></div></div>
+          <p class="blog-writing-meta bo-help" id="blog-word-count">0 mot</p>
+        </div>
+        <div class="blog-field blog-excerpt-field"><label for="blog-excerpt">Résumé</label><textarea id="blog-excerpt" rows="3" maxlength="500" aria-describedby="blog-excerpt-help" placeholder="Ce que le lecteur va découvrir"></textarea><p class="bo-help" id="blog-excerpt-help">Ce texte présente l’article dans le blog. Il ne fait pas partie du corps de l’article.</p></div>
+      </section>
+
+      <section class="blog-page blog-media-page" data-blog-page="medias" aria-label="Images et sujets de l’article" hidden>
+        <div class="blog-settings-surface"><h3>La couverture de l’article</h3><p class="blog-section-intro">Une image pour accompagner le titre dans le blog et à l’ouverture de l’article.</p>
+          <div class="blog-cover-layout"><div class="blog-cover-stage"><img id="blog-cover-preview" alt="Aperçu de la couverture" hidden /><p class="blog-cover-placeholder">Votre couverture apparaîtra ici.</p></div><div class="blog-image-fields"><div class="blog-field"><label for="blog-cover">Image de couverture</label><div class="blog-input-action"><input id="blog-cover" aria-describedby="blog-cover-help" /><button class="bo-button" id="blog-cover-choose" type="button">Choisir une couverture</button></div><p class="bo-help" id="blog-cover-help">Choisissez une image dans la bibliothèque ou téléversez un fichier.</p></div><div class="blog-field"><label for="blog-cover-alt">Description de la couverture</label><input id="blog-cover-alt" maxlength="300" placeholder="Ce que montre l’image" aria-describedby="blog-cover-alt-help" /><p class="bo-help" id="blog-cover-alt-help">Décrivez les éléments utiles pour une personne qui ne voit pas l’image.</p></div></div></div>
+        </div>
+        <div class="blog-settings-surface blog-subjects"><h3>Les sujets abordés</h3><div class="blog-field"><label for="blog-tags">Étiquettes</label><input id="blog-tags" maxlength="500" placeholder="Architecture, retour d’expérience" aria-describedby="blog-tags-help" /><p class="bo-help" id="blog-tags-help">Séparez les sujets par des virgules. Ils apparaîtront avec l’article.</p></div></div>
+        <aside class="blog-side-note"><p>Les images du corps de l’article se placent directement dans la page Rédaction, avec le bouton « Image » de l’éditeur.</p></aside>
+      </section>
+
+      <section class="blog-page blog-seo-page" data-blog-page="seo" aria-label="Référencement et partage de l’article" hidden>
+        <div class="blog-seo-layout"><div class="blog-settings-surface blog-seo-fields"><h3>Le résultat dans les moteurs</h3><p class="blog-section-intro">Affinez le titre et la description affichés lors d’une recherche.</p>
+          <div class="blog-field"><label for="blog-seo-title">Titre pour les moteurs de recherche</label><input id="blog-seo-title" maxlength="120" aria-describedby="blog-seo-title-help" /><p class="bo-help" id="blog-seo-title-help">Le titre de l’article est utilisé si ce champ reste vide. <span id="blog-title-counter">0 caractère</span></p></div>
+          <div class="blog-field"><label for="blog-seo-description">Description pour les moteurs de recherche</label><textarea id="blog-seo-description" rows="4" maxlength="320" aria-describedby="blog-seo-description-help"></textarea><p class="bo-help" id="blog-seo-description-help">Le résumé est utilisé si ce champ reste vide. <span id="blog-description-counter">0 caractère</span></p></div>
+          <div class="blog-field"><label for="blog-slug">Adresse de l’article</label><div class="blog-slug"><span>/blog/</span><input id="blog-slug" maxlength="100" required pattern="[a-z0-9]+(?:-[a-z0-9]+)*" aria-describedby="blog-slug-help" /></div><p class="bo-help" id="blog-slug-help">Lettres minuscules, chiffres et tirets. Gardez une adresse stable après publication.</p></div>
+        </div><aside class="blog-seo-preview"><div class="blog-serp" aria-label="Aperçu dans un moteur de recherche"><p class="blog-serp-label">Aperçu du résultat de recherche</p><p id="blog-serp-url"></p><strong id="blog-serp-title">Titre de l’article</strong><p id="blog-serp-description">La description apparaîtra ici.</p></div><div class="blog-seo-checks"><h3>À vérifier</h3><ul class="blog-seo-audit" id="blog-seo-audit" aria-label="Conseils de référencement"></ul><p class="bo-help">Ces repères aident à relire le contenu. L’affichage des moteurs et le classement peuvent varier.</p></div></aside></div>
+        <div class="blog-settings-surface blog-sharing"><h3>Le partage et l’indexation</h3><div class="blog-sharing-fields"><div class="blog-field"><label for="blog-og-image">Image de partage <span class="bo-muted">(facultative)</span></label><div class="blog-input-action"><input id="blog-og-image" /><button class="bo-button" id="blog-og-choose" type="button">Choisir une image de partage</button></div><p class="bo-help">La couverture est utilisée par défaut.</p></div><div class="blog-field"><label for="blog-canonical">Adresse canonique <span class="bo-muted">(facultative)</span></label><input id="blog-canonical" type="url" maxlength="2048" placeholder="https://" aria-describedby="blog-canonical-help" /><p class="bo-help" id="blog-canonical-help">À renseigner si la version d’origine est publiée à une autre adresse.</p></div><label class="blog-checkbox"><input id="blog-noindex" type="checkbox" /> Demander aux moteurs de ne pas indexer cet article</label></div></div>
+      </section>
+    </fieldset></form>
+
+    <section class="blog-page blog-publication" data-blog-page="publication" aria-labelledby="blog-publication-title" hidden>
+      <div class="blog-publication-layout"><div class="blog-publication-actions"><div class="blog-settings-surface"><h3 id="blog-publication-title">Choisir le moment</h3><p class="blog-section-intro">Enregistrez votre version et ouvrez son aperçu avant de la mettre en ligne.</p><div class="blog-publish-now"><h4>Publier dès maintenant</h4><p>La version enregistrée sera visible dans le blog.</p><div class="bo-actions"><button class="bo-button bo-button--primary" id="blog-publish" type="button" disabled>Publier maintenant</button><button class="bo-button" id="blog-unpublish" type="button" hidden>Revenir en brouillon</button></div></div>
+      <form id="blog-schedule-form"><fieldset><legend class="bo-sr">Programmer l’article</legend><h4>Programmer une publication</h4><label for="blog-scheduled-at">Date et heure de publication</label><input id="blog-scheduled-at" type="datetime-local" required aria-describedby="blog-timezone blog-schedule-help" /><p class="bo-help" id="blog-timezone"></p><p class="bo-help" id="blog-schedule-help">La programmation conserve cette version. Si vous la modifiez ensuite, reprogrammez pour inclure vos retouches.</p><button class="bo-button" id="blog-schedule" type="submit" disabled>Programmer la publication</button></fieldset></form>
+      </div><details class="blog-danger-zone"><summary>Supprimer l’article</summary><p>Cette action supprime le brouillon, la version publiée et sa programmation éventuelle.</p><button class="bo-button bo-button--danger" id="blog-delete" type="button" hidden>Supprimer l’article</button></details></div>
+      <aside class="blog-publication-review"><h3>La version à publier</h3><strong id="blog-review-title">Nouvel article</strong><p id="blog-review-excerpt"></p><dl><div><dt>Adresse après publication</dt><dd id="blog-review-url"></dd></div><div><dt>Visibilité</dt><dd id="blog-review-visibility"></dd></div><div><dt>Version de travail</dt><dd id="blog-review-changes"></dd></div></dl><p class="bo-help">La page Rédaction reste votre espace de travail. Seule une publication explicite rend les retouches visibles.</p></aside></div>
+    </section>
+    <div class="blog-section-footer"><a class="bo-button bo-button--quiet" id="blog-next-section" href="/backoffice/blog/medias">Continuer vers les images</a></div>
+  </div>
+</section>

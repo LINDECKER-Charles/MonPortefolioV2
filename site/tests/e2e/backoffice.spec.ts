@@ -345,7 +345,7 @@ test('le destinataire et les outils sont modifiables et les suggestions attenden
   await expect(page.getByLabel('Adresse du service')).toHaveValue('');
   expect(etat.links).toEqual([]);
   await page.getByLabel('Adresse du service').fill('https://umami.example.test');
-  await page.getByLabel(/Description/).fill('Mesure d’audience');
+  await page.locator('#bo-panel-links').getByLabel(/Description/).fill('Mesure d’audience');
   await page.getByRole('button', { name: 'Ajouter l’outil', exact: true }).click();
   const outil = page.locator('#bo-link-list li');
   await expect(outil.getByRole('link')).toHaveAttribute('href', 'https://umami.example.test/');
@@ -368,7 +368,7 @@ test('le jeton MCP ne reste affiché qu’une fois puis son accès peut être r�
   await expect(page.locator('#bo-contact-list').getByRole('button')).toHaveCount(1);
   await page.getByRole('tab', { name: 'Accès MCP', exact: true }).click();
   await expect(page.locator('#bo-mcp-url')).toHaveText(new URL('/mcp', page.url()).href);
-  await expect(page.getByRole('heading', { name: 'Connexion en lecture seule' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Connexion MCP' })).toBeVisible();
   await page.getByLabel('Nom de la connexion').fill('Mon assistant');
   await page.getByRole('button', { name: 'Créer le jeton', exact: true }).click();
   await expect(page.getByLabel('Jeton de connexion')).toHaveValue(SECRET);

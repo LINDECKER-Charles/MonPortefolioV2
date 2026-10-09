@@ -32,6 +32,9 @@ const CANONIQUE = { REDIRECT_HOSTS: 'www.exemple.org', CANONICAL_ORIGIN: 'https:
 const page = (titre) =>
   `<!doctype html><html lang="fr"><head><title>${titre}</title><script src="/theme.js"></script><script defer src="/mesure.js"></script></head><body>${titre}</body></html>`;
 
+const pagePrivee = (titre) =>
+  `<!doctype html><html lang="fr"><head><title>${titre}</title><meta name="robots" content="noindex, nofollow, noarchive"></head><body><h1>${titre}</h1></body></html>`;
+
 /** Le dist/ du contrat de build (astro.config.mjs), réduit à l'essentiel. */
 async function distFactice() {
   const dossier = await mkdtemp(path.join(tmpdir(), 'portfolio-dist-'));
@@ -42,6 +45,13 @@ async function distFactice() {
     'parcours/index.html': page('Parcours'),
     'contact/index.html': page('Contact'),
     'rubrique/sous-page/index.html': page('Sous-page'),
+    'backoffice/index.html': pagePrivee('Backoffice'),
+    'backoffice/blog/index.html': pagePrivee('Articles du blog'),
+    'backoffice/blog/redaction/index.html': pagePrivee('Rédaction'),
+    'backoffice/blog/medias/index.html': pagePrivee('Médias'),
+    'backoffice/blog/seo/index.html': pagePrivee('Référencement'),
+    'backoffice/blog/publication/index.html': pagePrivee('Publication'),
+    'backoffice-like/index.html': page('Une page publique'),
     '404.html': page('Introuvable'),
     '_astro/app.Ab12Cd34.js': 'console.log(1)',
     '_astro/site.Ef56Gh78.css': 'body{margin:0}',
@@ -283,6 +293,37 @@ describe('pages et fichiers', () => {
       assert.equal(res.headers.get('cache-control'), cache, cible);
       assert.equal(res.headers.get('content-type'), type, cible);
     }
+  });
+});
+
+describe('pages privées du backoffice', () => {
+  let site;
+  before(async () => (site = await demarrer(MESURE)));
+  after(() => site.fermer());
+
+  test('le backoffice et ses pages imbriquées restent hors cache, hors index et hors mesure', async () => {
+    for (const cible of ['/backoffice', '/backoffice/blog', '/backoffice/blog/redaction?id=12', '/backoffice/blog/medias', '/backoffice/blog/seo?id=12', '/backoffice/blog/publication?id=12']) {
+      const get = await fetch(`${site.base}${cible}`);
+      assert.equal(get.status, 200, cible);
+      assert.equal(get.headers.get('cache-control'), 'no-store', cible);
+      assert.equal(get.headers.get('x-robots-tag'), 'noindex, nofollow', cible);
+      const html = await get.text();
+      assert.match(html, /<meta name="robots" content="noindex, nofollow, noarchive">/, cible);
+      assert.doesNotMatch(html, /mesure\.js|\/u\/script\.js|data-umami|clFile/, cible);
+      const head = await brute(site.port, 'HEAD', cible);
+      assert.equal(head.statut, 200, cible);
+      assert.equal(head.enTetes['cache-control'], 'no-store', cible);
+      assert.equal(head.enTetes['x-robots-tag'], 'noindex, nofollow', cible);
+      assert.equal(head.corps, '', cible);
+    }
+  });
+
+  test('un préfixe ressemblant au backoffice conserve les règles publiques', async () => {
+    const response = await fetch(`${site.base}/backoffice-like`);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('cache-control'), 'no-cache');
+    assert.equal(response.headers.get('x-robots-tag'), null);
+    assert.match(await response.text(), /mesure\.js/);
   });
 });
 

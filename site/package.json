@@ -21,6 +21,12 @@
     "preview": "npm run build && npm run serve"
   },
   "dependencies": {
+    "@tiptap/core": "3.31.4",
+    "@tiptap/extension-image": "3.31.4",
+    "@tiptap/extension-table": "3.31.4",
+    "@tiptap/extension-text-align": "3.31.4",
+    "@tiptap/pm": "3.31.4",
+    "@tiptap/starter-kit": "3.31.4",
     "astro": "7.3.6",
     "sharp": "0.35.5"
   },

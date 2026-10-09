@@ -75,7 +75,7 @@ function repondreJson(req, res, statut, donnees, communs, supplement = {}) {
   res.end(req.method === 'HEAD' ? undefined : corps);
 }
 
-async function lireCorps(req) {
+async function lireCorps(req, maximum = TAILLE_MAX) {
   return new Promise((ok, ko) => {
     const morceaux = [];
     let taille = 0;
@@ -89,7 +89,7 @@ async function lireCorps(req) {
     };
     const lire = (morceau) => {
       taille += morceau.length;
-      if (taille > TAILLE_MAX) finir(new Error('trop-grand'));
+      if (taille > maximum) finir(new Error('trop-grand'));
       else morceaux.push(morceau);
     };
     const termine = () => finir();
@@ -155,18 +155,28 @@ export async function relayerApi(req, res, chemin, config, communs, recherche = 
   const configuration = chemin === '/api/config/contact';
   const mcp = chemin === '/mcp';
   const prive = chemin.startsWith('/api/backoffice/');
+  const blog = chemin.startsWith('/api/blog/') || chemin.startsWith('/api/backoffice/blog/');
+  const media = /^\/api\/(?:backoffice\/)?blog\/media\/[1-9]\d*$/.test(chemin);
+  const maximumCorps = blog || mcp ? 8 * 1024 * 1024 : TAILLE_MAX;
   const routes = new Map([
     ['/api/backoffice/login', ['POST']], ['/api/backoffice/logout', ['POST']],
     ['/api/backoffice/2fa/setup', ['POST']], ['/api/backoffice/2fa/verify', ['POST']],
     ['/api/backoffice/session', ['GET', 'HEAD']], ['/api/backoffice/settings', ['GET', 'HEAD', 'PUT']],
     ['/api/backoffice/contacts', ['GET', 'HEAD']], ['/api/backoffice/links', ['GET', 'HEAD', 'POST']],
     ['/api/backoffice/tokens', ['GET', 'HEAD', 'POST']],
+    ['/api/backoffice/blog/posts', ['GET', 'HEAD', 'POST']],
+    ['/api/backoffice/blog/media', ['GET', 'HEAD', 'POST']],
+    ['/api/blog/posts', ['GET', 'HEAD']],
   ]);
   let methodes = contact ? ['POST'] : sante || configuration ? ['GET', 'HEAD'] : mcp ? ['POST'] : routes.get(chemin);
   if (/^\/api\/backoffice\/contacts\/[1-9]\d*$/.test(chemin)) methodes = ['PATCH', 'DELETE'];
   if (/^\/api\/backoffice\/links\/[1-9]\d*$/.test(chemin)) methodes = ['PUT', 'DELETE'];
   if (/^\/api\/backoffice\/tokens\/[1-9]\d*$/.test(chemin)) methodes = ['DELETE'];
-  const mutation = !['GET', 'HEAD', 'DELETE'].includes(req.method);
+  if (/^\/api\/backoffice\/blog\/posts\/[1-9]\d*$/.test(chemin)) methodes = ['GET', 'HEAD', 'PUT', 'DELETE'];
+  if (/^\/api\/backoffice\/blog\/posts\/[1-9]\d*\/(?:publish|schedule|unpublish)$/.test(chemin)) methodes = ['POST'];
+  if (/^\/api\/backoffice\/blog\/posts\/[1-9]\d*\/(?:preview|seo)$/.test(chemin)) methodes = ['GET', 'HEAD'];
+  if (/^\/api\/blog\/posts\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(chemin) || media) methodes = ['GET', 'HEAD'];
+  const mutation = !['GET', 'HEAD'].includes(req.method) && (req.method !== 'DELETE' || blog);
   const erreur = (statut, code, message, supplement = {}) => repondreJson(req, res, statut, { code, message }, communs, supplement);
   if (!methodes) {
     erreur(404, 'not_found', 'Cette adresse n’existe pas.');
@@ -194,7 +204,7 @@ export async function relayerApi(req, res, chemin, config, communs, recherche = 
       erreur(415, 'unsupported_media_type', 'Le formulaire doit être envoyé au format JSON.');
       return;
     }
-    if (Number(req.headers['content-length']) > TAILLE_MAX) {
+    if (Number(req.headers['content-length']) > maximumCorps) {
       erreur(413, 'payload_too_large', 'Le message est trop volumineux.');
       return;
     }
@@ -204,7 +214,7 @@ export async function relayerApi(req, res, chemin, config, communs, recherche = 
     return;
   }
   let corps;
-  try { corps = mutation ? await lireCorps(req) : undefined; } catch (incident) {
+  try { corps = mutation ? await lireCorps(req, maximumCorps) : undefined; } catch (incident) {
     erreur(incident.message === 'delai' ? 408 : 413, incident.message === 'delai' ? 'request_timeout' : 'payload_too_large', incident.message === 'delai' ? 'L’envoi du formulaire a pris trop de temps.' : 'Le message est trop volumineux.', { Connection: 'close' });
     return;
   }
@@ -215,13 +225,14 @@ export async function relayerApi(req, res, chemin, config, communs, recherche = 
   try {
     const headers = { Accept: mcp ? String(req.headers.accept ?? 'application/json, text/event-stream') : 'application/json', 'X-Contact-Client-IP': adresseClient(req, config) };
     if (mutation) headers['Content-Type'] = 'application/json';
+    if (corps) headers['Content-Length'] = String(corps.length);
     if (config.token) headers['X-Contact-Proxy-Token'] = config.token;
     if (prive || mcp) {
       for (const nom of ['host', 'origin', ...(prive ? ['cookie', 'x-backoffice-request'] : ['authorization', 'mcp-protocol-version', 'mcp-method', 'mcp-name'])]) {
         if (typeof req.headers[nom] === 'string') headers[nom] = req.headers[nom];
       }
     }
-    const query = chemin === '/api/backoffice/contacts' ? new URLSearchParams(recherche) : null;
+    const query = chemin === '/api/backoffice/contacts' || chemin.endsWith('/blog/posts') || chemin.endsWith('/blog/media') ? new URLSearchParams(recherche) : null;
     const suffixe = query ? '?' + ['status', 'limit', 'offset'].filter((cle) => query.has(cle)).map((cle) => `${cle}=${encodeURIComponent(query.get(cle))}`).join('&') : '';
     const reponse = await requeteBackend(`${config.origine}${chemin}${suffixe}`, {
       method: req.method === 'HEAD' ? 'GET' : req.method,
@@ -243,10 +254,20 @@ export async function relayerApi(req, res, chemin, config, communs, recherche = 
       res.end();
       return;
     }
+    if (media && reponse.ok) {
+      const type = reponse.headers.get('content-type') ?? '';
+      if (!/^image\/(png|jpeg|gif|webp)$/.test(type)) throw new Error('format image invalide');
+      const parts = []; let size = 0;
+      for await (const part of reponse.body) { size += part.length; if (size > 5 * 1024 * 1024) throw new Error('image trop grande'); parts.push(part); }
+      const image = Buffer.concat(parts);
+      res.writeHead(200, { ...communs, 'Content-Type': type, 'Content-Length': image.length, 'Cache-Control': prive ? 'no-store' : 'no-cache', ...(prive ? { 'X-Robots-Tag': 'noindex, nofollow' } : {}) });
+      res.end(req.method === 'HEAD' ? undefined : image);
+      return;
+    }
     if (!/^application\/json(?:\s*;|$)/i.test(reponse.headers.get('content-type') ?? '')) {
       throw new Error('réponse invalide');
     }
-    const contenu = await lireReponse(reponse, prive || mcp ? TAILLE_REPONSE_PRIVEE : TAILLE_MAX);
+    const contenu = await lireReponse(reponse, blog || mcp ? 8 * 1024 * 1024 : prive ? TAILLE_REPONSE_PRIVEE : TAILLE_MAX);
     const donnees = JSON.parse(contenu);
     repondreJson(req, res, reponse.status, donnees, communs, supplement);
   } catch {

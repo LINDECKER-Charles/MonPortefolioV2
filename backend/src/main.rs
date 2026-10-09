@@ -93,21 +93,24 @@ async fn run(config: Config) -> Result<(), String> {
     let state = AppState::with_store(
         delivery,
         config.proxy_token,
-        store,
+        store.clone(),
         config.backoffice,
         config.secure_cookie,
     )?;
+    let scheduler = portfolio_backend::blog::spawn_scheduler(store);
     let listener = tokio::net::TcpListener::bind(config.address)
         .await
         .map_err(|_| "Impossible d’ouvrir le port HTTP configuré".to_owned())?;
     println!("Backend démarré sur {}", config.address);
-    axum::serve(
+    let result = axum::serve(
         listener,
         routes::router(state).into_make_service_with_connect_info::<SocketAddr>(),
     )
     .with_graceful_shutdown(shutdown())
     .await
-    .map_err(|_| "Le serveur HTTP s’est interrompu".to_owned())
+    .map_err(|_| "Le serveur HTTP s’est interrompu".to_owned());
+    scheduler.abort();
+    result
 }
 
 async fn shutdown() {

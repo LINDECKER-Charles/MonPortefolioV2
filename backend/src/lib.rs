@@ -1,4 +1,5 @@
 pub mod admin;
+pub mod blog;
 pub mod config;
 pub mod contact;
 pub mod error;

@@ -22,6 +22,7 @@ pub fn router(state: AppState) -> Router {
         .route("/api/config/contact", get(contact_config))
         .merge(crate::admin::routes(state.clone()))
         .merge(crate::mcp::routes())
+        .merge(crate::blog::routes(state.clone()))
         .fallback(|| async {
             ApiError::new(
                 StatusCode::NOT_FOUND,

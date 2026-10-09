@@ -242,7 +242,7 @@ pub(crate) fn check_origin(headers: &HeaderMap) -> Result<(), ApiError> {
     Ok(())
 }
 
-fn check_mutation(headers: &HeaderMap) -> Result<(), ApiError> {
+pub(crate) fn check_mutation(headers: &HeaderMap) -> Result<(), ApiError> {
     check_origin(headers)?;
     if headers
         .get("x-backoffice-request")
@@ -299,7 +299,7 @@ fn authenticated_response(
     response
 }
 
-async fn require_session(
+pub(crate) async fn require_session(
     State(state): State<AppState>,
     request: Request,
     next: Next,
@@ -723,19 +723,46 @@ async fn tokens(State(state): State<AppState>) -> Result<Json<Value>, ApiError> 
 #[serde(deny_unknown_fields)]
 struct TokenInput {
     name: String,
+    #[serde(default = "default_token_scopes")]
+    scopes: Vec<String>,
+}
+
+fn default_token_scopes() -> Vec<String> {
+    vec!["contacts:read".into(), "blog:read".into()]
+}
+
+pub(crate) fn valid_token_scopes(scopes: &[String]) -> bool {
+    !scopes.is_empty()
+        && scopes.len() <= 4
+        && scopes.iter().enumerate().all(|(index, scope)| {
+            matches!(
+                scope.as_str(),
+                "contacts:read" | "blog:read" | "blog:write" | "blog:publish"
+            ) && !scopes[..index].contains(scope)
+        })
+        && (!scopes.iter().any(|scope| scope == "blog:write")
+            || scopes.iter().any(|scope| scope == "blog:read"))
+        && (!scopes.iter().any(|scope| scope == "blog:publish")
+            || scopes.iter().any(|scope| scope == "blog:write"))
 }
 async fn create_token(
     State(state): State<AppState>,
     Json(payload): Json<TokenInput>,
 ) -> Result<(StatusCode, Json<Value>), ApiError> {
     let name = payload.name.trim();
-    if !(1..=100).contains(&name.chars().count()) || name.chars().any(char::is_control) {
+    if !(1..=100).contains(&name.chars().count())
+        || name.chars().any(char::is_control)
+        || !valid_token_scopes(&payload.scopes)
+    {
         return Err(invalid());
     }
-    let (id, token) = state.store.create_token(name).map_err(storage_error)?;
+    let (id, token) = state
+        .store
+        .create_token_with_scopes(name, &payload.scopes)
+        .map_err(storage_error)?;
     Ok((
         StatusCode::CREATED,
-        Json(json!({"id":id,"name":name,"token":token})),
+        Json(json!({"id":id,"name":name,"token":token,"scopes":payload.scopes})),
     ))
 }
 async fn delete_token(

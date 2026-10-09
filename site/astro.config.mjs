@@ -4,6 +4,7 @@ import { existsSync } from 'node:fs';
 import { loadEnvFile } from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { lireConfigBackend } from './server/contact.mjs';
+import { blogDevelopment } from './server/blog-dev.mjs';
 
 /**
  * Aucun <script> exécutable en ligne : la CSP envoyée par server/server.mjs
@@ -51,10 +52,11 @@ export default defineConfig({
         const backend = lireConfigBackend({ ...process.env, BACKEND_URL: process.env.BACKEND_URL || 'http://127.0.0.1:8080' });
         updateConfig({
           vite: {
+            plugins: [blogDevelopment(backend)],
             define: { 'import.meta.env.PUBLIC_CONTACT_EMAIL': JSON.stringify('') },
             server: {
               proxy: {
-                '^/(api/(contact|health|config/contact|backoffice/((login|logout|session|settings|contacts|links|tokens)(/[1-9][0-9]*)?|2fa/(setup|verify)))|mcp)$': {
+                '^/(api/(contact|health|config/contact|blog/(posts(/[a-z0-9-]+)?|media/[1-9][0-9]*)|backoffice/((login|logout|session|settings|contacts|links|tokens)(/[1-9][0-9]*)?|2fa/(setup|verify)|blog/(posts(/[1-9][0-9]*(/(publish|schedule|unpublish|preview|seo))?)?|media(/[1-9][0-9]*)?)))|mcp)$': {
                   target: backend?.origine,
                   timeout: 20_000,
                   proxyTimeout: 20_000,

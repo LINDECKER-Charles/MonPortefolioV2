@@ -30,6 +30,7 @@
 
 import { createServer } from 'node:http';
 import { createReadStream } from 'node:fs';
+import { serveBlog } from './blog.mjs';
 import { readFile, stat } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { isIP } from 'node:net';
@@ -385,11 +386,12 @@ export function creerServeur({ dossier, env = process.env } = {}) {
     const etag = corpsHtml
       ? `"${createHash('sha256').update(corpsHtml).digest('base64url')}"`
       : `W/"${infos.size.toString(16)}-${Math.trunc(infos.mtimeMs).toString(16)}"`;
+    const prive = cheminUrl === '/backoffice' || cheminUrl.startsWith('/backoffice/');
     const enTetes = {
       ...EN_TETES_COMMUNS,
       'Content-Type': TYPES.get(extension) ?? 'application/octet-stream',
-      'Cache-Control': cheminUrl === '/backoffice' ? 'no-store' : statut === 200 ? regimeDeCache(cheminUrl, extension) : 'no-cache',
-      ...(cheminUrl === '/backoffice' ? { 'X-Robots-Tag': 'noindex, nofollow' } : {}),
+      'Cache-Control': prive ? 'no-store' : statut === 200 ? regimeDeCache(cheminUrl, extension) : 'no-cache',
+      ...(prive ? { 'X-Robots-Tag': 'noindex, nofollow' } : {}),
       ETag: etag,
     };
     // Un 304 affirme que la ressource existe : jamais en réponse à une adresse inconnue.
@@ -436,6 +438,10 @@ export function creerServeur({ dossier, env = process.env } = {}) {
 
     // Routes API exactes avant les redirections des fichiers et des hôtes :
     // une soumission POST ne doit jamais devenir une navigation GET en 301.
+    if (/^\/api\/backoffice\/blog\/preview\/[1-9]\d*$/.test(cible.pathname)) {
+      await serveBlog(req, res, { pathname: cible.pathname, search: cible.search, root: racine, backend, headers: EN_TETES_COMMUNS, replaceEmail: (html) => remplacerEmailContact(html, emailContact), notFound: introuvable });
+      return;
+    }
     if (cible.pathname === '/mcp' || cible.pathname === '/api' || cible.pathname.startsWith('/api/')) {
       await relayerApi(req, res, cible.pathname, backend, EN_TETES_COMMUNS, cible.search);
       return;
@@ -499,6 +505,8 @@ export function creerServeur({ dossier, env = process.env } = {}) {
       envoyerMesure(req, res);
       return;
     }
+
+    if (await serveBlog(req, res, { pathname: normalise, search: cible.search, root: racine, backend, headers: EN_TETES_COMMUNS, replaceEmail: (html) => remplacerEmailContact(html, emailContact), notFound: introuvable })) return;
 
     const fichier = await resoudre(normalise);
     // `/404.html` demandé par son nom reste une page d'erreur : servie en 200,

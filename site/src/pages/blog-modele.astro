@@ -1,0 +1,9 @@
+---
+// Gabarit compilé une fois ; le serveur y insère les seules publications publiques.
+import Base from '../layouts/Base.astro';
+import '../styles/blog.css';
+---
+<Base titre="Aperçu d’un article | Charles Lindecker" description="Relire un article de Charles Lindecker dans sa mise en page complète avant sa publication sur le blog du portfolio personnel." chemin="/blog" horsIndex>
+  <div id="blog-article-slot"></div>
+  <noscript><div class="wrap"><h1>Aperçu d’un article</h1><p>Ouvrez l’aperçu depuis le backoffice.</p></div></noscript>
+</Base>
