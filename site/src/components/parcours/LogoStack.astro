@@ -1,0 +1,171 @@
+---
+import angular from '../../assets/stacks/angular.svg?url';
+import typescript from '../../assets/stacks/typescript.svg?url';
+import csharp from '../../assets/stacks/csharp.svg?url';
+import dotnet from '../../assets/stacks/dotnet.svg?url';
+import postgresql from '../../assets/stacks/postgresql.svg?url';
+import mysql from '../../assets/stacks/mysql.svg?url';
+import git from '../../assets/stacks/git.svg?url';
+import githubActions from '../../assets/stacks/github-actions.svg?url';
+import docker from '../../assets/stacks/docker.svg?url';
+import linux from '../../assets/stacks/linux.svg?url';
+import python from '../../assets/stacks/python.svg?url';
+import php from '../../assets/stacks/php.svg?url';
+import symfony from '../../assets/stacks/symfony.svg?url';
+import nodejs from '../../assets/stacks/nodejs.svg?url';
+import tailwindcss from '../../assets/stacks/tailwindcss.svg?url';
+import gsap from '../../assets/stacks/gsap.svg?url';
+import java from '../../assets/stacks/java.svg?url';
+import spring from '../../assets/stacks/spring.svg?url';
+import nginx from '../../assets/stacks/nginx.svg?url';
+import apache from '../../assets/stacks/apache.svg?url';
+import ionic from '../../assets/stacks/ionic.svg?url';
+import capacitor from '../../assets/stacks/capacitor.svg?url';
+import vitest from '../../assets/stacks/vitest.svg?url';
+import entityframeworkcore from '../../assets/stacks/entityframeworkcore.svg?url';
+import html from '../../assets/stacks/html5.svg?url';
+import css from '../../assets/stacks/css3.svg?url';
+import javascript from '../../assets/stacks/javascript.svg?url';
+import bash from '../../assets/stacks/bash.svg?url';
+import c from '../../assets/stacks/c.svg?url';
+import express from '../../assets/stacks/express.svg?url';
+import sqlite from '../../assets/stacks/sqlite.svg?url';
+import playwright from '../../assets/stacks/playwright.svg?url';
+import eslint from '../../assets/stacks/eslint.svg?url';
+import prettier from '../../assets/stacks/prettier.png?url';
+import twig from '../../assets/stacks/twig.png?url';
+import doctrine from '../../assets/stacks/doctrine.svg?url';
+import leaflet from '../../assets/stacks/leaflet.svg?url';
+import caddy from '../../assets/stacks/caddy.png?url';
+import sass from '../../assets/stacks/sass.svg?url';
+import rxjs from '../../assets/stacks/rxjs.svg?url';
+import sharp from '../../assets/stacks/sharp.svg?url';
+import rust from '../../assets/stacks/rust.svg?url';
+import wasm from '../../assets/stacks/wasm.svg?url';
+import tauri from '../../assets/stacks/tauri.svg?url';
+import react from '../../assets/stacks/react.svg?url';
+import vite from '../../assets/stacks/vite.svg?url';
+import go from '../../assets/stacks/go.svg?url';
+import vuejs from '../../assets/stacks/vuejs.svg?url';
+import xunit from '../../assets/stacks/xunit.svg?url';
+import phpunit from '../../assets/stacks/phpunit.png?url';
+import trello from '../../assets/stacks/trello.svg?url';
+import photino from '../../assets/stacks/photino.svg?url';
+import fastapi from '../../assets/stacks/fastapi.svg?url';
+import pytest from '../../assets/stacks/pytest.svg?url';
+import tokio from '../../assets/stacks/tokio.svg?url';
+import opentelemetry from '../../assets/stacks/opentelemetry.svg?url';
+import prometheus from '../../assets/stacks/prometheus.svg?url';
+import karma from '../../assets/stacks/karma.svg?url';
+import jasmine from '../../assets/stacks/jasmine.svg?url';
+import pillow from '../../assets/stacks/pillow.png?url';
+import apiPlatform from '../../assets/stacks/api-platform.svg?url';
+import gcc from '../../assets/stacks/gcc.svg?url';
+import chartjs from '../../assets/stacks/chartjs.svg?url';
+
+interface Props { nom: string; }
+const { nom } = Astro.props;
+const logos: Record<string, string> = {
+  Angular: angular,
+  TypeScript: typescript,
+  'C#': csharp,
+  '.NET': dotnet,
+  'ASP.NET Core': dotnet,
+  SignalR: dotnet,
+  PostgreSQL: postgresql,
+  MySQL: mysql,
+  Git: git,
+  'GitHub Actions': githubActions,
+  Docker: docker,
+  Linux: linux,
+  Python: python,
+  PHP: php,
+  Symfony: symfony,
+  'Node.js': nodejs,
+  'Tailwind CSS': tailwindcss,
+  GSAP: gsap,
+  Java: java,
+  Spring: spring,
+  Nginx: nginx,
+  Apache: apache,
+  Ionic: ionic,
+  Capacitor: capacitor,
+  Vitest: vitest,
+  'EF Core': entityframeworkcore,
+  HTML: html,
+  CSS: css,
+  JavaScript: javascript,
+  Bash: bash,
+  C: c,
+  Express: express,
+  SQLite: sqlite,
+  Playwright: playwright,
+  ESLint: eslint,
+  Prettier: prettier,
+  Twig: twig,
+  Doctrine: doctrine,
+  Leaflet: leaflet,
+  Caddy: caddy,
+  Sass: sass,
+  RxJS: rxjs,
+  sharp,
+  Rust: rust,
+  WebAssembly: wasm,
+  Tauri: tauri,
+  React: react,
+  Vite: vite,
+  Go: go,
+  'Vue.js': vuejs,
+  xUnit: xunit,
+  PHPUnit: phpunit,
+  Trello: trello,
+  'Photino.NET': photino,
+  FastAPI: fastapi,
+  pytest,
+  Tokio: tokio,
+  OpenTelemetry: opentelemetry,
+  Prometheus: prometheus,
+  Karma: karma,
+  Jasmine: jasmine,
+  Pillow: pillow,
+  'API Platform': apiPlatform,
+  'Spring Boot': spring,
+  GCC: gcc,
+  'Chart.js': chartjs,
+};
+const src = logos[nom];
+if (!src) throw new Error(`Logo de stack inconnu : ${nom}`);
+const monochrome = ['Linux', 'Symfony', 'Express', 'Rust', 'Tokio', 'xUnit'].includes(nom);
+const supportClair = ['Bash', 'Leaflet', 'Photino.NET', 'OpenTelemetry'].includes(nom);
+---
+
+<img
+  class:list={['logo-stack', {
+    'logo-stack--monochrome': monochrome,
+    'logo-stack--clair': nom === 'GSAP',
+    'logo-stack--sur-papier': supportClair,
+  }]}
+  src={src}
+  alt=""
+  aria-hidden="true"
+  width="32"
+  height="32"
+  loading="lazy"
+  decoding="async"
+/>
+
+<style>
+  .logo-stack { display: block; width: 32px; height: 32px; flex: 0 0 32px; object-fit: contain; }
+  .logo-stack--clair { filter: invert(1); }
+  .logo-stack--sur-papier { box-sizing: border-box; padding: 2px; border-radius: 3px; background: #fff; }
+  :global([data-theme='nuit']) .logo-stack--monochrome { filter: invert(1); }
+  :global([data-theme='nuit']) .logo-stack--clair { filter: none; }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme])) .logo-stack--monochrome { filter: invert(1); }
+    :global(:root:not([data-theme])) .logo-stack--clair { filter: none; }
+  }
+  @media print {
+    .logo-stack--monochrome { filter: none !important; }
+    .logo-stack--clair { filter: invert(1) !important; }
+  }
+</style>

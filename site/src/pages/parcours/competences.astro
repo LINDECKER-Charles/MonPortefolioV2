@@ -1,302 +1,228 @@
 ---
 import Parcours from '../../layouts/Parcours.astro';
+import LogoStack from '../../components/parcours/LogoStack.astro';
+import RepereCompetence from '../../components/parcours/RepereCompetence.astro';
+import { DOMAINES_TECHNIQUES, DOMAINES_QUALITE, COMPETENCES_HUMAINES } from '../../config/competences';
 
-const domaines = [
-  {
-    nom: 'Interface',
-    competence: 'Développer les écrans et organiser les interactions avec l’application.',
-    outils: ['Angular', 'TypeScript'],
-    dessin: 'interface',
-  },
-  {
-    nom: 'Application',
-    competence: 'Concevoir les services web, les API et la logique métier.',
-    outils: ['C#', '.NET', 'ASP.NET Core'],
-    dessin: 'application',
-  },
-  {
-    nom: 'Données',
-    competence: 'Structurer les données et les échanges avec l’application.',
-    outils: ['PostgreSQL', 'MySQL'],
-    dessin: 'donnees',
-  },
-  {
-    nom: 'Production',
-    competence: 'Tester, automatiser les livraisons et faire fonctionner les applications.',
-    outils: ['Tests', 'Git', 'GitHub Actions', 'Docker', 'Linux', 'Documentation'],
-    dessin: 'production',
-  },
-];
+// Outils sans marque graphique distincte ou sans logo réutilisable attesté.
+const sansLogo = new Set(['SQL', 'Axum', 'MCP', 'OpenTUI', 'Make', 'Dompdf', 'axe-core', 'SQLx', 'Stockage S3 compatible']);
 ---
 
 <Parcours
   titre="Compétences de Charles Lindecker"
-  description="Les compétences de Charles Lindecker en développement web, données et DevOps, organisées du navigateur à la production avec les outils associés."
+  description="Les technologies pratiquées et les compétences humaines de Charles Lindecker : web, applications, données, tests, DevOps, pédagogie et coordination."
   chemin="/parcours/competences"
   courant="Compétences"
-  introduction="Développer une application, c’est relier les interfaces, les services, les données et leur mise en production."
+  introduction="Les technologies que j’ai pratiquées et ma façon de travailler avec les autres."
 >
-  <section class="competences-systeme" aria-labelledby="competences-systeme-titre">
-    <header class="competences-tete">
-      <h2 id="competences-systeme-titre">Du navigateur à la production</h2>
-    </header>
-    <dl class="competences-couches">
-      {domaines.map((domaine) => <div class="competences-couche">
-        <dt>
-          <span class="competences-glyphe">
-            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-              {domaine.dessin === 'interface' && <><rect x="4" y="7" width="40" height="31" rx="2"/><path d="M4 15h40M10 11h1m5 0h1M10 21h10v11H10m16-11h11m-11 5h11m-11 6h7"/></>}
-              {domaine.dessin === 'application' && <><rect x="5" y="5" width="38" height="38" rx="2"/><path d="m18 15-9 9 9 9m12-18 9 9-9 9m-4-21-4 24"/></>}
-              {domaine.dessin === 'donnees' && <><ellipse cx="24" cy="10" rx="17" ry="6"/><path d="M7 10v28c0 3.3 7.6 6 17 6s17-2.7 17-6V10M7 24c0 3.3 7.6 6 17 6s17-2.7 17-6"/></>}
-              {domaine.dessin === 'production' && <><path d="M9 16v19m0-11c0-7 30-1 30-12"/><circle cx="9" cy="10" r="5"/><circle cx="9" cy="40" r="5"/><circle cx="39" cy="7" r="5"/><path d="m27 33 4 4 9-10"/></>}
-            </svg>
-          </span>
-          <span>{domaine.nom}</span>
-        </dt>
-        <dd>
-          <p>{domaine.competence}</p>
-          <ul class="competences-outils" role="list" aria-label={`Outils associés au domaine ${domaine.nom.toLowerCase()}`}>
-            {domaine.outils.map((outil) => <li>{outil}</li>)}
-          </ul>
-        </dd>
-      </div>)}
-    </dl>
-  </section>
+  <div class="competences-synthese">
+    <nav class="sommaire-competences ne-pas-imprimer" aria-label="Sommaire des compétences">
+      <a href="#technologies">Technologies pratiquées</a>
+      <a href="#qualite">Tests et livraison</a>
+      <a href="#humaines">Compétences humaines</a>
+    </nav>
 
-  <section class="competences-complement" aria-labelledby="competences-complement-titre">
-    <h2 id="competences-complement-titre">Selon le besoin</h2>
-    <dl>
-      <div><dt>Échanges en temps réel</dt><dd>SignalR</dd></div>
-      <div><dt>Outillage et automatisation</dt><dd>Python</dd></div>
-      <div><dt>Développement web</dt><dd>PHP et Symfony</dd></div>
-    </dl>
-  </section>
+    <section class="volet" id="technologies" aria-labelledby="technologies-titre">
+      <header class="volet-tete">
+        <h2 id="technologies-titre">Technologies pratiquées</h2>
+        <p>Web, applications, données et outils.</p>
+      </header>
+
+      <figure class="schema-technique" aria-label="Une interface échange avec une API, qui échange avec les données.">
+        <div><RepereCompetence categorie="interface" /><span>Interface</span></div>
+        <span class="liaison" aria-hidden="true">↔</span>
+        <div><RepereCompetence categorie="backend" /><span>API</span></div>
+        <span class="liaison" aria-hidden="true">↔</span>
+        <div><RepereCompetence categorie="donnees" /><span>Données</span></div>
+      </figure>
+
+      <div class="domaines">
+        {DOMAINES_TECHNIQUES.map((domaine) => (
+          <section class="domaine" aria-label={domaine.nom}>
+            <h3>{domaine.nom}</h3>
+            <ul class="stack" role="list">
+              {domaine.outils.map((outil) => (
+                <li class:list={{ 'outil-sans-logo': sansLogo.has(outil) }}>
+                  {!sansLogo.has(outil) && <LogoStack nom={outil} />}
+                  <span>{outil}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </section>
+
+    <section class="volet" id="qualite" aria-labelledby="qualite-titre">
+      <header class="volet-tete">
+        <h2 id="qualite-titre">Tests et livraison</h2>
+        <p>Vérifier, automatiser, déployer et observer.</p>
+      </header>
+
+      <ol class="schema-livraison" role="list" aria-label="Étapes de livraison">
+        {['Code', 'Tests', 'Build', 'Déploiement'].map((etape, index) => (
+          <li><span>{etape}</span>{index < 3 && <span class="liaison" aria-hidden="true">→</span>}</li>
+        ))}
+      </ol>
+
+      <div class="domaines">
+        {DOMAINES_QUALITE.map((domaine) => (
+          <section class="domaine" aria-label={domaine.nom}>
+            <h3>{domaine.nom}</h3>
+            <ul class="stack" role="list">
+              {domaine.outils.map((outil) => (
+                <li class:list={{ 'outil-sans-logo': sansLogo.has(outil) }}>
+                  {!sansLogo.has(outil) && <LogoStack nom={outil} />}
+                  <span>{outil}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </section>
+
+    <section class="volet volet-humain" id="humaines" aria-labelledby="humaines-titre">
+      <header class="volet-tete">
+        <h2 id="humaines-titre">Compétences humaines</h2>
+        <p>Comprendre, transmettre et faire ensemble.</p>
+      </header>
+
+      <ul class="soft-skills" role="list">
+        {COMPETENCES_HUMAINES.map((competence) => (
+          <li class="soft-skill">
+            <span class="repere-humain"><RepereCompetence categorie={competence.categorie} /></span>
+            <h3>{competence.nom}</h3>
+            {competence.schema ? (
+              <ol class="points-cles demarche" role="list" aria-label={competence.nom}>
+                {competence.points.map((point, index) => (
+                  <li><span>{point}</span>{index < competence.points.length - 1 && <span class="liaison" aria-hidden="true">→</span>}</li>
+                ))}
+              </ol>
+            ) : (
+              <ul class="points-cles" role="list" aria-label={competence.nom}>
+                {competence.points.map((point) => <li>{point}</li>)}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ul>
+
+      <div class="organisation">
+        <h3>Méthodes de travail</h3>
+        <ul role="list">
+          <li><LogoStack nom="Trello" /><span>Trello</span></li>
+          <li>Agile / Scrum</li>
+          <li>Cahiers des charges</li>
+          <li>Documentation</li>
+        </ul>
+      </div>
+    </section>
+  </div>
 </Parcours>
 
 <style>
-  .competences-systeme,
-  .competences-complement {
-    min-width: 0;
-  }
+  .sommaire-competences { display: flex; flex-wrap: wrap; gap: var(--s3) var(--s5); margin-bottom: var(--s7); }
+  .sommaire-competences a { display: flex; align-items: center; min-height: 48px; padding: var(--s3) var(--s5); border: 1px solid var(--filet); border-radius: var(--rayon); background: var(--blanc); font-size: var(--t-petit); font-weight: 700; }
+  .sommaire-competences a:hover { border-color: var(--bleu); }
+  .volet + .volet { margin-top: var(--s8); padding-top: var(--s8); border-top: 1px solid var(--filet); }
+  .volet-tete { margin-bottom: var(--s6); }
+  .volet-tete h2 { font-size: clamp(2rem, 1.4rem + 2vw, 3.4rem); line-height: 1.1; letter-spacing: -0.03em; }
+  .volet-tete p { margin-top: var(--s3); color: var(--graphite); font-size: var(--t-corps); }
 
-  .competences-tete {
-    margin-bottom: var(--s5);
-  }
+  .schema-technique { display: grid; grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr) 40px minmax(0, 1fr); align-items: center; max-width: 660px; margin: 0 0 var(--s7); padding: var(--s5) var(--s6); border: 1px solid var(--filet); border-radius: var(--rayon); background: color-mix(in srgb, var(--bleu) 4%, var(--blanc)); }
+  .schema-technique > div { display: flex; align-items: center; justify-content: center; gap: var(--s3); font-size: var(--t-petit); font-weight: 700; }
+  .schema-technique :global(.repere-competence) { width: 44px; height: 44px; flex: 0 0 44px; color: var(--bleu); }
+  .liaison { color: var(--bleu); font-weight: 700; }
+  .schema-technique > .liaison { font-size: 1.5rem; text-align: center; }
+  .domaines { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s6); align-items: start; }
+  .domaine { min-width: 0; padding: var(--s6); border: 1px solid var(--filet); border-radius: 8px; background: var(--blanc); }
+  .domaine h3 { margin-bottom: var(--s5); font-size: clamp(1.35rem, 1.1rem + 0.4vw, 1.6rem); line-height: 1.2; }
+  .stack { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s3) var(--s4); margin: 0; padding: 0; list-style: none; }
+  .stack li { display: flex; align-items: center; gap: var(--s3); min-height: 56px; min-width: 0; font-size: var(--t-petit); line-height: 1.35; }
+  .stack :global(.logo-stack) { width: 36px; height: 36px; flex-basis: 36px; }
+  .stack span { overflow-wrap: anywhere; }
+  .stack .outil-sans-logo { padding-left: 48px; }
+  .schema-livraison { display: flex; flex-wrap: wrap; gap: var(--s3); margin: 0 0 var(--s7); padding: 0; list-style: none; font-size: var(--t-petit); }
+  .schema-livraison li { display: flex; align-items: center; gap: var(--s3); }
+  .schema-livraison li > span:first-child { padding: var(--s3) var(--s5); border: 1px solid var(--filet); border-radius: var(--rayon); font-weight: 700; background: var(--blanc); }
 
-  .competences-tete h2 {
-    font-size: clamp(1.6rem, 1.3rem + 1vw, 2.25rem);
-    line-height: 1.2;
-    max-width: 30ch;
-  }
-
-  .competences-couches {
-    position: relative;
-    margin: 0;
-    border: 1px solid var(--filet);
-    border-radius: var(--rayon);
-    background: var(--blanc);
-  }
-
-  .competences-couche:not(:last-child)::before {
-    content: '';
-    position: absolute;
-    top: 48px;
-    bottom: -48px;
-    left: 55px;
-    border-left: 1px solid var(--bleu);
-  }
-
-  .competences-couche {
-    position: relative;
-    display: grid;
-    grid-template-columns: minmax(13rem, 0.75fr) minmax(0, 2fr);
-    align-items: start;
-    gap: var(--s6);
-    padding: var(--s5) var(--s6);
-  }
-
-  .competences-couche + .competences-couche {
-    border-top: 1px solid var(--filet);
-  }
-
-  .competences-couche dt {
-    display: grid;
-    grid-template-columns: 48px minmax(0, 1fr);
-    align-items: center;
-    gap: var(--s4);
-    min-width: 0;
-    color: var(--encre);
-    font-size: 1.375rem;
-    line-height: 1.25;
-    font-weight: 700;
-    overflow-wrap: anywhere;
-  }
-
-  .competences-glyphe {
-    position: relative;
-    display: grid;
-    place-items: center;
-    width: 48px;
-    height: 48px;
-    background: var(--blanc);
-    color: var(--bleu);
-  }
-
-  .competences-glyphe svg {
-    width: 40px;
-    height: 40px;
-  }
-
-  .competences-couche dd {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: center;
-    gap: var(--s5);
-    min-width: 0;
-  }
-
-  .competences-couche dd > p {
-    max-width: 35ch;
-    font-size: var(--t-petit);
-    line-height: 1.6;
-    overflow-wrap: anywhere;
-  }
-
-  .competences-outils {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    gap: var(--s2);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .competences-outils li {
-    max-width: 100%;
-    padding: var(--s1) var(--s2);
-    border: 1px solid var(--filet);
-    border-radius: var(--rayon);
-    font-size: var(--t-etiquette);
-    line-height: 1.5;
-    overflow-wrap: anywhere;
-  }
-
-  .competences-complement {
-    display: grid;
-    grid-template-columns: minmax(13rem, 0.75fr) minmax(0, 2fr);
-    gap: var(--s6);
-    padding: var(--s6);
-    margin-top: var(--s5);
-    border-top: 1px solid var(--filet);
-  }
-
-  .competences-complement h2 {
-    font-size: 1.25rem;
-    line-height: 1.3;
-  }
-
-  .competences-complement dl {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--s5);
-    min-width: 0;
-  }
-
-  .competences-complement dt {
-    font-size: var(--t-petit);
-    line-height: 1.4;
-    font-weight: 700;
-    overflow-wrap: anywhere;
-  }
-
-  .competences-complement dd {
-    margin-top: var(--s2);
-    font-size: var(--t-petit);
-    color: var(--graphite);
-    overflow-wrap: anywhere;
-  }
+  .soft-skills { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s6); margin: 0; padding: 0; list-style: none; }
+  .soft-skill { min-width: 0; padding: var(--s5) 0 var(--s6); border-top: 2px solid var(--bleu); }
+  .repere-humain { display: block; width: 52px; height: 52px; margin-bottom: var(--s5); color: var(--bleu); }
+  .soft-skill h3 { min-height: 2.4em; font-size: 1.375rem; line-height: 1.2; max-width: 22ch; }
+  .points-cles { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); margin: var(--s4) 0 0; padding: 0; list-style: none; color: var(--graphite); font-size: var(--t-etiquette); line-height: 1.4; }
+  .points-cles:not(.demarche) li { display: flex; align-items: center; gap: var(--s2); }
+  .points-cles:not(.demarche) li::before { content: ''; width: 4px; height: 4px; flex: 0 0 4px; border-radius: 50%; background: var(--bleu); }
+  .demarche { column-gap: var(--s2); }
+  .demarche li { display: flex; align-items: center; gap: var(--s2); }
+  .demarche li > span:first-child { padding: 5px var(--s2); border: 1px solid var(--filet); border-radius: var(--rayon); background: var(--blanc); }
+  .organisation { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s5) var(--s7); margin-top: var(--s6); padding: var(--s5) 0; border-block: 1px solid var(--filet); }
+  .organisation h3 { font-size: var(--t-petit); }
+  .organisation ul { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s5) var(--s6); margin: 0; padding: 0; list-style: none; }
+  .organisation li { display: flex; align-items: center; gap: var(--s3); font-size: var(--t-petit); }
 
   @media (max-width: 1050px) {
-    .competences-couche {
-      grid-template-columns: minmax(12rem, 0.7fr) minmax(0, 1.3fr);
-    }
-
-    .competences-couche dd {
-      grid-template-columns: minmax(0, 1fr);
-      gap: var(--s3);
-    }
-
-    .competences-complement {
-      grid-template-columns: minmax(0, 1fr);
-    }
+    .domaine { padding: var(--s5); }
+    .stack { column-gap: var(--s3); }
+    .stack li { font-size: var(--t-etiquette); }
+    .soft-skills { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
 
-  @media (max-width: 640px) {
-    .competences-couche::before {
-      display: none;
-    }
+  @media (max-width: 720px) {
+    .sommaire-competences { gap: var(--s2); }
+    .sommaire-competences a { padding: var(--s3) var(--s4); }
+    .volet + .volet { margin-top: var(--s7); padding-top: var(--s7); }
+    .domaines { grid-template-columns: minmax(0, 1fr); gap: var(--s5); }
+    .stack li { font-size: var(--t-petit); }
+    .schema-technique { padding: var(--s4); grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr) 24px minmax(0, 1fr); }
+    .schema-technique > div { flex-direction: column; gap: var(--s2); font-size: var(--t-etiquette); }
+    .schema-livraison { gap: var(--s2); font-size: var(--t-etiquette); }
+    .schema-livraison li { gap: var(--s2); }
+    .schema-livraison li > span:first-child { padding: var(--s2); }
+    .soft-skills { gap: var(--s5); }
+  }
 
-    .competences-couche {
-      grid-template-columns: minmax(0, 1fr);
-      gap: var(--s3);
-      padding: var(--s5) var(--s4);
-    }
+  @media (max-width: 520px) {
+    .sommaire-competences { flex-direction: column; align-items: stretch; }
+    .domaine { padding: var(--s5) var(--s4); }
+    .stack { column-gap: var(--s3); }
+    .stack li { font-size: var(--t-etiquette); gap: var(--s2); }
+    .stack :global(.logo-stack) { width: 30px; height: 30px; flex-basis: 30px; }
+    .stack .outil-sans-logo { padding-left: 38px; }
+    .schema-livraison { gap: var(--s1); font-size: 0.8125rem; }
+    .schema-livraison li { gap: var(--s1); }
+    .schema-livraison li > span:first-child { padding-inline: 6px; }
+    .soft-skills { grid-template-columns: minmax(0, 1fr); }
+    .soft-skill { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: var(--s4); padding-block: var(--s5); }
+    .repere-humain { width: 48px; height: 48px; margin: 0; }
+    .soft-skill h3 { min-height: auto; align-self: center; font-size: 1.25rem; }
+    .points-cles { grid-column: 1 / -1; margin-top: 0; }
+    .demarche, .demarche li { gap: var(--s1); }
+    .demarche li > span:first-child { padding-inline: 6px; }
+    .organisation { align-items: flex-start; }
+    .organisation ul { gap: var(--s4) var(--s5); }
+  }
 
-    .competences-couche dt {
-      gap: var(--s3);
-      font-size: 1.375rem;
-    }
-
-    .competences-couche dd > p {
-      max-width: 45ch;
-    }
-
-    .competences-complement {
-      padding: var(--s5) 0 0;
-      gap: var(--s5);
-    }
-
-    .competences-complement dl {
-      grid-template-columns: minmax(0, 1fr);
-      gap: var(--s5);
-    }
-
-    .competences-complement dl > div {
-      border-left: 2px solid var(--bleu);
-      padding-left: var(--s4);
-    }
+  @media (max-width: 360px) {
+    .stack { grid-template-columns: minmax(0, 1fr); }
+    .stack li { font-size: var(--t-petit); }
   }
 
   @media (forced-colors: active) {
-    .competences-couches,
-    .competences-couche,
-    .competences-outils li {
-      border-color: CanvasText;
-    }
-
-    .competences-couche::before,
-    .competences-complement dl > div {
-      border-color: CanvasText;
-    }
+    .domaine, .schema-technique, .schema-livraison li > span:first-child, .demarche li > span:first-child, .soft-skill, .organisation { border-color: CanvasText; }
+    .points-cles:not(.demarche) li::before { background: CanvasText; }
   }
 
   @media print {
-    .competences-couche::before {
-      display: none;
-    }
-
-    .competences-couche {
-      break-inside: avoid;
-    }
-
-    .competences-couche dd {
-      grid-template-columns: minmax(0, 1fr);
-      gap: var(--s3);
-    }
-
-    .competences-complement {
-      break-inside: avoid;
-    }
+    .volet + .volet { margin-top: 32px; padding-top: 32px; }
+    .volet-tete h2 { font-size: 26px; }
+    .domaines { gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .domaine { padding: 16px; break-inside: avoid; }
+    .stack li { min-height: 36px; font-size: 12px; }
+    .stack :global(.logo-stack) { width: 26px; height: 26px; flex-basis: 26px; }
+    .soft-skills { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .soft-skill { break-inside: avoid; }
+    .schema-technique, .schema-livraison { margin-bottom: 24px; }
   }
 </style>
