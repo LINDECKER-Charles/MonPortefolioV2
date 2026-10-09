@@ -12,8 +12,9 @@ interface Props {
   chemin: string;
   courant: string;
   introduction: string;
+  compact?: boolean;
 }
-const { titre, description, chemin, courant, introduction } = Astro.props;
+const { titre, description, chemin, courant, introduction, compact = false } = Astro.props;
 const suite = [
   { href: '/parcours', titre: 'Vue d’ensemble', detail: 'Revenir au parcours.' },
   ...PAGES_PARCOURS.filter((page) => page.href !== chemin).map((page) => ({
@@ -23,7 +24,7 @@ const suite = [
 ---
 
 <Base titre={titre} description={description} chemin={chemin}>
-  <div class="wrap profondeur parcours-page">
+  <div class:list={['wrap profondeur parcours-page', { 'parcours-page--compact': compact }]}>
     <FilAriane courant={courant} parents={[{ href: '/parcours', titre: 'Parcours' }]} />
     <header class="page-hero">
       <h1>{courant}</h1>
@@ -40,4 +41,9 @@ const suite = [
   .parcours-page .page-hero { padding-block: var(--s5) var(--s6); }
   .parcours-page .page-hero h1 { max-width: 24ch; font-size: clamp(2.25rem, 1.6rem + 2.5vw, 4rem); }
   .parcours-page .page-hero__intro { margin-top: var(--s4); max-width: 65ch; font-size: var(--t-corps); }
+  @media (max-width: 700px) {
+    .parcours-page--compact :global(.fil-ariane) { padding-block: var(--s4); font-size: var(--t-etiquette); }
+    .parcours-page--compact .page-hero { padding-block: var(--s2) var(--s5); }
+    .parcours-page--compact :global(.navigation-parcours) { margin-bottom: var(--s5); }
+  }
 </style>
