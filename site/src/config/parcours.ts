@@ -10,7 +10,7 @@ export const PAGES_PARCOURS = [
   {
     href: '/parcours/competences',
     titre: 'Compétences',
-    description: 'Mes savoir-faire, de l’interface à la mise en production.',
+    description: 'Développer, concevoir et faire progresser un collectif.',
     illustration: 'competences',
     action: 'Explorer mes compétences',
   },
