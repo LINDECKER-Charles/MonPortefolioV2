@@ -1,0 +1,396 @@
+---
+interface Props {
+  type:
+    | 'diplome'
+    | 'piscine'
+    | 'reseaux'
+    | 'sciences'
+    | 'informatique'
+    | 'autodidacte'
+    | 'web'
+    | 'donnees'
+    | 'python'
+    | 'csharp'
+    | 'anglais';
+  class?: string;
+}
+
+const { type, class: classe } = Astro.props;
+const format = type === 'diplome'
+  ? [440, 300]
+  : ['piscine', 'reseaux', 'sciences', 'informatique', 'autodidacte'].includes(type)
+    ? [280, 180]
+    : [180, 110];
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox={`0 0 ${format[0]} ${format[1]}`}
+  width={format[0]}
+  height={format[1]}
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.7"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  class:list={['visuel-formation', `visuel-formation--${type}`, classe]}
+  aria-hidden="true"
+  focusable="false"
+>
+  {type === 'diplome' && (
+    <>
+      <path class="vf-secondaire" d="m22 239 179 45 216-59-179-44-216 58Zm0 7 179 45 216-59M201 284v7" />
+      <path class="vf-secondaire" stroke-dasharray="3 6" d="m63 250 176-48 140 35M269 192l-44 12" />
+
+      <g transform="translate(39 80) skewY(-10)">
+        <path class="vf-teinte" d="M6 6h197v144H6z" />
+        <rect class="vf-papier" width="197" height="144" rx="5" />
+        <path class="vf-teinte" d="M1 19h195v-14a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v14Z" />
+        <path d="M0 20h197" />
+        <circle class="vf-plein" cx="11" cy="10" r="2" />
+        <circle class="vf-plein" cx="21" cy="10" r="2" />
+        <circle class="vf-plein" cx="31" cy="10" r="2" />
+        <path class="vf-secondaire" d="M54 10h125M61 20v124" />
+        <path d="M12 39h31M12 52h24M12 65h30" />
+        <rect class="vf-teinte" x="11" y="81" width="37" height="43" rx="3" />
+        <path d="M18 92h22m-22 9h16m-16 9h20" />
+        <rect class="vf-teinte" x="74" y="34" width="108" height="38" rx="3" />
+        <rect x="74" y="34" width="108" height="38" rx="3" />
+        <path d="m85 51 8-8 13 13 12-9 15 14M145 46h24m-24 10h17" />
+        <rect x="74" y="86" width="49" height="41" rx="3" />
+        <rect x="133" y="86" width="49" height="41" rx="3" />
+        <path d="M83 97h31m-31 10h23m26-10h31m-31 10h20" />
+        <path class="vf-accent" d="M83 116h12m47 0h12" />
+        <path d="M76 145v13h47v-13m-59 22h73l-14-9H76l-12 9Z" />
+      </g>
+
+      <path class="vf-secondaire" d="m237 131 26 6v-25l20-6m-46 41 18 5v36l34 9" />
+      <path class="vf-accent" d="m274 102 9 4-8 6m4 79 10 6-10 5" />
+      <circle class="vf-plein" cx="255" cy="152" r="2.8" />
+
+      <path class="vf-teinte" d="m289 68 81 18 15-9-81-18-15 9Z" />
+      <path class="vf-papier" d="m289 68 81 18v67l-81-18V68Z" />
+      <path d="m289 68 15-9 81 18v67l-15 9M370 86l15-9" />
+      <path d="m302 94 8-5m-8 5 8 9m42-1-8-9m8 9-8 5m-20-23-7 27" />
+      <path d="m303 121 16 4m7 1 30 7" />
+      <path class="vf-accent" d="m302 78 17 4" />
+      <path class="vf-secondaire" d="M333 151v21m-4-5 4 5 4-5" />
+
+      <path class="vf-papier" d="M290 190v40c0 9 18 16 40 16s40-7 40-16v-40" />
+      <ellipse class="vf-papier" cx="330" cy="190" rx="40" ry="15" />
+      <ellipse class="vf-teinte" cx="330" cy="190" rx="31" ry="9" />
+      <path d="M290 204c0 9 18 16 40 16s40-7 40-16m-80 13c0 9 18 16 40 16s40-7 40-16" />
+      <path class="vf-accent" d="m300 232 9 3" />
+      <path class="vf-secondaire" d="M16 114h11m-5-5v10M401 164h12m-6-6v12" />
+    </>
+  )}
+
+  {type === 'piscine' && (
+    <g class="vf-scene">
+      <path class="vf-secondaire" d="M13 158h252" />
+      <path class="vf-teinte" d="M26 45h153v97H26z" />
+      <rect class="vf-papier" x="20" y="39" width="153" height="98" rx="5" />
+      <path class="vf-teinte" d="M21 58h151V44a4 4 0 0 0-4-4H25a4 4 0 0 0-4 4v14Z" />
+      <path d="M20 59h153" />
+      <circle class="vf-plein" cx="31" cy="49" r="2.3" />
+      <circle class="vf-plein" cx="42" cy="49" r="2.3" />
+      <circle class="vf-plein" cx="53" cy="49" r="2.3" />
+      <path class="vf-accent" d="m36 75 10 8-10 8m19 0h15" />
+      <path d="M37 106h66m-66 9h45M82 83h34m7 0h26" />
+      <rect class="vf-teinte" x="35" y="122" width="121" height="5" rx="2" />
+      <rect class="vf-plein" x="35" y="122" width="87" height="5" rx="2" />
+      <path class="vf-papier" d="m20 137-10 11h174l-11-11M10 148v3c0 3 3 5 6 5h162c3 0 6-2 6-5v-3" />
+      <path d="M78 145h39" />
+
+      <path d="M173 90h21m-6-5 6 5-6 5" />
+      <rect class="vf-papier" x="194" y="22" width="65" height="117" rx="5" />
+      <path class="vf-teinte" d="M195 69h63V27a4 4 0 0 0-4-4h-55a4 4 0 0 0-4 4v42Z" />
+      <text class="vf-glyphe" x="226.5" y="57" text-anchor="middle">42</text>
+      <path d="M194 70h65M217 85h29m-29 20h29m-29 20h29" />
+      <circle cx="206" cy="85" r="5" />
+      <circle cx="206" cy="105" r="5" />
+      <circle class="vf-teinte" cx="206" cy="125" r="5" />
+      <path class="vf-accent" d="m203 85 2 2 4-4m-6 22 2 2 4-4" />
+      <path class="vf-secondaire" d="M36 19h12m-6-6v12M234 151h15" />
+    </g>
+  )}
+
+  {type === 'reseaux' && (
+    <g class="vf-scene">
+      <path class="vf-secondaire" d="M10 163h260" />
+      <path d="M73 39h26v29M74 128h25v-19M173 88h33" />
+      <circle class="vf-plein" cx="99" cy="128" r="3" />
+      <circle class="vf-plein" cx="99" cy="39" r="3" />
+
+      <rect class="vf-papier" x="18" y="17" width="55" height="39" rx="4" />
+      <rect class="vf-teinte" x="24" y="23" width="43" height="27" rx="2" />
+      <path d="M40 56v11m-9 0h28M29 36h15m-7-7v14" />
+
+      <rect class="vf-papier" x="16" y="110" width="58" height="37" rx="4" />
+      <rect class="vf-teinte" x="22" y="116" width="46" height="25" rx="2" />
+      <path class="vf-papier" d="m16 147-9 8h76l-9-8M7 155v3h76v-3" />
+      <path d="m32 125 7 5-7 5m14 0h11" />
+
+      <path d="M98 67V45m64 22V45" />
+      <circle class="vf-plein" cx="98" cy="43" r="3" />
+      <circle class="vf-plein" cx="162" cy="43" r="3" />
+      <path d="M112 29c10-12 26-12 36 0m-29 8c6-7 16-7 22 0" />
+      <circle class="vf-plein" cx="130" cy="45" r="3" />
+      <path class="vf-teinte" d="m88 73 74-1 17 11-74 1-17-11Z" />
+      <rect class="vf-papier" x="86" y="73" width="87" height="36" rx="4" />
+      <path d="m86 76 12-9h75l12 11v23l-12 8M173 78l12-1" />
+      <path class="vf-teinte" d="M87 74h85v9H87z" />
+      <path d="M98 90h10v10H98zM113 90h10v10h-10zM128 90h10v10h-10z" />
+      <circle class="vf-plein" cx="155" cy="95" r="3" />
+
+      <rect class="vf-papier" x="206" y="26" width="53" height="124" rx="5" />
+      <path class="vf-teinte" d="M207 27h51v25h-51z" />
+      <path d="M206 55h53m-53 31h53m-53 31h53M216 41h20m-20 30h20m-20 30h20m-20 31h20" />
+      <circle class="vf-plein" cx="249" cy="41" r="2.5" />
+      <circle class="vf-plein" cx="249" cy="71" r="2.5" />
+      <circle class="vf-plein" cx="249" cy="101" r="2.5" />
+      <circle class="vf-plein" cx="249" cy="132" r="2.5" />
+    </g>
+  )}
+
+  {type === 'sciences' && (
+    <g class="vf-scene">
+      <path class="vf-secondaire" d="M18 164h242" />
+      <path class="vf-papier" d="M70 24h44v12h-7v40l39 63c4 7 0 13-8 13H46c-8 0-12-6-8-13l39-63V36h-7V24Z" />
+      <path class="vf-teinte" d="M57 107c11-7 22 7 35 0s23-2 33 1l17 32c2 4 0 8-5 8H48c-5 0-7-4-5-8l14-33Z" />
+      <path d="M57 107c11-7 22 7 35 0s23-2 33 1M77 36h30" />
+      <path d="M111 117h11m-5 11h10" />
+      <circle cx="74" cy="129" r="4" />
+      <circle cx="91" cy="116" r="3" />
+      <circle class="vf-teinte" cx="85" cy="91" r="7" />
+      <circle cx="85" cy="91" r="7" />
+
+      <circle class="vf-teinte" cx="203" cy="69" r="38" />
+      <ellipse cx="203" cy="69" rx="43" ry="16" />
+      <ellipse cx="203" cy="69" rx="43" ry="16" transform="rotate(60 203 69)" />
+      <ellipse cx="203" cy="69" rx="43" ry="16" transform="rotate(-60 203 69)" />
+      <circle class="vf-plein" cx="203" cy="69" r="6" />
+      <circle class="vf-papier" cx="246" cy="69" r="4" />
+      <circle class="vf-papier" cx="185" cy="33" r="4" />
+      <circle class="vf-papier" cx="184" cy="104" r="4" />
+      <path d="M174 139h59m-47-10v21m11-16v11m11-11v11m11-16v21" />
+      <path class="vf-secondaire" d="M27 54h12m-6-6v12M248 22h10m-5-5v10" />
+    </g>
+  )}
+
+  {type === 'informatique' && (
+    <g class="vf-scene">
+      <path class="vf-secondaire" d="M14 163h252" />
+      <path class="vf-teinte" d="M25 37h152v103H25z" />
+      <rect class="vf-papier" x="19" y="31" width="152" height="103" rx="5" />
+      <path class="vf-teinte" d="M20 32h150v17H20z" />
+      <path d="M19 50h152M19 118h152M84 134v18m22-18v18m-35 0h48l10 7H61l10-7Z" />
+      <circle class="vf-plein" cx="30" cy="41" r="2.3" />
+      <circle class="vf-plein" cx="41" cy="41" r="2.3" />
+      <circle class="vf-plein" cx="52" cy="41" r="2.3" />
+      <path class="vf-accent" d="m44 69-11 11 11 11m32-22 11 11-11 11m-15-25-7 29" />
+      <path d="M104 70h48m-48 12h34m-34 12h40M33 105h28m10 0h35" />
+
+      <rect class="vf-teinte" x="207" y="17" width="57" height="22" rx="11" />
+      <rect x="207" y="17" width="57" height="22" rx="11" />
+      <path d="M221 28h29M235 39v13m-4-5 4 5 4-5" />
+      <path class="vf-papier" d="m235 52 24 17-24 17-24-17 24-17Z" />
+      <path d="M228 69h14M211 69h-20v48m-4-5 4 5 4-5M259 69h9v48m-4-5 4 5 4-5" />
+      <rect class="vf-papier" x="181" y="118" width="37" height="25" rx="3" />
+      <rect class="vf-papier" x="237" y="118" width="37" height="25" rx="3" />
+      <path d="m191 130 5 5 11-11M247 130h16m-8-5v10" />
+      <path class="vf-secondaire" d="M218 130h19m-11-4 4 4-4 4" />
+    </g>
+  )}
+
+  {type === 'autodidacte' && (
+    <g class="vf-scene">
+      <path class="vf-secondaire" d="M10 165h259" />
+      <path class="vf-teinte" d="M15 69c29-10 54-7 81 8 25-15 51-17 82-8v84c-30-8-57-7-82 7-28-14-54-15-81-6V69Z" />
+      <path d="M15 69v85c27-9 53-8 81 6 25-14 52-15 82-7V69M96 153v7" />
+      <path class="vf-papier" d="M21 61c27-9 51-6 75 8v83c-25-14-48-17-75-9V61Z" />
+      <path class="vf-papier" d="M96 69c24-14 49-18 75-9v83c-25-8-50-5-75 9V69Z" />
+      <path d="M96 73v74M31 81c17-3 33-1 49 5m-49 6c17-3 33-1 49 5m-49 7c16-3 31-1 44 4m-44 9c16-3 31-1 44 4" />
+      <text class="vf-glyphe" x="132" y="112" text-anchor="middle">C</text>
+      <path class="vf-secondaire" d="M113 130c13-4 24-5 38-1" />
+      <path class="vf-teinte" d="m92 151 1 17 6-5 7 4-1-18-13 2Z" />
+      <path d="m92 151 1 17 6-5 7 4-1-18" />
+
+      <rect class="vf-papier" x="183" y="30" width="77" height="61" rx="4" />
+      <rect class="vf-teinte" x="189" y="36" width="65" height="49" rx="2" />
+      <path class="vf-accent" d="m198 49 9 7-9 7m18 0h14" />
+      <path d="M198 73h37" />
+      <path class="vf-papier" d="m183 91-12 12h100l-11-12M171 103v4h100v-4" />
+      <path d="M209 99h24" />
+      <path class="vf-papier" d="m233 122 23 28-6 5-23-28 6-5Z" />
+      <path d="m227 127-2-10 8 5m17 33 10 5-4-10" />
+      <path class="vf-secondaire" d="M158 20h12m-6-6v12" />
+    </g>
+  )}
+
+  {type === 'web' && (
+    <>
+      <path class="vf-secondaire" d="M9 99h162" />
+      <rect class="vf-papier" x="12" y="15" width="123" height="77" rx="4" />
+      <path class="vf-teinte" d="M13 29h121V19a3 3 0 0 0-3-3H16a3 3 0 0 0-3 3v10Z" />
+      <path d="M12 30h123M73 30v62" />
+      <circle class="vf-plein" cx="21" cy="22" r="1.8" />
+      <circle class="vf-plein" cx="29" cy="22" r="1.8" />
+      <circle class="vf-plein" cx="37" cy="22" r="1.8" />
+      <path d="m32 44-7 7 7 7m24-14 7 7-7 7m-9-17-7 20M25 72h34M33 81h21" />
+      <path class="vf-accent" d="M25 72h12" />
+      <rect class="vf-teinte" x="82" y="40" width="43" height="19" rx="2" />
+      <path class="vf-secondaire" d="M83 68h39m-39 8h29m-29 7h35" />
+      <rect class="vf-papier" x="120" y="50" width="39" height="50" rx="4" />
+      <path d="M120 59h39M136 54h7M136 95h7" />
+      <rect class="vf-teinte" x="126" y="65" width="27" height="12" rx="1" />
+      <path d="M126 84h24m-24 5h18" />
+      <path class="vf-secondaire" d="M153 19h14m-7-7v14" />
+    </>
+  )}
+
+  {type === 'donnees' && (
+    <>
+      <path class="vf-secondaire" d="M12 101h156" />
+      <rect class="vf-papier" x="17" y="17" width="54" height="72" rx="4" />
+      <path class="vf-teinte" d="M18 18h52v19H18z" />
+      <path d="M17 40h54M17 64h54M25 29h23M25 52h23M25 76h23" />
+      <circle class="vf-plein" cx="60" cy="29" r="2" />
+      <circle class="vf-plein" cx="60" cy="52" r="2" />
+      <circle class="vf-plein" cx="60" cy="76" r="2" />
+      <path class="vf-secondaire" d="M71 53h22v-17h15M93 53v25h15" />
+      <path class="vf-accent" d="m102 31 6 5-6 5m0 32 6 5-6 5" />
+      <circle class="vf-plein" cx="93" cy="53" r="2.5" />
+      <path class="vf-papier" d="M109 29v55c0 7 12 13 27 13s27-6 27-13V29" />
+      <ellipse class="vf-papier" cx="136" cy="29" rx="27" ry="12" />
+      <ellipse class="vf-teinte" cx="136" cy="29" rx="20" ry="7" />
+      <path d="M109 47c0 7 12 13 27 13s27-6 27-13m-54 19c0 7 12 13 27 13s27-6 27-13" />
+      <path class="vf-accent" d="m116 83 7 3" />
+    </>
+  )}
+
+  {type === 'python' && (
+    <>
+      <path class="vf-secondaire" stroke-dasharray="3 5" d="M19 88V18h140v70" />
+      <rect class="vf-teinte" x="64" y="8" width="50" height="21" rx="10" />
+      <rect x="64" y="8" width="50" height="21" rx="10" />
+      <path d="M76 18h25M89 29v10m-4-5 4 5 4-5" />
+      <path class="vf-papier" d="m89 39 26 18-26 18-26-18 26-18Z" />
+      <path d="M81 57h16m-8-5v10M63 57H34v20m-4-5 4 5 4-5M115 57h29v20m-4-5 4 5 4-5" />
+      <rect class="vf-papier" x="13" y="77" width="42" height="22" rx="3" />
+      <rect class="vf-papier" x="123" y="77" width="42" height="22" rx="3" />
+      <path d="M23 85h21m-21 7h15M133 85h21m-21 7h15" />
+      <path class="vf-accent" d="M55 88h17m51 0h-17" />
+      <circle class="vf-teinte" cx="89" cy="88" r="11" />
+      <circle cx="89" cy="88" r="11" />
+      <path d="m84 88 4 4 7-8" />
+    </>
+  )}
+
+  {type === 'csharp' && (
+    <>
+      <path class="vf-secondaire" d="M22 103h136" />
+      <path class="vf-accent" d="M33 14c-9 0-11 5-11 13v15c0 7-4 10-10 11 6 1 10 4 10 11v15c0 8 2 13 11 13M147 14c9 0 11 5 11 13v15c0 7 4 10 10 11-6 1-10 4-10 11v15c0 8-2 13-11 13" />
+      <rect class="vf-papier" x="60" y="11" width="60" height="31" rx="3" />
+      <path class="vf-teinte" d="M61 12h58v10H61z" />
+      <path d="M60 22h60M70 32h14m6 0h20M90 42v15M55 57h70m-70 0v12m70-12v12" />
+      <rect class="vf-papier" x="36" y="69" width="38" height="29" rx="3" />
+      <rect class="vf-papier" x="106" y="69" width="38" height="29" rx="3" />
+      <rect class="vf-teinte" x="43" y="76" width="10" height="15" rx="1" />
+      <rect class="vf-teinte" x="113" y="76" width="10" height="15" rx="1" />
+      <path d="M59 79h8m-8 8h8m62-8h8m-8 8h8" />
+      <path class="vf-secondaire" d="M74 83h32m-6-4 5 4-5 4" />
+      <circle class="vf-plein" cx="90" cy="57" r="2.5" />
+    </>
+  )}
+
+  {type === 'anglais' && (
+    <>
+      <path class="vf-secondaire" d="M15 101h151" />
+      <path class="vf-papier" d="M18 18h83a5 5 0 0 1 5 5v34a5 5 0 0 1-5 5H43L27 75V62h-9a5 5 0 0 1-5-5V23a5 5 0 0 1 5-5Z" />
+      <path class="vf-teinte" d="M22 28h74v12H22z" />
+      <path d="M26 34h24m7 0h35M26 47h57m-57 7h36" />
+      <path class="vf-papier" d="M83 50h73a5 5 0 0 1 5 5v32a5 5 0 0 1-5 5h-10v12l-15-12H83a5 5 0 0 1-5-5V55a5 5 0 0 1 5-5Z" />
+      <path d="M91 62h25m-25 9h50m-50 9h38" />
+      <path class="vf-papier" d="M120 10h30l13 13v18h-43V10Z" />
+      <path d="M150 10v13h13M127 22h15m-15 9h27" />
+      <path class="vf-accent" d="M128 62h13" />
+    </>
+  )}
+</svg>
+
+<style>
+  .visuel-formation {
+    display: block;
+    width: 100%;
+    height: auto;
+    color: var(--formation-visuel-encre, var(--bleu));
+  }
+
+  .visuel-formation path,
+  .visuel-formation rect,
+  .visuel-formation circle,
+  .visuel-formation ellipse {
+    vector-effect: non-scaling-stroke;
+  }
+
+  .vf-papier {
+    fill: var(--formation-visuel-papier, var(--blanc));
+  }
+
+  .vf-teinte {
+    fill: currentColor;
+    fill-opacity: 0.1;
+    stroke: none;
+  }
+
+  .vf-plein {
+    fill: currentColor;
+    stroke: none;
+  }
+
+  .vf-accent {
+    stroke-width: 2.2;
+  }
+
+  .vf-scene {
+    stroke-width: 2;
+  }
+
+  .vf-glyphe {
+    fill: currentColor;
+    stroke: none;
+    font: 800 34px var(--font-texte);
+  }
+
+  .vf-secondaire {
+    opacity: 0.55;
+    stroke-width: 1.3;
+  }
+
+  @media (forced-colors: active) {
+    .visuel-formation {
+      color: CanvasText;
+    }
+
+    .vf-papier {
+      fill: Canvas;
+    }
+
+    .vf-teinte {
+      fill-opacity: 0.2;
+    }
+  }
+
+  @media print {
+    .visuel-formation {
+      color: var(--bleu);
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    .vf-papier {
+      fill: var(--blanc);
+    }
+  }
+</style>

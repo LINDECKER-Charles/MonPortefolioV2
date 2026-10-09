@@ -105,6 +105,14 @@ La page `/parcours` est un hub vers `/parcours/professionnel`, `/parcours/compet
 une navigation locale et un retour au hub. Les compétences sont présentées par domaine ; leurs
 liens avec les projets seront ajoutés dans une prochaine étape.
 
+La page Formation et certifications distingue une frise complète de formation (du DWWM
+aux premiers apprentissages, avec des étapes illustrées de taille variable), un catalogue de
+certifications par domaine et une section de pratique Frontend Mentor. Les intitulés,
+versions, dates et liens individuels des certifications sont dans `site/src/config/formation.ts`.
+Les illustrations SVG de
+`site/src/components/parcours/VisuelFormation.astro` suivent les thèmes jour/nuit et
+l’impression. Les cursus suivis et le programme CDA étudié sont distingués des titres obtenus.
+
 Pour ajouter un projet, créer sa page statique, l’inscrire dans l’index des projets et dans
 `site/src/pages/sitemap.xml.ts`, puis ajouter son adresse à `PAGES` dans le support des tests
 navigateur. Le build vérifie les liens internes et la cohérence du sitemap. Les descriptions

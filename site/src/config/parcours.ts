@@ -17,7 +17,7 @@ export const PAGES_PARCOURS = [
   {
     href: '/parcours/formation',
     titre: 'Formation et certifications',
-    description: 'Mes études, mes réorientations et ce que je continue à apprendre.',
+    description: 'Mes études, mon titre professionnel et mes certifications.',
     illustration: 'formation',
     action: 'Voir ma formation',
   },

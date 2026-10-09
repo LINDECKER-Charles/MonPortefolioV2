@@ -6,17 +6,19 @@ const liens = [{ href: '/parcours', titre: 'Vue d’ensemble' }, ...PAGES_PARCOU
 ---
 
 <nav class="navigation-parcours ne-pas-imprimer" aria-label="Navigation du parcours">
+  <p class="navigation-parcours__repere">Dans le parcours</p>
   <ul role="list">
     {liens.map((lien) => <li><a href={lien.href} aria-current={chemin === lien.href ? 'page' : undefined}>{lien.titre}</a></li>)}
   </ul>
 </nav>
 
 <style>
-  .navigation-parcours { margin-bottom: var(--s7); border-block: 1px solid var(--filet); }
+  .navigation-parcours { margin-bottom: var(--s7); padding-block: var(--s4); border-block: 1px solid var(--filet); }
+  .navigation-parcours__repere { margin-bottom: var(--s2); color: var(--graphite); font-size: var(--t-etiquette); }
   ul { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s5); list-style: none; margin: 0; padding: var(--s2) 0; }
-  a { display: flex; align-items: center; min-height: 48px; padding: var(--s2) var(--s3); border-bottom: 2px solid transparent; color: var(--graphite); font-size: var(--t-petit); text-decoration: none; }
+  a { display: flex; align-items: center; min-height: 48px; padding: var(--s2) var(--s3); border: 1px solid transparent; border-radius: var(--rayon); color: var(--encre); font-size: var(--t-petit); text-decoration: none; }
   a:hover { color: var(--encre); text-decoration: underline; }
-  a[aria-current='page'] { border-color: var(--bleu); color: var(--encre); font-weight: 700; }
+  a[aria-current='page'] { border-color: var(--bleu); background: var(--bleu); color: var(--sur-bleu); font-weight: 700; }
   @media (max-width: 760px) { ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s2); } a { height: 100%; padding-inline: var(--s2); line-height: 1.35; } }
   @media (max-width: 360px) { ul { grid-template-columns: minmax(0, 1fr); } }
 </style>
