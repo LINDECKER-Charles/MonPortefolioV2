@@ -1,161 +1,314 @@
-import { expect, test } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+import { expect, test, type Page } from '@playwright/test';
 import { surveillerConsole } from './support/navigateur';
 
+/**
+ * Omnicard, sur le gabarit commun des pages de projet (règle E5) : en-tête
+ * au pli à 1 440 et 390 px (E1), fiche, repères sourcés, un seul lien de
+ * code (le dépôt de présentation public), aucune mécanique inventée ni date
+ * de lancement non validée ; puis tout ce que la page gardait : les trois
+ * univers en éventail, la collection, le deck et le booster en captures,
+ * agrandis dans la visionneuse partagée, et désormais le rééquilibrage des
+ * cartes, le plateau et le compte à rebours de GitGud. Complète sans
+ * JavaScript, accessible jour et nuit, états ouverts compris.
+ */
+
 const CHEMIN = '/projets/omnicard';
+const DEPOT = 'https://github.com/LINDECKER-Charles/public-Omnicard';
+const NBSP = ' ';
+
+async function liensSortants(page: Page) {
+  return page.locator('main a[href^="http"]').evaluateAll((liens) =>
+    liens.map((lien) => ({
+      href: lien.getAttribute('href') ?? '',
+      evenement: lien.getAttribute('data-umami-event'),
+      domaine: lien.getAttribute('data-umami-event-domaine'),
+      emplacement: lien.getAttribute('data-umami-event-emplacement'),
+      rel: lien.getAttribute('rel'),
+    })),
+  );
+}
+
+test('l’en-tête tient dans le premier écran : titre, identité, preuve, action', async ({ page }) => {
+  await page.goto(CHEMIN);
+  for (const marque of ['titre', 'identite', 'preuve', 'action']) {
+    await expect(page.locator(`[data-pli="${marque}"]`), marque).toBeInViewport();
+  }
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Imaginer le jeu. Construire les règles.');
+  if ((page.viewportSize()?.width ?? 0) >= 1440) {
+    await expect(page.locator('[data-pli="preuve"] li')).toHaveCount(3);
+    for (const preuve of await page.locator('[data-pli="preuve"] li').all()) await expect(preuve).toBeInViewport({ ratio: 1 });
+    await expect(page.getByRole('group', { name: 'Fiche du projet' })).toBeInViewport({ ratio: 1 });
+  } else {
+    await expect(page.locator('[data-pli="preuve"] li').first()).toBeInViewport({ ratio: 1 });
+  }
+});
+
+test('le nom canonique, l’étiquette de preuve et le chemin vers « Comment je l’ai construit »', async ({ page }) => {
+  await page.goto(CHEMIN);
+  await expect(page.getByRole('navigation', { name: 'Fil d’Ariane', exact: true }).locator('[aria-current="page"]')).toHaveText('Omnicard');
+  const entete = page.locator('.projet-tete');
+  await expect(entete).toContainText('Inventer');
+  const construit = entete.locator('[data-pli="action"]').getByRole('link', { name: /Comment je l’ai construit/ });
+  await expect(construit).toHaveAttribute('href', '#construit');
+  await construit.click();
+  await expect(page.locator('#construit')).toBeInViewport();
+  await expect(page.locator('#construit .decision')).toHaveCount(3);
+});
+
+test('la fiche : sept cases, statut hors ligne à forme et mot, dates à confirmer, liens mesurés', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const fiche = page.getByRole('group', { name: 'Fiche du projet' });
+  await expect(fiche.locator('dt')).toHaveText(['Besoin', 'Ma part', 'Rôle', 'Période', 'Équipe', 'Statut', 'Liens publics']);
+  await expect(fiche.locator('.statut')).toHaveText('Hors ligne, en attente de refonte');
+  await expect(fiche.locator('.statut')).toHaveClass(/statut--eteint/);
+  await expect(fiche.locator('.fiche-projet__case--periode .a-confirmer')).toHaveText('à confirmer');
+  await expect(fiche).toContainText('moteur de règles en C#');
+  for (const lien of await fiche.locator('a').all()) {
+    expect(await lien.getAttribute('href')).toMatch(new RegExp(`^${DEPOT}`));
+    await expect(lien).toHaveAttribute('data-umami-event', 'lien-sortant');
+    await expect(lien).toHaveAttribute('data-umami-event-domaine', 'github.com');
+    await expect(lien).toContainText('↗');
+  }
+});
+
+test('trois repères sourcés, un seul surligné : les trois mois de développement', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const preuves = page.locator('[data-pli="preuve"] .preuve-chiffree');
+  await expect(preuves.locator('.preuve-chiffree__valeur')).toHaveText([`≈${NBSP}3${NBSP}mois`, '181', '5']);
+  for (const preuve of await preuves.all()) await expect(preuve.locator('.preuve-chiffree__source')).not.toBeEmpty();
+  const surligne = page.locator('.projet-tete mark');
+  await expect(surligne).toHaveCount(1);
+  await expect(surligne).toHaveAttribute('data-source', /Témoignage/);
+});
+
+test('un seul lien de code, le dépôt de présentation public ; aucune démo hors ligne', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const liens = await liensSortants(page);
+  expect(liens.length).toBeGreaterThan(5);
+  for (const lien of liens) {
+    expect(lien.href.startsWith(DEPOT), lien.href).toBe(true);
+    expect(lien).toMatchObject({ evenement: 'lien-sortant', domaine: 'github.com', emplacement: 'preuves', rel: 'external' });
+  }
+  const html = await page.content();
+  expect(html).not.toMatch(/omnicard\.fr|Omnicard-app|LINDECKER-Charles\/Omnicard\b|discord|ko-fi/i);
+});
+
+test('aucun fait non sourcé : ni mécanique « Combiner », ni date de lancement', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const texte = (await page.locator('main').textContent()) ?? '';
+  expect(texte).not.toMatch(/Combiner/);
+  expect(texte).not.toMatch(/16\s?mai|16\/05\/2026|lancé le|lancement public/i);
+  await expect(page.locator('main')).toContainText('sans moteur de jeu existant');
+});
+
+test('une seule navigation de page, sans la note de sources', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const navigation = page.locator('nav[aria-label="Dans cette page"]');
+  await expect(navigation).toHaveCount(1);
+  if ((page.viewportSize()?.width ?? 0) > 1100) await expect(navigation).toBeVisible();
+  const attendus = ['#papier', '#reequilibrer', '#partie', '#jeu', '#moteur', '#construit', '#retiens'];
+  expect(await navigation.locator('a').evaluateAll((liens) => liens.map((lien) => lien.getAttribute('href')))).toEqual(attendus);
+  for (const ancre of attendus) await expect(page.locator(ancre)).toHaveCount(1);
+});
+
+test('les univers révèlent l’effet de leur carte au clic et au clavier', async ({ page }) => {
+  const erreurs = surveillerConsole(page);
+  await page.goto(CHEMIN);
+  const univers = page.getByRole('group', { name: 'Choisir une carte et son univers' });
+  await univers.scrollIntoViewIfNeeded();
+  const effet = univers.locator('.effet:visible');
+  await expect(effet).toHaveCount(1);
+  await expect(effet.locator('.effet__mecanique')).toHaveText('Transformer');
+
+  await univers.locator('.oc-pastille', { hasText: 'Bloodborne' }).click();
+  await expect(effet.locator('.effet__mecanique')).toHaveText('Invoquer');
+  // La carte elle-même est une commande : cliquer Floppa choisit l’univers WTF.
+  await univers.locator('label.eventail__carte').nth(2).click();
+  await expect(univers.getByRole('radio', { name: /WTF/ })).toBeChecked();
+  await expect(effet.locator('.effet__mecanique')).toHaveText('Piocher');
+
+  await univers.getByRole('radio', { name: /WTF/ }).focus();
+  await page.keyboard.press('ArrowLeft');
+  await expect(univers.getByRole('radio', { name: /JoJo/ })).toBeChecked();
+  await expect(univers.getByRole('radio', { name: /JoJo/ })).toBeFocused();
+  await expect(effet.locator('.effet__mecanique')).toHaveText('Transformer');
+  expect(erreurs).toEqual([]);
+});
+
+test('le rééquilibrage montre, carte par carte, la saison 1 et le jeu en ligne côte à côte', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const comparateur = page.getByRole('group', { name: 'Une carte, deux versions' });
+  await comparateur.scrollIntoViewIfNeeded();
+  const visible = comparateur.locator('.comparaison:visible');
+  await expect(visible).toHaveCount(1);
+  await expect(visible.getByRole('img')).toHaveCount(2);
+  await expect(visible.getByRole('img').first()).toHaveAttribute('alt', /saison 1.*4\/8/);
+  await expect(visible.getByRole('img').last()).toHaveAttribute('alt', /jeu en ligne.*4\/15/);
+  await expect(visible.locator('dd')).toHaveText(['4/8 → devient 4/15']);
+
+  await comparateur.locator('.oc-pastille', { hasText: 'GitGud' }).click();
+  await expect(visible.locator('dd')).toHaveText(['13 → devient 10']);
+  await comparateur.getByRole('radio', { name: 'GitGud' }).focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(comparateur.getByRole('radio', { name: 'Floppa' })).toBeChecked();
+  await expect(visible.locator('dd')).toHaveText(['5 → devient 6', '0/4 → devient 2/8']);
+  // Un cercle par valeur changée, sur chacune des deux cartes.
+  await expect(visible.locator('.marque')).toHaveCount(6);
+});
+
+test('le plateau en schéma : quatre cibles, quatre repères chiffrés', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const partie = page.locator('#partie');
+  await expect(partie.locator('[data-figure="OMN-03"] .oc-cible')).toHaveCount(4);
+  const reperes = partie.getByRole('list', { name: 'Les repères d’une partie' }).locator('li');
+  await expect(reperes).toHaveCount(4);
+  await expect(reperes.locator('.reperes__valeur')).toHaveText(['30', '40', '10', '2']);
+});
+
+test('le compte à rebours de GitGud : neuf fins de tour, cinq comptent, puis l’égalité', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const frise = page.getByRole('button', { name: 'Rejouer l’animation : le compte à rebours de GitGud' });
+  await expect(frise.locator('.etape')).toHaveCount(10);
+  await expect(frise.locator('.etape--lanceur .etape__compte')).toHaveText(['4', '3', '2', '1', '0']);
+  await expect(frise.locator('.etape--adverse .etape__compte')).toHaveText(['4', '3', '2', '1']);
+  await expect(frise.locator('.etape--fin')).toContainText('Égalité');
+  await expect(page.locator('[data-figure="OMN-05"] figcaption')).toContainText('cinq de mes tours');
+});
+
+test.describe('la scène se rejoue au clic', () => {
+  test.use({ reducedMotion: 'no-preference' });
+
+  test('un clic sur la frise relance l’allumage des fins de tour', async ({ page }) => {
+    await page.goto(CHEMIN);
+    const frise = page.getByRole('button', { name: 'Rejouer l’animation : le compte à rebours de GitGud' });
+    await frise.scrollIntoViewIfNeeded();
+    await expect(frise).not.toHaveClass(/animation-en-cours/, { timeout: 8000 });
+    await frise.click();
+    await expect(frise).toHaveClass(/animation-en-cours/);
+    await expect(frise).not.toHaveClass(/animation-en-cours/, { timeout: 8000 });
+  });
+});
 
 for (const javaScriptEnabled of [true, false]) {
-  test.describe(`position de la galerie ${javaScriptEnabled ? 'avec' : 'sans'} JavaScript`, () => {
+  test.describe(`écrans du jeu ${javaScriptEnabled ? 'avec' : 'sans'} JavaScript`, () => {
     test.use({ javaScriptEnabled, reducedMotion: 'reduce' });
 
-    test('changer de capture au clic et au clavier garde l’image en place', async ({ page }) => {
+    test('changer d’écran au clic et au clavier garde la capture en place', async ({ page }) => {
       await page.goto(CHEMIN);
+      const galerie = page.getByRole('group', { name: 'Choisir un écran d’Omnicard' });
       await page.evaluate(async () => {
         await document.fonts.ready;
-        const commande = document.querySelector('label[for="ecran-deck"]')!;
+        const commande = document.querySelector('.galerie .onglet:nth-child(2)')!;
         window.scrollTo({ top: window.scrollY + commande.getBoundingClientRect().top - 220, behavior: 'instant' });
       });
       const position = await page.evaluate(() => window.scrollY);
-      const image = page.locator('.oc-ecran:visible [data-oc-capture]');
-      const hautImage = (await image.boundingBox())!.y;
+      const capture = galerie.locator('.galerie__ecran:visible .capture__vue');
+      const haut = (await capture.boundingBox())!.y;
 
-      for (const ecran of ['deck', 'ouverture', 'collection']) {
-        await page.locator(`label[for="ecran-${ecran}"]`).click();
-        await expect(page.locator(`#ecran-${ecran}`)).toBeChecked();
+      for (const [rang, nom] of [[1, 'deck'], [2, 'ouverture'], [0, 'collection']] as const) {
+        await galerie.locator('.onglet').nth(rang).click();
+        await expect(galerie.locator(`input[value="${nom}"]`)).toBeChecked();
         await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(position);
-        expect((await image.boundingBox())!.y).toBeCloseTo(hautImage, 0);
+        expect((await capture.boundingBox())!.y).toBeCloseTo(haut, 0);
       }
-
       await page.keyboard.press('ArrowRight');
-      await expect(page.locator('#ecran-deck')).toBeChecked();
+      await expect(galerie.locator('input[value="deck"]')).toBeChecked();
+      await expect(galerie.locator('.galerie__ecran:visible')).toContainText('Un deck, c’est le jeu de cartes');
       await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(position);
-      expect((await image.boundingBox())!.y).toBeCloseTo(hautImage, 0);
     });
   });
 }
 
-test('les univers révèlent les effets des cartes au clic et au clavier', async ({ page }) => {
+test('une capture s’ouvre dans la visionneuse partagée, Échap rend le focus à la bonne image', async ({ page }) => {
   const erreurs = surveillerConsole(page);
-  await page.goto(CHEMIN);
-  const cartes = page.getByRole('group', { name: 'Explorer les univers et les effets des cartes' });
-  await expect(cartes.getByText('Transformer.', { exact: true })).toBeVisible();
-
-  // Chaque univers a aussi un label sur sa carte : choisir la commande textuelle.
-  await cartes.locator('.oc-univers label[for="univers-gehrman"]').click();
-  await expect(cartes.locator('#univers-gehrman')).toBeChecked();
-  await expect(cartes.getByText('Invoquer.', { exact: true })).toBeVisible();
-  await expect(cartes.getByText('Transformer.', { exact: true })).toBeHidden();
-
-  await cartes.locator('#univers-gehrman').focus();
-  await page.keyboard.press('ArrowRight');
-  await expect(cartes.locator('#univers-jonathan')).toBeChecked();
-  await expect(cartes.locator('#univers-jonathan')).toBeFocused();
-  await expect(cartes.getByText('Transformer.', { exact: true })).toBeVisible();
-  await page.keyboard.press('ArrowRight');
-  await expect(cartes.locator('#univers-floppa')).toBeChecked();
-  await expect(cartes.locator('#univers-floppa')).toBeFocused();
-  await expect(cartes.getByText('Combiner.', { exact: true })).toBeVisible();
-  await expect(cartes.getByText('Transformer.', { exact: true })).toBeHidden();
-  // Sur téléphone, le focus poursuit vers les actions sous l’éventail.
-  await page.keyboard.press('Tab');
-  await expect(page.getByRole('link', { name: 'Voir le jeu', exact: true })).toBeFocused();
-  expect(erreurs).toEqual([]);
-});
-
-test('la galerie montre le deck puis le booster avec leurs explications', async ({ page }) => {
-  const erreurs = surveillerConsole(page);
-  await page.goto(CHEMIN);
-  const galerie = page.getByRole('group', { name: 'Choisir un écran d’Omnicard' });
-  await expect(galerie.getByRole('link', { name: 'Agrandir — Collectionner', exact: true })).toBeVisible();
-
-  await galerie.locator('label[for="ecran-deck"]').click();
-  await expect(galerie.locator('#ecran-deck')).toBeChecked();
-  await expect(galerie.getByRole('link', { name: 'Agrandir — Composer son deck', exact: true })).toBeVisible();
-  await expect(galerie.getByRole('link', { name: 'Agrandir — Collectionner', exact: true })).toBeHidden();
-  await expect(galerie.locator('figcaption:visible')).toContainText('Un deck, c’est le jeu de cartes');
-
-  await galerie.locator('#ecran-deck').focus();
-  await page.keyboard.press('ArrowRight');
-  await expect(galerie.locator('#ecran-ouverture')).toBeChecked();
-  await expect(galerie.locator('#ecran-ouverture')).toBeFocused();
-  await expect(galerie.getByRole('link', { name: 'Agrandir — Ouvrir un booster', exact: true })).toBeVisible();
-  await expect(galerie.getByRole('link', { name: 'Agrandir — Composer son deck', exact: true })).toBeHidden();
-  await expect(galerie.locator('figcaption:visible')).toContainText('Un booster est un paquet de cartes');
-  expect(erreurs).toEqual([]);
-});
-
-test('une capture s’agrandit au clavier et Échap rend le focus à la bonne image', async ({ page }) => {
-  const erreurs = surveillerConsole(page);
-  // Mesurer la restitution du défilement après la mise au point, sans animation en cours.
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto(CHEMIN);
   await page.evaluate(() => document.fonts.ready);
-  await page.locator('label[for="ecran-deck"]').click();
-  const ouvrir = page.getByRole('link', { name: 'Agrandir — Composer son deck', exact: true });
-  const dialogue = page.getByRole('dialog', { name: 'Capture d’Omnicard agrandie' });
+  const galerie = page.getByRole('group', { name: 'Choisir un écran d’Omnicard' });
+  await galerie.locator('.onglet').nth(1).click();
+  const ouvrir = galerie.locator('.galerie__ecran:visible a[data-agrandir]');
   await ouvrir.focus();
-  const position = await page.evaluate(() => ({
-    x: window.scrollX,
-    y: window.scrollY,
-    overflow: document.documentElement.style.overflow,
-  }));
+  const position = await page.evaluate(() => ({ x: window.scrollX, y: window.scrollY }));
   const source = await ouvrir.getAttribute('href');
-  if (!source) throw new Error('La capture du deck doit avoir une adresse.');
   const description = await ouvrir.locator('img').getAttribute('alt');
 
   await page.keyboard.press('Enter');
+  const dialogue = page.locator('dialog[data-visionneuse]');
   await expect(dialogue).toBeVisible();
-  await expect(dialogue).toHaveAttribute('aria-busy', 'false');
-  const image = dialogue.locator('img');
+  await expect(dialogue.locator('[data-visionneuse-legende]')).toContainText('Un deck, c’est le jeu de cartes');
+  const image = dialogue.locator('[data-visionneuse-image]');
   await expect(image).toBeVisible();
-  await expect(image).toHaveAttribute('src', new URL(source, page.url()).href);
+  await expect(image).toHaveAttribute('src', new URL(source!, page.url()).href);
   await expect(image).toHaveAttribute('alt', description ?? '');
   expect(await image.evaluate((element: HTMLImageElement) => element.naturalWidth)).toBeGreaterThan(0);
-  await expect(dialogue.getByRole('button', { name: 'Fermer la capture' })).toBeFocused();
+  await expect(dialogue.getByRole('button', { name: /Fermer/ })).toBeFocused();
   await expect(page.locator('html')).toHaveCSS('overflow', 'hidden');
 
   await page.keyboard.press('Escape');
   await expect(dialogue).toBeHidden();
   await expect(ouvrir).toBeFocused();
-  await expect.poll(() => page.evaluate(() => ({
-    x: window.scrollX,
-    y: window.scrollY,
-    overflow: document.documentElement.style.overflow,
-  }))).toEqual(position);
+  await expect.poll(() => page.evaluate(() => ({ x: window.scrollX, y: window.scrollY }))).toEqual(position);
   expect(erreurs).toEqual([]);
 });
 
-test.describe('Omnicard sans JavaScript', () => {
+test('la sortie : projets voisins dans l’ordre de la vitrine, « Discutons » vers /contact', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const sortie = page.locator('#retiens');
+  const discutons = sortie.getByRole('link', { name: /^Discutons/ });
+  await expect(discutons).toHaveAttribute('href', '/contact');
+  await expect(discutons).toHaveAttribute('data-umami-event', 'contact-page');
+  await expect(discutons).toHaveAttribute('data-umami-event-emplacement', 'discutons');
+  await expect(sortie.getByRole('link', { name: /Projet suivant\s+Bloodborne Legendary Run/ })).toHaveAttribute('href', '/projets/bloodborne-legendary-run');
+  await expect(sortie.getByRole('link', { name: /Projet précédent\s+League Of Data Base/ })).toHaveAttribute('href', '/projets/league-of-database');
+  await expect(sortie.locator('[data-citation]')).toHaveText(/Le projet qui m’a fait le plus apprendre/);
+});
+
+for (const theme of ['jour', 'nuit'] as const) {
+  test.describe(`axe, ${theme}, états ouverts`, () => {
+    test.use({ colorScheme: theme === 'nuit' ? 'dark' : 'light', reducedMotion: 'reduce' });
+
+    test('univers, rééquilibrage et écran du jeu changés restent accessibles', async ({ page }) => {
+      await page.goto(CHEMIN);
+      await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+      await page.getByRole('group', { name: 'Choisir une carte et son univers' }).locator('.oc-pastille', { hasText: 'WTF' }).click();
+      await page.getByRole('group', { name: 'Une carte, deux versions' }).locator('.oc-pastille', { hasText: 'Floppa' }).click();
+      await page.getByRole('group', { name: 'Choisir un écran d’Omnicard' }).locator('.onglet').nth(2).click();
+      for (const zone of ['.projet-tete', '#reequilibrer', '#partie', '#jeu', '#moteur']) {
+        const resultats = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice']).include(zone).analyze();
+        expect(resultats.violations.map((v) => ({ id: v.id, cibles: v.nodes.slice(0, 3).map((n) => n.target) })), zone).toEqual([]);
+      }
+    });
+  });
+}
+
+test.describe('sans JavaScript', () => {
   test.use({ javaScriptEnabled: false, reducedMotion: 'reduce' });
 
-  test('les univers, la galerie et les liens vers les captures restent utilisables', async ({ page }) => {
+  test('la page est complète : choix natifs, frise entière, captures en liens vers leur image', async ({ page }) => {
     const erreurs = surveillerConsole(page);
     await page.goto(CHEMIN);
-    const cartes = page.getByRole('group', { name: 'Explorer les univers et les effets des cartes' });
-    await cartes.locator('.oc-univers label[for="univers-floppa"]').click();
-    await expect(cartes.locator('#univers-floppa')).toBeChecked();
-    await expect(cartes.getByText('Combiner.', { exact: true })).toBeVisible();
-    await expect(cartes.getByText('Transformer.', { exact: true })).toBeHidden();
+    for (const marque of ['titre', 'identite', 'preuve', 'action']) await expect(page.locator(`[data-pli="${marque}"]`)).toBeInViewport();
+
+    const univers = page.getByRole('group', { name: 'Choisir une carte et son univers' });
+    await univers.locator('.oc-pastille', { hasText: 'Bloodborne' }).click();
+    await expect(univers.locator('.effet:visible .effet__mecanique')).toHaveText('Invoquer');
+
+    const comparateur = page.getByRole('group', { name: 'Une carte, deux versions' });
+    await comparateur.locator('.oc-pastille', { hasText: 'GitGud' }).click();
+    await expect(comparateur.locator('.comparaison:visible dd')).toHaveText(['13 → devient 10']);
+
+    await expect(page.locator('[data-figure="OMN-05"] .etape:visible')).toHaveCount(10);
 
     const galerie = page.getByRole('group', { name: 'Choisir un écran d’Omnicard' });
-    await galerie.locator('label[for="ecran-deck"]').click();
-    await expect(galerie.getByRole('link', { name: 'Agrandir — Composer son deck', exact: true })).toBeVisible();
-    await galerie.locator('#ecran-deck').focus();
-    await page.keyboard.press('ArrowRight');
-    await expect(galerie.locator('#ecran-ouverture')).toBeChecked();
-    const capture = galerie.getByRole('link', { name: 'Agrandir — Ouvrir un booster', exact: true });
-    await expect(capture).toBeVisible();
-    await expect(galerie.getByRole('link', { name: 'Agrandir — Composer son deck', exact: true })).toBeHidden();
-
-    for (const lien of await galerie.locator('a[data-oc-capture]').all()) {
+    for (const lien of await galerie.locator('a[data-agrandir]').all()) {
       const adresse = await lien.getAttribute('href');
       if (!adresse) throw new Error('Chaque capture doit rester un lien vers son image.');
       const reponse = await page.request.get(adresse);
       expect(reponse.ok()).toBe(true);
       expect(reponse.headers()['content-type']).toMatch(/^image\//);
     }
-    const adresse = await capture.getAttribute('href');
-    await capture.click();
-    expect(new URL(page.url()).pathname).toBe(adresse);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
     expect(erreurs).toEqual([]);
   });
 });
