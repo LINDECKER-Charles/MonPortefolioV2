@@ -86,9 +86,9 @@ if (!horsIndex) {
     <link rel="manifest" href="/site.webmanifest" />
     {/* Synchrone, avant les styles : le thème est posé avant le premier rendu. */}
     <script is:inline src="/theme.js"></script>
-    {/* Seule la police du texte est préchargée : c'est elle qui compose le premier écran. */}
+    {/* Le texte et les titres composent le premier écran : préchargés. L'italique attend. */}
     <Font cssVariable="--police-texte" preload />
-    <Font cssVariable="--police-note" />
+    <Font cssVariable="--police-titre" preload={[{ style: 'normal' }]} />
     <script is:inline defer src="/mesure.js"></script>
     {donnees && <script type="application/ld+json" set:html={donnees} />}
   </head>
