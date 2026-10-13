@@ -14,10 +14,9 @@
  * mobile : deux colonnes, les longues cases sur toute la largeur.
  * Les liens publics sont des sorties du site, mesurées en `lien-sortant`
  * (emplacement `preuves` par défaut). Le statut a une forme et un mot (C9).
- * Sous les liens, « Discutons de ce projet → » mène à /contact dès la fiche,
- * sans attendre la sortie de page (`contact-page`, emplacement
- * `fiche-projet`). Sur ordinateur, les liens n’ont pas de marge : la case
- * garde la hauteur de sa rangée et la fiche tient dans le premier écran.
+ * Juste sous la case des liens, hors du tableau (qui ne porte que des
+ * sorties), « Discutons de ce projet → » mène à /contact dès la fiche, sans
+ * attendre la sortie de page (`contact-page`, emplacement `fiche-projet`).
  */
 import AConfirmer from '../../ui/AConfirmer.astro';
 import Statut from '../../ui/Statut.astro';
@@ -41,7 +40,8 @@ const cases: { champ: ChampFiche; titre: string; large?: boolean }[] = [
 ];
 ---
 
-<div class:list={['fiche-projet', classe]} role="group" aria-label="Fiche du projet">
+<div class:list={['fiche-projet', classe]}>
+  <div role="group" aria-label="Fiche du projet">
   <dl>
     {
       cases.map(({ champ, titre, large }) => (
@@ -74,15 +74,14 @@ const cases: { champ: ChampFiche; titre: string; large?: boolean }[] = [
               );
             })
           }
-          <li class="fiche-projet__discuter">
-            <a href="/contact" {...attributsMesure('/contact', { evenement: 'contact-page', emplacement: 'fiche-projet' })}>
-              Discutons de ce projet<span class="fleche" aria-hidden="true">&nbsp;→</span>
-            </a>
-          </li>
         </ul>
       </dd>
     </div>
   </dl>
+  </div>
+  <p class="fiche-projet__discuter">
+    <a href="/contact" {...attributsMesure('/contact', { evenement: 'contact-page', emplacement: 'fiche-projet' })}>Discutons de ce projet<span class="fleche" aria-hidden="true">&nbsp;→</span></a>
+  </p>
 </div>
 
 <style>
@@ -151,21 +150,24 @@ const cases: { champ: ChampFiche; titre: string; large?: boolean }[] = [
     overflow-wrap: anywhere;
   }
 
+  /* L’appel, sous la colonne des liens : à droite sur ordinateur. */
+  .fiche-projet__discuter {
+    margin-top: var(--s1);
+    text-align: right;
+  }
+
   .fiche-projet__discuter a {
+    display: inline-block;
+    padding-block: var(--s1);
+    font-size: var(--t-s);
     font-weight: 600;
+    line-height: 1.5;
   }
 
   @media (min-width: 1101px) {
     .fiche-projet__case--liens ul {
       flex-direction: column;
       align-items: flex-start;
-    }
-
-    /* Liens serrés : quatre lignes dans la hauteur de trois. */
-    .fiche-projet__case--liens ul a {
-      display: block;
-      padding-block: 0;
-      line-height: 1.3;
     }
   }
 
@@ -187,8 +189,13 @@ const cases: { champ: ChampFiche; titre: string; large?: boolean }[] = [
   }
 
   @media (max-width: 860px) {
-    ul a {
+    ul a,
+    .fiche-projet__discuter a {
       padding-block: 10px;
+    }
+
+    .fiche-projet__discuter {
+      text-align: left;
     }
   }
 

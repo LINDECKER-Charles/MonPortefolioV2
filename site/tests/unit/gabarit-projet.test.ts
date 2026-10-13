@@ -58,8 +58,9 @@ describe('FicheProjet', () => {
     }
   });
 
-  it('propose « Discutons de ce projet → » vers /contact, mesuré en fiche-projet', async () => {
+  it('propose « Discutons de ce projet → » vers /contact, mesuré en fiche-projet, sous le tableau des sorties', async () => {
     const html = await rendre(FicheProjet, { fiche: FICHE });
+    expect(html.indexOf('</dl>')).toBeLessThan(html.indexOf('Discutons de ce projet'));
     expect(html).toMatch(/<a href="\/contact"[^>]*data-umami-event="contact-page"[^>]*data-umami-event-emplacement="fiche-projet"[^>]*>\s*Discutons de ce projet<span class="fleche" aria-hidden="true"[^>]*>\s→<\/span>/);
   });
 
