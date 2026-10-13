@@ -7,9 +7,10 @@
  *
  *   <Visionneuse />
  *
- * Elle remplacera les visionneuses propres à Bloodborne, Omnicard et League
- * Of Data Base quand ces pages seront refaites. Sans JavaScript, chaque lien
- * ouvre l’image elle-même.
+ * Le voile est peint sur le dialogue lui-même, qui couvre tout l’écran, et
+ * pas seulement sur ::backdrop : la légende claire garde un fond sombre
+ * mesurable (axe ignore ::backdrop), de jour comme de nuit. Sans JavaScript,
+ * chaque lien ouvre l’image elle-même.
  */
 ---
 
@@ -36,7 +37,7 @@
     margin: 0;
     padding: var(--s4) var(--gouttiere) var(--s5);
     border: 0;
-    background: transparent;
+    background: var(--voile-visionneuse);
     color: var(--lune);
     overflow: hidden;
   }
@@ -48,7 +49,7 @@
   }
 
   .visionneuse::backdrop {
-    background: var(--voile-visionneuse);
+    background: transparent;
   }
 
   .visionneuse__barre {

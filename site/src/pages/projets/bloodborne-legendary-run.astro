@@ -194,14 +194,6 @@ const LIENS_SORTIE = [
 </script>
 
 <style>
-  /* La visionneuse partagée peint son voile sur le dialogue lui-même, pas
-     seulement sur ::backdrop : la légende garde un fond sombre mesurable
-     (axe ignore ::backdrop et la lisait sur la pierre du jour). Demande
-     partagée : à reporter dans components/ui/Visionneuse.astro. */
-  :global(dialog.visionneuse[data-visionneuse]) {
-    background: var(--voile-visionneuse);
-  }
-
   /* BLR-01 sous le texte du problème : le visuel, pas une preuve. */
   :global(.blr-probleme) {
     margin-top: var(--s6);
