@@ -11,7 +11,9 @@
  * stack déclarée du CV, actualisée par l’audit public. À valider par Charles :
  * la page la marque « à confirmer » tant qu’il ne l’a pas fait.
  *   - Au quotidien : le cœur et les ops du CV, en grandes tuiles ;
- *   - Pratiqué : le reste du CV et ce que mes projets mettent en œuvre ;
+ *   - Pratiqué : le reste du CV et ce que mes projets mettent en œuvre
+ *     (Rust, Axum, Tokio et SQLx portent Life Pixel et l’API de ce site ;
+ *     React porte gup) ;
  *   - Exploré ou ponctuel : exercices, essais, contributions ciblées.
  * Aucun niveau n’est une note de maîtrise : chaque technologie garde un logo
  * (ou un picto de repli) et le lien de son site officiel.
@@ -39,18 +41,18 @@ export const QUOTIDIEN = [
  * sont coiffées par le schéma « Interface ↔ API ↔ Données » de la page.
  */
 export const PRATIQUE = [
-  { nom: 'Langages', outils: ['JavaScript', 'PHP', 'Python', 'Java', 'SQL'] },
-  { nom: 'Web et interfaces', pile: 'interface', outils: ['HTML', 'CSS', 'Sass', 'Tailwind CSS', 'RxJS', 'GSAP'] },
-  { nom: 'Backend et API', pile: 'backend', outils: ['ASP.NET Core', 'SignalR', 'Node.js', 'Symfony', 'Spring Boot', 'Twig'] },
-  { nom: 'Données', pile: 'donnees', outils: ['EF Core', 'MySQL', 'SQLite', 'Doctrine'] },
+  { nom: 'Langages', outils: ['JavaScript', 'PHP', 'Python', 'Java', 'Rust', 'SQL'] },
+  { nom: 'Web et interfaces', outils: ['HTML', 'CSS', 'Sass', 'Tailwind CSS', 'RxJS', 'GSAP', 'React'] },
+  { nom: 'Backend et API', outils: ['ASP.NET Core', 'SignalR', 'Node.js', 'Symfony', 'Spring Boot', 'Twig', 'Axum', 'Tokio'] },
+  { nom: 'Données', outils: ['EF Core', 'MySQL', 'SQLite', 'Doctrine', 'SQLx'] },
   { nom: 'Mobile', outils: ['Ionic', 'Capacitor'] },
 ] as const;
 
 /** Exploré ou ponctuel, rangé par famille (langages, web, API, données, bureau, outils). */
 export const EXPLORE = [
-  'React', 'Vue.js', 'Rust', 'Go', 'C', 'WebAssembly',
-  'Express', 'FastAPI', 'Axum', 'Tokio', 'API Platform',
-  'SQLx', 'Stockage S3 compatible',
+  'Vue.js', 'Go', 'C', 'WebAssembly',
+  'Express', 'FastAPI', 'API Platform',
+  'Stockage S3 compatible',
   'Tauri', 'Photino.NET',
   'Leaflet', 'Chart.js',
   'Bash', 'sharp', 'Pillow', 'Dompdf', 'OpenTUI', 'Make', 'GCC',
