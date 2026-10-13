@@ -3,12 +3,19 @@ import { Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import FilAriane from '../../components/pages/FilAriane.astro';
 import ContinuerLecture from '../../components/pages/ContinuerLecture.astro';
+import GesteCollectif from '../../components/projets/GesteCollectif.astro';
 import { SITE } from '../../config/site';
 import capture from '../../assets/captures/pvz-fusion.webp';
 import '../../styles/profondeur.css';
+import '../../styles/pvz-fusion.css';
 
-const titre = `PVZF Translation — ${SITE.nom}`;
-const description = 'Comprendre les plantes, leurs fusions et les commandes de PvZ Fusion en français. Découvrez la traduction et le travail du pôle francophone.';
+const titre = `PvZ Fusion, une aventure collective — ${SITE.nom}`;
+const description = 'Faire grandir le pôle français de PvZ Fusion : former 20 contributeurs, organiser le travail et livrer plus de 5 000 ajouts de traduction.';
+const revision = 'eda0b63fbacda194465144c9ec20cb975c7a9c6a';
+const depot = 'https://github.com/LINDECKER-Charles/PVZF-Translation-fr';
+const bilan = `${depot}/blob/${revision}/Docs/french-contributions.md`;
+const textes = `${depot}/blob/${revision}/PvZ_Fusion_Translator/Localization/French/Strings/translation_strings.json#L40-L51`;
+const sortant = { 'data-umami-event': 'lien-sortant', 'data-umami-event-domaine': 'github.com', 'data-umami-event-emplacement': 'preuves' };
 const commandes = [
   { origine: '选择你的植物', francais: 'Choisissez Vos Plantes' },
   { origine: '一起摇滚吧！', francais: 'C’est Parti\u00a0!' },
@@ -16,84 +23,139 @@ const commandes = [
   { origine: '返回游戏', francais: 'Reprendre' },
   { origine: '重新开始', francais: 'Recommencer' },
 ];
+const rituels = [
+  { geste: 'organiser' as const, outil: 'Trello', titre: 'Un endroit pour avancer ensemble.', texte: 'J’ai centralisé le travail sur un tableau commun pour que chacun puisse retrouver ce qu’il y avait à faire.' },
+  { geste: 'motiver' as const, outil: 'Classement hebdomadaire', titre: 'Donner envie de se dépasser.', texte: 'Chaque semaine, un leaderboard mettait en avant les contributions et donnait au groupe un nouveau rendez-vous.' },
+  { geste: 'remercier' as const, outil: 'Récapitulatif individuel', titre: 'Prendre le temps de dire merci.', texte: 'J’envoyais à chaque contributeur un petit bilan de sa semaine, pour le féliciter et le remercier de son travail.' },
+  { geste: 'livrer' as const, outil: 'Une PR chaque semaine', titre: 'Faire du travail une livraison.', texte: 'Je regroupais les contributions dans une pull request, une proposition de mise à jour adressée au projet multilingue.' },
+];
 ---
 
 <Base titre={titre} description={description} chemin="/projets/pvz-fusion">
   <article class="wrap profondeur cas-pvz">
     <FilAriane courant="PVZF Translation" projet />
-    <header class="page-hero pvz-hero">
-      <h1>PVZF Translation</h1>
-      <div>
-        <p class="page-hero__intro">Dans Plants vs. Zombies Fusion, on combine des plantes pour défendre son jardin contre les zombies. La traduction du chinois vers le français permet aux joueurs francophones de comprendre les menus et les capacités de chaque fusion, pour choisir quelles plantes utiliser.</p>
-        <p class="page-hero__meta">La traduction française de Plants vs. Zombies Fusion</p>
+    <header class="pvz-couverture">
+      <div class="pvz-couverture__texte">
+        <p class="pvz-repere">PVZF Translation <span aria-hidden="true">/</span> Pôle francophone</p>
+        <h1>Traduire un jeu.<br /><span>Faire grandir une équipe.</span></h1>
+        <p class="pvz-intro">Je suis arrivé pour traduire. J’ai appris à accueillir, former et donner à chacun l’envie de continuer.</p>
+        <p class="pvz-role">Lead du pôle français · Mainteneur du projet multilingue</p>
+        <a class="btn btn--plein" href="#le-collectif">Découvrir l’aventure <span aria-hidden="true">↓</span></a>
       </div>
+      <figure class="pvz-couverture__visuel">
+        <Picture src={capture} formats={['avif']} fallbackFormat="webp" widths={[480, 768, 1080, 1440]} sizes="(min-width: 1000px) 48vw, calc(100vw - 48px)" alt="Une partie de Plants vs. Zombies Fusion : des plantes fusionnées défendent le jardin contre les zombies." loading="eager" />
+        <figcaption>
+          <span class="pvz-repere">Le jeu qui nous a réunis</span>
+          <p>Combiner des plantes pour défendre son jardin. Notre rôle&nbsp;: le rendre accessible en français.</p>
+        </figcaption>
+      </figure>
     </header>
 
-    <div class="pvz-ouverture">
-      <figure class="page-capture">
-        <Picture src={capture} formats={['avif']} fallbackFormat="webp" widths={[480, 768, 1080, 1440]} sizes="(min-width: 900px) 60vw, calc(100vw - 48px)" alt="Une partie de Plants vs. Zombies Fusion, avec des plantes fusionnées qui défendent le jardin contre les zombies." loading="eager" />
-        <figcaption class="legende">Le jeu PvZ Fusion. Mon travail porte sur sa traduction et sur l’équipe francophone.</figcaption>
-      </figure>
-      <div class="pvz-besoin prose">
-        <h2>Lire pour décider.</h2>
-        <p>Dans PvZ Fusion, on combine des plantes pour défendre son jardin. Comprendre ce qu’une fusion fait, comment elle s’obtient et quelle commande choisir fait partie du jeu.</p>
-        <p>La traduction française rend ces informations accessibles aux joueurs francophones, des menus aux descriptions des plantes et des zombies.</p>
-      </div>
-    </div>
+    <dl class="pvz-reperes" aria-label="Le pôle en trois repères">
+      <div><dt>Ajouts de traduction recensés</dt><dd><mark class="surligne">5&nbsp;000+</mark><span>Bilan public du pôle, septembre 2026</span></dd></div>
+      <div><dt>Contributeurs que j’ai formés</dt><dd>20<span>De leurs premiers pas à l’autonomie</span></dd></div>
+      <div><dt>PR fusionnées dans le projet amont</dt><dd>35<span>Mes propositions, octobre 2025 → septembre 2026</span></dd></div>
+    </dl>
+    <nav class="pvz-sommaire" aria-label="Dans cette page">
+      <a href="#le-collectif"><span>01</span> Le collectif</a>
+      <a href="#les-traductions"><span>02</span> Les traductions</a>
+      <a href="#gestion-de-projet"><span>03</span> Gestion de projet</a>
+      <a href="#les-sources"><span>04</span> Les sources</a>
+    </nav>
 
-    <section class="page-section pvz-demonstration" aria-labelledby="traduction-titre">
-      <div class="pvz-demonstration__intro">
-        <h2 id="traduction-titre">Les mêmes commandes.<br />Un autre accès au jeu.</h2>
-        <p>Quelques mots suffisent à montrer la différence. Passez d’une langue à l’autre pour voir ces commandes telles qu’elles sont traduites dans le projet.</p>
+    <section class="pvz-section pvz-collectif" id="le-collectif" aria-labelledby="collectif-titre">
+      <div class="pvz-tete-section">
+        <div><p class="pvz-repere">01 / L’aventure humaine</p><h2 id="collectif-titre">Arriver pour aider.<br />Trouver sa place.</h2></div>
+        <p>Certains arrivaient sans compétences techniques. Les voir apprendre, puis devenir des piliers de la communauté, reste ce dont je suis le plus fier.</p>
       </div>
+      <ol class="pvz-parcours">
+        <li><span class="pvz-parcours__numero" aria-hidden="true">01</span><h3>Accueillir</h3><p>Faire une place aux nouveaux et les accompagner dans leurs premières contributions.</p></li>
+        <li><span class="pvz-parcours__numero" aria-hidden="true">02</span><h3>Former et relire</h3><p>Apprendre en faisant, expliquer les corrections et construire des repères communs.</p></li>
+        <li><span class="pvz-parcours__numero" aria-hidden="true">03</span><h3>Faire confiance</h3><p>Laisser chacun contribuer en autonomie et prendre sa place dans le pôle.</p></li>
+      </ol>
+      <div class="pvz-passage">
+        <p class="pvz-passage__roles">Traducteur <span aria-hidden="true">→</span> Lead <span aria-hidden="true">→</span> Mainteneur</p>
+        <blockquote>«&nbsp;La seule chose qui a changé,<br />c’est le titre.&nbsp;»</blockquote>
+        <p>Quand le rôle de lead m’a été confié, je m’occupais déjà de l’accueil, de la formation et de l’organisation.</p>
+      </div>
+    </section>
 
-      <div class="pvz-demo" data-pvz-traduction>
-        <div class="pvz-demo__entete">
-          <h3 id="extraits-titre">Extraits de la traduction française</h3>
-          <div class="pvz-langues" role="group" aria-label="Langue des extraits">
-            <button type="button" data-langue="origine" aria-pressed="false" aria-controls="extraits-origine">Texte d’origine</button>
-            <button type="button" data-langue="francais" aria-pressed="true" aria-controls="extraits-francais">Français</button>
+    <section class="pvz-section" id="les-traductions" aria-labelledby="traductions-titre">
+      <div class="pvz-tete-section">
+        <div><p class="pvz-repere">02 / Le travail du pôle</p><h2 id="traductions-titre">Des milliers de textes.<br />Un jeu plus accessible.</h2></div>
+        <p>Menus, descriptions des plantes, zombies et fusions&nbsp;: derrière chaque texte, il y a aussi des corrections et de la relecture.</p>
+      </div>
+      <div class="pvz-traductions">
+        <div class="pvz-bilan">
+          <p class="pvz-repere">Contributions françaises</p>
+          <p class="pvz-bilan__nombre">5&nbsp;000<span>+</span></p>
+          <h3>ajouts de traduction<br />recensés par le pôle</h3>
+          <p class="pvz-bilan__precision">Un travail cumulé au fil des versions, porté par plusieurs contributeurs.</p>
+          <div class="pvz-bilan__relecture"><strong>637</strong><span>relectures consignées<br />dans mon bilan</span></div>
+          <a href={bilan} {...sortant}>Lire le bilan des contributions <span aria-hidden="true">↗</span></a>
+          <p class="pvz-bilan__date">État du 26 septembre 2026 · <a href="#les-sources">Méthode et sources</a></p>
+        </div>
+        <div class="pvz-demo" data-pvz-traduction>
+          <div class="pvz-demo__entete">
+            <h3>Ce que ça change pour un joueur</h3>
+            <div class="pvz-langues" role="group" aria-label="Langue des extraits" hidden>
+              <button type="button" data-langue="origine" aria-pressed="false" aria-controls="extraits-origine">Texte d’origine</button>
+              <button type="button" data-langue="francais" aria-pressed="true" aria-controls="extraits-francais">Français</button>
+            </div>
           </div>
-        </div>
-        <div class="pvz-demo__contenu" aria-live="polite" aria-atomic="true">
-          <ul class="pvz-extraits" id="extraits-origine" data-extraits="origine" lang="zh-CN" aria-label="Commandes dans le texte chinois d’origine" hidden>
-            {commandes.map((commande) => <li>{commande.origine}</li>)}
-          </ul>
-          <ul class="pvz-extraits" id="extraits-francais" data-extraits="francais" lang="fr" aria-label="Commandes traduites en français">
-            {commandes.map((commande) => <li>{commande.francais}</li>)}
-          </ul>
-          <p class="pvz-demo__note" data-langue-affichee>Les commandes en français.</p>
-        </div>
-        <p class="pvz-demo__legende">Démonstration textuelle d’extraits des menus. Les commandes présentées sont des exemples à lire&nbsp;; elles ne lancent pas le jeu.</p>
-      </div>
-    </section>
-
-    <section class="page-section pvz-equipe" aria-labelledby="equipe-titre">
-      <div>
-        <h2 id="equipe-titre">Derrière les mots,<br />une équipe.</h2>
-        <p class="pvz-equipe__note">Traduire, relire, transmettre.</p>
-      </div>
-      <div class="prose">
-        <p>Je suis arrivé pour traduire le jeu et développer des outils. J’ai progressivement pris en charge l’accueil des nouveaux, leur formation et la relecture des contributions.</p>
-        <p>Environ <mark class="surligne">20</mark> contributeurs ont été formés, dont certains arrivaient sans compétences techniques. Je suis aujourd’hui lead du pôle francophone et mainteneur du projet multilingue.</p>
-        <p>Le travail continue à chaque version&nbsp;: traduire les nouveautés, garder des termes cohérents et donner aux prochains contributeurs les moyens de participer.</p>
-        <div class="page-liens">
-          <a href="https://github.com/LINDECKER-Charles/PVZF-Translation-fr" data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="preuves">Voir le projet francophone</a>
+          <div class="pvz-demo__contenu" aria-live="polite" aria-atomic="true">
+            <ul class="pvz-extraits" id="extraits-origine" data-extraits="origine" lang="zh-CN" aria-label="Commandes dans le texte chinois d’origine" hidden>
+              {commandes.map((commande) => <li>{commande.origine}</li>)}
+            </ul>
+            <ul class="pvz-extraits" id="extraits-francais" data-extraits="francais" lang="fr" aria-label="Commandes traduites en français">
+              {commandes.map((commande) => <li>{commande.francais}</li>)}
+            </ul>
+            <p class="pvz-demo__note" data-langue-affichee>Les commandes en français.</p>
+          </div>
+          <p class="pvz-demo__legende">Extraits des menus, mis en page pour cette démonstration. <a href={textes} {...sortant}>Voir les textes sources</a>.</p>
         </div>
       </div>
     </section>
 
-    <details class="pvz-sources">
-      <summary>Sources des extraits et du projet</summary>
-      <div class="prose">
-        <p>Les textes chinois et leurs traductions françaises sont issus du fichier de traduction des menus. Leur mise en forme a été adaptée pour cette démonstration.</p>
-        <div class="page-liens">
-          <a href="https://github.com/LINDECKER-Charles/PVZF-Translation-fr/blob/french-translation/PvZ_Fusion_Translator/Localization/French/Strings/translation_strings.json" data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="preuves">Lire les textes de traduction</a>
-          <a href="https://github.com/Teyliu/PVZF-Translation" data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="preuves">Le projet multilingue</a>
-        </div>
+    <section class="pvz-section" id="gestion-de-projet" aria-labelledby="gestion-titre">
+      <div class="pvz-tete-section">
+        <div><p class="pvz-repere">03 / Gestion de projet</p><h2 id="gestion-titre">Un cadre commun.<br />De l’attention pour chacun.</h2></div>
+        <p>Dans une équipe bénévole, donner de la visibilité au travail compte autant que reconnaître le temps que chacun y consacre.</p>
       </div>
-    </details>
+      <ol class="pvz-rituels">
+        {rituels.map((rituel, index) => <li>
+          <div class="pvz-rituels__dessin"><GesteCollectif geste={rituel.geste} /></div>
+          <div class="pvz-rituels__texte">
+            <p class="pvz-repere"><span aria-hidden="true">0{index + 1} / </span>{rituel.outil}</p>
+            <h3>{rituel.titre}</h3>
+            <p>{rituel.texte}</p>
+          </div>
+        </li>)}
+      </ol>
+      <div class="pvz-livraisons">
+        <div><p class="pvz-repere">Le travail rejoint le jeu</p><h3>Un rendez-vous chaque semaine.</h3><p>Le rythme que j’avais mis en place pour proposer le travail du pôle au projet multilingue.</p></div>
+        <div class="pvz-livraisons__preuve"><strong>35</strong><p>PR ouvertes par mes soins<br />et fusionnées dans le dépôt amont</p><a href="https://github.com/Teyliu/PVZF-Translation/pulls?q=is%3Apr+is%3Amerged+author%3ALINDECKER-Charles+created%3A2025-10-16..2026-09-26" {...sortant}>Parcourir les contributions <span aria-hidden="true">↗</span></a></div>
+      </div>
+    </section>
 
+    <section class="pvz-sources" id="les-sources" aria-labelledby="sources-titre">
+      <div><p class="pvz-repere">04 / Les traces du projet</p><h2 id="sources-titre">Un travail à plusieurs,<br />des contributions publiques.</h2></div>
+      <div class="pvz-sources__contenu">
+        <div class="page-liens">
+          <a href={depot} {...sortant}>Le dépôt francophone <span aria-hidden="true">↗</span></a>
+          <a href="https://github.com/Teyliu/PVZF-Translation" {...sortant}>Le projet multilingue <span aria-hidden="true">↗</span></a>
+        </div>
+        <details>
+          <summary>Comment lire ces chiffres</summary>
+          <div class="prose">
+            <p>Sources publiques consultées le 13 octobre 2026, sur la version du 26 septembre 2026. Les synthèses du pôle déclarent 5&nbsp;179 nouvelles traductions. Le chiffre affiché est arrondi à 5&nbsp;000+, car les synthèses et les journaux hebdomadaires présentent quelques écarts.</p>
+            <p>Il s’agit d’un cumul de contributions, pas du nombre de textes uniques dans le jeu ni d’un taux de couverture. Les 637 relectures figurent dans mon bilan personnel. Les 35 PR ont été ouvertes par mon compte entre le 16 octobre 2025 et le 26 septembre 2026, et fusionnées au plus tard le 26 septembre&nbsp;; elles ne correspondent pas à 35 semaines consécutives.</p>
+            <p>J’ai formé 20 contributeurs, dont certains ne figurent pas dans le rapport public. Ce chiffre, le classement, les bilans individuels et le rythme hebdomadaire sont issus de mon témoignage du 13 octobre 2026. Le bilan public documente aussi la coordination, le recrutement et l’utilisation de Trello. Les dessins illustrent cette organisation.</p>
+            <a href={bilan} {...sortant}>Consulter la version du bilan utilisée</a>
+          </div>
+        </details>
+      </div>
+    </section>
     <ContinuerLecture liens={[
       { href: '/projets/omnicard', titre: 'Omnicard', detail: 'Une autre façon de faire évoluer un jeu.' },
       { href: '/projets/gup', titre: 'GUP', detail: 'Une commande pour faire ses mises à jour.' },
@@ -105,113 +167,20 @@ const commandes = [
 
 <script>
   document.querySelectorAll<HTMLElement>('[data-pvz-traduction]').forEach((demo) => {
+    const choix = demo.querySelector<HTMLElement>('.pvz-langues');
     const boutons = demo.querySelectorAll<HTMLButtonElement>('[data-langue]');
     const extraits = demo.querySelectorAll<HTMLElement>('[data-extraits]');
     const note = demo.querySelector<HTMLElement>('[data-langue-affichee]');
-
     boutons.forEach((bouton) => {
       bouton.addEventListener('click', () => {
         const langue = bouton.dataset.langue;
-        boutons.forEach((choix) => choix.setAttribute('aria-pressed', String(choix === bouton)));
+        boutons.forEach((autre) => autre.setAttribute('aria-pressed', String(autre === bouton)));
         extraits.forEach((extrait) => { extrait.hidden = extrait.dataset.extraits !== langue; });
         if (note) note.textContent = langue === 'francais'
           ? 'Les commandes en français.'
           : 'Les commandes dans le texte chinois d’origine.';
       });
     });
+    if (choix) choix.hidden = false;
   });
 </script>
-
-<style>
-  .profondeur .pvz-hero {
-    display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-    gap: var(--s7);
-    align-items: end;
-    padding-bottom: var(--s7);
-  }
-  .pvz-hero h1 { max-width: 12ch; }
-  .profondeur .pvz-hero .page-hero__intro {
-    margin-top: 0;
-    font-size: clamp(1.6rem, 1.2rem + 1vw, 2.3rem);
-    line-height: 1.25;
-    font-weight: 700;
-    max-width: 24ch;
-  }
-  .pvz-hero .page-hero__meta { margin-top: var(--s4); max-width: 36ch; }
-  .pvz-ouverture {
-    display: grid;
-    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
-    gap: var(--s7);
-    align-items: center;
-    padding-bottom: var(--s8);
-  }
-  .pvz-besoin h2 { font-size: clamp(1.8rem, 1.4rem + 1.1vw, 2.6rem); }
-  .pvz-besoin p { font-size: var(--t-petit); }
-  .pvz-demonstration__intro {
-    display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-    gap: var(--s7);
-    align-items: end;
-  }
-  .pvz-demonstration__intro p { max-width: 49ch; }
-  .pvz-demo { margin-top: var(--s7); border: 1px solid var(--filet); background: var(--blanc); border-radius: var(--rayon); }
-  .pvz-demo__entete {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: var(--s5);
-    padding: var(--s5) var(--s6);
-    border-bottom: 1px solid var(--filet);
-  }
-  .pvz-demo__entete h3 { font-size: var(--t-corps); line-height: 1.35; max-width: 29ch; }
-  .pvz-langues { display: flex; gap: var(--s2); flex-wrap: wrap; }
-  .pvz-langues button {
-    min-height: 48px;
-    padding: var(--s2) var(--s4);
-    border: 1px solid var(--filet);
-    border-radius: var(--rayon);
-    background: var(--papier);
-    font-weight: 700;
-    font-size: var(--t-petit);
-    cursor: pointer;
-  }
-  .pvz-langues button[aria-pressed='true'] { background: var(--bleu); color: var(--sur-bleu); border-color: var(--bleu); }
-  .pvz-langues button:hover { border-color: var(--bleu); }
-  .pvz-demo__contenu { padding: var(--s7) var(--s6) var(--s6); }
-  .pvz-extraits { padding: 0; margin: 0 auto; list-style: none; max-width: 610px; display: grid; gap: var(--s3); }
-  .pvz-extraits[hidden] { display: none; }
-  .pvz-extraits li {
-    padding: var(--s3) var(--s5);
-    border: 1px solid var(--filet);
-    border-radius: var(--rayon);
-    background: var(--papier);
-    font-size: clamp(1.25rem, 1.05rem + 0.6vw, 1.7rem);
-    font-weight: 700;
-    text-align: center;
-    line-height: 1.5;
-    overflow-wrap: anywhere;
-  }
-  .pvz-demo__note { margin-top: var(--s5); color: var(--graphite); font-size: var(--t-petit); text-align: center; }
-  .pvz-demo__legende { border-top: 1px solid var(--filet); padding: var(--s4) var(--s6); font-size: var(--t-etiquette); color: var(--graphite); }
-  .pvz-equipe { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: var(--s7); }
-  .pvz-equipe__note { margin-top: var(--s5); color: var(--bleu); font-family: var(--font-note); font-size: 1.5rem; font-style: italic; }
-  .pvz-sources { padding-block: var(--s4); border-top: 1px solid var(--filet); color: var(--graphite); font-size: var(--t-petit); }
-  .pvz-sources summary { cursor: pointer; padding-block: var(--s3); }
-  .pvz-sources .prose { padding-top: var(--s4); color: var(--encre); }
-  @media (max-width: 900px) {
-    .profondeur .pvz-hero, .pvz-ouverture, .pvz-demonstration__intro, .pvz-equipe { grid-template-columns: minmax(0, 1fr); gap: var(--s6); }
-    .pvz-besoin { max-width: 62ch; }
-    .pvz-demo__entete, .pvz-demo__contenu, .pvz-demo__legende { padding-inline: var(--s5); }
-  }
-  @media (max-width: 640px) {
-    .pvz-demo__entete { align-items: flex-start; }
-    .pvz-demo__entete, .pvz-demo__contenu, .pvz-demo__legende { padding-inline: var(--s4); }
-    .pvz-demo__contenu { padding-top: var(--s6); }
-    .pvz-langues { width: 100%; }
-    .pvz-langues button { flex: 1; padding-inline: var(--s3); }
-    .pvz-extraits li { padding-inline: var(--s3); }
-    .pvz-demonstration__intro h2 br { display: none; }
-  }
-</style>
