@@ -1,5 +1,9 @@
 import { expect, test } from '@playwright/test';
+import { VITRINE } from '../../src/config/projets';
 import { PAGES, surveillerConsole } from './support/navigateur';
+
+/** Un nom de projet, lu tel quel dans une expression régulière. */
+const exact = (texte: string) => texte.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 const nouvellesPages = PAGES.filter((chemin) => chemin !== '/' && chemin !== '/mentions-legales');
 
@@ -19,19 +23,29 @@ for (const chemin of nouvellesPages) {
   });
 }
 
-test('la fin du récit mène à la vitrine et à des projets qui se répondent', async ({ page }) => {
+test('la fin du récit mène à la vitrine, puis d’un projet au suivant dans l’ordre de la vitrine', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('navigation', { name: 'Pour aller plus loin', exact: true }).locator('a[href="/projets"]').click();
   await expect(page).toHaveURL(/\/projets$/);
-  await page.locator('[data-project-card="pvz"]').getByRole('link', { name: 'Page du projet PVZF Translation', exact: true }).click();
-  await expect(page).toHaveURL(/\/projets\/pvz-fusion$/);
-  // La sortie commune des pages de projet mène au projet suivant de la vitrine.
-  await page.locator('#retiens').getByRole('link', { name: /Projet suivant/ }).click();
-  await expect(page).toHaveURL(/\/projets\/league-of-database$/);
-  await page.locator('main a[href="/projets/bloodborne-legendary-run"]').first().click();
-  await expect(page).toHaveURL(/\/projets\/bloodborne-legendary-run$/);
-  await page.locator('main a[href="/projets/gup"]').first().click();
-  await expect(page).toHaveURL(/\/projets\/gup$/);
+  const [premier, ...suivants] = VITRINE;
+  await page.locator(`#${premier.id}`).getByRole('link', { name: premier.nom, exact: true }).click();
+  await expect(page).toHaveURL(new RegExp(`${exact(premier.href)}$`));
+  // La sortie commune des pages de projet (#retiens) suit l’ordre de VITRINE
+  // (config/projets.ts) : chaque page mène à la suivante, et renvoie à la précédente.
+  let precedent = premier;
+  for (const projet of suivants) {
+    const voisins = page.locator('#retiens').getByRole('navigation', { name: 'Autres projets', exact: true });
+    await expect(voisins.getByRole('link', { name: /^Projet suivant/ })).toHaveCount(1);
+    await voisins.getByRole('link', { name: new RegExp(`^Projet suivant\\s*${exact(projet.nom)}`) }).click();
+    await expect(page).toHaveURL(new RegExp(`${exact(projet.href)}$`));
+    await expect(page.locator('#retiens').getByRole('link', { name: new RegExp(`^Projet précédent\\s*${exact(precedent.nom)}`) })).toHaveAttribute('href', precedent.href);
+    precedent = projet;
+  }
+  // Le dernier projet de la vitrine n’a pas de suivant : la sortie ramène à la vitrine.
+  const sortie = page.locator('#retiens');
+  await expect(sortie.getByRole('link', { name: /^Projet suivant/ })).toHaveCount(0);
+  await sortie.getByRole('link', { name: /^Tous les projets/ }).click();
+  await expect(page).toHaveURL(/\/projets$/);
 });
 
 test('le blog ne publie aucun article fictif', async ({ page }) => {
