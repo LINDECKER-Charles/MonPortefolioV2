@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360" class="v-omn">
+  <title>Deux fenêtres de navigateur envoient leur action à un serveur dessiné comme une table d’arbitre, éclairée par une lanterne, qui renvoie à chacune l’état de la partie</title>
+  <!--
+    OMN-04, dessiné à la main : dans chaque fenêtre, la main adverse en dos de
+    cartes et la main du joueur en faces génériques (cadre, losange, pastille de
+    coût vide). Flèches pleines : l’action jouée ; pointillées : l’état renvoyé.
+    Les intitulés des trois étapes restent en HTML sous le dessin.
+    Trait constant en currentColor, aplat et lumière par jetons ; seul, le
+    dessin suit le color-scheme de son conteneur (svg:root et
+    prefers-color-scheme) ; inséré dans la page, il prend les jetons.
+  -->
+  <style>
+    svg:root { color: #141312; --surface: #fbfaf7; --trait: #7b7368; --laiton: #7a4f10; --lanterne: #f0b24a; }
+    @media (prefers-color-scheme: dark) { svg:root { color: #e4e7ee; --surface: #1a1e29; --trait: #687083; --laiton: #f0b24a; } }
+    .v-omn .t { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+    .v-omn .f { fill: none; stroke: var(--trait); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .v-omn .a { fill: var(--surface); }
+    .v-omn .l { fill: var(--laiton); }
+    .v-omn .h { fill: var(--lanterne); opacity: 0.32; }
+  </style>
+  <path class="t a" d="M22 64h178a6 6 0 0 1 6 6v168a6 6 0 0 1-6 6H22a6 6 0 0 1-6-6V70a6 6 0 0 1 6-6Z" />
+  <path class="t" d="M16 84h190" />
+  <path class="f" d="M28 74h.01M38 74h.01M48 74h.01M66 74h110" style="stroke-width:3" />
+  <rect class="t a" x="54" y="96" width="26" height="38" rx="3" />
+  <path class="f" d="M58 128l18-26M58 116l10-14M66 130l10-14" />
+  <rect class="t a" x="88" y="96" width="26" height="38" rx="3" />
+  <path class="f" d="M92 128l18-26M92 116l10-14M100 130l10-14" />
+  <rect class="t a" x="122" y="96" width="26" height="38" rx="3" />
+  <path class="f" d="M126 128l18-26M126 116l10-14M134 130l10-14" />
+  <rect class="t a" x="156" y="96" width="26" height="38" rx="3" />
+  <path class="f" d="M160 128l18-26M160 116l10-14M168 130l10-14" />
+  <g transform="rotate(-12.0 73 236)"><rect class="t a" x="60" y="176" width="28" height="42" rx="3" /><path class="t" d="M74 188l7 9-7 9-7-9Z" /><circle class="f" cx="66" cy="182" r="2.4" /></g>
+  <g transform="rotate(-4.0 103 236)"><rect class="t a" x="90" y="176" width="28" height="42" rx="3" /><path class="t" d="M104 188l7 9-7 9-7-9Z" /><circle class="f" cx="96" cy="182" r="2.4" /></g>
+  <g transform="rotate(4.0 133 236)"><rect class="t a" x="120" y="176" width="28" height="42" rx="3" /><path class="t" d="M134 188l7 9-7 9-7-9Z" /><circle class="f" cx="126" cy="182" r="2.4" /></g>
+  <g transform="rotate(12.0 163 236)"><rect class="t a" x="150" y="176" width="28" height="42" rx="3" /><path class="t" d="M164 188l7 9-7 9-7-9Z" /><circle class="f" cx="156" cy="182" r="2.4" /></g>
+  <path class="f" d="M36 158h150" style="stroke-dasharray:5 6" />
+  <path class="t a" d="M440 64h178a6 6 0 0 1 6 6v168a6 6 0 0 1-6 6H440a6 6 0 0 1-6-6V70a6 6 0 0 1 6-6Z" />
+  <path class="t" d="M434 84h190" />
+  <path class="f" d="M446 74h.01M456 74h.01M466 74h.01M484 74h110" style="stroke-width:3" />
+  <rect class="t a" x="472" y="96" width="26" height="38" rx="3" />
+  <path class="f" d="M476 128l18-26M476 116l10-14M484 130l10-14" />
+  <rect class="t a" x="506" y="96" width="26" height="38" rx="3" />
+  <path class="f" d="M510 128l18-26M510 116l10-14M518 130l10-14" />
+  <rect class="t a" x="540" y="96" width="26" height="38" rx="3" />
+  <path class="f" d="M544 128l18-26M544 116l10-14M552 130l10-14" />
+  <rect class="t a" x="574" y="96" width="26" height="38" rx="3" />
+  <path class="f" d="M578 128l18-26M578 116l10-14M586 130l10-14" />
+  <g transform="rotate(-12.0 491 236)"><rect class="t a" x="478" y="176" width="28" height="42" rx="3" /><path class="t" d="M492 188l7 9-7 9-7-9Z" /><circle class="f" cx="484" cy="182" r="2.4" /></g>
+  <g transform="rotate(-4.0 521 236)"><rect class="t a" x="508" y="176" width="28" height="42" rx="3" /><path class="t" d="M522 188l7 9-7 9-7-9Z" /><circle class="f" cx="514" cy="182" r="2.4" /></g>
+  <g transform="rotate(4.0 551 236)"><rect class="t a" x="538" y="176" width="28" height="42" rx="3" /><path class="t" d="M552 188l7 9-7 9-7-9Z" /><circle class="f" cx="544" cy="182" r="2.4" /></g>
+  <g transform="rotate(12.0 581 236)"><rect class="t a" x="568" y="176" width="28" height="42" rx="3" /><path class="t" d="M582 188l7 9-7 9-7-9Z" /><circle class="f" cx="574" cy="182" r="2.4" /></g>
+  <path class="f" d="M454 158h150" style="stroke-dasharray:5 6" />
+  <circle class="h" cx="330" cy="184" r="62" />
+  <path class="t a" d="M258 140h80v72h-80Z" />
+  <path class="t" d="M270 156h56M270 170h56M270 184h40" />
+  <path class="l" d="M314 194h12v8h-12Z" />
+  <path class="t" d="M232 212h176M246 212l-8 66M394 212l8 66M228 278h24M390 278h24" />
+  <path class="f" d="M250 222h140" />
+  <g class="lanterne" transform="translate(348 162) scale(2.2500)"><path class="a" d="M7.9 9.3 12 5.8l4.1 3.5v8.4l-.9 2.6H9.2l-.4-2.6Z" /><path class="t" d="M10.3 4.4a1.7 1.7 0 0 1 3.4 0M12 4.4v1.4M7.9 9.3 12 5.8l4.1 3.5ZM8.8 9.3v8.4M15.2 9.3v8.4M12 9.3v8.4M7.4 17.7h9.2M9.2 20.3h5.6M8.8 17.7l.4 2.6M15.2 17.7l-.4 2.6" style="stroke-width:1.5" /><path class="l" d="M12 11.2c1.5 1.6 2 2.8 2 3.8a2 2 0 0 1-4 0c0-1 .5-2.2 2-3.8Z" /></g>
+  <path class="t" d="M210 104c26 0 40 12 46 34M246 130l10 10 4-13" />
+  <path class="t" d="M430 104c-26 0-40 12-46 34M394 130l-10 10-4-13" />
+  <path class="t" d="M254 196c-14 8-26 12-44 14M220 202l-10 8 11 6" style="stroke-dasharray:7 6" />
+  <path class="t" d="M412 196c4 6 8 12 18 14M420 202l10 8-11 6" style="stroke-dasharray:7 6" />
+</svg>

@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 220" width="440" height="220" class="v-blr">
+  <title>Une fenêtre de navigateur et un téléphone montrent la même petite constellation ; une lanterne posée entre eux éclaire l’étoile commune</title>
+  <!--
+    BLR-08, dessiné à la main pour la direction « Lanterne » : trait constant en
+    currentColor, aplat et lumière par jetons, la lanterne du logo (cage à
+    quatre montants, anneau, flamme en goutte) seule source de lumière.
+    BLR-08 : la couche « L’interface ». Série BLR-08 à BLR-10 : même cadrage, même ligne de sol, même lanterne.
+    Seul, il suit le color-scheme de son conteneur (svg:root et
+    prefers-color-scheme) ; inséré dans la page, il prend les jetons.
+  -->
+  <style>
+    svg:root { color: #141312; --surface: #fbfaf7; --trait: #7b7368; --laiton: #7a4f10; --lanterne: #f0b24a; }
+    @media (prefers-color-scheme: dark) { svg:root { color: #e4e7ee; --surface: #1a1e29; --trait: #687083; --laiton: #f0b24a; } }
+    .v-blr .t { fill: none; stroke: currentColor; stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; }
+    .v-blr .f { fill: none; stroke: var(--trait); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+    .v-blr .a { fill: var(--surface); }
+    .v-blr .l { fill: var(--laiton); }
+    .v-blr .h { fill: var(--lanterne); opacity: 0.32; }
+  </style>
+  <path class="t" d="M24 196h392" />
+  <path class="t a" d="M66 34h190a6 6 0 0 1 6 6v122a6 6 0 0 1-6 6H66a6 6 0 0 1-6-6V40a6 6 0 0 1 6-6Z" />
+  <path class="t" d="M60 54h202M162 168v28M136 196h52" />
+  <path class="f" d="M72 44h.01M82 44h.01M92 44h.01M112 44h120" style="stroke-width:3.4" />
+  <path class="f" d="M66 160l26-26M66 146l12-12M82 162l22-22M98 162l14-14" />
+  <path class="f" d="M110.0 122.5L145.1 98.2L180.2 117.1L215.3 82.0" style="stroke-dasharray:4 4" />
+  <circle class="h" cx="180.2" cy="117.1" r="16.9" />
+  <path class="t a" d="M110.0 116.0L111.7 120.1L116.2 120.5L112.8 123.4L113.8 127.8L110.0 125.4L106.2 127.8L107.2 123.4L103.8 120.5L108.3 120.1Z" />
+  <path class="t a" d="M145.1 91.7L146.8 95.8L151.3 96.2L147.9 99.1L148.9 103.5L145.1 101.1L141.3 103.5L142.3 99.1L138.9 96.2L143.4 95.8Z" />
+  <path class="t l" d="M180.2 108.3L182.5 113.9L188.5 114.4L184.0 118.3L185.4 124.2L180.2 121.0L175.0 124.2L176.4 118.3L171.9 114.4L177.9 113.9Z" />
+  <path class="t a" d="M215.3 75.5L217.0 79.6L221.5 80.0L218.1 82.9L219.1 87.3L215.3 84.9L211.5 87.3L212.5 82.9L209.1 80.0L213.6 79.6Z" />
+  <path class="t a" d="M336 70h50a9 9 0 0 1 9 9v108a9 9 0 0 1-9 9h-50a9 9 0 0 1-9-9V79a9 9 0 0 1 9-9Z" />
+  <path class="t" d="M352 80h18" />
+  <path class="f" d="M335 92h52v84h-52Z" />
+  <path class="f" d="M340.0 136.8L354.6 126.7L369.1 134.6L383.7 120.0" style="stroke-dasharray:4 4" />
+  <circle class="h" cx="369.1" cy="134.6" r="11.4" />
+  <path class="t a" d="M340.0 132.4L341.2 135.2L344.2 135.4L341.9 137.4L342.6 140.4L340.0 138.8L337.4 140.4L338.1 137.4L335.8 135.4L338.8 135.2Z" />
+  <path class="t a" d="M354.6 122.3L355.7 125.1L358.7 125.4L356.4 127.3L357.1 130.3L354.6 128.7L352.0 130.3L352.7 127.3L350.4 125.4L353.4 125.1Z" />
+  <path class="t l" d="M369.1 128.6L370.7 132.4L374.8 132.7L371.7 135.4L372.6 139.4L369.1 137.2L365.6 139.4L366.6 135.4L363.5 132.7L367.5 132.4Z" />
+  <path class="t a" d="M383.7 115.6L384.8 118.4L387.9 118.6L385.6 120.6L386.3 123.6L383.7 122.0L381.1 123.6L381.8 120.6L379.5 118.6L382.5 118.4Z" />
+  <circle class="h" cx="300.0" cy="173.2" r="25.2" />
+  <g class="lanterne" transform="translate(270 136) scale(2.5000)"><path class="a" d="M7.9 9.3 12 5.8l4.1 3.5v8.4l-.9 2.6H9.2l-.4-2.6Z" /><path class="t" d="M10.3 4.4a1.7 1.7 0 0 1 3.4 0M12 4.4v1.4M7.9 9.3 12 5.8l4.1 3.5ZM8.8 9.3v8.4M15.2 9.3v8.4M12 9.3v8.4M7.4 17.7h9.2M9.2 20.3h5.6M8.8 17.7l.4 2.6M15.2 17.7l-.4 2.6" style="stroke-width:1.5" /><path class="l" d="M12 11.2c1.5 1.6 2 2.8 2 3.8a2 2 0 0 1-4 0c0-1 .5-2.2 2-3.8Z" /></g>
+</svg>

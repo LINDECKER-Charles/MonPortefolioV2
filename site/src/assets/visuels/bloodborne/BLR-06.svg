@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" class="v-blr">
+  <title>Une fenêtre de navigateur où quatre étoiles reliées dessinent un petit ciel, la plus haute éclairée par une lanterne</title>
+  <!--
+    BLR-06, dessiné à la main pour la direction « Lanterne » : trait constant en
+    currentColor, aplat et lumière par jetons, la lanterne du logo (cage à
+    quatre montants, anneau, flamme en goutte) seule source de lumière.
+    BLR-06 : l’application web. Pendant de BLR-07 : même angle, même trait, même lanterne.
+    Seul, il suit le color-scheme de son conteneur (svg:root et
+    prefers-color-scheme) ; inséré dans la page, il prend les jetons.
+  -->
+  <style>
+    svg:root { color: #141312; --surface: #fbfaf7; --trait: #7b7368; --laiton: #7a4f10; --lanterne: #f0b24a; }
+    @media (prefers-color-scheme: dark) { svg:root { color: #e4e7ee; --surface: #1a1e29; --trait: #687083; --laiton: #f0b24a; } }
+    .v-blr .t { fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+    .v-blr .f { fill: none; stroke: var(--trait); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+    .v-blr .a { fill: var(--surface); }
+    .v-blr .l { fill: var(--laiton); }
+    .v-blr .h { fill: var(--lanterne); opacity: 0.32; }
+  </style>
+  <path class="t a" d="M14 22h92a4 4 0 0 1 4 4v64a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V26a4 4 0 0 1 4-4Z" />
+  <path class="t" d="M10 34h100" />
+  <path class="f" d="M17 28h.01M23 28h.01M29 28h.01M42 28h44" style="stroke-width:2.4" />
+  <path class="f" d="M16 88l14-14M16 80l6-6M24 88l14-14M32 88l10-10M40 88l6-6" />
+  <path class="f" d="M30 72L48 58L64 66L84 44" style="stroke-dasharray:3 3" />
+  <circle class="h" cx="84" cy="44" r="12" />
+  <path class="t a" d="M30.0 67.4L31.2 70.3L34.4 70.6L32.0 72.6L32.7 75.7L30.0 74.1L27.3 75.7L28.0 72.6L25.6 70.6L28.8 70.3Z" />
+  <path class="t a" d="M48.0 53.4L49.2 56.3L52.4 56.6L50.0 58.6L50.7 61.7L48.0 60.1L45.3 61.7L46.0 58.6L43.6 56.6L46.8 56.3Z" />
+  <path class="t a" d="M64.0 61.4L65.2 64.3L68.4 64.6L66.0 66.6L66.7 69.7L64.0 68.1L61.3 69.7L62.0 66.6L59.6 64.6L62.8 64.3Z" />
+  <path class="t l" d="M84.0 37.6L85.7 41.7L90.1 42.0L86.7 44.9L87.8 49.2L84.0 46.9L80.2 49.2L81.3 44.9L77.9 42.0L82.3 41.7Z" />
+  <circle class="h" cx="100.0" cy="95.8" r="13.4" />
+  <g class="lanterne" transform="translate(84 76) scale(1.3333)"><path class="a" d="M7.9 9.3 12 5.8l4.1 3.5v8.4l-.9 2.6H9.2l-.4-2.6Z" /><path class="t" d="M10.3 4.4a1.7 1.7 0 0 1 3.4 0M12 4.4v1.4M7.9 9.3 12 5.8l4.1 3.5ZM8.8 9.3v8.4M15.2 9.3v8.4M12 9.3v8.4M7.4 17.7h9.2M9.2 20.3h5.6M8.8 17.7l.4 2.6M15.2 17.7l-.4 2.6" style="stroke-width:1.5" /><path class="l" d="M12 11.2c1.5 1.6 2 2.8 2 3.8a2 2 0 0 1-4 0c0-1 .5-2.2 2-3.8Z" /></g>
+</svg>

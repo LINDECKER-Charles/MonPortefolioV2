@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 96" width="576" height="96" class="v-gup">
+  <title>Six pictogrammes des choix d’ingénierie de gup : une cloison étanche, des arguments séparés, un seul colis tombé, un réveil sans fil, un seul système actif, un œil devant deux pastilles contrastées</title>
+  <!--
+    GUP-02, dessiné à la main : six cases de 96 × 96, un accent de lumière au plus
+    par picto. Chaque picto est aussi un <symbol id="GUP-02-…"> (cloison, arguments,
+    colis, reveil, systemes, lisible) ; la bande les reprend en clair pour rester
+    lisible en <img> (une <use> n’hérite pas des règles de classe du fichier).
+    Trait constant en currentColor, aplat et lumière par jetons ; seul, le
+    dessin suit le color-scheme de son conteneur (svg:root et
+    prefers-color-scheme) ; inséré dans la page, il prend les jetons.
+  -->
+  <style>
+    svg:root { color: #141312; --surface: #fbfaf7; --trait: #7b7368; --laiton: #7a4f10; --lanterne: #f0b24a; }
+    @media (prefers-color-scheme: dark) { svg:root { color: #e4e7ee; --surface: #1a1e29; --trait: #687083; --laiton: #f0b24a; } }
+    .v-gup .t { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+    .v-gup .f { fill: none; stroke: var(--trait); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .v-gup .a { fill: var(--surface); }
+    .v-gup .l { fill: var(--laiton); }
+    .v-gup .h { fill: var(--lanterne); opacity: 0.32; }
+  </style>
+  <defs>
+    <symbol id="GUP-02-cloison" viewBox="0 0 96 96">
+      <path class="t a" d="M12 30h34v38H12Z" />
+      <path class="h" d="M50 30h34v38H50Z" style="opacity:.3" />
+      <path class="t a" d="M50 30h34v38H50Z" style="fill-opacity:0" />
+      <path class="t" d="M46 24v50M50 24v50" />
+      <path class="t" d="M22 30l6 10-5 7 7 9-3 12" />
+      <path class="f" d="M16 62l6-6M16 54l4-4" />
+    </symbol>
+    <symbol id="GUP-02-arguments" viewBox="0 0 96 96">
+      <rect class="t l" x="10" y="38" width="20" height="20" rx="3" />
+      <rect class="t a" x="36" y="38" width="16" height="20" rx="3" />
+      <rect class="t a" x="58" y="38" width="12" height="20" rx="3" />
+      <rect class="t a" x="76" y="38" width="10" height="20" rx="3" />
+      <path class="f" d="M10 30h2M84 30h2M10 66h2M84 66h2" style="stroke-dasharray:2 4" />
+    </symbol>
+    <symbol id="GUP-02-colis" viewBox="0 0 96 96">
+      <path class="t" d="M6 56h84" />
+      <path class="f" d="M12 62h.01M28 62h.01M44 62h.01M60 62h.01M76 62h.01" style="stroke-width:4" />
+      <path class="t a" d="M10 38h16v18H10Z" />
+      <path class="t a" d="M30 38h16v18H30Z" />
+      <path class="t a" d="M70 38h16v18H70Z" />
+      <path class="t a" d="M50 72l14-6 6 14-14 6Z" />
+      <path class="f" d="M52 52l2 8M58 50l4 8" style="stroke-dasharray:2 3" />
+      <path class="f" d="M90 47h4M90 42h2" />
+    </symbol>
+    <symbol id="GUP-02-reveil" viewBox="0 0 96 96">
+      <circle class="t a" cx="42" cy="52" r="22" />
+      <path class="t" d="M42 38v14l9 6M28 77l-5 6M56 77l5 6" />
+      <path class="t l" d="M22 34a8 8 0 0 1 12-10ZM50 24a8 8 0 0 1 12 10Z" />
+      <path class="f" d="M72 40c4 3 4 9 0 12M78 34c7 6 7 18 0 24" />
+      <path class="f" d="M84 62l4 4m0-4-4 4" />
+    </symbol>
+    <symbol id="GUP-02-systemes" viewBox="0 0 96 96">
+      <circle class="h" cx="22" cy="44" r="16" />
+      <path class="t a" d="M8 32h28v22H8Z" />
+      <path class="t" d="M22 54v8M14 64h16" />
+      <path class="t a" d="M40 32h20v22H40Z" />
+      <path class="f" d="M42 50l14-14M42 42l6-6M48 52l10-10" />
+      <path class="t" d="M50 54v8M44 64h12" />
+      <path class="t a" d="M66 32h22v22H66Z" />
+      <path class="f" d="M68 50l16-16M68 42l8-8M75 52l11-11" />
+      <path class="t" d="M77 54v8M71 64h12" />
+    </symbol>
+    <symbol id="GUP-02-lisible" viewBox="0 0 96 96">
+      <path class="t a" d="M8 42c10-14 34-14 44 0-10 14-34 14-44 0Z" />
+      <circle class="t l" cx="30" cy="42" r="7" />
+      <circle class="t" cx="68" cy="34" r="10" style="fill:currentColor" />
+      <circle class="t a" cx="74" cy="60" r="10" />
+    </symbol>
+  </defs>
+  <g transform="translate(0 0)"><path class="t a" d="M12 30h34v38H12Z" /><path class="h" d="M50 30h34v38H50Z" style="opacity:.3" /><path class="t a" d="M50 30h34v38H50Z" style="fill-opacity:0" /><path class="t" d="M46 24v50M50 24v50" /><path class="t" d="M22 30l6 10-5 7 7 9-3 12" /><path class="f" d="M16 62l6-6M16 54l4-4" /></g>
+  <g transform="translate(96 0)"><rect class="t l" x="10" y="38" width="20" height="20" rx="3" /><rect class="t a" x="36" y="38" width="16" height="20" rx="3" /><rect class="t a" x="58" y="38" width="12" height="20" rx="3" /><rect class="t a" x="76" y="38" width="10" height="20" rx="3" /><path class="f" d="M10 30h2M84 30h2M10 66h2M84 66h2" style="stroke-dasharray:2 4" /></g>
+  <g transform="translate(192 0)"><path class="t" d="M6 56h84" /><path class="f" d="M12 62h.01M28 62h.01M44 62h.01M60 62h.01M76 62h.01" style="stroke-width:4" /><path class="t a" d="M10 38h16v18H10Z" /><path class="t a" d="M30 38h16v18H30Z" /><path class="t a" d="M70 38h16v18H70Z" /><path class="t a" d="M50 72l14-6 6 14-14 6Z" /><path class="f" d="M52 52l2 8M58 50l4 8" style="stroke-dasharray:2 3" /><path class="f" d="M90 47h4M90 42h2" /></g>
+  <g transform="translate(288 0)"><circle class="t a" cx="42" cy="52" r="22" /><path class="t" d="M42 38v14l9 6M28 77l-5 6M56 77l5 6" /><path class="t l" d="M22 34a8 8 0 0 1 12-10ZM50 24a8 8 0 0 1 12 10Z" /><path class="f" d="M72 40c4 3 4 9 0 12M78 34c7 6 7 18 0 24" /><path class="f" d="M84 62l4 4m0-4-4 4" /></g>
+  <g transform="translate(384 0)"><circle class="h" cx="22" cy="44" r="16" /><path class="t a" d="M8 32h28v22H8Z" /><path class="t" d="M22 54v8M14 64h16" /><path class="t a" d="M40 32h20v22H40Z" /><path class="f" d="M42 50l14-14M42 42l6-6M48 52l10-10" /><path class="t" d="M50 54v8M44 64h12" /><path class="t a" d="M66 32h22v22H66Z" /><path class="f" d="M68 50l16-16M68 42l8-8M75 52l11-11" /><path class="t" d="M77 54v8M71 64h12" /></g>
+  <g transform="translate(480 0)"><path class="t a" d="M8 42c10-14 34-14 44 0-10 14-34 14-44 0Z" /><circle class="t l" cx="30" cy="42" r="7" /><circle class="t" cx="68" cy="34" r="10" style="fill:currentColor" /><circle class="t a" cx="74" cy="60" r="10" /></g>
+</svg>
