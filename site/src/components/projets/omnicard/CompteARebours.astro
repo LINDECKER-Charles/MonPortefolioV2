@@ -12,8 +12,10 @@
  * la frise la compte, et la légende marque ce décompte « à confirmer ».
  *
  * Scène rejouable : les fins de tour s’allument une à une à l’arrivée, puis
- * au clic sur la frise (scripts/figure-animations.ts). Sans JavaScript et en
- * mouvement réduit, la frise est entière ; la légende dit tout en texte.
+ * au clic sur la frise (scripts/figure-animations.ts). Sans JavaScript, le
+ * bouton reste `disabled`, hors de la tabulation, et la frise est entière ;
+ * le script le réactive. En mouvement réduit aussi, la frise est entière ; la
+ * légende dit tout en texte.
  */
 import { Picture } from 'astro:assets';
 import gitgud from '../../../assets/projets/omnicard/carte-gitgud.webp';
@@ -46,7 +48,7 @@ const etapes = Array.from({ length: GITGUD.delai * 2 - 1 }, (_, index) => {
       <span class="rebours__etiquette">L’effet, écrit sur la carte</span>
       <span class="rebours__phrase">«&nbsp;{GITGUD.effet}&nbsp;»</span>
     </p>
-    <button type="button" class="scene rebours__frise" data-scene="omnicard-rebours" data-rejouer data-figure-animation aria-label="Rejouer l’animation : le compte à rebours de GitGud">
+    <button type="button" class="scene rebours__frise" data-scene="omnicard-rebours" data-rejouer data-figure-animation disabled aria-label="Rejouer l’animation : le compte à rebours de GitGud">
       <span class="etape etape--depart" style="--rang:0">
         <span class="etape__qui">Carte jouée</span>
         <span class="etape__compte">{GITGUD.delai}</span>

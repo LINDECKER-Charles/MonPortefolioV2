@@ -199,6 +199,7 @@ test.describe('la scène se rejoue au clic', () => {
   test('un clic sur la frise relance l’allumage des fins de tour', async ({ page }) => {
     await page.goto(CHEMIN);
     const frise = page.getByRole('button', { name: 'Rejouer l’animation : le compte à rebours de GitGud' });
+    await expect(frise).toBeEnabled();
     await frise.scrollIntoViewIfNeeded();
     await expect(frise).not.toHaveClass(/animation-en-cours/, { timeout: 8000 });
     await frise.click();
@@ -316,6 +317,8 @@ test.describe('sans JavaScript', () => {
     await expect(comparateur.locator('.comparaison:visible dd')).toHaveText(['13 → devient 10']);
 
     await expect(page.locator('[data-figure="OMN-05"] .etape:visible')).toHaveCount(10);
+    // Rien ne rejouerait la frise : son bouton reste désactivé, hors de la tabulation.
+    await expect(page.getByRole('button', { name: 'Rejouer l’animation : le compte à rebours de GitGud' })).toBeDisabled();
 
     const galerie = page.getByRole('group', { name: 'Choisir un écran d’Omnicard' });
     for (const lien of await galerie.locator('a[data-agrandir]').all()) {
