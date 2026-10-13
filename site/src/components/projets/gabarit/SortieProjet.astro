@@ -41,8 +41,8 @@ interface Voisin {
 }
 const voisins: Voisin[] = [
   suivant ? { sens: 'Projet suivant', nom: suivant.nom, href: suivant.href, preuve: suivant.preuve } : { sens: 'Aussi', nom: 'Les autres projets publics', href: '/projets#aussi', preuve: 'Des projets publics, sans page dédiée' },
-  precedent && { sens: 'Projet précédent', nom: precedent.nom, href: precedent.href, preuve: precedent.preuve, retour: true },
-].filter((voisin): voisin is Voisin => Boolean(voisin));
+];
+if (precedent) voisins.push({ sens: 'Projet précédent', nom: precedent.nom, href: precedent.href, preuve: precedent.preuve, retour: true });
 ---
 
 <section id={ancre} class="sortie-projet" aria-labelledby={`${ancre}-titre`}>
