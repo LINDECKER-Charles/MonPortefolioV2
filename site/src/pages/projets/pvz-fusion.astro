@@ -113,18 +113,18 @@ const etiquette = (id: string) => SECTIONS.find((section) => section.id === id)?
         </div>
         <div class="pvz-metier__grille">
           <div class="pvz-corrections">
-            <table>
+            <table role="table">
               <caption>Trois corrections de mon journal public, semaine du 21/09/2026</caption>
-              <thead>
-                <tr><th scope="col">Entrée</th><th scope="col">Avant</th><th scope="col">Après</th></tr>
+              <thead role="rowgroup">
+                <tr role="row"><th scope="col" role="columnheader">Entrée</th><th scope="col" role="columnheader">Avant</th><th scope="col" role="columnheader">Après</th></tr>
               </thead>
-              <tbody>
+              <tbody role="rowgroup">
                 {
                   CORRECTIONS.map((correction) => (
-                    <tr>
-                      <th scope="row">{correction.entree}</th>
-                      <td><del>{typo(correction.avant)}</del></td>
-                      <td><ins>{typo(correction.apres)}</ins></td>
+                    <tr role="row">
+                      <th scope="row" role="rowheader">{correction.entree}</th>
+                      <td role="cell"><del>{typo(correction.avant)}</del></td>
+                      <td role="cell"><ins>{typo(correction.apres)}</ins></td>
                     </tr>
                   ))
                 }
@@ -307,6 +307,10 @@ const etiquette = (id: string) => SECTIONS.find((section) => section.id === id)?
     font-size: var(--t-s);
   }
 
+  .pvz-corrections thead th:first-child {
+    width: 38%;
+  }
+
   .pvz-corrections caption {
     margin-bottom: var(--s2);
     font-size: var(--t-xs);
@@ -334,14 +338,17 @@ const etiquette = (id: string) => SECTIONS.find((section) => section.id === id)?
     font-weight: 600;
   }
 
+  /* Un texte barré ne se coupe pas : guillemets et mots restent ensemble. */
   .pvz-corrections del {
     color: var(--eteint);
     text-decoration-thickness: 1px;
+    white-space: nowrap;
   }
 
   .pvz-corrections ins {
     text-decoration: none;
     font-weight: 600;
+    white-space: nowrap;
   }
 
   .pvz-corrections .petit {
@@ -373,6 +380,41 @@ const etiquette = (id: string) => SECTIONS.find((section) => section.id === id)?
 
     .pvz-outil :global(.pvz-outil__visuel) {
       max-width: 320px;
+    }
+
+    /* Les corrections en lignes empilées : l’entrée en titre, puis
+       « 7,5 s → 30 s » sur une ligne. Les rôles explicites du tableau
+       gardent sa sémantique quand ses lignes ne s’affichent plus en tableau. */
+    .pvz-corrections thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+
+    .pvz-corrections tr {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--s1) var(--s3);
+      padding-block: var(--s3);
+      border-bottom: 1px solid var(--filet);
+    }
+
+    .pvz-corrections tbody th {
+      flex-basis: 100%;
+    }
+
+    .pvz-corrections th,
+    .pvz-corrections td {
+      padding: 0;
+      border-bottom: 0;
+    }
+
+    .pvz-corrections td + td::before {
+      content: '→\00a0' / '';
+      color: var(--eteint);
+      font-weight: 400;
     }
   }
 </style>
