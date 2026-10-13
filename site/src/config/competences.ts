@@ -8,7 +8,7 @@
  * attestée.
  *
  * Hiérarchie en trois niveaux (cahier, § 5.10 ; Q9) : proposée à partir de la
- * stack déclarée du CV, actualisée par l’audit public. À valider par Charles :
+ * stack déclarée du CV, actualisée par l’audit public. À confirmer par Charles :
  * la page la marque « à confirmer » tant qu’il ne l’a pas fait.
  *   - Au quotidien : le cœur et les ops du CV, en grandes tuiles ;
  *   - Pratiqué : le reste du CV et ce que mes projets mettent en œuvre
@@ -168,7 +168,7 @@ export const SITES_OFFICIELS = {
  * Compétences humaines : un intitulé, trois verbes, une illustration
  * (CMP-02 à CMP-08). `demarche` : les verbes forment une suite (→) plutôt
  * qu’une liste (·). `aConfirmer` : verbes reformulés depuis la V1 (adjectifs
- * ou noms seuls), à valider par Charles. Pas de ligne de fait (Q9).
+ * ou noms seuls), à confirmer par Charles. Pas de ligne de fait (Q9).
  */
 export const COMPETENCES_HUMAINES = [
   { nom: 'Pédagogie', visuel: 'CMP-02', verbes: ['Expliquer', 'Accompagner', 'Rendre autonome'], demarche: true, aConfirmer: true },

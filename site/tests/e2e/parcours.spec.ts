@@ -53,7 +53,9 @@ test.describe('hub', () => {
     await page.goto('/parcours');
     const portes = page.getByRole('navigation', { name: 'Explorer le parcours', exact: true });
     await expect(portes.getByRole('link', { name: 'Parcours professionnel', exact: true })).toHaveAccessibleDescription(/6 expériences.*20 contributeurs formés/);
-    await expect(portes.getByRole('link', { name: 'Compétences', exact: true })).toHaveAccessibleDescription(/C#, \.NET, Angular, TypeScript, PostgreSQL, MySQL.*à valider/);
+    // Une seule source pour le cœur de la stack : « Au quotidien » (config/competences.ts).
+    await expect(portes.getByRole('link', { name: 'Compétences', exact: true })).toHaveAccessibleDescription(/Au quotidien\s:\sC#, \.NET, Angular, TypeScript, PostgreSQL, Docker, Git, GitHub Actions\sniveaux à confirmer/);
+    await expect(portes).not.toContainText(/à valider|MySQL/);
     await expect(portes.getByRole('link', { name: 'Formation et certifications', exact: true })).toHaveAccessibleDescription(/Titre DWWM, RNCP niveau 5.*12 certifications/);
     for (const id of ['PAR-01', 'PAR-02', 'PAR-03']) await expect(portes.locator(`[data-visuel="${id}"]`)).toHaveCount(1);
     // Aucune flèche de sortie pour un lien interne.

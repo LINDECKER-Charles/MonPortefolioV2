@@ -19,7 +19,10 @@ import dotnet from '../assets/stacks/dotnet.svg?url';
 import angular from '../assets/stacks/angular.svg?url';
 import typescript from '../assets/stacks/typescript.svg?url';
 import postgresql from '../assets/stacks/postgresql.svg?url';
-import mysql from '../assets/stacks/mysql.svg?url';
+import docker from '../assets/stacks/docker.svg?url';
+import git from '../assets/stacks/git.svg?url';
+import githubActions from '../assets/stacks/github-actions.svg?url';
+import { QUOTIDIEN } from '../config/competences';
 import { EXPERIENCES, ligneDeFrise, NOMBRE_EXPERIENCES, PAGES_PARCOURS } from '../config/parcours';
 import { DIPLOME, NOMBRE_CERTIFICATIONS } from '../config/formation';
 import { SITE } from '../config/site';
@@ -42,19 +45,21 @@ const couloirs = [
 ] as const;
 
 /**
- * Le cœur de ma stack : six technologies du niveau « Cœur » de mon CV
- * (matière première, « Stack déclarée » : C# / .NET / ASP.NET, Angular,
- * TypeScript, PostgreSQL, MySQL). Docker est rangé dans « Ops ». La
- * hiérarchie des technologies reste à valider par Charles (Q9).
+ * Le cœur de ma stack : la même liste que « Au quotidien » sur la page
+ * Compétences (config/competences.ts, QUOTIDIEN), dans le même ordre. La
+ * hiérarchie des technologies reste à confirmer par Charles (Q9).
  */
-const coeur = [
-  { nom: 'C#', logo: csharp },
-  { nom: '.NET', logo: dotnet },
-  { nom: 'Angular', logo: angular },
-  { nom: 'TypeScript', logo: typescript },
-  { nom: 'PostgreSQL', logo: postgresql },
-  { nom: 'MySQL', logo: mysql },
-];
+const LOGOS: Record<(typeof QUOTIDIEN)[number]['nom'], string> = {
+  'C#': csharp,
+  '.NET': dotnet,
+  Angular: angular,
+  TypeScript: typescript,
+  PostgreSQL: postgresql,
+  Docker: docker,
+  Git: git,
+  'GitHub Actions': githubActions,
+};
+const coeur = QUOTIDIEN.map(({ nom }) => ({ nom, logo: LOGOS[nom] }));
 
 const faits: Record<string, string[]> = {
   '/parcours/professionnel': [`${NOMBRE_EXPERIENCES} expériences`, 'une promotion menée jusqu’au titre', '20 contributeurs formés'],
@@ -119,9 +124,9 @@ const faits: Record<string, string[]> = {
                     </p>
                   )}
                   <p class="porte__faits" id={`porte-faits-${index}`}>
-                    {page.href === '/parcours/competences' && <span class="porte__faits-titre">Le cœur de ma stack&nbsp;: </span>}
+                    {page.href === '/parcours/competences' && <span class="porte__faits-titre">Au quotidien&nbsp;: </span>}
                     {faits[page.href].map((fait) => <span class="porte__fait">{fait}</span>)}
-                    {page.href === '/parcours/competences' && <AConfirmer titre="Hiérarchie des technologies à valider (Q9)">à valider</AConfirmer>}
+                    {page.href === '/parcours/competences' && <AConfirmer titre="Hiérarchie des technologies à confirmer (Q9)">niveaux à confirmer</AConfirmer>}
                   </p>
                   <p class="porte__action" aria-hidden="true">{page.action}<span class="fleche">&nbsp;→</span></p>
                 </div>
