@@ -1255,62 +1255,68 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 ### GUP-01 · Dispersé, puis un seul geste
 
 - **Priorité** : élargi · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/projets/gup` · § 2, à côté des commandes _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/projets/gup` · § 1, le problème : sous les deux paragraphes, à gauche de la figure des commandes (GUP-F1) ; 320 px de large sur ordinateur, masqué sous 860 px _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Dispersé, puis un seul geste
-- **Composition** : Une douzaine de petites machines de formes différentes, chacune avec son levier, reliées par des fils emmêlés qui convergent vers une boîte nette à flèche circulaire
+- **Composition** : Une douzaine de petites machines toutes différentes, chacune avec sa propre commande, reliées par des fils emmêlés qui convergent vers une seule boîte nette à flèche circulaire, éclairée par une lanterne
 - **Format** : 4:3, 1200 × 900
 - **Fichier attendu** : `site/src/assets/visuels/gup/GUP-01_1200x900.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Dispersé, puis un seul geste »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une douzaine de petites machines dont les fils emmêlés convergent vers une seule boîte éclairée par une lanterne. »
+- **Note** : Posé dans le slot « texte » de la section « probleme » de pages/projets/gup.astro. La figure des commandes (GUP-F1) porte le fait ; l’image ne fait que le faire sentir.
 
 ### GUP-02 · Les choix d’ingénierie
 
 - **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
-- **Emplacement** : `/projets/gup` · § 4, six cartes _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/projets/gup` · Comment je l’ai construit, au-dessus de l’intertitre « Et deux choix de plus », sous les quatre décisions ; bandeau en pleine mesure jusqu’à 576 px (pleine largeur sur mobile), six pictos de 96 px dans l’ordre des quatre décisions puis des deux choix _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Les choix d’ingénierie
-- **Composition** : Six pictos : cloison étanche, liste d’arguments sans coquillage, clé unique, réveil qui s’éteint, trois silhouettes de systèmes dont deux grisées, œil et contraste
-- **Format** : 6 × 1:1, 96
+- **Composition** : Bandeau de six pictogrammes alignés, de la même main, trait constant en currentColor, un accent lanterne au plus par picto, espacement régulier, sans texte ni filet entre eux. Dans l’ordre : 1. une cloison étanche entre deux compartiments, l’un fissuré, l’autre intact (une source en panne reste dans sa ligne) ; 2. une liste d’arguments en petits blocs séparés, sans coquille de shell autour (aucun shell) ; 3. une file de quatre colis séparés dont un seul est tombé, les autres continuent sur leur tapis (un paquet par appel : un échec ne fait tomber qu’une installation) ; 4. un réveil qui sonne puis s’éteint, sans fil vers rien (rien ne tourne en arrière-plan) ; 5. trois silhouettes génériques d’ordinateurs dont deux grisées en hachures (chaque système voit ses outils) ; 6. un œil devant deux pastilles contrastées (lisible partout). Aucun logo de système d’exploitation ni de gestionnaire de paquets, aucune lettre.
+- **Format** : 6:1, 576 × 96
 - **Fichier attendu** : `site/src/assets/visuels/gup/GUP-02.svg` (lot de 6)
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Un seul fichier SVG de 576 × 96 (viewBox 0 0 576 96), six cases de 96 × 96 ; couleurs par currentColor et var(--lanterne) pour rester lisible jour et nuit. Les quatre premiers pictos répondent aux quatre décisions (la troisième, « un paquet par appel », remplace depuis le 13/10/2026 le lot administrateur unique, qui vient d’une contribution extérieure), les deux derniers aux deux choix qui suivent.
 
 ### GUP-03 · Une commande, tout mettre à jour
 
 - **Priorité** : élargi · **Méthode** : IMG, à générer (image)
 - **Emplacement** : `/projets/gup` · Partage, hub de repli _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Une commande, tout mettre à jour
-- **Composition** : Fenêtre de terminal d’où partent des rayons vers des paquets génériques, sans logo
+- **Composition** : Une fenêtre de terminal vide de tout caractère, éclairée par une lanterne, d’où partent des rayons fins vers une douzaine de paquets génériques qui s’allument là où le rayon les touche
 - **Format** : 1200 × 630 ; 16:10
 - **Fichier attendu** : `site/src/assets/visuels/gup/GUP-03_1600x1000.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une commande, tout mettre à jour »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une fenêtre de terminal éclairée par une lanterne, d’où partent des rayons vers des paquets. »
+- **Note** : Pas posé dans la page : la carte de la vitrine et l’image de partage montrent d’abord la vraie capture (src/assets/projets/gup/packages-select.webp) ; celle-ci sert de repli.
 
 ### GUP-F1 · Les commandes réelles
 
 - **Priorité** : socle · **Méthode** : FIG, à coder (figure de données), rien à générer
-- **Emplacement** : `/projets/gup` · § 2 _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/projets/gup` · § 1, le problème _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Les commandes réelles
-- **Composition** : Colonne HTML de commandes empilées face à gup
+- **Composition** : Onze commandes de mise à jour, une par outil, empilées dans une carte, face à gup éclairé
 - **Format** : —
 - **Fichier attendu** : aucune image, figure codée
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Les commandes réelles, empilées face à gup »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Onze commandes de mise à jour, une par outil, face à la seule commande gup »
+- **Note** : Codée en HTML : components/projets/gup/FigureCommandes.astro, données COMMANDES de config/gup.ts.
 
 ### GUP-F2 · 153 sources par famille et par système
 
 - **Priorité** : élargi · **Méthode** : FIG, à coder (figure de données), rien à générer
-- **Emplacement** : `/projets/gup` · § 5 _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/projets/gup` · § 4, les règles de 153 outils _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : 153 sources par famille et par système
-- **Composition** : Sélecteur Windows / macOS / Linux qui grise les sources incompatibles, données du registre
+- **Composition** : Sélecteur Windows, macOS, Linux qui grise en hachures les sources jamais lancées sur ce système ; un carré par source, vingt familles
 - **Format** : 16:9
 - **Fichier attendu** : aucune image, figure codée
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « 153 sources par famille et par système »
+- **Note** : Codée en HTML et CSS, sans script (:has) : components/projets/gup/FigureSources.astro, données config/gup-sources.ts tirées du registre de gup.
 
 ### GUP-F3 · Les versions
 
 - **Priorité** : élargi · **Méthode** : FIG, à coder (figure de données), rien à générer
-- **Emplacement** : `/projets/gup` · § 6 _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/projets/gup` · § 5, tenu comme un produit _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Les versions
-- **Composition** : Frise 0.1.0 → 0.5.3
+- **Composition** : Frise à l’échelle du temps des douze versions publiées sur npm, 0.1.0 → 0.5.3
 - **Format** : 5:1
 - **Fichier attendu** : aucune image, figure codée
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Les versions »
+- **Note** : Codée en HTML : components/projets/gup/FigureVersions.astro, données VERSIONS de config/gup.ts (registre npm).
 
 ## Parcours : hub, professionnel, compétences, formation
 

@@ -1,84 +1,481 @@
 ---
+/**
+ * gup : la preuve d’« un outil open source ». Page bâtie sur le gabarit commun
+ * des pages de projet (components/projets/gabarit, règle E5), comme PvZ
+ * Fusion : en-tête et fiche, corps libre (le problème, quatre vrais écrans,
+ * la démonstration, les règles de 153 outils, un projet tenu comme un
+ * produit), « Comment je l’ai construit », sortie et note de sources.
+ * Données et relevés : config/gup.ts et config/gup-sources.ts.
+ *
+ * Les captures sont de vraies vues de gup 0.5.3 en français, produites par le
+ * générateur de captures du dépôt sur sa machine d’exemple
+ * (src/assets/projets/gup/README.md).
+ */
+import type { ImageMetadata } from 'astro';
 import Base from '../../layouts/Base.astro';
-import FilAriane from '../../components/pages/FilAriane.astro';
-import ContinuerLecture from '../../components/pages/ContinuerLecture.astro';
-import DemoGup from '../../components/projets/DemoGup.astro';
+import CorpsProjet from '../../components/projets/gabarit/CorpsProjet.astro';
+import DecisionsProjet from '../../components/projets/gabarit/DecisionsProjet.astro';
+import EnTeteProjet from '../../components/projets/gabarit/EnTeteProjet.astro';
+import SectionProjet from '../../components/projets/gabarit/SectionProjet.astro';
+import SortieProjet from '../../components/projets/gabarit/SortieProjet.astro';
+import SourcesProjet from '../../components/projets/gabarit/SourcesProjet.astro';
+import DemoGup from '../../components/projets/gup/DemoGup.astro';
+import FigureCommandes from '../../components/projets/gup/FigureCommandes.astro';
+import FigureSources from '../../components/projets/gup/FigureSources.astro';
+import FigureVersions from '../../components/projets/gup/FigureVersions.astro';
+import AConfirmer from '../../components/ui/AConfirmer.astro';
+import CadreCapture from '../../components/ui/CadreCapture.astro';
+import CaptureAnnotee from '../../components/ui/CaptureAnnotee.astro';
+import LienAction from '../../components/ui/LienAction.astro';
+import Visionneuse from '../../components/ui/Visionneuse.astro';
+import Visuel from '../../components/ui/Visuel.astro';
+import selection from '../../assets/projets/gup/packages-select.webp';
 import { SITE } from '../../config/site';
-import capture from '../../assets/projets/gup-selection.webp';
-import '../../styles/profondeur.css';
+import { AUTRES_CHOIX, CAS_PARTICULIERS, DECISIONS, EN_TETE, ETAPES, FICHE, LIENS, LIENS_SORTIE, PRATIQUES, PREUVES, SECTIONS } from '../../config/gup';
+import { attributsMesure } from '../../lib/liens';
+import { typo } from '../../lib/typo';
 
-const titre = `gup, les mises à jour au même endroit — ${SITE.nom}`;
-const description = 'Voir les mises à jour, choisir ses logiciels et les lancer au même endroit. Découvrez gup à travers une démonstration, sans rien installer.';
+const titre = `gup, une commande pour toute sa machine — ${SITE.nom}`;
+const description = 'gup met à jour en une commande tout ce qu’un poste de développeur a installé : 153 sources, Windows, macOS et Linux. Un outil open source publié sur npm.';
+const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(href, { emplacement: 'preuves' }) });
+
+/** Hauteur de la loupe en % de sa largeur (« 3 / 1 » → 33,3 %), pour la poser sous la capture. */
+const hauteurLoupe = (ratio: string) => {
+  const [largeur, hauteur] = ratio.split('/').map(Number);
+  return `${((hauteur / largeur) * 100).toFixed(2)}%`;
+};
+
+const captures = import.meta.glob<ImageMetadata>('../../assets/projets/gup/*.webp', { eager: true, import: 'default' });
+const capture = (nom: string) => {
+  const image = captures[`../../assets/projets/gup/${nom}.webp`];
+  if (!image) throw new Error(`Capture de gup introuvable : ${nom}.webp`);
+  return image;
+};
 ---
 
-<Base titre={titre} description={description} chemin="/projets/gup">
-  <article class="wrap profondeur cas-gup">
-    <FilAriane courant="gup" projet />
-    <header class="page-hero gup-hero">
-      <div class="gup-introduction">
-        <p class="gup-nom">gup</p>
-        <h1>Les mises à jour, au même endroit.</h1>
-        <p class="page-hero__intro">Sur l’ordinateur d’un développeur, les logiciels et les outils de développement demandent souvent des commandes de mise à jour différentes. GUP rassemble les mises à jour disponibles dans une liste&nbsp;: on choisit celles que l’on veut lancer.</p>
-        <p class="gup-note note">Voir ce qui attend. Choisir. Mettre à jour.</p>
-      </div>
-      <DemoGup />
-    </header>
+<Base titre={titre} description={description} chemin="/projets/gup" sommaire={SECTIONS}>
+  <EnTeteProjet projet="gup" titre={EN_TETE.titre} chapeau={EN_TETE.chapeau} liens={EN_TETE.liens} preuves={PREUVES} fiche={FICHE}>
+    <CadreCapture
+      slot="visuel"
+      type="terminal"
+      src={selection}
+      alt="gup en français : douze paquets à mettre à jour, classés par source, dont cinq cochés ; l’analyse de Scoop a échoué sans bloquer les autres."
+      legende="La vraie interface, sur la machine d’exemple du dépôt. Un clic l’affiche en entier."
+      class="gup-entete-capture"
+      ratio="1730 / 1321"
+      ratioMobile="4 / 5"
+      sizes="(max-width: 860px) 225vw, (max-width: 1100px) 141vw, 780px"
+      widths={[800, 1200, 1600, 2436]}
+      loading="eager"
+      agrandir
+    />
+  </EnTeteProjet>
 
-    <section class="page-section gup-usage" aria-labelledby="besoin-titre">
-      <div class="gup-recit prose">
-        <h2 id="besoin-titre">Faire le tour de sa machine, en un passage.</h2>
-        <p>Sur une machine de développement, les logiciels viennent de plusieurs sources. Chacune propose sa propre façon de vérifier les mises à jour. C’est une tâche répétitive, et il est facile d’en oublier une.</p>
-        <p>gup rassemble ce qui est disponible dans une même liste. Je peux cocher un logiciel, plusieurs ou l’ensemble, puis suivre leurs mises à jour depuis l’interface.</p>
-        <p>Pour les outils que je mets à jour régulièrement, je peux aussi choisir les logiciels et leur programmer un rendez-vous.</p>
-        <p class="page-repere">Disponible sur Windows, macOS et Linux.</p>
-      </div>
-      <figure class="page-capture gup-capture">
-        <img src={capture.src} width={capture.width} height={capture.height} alt="L’interface de gup affiche les logiciels par source, leurs versions et une case pour choisir chacun d’eux." loading="lazy" />
-        <figcaption class="legende">La vraie interface de gup. Cette capture utilise des données d’exemple, comme la démonstration ci-dessus.</figcaption>
-      </figure>
-    </section>
+  <CorpsProjet sections={SECTIONS}>
+    <SectionProjet id="probleme" titre="Une commande par outil, et aucune vue d’ensemble" alignement="centre">
+      <Fragment slot="texte">
+        <p>Sur un poste de développeur, chaque outil a sa commande de mise à jour, son format de sortie et ses angles morts. La documentation de gup le résume ainsi&nbsp;: dix à quinze commandes enchaînées à la main, plusieurs fois par mois, sans savoir laquelle a oublié quoi.</p>
+        <p>gup ne remplace aucun de ces outils. Il les interroge tous en parallèle, liste ce qui est en retard et les fait travailler&nbsp;: c’est un chef d’orchestre, pas un gestionnaire de paquets de plus.</p>
+        <Visuel id="GUP-01" class="gup-dispersion" sizes="320px" />
+      </Fragment>
+      <FigureCommandes slot="figure" />
+    </SectionProjet>
 
-    <details class="gup-details">
-      <summary>Le code et les détails techniques</summary>
-      <div class="prose">
-        <p>gup est un projet open source écrit en TypeScript et Node.js. Il utilise les gestionnaires déjà présents sur la machine pour mettre à jour les logiciels installés globalement. Le code, la documentation et le paquet sont publics.</p>
-        <div class="page-liens">
-          <a href="https://github.com/LINDECKER-Charles/gup" data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="preuves">Le code et la documentation</a>
-          <a href="https://www.npmjs.com/package/@charles_lindecker/gup" data-umami-event="lien-sortant" data-umami-event-domaine="www.npmjs.com" data-umami-event-emplacement="preuves">Le paquet sur npm</a>
+    <SectionProjet id="etapes" titre="Analyser, choisir, mettre à jour, garder une trace" chapeau="Quatre écrans de la vraie application, en français, sur la machine d’exemple de son dépôt. Un clic agrandit chaque écran.">
+      <ol class="gup-etapes">
+        {
+          ETAPES.map((etape, index) => (
+            <li class="gup-etape" id={`etape-${etape.id}`} style={`--gup-loupe-h:${hauteurLoupe(etape.loupe.ratio)}`}>
+              <div class="gup-etape__texte">
+                <span class="gup-etape__rang" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+                <h3>{etape.titre}</h3>
+                <p>{typo(etape.texte)}</p>
+              </div>
+              <CaptureAnnotee
+                type="terminal"
+                src={capture(etape.capture)}
+                alt={etape.alt}
+                legende={etape.legende}
+                ratio={etape.ratio}
+                cible={etape.cible}
+                loupe={etape.loupe}
+                sizes="(max-width: 860px) 100vw, (max-width: 1100px) 50vw, 520px"
+                agrandir
+              />
+            </li>
+          ))
+        }
+      </ol>
+    </SectionProjet>
+
+    <SectionProjet id="essai" titre="Cocher, lancer, regarder passer les paquets">
+      <div class="gup-essai acte-veille">
+        <div class="gup-essai__texte">
+          <p>La même liste, à manipuler dans la page. Une source a échoué à l’analyse&nbsp;: elle reste à sa ligne, sans bloquer les autres.</p>
+          <p>Le paquet marqué «&nbsp;admin&nbsp;» passe en dernier, avec les autres paquets qui demandent des droits, derrière une seule demande.</p>
+          <p class="petit">Le vrai gup s’essaie aussi sur son site, dans une démonstration de terminal.</p>
+          <LienAction href={LIENS.site} emplacement="preuves">Le site de gup</LienAction>
         </div>
+        <DemoGup />
       </div>
-    </details>
+    </SectionProjet>
 
-    <ContinuerLecture liens={[
-      { href: '/projets/bloodborne-legendary-run', titre: 'Bloodborne Legendary Run', detail: 'Se donner une nouvelle façon de parcourir un jeu.' },
-      { href: '/projets/pvz-fusion', titre: 'PVZF Translation', detail: 'Comprendre le jeu dans sa langue.' },
-      { href: '/projets/omnicard', titre: 'Omnicard', detail: 'D’un jeu papier à un jeu dans le navigateur.' },
-      { href: '/projets', titre: 'Tous les projets', detail: 'Revenir aux réalisations.' },
-    ]} />
-  </article>
+    <SectionProjet id="regles" titre="Apprendre les règles de 153 outils" chapeau="Le vrai travail est là : chaque outil a ses exceptions, et gup les absorbe une par une.">
+      <ul class="gup-cas">
+        {
+          CAS_PARTICULIERS.map((cas) => (
+            <li>
+              <p>{typo(cas.texte)}</p>
+              <a {...sortant(cas.trace.href)}>{typo(cas.trace.libelle)}<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>
+            </li>
+          ))
+        }
+      </ul>
+      <FigureSources class="gup-sources" />
+    </SectionProjet>
+
+    <SectionProjet id="produit" titre="Tenu comme un produit" chapeau="Des versions publiées, testées sur trois systèmes et documentées, pour que d’autres puissent s’en servir et y contribuer.">
+      <FigureVersions class="gup-versions" />
+      <ul class="gup-pratiques">
+        {
+          PRATIQUES.map((pratique) => (
+            <li>
+              <h3>{typo(pratique.titre)}</h3>
+              <p>{typo(pratique.texte)}</p>
+              <a {...sortant(pratique.trace.href)}>{typo(pratique.trace.libelle)}<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="gup-contribuer">
+        <p class="gup-contribuer__phrase">Une source manque&nbsp;? En général, il suffit d’un fichier, d’une ligne dans le registre et de ses tests.</p>
+        <LienAction href={LIENS.contribuer} emplacement="preuves">Le guide de contribution</LienAction>
+      </div>
+    </SectionProjet>
+
+    <DecisionsProjet decisions={DECISIONS} chapeau="Quatre choix d’architecture qui ne se voient pas à l’écran, et pourquoi.">
+      <div class="gup-autres">
+        <Visuel id="GUP-02" alt="" class="gup-autres__visuel" sizes="(max-width: 640px) 100vw, 576px" />
+        <h3>Et deux choix de plus</h3>
+        <ul>
+          {
+            AUTRES_CHOIX.map((choix) => (
+              <li>
+                <h4>{typo(choix.titre)}</h4>
+                <p>{typo(choix.texte)}</p>
+                <a {...sortant(choix.trace.href)}>{typo(choix.trace.libelle)}<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </DecisionsProjet>
+
+    <SortieProjet projet="gup" liens={LIENS_SORTIE}>
+      <p>Absorber les exceptions de chaque outil, pour qu’il ne reste qu’un geste.<AConfirmer titre="Formulation proposée, à valider par Charles" /></p>
+    </SortieProjet>
+
+    <SourcesProjet>
+      <p><b>Sources.</b> Les 153 sont comptées à l’exécution dans le <a {...sortant(LIENS.registre)}>registre de gup<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>, à la release 0.5.3 (commit 0c0e85a du 06/10/2026), le 13/10/2026. La famille est le dossier de la source dans le code&nbsp;; le système, l’ensemble déclaré par la source dans le <a {...sortant(LIENS.catalogue)}>catalogue<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>&nbsp;: 14 sources grisées sous Windows, 21 sous macOS, 27 sous Linux.</p>
+      <p><b>Versions.</b> Douze versions publiées sur npm, de la 0.1.0 (19/05/2026) à la 0.5.3 (06/10/2026), d’après les dates du registre npm relevées le 13/10/2026. La <a {...sortant(LIENS.quatreZero)}>0.4.0<span class="fleche" aria-hidden="true">&nbsp;↗</span></a> n’a jamais été publiée. Les téléchargements npm ne sont pas affichés&nbsp;: ils se concentrent les jours de publication et ne mesurent pas un usage.</p>
+      <p><b>Écrans et démonstration.</b> Les quatre écrans et celui de l’en-tête sont produits par le générateur de captures du dépôt, à la release 0.5.3, interface en français, sur sa <a {...sortant(LIENS.captures)}>machine d’exemple<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>&nbsp;: des versions inventées, aucune machine réelle, aucun gestionnaire lancé. La démonstration reprend les mêmes paquets. Les commandes de la première figure sont lues dans les fichiers des sources, à la même révision.</p>
+      <p><b>Le problème.</b> «&nbsp;Dix à quinze commandes, plusieurs fois par mois&nbsp;» traduit la <a {...sortant(LIENS.pourquoi)}>page de cadrage du projet<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. Les décisions d’architecture sont décrites dans <a {...sortant(LIENS.decisions)}>ses décisions notables<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. La règle «&nbsp;sans shell&nbsp;» a une exception écrite&nbsp;: Scoop, lancé par un shell sur une liste blanche (<a {...sortant(LIENS.exceptionScoop)}>architecture, ligne 484<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>).</p>
+    </SourcesProjet>
+  </CorpsProjet>
+
+  <Visionneuse />
 </Base>
 
 <style>
-  .gup-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(40px, 6vw, 88px); align-items: center; }
-  .gup-nom { margin-bottom: var(--s4); color: var(--bleu); font-size: 1.5rem; font-weight: 800; line-height: 1; }
-  .gup-introduction h1 { max-width: 15ch; }
-  .gup-introduction .page-hero__intro { max-width: 41ch; }
-  .gup-note { margin-top: var(--s5); font-size: 1.25rem; }
-  .gup-usage { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: clamp(32px, 6vw, 80px); align-items: start; }
-  .gup-recit h2 { max-width: 20ch; }
-  .gup-recit .page-repere { margin-top: var(--s5); }
-  .gup-capture { margin-top: var(--s1); }
-  .gup-capture img { border: 1px solid #30363d; background: #0d1117; }
-  .gup-capture .legende { max-width: 64ch; }
-  .gup-details { border-top: 1px solid var(--filet); border-bottom: 1px solid var(--filet); padding-block: var(--s5); }
-  .gup-details summary { width: fit-content; min-height: 44px; padding-block: var(--s2); color: var(--bleu); font-weight: 700; cursor: pointer; }
-  .gup-details .prose { padding-top: var(--s5); max-width: 70ch; }
-  @media (max-width: 1000px) {
-    .gup-hero { grid-template-columns: minmax(0, 1fr); gap: var(--s7); }
-    .gup-introduction h1 { max-width: 19ch; }
-    .gup-introduction .page-hero__intro { max-width: 56ch; }
-    .gup-usage { grid-template-columns: minmax(0, 1fr); gap: var(--s6); }
-    .gup-recit h2 { max-width: 24ch; }
-    .gup-capture { max-width: 860px; }
+  .gup-etapes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s7) var(--s6);
+    margin: var(--s6) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .gup-etape {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: var(--s4);
+    align-content: start;
+  }
+
+  .gup-etape__texte {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: var(--s3);
+    align-items: baseline;
+  }
+
+  .gup-etape__rang {
+    font-size: var(--t-xs);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--eteint);
+  }
+
+  .gup-etape h3 {
+    font-size: var(--t-xl);
+  }
+
+  .gup-etape__texte p {
+    grid-column: 2;
+    margin-top: var(--s2);
+    max-width: 34em;
+    font-size: var(--t-s);
+    line-height: 1.55;
+    color: var(--eteint);
+  }
+
+  :global(#probleme .gup-dispersion) {
+    max-width: 320px;
+    margin-top: var(--s5);
+  }
+
+  /* La loupe agrandit l’écran entier : le recadrage de la capture ne doit pas
+     la toucher (CadreCapture applique height: 100% à toute image de la vue). */
+  .gup-etape :global(.loupe > img) {
+    height: auto !important;
+    object-fit: fill !important;
+  }
+
+  /* L’en-tête montre le volet « Paquets », lisible : la vue recadre la
+     capture sur x 27–98 %, y 11,3–95 % (sous 860 px, 4:5 sur x 29,7–73,3 %,
+     y 11,3–95,4 %). La visionneuse garde l’écran entier. */
+  :global(.gup-entete-capture .capture__vue img) {
+    position: absolute;
+    left: -38.03%;
+    top: -13.5%;
+    width: 140.85%;
+    max-width: none;
+    height: 119.47% !important;
+    object-fit: fill !important;
+  }
+
+  @media (max-width: 860px) {
+    :global(.gup-entete-capture .capture__vue img) {
+      left: -68.12%;
+      top: -13.43%;
+      width: 229.36%;
+      height: 118.86% !important;
+    }
+  }
+
+  /* La démonstration : la nuit dans le jour, là où le terminal attend. */
+  .gup-essai {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: var(--s5) var(--s6);
+    align-items: start;
+    margin-top: var(--s5);
+    padding: clamp(20px, 3.4vw, 40px);
+    border-radius: var(--r2);
+  }
+
+  /* La nuit, l’acte de veille se confond presque avec le fond : un filet et
+     une surface le redessinent. */
+  :global(:root[data-theme='nuit']) .gup-essai {
+    border: 1px solid var(--trait);
+    background: var(--surface);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme])) .gup-essai {
+      border: 1px solid var(--trait);
+      background: var(--surface);
+    }
+  }
+
+  .gup-essai__texte {
+    display: grid;
+    gap: var(--s3);
+    justify-items: start;
+  }
+
+  .gup-essai__texte p {
+    max-width: var(--mesure);
+  }
+
+  .gup-cas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+    gap: 0 var(--s6);
+    margin: var(--s5) 0 var(--s6);
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--trait);
+  }
+
+  .gup-cas li {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s1);
+    padding-block: var(--s4);
+    border-bottom: 1px solid var(--filet);
+  }
+
+  .gup-cas p {
+    font-size: var(--t-m);
+    line-height: 1.5;
+  }
+
+  /* Liens de trace autonomes : cibles de 44 px (WCAG 2.5.8, contrat du site). */
+  .gup-cas a,
+  .gup-pratiques a,
+  .gup-autres a {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    min-height: 44px;
+    font-size: var(--t-xs);
+    font-weight: 600;
+  }
+
+  :global(#produit .gup-versions) {
+    margin-top: var(--s6);
+  }
+
+  .gup-pratiques {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--s5);
+    margin: var(--s6) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .gup-pratiques li {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+    padding-top: var(--s3);
+    border-top: 1px solid var(--trait);
+  }
+
+  .gup-pratiques h3,
+  .gup-autres h4 {
+    font-family: var(--police-texte);
+    font-size: var(--t-s);
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0;
+  }
+
+  .gup-pratiques p,
+  .gup-autres p {
+    font-size: var(--t-s);
+    line-height: 1.5;
+    color: var(--eteint);
+  }
+
+  .gup-pratiques a {
+    margin-top: auto;
+  }
+
+  .gup-contribuer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s2) var(--s6);
+    margin-top: var(--s7);
+    padding: var(--s5) var(--s5);
+    border: 1px solid var(--trait);
+    border-radius: var(--r2);
+    background: var(--surface);
+  }
+
+  .gup-contribuer__phrase {
+    max-width: 34em;
+    font-family: var(--police-titre);
+    font-size: var(--t-xl);
+    line-height: 1.2;
+  }
+
+  .gup-autres {
+    margin-top: var(--s6);
+  }
+
+  /* GUP-02 : un bandeau de six pictos de 96 px, au-dessus de l’intertitre. */
+  :global(#construit .gup-autres__visuel) {
+    width: 576px;
+    margin-bottom: var(--s4);
+  }
+
+  .gup-autres h3 {
+    font-size: var(--t-xl);
+  }
+
+  .gup-autres ul {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s5);
+    margin: var(--s4) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .gup-autres li {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+    padding-top: var(--s3);
+    border-top: 1px solid var(--trait);
+  }
+
+  @media (max-width: 1280px) {
+    .gup-pratiques {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 1100px) {
+    .gup-pratiques {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .gup-essai {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 860px) {
+    :global(#probleme .gup-dispersion) {
+      display: none;
+    }
+
+    .gup-etapes {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s6);
+    }
+
+    .gup-autres ul {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .gup-pratiques {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* La loupe sort de l’écran qu’elle annote et se pose dessous, en pleine
+       largeur : son texte y redevient lisible. */
+    .gup-etape :global(.capture__cadre) {
+      overflow: visible !important;
+    }
+
+    .gup-etape :global(.capture__vue) {
+      overflow: visible !important;
+      margin-bottom: calc(var(--gup-loupe-h) + var(--s3) + var(--s2));
+    }
+
+    .gup-etape :global(.loupe) {
+      inset: calc(100% + var(--s3)) auto auto 0 !important;
+      width: 100% !important;
+    }
   }
 </style>
