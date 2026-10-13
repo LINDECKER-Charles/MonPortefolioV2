@@ -112,9 +112,10 @@
   --largeur: 1344px;
   --mesure: 35rem;            /* ≈ 62 caractères */
 
-  /* Rayons : trois (règle B1). Cartes et cadres restent nets ; seuls les
-     boutons et la bascule sont en pilule. */
-  --r1: 3px;                  /* étiquettes, champs, surligneur */
+  /* Rayons : trois (règle B1), de 4 à 6 px pour tout ce qui n’est pas une
+     pilule (décision du 13/10/2026). Seuls les boutons et la bascule sont en
+     pilule ; seuls les cadres de téléphone dessinent leur propre courbure. */
+  --r1: 4px;                  /* étiquettes, champs, surligneur */
   --r2: 6px;                  /* cartes, cadres, captures, emplacements */
   --r3: 999px;                /* boutons, bascule */
 
