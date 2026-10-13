@@ -43,15 +43,15 @@ const sections = [
     <section class="introuvable__scene" aria-labelledby="introuvable-titre">
       <div class="introuvable__texte">
         <p class="introuvable__code">Erreur 404</p>
-        <h1 id="introuvable-titre">Cette page ne figure pas dans ce mode d’emploi.</h1>
-        <p class="chapeau">L’adresse est peut-être mal recopiée, ou la page a changé de place.</p>
+        <h1 id="introuvable-titre" data-pli="titre">Cette page ne figure pas dans ce mode d’emploi.</h1>
+        <p class="chapeau" data-pli="identite">L’adresse est peut-être mal recopiée, ou la page a changé de place.</p>
         <div class="actions introuvable__actions">
-          <Bouton href="/">Revenir à l’accueil</Bouton>
+          <Bouton href="/" attributs={{ 'data-pli': 'action' }}>Revenir à l’accueil</Bouton>
         </div>
       </div>
       <div class="introuvable__image">
-        <Visuel id="ERR-01" alt="" foyer loading="eager" sizes="(max-width: 860px) 100vw, 560px" />
-        <Portrait src={photo} alt="Charles Lindecker en chemise bleu roi, le regard tourné vers la gauche." widths={[200, 400]} sizes="(max-width: 860px) 96px, 150px" cadrage="50% 30%" lueur="40% 32%" loading="eager" class="introuvable__portrait" />
+        <Visuel id="ERR-01" alt="" foyer loading="eager" sizes="(max-width: 860px) 80vw, 560px" />
+        <Portrait src={photo} alt="Charles Lindecker en chemise bleu roi, le regard tourné vers la gauche." widths={[200, 400]} sizes="(max-width: 860px) 72px, 150px" cadrage="50% 30%" lueur="40% 32%" loading="eager" class="introuvable__portrait" />
       </div>
     </section>
 
@@ -290,18 +290,20 @@ const sections = [
       grid-template-columns: minmax(0, 1fr);
     }
 
+    /* L’illustration laisse une marge à droite : le médaillon y chevauche
+       son bord sans en masquer le centre, et regarde toujours vers elle. */
     .introuvable__image {
-      margin-inline: var(--s4) 0;
+      width: 78%;
     }
 
     .introuvable__image :global(.introuvable__portrait) {
-      right: calc(-1 * var(--s2));
-      bottom: calc(-1 * var(--s5));
-      width: 96px;
+      right: calc(-1 * (72px - var(--s4)));
+      bottom: calc(-1 * var(--s6));
+      width: 72px;
     }
 
     .introuvable__suite {
-      margin-top: var(--s7);
+      margin-top: var(--s6);
     }
 
     .introuvable__tuiles {
