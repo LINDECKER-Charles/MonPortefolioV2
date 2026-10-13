@@ -206,6 +206,12 @@ const etapes = [
     margin-bottom: var(--s4);
   }
 
+  /* Emplacement en attente : le cadre de 2:1 ne tient pas la consigne
+     entière ; le registre (config/visuels.ts) garde la commande complète. */
+  .blr-fab__couche :global(.visuel__consigne) {
+    display: none;
+  }
+
   .blr-fab__nom {
     font-family: var(--police-titre);
     font-size: var(--t-xl);
