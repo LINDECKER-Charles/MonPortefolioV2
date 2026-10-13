@@ -51,6 +51,8 @@ test('le nom canonique, l’étiquette de preuve et le chemin vers « Comment je
   await expect(entete).toContainText('Inventer');
   const construit = entete.locator('[data-pli="action"]').getByRole('link', { name: /Comment je l’ai construit/ });
   await expect(construit).toHaveAttribute('href', '#construit');
+  // « Le jeu en images », l’appel de l’ancienne page, reste une action de l’en-tête.
+  await expect(entete.locator('[data-pli="action"]').getByRole('link', { name: /Le jeu en images/ })).toHaveAttribute('href', '#jeu');
   await construit.click();
   await expect(page.locator('#construit')).toBeInViewport();
   await expect(page.locator('#construit .decision')).toHaveCount(3);
@@ -72,7 +74,7 @@ test('la fiche : sept cases, statut hors ligne à forme et mot, dates à confirm
   }
 });
 
-test('trois repères sourcés, un seul surligné : les trois mois de développement', async ({ page }) => {
+test('trois repères sourcés, un seul surligné : les trois mois de travail', async ({ page }) => {
   await page.goto(CHEMIN);
   const preuves = page.locator('[data-pli="preuve"] .preuve-chiffree');
   await expect(preuves.locator('.preuve-chiffree__valeur')).toHaveText([`≈${NBSP}3${NBSP}mois`, '181', '5']);
@@ -88,6 +90,8 @@ test('un seul lien de code, le dépôt de présentation public ; aucune démo ho
   expect(liens.length).toBeGreaterThan(5);
   for (const lien of liens) {
     expect(lien.href.startsWith(DEPOT), lien.href).toBe(true);
+    // La racine du dépôt affiche encore « Jouer maintenant » : on relie ses règles, sa galerie, son archive.
+    expect(lien.href.replace(/\/$/, ''), lien.href).not.toBe(DEPOT);
     expect(lien).toMatchObject({ evenement: 'lien-sortant', domaine: 'github.com', emplacement: 'preuves', rel: 'external' });
   }
   const html = await page.content();
@@ -128,6 +132,8 @@ test('les univers révèlent l’effet de leur carte au clic et au clavier', asy
   await expect(univers.getByRole('radio', { name: /WTF/ })).toBeChecked();
   await expect(effet.locator('.effet__mecanique')).toHaveText('Piocher');
 
+  // Un nom par bouton : l’univers, sans doublon venu de l’image de la carte.
+  await expect(univers.getByRole('radio', { name: 'Bloodborne', exact: true })).toHaveCount(1);
   await univers.getByRole('radio', { name: /WTF/ }).focus();
   await page.keyboard.press('ArrowLeft');
   await expect(univers.getByRole('radio', { name: /JoJo/ })).toBeChecked();
@@ -136,7 +142,7 @@ test('les univers révèlent l’effet de leur carte au clic et au clavier', asy
   expect(erreurs).toEqual([]);
 });
 
-test('le rééquilibrage montre, carte par carte, la saison 1 et le jeu en ligne côte à côte', async ({ page }) => {
+test('le rééquilibrage montre, carte par carte, la saison 1 et la version actuelle côte à côte', async ({ page }) => {
   await page.goto(CHEMIN);
   const comparateur = page.getByRole('group', { name: 'Une carte, deux versions' });
   await comparateur.scrollIntoViewIfNeeded();
@@ -144,7 +150,11 @@ test('le rééquilibrage montre, carte par carte, la saison 1 et le jeu en ligne
   await expect(visible).toHaveCount(1);
   await expect(visible.getByRole('img')).toHaveCount(2);
   await expect(visible.getByRole('img').first()).toHaveAttribute('alt', /saison 1.*4\/8/);
-  await expect(visible.getByRole('img').last()).toHaveAttribute('alt', /jeu en ligne.*4\/15/);
+  await expect(visible.getByRole('img').last()).toHaveAttribute('alt', /version actuelle.*4\/15/);
+  // La version en ligne de ces valeurs n’est pas établie : l’étiquette le dit.
+  await expect(visible.locator('.comparaison__carte--apres .comparaison__etiquette')).toContainText('Version actuelle du projet');
+  await expect(visible.locator('.comparaison__carte--apres .a-confirmer')).toHaveCount(1);
+  await expect(comparateur).not.toContainText('Jeu en ligne');
   await expect(visible.locator('dd')).toHaveText(['4/8 → devient 4/15']);
 
   await comparateur.locator('.oc-pastille', { hasText: 'GitGud' }).click();
@@ -161,6 +171,9 @@ test('le plateau en schéma : quatre cibles, quatre repères chiffrés', async (
   await page.goto(CHEMIN);
   const partie = page.locator('#partie');
   await expect(partie.locator('[data-figure="OMN-03"] .oc-cible')).toHaveCount(4);
+  // Deux lignes de 10 places par joueur, comme le dit le repère 4.
+  await expect(partie.locator('[data-figure="OMN-03"] .ligne')).toHaveCount(4);
+  await expect(partie.locator('[data-figure="OMN-03"] .place')).toHaveCount(40);
   const reperes = partie.getByRole('list', { name: 'Les repères d’une partie' }).locator('li');
   await expect(reperes).toHaveCount(4);
   await expect(reperes.locator('.reperes__valeur')).toHaveText(['30', '40', '10', '2']);
@@ -173,7 +186,8 @@ test('le compte à rebours de GitGud : neuf fins de tour, cinq comptent, puis l�
   await expect(frise.locator('.etape--lanceur .etape__compte')).toHaveText(['4', '3', '2', '1', '0']);
   await expect(frise.locator('.etape--adverse .etape__compte')).toHaveText(['4', '3', '2', '1']);
   await expect(frise.locator('.etape--fin')).toContainText('Égalité');
-  await expect(page.locator('[data-figure="OMN-05"] figcaption')).toContainText('cinq de mes tours');
+  await expect(page.locator('[data-figure="OMN-05"] figcaption')).toContainText('cinq de mes fins de tour');
+  await expect(page.locator('[data-figure="OMN-05"] figcaption .a-confirmer')).toHaveCount(1);
 });
 
 test.describe('la scène se rejoue au clic', () => {
