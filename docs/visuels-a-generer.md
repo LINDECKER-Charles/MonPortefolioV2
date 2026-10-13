@@ -4,7 +4,7 @@
 
 ## La mission
 
-Tu produis les visuels de la refonte du portfolio de Charles Lindecker. Le registre recense **126 emplacements** (82 « socle », 44 « élargi »). Pour chaque fiche ci-dessous, livre le **fichier attendu**, au chemin indiqué, en respectant le sujet, la composition et le format. Les règles communes valent pour toutes les fiches.
+Tu produis les visuels de la refonte du portfolio de Charles Lindecker. Le registre recense **133 emplacements** (90 « socle », 43 « élargi »). Pour chaque fiche ci-dessous, livre le **fichier attendu**, au chemin indiqué, en respectant le sujet, la composition et le format. Les règles communes valent pour toutes les fiches.
 
 - **Socle** : nécessaire au lancement de la refonte. À produire d’abord.
 - **Élargi** : enrichit le site et peut suivre.
@@ -49,7 +49,7 @@ Exceptions à la règle 3 : le nom dans les déclinaisons du logo, et les images
 | Série | Emplacements | Socle | Méthodes |
 |---|---|---|---|
 | Identité et éléments globaux | 13 | 7 | IMG 2 · SVG 9 · FIG 0 · CAP 0 · PHO 0 · OG 2 |
-| Accueil | 16 | 10 | IMG 10 · SVG 1 · FIG 3 · CAP 1 · PHO 1 · OG 0 |
+| Accueil | 23 | 18 | IMG 15 · SVG 3 · FIG 3 · CAP 1 · PHO 1 · OG 0 |
 | Projets (hub) | 12 | 5 | IMG 10 · SVG 0 · FIG 0 · CAP 2 · PHO 0 · OG 0 |
 | PvZ Fusion | 17 | 13 | IMG 10 · SVG 0 · FIG 6 · CAP 0 · PHO 0 · OG 1 |
 | League Of Data Base | 7 | 4 | IMG 3 · SVG 2 · FIG 2 · CAP 0 · PHO 0 · OG 0 |
@@ -60,14 +60,14 @@ Exceptions à la règle 3 : le nom dans les déclinaisons du logo, et les images
 | Contact | 4 | 3 | IMG 3 · SVG 0 · FIG 0 · CAP 0 · PHO 1 · OG 0 |
 | Blog | 2 | 1 | IMG 2 · SVG 0 · FIG 0 · CAP 0 · PHO 0 · OG 0 |
 | États : 404 et hors ligne | 2 | 1 | IMG 1 · SVG 1 · FIG 0 · CAP 0 · PHO 0 · OG 0 |
-| **Total** | **126** | **82** | IMG 73 · SVG 23 · FIG 19 · CAP 3 · PHO 3 · OG 5 |
+| **Total** | **133** | **90** | IMG 78 · SVG 25 · FIG 19 · CAP 3 · PHO 3 · OG 5 |
 
 ## File de travail « socle »
 
 Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séries. Les emplacements qui reprennent le fichier d’un autre n’y figurent pas.
 
 - **Identité et éléments globaux** : GLO-01 (SVG), GLO-02 (SVG), GLO-03 (SVG), GLO-04 (SVG), GLO-05 (SVG), GLO-06 (SVG), GLO-07 (OG)
-- **Accueil** : ACC-03 (IMG), ACC-04 (IMG), ACC-08 (IMG), ACC-09 (IMG), ACC-11 (IMG)
+- **Accueil** : ACC-03 (IMG), ACC-04 (IMG), ACC-08 (IMG), ACC-09 (IMG), ACC-11 (IMG), ACC-14 (SVG), ACC-17 (SVG), ACC-18 (IMG), ACC-19 (IMG), ACC-20 (IMG), ACC-21 (IMG), ACC-22 (IMG), ACC-23 (IMG)
 - **Projets (hub)** : PRJ-01 (IMG), PRJ-02 (IMG)
 - **PvZ Fusion** : PVZ-01 (IMG), PVZ-02 (IMG), PVZ-04 (IMG), PVZ-05 (IMG), PVZ-06 (IMG), PVZ-07 (IMG), PVZ-08 (IMG), PVZ-11 (IMG)
 - **League Of Data Base** : LOD-03 (SVG), LOD-04 (IMG)
@@ -221,13 +221,13 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 ### ACC-01 · Portrait de Charles dans le colza
 
 - **Priorité** : socle · **Méthode** : PHO, photo réelle, traitements déterministes seulement
-- **Emplacement** : `/` · Couverture _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/` · Couverture, à droite de l’accroche ; sur mobile, après le bandeau des preuves _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Portrait de Charles dans le colza
-- **Composition** : Photo existante charles-4, cadrage vertical plein, sans agrandissement ; bichromie nuit existante
+- **Composition** : Photo existante charles-4, en couleur, cadrage vertical 4:5 sur le visage et la chemise bleu roi, sans agrandissement ; la nuit, un voile de lune et une lueur de lanterne posée sur le côté éclairé du visage, en CSS (composant Portrait)
 - **Format** : 4:5
 - **Fichier attendu** : `site/src/assets/photos/charles-4.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Portrait de Charles dans le colza »
-- **Note** : Existe : photo charles-4, jamais régénérée.
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Charles Lindecker, chemise bleu roi, dans un champ de colza en fleur. »
+- **Note** : Existe : photo charles-4, jamais régénérée. Lueur de nuit centrée sur la joue éclairée (54 % de la largeur, 39 % de la hauteur du cadre 4:5).
 
 ### ACC-02 · Trois pictos des verbes
 
@@ -238,33 +238,36 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Format** : —
 - **Fichier attendu** : aucun, reprend `GLO-04`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : En attendant GLO-04, trois pictos au trait, repris de la maquette « Lanterne », sont dessinés dans le bandeau (components/accueil/BandeauPreuves.astro).
 
 ### ACC-03 · Démonter de vieux PC avec son père
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/` · 01, le terrain de jeu _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/` · 01, le terrain de jeu : scène « Un vieux PC, en vue éclatée », rejouable au clic _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Démonter de vieux PC avec son père
-- **Composition** : Établi vu de trois quarts, tour ouverte, composants posés en vue éclatée, deux paires de mains (adulte, enfant), aucune inscription
+- **Composition** : Établi d’atelier vu de trois quarts, en léger surplomb : une vieille tour de PC ouverte au centre ; son panneau latéral, la carte mère, le disque dur et deux vis sortis et disposés en vue éclatée, chacun relié à sa place par un fin pointillé de montage ; deux paires de mains, celles d’un adulte et celles d’un enfant d’une dizaine d’années, tiennent chacune une pièce ; une lanterne posée sur l’établi, à gauche (vers 28 % de la largeur et 58 % de la hauteur), seule source de lumière, éclaire les pièces ; le fond de l’atelier reste dans l’ombre ; aucune marque, aucune inscription, aucun visage
 - **Format** : 3:2, 1800 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-03_1800x1200.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Démonter de vieux PC avec son père »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une vieille tour de PC démontée sur un établi, ses pièces en vue éclatée, tenues par un adulte et un enfant. »
+- **Note** : Scène animée : la lumière part de la lanterne, à l’endroit indiqué, à l’arrivée de la scène puis à chaque clic (components/accueil/Scene.astro). Remplace le dessin au trait de l’ancienne direction, dont elle reprend les pièces.
 
 ### ACC-04 · Le jeu de cartes papier inventé avec son cousin
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/` · 01, le terrain de jeu (et Omnicard § 2) _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/` · 01, le terrain de jeu : scène « Les cartes, plastifiées à la main », rejouable au clic (et Omnicard § 2) _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Le jeu de cartes papier inventé avec son cousin
-- **Composition** : Table d’après-midi d’été vue de dessus : piles de cartes imprimées, plastifieuse, ciseaux, cartes en pochettes aux coins cornés, feuille de règles griffonnée illisible, deux paires de mains d’adolescents
+- **Composition** : Table d’après-midi d’été vue de dessus : piles de cartes imprimées, une plastifieuse d’où sort une carte glissée dans sa pochette transparente, ciseaux, cartes déjà plastifiées aux coins cornés, une feuille de règles griffonnée illisible ; deux paires de mains d’adolescents, l’une glisse une carte dans la plastifieuse, l’autre en découpe une ; une lanterne posée en haut à droite de la table (vers 78 % de la largeur et 26 % de la hauteur) éclaire la carte qui sort ; faces de cartes génériques, faites de formes simples, sans personnage, sans chiffre, sans texte
 - **Format** : 3:2, 1800 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-04_1800x1200.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Le jeu de cartes papier inventé avec son cousin »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Des mains d’adolescents plastifient à la main des cartes imprimées, sur une table d’été. »
+- **Note** : Scène animée de l’accueil, comme ACC-03 ; même image reprise par OMN-02.
 
-### ACC-05 · Apprendre le C pour coder des jeux
+### ACC-05 · Apprendre le C, pour passer ensuite au C++ et coder des jeux
 
 - **Priorité** : élargi · **Méthode** : IMG, à générer (image)
 - **Emplacement** : `/` · 01, vers 13 ans _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Apprendre le C pour coder des jeux
-- **Composition** : Vieux PC allumé, tutoriel ouvert, listing illisible, croquis de niveau de jeu épinglé au mur (sans manette de marque)
+- **Sujet** : Apprendre le C, pour passer ensuite au C++ et coder des jeux
+- **Composition** : Vieux PC allumé dans une chambre d’adolescent, tutoriel de programmation ouvert, listing illisible, croquis de niveau de jeu épinglé au mur (sans manette de marque)
 - **Format** : 4:3, 1600 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-05_1600x1200.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Apprendre le C pour coder des jeux »
@@ -274,7 +277,7 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Priorité** : socle · **Méthode** : FIG, à coder (figure de données), rien à générer
 - **Emplacement** : `/` · 01, Gwent _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Le plafond puis le saut
-- **Composition** : Figure existante FigurePlafond.astro, agrandie, sans « Fig. 1 », tracée à l’arrivée
+- **Composition** : Figure existante FigurePlafond.astro, agrandie, sans « Fig. 1 » : courbe à l’encre tracée à l’arrivée, plateau de quatre mois grisé, percée au laiton le jour et à la lanterne la nuit ; se rejoue au clic
 - **Format** : 16:9
 - **Fichier attendu** : `site/src/components/accueil/FigurePlafond.astro`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Le plafond puis le saut »
@@ -293,22 +296,24 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 ### ACC-08 · Les portes qui ne s’ouvrent pas
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/` · 01, les portes _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/` · 01, les portes : scène « Des voies essayées, puis une réorientation », rejouable au clic ; intitulés des cinq portes en HTML dessous _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Les portes qui ne s’ouvrent pas
-- **Composition** : Couloir de quatre portes fermées, une cinquième entrouverte sur la lumière, sans inscription (intitulés en HTML dessous)
-- **Format** : 21:9, 2100 × 900 ; recadrage 4:5 mobile (recadrage mobile 4:5)
+- **Composition** : Un mur vu de face, droit, sans perspective : cinq portes alignées de gauche à droite, chacune au centre de son cinquième de la largeur ; les quatre premières, de formes et d’époques différentes, restent fermées ; la cinquième, à droite, est entrouverte et laisse passer la lumière d’une lanterne posée derrière elle (vers 90 % de la largeur et 52 % de la hauteur), qui s’étale sur le sol ; aucune inscription ni plaque, les intitulés sont en HTML sous chaque porte
+- **Format** : 21:9, 2100 × 900
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-08_2100x900.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Les portes qui ne s’ouvrent pas »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Cinq portes alignées : quatre restent fermées, la cinquième s’entrouvre sur la lumière. »
+- **Note** : Même cadrage 21:9 sur mobile, qui garde les cinq portes alignées sur leurs intitulés (le recadrage 4:5 du cahier les coupait). Scène animée de l’accueil, comme ACC-03.
 
 ### ACC-09 · Le programme bouclé en un mois
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/` · 01, la voie qui marche _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/` · 01, la voie qui marche : scène « Un mois pour parcourir le programme DWWM », rejouable au clic _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Le programme bouclé en un mois
-- **Composition** : Composition validée le 2026-10-08 : chronomètre, grands dossiers en perspective, rouleau de diplôme noué
+- **Composition** : Composition validée le 2026-10-08 : un grand chronomètre posé au-dessus de trois grands dossiers empilés en perspective, ses aiguilles presque revenues à leur point de départ ; devant, un rouleau de diplôme noué d’un ruban et scellé ; une lanterne à gauche (vers 22 % de la largeur et 40 % de la hauteur) éclaire le rouleau ; cadran sans chiffre, dossiers sans inscription
 - **Format** : 4:3, 1600 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-09_1600x1200.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Le programme bouclé en un mois »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un chronomètre posé sur trois grands dossiers, devant un rouleau de diplôme noué. »
+- **Note** : Scène animée de l’accueil, comme ACC-03.
 
 ### ACC-10 · −30 % de temps de traitement
 
@@ -323,12 +328,13 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 ### ACC-11 · La classe vue depuis le pupitre du formateur
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/` · 01, de l’autre côté du bureau _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/` · 01, de l’autre côté du bureau : scène « Passer de l’apprenant au formateur », rejouable au clic _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : La classe vue depuis le pupitre du formateur
-- **Composition** : Une dizaine de postes, silhouettes de dos, tableau couvert d’un schéma front / API / base
+- **Composition** : Une salle de formation vue de trois quarts depuis l’estrade, derrière l’épaule du formateur : au premier plan, le pupitre et la silhouette du formateur, de dos ; devant lui, une dizaine de postes en deux rangées, des apprenants en silhouettes sans visage, penchés sur leurs écrans ; au mur, un tableau couvert d’un schéma de trois blocs reliés (interface, service, base de données) dessiné au trait, sans aucun mot ; une lanterne posée sur le pupitre (vers 30 % de la largeur et 70 % de la hauteur) éclaire la salle depuis l’avant
 - **Format** : 4:3, 1600 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-11_1600x1200.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « La classe vue depuis le pupitre du formateur »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une salle de formation vue depuis le pupitre : une dizaine de postes, un tableau couvert d’un schéma. »
+- **Note** : Scène animée de l’accueil, comme ACC-03.
 
 ### ACC-12 · « Une dizaine, tous titrés »
 
@@ -349,26 +355,29 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Format** : 16:10
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-13_1600x1000.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Captures de League Of Data Base, de Bloodborne Legendary Run et de gup »
+- **Note** : Posées sur l’accueil avec les trois captures réelles existantes, annotées d’une cible, d’une loupe et d’une légende (components/accueil/ProjetsConstruits.astro). Ce fichier composé ne sert plus qu’à une éventuelle image de partage.
 
 ### ACC-14 · La flamme qui se transmet
 
-- **Priorité** : élargi · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/` · 02, à plusieurs, en tête _(contexte : ne pas le recopier dans un prompt)_
+- **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
+- **Emplacement** : `/` · 02, du solo au collectif : scène « Une lanterne allumée en allume d’autres », rejouable au clic _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : La flamme qui se transmet
-- **Composition** : Trois lanternes de tailles proches, la flamme passe de gauche à droite (dessin validé le 2026-10-08), discret, au service du chiffre
-- **Format** : 21:9, 2100 × 900
-- **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-14_2100x900.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « La flamme qui se transmet »
+- **Composition** : Trois lanternes de même modèle posées sur une ligne de sol, la première allumée ; une étincelle part de sa flamme et allume la deuxième, puis la troisième (dessin validé le 2026-10-08) ; trajets en pointillé ; calques séparés (lanternes au trait, lumières, étincelles) que le site anime
+- **Format** : 4:3, viewBox 320 × 240
+- **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-14.svg`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Trois lanternes : la première, allumée, passe sa flamme à la deuxième, puis à la troisième. »
+- **Note** : Livré le 13 octobre 2026 : un seul fichier à calques, inséré dans la page et animé en CSS (components/accueil/SceneLanternes.astro), comme la lanterne de la bascule (GLO-03). Remplace la commande d’image 21:9 du cahier.
 
 ### ACC-15 · Les quatre gestes
 
 - **Priorité** : socle · **Méthode** : IMG, rien à produire, le fichier est celui d’un autre emplacement
-- **Emplacement** : `/` · 02, à plusieurs _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/` · 02, du solo au collectif : les quatre gestes de la semaine _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Les quatre gestes
 - **Composition** : Réutilise les quatre cartes de gestion de projet de la page PvZ Fusion : organiser (PVZ-05), livrer (PVZ-07), motiver (PVZ-08), remercier (PVZ-11)
 - **Format** : 1:1
 - **Fichier attendu** : aucun, reprend `PVZ-05`, `PVZ-07`, `PVZ-08`, `PVZ-11`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Les quatre gestes »
+- **Note** : Posé en quatre vignettes de 64 à 88 px (components/accueil/GestesPole.astro), avec les textes de config/pvz-fusion.ts.
 
 ### ACC-16 · La lanterne posée sur un livre ouvert, un chemin éclairé devant
 
@@ -380,6 +389,83 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-16_1920x1080.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « La lanterne posée sur un livre ouvert, un chemin éclairé devant »
 - **Note** : Reprend ILL-08 de docs/assets-a-generer.md.
+
+### ACC-17 · Le système qui communique
+
+- **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
+- **Emplacement** : `/` · 02, aujourd’hui, à côté du métier : scène « Un petit système, en plan », qui communique en boucle tant qu’elle est visible _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Le système qui communique
+- **Composition** : Plan au trait d’un petit système : un poste client à gauche, un service au centre, une base de données à droite et une fenêtre livrée en haut à droite, reliés par des liaisons à angle droit et un chemin de retour en pointillé ; des messages, points de lumière, circulent dans l’ordre requête, données, réponse, livraison ; calques séparés (trait, aplats, lumière) que le site anime
+- **Format** : 4:3, viewBox 320 × 240
+- **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-17.svg`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un petit système en plan : un poste, un service, une base de données et une livraison, reliés par des messages qui circulent. »
+- **Note** : Livré le 13 octobre 2026 : le dessin de l’ancienne vignette « architecte », redessiné dans le système « Lanterne » et animé en boucle en CSS (components/accueil/SceneSysteme.astro). La boucle s’arrête hors de l’écran, dans un onglet masqué et en mouvement réduit.
+
+### ACC-18 · Lire le jeu
+
+- **Priorité** : socle · **Méthode** : IMG, à générer (image)
+- **Emplacement** : `/` · 01, Gwent, la méthode : carte 1 « Lire le jeu », illustration dans la fenêtre du cadre de carte codé _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Lire le jeu
+- **Composition** : Illustration de carte en hauteur : au sommet d’une colline, une silhouette de dos, sans visage, observe à la loupe une citadelle et des champs en damier en contrebas ; quelques repères en croix posés sur le paysage ; une lanterne posée à ses pieds (vers 35 % de la largeur et 72 % de la hauteur) éclaire la lentille ; ciel de nuit calme ; rien d’important dans les 8 % du bord, que recouvre le cadre de carte ; aucune carte, aucun personnage, aucun symbole ni décor d’un jeu existant
+- **Format** : 2:3, 1200 × 1800
+- **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-18_1200x1800.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une silhouette observe une citadelle à la loupe, éclairée par sa lanterne. »
+- **Note** : Série de trois cartes (ACC-18 à ACC-20) : même cadrage, même lumière, même main. Le cadre ouvragé, la valeur et le titre restent codés (components/accueil/FigureGwent.astro) ; la lumière part de la lanterne à l’arrivée de la carte puis à chaque clic. Affichée de 108 à 200 px de large : sujet principal au centre, lisible en petit.
+
+### ACC-19 · Tester mes idées
+
+- **Priorité** : socle · **Méthode** : IMG, à générer (image)
+- **Emplacement** : `/` · 01, Gwent, la méthode : carte 2 « Tester mes idées », illustration dans la fenêtre du cadre de carte codé _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Tester mes idées
+- **Composition** : Illustration de carte en hauteur : sur une table, trois feuilles d’essai qui se chevauchent, la première barrée d’une croix, la deuxième annotée, la troisième en cours et cochée ; une plume qui écrit sur la dernière, un encrier à côté ; une lanterne en haut à droite (vers 70 % de la largeur et 24 % de la hauteur) éclaire la feuille cochée ; rien d’important dans les 8 % du bord ; aucune écriture lisible, aucun symbole d’un jeu existant
+- **Format** : 2:3, 1200 × 1800
+- **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-19_1200x1800.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Trois feuilles d’essai, la première barrée, la dernière cochée sous la plume. »
+- **Note** : Deuxième carte de la série ACC-18 à ACC-20.
+
+### ACC-20 · Prendre le contre-pied
+
+- **Priorité** : socle · **Méthode** : IMG, à générer (image)
+- **Emplacement** : `/` · 01, Gwent, la méthode : carte 3 « Prendre le contre-pied », illustration dans la fenêtre du cadre de carte codé _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Prendre le contre-pied
+- **Composition** : Illustration de carte en hauteur : un large chemin battu monte vers la droite, vide ; un sentier neuf part à contre-sens vers la gauche, éclairé par une lanterne tenue à bout de bras par une silhouette de dos, sans visage (vers 40 % de la largeur et 46 % de la hauteur) ; arbres en silhouette de part et d’autre, montagne dans l’ombre au fond ; rien d’important dans les 8 % du bord ; aucun symbole d’un jeu existant
+- **Format** : 2:3, 1200 × 1800
+- **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-20_1200x1800.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une silhouette éclaire à la lanterne un sentier qui part à contre-sens du chemin battu. »
+- **Note** : Troisième carte de la série ACC-18 à ACC-20.
+
+### ACC-21 · Accueillir les nouveaux
+
+- **Priorité** : socle · **Méthode** : IMG, à générer (image)
+- **Emplacement** : `/` · 02, du solo au collectif : scène 1 « Accueillir », rejouable au clic _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Accueillir les nouveaux
+- **Composition** : Une porte ouverte sur une pièce de travail ; sur le seuil, une silhouette accueille d’un geste de la main une nouvelle venue qui arrive avec un sac en bandoulière ; quelques traces de pas mènent à la porte ; une lanterne accrochée au chambranle (vers 46 % de la largeur et 24 % de la hauteur) éclaire l’arrivante ; silhouettes sans visage, aucune inscription
+- **Format** : 3:2, 1800 × 1200
+- **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-21_1800x1200.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une silhouette accueille une nouvelle venue sur le seuil d’une porte éclairée. »
+- **Note** : Série de trois scènes (ACC-21 à ACC-23) : même décor et mêmes silhouettes d’une scène à l’autre. Affichées de 140 à 340 px de large : sujet principal au centre, sans détail fin. La lumière part de la lanterne à l’arrivée puis à chaque clic (components/accueil/FigureCollectif.astro).
+
+### ACC-22 · Former et relire
+
+- **Priorité** : socle · **Méthode** : IMG, à générer (image)
+- **Emplacement** : `/` · 02, du solo au collectif : scène 2 « Former et relire », rejouable au clic _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Former et relire
+- **Composition** : Deux silhouettes côte à côte à une même table, penchées sur une feuille : l’une montre une ligne du doigt, l’autre la corrige au crayon ; une coche dans la marge ; une lanterne posée sur la table, entre elles (vers 50 % de la largeur et 56 % de la hauteur), éclaire la feuille ; silhouettes sans visage, aucune écriture lisible
+- **Format** : 3:2, 1800 × 1200
+- **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-22_1800x1200.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Deux silhouettes relisent ensemble une feuille ; l’une la corrige au crayon. »
+- **Note** : Deuxième scène de la série ACC-21 à ACC-23.
+
+### ACC-23 · Contribuer en autonomie
+
+- **Priorité** : socle · **Méthode** : IMG, à générer (image)
+- **Emplacement** : `/` · 02, du solo au collectif : scène 3 « Contribuer en autonomie », rejouable au clic _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Contribuer en autonomie
+- **Composition** : Une silhouette seule à son poste, de trois quarts dos, envoie une feuille terminée qui rejoint une petite pile de feuilles cochées sur une étagère ; sa propre lanterne, posée à côté de l’écran (vers 30 % de la largeur et 48 % de la hauteur), est allumée ; silhouette sans visage, écran sans interface lisible
+- **Format** : 3:2, 1800 × 1200
+- **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-23_1800x1200.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une silhouette, seule à son poste, envoie une feuille qui rejoint une pile de feuilles cochées. »
+- **Note** : Troisième scène de la série ACC-21 à ACC-23.
 
 ## Projets (hub)
 
