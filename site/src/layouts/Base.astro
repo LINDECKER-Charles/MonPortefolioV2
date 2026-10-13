@@ -16,6 +16,11 @@
  *
  * `sommaire` : les sections de la page, proposées par le bouton « Sommaire »
  * de l'en-tête sur mobile et tablette.
+ *
+ * `titre` : le titre court de la page ; le <title> et og:title suivent un seul
+ * gabarit, « Titre — Charles Lindecker » (lib/seo.ts, titreDePage). Le JSON-LD
+ * décrit la page, Charles, le fil d’Ariane (BreadcrumbList) et, sur une page
+ * de projet, le projet lui-même.
  */
 import { existsSync } from 'node:fs';
 import path from 'node:path';
@@ -26,7 +31,7 @@ import photo from '../assets/photos/charles-4.webp';
 import { SITE } from '../config/site';
 import { visuelParId } from '../config/visuels';
 import type { EntreeSommaire } from '../config/navigation';
-import { absolue, jsonLd, noeudPage, noeudPersonne } from '../lib/seo';
+import { absolue, jsonLd, noeudAriane, noeudPage, noeudPersonne, noeudProjet, titreDePage } from '../lib/seo';
 import '../styles/global.css';
 
 interface Props {
@@ -42,8 +47,11 @@ interface Props {
   sommaire?: readonly EntreeSommaire[];
 }
 
-const { titre, description, chemin, horsIndex = false, accueil = false, sommaire } = Astro.props;
+const { titre: titreDonne, description, chemin, horsIndex = false, accueil = false, sommaire } = Astro.props;
+const titre = titreDePage(titreDonne, chemin);
 const canonique = absolue(chemin);
+/** La barre du navigateur mobile : bleu roi le jour, suie la nuit. */
+const COULEUR_NUIT = '#0b0d12';
 /* L’image de partage de la direction « Lanterne » (GLO-07) dès qu’elle est
    livrée, avec l’alt du registre (« mode d’emploi » n’y reste qu’en clin
    d’œil, décision du 13/10/2026). D’ici là, l’image actuelle, que son alt
@@ -60,10 +68,14 @@ const imagePartage = {
 let donnees: string | undefined;
 if (!horsIndex) {
   const portrait = await getImage({ src: photo, width: 800, format: 'jpg', quality: 80 });
-  donnees = jsonLd([
-    noeudPage({ chemin, titre, description }),
-    noeudPersonne({ url: absolue(portrait.src), largeur: 800, hauteur: Math.round((800 * photo.height) / photo.width) }),
-  ]);
+  donnees = jsonLd(
+    [
+      noeudPage({ chemin, titre, description }),
+      noeudPersonne({ url: absolue(portrait.src), largeur: 800, hauteur: Math.round((800 * photo.height) / photo.width) }),
+      noeudAriane(chemin, titreDonne),
+      noeudProjet(chemin, description),
+    ].filter((noeud): noeud is NonNullable<typeof noeud> => Boolean(noeud)),
+  );
 }
 ---
 
@@ -85,7 +97,8 @@ if (!horsIndex) {
       )
     }
     <meta name="author" content={SITE.nom} />
-    <meta name="theme-color" content={SITE.couleurTheme} />
+    <meta name="theme-color" content={SITE.couleurTheme} media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content={COULEUR_NUIT} media="(prefers-color-scheme: dark)" />
     <meta property="og:type" content={chemin === '/' ? 'profile' : 'website'} />
     <meta property="og:site_name" content={SITE.nom} />
     <meta property="og:locale" content={SITE.locale} />
