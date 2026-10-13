@@ -39,8 +39,10 @@ async function plusRecent(dossier) {
   } catch {
     return 0;
   }
+  // Les dossiers comptent aussi : supprimer un fichier en change la date.
+  max = await mtime(dossier);
   for (const e of entrees) {
-    if (e.isFile()) max = Math.max(max, await mtime(path.join(e.parentPath, e.name)));
+    if (e.isFile() || e.isDirectory()) max = Math.max(max, await mtime(path.join(e.parentPath, e.name)));
   }
   return max;
 }
