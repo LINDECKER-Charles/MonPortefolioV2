@@ -11,7 +11,8 @@
  *
  * Les faits d’hébergement viennent des mentions de la V1. Durée de la session
  * (12 h) : backend/src/admin.rs. Durée du journal : relevé de l’administration
- * du serveur, à faire confirmer par Charles (aucune source dans ce dépôt).
+ * du serveur, marquée « à confirmer » (aucune source dans ce dépôt), comme
+ * l’auteur des photographies et la cession de leurs droits.
  * Ce qui n’est pas encore établi (durée de conservation des messages, service
  * d’envoi des notifications) reste marqué « à confirmer ». Texte à faire
  * relire par Charles.
@@ -21,6 +22,7 @@ import FilAriane from '../components/pages/FilAriane.astro';
 import NavigationPage from '../components/pages/NavigationPage.astro';
 import AConfirmer from '../components/ui/AConfirmer.astro';
 import { CONTACT, SITE } from '../config/site';
+import { attributsMesure } from '../lib/liens';
 
 const majour = { iso: '2026-10-13', texte: '13 octobre 2026' };
 const SECTIONS = [
@@ -32,6 +34,8 @@ const SECTIONS = [
   { id: 'credits', titre: 'Crédits' },
 ] as const;
 const courriel = `mailto:${CONTACT.email}`;
+const HOSTINGER = 'https://www.hostinger.fr';
+const CNIL = 'https://www.cnil.fr/fr/plaintes';
 ---
 
 <Base
@@ -64,7 +68,7 @@ const courriel = `mailto:${CONTACT.email}`;
         <h2 id="hebergement-titre">Hébergement</h2>
         <p>
           Le site est servi par un serveur privé virtuel loué à Hostinger International Ltd., 61 Lordou Vironos Street,
-          6023 Larnaca, Chypre (<a href="https://www.hostinger.fr" rel="external">hostinger.fr<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>). Le logiciel du serveur, du site
+          6023 Larnaca, Chypre (<a href={HOSTINGER} rel="external" {...attributsMesure(HOSTINGER, { emplacement: 'mentions' })}>hostinger.fr<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>). Le logiciel du serveur, du site
           aux certificats de sécurité, est administré par l’éditeur.
         </p>
       </section>
@@ -92,7 +96,7 @@ const courriel = `mailto:${CONTACT.email}`;
               <tr>
                 <th scope="row" data-titre="Donnée">Journal du serveur (adresse IP, page demandée, navigateur)</th>
                 <td data-titre="Pourquoi">Sécurité et diagnostic des pannes</td>
-                <td data-titre="Combien de temps" class="chiffres">90&nbsp;jours</td>
+                <td data-titre="Combien de temps" class="chiffres">90&nbsp;jours<AConfirmer titre="Durée du journal du serveur à confirmer par Charles" /></td>
                 <td data-titre="Qui la reçoit">L’éditeur</td>
               </tr>
               <tr>
@@ -126,7 +130,7 @@ const courriel = `mailto:${CONTACT.email}`;
             Vous pouvez demander l’accès à vos données, leur correction ou leur effacement en écrivant à
             <a href={courriel} data-umami-event="contact-email" data-umami-event-emplacement="mentions">{CONTACT.email}<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>.
             En cas de désaccord, vous pouvez saisir la
-            <a href="https://www.cnil.fr/fr/plaintes" rel="external">CNIL<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>.
+            <a href={CNIL} rel="external" {...attributsMesure(CNIL, { emplacement: 'mentions' })}>CNIL<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>.
           </li>
         </ul>
       </section>
@@ -181,10 +185,16 @@ const courriel = `mailto:${CONTACT.email}`;
       <section id="credits" aria-labelledby="credits-titre">
         <h2 id="credits-titre">Propriété intellectuelle et crédits</h2>
         <p>
-          Les textes, photographies et illustrations du site appartiennent à {SITE.nom}, sauf mention contraire. Les noms
+          Les textes et illustrations du site appartiennent à {SITE.nom}, sauf mention contraire. Les noms
           de jeux et de logiciels cités appartiennent à leurs détenteurs.
         </p>
         <dl class="credits">
+          <div>
+            <dt>Photographies</dt>
+            <dd>
+              Portraits de {SITE.nom}, issus d’une séance photo&nbsp;: auteur et droits<AConfirmer titre="Nom du photographe et cession des droits à confirmer par Charles" />.
+            </dd>
+          </div>
           <div>
             <dt>Polices</dt>
             <dd>

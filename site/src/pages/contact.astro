@@ -8,8 +8,10 @@
  * Le formulaire est un contrat : ses `id`, ses `data-*`, le piège à robots, le
  * repli `mailto:` sans JavaScript et le JSON `{ name, email, subject, message,
  * website }` restent ceux que scripts/contact.ts et tests/e2e/contact.spec.ts
- * attendent. Les puces de sujet ne font que remplir le champ « Le sujet »
- * (scripts/contact-sujets.ts) ; le panneau de réussite et la patience
+ * attendent. Sans JavaScript, les champs et l’envoi ne s’affichent pas
+ * ([data-js-seulement]) : le <noscript> et son lien `mailto:` sont la seule
+ * voie, plutôt qu’un message écrit pour rien. Les puces de sujet ne font que
+ * remplir le champ « Le sujet » (scripts/contact-sujets.ts) ; le panneau de réussite et la patience
  * s’affichent en CSS selon l’état que le script pose sur le message d’état.
  */
 import Base from '../layouts/Base.astro';
@@ -48,9 +50,9 @@ const profils = [
           <Visuel id="CON-01" alt="" class="contact__signe" sizes="96px" loading="eager" />
         </div>
         <form method="post" action="/api/contact" data-contact-form aria-labelledby="formulaire-titre">
-          <p class="contact-obligatoire"><span class="contact-requis" aria-hidden="true">*</span> Tous les champs sont obligatoires.</p>
-          <noscript><p class="contact-sans-js">Activez JavaScript pour utiliser le formulaire, ou <a href={MAILTO} data-umami-event="contact-email" data-umami-event-emplacement="contact">écrivez-moi directement par e-mail<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>.</p></noscript>
-          <fieldset class="contact-champs">
+          <noscript><p class="contact-sans-js">Le formulaire a besoin de JavaScript&nbsp;: <a href={MAILTO} data-umami-event="contact-email" data-umami-event-emplacement="contact">écrivez-moi directement par e-mail<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>.</p></noscript>
+          <p class="contact-obligatoire" data-js-seulement><span class="contact-requis" aria-hidden="true">*</span> Tous les champs sont obligatoires.</p>
+          <fieldset class="contact-champs" data-js-seulement>
             <legend class="sr">Votre message</legend>
             <div class="contact-identite">
               <div class="contact-champ">
@@ -85,7 +87,7 @@ const profils = [
               <input id="contact-website" name="website" tabindex="-1" aria-hidden="true" autocomplete="off" />
             </div>
           </fieldset>
-          <div class="contact-envoi">
+          <div class="contact-envoi" data-js-seulement>
             <button class="bouton" type="submit" disabled data-pli="action"><span class="contact-attente" data-contact-spinner aria-hidden="true" hidden></span><span data-contact-submit-label>Envoyer le message</span><Picto nom="interface/email" /></button>
             <p class="contact-confidentialite">Vos coordonnées et votre message servent seulement à vous répondre. <a href="/mentions-legales#donnees">À propos de vos données</a>.</p>
           </div>
@@ -156,7 +158,9 @@ const profils = [
       'moi lettre';
     gap: var(--s7) clamp(40px, 6vw, 96px);
     align-items: start;
-    padding-block: var(--s4) var(--s8);
+    /* « Pour continuer » apporte sa propre marge (--entre-sections) : pas
+       de vide de plus sous le formulaire. */
+    padding-block: var(--s4) 0;
   }
 
   .contact__tete { grid-area: tete; }
@@ -184,6 +188,15 @@ const profils = [
     gap: var(--s4) var(--s5);
     padding-top: var(--s6);
     border-top: 1px solid var(--trait);
+  }
+
+  /* Sur ordinateur, la carte d’identité accompagne la lecture du formulaire,
+     plus long qu’elle : la page ne paraît pas s’arrêter sous elle. */
+  @media (min-width: 861px) {
+    .contact__moi {
+      position: sticky;
+      top: calc(var(--entete) + var(--s5));
+    }
   }
 
   .contact__portrait {
@@ -622,7 +635,6 @@ const profils = [
         'lettre'
         'moi';
       gap: var(--s6);
-      padding-bottom: 0;
     }
 
     .contact__tete h1 {

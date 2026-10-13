@@ -342,6 +342,9 @@ test.describe('sans JavaScript', () => {
     expect(decodeURIComponent(href ?? '').split('?')[0]).toBe(`mailto:${CONTACT_EMAIL}`);
     await expect(page.locator('.contact-sans-js')).toBeVisible();
     await expect(page.locator('.contact-sans-js')).toContainText(/JavaScript/);
-    await expect(page.getByRole('button', { name: 'Envoyer le message', exact: true })).toBeDisabled();
+    // Les champs et l’envoi ne s’affichent pas : rien ne s’écrit pour rien.
+    await expect(page.locator('fieldset.contact-champs')).toBeHidden();
+    await expect(page.locator('.contact-envoi')).toBeHidden();
+    await expect(page.locator('[data-contact-form] button[type="submit"]')).toBeDisabled();
   });
 });
