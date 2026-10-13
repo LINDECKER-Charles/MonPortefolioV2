@@ -1,9 +1,10 @@
 # MonPortefolioV2
 
-Portfolio de Charles Lindecker, version 2 : un **mode d'emploi**. L'accueil raconte, de haut en
-bas, l’origine, aujourd’hui, puis « La suite, à plusieurs » : une invitation au contact et à la
-contribution open source. Cette nouvelle conclusion est un essai autorisé le 2026-10-08,
-à évaluer. Pages produites par [Astro](https://astro.build), servies par un petit serveur
+Portfolio de Charles Lindecker, version 2, dans la direction visuelle **« Lanterne »** retenue le
+2026-10-13 ([`DESIGN.md`](DESIGN.md)) : une seule source de lumière, ce qui compte est éclairé.
+L'accueil raconte, de haut en bas, l’origine, aujourd’hui, puis « La suite, à plusieurs » :
+Maîtriser, Réinventer, puis Emmener, la preuve la plus forte, et l’invitation « Discutons » vers
+`/contact`. Pages produites par [Astro](https://astro.build), servies par un petit serveur
 Node sans dépendance, en conteneur derrière l'edge TLS mutualisé du VPS. Les publications du blog
 sont rendues à la demande à partir des contenus persistés, sans reconstruction du site.
 
@@ -92,18 +93,21 @@ l’API et sauvegarde de la base : [`backend/README.md`](backend/README.md).
 
 ## Pages et contenu
 
-L’accueil garde le récit. Les pages `/projets`, `/parcours`, `/contact` et `/blog` sont accessibles
-depuis la navigation et reliées entre elles. L’essai de conclusion conserve trois chapitres :
-`origine`, `aujourdhui` et `discutons` (03, « La suite, à plusieurs »). Les sections séparées de
-preuves et de loisirs sont retirées ; les réalisations continuent à étayer le récit. Le CTA
-principal « Parlons de votre projet » ouvre `/contact`, et « Contribuer à mes projets open source »
-ouvre le profil GitHub public en attendant un parcours de contribution sur Projets. La navigation
-finale « Pour aller plus loin » mène à Projets, Parcours et Blog.
+L’accueil garde le récit, dans ses trois chapitres `origine`, `aujourdhui` et `discutons`. Le
+premier écran porte l’accroche, l’identité et le bandeau des trois preuves (Maîtriser, Réinventer,
+Emmener). « La suite, à plusieurs » est un acte bleu nuit : les trois règles apparaissent de 1 à 3,
+puis « Discutons → » sur un aplat bleu roi mène à `/contact`, et « Contribuer à mes projets open
+source » mène au bloc « Contribuer » de la vitrine (`/projets#contribuer`). La navigation finale
+« Pour aller plus loin » mène à Projets, Parcours et Blog. Les pages `/projets`, `/parcours`,
+`/contact` et `/blog` sont accessibles depuis la navigation et reliées entre elles.
 
-Les premières études de cas ont chacune un fichier
-Astro dans `site/src/pages/projets/` : `pvz-fusion.astro`, `omnicard.astro`, `gup.astro` et
-`bloodborne-legendary-run.astro`. Leur
-mise en page reste indépendante ; elles partagent seulement le cadre et les composants utiles.
+Les cinq pages de projet (`site/src/pages/projets/`) suivent l’ordre de la vitrine : PvZ Fusion,
+League Of Data Base, Omnicard, Bloodborne Legendary Run et gup. Elles partagent le gabarit de
+`site/src/components/projets/gabarit/` : un en-tête commun (nom canonique, étiquette de preuve,
+fiche technique en tableau à filets, un à trois repères chiffrés sourcés et datés), un corps libre
+avec sa navigation de page, « Comment je l’ai construit », une sortie commune (projet précédent et
+suivant, « Discutons ») et une note de sources. Le corps reste propre à chaque projet ; ses
+données sont dans `site/src/config/<projet>.ts`.
 
 La page `/parcours` est un hub vers `/parcours/professionnel`, `/parcours/competences` et
 `/parcours/formation`. Ces trois pages partagent le gabarit `site/src/layouts/Parcours.astro`,
@@ -119,10 +123,11 @@ Les illustrations SVG de
 `site/src/components/parcours/VisuelFormation.astro` suivent les thèmes jour/nuit et
 l’impression. Les cursus suivis et le programme CDA étudié sont distingués des titres obtenus.
 
-Pour ajouter un projet, créer sa page statique, l’inscrire dans l’index des projets et dans
-`site/src/pages/sitemap.xml.ts`, puis ajouter son adresse à `PAGES` dans le support des tests
-navigateur. Le build vérifie les liens internes et la cohérence du sitemap. Les descriptions
-doivent faire 110 à 165 caractères, les titres 65 caractères au plus.
+Pour ajouter une page, l’inscrire dans `site/src/config/pages.ts` : le sitemap et la liste des
+pages des tests navigateur en découlent. Pour ajouter un projet à la vitrine, l’ajouter aussi à
+`VITRINE` (`site/src/config/projets.ts`, ordre, nom canonique et étiquette de preuve) et sa carte à
+`site/src/config/vitrine.ts`. Le build vérifie les liens internes et la cohérence du sitemap. Les
+descriptions doivent faire 110 à 165 caractères, les titres 65 caractères au plus.
 
 Le blog se gère dans **`/backoffice/blog`**, avec une liste filtrable et des liens vers chaque
 article. Quatre pages distinctes partagent la version de travail : **Rédaction**, **Images**,
@@ -158,21 +163,25 @@ d’architecture fait circuler des messages en boucle
 tant qu’il est visible ; les trois règles apparaissent dans l’ordre. Avec mouvement réduit,
 sans JavaScript ou à l’impression, les illustrations restent complètes.
 
-Le hub `/projets` commence par un projet à la une, puis oriente vers « Jouer et explorer » ou
-« Simplifier le quotidien » par des ancres vers deux sections toujours visibles. Sa sélection comprend GUP, Bloodborne Legendary Run et PVZF
-Translation. Les données de la sélection et le choix éditorial de la vedette se règlent dans
-`site/src/config/projets.ts`. La vedette et les cartes montrent des captures statiques et mènent
-directement aux pages des projets, sans fenêtre d’aperçu. Les démonstrations restent sur les
-pages dédiées : GUP utilise les données d’exemple de son dépôt et Bloodborne montre de vraies
-captures, agrandissables au clic. Les trois écrans de reprise de partie sont présentés entiers,
-sans recadrage, et occupent une ligne chacun sur téléphone. Les nouvelles captures
-Bloodborne et GUP proviennent de leurs interfaces locales sur données d’exemple ; leur
-provenance est détaillée dans `site/src/assets/projets/README.md`.
+Les illustrations à générer sont posées par `<Visuel id="…">` depuis le registre
+`site/src/config/visuels.ts`. Tant que le fichier manque, un cadre hachuré au bon ratio affiche
+la consigne (identifiant, sujet, composition, format). `npm run visuels` liste ce qu’il reste à
+produire et `npm run visuels:doc` régénère [`docs/visuels-a-generer.md`](docs/visuels-a-generer.md),
+la commande de production des images.
+
+Le hub `/projets` commence par l’index des étiquettes de preuve, puis présente les cinq projets
+dans l’ordre de ce qu’ils prouvent, PvZ Fusion en vedette. Chaque carte donne le besoin, un
+chiffre sourcé, le rôle, le statut et les liens publics, et mène à la page du projet (« Voir le
+projet → »). Suivent la rangée « Aussi » (GitHealth, Life Pixel, img-convertor, Shreksophone), le
+volet des projets archivés et le bloc « Contribuer ». Les démonstrations restent sur les pages
+dédiées : gup utilise les données d’exemple de son dépôt et Bloodborne montre de vraies captures,
+agrandissables au clic dans la visionneuse partagée. La provenance des captures est détaillée dans
+`site/src/assets/projets/README.md`.
 
 Le volet « Projets archivés » est replié par défaut et vide pour l’instant. Pour déplacer un projet
-hors de la vitrine, ajouter son nom, son adresse et son résumé dans
-`site/src/config/projets.ts`, puis retirer son entrée de la sélection. Conserver sa page et son
-entrée dans le sitemap pour que les liens existants continuent à fonctionner.
+hors de la vitrine, ajouter son nom, son adresse et son résumé à `PROJETS_ARCHIVES`
+(`site/src/config/projets.ts`), puis retirer son entrée de `VITRINE`. Conserver sa page et son
+entrée dans `site/src/config/pages.ts` pour que les liens existants continuent à fonctionner.
 
 ## Mise en ligne
 
