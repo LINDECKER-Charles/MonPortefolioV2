@@ -30,7 +30,7 @@ export interface DepotPublic {
 
 export const DEPOTS_PUBLICS: readonly DepotPublic[] = [
   { nom: 'PVZF-Translation-fr', usage: 'PvZ Fusion : fork de la traduction française, cité dans la note de méthode', statut: 'lie', verifie: '2026-10-13' },
-  { nom: 'PVZ-Fuzion-ConsolManager', usage: 'PvZ Fusion : outil Console Manager, rattaché à la page PvZ', statut: 'prevu', verifie: '2026-10-13' },
+  { nom: 'PVZ-Fuzion-ConsolManager', usage: 'PvZ Fusion : outil Console Manager, rattaché à la page PvZ', statut: 'lie', verifie: '2026-10-13' },
   { nom: 'LeagueOfDataBaseFinal', usage: 'League Of Data Base : le code, après correction de son README', statut: 'lie', verifie: '2026-10-13' },
   { nom: 'public-Omnicard', usage: 'Omnicard : règles et cartes, seul dépôt Omnicard public', statut: 'lie', verifie: '2026-10-13' },
   { nom: 'gup', usage: 'gup : le code, open source', statut: 'lie', verifie: '2026-10-13' },

@@ -1,0 +1,219 @@
+---
+/**
+ * PVZ-F4 et PVZ-F3 réunies · Mes rôles et les arrivées dans le pôle : trois
+ * jalons datés (traducteur, lead du pôle, mainteneur) et neuf arrivées en
+ * silhouettes anonymes, depuis ROLES et ARRIVEES (config/pvz-fusion.ts,
+ * journaux publics du pôle). Aucun pseudonyme.
+ *
+ * Une scène : elle se joue à son arrivée dans l’écran (les arrivées
+ * apparaissent une à une), puis se rejoue d’un clic sur le dessin ou au
+ * clavier (scripts/figure-animations.ts). Mouvement réduit, impression et
+ * sans JavaScript : l’état final, complet.
+ */
+import { ARRIVEES, ROLES } from '../../../config/pvz-fusion';
+
+const DEBUT = Date.parse('2025-10-01');
+const FIN = Date.parse('2026-10-31');
+
+interface Gabarit {
+  largeur: number;
+  hauteur: number;
+  x0: number;
+  x1: number;
+  axe: number;
+  mois: { date: string; texte: string }[];
+}
+
+const GABARITS: Record<'large' | 'compacte', Gabarit> = {
+  large: {
+    largeur: 560,
+    hauteur: 250,
+    x0: 34,
+    x1: 526,
+    axe: 104,
+    mois: [
+      { date: '2025-10-01', texte: 'oct. 2025' },
+      { date: '2026-01-01', texte: 'janv.' },
+      { date: '2026-04-01', texte: 'avr.' },
+      { date: '2026-07-01', texte: 'juil.' },
+      { date: '2026-10-01', texte: 'oct. 2026' },
+    ],
+  },
+  compacte: {
+    largeur: 360,
+    hauteur: 250,
+    x0: 26,
+    x1: 336,
+    axe: 104,
+    mois: [
+      { date: '2025-10-01', texte: 'oct. 25' },
+      { date: '2026-04-01', texte: 'avr. 26' },
+      { date: '2026-10-01', texte: 'oct. 26' },
+    ],
+  },
+};
+
+const position = (g: Gabarit, date: string) => g.x0 + ((Date.parse(date) - DEBUT) / (FIN - DEBUT)) * (g.x1 - g.x0);
+
+/** Deux arrivées trop proches pour tenir côte à côte s’empilent : la date reste exacte. */
+const ECART = 13;
+const arrivees = (g: Gabarit) => {
+  const fins: number[] = [];
+  return ARRIVEES.map((date) => {
+    const x = position(g, date);
+    let rangee = fins.findIndex((fin) => fin + ECART <= x);
+    if (rangee < 0) rangee = fins.length;
+    fins[rangee] = x;
+    return { x, y: g.axe + 40 + rangee * 22 };
+  });
+};
+
+/** Étiquettes : à gauche du jalon, sauf le dernier, aligné à droite ; le lead plus bas. */
+const jalons = (g: Gabarit) =>
+  ROLES.map((role, index) => {
+    const x = position(g, role.date);
+    const dernier = index === ROLES.length - 1;
+    const haut = index === 1 ? 56 : 20;
+    return { ...role, x, haut, ancre: dernier ? 'end' : 'start', tx: dernier ? x + 6 : x - 6, lead: index === 1 };
+  });
+
+/** La hauteur suit le nombre de rangées d’arrivées : la note reste sous les silhouettes. */
+const versions = (['large', 'compacte'] as const).map((nom) => {
+  const base = GABARITS[nom];
+  const bas = Math.max(...arrivees(base).map(({ y }) => y)) + 16;
+  return { nom, g: { ...base, hauteur: bas + 4 } };
+});
+---
+
+<button type="button" class="scene equipe" data-scene="pvz-equipe" data-rejouer data-figure-animation aria-label="Rejouer l’animation : mes rôles et les arrivées dans le pôle">
+  {
+    versions.map(({ nom, g }) => (
+      <svg class:list={['equipe__dessin', `version-${nom}`]} viewBox={`0 0 ${g.largeur} ${g.hauteur}`} aria-hidden="true" focusable="false">
+        <line class="eq-ligne" x1={g.x0} y1={g.axe} x2={g.x1} y2={g.axe} />
+        {g.mois.map((m) => {
+          const x = position(g, m.date);
+          return (
+            <>
+              <line class="eq-ligne" x1={x} y1={g.axe - 4} x2={x} y2={g.axe + 4} />
+              <text class="eq-mois" x={x} y={g.axe + 22} text-anchor="middle">{m.texte}</text>
+            </>
+          );
+        })}
+        {jalons(g).map((j) => (
+          <g class:list={['eq-jalon', { 'eq-jalon--lead': j.lead }]}>
+            <line class="eq-attache" x1={j.x} y1={j.haut + 18} x2={j.x} y2={g.axe - 8} />
+            <circle class="eq-point" cx={j.x} cy={g.axe} r="7" />
+            <text class="eq-titre" x={j.tx} y={j.haut} text-anchor={j.ancre}>{j.titre}</text>
+            <text class="eq-date" x={j.tx} y={j.haut + 15} text-anchor={j.ancre}>{j.libelle}</text>
+          </g>
+        ))}
+        {arrivees(g).map(({ x, y }, index) => (
+          <g class="eq-arrivee" style={`--rang:${index}`}>
+            <circle cx={x} cy={y} r="4.4" />
+            <path d={`M${x - 6.2} ${y + 16}c0-4.2 2.8-7.1 6.2-7.1s6.2 2.9 6.2 7.1z`} />
+          </g>
+        ))}
+      </svg>
+    ))
+  }
+</button>
+
+<style>
+  .scene {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--encre);
+    text-align: inherit;
+  }
+
+  .equipe__dessin {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .version-compacte {
+    display: none;
+  }
+
+  .eq-ligne,
+  .eq-attache {
+    stroke: var(--trait);
+    stroke-width: 1;
+    fill: none;
+  }
+
+  .eq-attache {
+    stroke-dasharray: 2 3;
+  }
+
+  .eq-point {
+    fill: var(--fond);
+    stroke: var(--encre);
+    stroke-width: 1.6;
+  }
+
+  .eq-jalon--lead .eq-point {
+    fill: var(--laiton);
+    stroke: var(--laiton);
+  }
+
+  .eq-mois,
+  .eq-date {
+    fill: var(--eteint);
+    font-family: var(--police-texte);
+    font-size: 13px;
+  }
+
+  .eq-titre {
+    fill: var(--encre);
+    font-family: var(--police-texte);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .eq-arrivee {
+    fill: var(--encre);
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+  }
+
+  .animation-en-cours .eq-arrivee {
+    animation: eq-arriver var(--d-scene) var(--courbe) both;
+    animation-delay: calc(var(--d-scene) + var(--rang) * 110ms);
+  }
+
+  .animation-en-cours .eq-jalon {
+    animation: eq-jalon var(--d-scene) var(--courbe) both;
+  }
+
+  .animation-en-cours .eq-jalon--lead {
+    animation-delay: calc(var(--d-scene) / 2);
+  }
+
+  @keyframes eq-arriver {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.6);
+    }
+  }
+
+  @keyframes eq-jalon {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .version-large {
+      display: none;
+    }
+
+    .version-compacte {
+      display: block;
+    }
+  }
+</style>
