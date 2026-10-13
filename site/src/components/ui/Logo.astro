@@ -9,8 +9,18 @@
  *
  *   <Logo />            emblème et nom (le nom se masque sous 860 px)
  *   <Logo nom={false} /> emblème seul
+ *
+ * Le composant lit les dessins du registre (config/visuels.ts) dès qu’ils
+ * sont livrés, et revient sinon aux images du logo validé
+ * (src/assets/marque) :
+ *   - GLO-01, l’emblème seul redessiné pour les petites tailles, remplace
+ *     l’emblème illustré sous 860 px (en-tête mobile) ;
+ *   - GLO-02, le logo horizontal, remplace l’emblème et le nom au-delà.
+ * Insérés en ligne, ils suivent les jetons : encre le jour, lune la nuit,
+ * flamme de la lanterne.
  */
 import LogoImage from './LogoImage.astro';
+import { svgEnLigne } from '../../lib/visuels';
 import symbole from '../../assets/marque/logo-symbole.webp';
 import nomImage from '../../assets/marque/logo-nom.webp';
 import { cadrages, lumieres } from '../../assets/marque/cadrages.json';
@@ -22,6 +32,9 @@ interface Props {
 }
 
 const { nom = true, class: classe } = Astro.props;
+const dessins = import.meta.glob<string>('/src/assets/visuels/global/GLO-0[12].svg', { eager: true, query: '?raw', import: 'default' });
+const emblemeSeul = dessins['/src/assets/visuels/global/GLO-01.svg'];
+const horizontal = dessins['/src/assets/visuels/global/GLO-02.svg'];
 const cadrage = cadrages.symbole;
 const clips = lumieres.map(({ left, top, width, height }) => {
   const haut = ((top - cadrage.top) / cadrage.height) * 100;
@@ -32,9 +45,18 @@ const clips = lumieres.map(({ left, top, width, height }) => {
 });
 ---
 
-<span class:list={['logo', classe]} aria-hidden="true">
-  <span class="logo__embleme"><LogoImage src={symbole} lumieres={clips} /></span>
-  {nom && <span class="logo__nom"><LogoImage src={nomImage} /></span>}
+<span class:list={['logo', { 'logo--compact': emblemeSeul, 'logo--horizontal': nom && horizontal }, classe]} aria-hidden="true">
+  {
+    nom && horizontal ? (
+      <span class="logo__horizontal" set:html={svgEnLigne(horizontal, { alt: '' })} />
+    ) : (
+      <>
+        <span class="logo__embleme"><LogoImage src={symbole} lumieres={clips} /></span>
+        {nom && <span class="logo__nom"><LogoImage src={nomImage} /></span>}
+      </>
+    )
+  }
+  {emblemeSeul && <span class="logo__embleme logo__embleme--seul" set:html={svgEnLigne(emblemeSeul, { alt: '' })} />}
 </span>
 
 <style>
@@ -85,13 +107,51 @@ const clips = lumieres.map(({ left, top, width, height }) => {
     width: 122px;
   }
 
+  .logo__horizontal {
+    display: block;
+    width: 190px;
+    color: var(--encre);
+  }
+
+  /* Les dessins du registre : encre au trait du texte, vitre et flamme de la
+     lanterne. */
+  .logo :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .logo :global(.em-vitre) {
+    fill: var(--suie);
+  }
+
+  .logo :global(.em-lumiere) {
+    fill: var(--lanterne);
+  }
+
+  .logo__embleme--seul {
+    display: none;
+    width: 40px;
+    color: var(--encre);
+  }
+
   @media (max-width: 860px) {
     .logo__embleme {
       width: 44px;
     }
 
-    .logo__nom {
+    .logo__nom,
+    .logo__horizontal {
       display: none;
+    }
+
+    .logo--compact .logo__embleme:not(.logo__embleme--seul) {
+      display: none;
+    }
+
+    .logo--compact .logo__embleme--seul {
+      display: block;
+      width: 40px;
     }
   }
 

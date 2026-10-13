@@ -84,7 +84,7 @@ const images = import.meta.glob<ImageMetadata>(
 /** Les dessins vectoriels, insérés en ligne : ils suivent `currentColor`. */
 const dessins = import.meta.glob<string>('/src/assets/visuels/**/*.svg', { eager: true, query: '?raw', import: 'default' });
 /** L’emblème seul (GLO-01), en filigrane des cadres en attente, dès qu’il est livré. */
-const emblemes = import.meta.glob<string>('/src/assets/visuels/global/GLO-01.svg', { eager: true, query: '?url', import: 'default' });
+const emblemes = import.meta.glob<string>('/src/assets/visuels/global/GLO-01.svg', { eager: true, query: '?url&no-inline', import: 'default' });
 const embleme = emblemes['/src/assets/visuels/global/GLO-01.svg'];
 
 const attendus = fichiersAttendus(visuel);
@@ -97,7 +97,7 @@ const alt = altPropre ?? visuel.alt;
 const ratio = ratioPropre ?? visuel.ratio ?? '16 / 10';
 const ratioMobile = ratioMobilePropre ?? visuel.ratioMobile;
 const brouillon = visuelsEnBrouillon();
-const style = [`--visuel-ratio:${ratio}`, !brouillon && embleme && `--visuel-embleme:url(${embleme})`, ratioMobile && `--visuel-ratio-mobile:${ratioMobile}`, largeur && `--visuel-largeur:${largeur}`].filter(Boolean).join(';');
+const style = [`--visuel-ratio:${ratio}`, !brouillon && embleme && `--visuel-embleme:url("${embleme}")`, ratioMobile && `--visuel-ratio-mobile:${ratioMobile}`, largeur && `--visuel-largeur:${largeur}`].filter(Boolean).join(';');
 const largeurs = image ? [...new Set([Math.round(image.width / 2), image.width])].filter((l) => l >= 320 || l === image.width) : [];
 
 const NATURE = { IMG: 'Image à générer', SVG: 'Dessin à faire', FIG: 'Figure à coder', CAP: 'Capture à faire', PHO: 'Photo réelle', OG: 'Image de partage' } as const;
