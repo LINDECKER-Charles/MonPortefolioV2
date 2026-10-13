@@ -9,7 +9,9 @@
  * Vers la nuit, la nouvelle vue (la nuit) apparaît depuis les bords et se
  * referme sur la lanterne ; vers le jour, elle part de la lanterne et gagne
  * les bords. Deux scènes (800 ms), la courbe du site. Les masques ne lisent
- * que l’opacité : `currentColor`, toujours opaque, y tient lieu de noir.
+ * que l’opacité : `currentColor`, toujours opaque, y tient lieu de noir. Le
+ * centre est la lanterne visible à l’écran (celle de l’en-tête, sur mobile
+ * comme sur ordinateur), mesurée par scripts/theme.ts.
  */
 @property --rayon {
   syntax: '<length>';
@@ -27,27 +29,47 @@
   mix-blend-mode: normal;
 }
 
+/* Le bord du masque est une lumière, pas un fondu gris : l’ancienne vue s’y
+   efface sur 40 px, la nouvelle y apparaît sur les 40 px suivants, et entre
+   les deux passe l’ambre de la lanterne assombri vers la suie (le fond de la
+   paire d’images). Bande de 80 px en tout. */
+:root[data-transition-theme]::view-transition-image-pair(root) {
+  background: color-mix(in srgb, var(--lanterne) 50%, var(--suie));
+}
+
 :root[data-transition-theme='vers-nuit']::view-transition-new(root) {
-  -webkit-mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0%), transparent var(--rayon), currentColor calc(var(--rayon) + 160px));
-  mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0%), transparent var(--rayon), currentColor calc(var(--rayon) + 160px));
+  -webkit-mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0%), transparent calc(var(--rayon) + 40px), currentColor calc(var(--rayon) + 80px));
+  mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0%), transparent calc(var(--rayon) + 40px), currentColor calc(var(--rayon) + 80px));
+  animation: tombee-de-la-nuit calc(var(--d-scene) * 2) var(--courbe) both;
+}
+
+:root[data-transition-theme='vers-nuit']::view-transition-old(root) {
+  -webkit-mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0%), currentColor var(--rayon), transparent calc(var(--rayon) + 40px));
+  mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0%), currentColor var(--rayon), transparent calc(var(--rayon) + 40px));
   animation: tombee-de-la-nuit calc(var(--d-scene) * 2) var(--courbe) both;
 }
 
 :root[data-transition-theme='vers-jour']::view-transition-new(root) {
-  -webkit-mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0%), currentColor var(--rayon), transparent calc(var(--rayon) + 160px));
-  mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0%), currentColor var(--rayon), transparent calc(var(--rayon) + 160px));
+  -webkit-mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0%), currentColor var(--rayon), transparent calc(var(--rayon) + 40px));
+  mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0%), currentColor var(--rayon), transparent calc(var(--rayon) + 40px));
   animation: lever-du-jour calc(var(--d-scene) * 2) var(--courbe) both;
 }
 
-/* Le rayon finit (ou part) sous zéro : le fondu de 160 px se referme
+:root[data-transition-theme='vers-jour']::view-transition-old(root) {
+  -webkit-mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0%), transparent calc(var(--rayon) + 40px), currentColor calc(var(--rayon) + 80px));
+  mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0%), transparent calc(var(--rayon) + 40px), currentColor calc(var(--rayon) + 80px));
+  animation: lever-du-jour calc(var(--d-scene) * 2) var(--courbe) both;
+}
+
+/* Le rayon finit (ou part) sous zéro : la bande de 80 px se referme
    entièrement sur la lanterne, sans tache de l’ancien thème. */
 @keyframes tombee-de-la-nuit {
   from { --rayon: 160vmax; }
-  to { --rayon: -160px; }
+  to { --rayon: -80px; }
 }
 
 @keyframes lever-du-jour {
-  from { --rayon: -160px; }
+  from { --rayon: -80px; }
   to { --rayon: 160vmax; }
 }
 

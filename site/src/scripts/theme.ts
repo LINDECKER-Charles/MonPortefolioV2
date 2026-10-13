@@ -32,6 +32,16 @@ function memoriser(theme: Theme): void {
   }
 }
 
+/** La lanterne qu’on voit : celle qu’on vient de toucher, sinon la première bascule affichée. */
+function lanterneVisible(origine?: Element): DOMRect | undefined {
+  const candidates = [origine, ...document.querySelectorAll('[data-theme-bascule]')];
+  for (const candidate of candidates) {
+    const boite = candidate?.getBoundingClientRect();
+    if (boite && boite.width > 0 && boite.height > 0 && boite.bottom > 0 && boite.top < window.innerHeight) return boite;
+  }
+  return undefined;
+}
+
 function poser(theme: Theme): void {
   document.documentElement.setAttribute('data-theme', theme);
   for (const bouton of document.querySelectorAll<HTMLButtonElement>('[data-theme-bascule]')) {
@@ -70,10 +80,10 @@ export function brancherTheme(): void {
     }
 
     if (typeof document.startViewTransition === 'function') {
-      // Le centre du masque : la lanterne qu’on vient de toucher, sinon le coin
-      // de l’en-tête où elle se trouve.
-      const boite = origine?.getBoundingClientRect();
-      if (boite && boite.width) {
+      // Le centre du masque : la lanterne visible (celle qu’on vient de toucher,
+      // sinon la bascule affichée de l’en-tête), à défaut le coin de l’en-tête.
+      const boite = lanterneVisible(origine);
+      if (boite) {
         racine.style.setProperty('--vt-x', `${Math.round(boite.left + boite.width / 2)}px`);
         racine.style.setProperty('--vt-y', `${Math.round(boite.top + boite.height / 2)}px`);
       }
