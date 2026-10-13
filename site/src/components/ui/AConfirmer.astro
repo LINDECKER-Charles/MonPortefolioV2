@@ -7,7 +7,9 @@
  *   League Of Data Base<AConfirmer titre="Nom officiel à confirmer (Q8)">nom à confirmer</AConfirmer>
  *   <AConfirmer />                                    « à confirmer »
  *
- * Classe : `.a-confirmer` (global.css).
+ * Une espace la précède toujours, dans le texte et pour les lecteurs d’écran
+ * (« League Of Data Base nom à confirmer », jamais « Basenom ») : la page n’a
+ * pas à en ajouter. Classe : `.a-confirmer` (global.css).
  */
 interface Props {
   /** Ce qu’il faut confirmer, en info-bulle. */
@@ -17,4 +19,4 @@ interface Props {
 const { titre } = Astro.props;
 ---
 
-<span class="a-confirmer" title={titre}><slot>à confirmer</slot></span>
+{' '}<span class="a-confirmer" title={titre}><slot>à confirmer</slot></span>

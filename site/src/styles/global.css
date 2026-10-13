@@ -335,10 +335,10 @@ mark,
   box-decoration-break: clone;
 }
 
-/* Marque « à confirmer » : jamais une couleur seule, toujours un mot. */
+/* Marque « à confirmer » : jamais une couleur seule, toujours un mot. Une
+   espace la sépare du texte (ui/AConfirmer.astro). */
 .a-confirmer {
   display: inline-block;
-  margin-left: 0.25em;
   padding: 0 0.4em;
   border: 1px dashed var(--trait);
   border-radius: var(--r1);
