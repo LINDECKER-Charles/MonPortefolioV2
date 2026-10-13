@@ -4,7 +4,8 @@
  * Toujours décoratif : le lien qui l’entoure porte le nom accessible.
  *
  * La nuit, l’emblème passe à l’encre de lune et seules les lumières de la
- * lanterne gardent leur couleur (LogoImage).
+ * lanterne gardent leur couleur (LogoImage) ; la flamme s’entoure d’un halo,
+ * qui s’allume avec la bascule (400 ms, aucun en mouvement réduit).
  *
  *   <Logo />            emblème et nom (le nom se masque sous 860 px)
  *   <Logo nom={false} /> emblème seul
@@ -45,8 +46,39 @@ const clips = lumieres.map(({ left, top, width, height }) => {
   }
 
   .logo__embleme {
+    position: relative;
     width: 52px;
     flex-shrink: 0;
+  }
+
+  /* Le halo de la flamme : son centre est à 50 % × 54 % de l’emblème
+     (src/assets/marque/cadrages.json, lumière du milieu). */
+  .logo__embleme::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 54%;
+    width: 44px;
+    height: 44px;
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, var(--lanterne-eclat), transparent);
+    opacity: 0;
+    scale: 0.4;
+    pointer-events: none;
+    transition: opacity var(--d-scene) var(--courbe), scale var(--d-scene) var(--courbe);
+  }
+
+  :global(:root[data-theme='nuit']) .logo__embleme::after {
+    opacity: 1;
+    scale: 1;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme])) .logo__embleme::after {
+      opacity: 1;
+      scale: 1;
+    }
   }
 
   .logo__nom {
@@ -59,6 +91,12 @@ const clips = lumieres.map(({ left, top, width, height }) => {
     }
 
     .logo__nom {
+      display: none;
+    }
+  }
+
+  @media print {
+    .logo__embleme::after {
       display: none;
     }
   }

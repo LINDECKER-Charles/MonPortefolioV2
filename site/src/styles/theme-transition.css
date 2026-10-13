@@ -1,39 +1,74 @@
-/* Seulement pendant un changement demandé : aucun fondu au premier rendu. */
-:root[data-transition-theme]::view-transition-group(root) {
-  animation-duration: 380ms;
-}
-:root[data-transition-theme]::view-transition-old(root),
-:root[data-transition-theme]::view-transition-new(root) {
-  animation-duration: 380ms;
-  animation-timing-function: ease-in-out;
-  mix-blend-mode: normal;
-}
-:root[data-transition-theme]::view-transition-old(root) {
-  animation-name: theme-effacer;
-}
-:root[data-transition-theme]::view-transition-new(root) {
-  animation-name: theme-reveler;
+/*
+ * La signature « Lanterne » : l’allumage (scripts/theme.ts).
+ *
+ * Seulement pendant un changement demandé, jamais au premier rendu :
+ * `data-transition-theme` vaut `vers-nuit` ou `vers-jour` le temps d’une View
+ * Transition, `couleurs` dans un navigateur qui n’en a pas. --vt-x et --vt-y
+ * placent le centre du masque sur la lanterne touchée.
+ *
+ * Vers la nuit, la nouvelle vue (la nuit) apparaît depuis les bords et se
+ * referme sur la lanterne ; vers le jour, elle part de la lanterne et gagne
+ * les bords. Deux scènes (800 ms), la courbe du site.
+ */
+@property --rayon {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
 }
 
-@keyframes theme-effacer { to { opacity: 0; } }
-@keyframes theme-reveler { from { opacity: 0; } to { opacity: 1; } }
+:root[data-transition-theme]::view-transition-group(root) {
+  animation-duration: calc(var(--d-scene) * 2);
+}
+
+:root[data-transition-theme]::view-transition-old(root),
+:root[data-transition-theme]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+:root[data-transition-theme='vers-nuit']::view-transition-new(root) {
+  -webkit-mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0%), transparent var(--rayon), black calc(var(--rayon) + 160px));
+  mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0%), transparent var(--rayon), black calc(var(--rayon) + 160px));
+  animation: tombee-de-la-nuit calc(var(--d-scene) * 2) var(--courbe) both;
+}
+
+:root[data-transition-theme='vers-jour']::view-transition-new(root) {
+  -webkit-mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0%), black var(--rayon), transparent calc(var(--rayon) + 160px));
+  mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0%), black var(--rayon), transparent calc(var(--rayon) + 160px));
+  animation: lever-du-jour calc(var(--d-scene) * 2) var(--courbe) both;
+}
+
+/* Le rayon finit (ou part) sous zéro : le fondu de 160 px se referme
+   entièrement sur la lanterne, sans tache de l’ancien thème. */
+@keyframes tombee-de-la-nuit {
+  from { --rayon: 160vmax; }
+  to { --rayon: -160px; }
+}
+
+@keyframes lever-du-jour {
+  from { --rayon: -160px; }
+  to { --rayon: 160vmax; }
+}
 
 /* Navigateurs sans View Transitions : les couleurs évoluent sur la même durée. */
 :root[data-transition-theme='couleurs'],
 :root[data-transition-theme='couleurs'] *,
 :root[data-transition-theme='couleurs'] *::before,
 :root[data-transition-theme='couleurs'] *::after {
-  transition-property: color, background-color, border-color, fill, stroke;
-  transition-duration: 380ms;
-  transition-timing-function: ease-in-out;
+  transition-property: color, background-color, border-color, fill, stroke, opacity, filter;
+  transition-duration: calc(var(--d-scene) * 2);
+  transition-timing-function: var(--courbe);
 }
 
+/* Mouvement réduit : l’état final, sans transition (scripts/theme.ts ne pose
+   d’ailleurs aucun attribut). */
 @media (prefers-reduced-motion: reduce) {
   :root[data-transition-theme]::view-transition-group(root),
   :root[data-transition-theme]::view-transition-old(root),
   :root[data-transition-theme]::view-transition-new(root) {
     animation: none;
   }
+
   :root[data-transition-theme='couleurs'],
   :root[data-transition-theme='couleurs'] *,
   :root[data-transition-theme='couleurs'] *::before,

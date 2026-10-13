@@ -2,7 +2,13 @@
  * Le mode nuit : un choix du lecteur, mémorisé. Sans choix, le site suit la
  * préférence du système, y compris quand elle change en cours de lecture.
  * /theme.js a déjà posé `data-theme` avant le premier rendu ; ici, on ne fait
- * que réagir au bouton.
+ * que réagir à la lanterne.
+ *
+ * La signature, « l’allumage » (styles/theme-transition.css) : vers la nuit,
+ * l’obscurité gagne la page depuis les bords et se referme sur la lanterne
+ * qu’on vient d’allumer ; vers le jour, la lumière part d’elle. View
+ * Transitions et masque radial centré sur la bascule. Sans View Transitions,
+ * les couleurs glissent ; en mouvement réduit, le thème change d’un coup.
  */
 import { mesurer } from './mesure';
 
@@ -46,26 +52,39 @@ export function brancherTheme(): void {
   // Le script synchrone a déjà choisi les couleurs : aucune animation à l’arrivée.
   poser(themeVise);
 
-  function appliquer(theme: Theme): void {
+  function terminer(): void {
+    racine.removeAttribute('data-transition-theme');
+    racine.style.removeProperty('--vt-x');
+    racine.style.removeProperty('--vt-y');
+  }
+
+  function appliquer(theme: Theme, origine?: Element): void {
     themeVise = theme;
     transition?.skipTransition();
     if (finCouleurs) clearTimeout(finCouleurs);
 
     if (mouvementReduit.matches) {
-      racine.removeAttribute('data-transition-theme');
+      terminer();
       poser(theme);
       return;
     }
 
     if (typeof document.startViewTransition === 'function') {
-      racine.setAttribute('data-transition-theme', 'fondu');
+      // Le centre du masque : la lanterne qu’on vient de toucher, sinon le coin
+      // de l’en-tête où elle se trouve.
+      const boite = origine?.getBoundingClientRect();
+      if (boite && boite.width) {
+        racine.style.setProperty('--vt-x', `${Math.round(boite.left + boite.width / 2)}px`);
+        racine.style.setProperty('--vt-y', `${Math.round(boite.top + boite.height / 2)}px`);
+      }
+      racine.setAttribute('data-transition-theme', theme === 'nuit' ? 'vers-nuit' : 'vers-jour');
       const nouvelleTransition = document.startViewTransition(() => poser(theme));
       transition = nouvelleTransition;
-      // Un second geste peut interrompre le fondu précédent avant sa capture.
+      // Un second geste peut interrompre la transition précédente avant sa capture.
       void nouvelleTransition.ready.catch(() => {});
       void nouvelleTransition.finished.catch(() => {}).then(() => {
         if (transition === nouvelleTransition) {
-          racine.removeAttribute('data-transition-theme');
+          terminer();
           transition = undefined;
         }
       });
@@ -76,14 +95,14 @@ export function brancherTheme(): void {
     // Établir les couleurs actuelles avant de poser les nouvelles.
     void racine.offsetWidth;
     poser(theme);
-    finCouleurs = setTimeout(() => racine.removeAttribute('data-transition-theme'), 420);
+    finCouleurs = setTimeout(terminer, 820);
   }
 
   for (const bouton of document.querySelectorAll<HTMLButtonElement>('[data-theme-bascule]')) {
     bouton.addEventListener('click', () => {
       const suivant: Theme = themeVise === 'nuit' ? 'jour' : 'nuit';
       choixSession = true;
-      appliquer(suivant);
+      appliquer(suivant, bouton);
       memoriser(suivant);
       mesurer('theme', { choix: suivant });
     });

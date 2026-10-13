@@ -1,5 +1,5 @@
 ---
-import { Picture } from 'astro:assets';
+import Portrait from '../ui/Portrait.astro';
 import photo from '../../assets/photos/charles-4.webp';
 import { SITE } from '../../config/site';
 ---
@@ -28,19 +28,17 @@ import { SITE } from '../../config/site';
       </div>
 
       <figure class="fig0" id="fig-0">
-        <div class="fig0__cadre">
-          <Picture
-            src={photo}
-            formats={['avif']}
-            fallbackFormat="webp"
-            widths={[360, 480, 720, 960]}
-            sizes="(max-width: 760px) calc(100vw - 48px), (max-width: 1100px) 42vw, 480px"
-            alt="Charles Lindecker dans un champ de colza, en chemise bleu roi et bretelles."
-            loading="eager"
-            fetchpriority="high"
-            decoding="async"
-          />
-        </div>
+        <Portrait
+          class="fig0__cadre"
+          src={photo}
+          widths={[360, 480, 720, 960]}
+          sizes="(max-width: 760px) calc(100vw - 48px), (max-width: 1100px) 42vw, 480px"
+          alt="Charles Lindecker dans un champ de colza, en chemise bleu roi et bretelles."
+          loading="eager"
+          fetchpriority="high"
+          cadrage="50% 65%"
+          lueur="52% 36%"
+        />
         <figcaption>
           <span>{SITE.nom}</span>
           <a class="fig0__note" href="#collectif">Du solo au collectif</a>
@@ -70,9 +68,7 @@ import { SITE } from '../../config/site';
   .couverture__lire { display: inline-flex; align-items: center; justify-content: space-between; gap: 18px; min-height: 48px; color: var(--encre); font-weight: 500; }
   .fig0 { position: relative; width: 100%; max-width: 480px; justify-self: end; padding: 12px 12px 0; }
   .fig0::before { content: ''; position: absolute; inset: 0 0 50px; border: 1px solid var(--filet); pointer-events: none; }
-  .fig0__cadre { position: relative; aspect-ratio: .96; overflow: hidden; background: var(--filet); }
-  .fig0__cadre :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: 50% 65%; transform: scale(1.13); transform-origin: 50% 70%; }
-  .fig0__cadre :global(picture) { display: contents; }
+  .fig0 :global(.fig0__cadre) { aspect-ratio: .96; }
   .fig0 figcaption { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 16px; padding-top: 16px; font-size: .875rem; }
   .fig0__note { font-family: var(--font-note); font-style: italic; color: var(--bleu); font-size: 1.0625rem; }
   .couverture__suite { display: flex; align-items: center; justify-content: space-between; gap: 16px; border-top: 1px solid var(--filet); padding: 18px 0; font-size: .9375rem; }
@@ -88,7 +84,7 @@ import { SITE } from '../../config/site';
     .couverture__chapeau { margin-top: 22px; font-size: 1.0625rem; }
     .couverture__actions { gap: 22px; margin-top: 24px; }
     .fig0 { justify-self: start; max-width: none; padding: 8px 8px 0; }
-    .fig0__cadre { aspect-ratio: 1.12; }
+    .fig0 :global(.fig0__cadre) { aspect-ratio: 1.12; }
     .couverture__suite { flex-wrap: wrap; gap: 2px; padding-block: 14px; }
   }
   @media print { .couverture__signature { font-size: 54pt; } .couverture__in { gap: 24px; } h1 { font-size: 24pt; } }
