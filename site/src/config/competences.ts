@@ -1,26 +1,82 @@
-// Inventaire public vérifié le 2026-10-09 : docs/matiere-premiere.md.
-// Les technologies des forks sont retenues seulement sur contribution attestée.
-export const DOMAINES_TECHNIQUES = [
-  { nom: 'Langages', outils: ['TypeScript', 'JavaScript', 'C#', 'PHP', 'Java', 'Python', 'Rust', 'Go', 'C', 'SQL'] },
-  { nom: 'Web et interfaces', outils: ['HTML', 'CSS', 'Angular', 'React', 'Vue.js', 'Tailwind CSS', 'Sass', 'RxJS', 'GSAP', 'Twig', 'Leaflet', 'Chart.js', 'WebAssembly'] },
-  { nom: 'Backend et API', outils: ['.NET', 'ASP.NET Core', 'Node.js', 'Express', 'Symfony', 'Spring Boot', 'FastAPI', 'Axum', 'Tokio', 'SignalR', 'API Platform'] },
-  { nom: 'Données et persistance', outils: ['PostgreSQL', 'MySQL', 'SQLite', 'EF Core', 'Doctrine', 'SQLx', 'Stockage S3 compatible'] },
-  { nom: 'Mobile et applications de bureau', outils: ['Ionic', 'Capacitor', 'Tauri', 'Photino.NET'] },
-  { nom: 'Scripts, fichiers et outils en console', outils: ['Bash', 'sharp', 'Pillow', 'Dompdf', 'OpenTUI', 'Make', 'GCC'] },
+/**
+ * Compétences de Charles (/parcours/competences), en trois niveaux, puis
+ * l’intégration IA, les tests et la livraison, et les compétences humaines.
+ *
+ * Inventaire public vérifié le 2026-10-09 : docs/matiere-premiere.md
+ * (« Stack déclarée (CV) », « Actualisation des technologies », « Compétences
+ * IA »). Les technologies des forks sont retenues seulement sur contribution
+ * attestée.
+ *
+ * Hiérarchie en trois niveaux (cahier, § 5.10 ; Q9) : proposée à partir de la
+ * stack déclarée du CV, actualisée par l’audit public. À valider par Charles :
+ * la page la marque « à confirmer » tant qu’il ne l’a pas fait.
+ *   - Au quotidien : le cœur et les ops du CV, en grandes tuiles ;
+ *   - Pratiqué : le reste du CV et ce que mes projets mettent en œuvre ;
+ *   - Exploré ou ponctuel : exercices, essais, contributions ciblées.
+ * Aucun niveau n’est une note de maîtrise : chaque technologie garde un logo
+ * (ou un picto de repli) et le lien de son site officiel.
+ */
+
+export interface TechnoQuotidien {
+  nom: string;
+  /** Ce que la technologie fait dans ma stack, en deux ou trois mots. */
+  role: string;
+}
+
+export const QUOTIDIEN = [
+  { nom: 'C#', role: 'Langage' },
+  { nom: '.NET', role: 'Plateforme et API' },
+  { nom: 'Angular', role: 'Interfaces' },
+  { nom: 'TypeScript', role: 'Langage' },
+  { nom: 'PostgreSQL', role: 'Données' },
+  { nom: 'Docker', role: 'Conteneurs' },
+  { nom: 'Git', role: 'Versions' },
+  { nom: 'GitHub Actions', role: 'Intégration continue' },
 ] as const;
 
+/**
+ * Pratiqué, par famille. `pile` relie une famille au schéma « Interface ↔ API
+ * ↔ Données » qui coiffe les trois familles du milieu.
+ */
+export const PRATIQUE = [
+  { nom: 'Langages', outils: ['JavaScript', 'PHP', 'Python', 'Java', 'SQL'] },
+  { nom: 'Web et interfaces', pile: 'interface', outils: ['HTML', 'CSS', 'Sass', 'Tailwind CSS', 'RxJS', 'GSAP'] },
+  { nom: 'Backend et API', pile: 'backend', outils: ['ASP.NET Core', 'SignalR', 'Node.js', 'Symfony', 'Spring Boot', 'Twig'] },
+  { nom: 'Données', pile: 'donnees', outils: ['EF Core', 'MySQL', 'SQLite', 'Doctrine'] },
+  { nom: 'Mobile', outils: ['Ionic', 'Capacitor'] },
+] as const;
+
+/** Exploré ou ponctuel, rangé par famille (langages, web, API, données, bureau, outils). */
+export const EXPLORE = [
+  'React', 'Vue.js', 'Rust', 'Go', 'C', 'WebAssembly',
+  'Express', 'FastAPI', 'Axum', 'Tokio', 'API Platform',
+  'SQLx', 'Stockage S3 compatible',
+  'Tauri', 'Photino.NET',
+  'Leaflet', 'Chart.js',
+  'Bash', 'sharp', 'Pillow', 'Dompdf', 'OpenTUI', 'Make', 'GCC',
+] as const;
+
+/**
+ * Intégration IA : ce que mes projets publics font, sans entraînement de
+ * modèle (pas de fine-tuning, de RAG ni de transcription attestés).
+ */
 export const DOMAINES_IA = [
-  { nom: 'Assistants et agents', outils: ['Claude', 'Codex'], points: ['Développement assisté', 'Intégration CLI', 'Prompts et contexte', 'Veille automatisée'] },
-  { nom: 'Intégration aux applications', outils: ['MCP'], points: ['Serveurs et outils MCP', 'Schémas JSON', 'Permissions et quotas'] },
-  { nom: 'Synthèse vocale', outils: ['Kokoro', 'Piper'], points: ['Modèles auto-hébergés', 'Streaming audio', 'Cache des générations'] },
+  { nom: 'Assistants et agents', picto: 'agents', outils: ['Claude', 'Codex'], points: ['Développement assisté', 'Intégration CLI', 'Prompts et contexte', 'Veille automatisée'] },
+  { nom: 'Intégration aux applications', picto: 'mcp', outils: ['MCP'], points: ['Serveurs et outils MCP', 'Schémas JSON', 'Permissions et quotas'] },
+  { nom: 'Synthèse vocale', picto: 'voix', outils: ['Kokoro', 'Piper'], points: ['Modèles auto-hébergés', 'Streaming audio', 'Cache des générations'] },
 ] as const;
 
 export const DOMAINES_QUALITE = [
   { nom: 'Tests et qualité', outils: ['xUnit', 'Vitest', 'PHPUnit', 'pytest', 'Playwright', 'Karma', 'Jasmine', 'axe-core', 'ESLint', 'Prettier'] },
-  { nom: 'Livraison et observabilité', outils: ['Git', 'GitHub Actions', 'Docker', 'Linux', 'Apache', 'Nginx', 'Caddy', 'Vite', 'OpenTelemetry', 'Prometheus'] },
+  { nom: 'Livraison et observabilité', outils: ['Linux', 'Apache', 'Nginx', 'Caddy', 'Vite', 'OpenTelemetry', 'Prometheus'] },
 ] as const;
 
-type Technologie = (typeof DOMAINES_TECHNIQUES | typeof DOMAINES_IA | typeof DOMAINES_QUALITE)[number]['outils'][number];
+type Technologie =
+  | (typeof QUOTIDIEN)[number]['nom']
+  | (typeof PRATIQUE)[number]['outils'][number]
+  | (typeof EXPLORE)[number]
+  | (typeof DOMAINES_IA)[number]['outils'][number]
+  | (typeof DOMAINES_QUALITE)[number]['outils'][number];
 
 // Sites des éditeurs, mainteneurs ou organismes de normalisation vérifiés le 2026-10-09.
 export const SITES_OFFICIELS = {
@@ -104,11 +160,29 @@ export const SITES_OFFICIELS = {
   Trello: 'https://trello.com/',
 } as const satisfies Record<Technologie | 'Trello', string>;
 
+/**
+ * Compétences humaines : un intitulé, trois verbes, une illustration
+ * (CMP-02 à CMP-08). `demarche` : les verbes forment une suite (→) plutôt
+ * qu’une liste (·). `aConfirmer` : verbes reformulés depuis la V1 (adjectifs
+ * ou noms seuls), à valider par Charles. Pas de ligne de fait (Q9).
+ */
 export const COMPETENCES_HUMAINES = [
-  { nom: 'Pédagogie', categorie: 'pedagogie' as const, points: ['Expliquer', 'Accompagner', 'Autonomie'], schema: true },
-  { nom: 'Coordination', categorie: 'coordination' as const, points: ['Accueillir', 'Organiser', 'Relire'], schema: false },
-  { nom: 'Écoute et cadrage', categorie: 'ecoute' as const, points: ['Besoin', 'Échanges', 'Cadrage'], schema: true },
-  { nom: 'Communication directe', categorie: 'communication' as const, points: ['Franchise', 'Sincérité', 'Collectif'], schema: false },
-  { nom: 'Créativité', categorie: 'creativite' as const, points: ['Expérimenter', 'Réinventer', 'Contre-courant'], schema: false },
-  { nom: 'Apprentissage et adaptation', categorie: 'adaptation' as const, points: ['Comprendre', 'Tester', 'Ajuster'], schema: true },
+  { nom: 'Pédagogie', visuel: 'CMP-02', verbes: ['Expliquer', 'Accompagner', 'Rendre autonome'], demarche: true, aConfirmer: true },
+  { nom: 'Coordination', visuel: 'CMP-03', verbes: ['Accueillir', 'Organiser', 'Relire'], demarche: false, aConfirmer: false },
+  { nom: 'Écoute et cadrage', visuel: 'CMP-04', verbes: ['Écouter le besoin', 'Échanger', 'Cadrer'], demarche: true, aConfirmer: true },
+  { nom: 'Communication directe', visuel: 'CMP-05', verbes: ['Dire franchement', 'Échanger sincèrement', 'Avancer ensemble'], demarche: false, aConfirmer: true },
+  { nom: 'Créativité', visuel: 'CMP-06', verbes: ['Expérimenter', 'Réinventer', 'Prendre à contre-courant'], demarche: false, aConfirmer: true },
+  { nom: 'Apprentissage et adaptation', visuel: 'CMP-07', verbes: ['Comprendre', 'Tester', 'Ajuster'], demarche: true, aConfirmer: false },
 ] as const;
+
+/** Septième carte : les méthodes de travail du CV, Trello lié à son site. */
+export const METHODES = { nom: 'Méthodes de travail', visuel: 'CMP-08', outil: 'Trello', pratiques: ['Agile et Scrum', 'Cahiers des charges', 'Documentation'] } as const;
+
+/** Nombre de technologies affichées, Trello compris (contrat du test de la page). */
+export const NOMBRE_TECHNOLOGIES =
+  QUOTIDIEN.length
+  + PRATIQUE.reduce((total, famille) => total + famille.outils.length, 0)
+  + EXPLORE.length
+  + DOMAINES_IA.reduce((total, domaine) => total + domaine.outils.length, 0)
+  + DOMAINES_QUALITE.reduce((total, domaine) => total + domaine.outils.length, 0)
+  + 1;
