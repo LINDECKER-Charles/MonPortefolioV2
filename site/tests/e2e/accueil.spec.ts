@@ -191,17 +191,33 @@ test('les quatre gestes du pôle : l’image en tête, en grand, sans « semaine
   }
 });
 
-test('la figure du plafond se lit : aucun libellé sous 12 px', async ({ page }) => {
+test('la figure du plafond se lit : libellés à la taille du texte, sans chevauchement', async ({ page }) => {
   await page.goto('/');
-  const figure = page.locator('#fig-1 svg:visible');
-  await figure.scrollIntoViewIfNeeded();
-  const tailles = await figure.locator('text').evaluateAll((textes) => textes.map((t) => {
-    const svg = t.closest('svg') as SVGSVGElement;
-    const echelle = svg.getBoundingClientRect().width / svg.viewBox.baseVal.width;
-    return Number.parseFloat(getComputedStyle(t).fontSize) * echelle;
+  const dessin = page.locator('#fig-1 .plafond__dessin:visible');
+  await expect(dessin).toHaveCount(1);
+  await dessin.scrollIntoViewIfNeeded();
+  const libelles = await dessin.locator('.f-l').evaluateAll((elements) => elements.map((element) => {
+    const r = element.getBoundingClientRect();
+    return { texte: element.textContent ?? '', taille: Number.parseFloat(getComputedStyle(element).fontSize), boite: [r.left, r.top, r.right, r.bottom] };
   }));
-  expect(tailles.length).toBeGreaterThan(5);
-  expect(Math.min(...tailles)).toBeGreaterThanOrEqual(12);
+  expect(libelles.length).toBeGreaterThan(5);
+  // Les libellés ne grandissent pas avec le dessin : ni cri au bureau, ni chuchotement sur mobile.
+  for (const { texte, taille } of libelles) {
+    expect(taille, texte).toBeGreaterThanOrEqual(14);
+    expect(taille, texte).toBeLessThanOrEqual(18);
+  }
+  // Aucun ne touche un autre, tous restent dans le cadre de la figure.
+  const cadre = await page.locator('#fig-1 .plafond__plan').evaluate((e) => {
+    const r = e.getBoundingClientRect();
+    return [r.left, r.top, r.right, r.bottom];
+  });
+  for (const [i, a] of libelles.entries()) {
+    expect(a.boite[0] >= cadre[0] && a.boite[1] >= cadre[1] && a.boite[2] <= cadre[2] && a.boite[3] <= cadre[3], a.texte).toBe(true);
+    for (const b of libelles.slice(i + 1)) {
+      const disjoints = a.boite[2] <= b.boite[0] || b.boite[2] <= a.boite[0] || a.boite[3] <= b.boite[1] || b.boite[3] <= a.boite[1];
+      expect(disjoints, `${a.texte} / ${b.texte}`).toBe(true);
+    }
+  }
 });
 
 test('les cartes de projets suivent l’ordre de la vitrine', async ({ page }) => {
