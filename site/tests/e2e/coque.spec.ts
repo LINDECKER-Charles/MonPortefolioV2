@@ -114,6 +114,22 @@ test.describe('mobile', () => {
     });
   }
 
+  test('le sommaire et le menu s’ouvrent dans l’écran, de 360 à 430 px', async ({ page }) => {
+    for (const largeur of [360, 390, 430]) {
+      await page.setViewportSize({ width: largeur, height: 800 });
+      await page.goto('/projets/pvz-fusion');
+      for (const deroulant of [page.locator('.entete__sommaire'), page.locator('details[data-menu-mobile]')]) {
+        await deroulant.locator('summary').click();
+        const panneau = await deroulant.locator('.deroulant__panneau').boundingBox();
+        expect(panneau, `${largeur} px`).not.toBeNull();
+        expect(panneau!.x, `${largeur} px, bord gauche`).toBeGreaterThanOrEqual(0);
+        expect(panneau!.x + panneau!.width, `${largeur} px, bord droit`).toBeLessThanOrEqual(largeur);
+        await page.keyboard.press('Escape');
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
+    }
+  });
+
   test('l’en-tête tient sur une ligne, sans débordement, jusqu’à 340 px', async ({ page }) => {
     await page.setViewportSize({ width: 340, height: 740 });
     await page.goto('/');

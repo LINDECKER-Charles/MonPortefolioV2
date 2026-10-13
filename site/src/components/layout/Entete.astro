@@ -12,6 +12,10 @@
  * `sommaire` : les sections de la page, pour le bouton « Sommaire » de
  * l’en-tête sous 1 100 px (au-delà, la navigation de page en colonne
  * prend le relais : components/pages/NavigationPage.astro).
+ *
+ * Sous 860 px, les panneaux ne s’ancrent plus sur leur bouton (le Sommaire
+ * est à gauche : son panneau sortait de l’écran) mais sur l’en-tête, alignés
+ * sur sa gouttière droite : ils tiennent dans l’écran dès 320 px.
  */
 import BasculeLanterne from './BasculeLanterne.astro';
 import Logo from '../ui/Logo.astro';
@@ -297,6 +301,18 @@ const actif = (href: string) => pageActive(href, chemin);
       text-decoration-thickness: 2px;
       text-underline-offset: 8px;
       text-decoration-color: var(--trait);
+    }
+
+    /* Panneaux ancrés sur l’en-tête collant (bloc conteneur), pas sur leur bouton. */
+    .deroulant {
+      position: static;
+    }
+
+    .deroulant__panneau {
+      top: calc(100% + var(--s1));
+      right: var(--gouttiere);
+      left: auto;
+      width: min(360px, 100% - 2 * var(--gouttiere));
     }
   }
 
