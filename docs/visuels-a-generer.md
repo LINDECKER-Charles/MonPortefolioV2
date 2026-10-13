@@ -4,7 +4,7 @@
 
 ## La mission
 
-Tu produis les visuels de la refonte du portfolio de Charles Lindecker. Le registre recense **126 emplacements** (82 « socle », 44 « élargi »). Pour chaque fiche ci-dessous, livre le **fichier attendu**, au chemin indiqué, en respectant le sujet, la composition et le format. Les règles communes valent pour toutes les fiches.
+Tu produis les visuels de la refonte du portfolio de Charles Lindecker. Le registre recense **127 emplacements** (83 « socle », 44 « élargi »). Pour chaque fiche ci-dessous, livre le **fichier attendu**, au chemin indiqué, en respectant le sujet, la composition et le format. Les règles communes valent pour toutes les fiches.
 
 - **Socle** : nécessaire au lancement de la refonte. À produire d’abord.
 - **Élargi** : enrichit le site et peut suivre.
@@ -59,8 +59,8 @@ Exceptions à la règle 3 : le nom dans les déclinaisons du logo, et les images
 | Parcours : hub, professionnel, compétences, formation | 32 | 27 | IMG 24 · SVG 4 · FIG 3 · CAP 0 · PHO 1 · OG 0 |
 | Contact | 4 | 3 | IMG 3 · SVG 0 · FIG 0 · CAP 0 · PHO 1 · OG 0 |
 | Blog | 2 | 1 | IMG 2 · SVG 0 · FIG 0 · CAP 0 · PHO 0 · OG 0 |
-| États : 404 et hors ligne | 2 | 1 | IMG 1 · SVG 1 · FIG 0 · CAP 0 · PHO 0 · OG 0 |
-| **Total** | **126** | **82** | IMG 73 · SVG 23 · FIG 19 · CAP 3 · PHO 3 · OG 5 |
+| États : 404 et hors ligne | 3 | 2 | IMG 1 · SVG 1 · FIG 0 · CAP 0 · PHO 1 · OG 0 |
+| **Total** | **127** | **83** | IMG 73 · SVG 23 · FIG 19 · CAP 3 · PHO 4 · OG 5 |
 
 ## File de travail « socle »
 
@@ -1309,88 +1309,104 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 
 ## Contact
 
-### CON-PHO · Portrait
+### CON-PHO · Portrait de Charles devant la friche
 
 - **Priorité** : socle · **Méthode** : PHO, photo réelle, traitements déterministes seulement
-- **Emplacement** : `/contact` · Contact, colonne gauche _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Portrait
-- **Composition** : Photo réelle n° 2 (friche), cadrage buste
+- **Emplacement** : `/contact` · Contact, carte d’identité à côté du formulaire (sous le formulaire sur mobile) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Portrait de Charles devant la friche
+- **Composition** : Photo réelle n° 2 de la séance (friche industrielle, chemise bleu roi, regard vers la droite), recadrée en buste : visage dans le tiers haut, cravate et bretelles visibles. Recadrage et redimensionnement seulement, aucune retouche ; la nuit, voile de lune et lueur de lanterne posés en CSS par le composant Portrait
 - **Format** : 4:5, 800 × 1000
 - **Fichier attendu** : `site/src/assets/visuels/contact/CON-PHO_800x1000.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Portrait »
-- **Note** : À confirmer.
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Charles Lindecker en chemise bleu roi, devant une friche industrielle. »
+- **Note** : Livré le 13 octobre 2026 : recadrage déterministe de design/assets/photos/sources/1536x2304_charles-2.webp (zone 300, 300, 1 080 × 1 350), jamais régénéré. Photo autorisée sur Contact par défaut de la question Q10.
 
-### CON-01 · L’invitation
+### CON-01 · L’invitation : une enveloppe ouverte éclairée par la lanterne
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/contact` · Contact, signe de la page _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : L’invitation
-- **Composition** : Enveloppe ouverte d’où s’échappe la lumière de la lanterne
-- **Format** : 1:1, 480
+- **Emplacement** : `/contact` · Contact, signe de la page : en tête de la carte du formulaire, à droite du titre « M’écrire » _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : L’invitation : une enveloppe ouverte éclairée par la lanterne
+- **Composition** : Une enveloppe de papier épais posée de trois quarts, rabat ouvert vers le haut ; la lanterne du logo (cage à quatre montants, anneau, flamme en goutte) est posée juste derrière, et sa lumière sort de l’enveloppe comme si la lettre l’emportait. Gravure en réserve, trait régulier, aucun personnage. Trois aplats séparables : encre (traits et ombres), aplat (papier de l’enveloppe), lumière (flamme et halo). Fond transparent ; le sujet occupe 70 % du cadre et reste lisible à 88 px. Aucun texte, aucun timbre, aucune adresse
+- **Format** : 1:1, 480 × 480, fond transparent
 - **Fichier attendu** : `site/src/assets/visuels/contact/CON-01_480x480.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « L’invitation »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une enveloppe ouverte d’où sort la lumière d’une lanterne. »
+- **Note** : Décoratif dans la page (alt vide passé par la page) : il remplace la plume de l’ancienne carte du formulaire.
 
-### CON-02 · Message reçu
+### CON-02 · Message reçu : la lanterne allumée sur une lettre cachetée
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/contact` · Contact, réussite _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Message reçu
-- **Composition** : Lanterne allumée posée sur une lettre cachetée
-- **Format** : 1:1, 360
+- **Emplacement** : `/contact` · Contact, panneau de réussite qui s’ouvre sous le bouton d’envoi _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Message reçu : la lanterne allumée sur une lettre cachetée
+- **Composition** : La lanterne du logo, flamme haute et halo net, posée sur une lettre pliée fermée par un cachet de cire rond et lisse (sans motif ni initiale) ; vue de face, légère plongée. Gravure en réserve, trois aplats séparables : encre, aplat (papier), lumière (flamme, halo, reflet sur le cachet). Fond transparent, sujet centré à 75 % du cadre, lisible à 96 px. Aucun texte
+- **Format** : 1:1, 360 × 360, fond transparent
 - **Fichier attendu** : `site/src/assets/visuels/contact/CON-02_360x360.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Message reçu »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une lanterne allumée posée sur une lettre cachetée. »
+- **Note** : Décoratif dans la page (le message d’état dit la réussite) : affiché par CSS seulement quand l’état du formulaire vaut « success ».
 
-### CON-03 · Patience
+### CON-03 · Patience : la lanterne à flamme basse et un sablier
 
 - **Priorité** : élargi · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/contact` · Contact, erreur ou limite de débit _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Patience
-- **Composition** : Lanterne à flamme basse à côté d’un petit sablier
-- **Format** : 1:1, 360
+- **Emplacement** : `/contact` · Contact, message d’erreur ou de limite d’envoi, sous le bouton _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Patience : la lanterne à flamme basse et un sablier
+- **Composition** : La lanterne du logo, flamme réduite à une petite goutte, halo à peine visible ; à sa droite un petit sablier dont le sable est à moitié tombé. Même angle et même trait que CON-02, pour qu’on reconnaisse la même scène. Trois aplats séparables : encre, aplat (verre du sablier, sable), lumière (flamme). Fond transparent, lisible à 96 px. Aucun texte
+- **Format** : 1:1, 360 × 360, fond transparent
 - **Fichier attendu** : `site/src/assets/visuels/contact/CON-03_360x360.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Patience »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une lanterne à la flamme basse à côté d’un sablier. »
+- **Note** : Décoratif dans la page (le message d’état dit l’erreur) : affiché par CSS seulement quand l’état du formulaire vaut « error ».
 
 ## Blog
 
-### BLG-01 · Les pages à écrire
+### BLG-01 · Les pages à écrire : le livre du logo ouvert, éclairé par la lanterne
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/blog` · Blog vide _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Les pages à écrire
-- **Composition** : Le livre du logo ouvert sur des pages blanches, la lanterne éclaire la première page, un crayon posé
-- **Format** : 4:3, 960 × 720
+- **Emplacement** : `/blog` · Blog sans article : la zone éclairée, à droite du titre (sous le titre sur mobile) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Les pages à écrire : le livre du logo ouvert, éclairé par la lanterne
+- **Composition** : Le livre du logo ouvert à plat, vu en légère plongée, sur des pages blanches dont seule la première est éclairée ; la lanterne posée en haut à droite du livre est la seule source de lumière, son halo s’arrête au bord de la page ; un crayon posé en travers de la page de gauche, pointe vers la lumière. Le reste du cadre reste dans l’ombre. Gravure en réserve, trois aplats séparables : encre, aplat (papier), lumière (flamme, page éclairée). Fond transparent ; le livre occupe 70 % de la largeur. Aucune écriture sur les pages
+- **Format** : 4:3, 960 × 720, fond transparent
 - **Fichier attendu** : `site/src/assets/visuels/blog/BLG-01_960x720.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Les pages à écrire »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un livre ouvert sur des pages blanches, éclairé par une lanterne, un crayon posé dessus. »
+- **Note** : Décoratif dans la page (la phrase dit que le blog est vide). Disparaît avec l’état vide quand le serveur injecte la liste des articles.
 
-### BLG-02 · Couverture de secours
+### BLG-02 · Couverture de secours : la lanterne sur une page de livre
 
 - **Priorité** : élargi · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/blog` · Article sans image, partage _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Couverture de secours
-- **Composition** : Motif de la direction + lanterne
-- **Format** : 16:9, 1600 × 900 ; 1200 × 630
+- **Emplacement** : `/blog` · Article sans image de couverture, et image de partage d’un article _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Couverture de secours : la lanterne sur une page de livre
+- **Composition** : Cadrage large : le coin d’une page de livre ouvert à gauche, la lanterne du logo à droite du centre, son halo éclaire la page ; grand espace calme à gauche pour qu’un titre posé en HTML reste lisible par-dessus. Gravure en réserve, deux aplats et la lumière, recolorables par les jetons. Aucun texte
+- **Format** : 16:9, 1600 × 900 ; déclinaison 1200 × 630 pour le partage
 - **Fichier attendu** : `site/src/assets/visuels/blog/BLG-02_1600x900.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Couverture de secours »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une lanterne éclaire la page d’un livre ouvert. »
+- **Note** : Le rendu des articles (server/blog.mjs) ne sait pas encore poser une couverture de secours : à brancher avec le serveur, hors refonte des pages.
 
 ## États : 404 et hors ligne
 
-### ERR-01 · La page qui manque
+### ERR-PHO · Portrait de Charles qui regarde ailleurs
+
+- **Priorité** : socle · **Méthode** : PHO, photo réelle, traitements déterministes seulement
+- **Emplacement** : `/404` · 404, médaillon posé sur le coin bas droit de l’illustration ERR-01, le regard tourné vers elle _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Portrait de Charles qui regarde ailleurs
+- **Composition** : Photo réelle n° 1 de la séance (sous-bois, chemise bleu roi, cravate rayée, regard vers la gauche), recadrée en buste, visage dans le tiers haut. Recadrage et redimensionnement seulement, aucune retouche ; la nuit, voile de lune et lueur de lanterne posés en CSS par le composant Portrait
+- **Format** : 4:5, 800 × 1000
+- **Fichier attendu** : `site/src/assets/visuels/etats/ERR-PHO_800x1000.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Charles Lindecker en chemise bleu roi, le regard tourné vers la gauche. »
+- **Note** : Livré le 13 octobre 2026 : recadrage déterministe de design/assets/photos/sources/1536x2304_charles-1.webp (zone 60, 330, 1 440 × 1 800), jamais régénéré. Photo autorisée sur la 404 par défaut de la question Q10 ; la n° 3 sert au Parcours (PAR-PHO).
+
+### ERR-01 · La page qui manque : un manuel ouvert, une page arrachée
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/404` · 404 _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : La page qui manque
-- **Composition** : Un manuel ouvert dont une page a été arrachée (bord déchiré), la lanterne éclaire le vide (reprend ETA-01)
-- **Format** : 4:3, 1280 × 960
+- **Emplacement** : `/404` · 404, la zone éclairée, à droite du titre (sous le titre sur mobile) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : La page qui manque : un manuel ouvert, une page arrachée
+- **Composition** : Un manuel relié ouvert à plat, vu en légère plongée ; au milieu, le talon d’une page arrachée (bord déchiré net, quelques fibres) ; la lanterne du logo, posée sur la page de droite, éclaire précisément le vide laissé par la page, le reste du livre est dans l’ombre. Le coin bas droit reste calme : un médaillon photo s’y pose. Gravure en réserve, trois aplats séparables : encre, aplat (papier), lumière (flamme, halo). Fond transparent ; le livre occupe 75 % de la largeur. Aucune écriture, aucun numéro de page
+- **Format** : 4:3, 1280 × 960, fond transparent
 - **Fichier attendu** : `site/src/assets/visuels/etats/ERR-01_1280x960.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « La page qui manque »
-- **Note** : Reprend ETA-01 de docs/assets-a-generer.md.
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un manuel ouvert dont une page a été arrachée, éclairé par une lanterne. »
+- **Note** : Reprend ETA-01 de docs/assets-a-generer.md. Décoratif dans la page (le titre dit déjà que la page manque).
 
 ### ERR-02 · La lanterne éteinte
 
 - **Priorité** : élargi · **Méthode** : SVG, à dessiner (vectoriel)
 - **Emplacement** : toutes les pages · Maintenance, hors ligne _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : La lanterne éteinte
-- **Composition** : Lanterne seule, flamme absente
-- **Format** : 1:1
+- **Composition** : La lanterne du logo seule, de face, cage à quatre montants et anneau, sans flamme ni halo ; même grille et même trait que la bascule GLO-03 (24 unités, trait 1,4 en currentColor), pour qu’elle se lise comme la bascule éteinte. Aucun texte
+- **Format** : 1:1, viewBox 24
 - **Fichier attendu** : `site/src/assets/visuels/etats/ERR-02.svg`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
