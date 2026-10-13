@@ -35,7 +35,7 @@ interface Props {
 
 const { titre, description, chemin, courant, introduction, sommaire } = Astro.props;
 const suite = [
-  { href: '/parcours', titre: 'Vue d’ensemble', detail: 'Le parcours en un écran.' },
+  { href: '/parcours', titre: 'Vue d’ensemble', detail: 'Le parcours en bref, avec sa frise.' },
   ...PAGES_PARCOURS.filter((page) => page.href !== chemin).map((page) => ({
     href: page.href, titre: page.titre, detail: page.description,
   })),

@@ -9,6 +9,7 @@ import FilAriane from '../components/pages/FilAriane.astro';
 import AppelDiscutons from '../components/pages/AppelDiscutons.astro';
 import Frise from '../components/parcours/Frise.astro';
 import NavigationParcours from '../components/parcours/NavigationParcours.astro';
+import AConfirmer from '../components/ui/AConfirmer.astro';
 import LienAction from '../components/ui/LienAction.astro';
 import Portrait from '../components/ui/Portrait.astro';
 import Visuel from '../components/ui/Visuel.astro';
@@ -18,7 +19,7 @@ import dotnet from '../assets/stacks/dotnet.svg?url';
 import angular from '../assets/stacks/angular.svg?url';
 import typescript from '../assets/stacks/typescript.svg?url';
 import postgresql from '../assets/stacks/postgresql.svg?url';
-import docker from '../assets/stacks/docker.svg?url';
+import mysql from '../assets/stacks/mysql.svg?url';
 import { EXPERIENCES, ligneDeFrise, NOMBRE_EXPERIENCES, PAGES_PARCOURS } from '../config/parcours';
 import { DIPLOME, NOMBRE_CERTIFICATIONS } from '../config/formation';
 import { SITE } from '../config/site';
@@ -40,14 +41,19 @@ const couloirs = [
   { nom: 'Communauté', lignes: parNature(true) },
 ] as const;
 
-/** Le cœur de ma stack, d’après mon CV (matière première, « Stack déclarée »). */
+/**
+ * Le cœur de ma stack : six technologies du niveau « Cœur » de mon CV
+ * (matière première, « Stack déclarée » : C# / .NET / ASP.NET, Angular,
+ * TypeScript, PostgreSQL, MySQL). Docker est rangé dans « Ops ». La
+ * hiérarchie des technologies reste à valider par Charles (Q9).
+ */
 const coeur = [
   { nom: 'C#', logo: csharp },
   { nom: '.NET', logo: dotnet },
   { nom: 'Angular', logo: angular },
   { nom: 'TypeScript', logo: typescript },
   { nom: 'PostgreSQL', logo: postgresql },
-  { nom: 'Docker', logo: docker },
+  { nom: 'MySQL', logo: mysql },
 ];
 
 const faits: Record<string, string[]> = {
@@ -68,7 +74,7 @@ const faits: Record<string, string[]> = {
         <dl class="hub-identite" data-pli="identite">
           <div>
             <dt>Aujourd’hui</dt>
-            <dd>Architecte logiciel chez B-Hive, à&nbsp;Mulhouse, depuis août 2026</dd>
+            <dd>Architecte logiciel chez <span class="insecable">B-Hive</span>, à&nbsp;Mulhouse, depuis août 2026</dd>
           </div>
           <div>
             <dt>En communauté</dt>
@@ -94,7 +100,7 @@ const faits: Record<string, string[]> = {
     </header>
 
     <section class="hub-frise" aria-label="Le parcours dans le temps">
-      <Frise id="frise-parcours" titre="De 2023 à aujourd’hui" debut="2023-01" couloirs={couloirs} />
+      <Frise id="frise-parcours" titre="De septembre 2023 à aujourd’hui" debut="2023-09" couloirs={couloirs} />
     </section>
 
     <nav class="hub-portes" aria-label="Explorer le parcours">
@@ -115,6 +121,7 @@ const faits: Record<string, string[]> = {
                   <p class="porte__faits" id={`porte-faits-${index}`}>
                     {page.href === '/parcours/competences' && <span class="porte__faits-titre">Le cœur de ma stack&nbsp;: </span>}
                     {faits[page.href].map((fait) => <span class="porte__fait">{fait}</span>)}
+                    {page.href === '/parcours/competences' && <AConfirmer titre="Hiérarchie des technologies à valider (Q9)">à valider</AConfirmer>}
                   </p>
                   <p class="porte__action" aria-hidden="true">{page.action}<span class="fleche">&nbsp;→</span></p>
                 </div>
@@ -136,16 +143,16 @@ const faits: Record<string, string[]> = {
 
 <style>
   .parcours-hub {
-    padding-bottom: var(--s8);
+    padding-bottom: var(--s7);
   }
 
   /* L’en-tête : qui, où, depuis quand, et la photo. */
   .hub-tete {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+    grid-template-columns: minmax(0, 1fr) minmax(200px, 232px);
     gap: var(--s5) clamp(24px, 5vw, 96px);
     align-items: end;
-    padding-block: clamp(24px, 3.5vw, 48px) var(--s6);
+    padding-block: clamp(20px, 2.5vw, 36px) var(--s5);
   }
 
   .hub-tete h1 {
@@ -157,7 +164,7 @@ const faits: Record<string, string[]> = {
     display: grid;
     gap: var(--s3);
     max-width: 40rem;
-    margin-top: var(--s5);
+    margin-top: var(--s4);
     padding-left: var(--s4);
     border-left: 2px solid var(--encre);
   }
@@ -180,9 +187,14 @@ const faits: Record<string, string[]> = {
     color: var(--encre);
   }
 
+  /* « B-Hive » ne se coupe pas sur son trait d’union. */
+  .insecable {
+    white-space: nowrap;
+  }
+
   .hub-tete__chapeau {
     max-width: 38rem;
-    margin-top: var(--s5);
+    margin-top: var(--s4);
     font-size: var(--t-m);
     color: var(--eteint);
   }
@@ -219,7 +231,7 @@ const faits: Record<string, string[]> = {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--s5);
-    margin: var(--s7) 0 0;
+    margin: var(--s6) 0 0;
     padding: 0;
     list-style: none;
   }
@@ -257,8 +269,8 @@ const faits: Record<string, string[]> = {
     display: flex;
     flex: 1;
     flex-direction: column;
-    gap: var(--s3);
-    padding: var(--s5);
+    gap: var(--s2);
+    padding: var(--s4) var(--s5);
   }
 
   .porte h2 {
@@ -307,6 +319,11 @@ const faits: Record<string, string[]> = {
     display: block;
   }
 
+  .porte__faits :global(.a-confirmer) {
+    align-self: flex-start;
+    margin: 2px 0 0;
+  }
+
   /* Emplacement en attente : la consigne tient en quatre lignes. */
   .porte :global(.visuel__consigne) {
     max-height: calc(1.4em * 4);
@@ -333,7 +350,7 @@ const faits: Record<string, string[]> = {
     flex-wrap: wrap;
     align-items: center;
     gap: 0 var(--s4);
-    margin-top: var(--s6);
+    margin-top: var(--s5);
     font-size: var(--t-s);
     color: var(--eteint);
   }
