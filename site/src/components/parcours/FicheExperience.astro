@@ -8,7 +8,10 @@
  *   <FicheExperience experience={EXPERIENCES[0]} actuelle />
  *
  * Les dates sont des <time datetime="AAAA-MM"> ; une fin inconnue reste
- * « à confirmer », jamais extrapolée.
+ * « à confirmer », jamais extrapolée. Un rôle pris en cours de route
+ * (`bascule`) dit depuis quand il est tenu : « Depuis octobre 2025 (lead
+ * depuis décembre 2025) ». La preuve reste sous le rôle, en taille
+ * intermédiaire : le rôle domine. Sur mobile, le visuel suit le texte.
  */
 import AConfirmer from '../ui/AConfirmer.astro';
 import LienAction from '../ui/LienAction.astro';
@@ -51,6 +54,9 @@ const debutTexte = moisEnClair(e.debut);
             </>
           ) : (
             <>Depuis <time datetime={e.debut}>{debutTexte}</time></>
+          )}
+          {e.bascule && (
+            <span class="fiche__bascule"> ({e.bascule.role} depuis <time datetime={e.bascule.mois}>{moisEnClair(e.bascule.mois)}</time>)</span>
           )}
         </span>
         <Statut etat={e.statut.etat}>{e.statut.texte}</Statut>
@@ -231,6 +237,15 @@ const debutTexte = moisEnClair(e.debut);
     margin-top: var(--s3);
   }
 
+  /* Une preuve forte, mais sous le rôle : jamais plus grande que lui. */
+  .fiche :global(.fiche__preuve .preuve-chiffree__valeur) {
+    font-size: var(--t-l);
+  }
+
+  .fiche__bascule {
+    color: var(--eteint);
+  }
+
   .fiche__contexte {
     margin-top: var(--s1);
   }
@@ -277,10 +292,7 @@ const debutTexte = moisEnClair(e.debut);
       padding-block: var(--s5);
     }
 
-    .fiche :global(.fiche__visuel) {
-      grid-row: 1;
-    }
-
+    /* Le rôle d’abord : le visuel suit le texte, en bandeau 16:9. */
     .experience--actuelle .fiche {
       padding: var(--s4);
     }
