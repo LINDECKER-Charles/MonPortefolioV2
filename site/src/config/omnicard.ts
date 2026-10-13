@@ -13,6 +13,10 @@
  *
  * Non affiché tant que Charles ne l’a pas validé (cahier, Q8) : la date de
  * lancement du 16/05/2026 (CHANGELOG.md, 1.0.0).
+ *
+ * La racine du dépôt n’est pas reliée tant que son README annonce encore
+ * « Jouer maintenant » et un statut actif (cahier § 5.5 et § 9, action 1) :
+ * on relie les règles, la galerie et l’archive.
  */
 import type { EntreeSommaire } from './navigation';
 import type { Decision, DonneesFiche, LienProjet, PreuveEnTete } from '../components/projets/gabarit/types';
@@ -39,7 +43,10 @@ export const EN_TETE = {
   titre: 'Imaginer le jeu. Construire les règles.',
   chapeau:
     'Un jeu de cartes inventé sur papier avec mon cousin, que j’ai transformé seul en jeu en ligne : les cartes rééquilibrées, le serveur qui arbitre les parties et l’interface.',
-  liens: [{ href: DEPOT, libelle: 'Règles et cartes (GitHub)' }] satisfies LienProjet[],
+  liens: [
+    { href: '#jeu', libelle: 'Le jeu en images' },
+    { href: LIENS.regles, libelle: 'Règles du jeu (GitHub)' },
+  ] satisfies LienProjet[],
 };
 
 export const PREUVES: readonly PreuveEnTete[] = [
@@ -74,7 +81,6 @@ export const FICHE: DonneesFiche = {
   equipe: 'À deux sur papier, seul pour le code',
   statut: { texte: 'Hors ligne, en attente de refonte', etat: 'eteint' },
   liens: [
-    { href: DEPOT, libelle: 'Dépôt public' },
     { href: LIENS.regles, libelle: 'Règles' },
     { href: LIENS.galerie, libelle: 'Galerie de cartes' },
   ],
@@ -264,7 +270,6 @@ export const DECISIONS: readonly Decision[] = [
 /* ------------------------------------------------------------------ */
 
 export const LIENS_SORTIE: readonly LienProjet[] = [
-  { href: DEPOT, libelle: 'Le dépôt de présentation' },
   { href: LIENS.regles, libelle: 'Les règles du jeu' },
   { href: LIENS.galerie, libelle: 'La galerie des 181 cartes' },
   { href: LIENS.archive, libelle: 'L’archive de la saison 1' },
