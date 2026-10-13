@@ -6,11 +6,19 @@
  * l’alt prévu. Un dessin vectoriel (SVG) est inséré en ligne, et non par un
  * <img> : son trait en `currentColor` suit la couleur du texte et les jetons
  * (lune la nuit, encre le jour, clair dans un acte de veille) ; son alt
- * devient son nom accessible, ou il est décoratif. Il manque : un cadre hachuré au bon ratio, dans la lumière de
- * la direction « Lanterne », porte la commande — identifiant, méthode et
- * priorité, sujet, composition, format. La page garde ainsi sa mise en page
- * avant que l’image arrive, et `npm run visuels` liste ce qu’il reste à
- * produire.
+ * devient son nom accessible, ou il est décoratif.
+ *
+ * Le fichier manque : deux rendus, selon le moment.
+ *   - En ligne (le build de production, par défaut) : un cadre neutre au bon
+ *     ratio, l’aplat des emplacements de la direction « Lanterne » et, dès
+ *     qu’il est assez grand, l’emblème en filigrane. Il porte l’alt du
+ *     registre (role="img"), ou reste décoratif. Le visiteur ne voit jamais la
+ *     commande de production.
+ *   - En brouillon (`astro dev`, ou `VISUELS_BROUILLON=1` au build : voir
+ *     lib/visuels.ts) : un cadre hachuré porte la commande, identifiant,
+ *     méthode et priorité, sujet, composition, format. La page garde sa mise
+ *     en page avant que l’image arrive, et `npm run visuels` liste ce qu’il
+ *     reste à produire.
  *
  *   <Visuel id="PRJ-01" sizes="(max-width: 860px) 100vw, 50vw" />
  *   <Visuel id="ACC-03" foyer />          la zone éclairée de l’écran
@@ -18,12 +26,23 @@
  *   <Visuel id="GUP-01" largeur="320px" />    largeur d’affichage (bornée à 100 %)
  *   <Visuel id="PRJ-01" ratioMobile="16 / 10" />   remplace le ratio du registre
  *
+ * Le ton vient de l’acte qui contient l’emplacement, par les jetons : clair
+ * sur la pierre de la page, sombre dans un acte de veille (`.acte-veille`) ou
+ * l’acte bleu. Le composant n’a pas de variante de ton, et une page ne pose
+ * pas d’acte autour d’un seul emplacement pour le teinter : une même série
+ * garde le même traitement d’une page à l’autre.
+ *
+ * Une seule lumière par écran : seul l’emplacement marqué `foyer` reçoit la
+ * flaque de jour ou le halo de la lanterne. Un emplacement ordinaire n’a
+ * aucune lueur, de jour comme de nuit.
+ *
  * Un identifiant absent du registre fait échouer le build : pas de faute de
- * frappe silencieuse. Le cadre s’adapte à sa taille (requêtes de conteneur sur
- * la largeur et la hauteur) : la consigne s’arrête net après quatre lignes,
- * deux dans un cadre bas, et disparaît sous 260 px de large ou 190 px de haut ;
- * le format tient sur une ligne ; sous 100 px, il ne reste que l’identifiant.
- * Aucun texte ne déborde du cadre : la page n’a rien à corriger.
+ * frappe silencieuse. En brouillon, le cadre s’adapte à sa taille (requêtes de
+ * conteneur sur la largeur et la hauteur) : la consigne s’arrête net après
+ * quatre lignes, deux dans un cadre bas, et disparaît sous 260 px de large ou
+ * 190 px de haut ; le format tient sur une ligne ; sous 140 px, il ne reste
+ * que l’identifiant, en petit et sans pastille, sur les hachures. Aucun texte
+ * ne déborde du cadre : la page n’a rien à corriger.
  *
  * Les règles du composant ont la spécificité d’une classe (`:where`) : une
  * page qui passe `class` peut les surcharger sans sélecteur d’identifiant.
@@ -32,7 +51,7 @@ import type { ImageMetadata } from 'astro';
 import { Picture } from 'astro:assets';
 import { fichiersAttendus, visuelParId } from '../../config/visuels';
 import { typo } from '../../lib/typo';
-import { svgEnLigne } from '../../lib/visuels';
+import { svgEnLigne, visuelsEnBrouillon } from '../../lib/visuels';
 
 interface Props {
   id: string;
@@ -64,6 +83,9 @@ const images = import.meta.glob<ImageMetadata>(
 );
 /** Les dessins vectoriels, insérés en ligne : ils suivent `currentColor`. */
 const dessins = import.meta.glob<string>('/src/assets/visuels/**/*.svg', { eager: true, query: '?raw', import: 'default' });
+/** L’emblème seul (GLO-01), en filigrane des cadres en attente, dès qu’il est livré. */
+const emblemes = import.meta.glob<string>('/src/assets/visuels/global/GLO-01.svg', { eager: true, query: '?url', import: 'default' });
+const embleme = emblemes['/src/assets/visuels/global/GLO-01.svg'];
 
 const attendus = fichiersAttendus(visuel);
 // Un emplacement qui reprend plusieurs fichiers (ACC-15) se compose de plusieurs <Visuel>.
@@ -74,7 +96,8 @@ const dessin = fichier ? dessins[`/${fichier}`] : undefined;
 const alt = altPropre ?? visuel.alt;
 const ratio = ratioPropre ?? visuel.ratio ?? '16 / 10';
 const ratioMobile = ratioMobilePropre ?? visuel.ratioMobile;
-const style = [`--visuel-ratio:${ratio}`, ratioMobile && `--visuel-ratio-mobile:${ratioMobile}`, largeur && `--visuel-largeur:${largeur}`].filter(Boolean).join(';');
+const brouillon = visuelsEnBrouillon();
+const style = [`--visuel-ratio:${ratio}`, !brouillon && embleme && `--visuel-embleme:url(${embleme})`, ratioMobile && `--visuel-ratio-mobile:${ratioMobile}`, largeur && `--visuel-largeur:${largeur}`].filter(Boolean).join(';');
 const largeurs = image ? [...new Set([Math.round(image.width / 2), image.width])].filter((l) => l >= 320 || l === image.width) : [];
 
 const NATURE = { IMG: 'Image à générer', SVG: 'Dessin à faire', FIG: 'Figure à coder', CAP: 'Capture à faire', PHO: 'Photo réelle', OG: 'Image de partage' } as const;
@@ -90,6 +113,14 @@ const format = [visuel.format, mobile, reprise].filter(Boolean).join(' · ');
     <figure class:list={['visuel', { foyer }, classe]} style={style} data-visuel={id}>
       <Picture src={image} formats={['avif']} fallbackFormat="webp" widths={largeurs} sizes={sizes} alt={alt} loading={loading} decoding="async" />
     </figure>
+  ) : !brouillon ? (
+    <figure
+      class:list={['visuel', 'visuel--attente', { 'visuel--foyer': foyer, 'visuel--embleme': embleme }, classe]}
+      style={style}
+      data-visuel={id}
+      data-manquant
+      {...(alt ? { role: 'img', 'aria-label': alt } : { 'aria-hidden': 'true' })}
+    />
   ) : (
     <figure class:list={['visuel', 'visuel--manquant', { 'visuel--foyer': foyer, 'visuel--capture': visuel.methode === 'CAP' }, classe]} style={style} data-visuel={id} data-manquant>
       <div class="visuel__contenu">
@@ -148,16 +179,34 @@ const format = [visuel.format, mobile, reprise].filter(Boolean).join(' · ');
     color: var(--encre);
   }
 
-  /* La lueur neutre de la direction ; la lumière de la scène s’il est le foyer. */
-  .visuel--manquant::before {
+  /* En ligne : un aplat neutre au bon ratio, l’emblème en filigrane. */
+  :where(.visuel--attente) {
+    position: relative;
+    isolation: isolate;
+    background: var(--emplacement);
+    box-shadow: inset 0 0 0 1px var(--filet);
+  }
+
+  .visuel--embleme::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: clamp(32px, 22%, 88px);
+    margin: auto;
+    aspect-ratio: 1;
+    background: var(--trait);
+    opacity: 0.3;
+    -webkit-mask: var(--visuel-embleme) center / contain no-repeat;
+    mask: var(--visuel-embleme) center / contain no-repeat;
+  }
+
+  /* La lumière de la scène, seulement sur l’emplacement qui en est le foyer :
+     une seule lumière par écran. */
+  .visuel--foyer::before {
     content: '';
     position: absolute;
     inset: 0;
     z-index: -1;
-    background: radial-gradient(60% 70% at 62% 42%, var(--lueur), transparent 70%);
-  }
-
-  .visuel--foyer::before {
     background: radial-gradient(55% 65% at 60% 45%, var(--lumiere), transparent 72%);
   }
 
@@ -279,21 +328,30 @@ const format = [visuel.format, mobile, reprise].filter(Boolean).join(' · ');
     }
   }
 
-  /* Vignette : l’identifiant seul, entier, au besoin sur deux lignes. */
-  @container (max-width: 110px) or (max-height: 100px) {
-    .visuel__sujet {
+  /* Vignette, sous 140 px : l’identifiant seul, en petit, sans pastille, sur
+     les hachures ; au besoin sur deux lignes. */
+  @container (max-width: 140px) or (max-height: 100px) {
+    .visuel__sujet,
+    .visuel__format {
       display: none;
+    }
+
+    .visuel__contenu {
+      justify-content: flex-end;
+      padding: var(--s2);
+    }
+
+    .visuel__id,
+    .visuel--capture .visuel__id {
+      padding: 0;
+      background: none;
+      color: var(--eteint);
     }
   }
 
-  @container (max-width: 100px) {
+  @container (max-width: 90px) {
     .visuel__contenu {
       padding: var(--s1);
-    }
-
-    .visuel__id {
-      padding: 1px var(--s1);
-      white-space: normal;
     }
   }
 

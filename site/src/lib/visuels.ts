@@ -3,6 +3,20 @@
  * de savoir au moment du rendu, hors du registre.
  */
 
+/**
+ * Vrai quand un visuel manquant doit afficher sa commande de production
+ * (identifiant, sujet, composition, format) : en développement, ou au build
+ * avec `VISUELS_BROUILLON=1`. Sinon, le visiteur voit un cadre neutre au bon
+ * ratio : la commande ne part jamais en ligne. `VISUELS_BROUILLON=0` force le
+ * rendu public, même en développement.
+ */
+export function visuelsEnBrouillon(): boolean {
+  const drapeau = process.env.VISUELS_BROUILLON;
+  if (drapeau === '1') return true;
+  if (drapeau === '0') return false;
+  return import.meta.env.DEV;
+}
+
 let compteur = 0;
 
 const echapper = (texte: string) => texte.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
