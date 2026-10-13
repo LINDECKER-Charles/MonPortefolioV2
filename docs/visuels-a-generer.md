@@ -9,7 +9,7 @@ Tu produis les visuels de la refonte du portfolio de Charles Lindecker. Le regis
 - **Socle** : nécessaire au lancement de la refonte. À produire d’abord.
 - **Élargi** : enrichit le site et peut suivre.
 - Seules les méthodes **IMG**, **SVG** et **OG** se produisent ici. Les figures (**FIG**), les captures (**CAP**) et les photos (**PHO**) sont codées, capturées ou traitées ailleurs : leurs fiches donnent le contexte, pas une tâche de génération.
-- La famille de style (règle 5) vient de la direction visuelle de la refonte, choisie après les maquettes. **Tant qu’elle n’est pas arrêtée, ne génère pas les images (IMG)** : elles en dépendent toutes.
+- La famille de style (règle 5) est arrêtée : la direction « Lanterne », retenue le 13 octobre 2026 (`design/refonte/c-lanterne/README.md`). Gravure en réserve, deux ou trois aplats séparables (encre, aplat, lumière) recolorés par les jetons, la lanterne comme seule source de lumière.
 - Le prompt d’une image se rédige en anglais, à partir des seuls champs **Sujet** et **Composition** de la fiche. Le champ **Emplacement** donne le contexte et peut nommer une marque ou un jeu : il ne va jamais dans un prompt.
 
 ## Règles communes
@@ -18,8 +18,8 @@ Tu produis les visuels de la refonte du portfolio de Charles Lindecker. Le regis
 2. **Jamais de visage de Charles généré** ; les personnages sont des silhouettes sans ressemblance. Les portraits sont ses quatre vraies photos (détourage, bichromie et filtres déterministes seulement).
 3. **Aucun texte dans l’image**, chiffres compris : les libellés, dates et légendes sont en HTML.
 4. **Jamais une image générée présentée comme une capture ou comme une donnée** : les courbes, frises et schémas chiffrés sont des figures codées (FIG), les écrans sont des captures réelles (CAP).
-5. **Une seule famille de style**, fixée par la direction retenue : même trait, même lumière, même angle par série. La lanterne du logo est le motif récurrent des états (vide, succès, 404).
-6. **Jour et nuit** : par défaut, l’illustration est livrée en deux ou trois aplats francs sur fond transparent (encre, aplat, lumière), puis séparée par script en calques recolorés par les jetons CSS. Elle suit ainsi la bascule de thème sans double téléchargement et sans script en ligne. C’est une extension du masque monochrome actuel (`Planche.astro`), à valider.
+5. **Une seule famille de style**, celle de la direction « Lanterne », retenue le 13 octobre 2026 (`design/refonte/c-lanterne/`) : **gravure en réserve**, trait clair sur fond sombre la nuit et inversé le jour ; deux ou trois aplats francs et séparables (encre, aplat, lumière) ; la lanterne comme seule source de lumière de la scène, qui éclaire une seule chose et laisse le reste dans l’ombre. Même trait, même lumière, même angle par série. Aucun ornement de jeu, aucun cadre doré. La lanterne du logo est le motif récurrent des états (vide, succès, 404).
+6. **Jour et nuit** : par défaut, l’illustration est livrée en deux ou trois aplats francs sur fond transparent (encre, aplat, lumière), puis séparée par script en calques recolorés par les jetons CSS. Elle suit ainsi la bascule de thème sans double téléchargement et sans script en ligne. C’est une extension du masque monochrome actuel (`Planche.astro`), retenue le 13 octobre 2026.
 7. **Livrables** : master PNG 2× + WebP ; nommage `<ID>_<largeur>x<hauteur>.webp` ; prompt, date et provenance consignés dans `design/assets/<série>/README.md` et `site/src/assets/…/README.md`.
 8. **Lisibilité mobile** : le sujet principal occupe au moins 60 % du cadre et se comprend à 390 px.
 
@@ -96,10 +96,11 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
 - **Emplacement** : toutes les pages · En-tête ordinateur, pied de page _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Logo horizontal : emblème + nom
-- **Composition** : Emblème à gauche, nom à droite, hauteur 40 px ; nom gothique conservé ou recomposé selon la direction
+- **Composition** : Emblème à gauche, nom à droite, hauteur 40 px ; nom gothique conservé (direction « Lanterne »)
 - **Format** : ≈ 5:1
 - **Fichier attendu** : `site/src/assets/visuels/global/GLO-02.svg`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Charles Lindecker, mode d’emploi »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Charles Lindecker »
+- **Note** : En attendant le SVG, l’en-tête et le pied de page composent l’emblème et le nom à partir des images du logo validé (components/ui/Logo.astro).
 
 ### GLO-03 · La lanterne en trois états : éteinte, qui s’allume, allumée avec halo
 
@@ -110,6 +111,7 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Format** : 1:1, 24 et 64 px
 - **Fichier attendu** : `site/src/assets/visuels/global/GLO-03.svg` (lot de 3)
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Livré le 13 octobre 2026 : un seul fichier à trois calques (lt-halo, lt-trait, lt-flamme), dont le site anime les états en CSS (components/layout/BasculeLanterne.astro).
 
 ### GLO-04 · Pictogrammes des trois verbes : maîtriser (un livre de règles ouvert, main posée à plat), réinventer (une carte retournée au milieu d’un éventail de cartes identiques), emmener (une lanterne qui en allume une seconde)
 
@@ -130,7 +132,7 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Format** : 16:10 ; 9:19,5 ; 16:10
 - **Fichier attendu** : `site/src/assets/visuels/global/GLO-05.svg` (lot de 3)
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Cadres neutres de navigateur, de téléphone et de terminal »
-- **Note** : Trois cadres : navigateur, téléphone, terminal.
+- **Note** : Trois cadres : navigateur, téléphone, terminal. En attendant le SVG, components/ui/CadreCapture.astro les dessine en CSS.
 
 ### GLO-06 · Compléments de pictos : flèche interne, ancre, lien sortant unique, agrandir, lecture vidéo, succès, erreur, sommaire
 
@@ -142,15 +144,15 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Fichier attendu** : `site/src/assets/visuels/global/GLO-06.svg`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
 
-### GLO-07 · Nom, métier, accroche, emblème, photo en bichromie
+### GLO-07 · Nom, métier, accroche, emblème, photo en couleur (chemise bleu roi)
 
 - **Priorité** : socle · **Méthode** : OG, à composer en HTML puis rendre en PNG
 - **Emplacement** : toutes les pages · Partage par défaut _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Nom, métier, accroche, emblème, photo en bichromie
-- **Composition** : Typographie réelle de la direction
+- **Sujet** : Nom, métier, accroche, emblème, photo en couleur (chemise bleu roi)
+- **Composition** : Typographie réelle de la direction : Instrument Serif pour l’accroche, Instrument Sans pour le nom et le métier, sur la pierre du jour
 - **Format** : 1200 × 630
 - **Fichier attendu** : `site/public/og/GLO-07_1200x630.png`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Charles Lindecker, mode d’emploi. Je maîtrise d’abord les règles du jeu. Ensuite, je les réinvente. »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Charles Lindecker, architecte logiciel. Je maîtrise d’abord les règles du jeu. Ensuite, je les réinvente. »
 
 ### GLO-08 · Gabarit de GLO-07 avec le visuel de la page : Projets, Parcours, Contact, Blog, 404 et chaque projet
 
