@@ -8,7 +8,9 @@
  *
  * Bureau : deux cartes sur deux, dans le sens des aiguilles d’une montre,
  * reliées par des flèches, « une semaine » au centre. Mobile et sans styles :
- * une liste ordonnée, lue dans l’ordre de la semaine.
+ * une liste ordonnée, lue dans l’ordre de la semaine. Les vignettes prennent
+ * les jetons du thème courant, comme les autres emplacements : la nuit dans
+ * le jour reste réservée à l’acte de l’outil, juste en dessous.
  */
 import LienAction from '../../ui/LienAction.astro';
 import Visuel from '../../ui/Visuel.astro';
@@ -21,7 +23,7 @@ import { typo } from '../../../lib/typo';
     {
       GESTES.map((geste, index) => (
         <li class:list={['geste', `geste--${geste.id}`]}>
-          <div class="geste__visuel acte-veille">
+          <div class="geste__visuel">
             <Visuel id={geste.visuel} alt="" sizes="(max-width: 860px) 96px, 140px" />
           </div>
           <div class="geste__texte">
