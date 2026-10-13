@@ -9,7 +9,8 @@
  *   <CompteARebours />
  *
  * Le glossaire ne dit pas si la fin du tour où la carte est jouée compte :
- * la frise la compte, et la légende marque ce décompte « à confirmer ».
+ * la frise part de l’effet programmé et ne montre que les fins de tour qui
+ * décomptent ; la légende ne dit que ce que le glossaire établit.
  *
  * Scène rejouable : les fins de tour s’allument une à une à l’arrivée, puis
  * au clic sur la frise (scripts/figure-animations.ts). Sans JavaScript, le
@@ -19,10 +20,9 @@
  */
 import { Picture } from 'astro:assets';
 import gitgud from '../../../assets/projets/omnicard/carte-gitgud.webp';
-import AConfirmer from '../../ui/AConfirmer.astro';
 import { GITGUD } from '../../../config/omnicard';
 
-/** Neuf fins de tour, en commençant par celle où la carte est jouée. */
+/** Neuf fins de tour : cinq du lanceur, qui décomptent, et quatre adverses entre elles. */
 const etapes = Array.from({ length: GITGUD.delai * 2 - 1 }, (_, index) => {
   const lanceur = index % 2 === 0;
   return { lanceur, compte: GITGUD.delai - Math.floor(index / 2) - 1 };
@@ -50,7 +50,7 @@ const etapes = Array.from({ length: GITGUD.delai * 2 - 1 }, (_, index) => {
     </p>
     <button type="button" class="scene rebours__frise" data-scene="omnicard-rebours" data-rejouer data-figure-animation disabled aria-label="Rejouer l’animation : le compte à rebours de GitGud">
       <span class="etape etape--depart" style="--rang:0">
-        <span class="etape__qui">Carte jouée</span>
+        <span class="etape__qui">Délai lancé</span>
         <span class="etape__compte">{GITGUD.delai}</span>
       </span>
       {
@@ -64,7 +64,7 @@ const etapes = Array.from({ length: GITGUD.delai * 2 - 1 }, (_, index) => {
       }
     </button>
     <figcaption class="rebours__legende">
-      Le compteur ne baisse qu’à la fin de mes tours. «&nbsp;Dans 5&nbsp;tours&nbsp;», ce sont cinq de mes fins de tour, celle où je joue la carte comprise<AConfirmer titre="Décompte du tour de pose à confirmer : le glossaire ne dit pas si la fin du tour où la carte est jouée compte" />&nbsp;: neuf fins de tour en tout, puis la partie s’arrête sur une égalité. Le moteur tient ce compte pour chaque effet différé, et l’annule si l’unité qui l’a programmé meurt.
+      Le compteur ne baisse qu’à la fin du tour du joueur qui a programmé l’effet, jamais à la fin du tour adverse. «&nbsp;Dans 5&nbsp;tours&nbsp;», ce sont donc cinq de mes fins de tour, avec quatre tours adverses entre elles&nbsp;: neuf fins de tour, puis la partie s’arrête sur une égalité. Le moteur tient ce compte pour chaque effet différé, et l’annule si l’unité qui l’a programmé meurt.
     </figcaption>
   </div>
 </figure>

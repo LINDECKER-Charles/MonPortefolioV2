@@ -190,7 +190,9 @@ test('le compte à rebours de GitGud : neuf fins de tour, cinq comptent, puis l�
   await expect(frise.locator('.etape--adverse .etape__compte')).toHaveText(['4', '3', '2', '1']);
   await expect(frise.locator('.etape--fin')).toContainText('Égalité');
   await expect(page.locator('[data-figure="OMN-05"] figcaption')).toContainText('cinq de mes fins de tour');
-  await expect(page.locator('[data-figure="OMN-05"] figcaption .a-confirmer')).toHaveCount(1);
+  // La règle affichée ne s’appuie que sur le glossaire public : aucune précision incertaine.
+  await expect(page.locator('[data-figure="OMN-05"] figcaption .a-confirmer')).toHaveCount(0);
+  await expect(page.locator('[data-figure="OMN-05"] figcaption')).toContainText('jamais à la fin du tour adverse');
 });
 
 test.describe('la scène se rejoue au clic', () => {
