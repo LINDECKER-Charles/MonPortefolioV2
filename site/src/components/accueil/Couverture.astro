@@ -1,8 +1,9 @@
 ---
 /**
  * Le premier écran de l’accueil (cahier, § 5.1 ; règle E1) : l’accroche, seul
- * grand titre, avec le nom en sur-titre ; l’identité en clair ; le chapeau
- * dans la voix de Charles ; « Discutons » vers /contact et « Lire mon
+ * grand titre, avec le nom en sur-titre ; l’identité en clair, le métier, à la
+ * taille d’un chapeau ; puis l’histoire en une phrase, dans la voix de
+ * Charles, au corps du texte ; « Discutons » vers /contact et « Lire mon
  * histoire » ; la photo en couleur ; le bandeau des trois preuves. Titre,
  * identité, preuve et action portent `data-pli` : ils tiennent dans
  * 1 440 × 900 et 390 × 844.
@@ -39,7 +40,8 @@ const { minutes } = Astro.props;
       <span class="couverture__accroche"><span>Je maîtrise d’abord les&nbsp;règles&nbsp;du&nbsp;jeu.</span> <span>Ensuite, je&nbsp;les&nbsp;réinvente.</span></span>
     </h1>
     <p class="couverture__identite" data-pli="identite">
-      Architecte logiciel chez <span class="insecable">B-Hive</span>, à Mulhouse. Lead du pôle francophone de PvZ&nbsp;Fusion et mainteneur de sa traduction multilingue.
+      <span>Architecte logiciel chez <span class="insecable">B-Hive</span>, à Mulhouse.</span>
+      <span>Lead du pôle francophone de PvZ&nbsp;Fusion et mainteneur de sa traduction multilingue.</span>
     </p>
     <p class="couverture__chapeau">
       Je code depuis mes 13&nbsp;ans. Sur Gwent, j’ai appris qu’il n’y a pas d’excuse en cas de défaite&nbsp;: juste moi et mes propres décisions. Depuis, j’ai formé des développeurs jusqu’à leur titre et je mène une équipe de bénévoles sur un projet open source.
@@ -149,19 +151,28 @@ const { minutes } = Astro.props;
     display: block;
   }
 
+  /* Le métier d’abord, à la taille d’un chapeau ; l’histoire ensuite, au
+     corps du texte. */
   .couverture__identite {
     max-width: 44rem;
     margin-top: var(--s5);
-    font-size: var(--t-m);
-    line-height: 1.5;
+    font-size: var(--t-l);
+    font-weight: 500;
+    line-height: 1.4;
     color: var(--encre);
+  }
+
+  /* Une phrase par ligne : le poste, puis le rôle de lead. */
+  .couverture__identite > span {
+    display: block;
+    text-wrap: balance;
   }
 
   .couverture__chapeau {
     max-width: 36rem;
     margin-top: var(--s3);
-    font-size: var(--t-l);
-    line-height: 1.45;
+    font-size: var(--t-m);
+    line-height: 1.55;
     color: var(--encre);
   }
 
@@ -215,13 +226,14 @@ const { minutes } = Astro.props;
 
     .couverture__identite {
       margin-top: var(--s3);
-      font-size: var(--t-s);
+      font-size: var(--t-m);
+      line-height: 1.4;
     }
 
     .couverture__chapeau {
       margin-top: var(--s2);
-      font-size: var(--t-m);
-      line-height: 1.45;
+      font-size: var(--t-s);
+      line-height: 1.5;
     }
 
     .couverture__actions {

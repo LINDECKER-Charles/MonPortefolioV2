@@ -29,7 +29,10 @@ test('le premier écran dit qui, quoi, une preuve et l’action (règle E1)', as
   for (const marque of ['titre', 'identite', 'preuve', 'action']) {
     await expect(page.locator(`[data-pli="${marque}"]`), marque).toBeInViewport();
   }
-  await expect(page.locator('[data-pli="identite"]')).toHaveText(/Architecte logiciel chez B-Hive, à Mulhouse\. Lead du pôle francophone de PvZ\sFusion/);
+  await expect(page.locator('[data-pli="identite"]')).toHaveText(/Architecte logiciel chez B-Hive, à Mulhouse\.\s+Lead du pôle francophone de PvZ\sFusion/);
+  // Le métier d’abord : la ligne d’identité est composée plus grand que l’histoire qui la suit.
+  const corps = (selecteur: string) => page.locator(selecteur).evaluate((e) => Number.parseFloat(getComputedStyle(e).fontSize));
+  expect(await corps('.couverture__identite')).toBeGreaterThan(await corps('.couverture__chapeau'));
   // Les trois preuves tiennent entières au pli, à 1 440 × 900 comme à 390 × 844.
   for (const preuve of await page.locator('[data-pli="preuve"] li').all()) await expect(preuve).toBeInViewport({ ratio: 1 });
 
