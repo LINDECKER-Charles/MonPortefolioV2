@@ -80,14 +80,15 @@ test('la fiche technique : sept cases à filets, statut à forme et mot, liens p
 test('trois chiffres sourcés et datés, un seul surligné, la part personnelle en note de sources', async ({ page }) => {
   await page.goto(CHEMIN);
   const preuves = page.locator('[data-pli="preuve"] .preuve-chiffree');
-  await expect(preuves.locator('.preuve-chiffree__valeur')).toHaveText(['20', '0', '35']);
+  await expect(preuves.locator('.preuve-chiffree__valeur')).toHaveText(['20', '1\u00a0335 → 0', '35']);
   for (const preuve of await preuves.all()) {
     await expect(preuve.locator('.preuve-chiffree__source')).toHaveText(/\d{2}\/\d{2}\/\d{4}/);
   }
   const surligne = page.locator('.projet-tete mark');
   await expect(surligne).toHaveCount(1);
-  await expect(surligne).toHaveText('0');
-  await expect(surligne).toHaveAttribute('data-source', /Historique public du dépôt/);
+  // Le même chiffre surligné que sur l’accueil et la vitrine : 20 personnes formées.
+  await expect(surligne).toHaveText('20');
+  await expect(surligne).toHaveAttribute('data-source', /Témoignage/);
   // 4 862 sur 5 179 : seulement dans la note de sources, jamais sous le titre.
   await expect(page.locator('.projet-tete')).not.toContainText(/4\s?862/);
   await expect(page.locator('#sources')).toContainText(/4\s862 dans mon bilan/);

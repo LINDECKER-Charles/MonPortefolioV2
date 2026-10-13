@@ -54,13 +54,13 @@ export const EN_TETE = {
 };
 
 export const PREUVES: readonly PreuveEnTete[] = [
-  { valeur: '20', libelle: 'personnes formées au pôle francophone', source: 'Témoignage', date: 'confirmé le 13/10/2026' },
+  { valeur: '20', libelle: 'personnes formées au pôle francophone', source: 'Témoignage', date: 'confirmé le 13/10/2026', surligne: true },
   {
-    valeur: '0',
-    libelle: 'entrée manquante en août 2026, contre 1\u00a0335 sur 2\u00a0415 à mon arrivée',
-    source: 'Historique public du dépôt',
-    date: 'relevé le 13/10/2026',
-    surligne: true,
+    valeur: '1\u00a0335 → 0',
+    libelle: 'entrée manquante',
+    source: 'Historique du dépôt',
+    /** Les deux relevés comparés : l’arrivée et la couverture complète. */
+    date: 'du 16/10/2025 au 15/08/2026',
   },
   { valeur: '35', libelle: 'pull requests fusionnées dans le projet officiel', source: 'GitHub', date: 'du 16/10/2025 au 26/09/2026' },
 ];
