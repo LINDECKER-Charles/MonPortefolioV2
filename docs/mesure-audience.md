@@ -165,6 +165,10 @@ Depuis le 2026-10-09, les liens officiels des technologies et de Trello sur `/pa
 utilisent `lien-sortant` avec l’emplacement `competences` et le seul nom d’hôte de leur cible.
 Ces clics indiquent une consultation technique, sans constituer un objectif de prise de contact.
 
+Depuis le 2026-10-13, les liens réglementaires des mentions légales (hébergeur `www.hostinger.fr`,
+plaintes à la CNIL `www.cnil.fr`) utilisent `lien-sortant` avec l’emplacement `mentions`, comme
+tout lien externe : le plan de marquage n’admet plus d’exception.
+
 **Historique avant cet essai** : les valeurs de `chapitre` `preuves` et `dehors`, ainsi que
 l’emplacement `dehors`, ne font plus partie du plan courant. Les données déjà collectées sous
 ces valeurs restent à lire dans le contexte de l’ancienne structure de l’accueil. L’emplacement
