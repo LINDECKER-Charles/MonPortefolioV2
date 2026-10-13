@@ -224,7 +224,11 @@ export const PLATEFORME: readonly FonctionPlateforme[] = [
     aConfirmer: 'Affichage des builds à confirmer par Charles',
   },
   { titre: 'Les tendances', texte: 'Les fiches les plus consultées du site : une mesure de l’attention, pas des statistiques de parties.' },
-  { titre: 'Une API publique', texte: 'Une API REST en JSON pour les profils publics, les builds partagés et les tendances, avec une offre gratuite.' },
+  {
+    titre: 'Une API publique',
+    texte: 'Une API REST en JSON pour les profils publics, les builds partagés et les tendances, avec une offre gratuite.',
+    aConfirmer: 'Affichage de l’API à confirmer par Charles',
+  },
   {
     titre: 'Gratuit, sans publicité',
     texte: 'Le site vit de dons volontaires et s’installe comme une application web.',
@@ -283,7 +287,7 @@ export const DECISIONS: readonly Decision[] = [
   },
   {
     contrainte: 'Changer tout le moteur sans perdre un compte ni un lien.',
-    choix: 'Comparer les deux versions donnée par donnée avant de basculer.',
+    choix: 'Comparer les deux versions sur 75 couples (version, langue) avant de basculer.',
     effet: '12\u00a0260 écarts classés, aucun défaut neuf.',
     lien: { href: LIENS.parite, libelle: 'Le rapport de parité' },
   },
@@ -294,7 +298,7 @@ export const DECISIONS: readonly Decision[] = [
 /* ------------------------------------------------------------------ */
 
 export const LIENS_SORTIE: readonly LienProjet[] = [
-  { href: LIENS.application, libelle: 'Un ancien patch en tête ? Explorer l’application' },
+  { href: LIENS.application, libelle: 'Explorer l’application' },
   { href: LIENS.patchs, libelle: 'L’historique des 403 patchs' },
   { href: LIENS.code, libelle: 'Le code' },
   { href: LIENS.parite, libelle: 'Le rapport de parité' },

@@ -211,7 +211,7 @@ const ADRESSE = 'league-of-data-base.com';
     <SectionProjet id="reecriture" titre="Changer de moteur sans perdre personne" alignement="centre">
       <Fragment slot="texte">
         <p>La première version a livré le produit, mais elle ne pouvait pas devenir une application de bureau ou Android, et son état restait sur le disque d’un seul serveur. J’ai tout réécrit en .NET et Angular&nbsp;: deux langages au lieu de trois.</p>
-        <p>Avant de basculer, j’ai comparé les deux versions donnée par donnée. Le jour de la bascule, chacun s’est reconnecté une fois&nbsp;; comptes, builds, favoris, clés d’API et anciens liens ont suivi.</p>
+        <p>Avant de basculer, j’ai comparé les deux versions sur 75 couples (version, langue)&nbsp;: 12&nbsp;260 écarts, tous classés. Le jour de la bascule, chacun s’est reconnecté une fois&nbsp;; comptes, builds, favoris, clés d’API et anciens liens ont suivi.</p>
         <div class="actions">
           <LienAction href={LIENS.adr1} emplacement="preuves">Pourquoi réécrire</LienAction>
           <LienAction href={LIENS.parite} emplacement="preuves">Le rapport de parité</LienAction>
@@ -236,8 +236,9 @@ const ADRESSE = 'league-of-data-base.com';
     <SourcesProjet>
       <p><b>Ampleur.</b> 403 patchs, du 0.151.2 au 16.20.1, comptés sur l’<a {...sortant(LIENS.patchs)}>historique public de l’application<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>&nbsp;; 21 langues et un projet «&nbsp;conçu et maintenu par un développeur seul&nbsp;», d’après sa <a {...sortant(LIENS.aPropos)}>page À propos<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. Relevés le 13/10/2026. Le périmètre est celui des versions et des langues publiées dans Data Dragon, la source de données de Riot&nbsp;; aucune date n’y est attachée aux patchs.</p>
       <p><b>Ahri.</b> Valeurs de base au niveau 1, titre, passif et recharge de l’ultime relevés dans les fiches publiques des patchs 3.6.14 et 16.20.1, le 13/10/2026. Les captures viennent de la production v3.0.0, les 12 et 13 octobre 2026, sans compte connecté ni retouche. Les illustrations et les vidéos de Riot ne sont pas versionnées&nbsp;: elles ne prouvent rien d’historique, et l’application le signale.</p>
-      <p><b>Réécriture.</b> Dix décisions d’architecture acceptées le 24/09/2026, rapport de parité du 26/09/2026 (75 couples version et langue, 12&nbsp;260 écarts tous classés, 328 défauts de l’ancienne version corrigés volontairement), note publique de la version 3.0.0 du 04/10/2026. Permaliens figés à la <a {...sortant(LIENS.decisions)}>révision publique du 12/10/2026<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>.</p>
+      <p><b>Réécriture.</b> Dix décisions d’architecture acceptées le 24/09/2026, rapport de parité du 26/09/2026 (75 couples version et langue, 12&nbsp;260 écarts tous classés, 328 défauts de l’ancienne version corrigés volontairement), note publique de la version 3.0.0 du 04/10/2026. Permaliens figés à la <a {...sortant(LIENS.decisions)}>révision publique du 12/10/2026<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. Le README et la description du dépôt décrivent encore la période de bascule.</p>
       <p><b>Exploitation.</b> Caches, ingestion, mesure, sauvegardes et livraison sont décrits dans le dépôt public, à la même révision. Les fréquences des sauvegardes sont celles du dispositif&nbsp;; leur activation en production reste à confirmer. Aucun chiffre d’audience n’est publié&nbsp;: le tableau Umami est privé.</p>
+      <p><b>Nom.</b> League Of Data Base<AConfirmer titre="Nom officiel à confirmer (question Q8)">nom à confirmer</AConfirmer>.</p>
       <p><b>Riot Games.</b> Les données et les illustrations du jeu proviennent de Riot Games. Projet indépendant, sans affiliation à Riot Games.</p>
     </SourcesProjet>
   </CorpsProjet>
