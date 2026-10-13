@@ -195,6 +195,15 @@ test('le compte à rebours de GitGud : neuf fins de tour, cinq comptent, puis l�
   await expect(page.locator('[data-figure="OMN-05"] figcaption')).toContainText('jamais à la fin du tour adverse');
 });
 
+test('« Rééquilibrer » remonte sous la citation : pas de vide au-dessus du titre', async ({ page }) => {
+  test.skip((page.viewportSize()?.width ?? 0) <= 1100, 'Colonnes côte à côte seulement au-delà de 1 100 px.');
+  await page.goto(CHEMIN);
+  const titre = (await page.locator('#reequilibrer-titre').boundingBox())!;
+  const comparateur = (await page.getByRole('group', { name: 'Une carte, deux versions' }).boundingBox())!;
+  // Le titre s’aligne sur le haut du comparateur au lieu de se centrer sur sa hauteur.
+  expect(Math.abs(titre.y - comparateur.y)).toBeLessThan(40);
+});
+
 test.describe('la scène se rejoue au clic', () => {
   test.use({ reducedMotion: 'no-preference' });
 
