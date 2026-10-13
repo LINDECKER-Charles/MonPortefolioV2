@@ -155,10 +155,8 @@ const capture = (nom: string) => {
 
     <DecisionsProjet decisions={DECISIONS} chapeau="Quatre choix d’architecture qui ne se voient pas à l’écran, et pourquoi.">
       <div class="gup-autres">
-        <div class="gup-autres__tete">
-          <Visuel id="GUP-02" alt="" class="gup-autres__visuel" sizes="96px" />
-          <h3>Et deux choix de plus</h3>
-        </div>
+        <Visuel id="GUP-02" alt="" class="gup-autres__visuel" sizes="(max-width: 640px) 100vw, 576px" />
+        <h3>Et deux choix de plus</h3>
         <ul>
           {
             AUTRES_CHOIX.map((choix) => (
@@ -386,15 +384,10 @@ const capture = (nom: string) => {
     margin-top: var(--s6);
   }
 
-  .gup-autres__tete {
-    display: flex;
-    align-items: center;
-    gap: var(--s4);
-  }
-
-  .gup-autres__tete :global(.gup-autres__visuel) {
-    flex: none;
-    width: 96px;
+  /* GUP-02 : un bandeau de six pictos de 96 px, au-dessus de l’intertitre. */
+  :global(#construit .gup-autres__visuel) {
+    width: 576px;
+    margin-bottom: var(--s4);
   }
 
   .gup-autres h3 {
