@@ -352,6 +352,20 @@ const ADRESSE = 'league-of-data-base.com';
   }
 
   @media (max-width: 860px) {
+    /* Les repères de l’en-tête : « 12 260 » est bien plus large que 403 et
+       21. Chaque chiffre prend sa propre largeur, collé à sa légende, au lieu
+       d’une colonne commune qui laisserait les petits flotter. */
+    :global([data-projet='league'] .projet-tete__preuves .preuve-chiffree) {
+      grid-template-columns: max-content minmax(0, 1fr);
+      column-gap: var(--s3);
+    }
+
+    /* Les trois liens de l’en-tête passent sur deux lignes : des cibles de
+       44 px (règle E7) plutôt que 48, pour un interligne plus serré. */
+    :global([data-projet='league'] .projet-tete__actions .lien-action) {
+      padding-block: 10px;
+    }
+
     .paire {
       grid-template-columns: minmax(0, 1fr);
     }
