@@ -120,6 +120,14 @@ test('le récit garde ses moments, ses figures et ses scènes', async ({ page })
   // Le système qui communique en boucle et les lanternes : les dessins du registre, insérés dans la page.
   await expect(page.locator('[data-scene="architecte"] [data-animation-continue] .sys-paquet')).toHaveCount(4);
   await expect(page.locator('[data-scene="lanternes"] .lt-particule')).toHaveCount(2);
+  // Les lanternes au trait, de la même main que la bascule : ni dégradé, ni flou, ni ombre ; un contour d’encre de 1,5 px.
+  const lanternes = page.locator('[data-scene="lanternes"] svg');
+  await expect(lanternes.locator('linearGradient, radialGradient, filter, .lt-ombre, .lt-halo')).toHaveCount(0);
+  for (const trait of await lanternes.locator('.lt-aplat, .lt-flamme').all()) {
+    await expect(trait).toHaveCSS('filter', 'none');
+  }
+  await expect(lanternes.locator('.lt-aplat').first()).toHaveCSS('stroke-width', '1.5px');
+  await expect(lanternes.locator('.lt-aplat').first()).toHaveCSS('vector-effect', 'non-scaling-stroke');
   // Plus aucun dessin de l’ancienne direction.
   await expect(page.locator('.scene-origine, .illustration, .planche')).toHaveCount(0);
   // Les portes portent leurs intitulés en HTML, sans date pour la piscine de 42.
