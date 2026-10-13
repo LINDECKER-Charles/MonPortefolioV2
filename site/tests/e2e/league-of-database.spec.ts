@@ -338,7 +338,7 @@ for (const theme of ['jour', 'nuit'] as const) {
       await expect(page.locator('dialog[data-visionneuse] [data-visionneuse-image]')).toBeVisible();
       // axe ne voit pas le ::backdrop sombre du <dialog> : le contraste de la légende claire
       // s’y mesure sur la page, dessous. Il est vérifié la nuit, où le fond de page est sombre.
-      const regles = theme === 'jour' ? { 'color-contrast': { enabled: false } } : {};
+      const regles: Record<string, { enabled: boolean }> = { 'color-contrast': { enabled: theme === 'nuit' } };
       const ouverte = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).options({ rules: regles }).include('dialog[data-visionneuse]').analyze();
       expect(ouverte.violations.map((v) => v.id)).toEqual([]);
     });
