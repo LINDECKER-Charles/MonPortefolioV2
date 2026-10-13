@@ -1,5 +1,8 @@
 /* Pages de profondeur : les mêmes repères de lecture que l’accueil,
-   avec une composition propre à chaque sujet dans son fichier Astro. */
+   avec une composition propre à chaque sujet dans son fichier Astro.
+   Instrument Serif est déjà étroite : son crénage reste celui des jetons
+   (--ls-affiche pour le titre de page, --ls-titre ensuite), sans quoi les
+   lettres se touchent. */
 .profondeur .page-hero {
   padding-block: clamp(24px, 4vw, 56px) clamp(48px, 7vw, 96px);
 }
@@ -8,7 +11,7 @@
   max-width: 17ch;
   font-size: clamp(2.7rem, 1.5rem + 4.4vw, 5.7rem);
   line-height: 1.02;
-  letter-spacing: -0.045em;
+  letter-spacing: var(--ls-affiche);
 }
 
 .profondeur .page-hero__intro {
@@ -32,7 +35,7 @@
 .profondeur .page-section h2 {
   font-size: clamp(2rem, 1.4rem + 2vw, 3.4rem);
   line-height: 1.08;
-  letter-spacing: -0.03em;
+  letter-spacing: var(--ls-titre);
 }
 
 .profondeur .prose p + p {
