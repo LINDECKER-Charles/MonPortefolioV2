@@ -232,16 +232,16 @@ export function rangDuMois(mois: Mois): number {
   return annee * 12 + numero - 1;
 }
 
-/** Période d’une expérience, en clair : « Depuis août 2026 », « Août → septembre 2025 ». */
+/** Période d’une expérience, en clair : « Depuis août 2026 », « Août – septembre 2025 » (le tiret d’intervalle : les flèches sont réservées aux liens, règle E2). */
 export function periodeEnClair(experience: Pick<Experience, 'debut' | 'fin' | 'finAConfirmer'>): string {
   const debut = moisEnClair(experience.debut);
   if (experience.fin) {
     const [anneeDebut] = experience.debut.split('-');
     const [anneeFin] = experience.fin.split('-');
     const premier = anneeDebut === anneeFin ? debut.replace(/ \d+$/, '') : debut;
-    return majuscule(`${premier} → ${moisEnClair(experience.fin)}`);
+    return majuscule(`${premier} – ${moisEnClair(experience.fin)}`);
   }
-  if (experience.finAConfirmer) return majuscule(`${debut} → terminé`);
+  if (experience.finAConfirmer) return majuscule(`${debut} – terminé`);
   return `Depuis ${debut}`;
 }
 
@@ -252,7 +252,7 @@ export function majuscule(texte: string): string {
 /** Nature et période pour une ligne de frise : « CDI, depuis août 2026 ». */
 export function periodeDeFrise(experience: Pick<Experience, 'debut' | 'fin' | 'finAConfirmer' | 'nature' | 'bascule'>): string {
   const periode = experience.finAConfirmer && !experience.fin
-    ? `${moisEnClair(experience.debut)} → fin à confirmer`
+    ? `${moisEnClair(experience.debut)} – fin à confirmer`
     : periodeEnClair(experience);
   const role = experience.bascule ? `, ${experience.bascule.role} depuis ${moisEnClair(experience.bascule.mois)}` : '';
   return `${NATURES[experience.nature]}, ${periode.charAt(0).toLowerCase()}${periode.slice(1)}${role}`;

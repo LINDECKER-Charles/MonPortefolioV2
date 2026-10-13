@@ -43,13 +43,13 @@ const debutTexte = moisEnClair(e.debut);
           {e.fin ? (
             <>
               <time datetime={e.debut}>{majuscule(memeAnnee ? debutTexte.replace(/ \d+$/, '') : debutTexte)}</time>
-              <span aria-hidden="true"> → </span><span class="sr"> à </span>
+              <span aria-hidden="true"> – </span><span class="sr"> à </span>
               <time datetime={e.fin}>{moisEnClair(e.fin)}</time>
             </>
           ) : e.finAConfirmer ? (
             <>
               <time datetime={e.debut}>{majuscule(debutTexte)}</time>
-              <span aria-hidden="true"> →</span><span class="sr">, </span>
+              <span aria-hidden="true"> –</span><span class="sr">, </span>
               <AConfirmer titre="Date de fin à confirmer">fin à confirmer</AConfirmer>
             </>
           ) : (

@@ -88,9 +88,9 @@ function barre(ligne: LigneFrise) {
 /** La période en mots pour le nom du lien : « août à septembre 2025 », « de 2023 à 2024 ». */
 const periodeLue = (periode: string) =>
   periode
-    .replace(' → fin à confirmer', ', fin à confirmer')
-    .replace(' → terminé', ', terminé')
-    .replace(' → ', ' à ')
+    .replace(' – fin à confirmer', ', fin à confirmer')
+    .replace(' – terminé', ', terminé')
+    .replace(' – ', ' à ')
     .replace(/(\d{4})–(\d{4})/, 'de $1 à $2');
 
 // Repères : chaque 1er janvier (trait plein), chaque trimestre si demandé.
