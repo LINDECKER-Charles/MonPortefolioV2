@@ -4,6 +4,7 @@ import FilAriane from '../components/pages/FilAriane.astro';
 import ContinuerLecture from '../components/pages/ContinuerLecture.astro';
 import NavigationParcours from '../components/parcours/NavigationParcours.astro';
 import { PAGES_PARCOURS } from '../config/parcours';
+import type { EntreeSommaire } from '../config/navigation';
 import '../styles/profondeur.css';
 
 interface Props {
@@ -13,8 +14,10 @@ interface Props {
   courant: string;
   introduction: string;
   compact?: boolean;
+  /** Sections de la page, transmises au sommaire de l’en-tête (sous 1 100 px). */
+  sommaire?: readonly EntreeSommaire[];
 }
-const { titre, description, chemin, courant, introduction, compact = false } = Astro.props;
+const { titre, description, chemin, courant, introduction, compact = false, sommaire } = Astro.props;
 const suite = [
   { href: '/parcours', titre: 'Vue d’ensemble', detail: 'Revenir au parcours.' },
   ...PAGES_PARCOURS.filter((page) => page.href !== chemin).map((page) => ({
@@ -23,12 +26,12 @@ const suite = [
 ];
 ---
 
-<Base titre={titre} description={description} chemin={chemin}>
+<Base titre={titre} description={description} chemin={chemin} sommaire={sommaire}>
   <div class:list={['wrap profondeur parcours-page', { 'parcours-page--compact': compact }]}>
     <FilAriane courant={courant} parents={[{ href: '/parcours', titre: 'Parcours' }]} />
     <header class="page-hero">
-      <h1>{courant}</h1>
-      <p class="page-hero__intro">{introduction}</p>
+      <h1 data-pli="titre">{courant}</h1>
+      <p class="page-hero__intro" data-pli="identite">{introduction}</p>
     </header>
     <NavigationParcours chemin={chemin} />
     <slot />
