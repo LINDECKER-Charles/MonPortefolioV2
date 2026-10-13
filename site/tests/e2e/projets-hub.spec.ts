@@ -64,8 +64,12 @@ test('le premier écran dit quoi et pourquoi : titre, phrase, index des preuves 
   await expect(index.getByRole('link').first()).toBeInViewport();
   const vedette = carte(page, 'pvz');
   await expect(vedette).toHaveClass(/carte-projet--vedette/);
-  await expect(vedette.locator('.carte-projet__chiffre')).toBeInViewport({ ratio: 1 });
-  await expect(vedette.locator('.carte-projet__chiffre b')).toHaveText('20');
+  // La preuve du premier écran : le chiffre de la vedette, marqué par CarteProjet (règle E1).
+  const preuve = page.locator('[data-pli="preuve"]');
+  await expect(preuve).toHaveCount(1);
+  await expect(preuve).toHaveClass(/carte-projet__chiffre/);
+  await expect(preuve).toBeInViewport({ ratio: 1 });
+  await expect(vedette.locator('[data-pli="preuve"] b')).toHaveText('20');
   expect(erreurs).toEqual([]);
 });
 
@@ -103,7 +107,7 @@ test('cinq projets dans l’ordre de ce qu’ils prouvent, une seule fois chacun
   for (const [index, projet] of PROJETS.entries()) {
     const li = carte(page, projet.id);
     await expect(li.getByRole('heading', { level: 2 })).toContainText(projet.nom);
-    await expect(li.locator('.carte-projet__preuve')).toHaveText(new RegExp(`^\\s*${index + 1}\\s*${projet.preuve}\\s*$`));
+    await expect(li.locator('.carte-projet__preuve')).toHaveText(new RegExp(`^\\s*${String(index + 1).padStart(2, '0')}\\s*${projet.preuve}\\s*$`));
     await expect(li.locator('.carte-projet__chiffre b')).toHaveText(projet.chiffre);
     await expect(li.locator('.carte-projet__voir')).toHaveText(/^\s*Voir le projet\s*→\s*$/);
     await expect(li.locator('.carte-projet__fiche dt')).toHaveText(['Rôle', 'Statut']);
