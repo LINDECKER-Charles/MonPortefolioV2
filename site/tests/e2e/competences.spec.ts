@@ -44,6 +44,17 @@ test.describe('sans JavaScript', () => {
 
     const pratique = page.getByRole('region', { name: 'Pratiqué', exact: true });
     await expect(pratique.getByRole('link', { name: 'ASP.NET Core', exact: true })).toBeVisible();
+    // Ce que Life Pixel, l’API de ce site et gup mettent en œuvre se range dans Pratiqué.
+    for (const nom of ['Rust', 'Axum', 'Tokio', 'SQLx', 'React']) {
+      await expect(pratique.getByRole('link', { name: nom, exact: true })).toBeVisible();
+    }
+    // Le schéma « Interface ↔ API ↔ Données » reste visible, décoratif, avec sa phrase.
+    const pile = pratique.locator('.pile');
+    await expect(pile).toBeVisible();
+    await expect(pile).toHaveAttribute('aria-hidden', 'true');
+    await expect(pile.locator('.pile__nom')).toHaveText(['Interface', 'API', 'Données']);
+    await expect(pile.locator('.pile__lien')).toHaveCount(2);
+    await expect(pratique.locator('.sr')).toHaveText('Une interface échange avec une API, qui échange avec les données.');
     for (const famille of ['Langages', 'Web et interfaces', 'Backend et API', 'Données', 'Mobile']) {
       await expect(pratique.getByRole('region', { name: famille, exact: true }).getByRole('heading', { level: 3 })).toBeVisible();
     }
@@ -51,7 +62,8 @@ test.describe('sans JavaScript', () => {
     // Exploré : ouvert par défaut, complet sans script.
     const explore = page.getByRole('region', { name: 'Exploré ou ponctuel', exact: true });
     await expect(explore.locator('details')).toHaveAttribute('open', '');
-    await expect(explore.getByRole('link', { name: 'Rust', exact: true })).toBeVisible();
+    await expect(explore.getByRole('link', { name: 'Vue.js', exact: true })).toBeVisible();
+    await expect(explore.getByRole('link', { name: 'Rust', exact: true })).toHaveCount(0);
     await expect(explore.getByRole('link', { name: 'Photino.NET', exact: true })).toBeVisible();
 
     const ia = page.getByRole('region', { name: 'Intégration IA', exact: true });
@@ -63,13 +75,16 @@ test.describe('sans JavaScript', () => {
     const etapes = livraison.locator('.chaine__etapes > li');
     await expect(etapes).toHaveCount(5);
     await expect(etapes.first()).toContainText('Vérifier');
-    await expect(etapes.last()).toContainText('Promouvoir sans reconstruire');
+    await expect(etapes.nth(1)).toContainText('Les images du site et de l’API, construites une seule fois par révision');
+    await expect(etapes.last()).toContainText('Promouvoir');
     await expect(livraison.locator('.chaine__empreinte')).toHaveCount(4);
 
     const humaines = page.getByRole('region', { name: 'Compétences humaines', exact: true });
     await expect(humaines.locator('.humaine')).toHaveCount(7);
     await expect(humaines.getByRole('heading', { name: 'Pédagogie', exact: true })).toBeVisible();
     await expect(humaines.getByRole('link', { name: 'Trello', exact: true })).toHaveAttribute('href', 'https://trello.com/');
+    const trello = await humaines.getByRole('link', { name: 'Trello', exact: true }).boundingBox();
+    expect(trello?.height ?? 0).toBeGreaterThanOrEqual(44);
     for (const id of ['CMP-02', 'CMP-03', 'CMP-04', 'CMP-05', 'CMP-06', 'CMP-07', 'CMP-08']) {
       await expect(humaines.locator(`[data-visuel="${id}"]`)).toHaveCount(1);
     }
@@ -81,21 +96,49 @@ test.describe('sans JavaScript', () => {
   });
 });
 
-test('le sommaire mène à chaque section et « Exploré » se replie', async ({ page, isMobile }, testInfo) => {
+test('titre, identité et preuve tiennent au premier écran', async ({ page }) => {
   await page.goto('/parcours/competences');
-  const sommaire = isMobile
-    ? page.getByRole('navigation', { name: 'Sections de la page', exact: true })
-    : page.getByRole('navigation', { name: 'Dans cette page', exact: true });
-  await expect(sommaire).toBeVisible();
+  for (const marque of ['titre', 'identite', 'preuve']) {
+    await expect(page.locator(`[data-pli="${marque}"]`), marque).toHaveCount(1);
+  }
+  await expect(page.locator('[data-pli="titre"]')).toBeInViewport({ ratio: 1 });
+  await expect(page.locator('[data-pli="identite"]')).toBeInViewport({ ratio: 1 });
+  await expect(page.locator('[data-pli="preuve"] li').first()).toBeInViewport();
+});
 
-  await sommaire.getByRole('link', { name: 'Intégration IA', exact: true }).click();
+test('une seule navigation de page, et le sommaire mène à chaque section', async ({ page, isMobile }, testInfo) => {
+  await page.goto('/parcours/competences');
+  // Règle E4 : une seule navigation de page dans le contenu, masquée ou non selon la largeur.
+  await expect(page.locator('main nav[aria-label="Sections de la page"]')).toHaveCount(0);
+  await expect(page.locator('main nav[aria-label="Dans cette page"]')).toHaveCount(1);
+
+  // Sous 1 100 px, la colonne s’efface : le bouton « Sommaire » de l’en-tête prend le relais.
+  const ouvrir = async () => {
+    if (!isMobile) return page.getByRole('navigation', { name: 'Dans cette page', exact: true });
+    await page.locator('.entete__sommaire > summary').click();
+    return page.getByRole('navigation', { name: 'Sommaire de la page', exact: true });
+  };
+
+  let sommaire = await ouvrir();
+  await expect(sommaire).toBeVisible();
+  await expect(sommaire.getByRole('link')).toHaveText([
+    /^Au quotidien/, /^Pratiqué/, /^Exploré ou ponctuel/, /^Intégration IA/, /^Tests et livraison/, /^Compétences humaines/,
+  ]);
+  await sommaire.getByRole('link', { name: /^Intégration IA/ }).click();
   await expect(page).toHaveURL(/#ia$/);
   await expect(page.getByRole('heading', { level: 2, name: 'Intégration IA', exact: true })).toBeInViewport();
   if (!isMobile) await expect(sommaire.locator('a[aria-current="location"]')).toHaveAttribute('href', '#ia');
 
-  await sommaire.getByRole('link', { name: 'Compétences humaines', exact: true }).click();
+  sommaire = await ouvrir();
+  await sommaire.getByRole('link', { name: /^Compétences humaines/ }).click();
   await expect(page.getByRole('heading', { level: 2, name: 'Compétences humaines', exact: true })).toBeInViewport();
 
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath('competences.png'), fullPage: true });
+});
+
+test('« Exploré ou ponctuel » se replie et se rouvre', async ({ page }) => {
+  await page.goto('/parcours/competences');
   const explore = page.locator('#explore details');
   await explore.locator('summary').click();
   await expect(explore).not.toHaveAttribute('open', '');
@@ -103,16 +146,14 @@ test('le sommaire mène à chaque section et « Exploré » se replie', async ({
   await expect(explore.locator('.explore__masquer')).toBeHidden();
   await explore.locator('summary').click();
   await expect(explore).toHaveAttribute('open', '');
-
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await page.screenshot({ path: testInfo.outputPath('competences.png'), fullPage: true });
 });
 
 test('la chaîne de livraison se joue à son arrivée et se rejoue au clic', async ({ page, isMobile }) => {
   test.skip(isMobile, 'Le rail animé s’efface sous 860 px : la liste se lit à la verticale.');
   await page.goto('/parcours/competences');
-  const rail = page.getByRole('button', { name: /^Rejouer l’animation : la même image/ });
+  const rail = page.getByRole('button', { name: /^Rejouer l’animation : les mêmes images/ });
   await rail.scrollIntoViewIfNeeded();
+  expect((await rail.boundingBox())?.height ?? 0).toBeGreaterThanOrEqual(44);
   await expect(rail).toHaveClass(/animation-en-cours/);
   await expect(rail).not.toHaveClass(/animation-en-cours/, { timeout: 8_000 });
   await rail.click();
@@ -125,7 +166,7 @@ test.describe('mouvement réduit', () => {
   test('le rail reste immobile, sceau posé à l’arrivée', async ({ page, isMobile }) => {
     test.skip(isMobile, 'Le rail s’efface sous 860 px.');
     await page.goto('/parcours/competences');
-    const rail = page.getByRole('button', { name: /^Rejouer l’animation : la même image/ });
+    const rail = page.getByRole('button', { name: /^Rejouer l’animation : les mêmes images/ });
     await rail.scrollIntoViewIfNeeded();
     await rail.click();
     await expect(rail).not.toHaveClass(/animation-en-cours/);
