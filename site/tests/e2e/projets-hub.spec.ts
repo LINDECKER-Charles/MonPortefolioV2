@@ -12,7 +12,7 @@ import { surveillerConsole } from './support/navigateur';
  */
 
 const PROJETS = [
-  { id: 'pvz', nom: 'PvZ Fusion, pôle francophone', preuve: 'Mener une équipe', chemin: '/projets/pvz-fusion', chiffre: '20' },
+  { id: 'pvz', nom: 'PvZ Fusion, pôle francophone', preuve: 'Une équipe formée et menée', chemin: '/projets/pvz-fusion', chiffre: '20' },
   { id: 'league', nom: 'League Of Data Base', preuve: 'Un système en production', chemin: '/projets/league-of-database', chiffre: '403' },
   { id: 'omnicard', nom: 'Omnicard', preuve: 'Réinventer', chemin: '/projets/omnicard', chiffre: '≈ 3 mois' },
   { id: 'bloodborne', nom: 'Bloodborne Legendary Run', preuve: 'Un produit de bout en bout', chemin: '/projets/bloodborne-legendary-run', chiffre: '1 289' },
@@ -205,6 +205,9 @@ test('« Aussi » : quatre projets publics, et la démo de Shreksophone en ligne
   await expect(aussi.getByRole('heading', { level: 3 })).toHaveText(['GitHealth', 'Life Pixel', 'img-convertor', 'Shreksophone']);
   await expect(aussi.getByRole('link', { name: /La démo/ })).toHaveAttribute('href', 'https://lindecker-charles.github.io/ShrekSophone/');
   await expect(page.locator('a[href*="shrek.charles-lindecker.com"]')).toHaveCount(0);
+  // Un nom de dépôt en linéale : son trait d’union ne s’ouvre pas comme dans la sérif.
+  const depot = aussi.getByRole('heading', { level: 3, name: 'img-convertor' });
+  expect(await depot.evaluate((h) => getComputedStyle(h).fontFamily)).toMatch(/Instrument Sans/);
 });
 
 test('les liens sortants sont publics, marqués « ↗ » et mesurés', async ({ page }) => {
@@ -274,16 +277,19 @@ test('« Discutons » mène à la page Contact et se mesure', async ({ page }) =
   await expect(page).toHaveURL(/\/contact$/);
 });
 
-test('l’index défile sur lui-même sur mobile, jamais la page', async ({ page }) => {
+test('sur mobile, l’index passe à la ligne : cinq preuves entières, rien ne défile', async ({ page }) => {
   test.skip((page.viewportSize()?.width ?? 0) > 860, 'mobile seulement');
   await page.goto('/projets');
   const liste = page.getByRole('navigation', { name: 'Ce que prouve chaque projet', exact: true }).locator('ol');
   const { defile, hauteur } = await liste.evaluate((ol) => ({ defile: ol.scrollWidth > ol.clientWidth, hauteur: ol.getBoundingClientRect().height }));
-  expect(defile).toBe(true);
-  expect(hauteur).toBeLessThan(80);
-  const dernier = liste.getByRole('link').last();
-  await dernier.focus();
-  await expect(dernier).toBeInViewport();
+  expect(defile).toBe(false);
+  // Trois lignes au plus : le chiffre de la vedette reste au premier écran (E1).
+  expect(hauteur).toBeLessThan(110);
+  for (const lien of await liste.getByRole('link').all()) {
+    await expect(lien).toBeInViewport({ ratio: 1 });
+    // Une cible d’au moins 24 px de haut (WCAG 2.5.8).
+    expect((await lien.boundingBox())!.height).toBeGreaterThanOrEqual(24);
+  }
   expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
 });
 

@@ -15,7 +15,7 @@ export interface ProjetVitrine {
 }
 
 export const VITRINE: readonly ProjetVitrine[] = [
-  { id: 'pvz', nom: 'PvZ Fusion, pôle francophone', href: '/projets/pvz-fusion', preuve: 'Mener une équipe' },
+  { id: 'pvz', nom: 'PvZ Fusion, pôle francophone', href: '/projets/pvz-fusion', preuve: 'Une équipe formée et menée' },
   { id: 'league', nom: 'League Of Data Base', href: '/projets/league-of-database', preuve: 'Un système en production' },
   { id: 'omnicard', nom: 'Omnicard', href: '/projets/omnicard', preuve: 'Réinventer' },
   { id: 'bloodborne', nom: 'Bloodborne Legendary Run', href: '/projets/bloodborne-legendary-run', preuve: 'Un produit de bout en bout' },

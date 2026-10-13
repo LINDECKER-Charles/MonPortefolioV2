@@ -48,8 +48,8 @@ export interface CarteVitrine {
 export const CARTES: Readonly<Record<ProjetVitrine['id'], CarteVitrine>> = {
   pvz: {
     // Matière première : « Parcours » (lead, mainteneur, 20 contributeurs formés) ;
-    // 25 versions multilingues d’août 2025 à octobre 2026 (page PvZ Fusion).
-    besoin: 'Rattraper, à plusieurs, la traduction française d’un jeu qui change toutes les deux ou trois semaines.',
+    // 15 versions du jeu d’août 2025 à octobre 2026, en 25 publications multilingues (page PvZ Fusion).
+    besoin: 'Rattraper, à plusieurs, la traduction française d’un jeu qui sort une nouvelle version chaque mois environ.',
     chiffre: { valeur: '20', libelle: 'contributeurs formés' },
     role: 'Lead du pôle, mainteneur du projet multilingue',
     statut: { texte: 'En cours, bénévole' },
@@ -135,6 +135,8 @@ export interface ProjetAussi {
   id: string;
   nom: string;
   visuel: string;
+  /** Nom de dépôt technique (« img-convertor ») : composé en linéale, son trait d’union ne s’ouvre pas. */
+  technique?: boolean;
   description: string;
   liens: readonly LienPublic[];
 }
@@ -158,6 +160,7 @@ export const AUSSI: readonly ProjetAussi[] = [
   {
     id: 'img-convertor',
     nom: 'img-convertor',
+    technique: true,
     visuel: 'PRJ-08',
     description: 'Convertir un dossier d’images et en tirer les déclinaisons adaptées à chaque largeur d’écran (WebP, AVIF…).',
     liens: [{ href: 'https://github.com/LINDECKER-Charles/Web-Image-Formateur', libelle: 'Le code' }],

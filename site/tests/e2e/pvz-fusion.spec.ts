@@ -55,7 +55,7 @@ test('le nom canonique, l’étiquette de preuve et le chemin vers « Comment je
   const ariane = page.getByRole('navigation', { name: 'Fil d’Ariane', exact: true });
   await expect(ariane.locator('[aria-current="page"]')).toHaveText('PvZ Fusion, pôle francophone');
   const entete = page.locator('.projet-tete');
-  await expect(entete).toContainText('Mener une équipe');
+  await expect(entete).toContainText('Une équipe formée et menée');
   const construit = entete.locator('[data-pli="action"]').getByRole('link', { name: /Comment je l’ai construit/ });
   await expect(construit).toHaveAttribute('href', '#construit');
   await construit.click();
@@ -80,18 +80,38 @@ test('la fiche technique : sept cases à filets, statut à forme et mot, liens p
 test('trois chiffres sourcés et datés, un seul surligné, la part personnelle en note de sources', async ({ page }) => {
   await page.goto(CHEMIN);
   const preuves = page.locator('[data-pli="preuve"] .preuve-chiffree');
-  await expect(preuves.locator('.preuve-chiffree__valeur')).toHaveText(['20', '0', '35']);
+  await expect(preuves.locator('.preuve-chiffree__valeur')).toHaveText(['20', '1\u00a0335 → 0', '35']);
   for (const preuve of await preuves.all()) {
     await expect(preuve.locator('.preuve-chiffree__source')).toHaveText(/\d{2}\/\d{2}\/\d{4}/);
   }
   const surligne = page.locator('.projet-tete mark');
   await expect(surligne).toHaveCount(1);
-  await expect(surligne).toHaveText('0');
-  await expect(surligne).toHaveAttribute('data-source', /Historique public du dépôt/);
+  // Le même chiffre surligné que sur l’accueil et la vitrine : 20 personnes formées.
+  await expect(surligne).toHaveText('20');
+  await expect(surligne).toHaveAttribute('data-source', /Témoignage/);
   // 4 862 sur 5 179 : seulement dans la note de sources, jamais sous le titre.
   await expect(page.locator('.projet-tete')).not.toContainText(/4\s?862/);
   await expect(page.locator('#sources')).toContainText(/4\s862 dans mon bilan/);
   await expect(page.locator('main').getByText(/4\s862/)).toHaveCount(1);
+});
+
+test('la cadence, le rattrapage et ses limites sont dits tels que les sources les donnent', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const main = page.locator('main');
+  // 15 versions du jeu en 25 publications : pas « toutes les deux ou trois semaines ».
+  await expect(main).not.toContainText(/deux ou trois semaines/);
+  await expect(page.locator('.projet-tete')).toContainText('quinze versions en quatorze mois');
+  await expect(page.locator('#sources')).toContainText(/25\spublications .* pour 15\sversions distinctes du jeu/);
+  // Le retard a disparu, sans promettre qu’il ne revient plus.
+  await expect(page.locator('#resultat h2')).toHaveText('Rattraper le retard');
+  await expect(page.locator('#resultat')).toContainText(/la 4\.0\.5 ajoute 29\sentrées à traduire/);
+  await expect(main).not.toContainText(/ne plus décrocher|avant même sa sortie/);
+  // Les écarts du bilan, conservés tels quels.
+  await expect(page.locator('#sources')).toContainText(/4\s853 nouvelles traductions et 293 ajustements/);
+  await expect(page.locator('#sources')).toContainText('douze autres membres du bilan');
+  await expect(page.locator('#equipe')).toContainText('ma première pull request date du 16');
+  await expect(page.locator('#equipe .pvz-temps h3')).toHaveText(['Accueillir', 'Former et relire', 'Contribuer en autonomie']);
+  await expect(page.locator('#construit')).toContainText('la PR #110 en crédite huit');
 });
 
 test('aucun lien hors de la liste blanche, chaque sortie mesurée, le fork seulement dans les sources', async ({ page }) => {

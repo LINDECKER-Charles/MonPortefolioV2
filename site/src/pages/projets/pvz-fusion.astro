@@ -45,7 +45,7 @@ const etiquette = (id: string) => SECTIONS.find((section) => section.id === id)?
   <CorpsProjet sections={SECTIONS}>
     <SectionProjet id="depart" etiquette={etiquette('depart')} titre="Un jeu qui ne s’arrête jamais">
       <Fragment slot="texte">
-        <p>PvZ Fusion est un jeu amateur dérivé de Plants vs. Zombies&nbsp;: on y combine des plantes pour défendre son jardin. Des bénévoles du monde entier le traduisent. Chaque mise à jour ajoute des plantes et réécrit des règles, et le projet multilingue a publié 25&nbsp;versions entre août 2025 et octobre 2026.</p>
+        <p>PvZ Fusion est un jeu amateur dérivé de Plants vs. Zombies&nbsp;: on y combine des plantes pour défendre son jardin. Des bénévoles du monde entier le traduisent. Chaque mise à jour ajoute des plantes et réécrit des règles&nbsp;: d’août 2025 à octobre 2026, le projet multilingue a publié 15&nbsp;versions du jeu.</p>
         <p>En octobre 2025, la traduction française en était à la version 2.3.1&nbsp;; le jeu, à la 3.0.1.</p>
         <figure class="pvz-jeu">
           <Picture src={capture} formats={['avif']} fallbackFormat="webp" widths={[480, 768, 1024]} sizes="(max-width: 860px) 100vw, 320px" alt="Une partie de PvZ Fusion : des plantes fusionnées défendent le jardin contre une vague de zombies." loading="lazy" />
@@ -57,9 +57,9 @@ const etiquette = (id: string) => SECTIONS.find((section) => section.id === id)?
 
     <SectionProjet id="equipe" etiquette={etiquette('equipe')} titre="Accueillir, former, faire confiance">
       <Fragment slot="texte">
-        <p>Je suis arrivé pour traduire, le 21&nbsp;octobre 2025. Le 5&nbsp;décembre, on m’a confié le pôle&nbsp;; je m’occupais déjà de l’organisation, de l’accueil et de la formation des nouveaux.</p>
+        <p>Je suis arrivé pour traduire en octobre 2025&nbsp;: ma première pull request date du 16. Le 5&nbsp;décembre, on m’a confié le pôle&nbsp;; je m’occupais déjà de l’organisation, de l’accueil et de la formation des nouveaux.</p>
         <blockquote class="citation foyer pvz-citation"><p>«&nbsp;La seule chose qui a changé, c’est le titre.&nbsp;»</p></blockquote>
-        <p>Le 8&nbsp;décembre, deux nouvelles arrivées étaient consignées dans les journaux du pôle. En tout, j’ai formé 20&nbsp;personnes.</p>
+        <p>En tout, j’ai formé 20&nbsp;personnes.</p>
       </Fragment>
       <figure slot="figure" class="pvz-equipe">
         <figcaption class="pvz-legende-titre">Traducteur, lead, mainteneur&nbsp;: mes rôles et les arrivées dans le pôle</figcaption>
@@ -99,8 +99,8 @@ const etiquette = (id: string) => SECTIONS.find((section) => section.id === id)?
       </div>
     </SectionProjet>
 
-    <SectionProjet id="resultat" etiquette={etiquette('resultat')} titre="Rattraper, puis ne plus décrocher" alignement="bas">
-      <p slot="texte">En dix mois, le retard a disparu, alors que le jeu avait gagné 185&nbsp;plantes. Depuis, une version majeure est traduite avant même sa sortie multilingue.</p>
+    <SectionProjet id="resultat" etiquette={etiquette('resultat')} titre="Rattraper le retard" alignement="bas">
+      <p slot="texte">En dix mois, le retard a disparu, alors que le jeu avait gagné 185&nbsp;plantes. La 4.0 a été traduite avant sa sortie multilingue&nbsp;; en octobre 2026, la 4.0.5 ajoute 29&nbsp;entrées à traduire.</p>
       <FigureQuatreZero slot="figure" />
       <FigureRattrapage class="foyer pvz-rattrapage" />
       <PreuvesChiffrees label="Le bilan public du pôle, au 26/09/2026" class="pvz-volumes">
@@ -144,11 +144,11 @@ const etiquette = (id: string) => SECTIONS.find((section) => section.id === id)?
     </SortieProjet>
 
     <SourcesProjet>
-      <p><b>Le jeu et l’outil.</b> Les 25&nbsp;versions sont celles que le projet multilingue a publiées (PC, Android et préversions) du 12/08/2025 au 01/10/2026, d’après <a {...sortant(LIENS.versions)}>sa liste des versions<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>, relevée le 13/10/2026. À la révision c623790 (16/10/2025), <a {...sortant(LIENS.readmeDepart)}>le README du projet<span class="fleche" aria-hidden="true">&nbsp;↗</span></a> donne le jeu en 3.0.1 et le français en «&nbsp;Last Updated 2.3.1&nbsp;». Le Console Manager affiche le badge «&nbsp;locales 19&nbsp;» dans <a {...sortant(LIENS.outilCode)}>son dépôt<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>&nbsp;; il est entré dans le dépôt officiel par <a {...sortant(LIENS.pr23)}>la pull request #23<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>, fusionnée le 31/10/2025.</p>
+      <p><b>Le jeu et l’outil.</b> Du 12/08/2025 au 01/10/2026, <a {...sortant(LIENS.versions)}>la liste des versions<span class="fleche" aria-hidden="true">&nbsp;↗</span></a> du projet multilingue compte 25&nbsp;publications (PC, Android et préversions) pour 15&nbsp;versions distinctes du jeu, de la 2.8.1 à la 4.0.5&nbsp;: une version du jeu toutes les quatre semaines environ. Relevé le 13/10/2026. À la révision c623790 (16/10/2025), <a {...sortant(LIENS.readmeDepart)}>le README du projet<span class="fleche" aria-hidden="true">&nbsp;↗</span></a> donne le jeu en 3.0.1 et le français en «&nbsp;Last Updated 2.3.1&nbsp;». Le Console Manager affiche le badge «&nbsp;locales 19&nbsp;» dans <a {...sortant(LIENS.outilCode)}>son dépôt<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>&nbsp;; il est entré dans le dépôt officiel par <a {...sortant(LIENS.pr23)}>la pull request #23<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>, fusionnée le 31/10/2025.</p>
       <p><b>Couverture.</b> Mesurée par clé sur la branche principale du <a {...sortant(LIENS.amont)}>projet multilingue<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>&nbsp;: pour chaque révision, les entrées présentes en anglais, la langue pivot, et absentes en français, dans les fiches des plantes, celles des zombies et les textes d’interface. Huit révisions, de c623790 (16/10/2025) à 13d63b1 (12/10/2026), relevées le 13/10/2026. Une entrée présente mais obsolète n’est pas comptée&nbsp;: c’est une mesure de couverture, pas de qualité.</p>
-      <p><b>Volumes.</b> Le <a {...sortant(LIENS.bilanFige)}>bilan du pôle, figé au 26/09/2026<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>, déclare 5&nbsp;179 nouvelles traductions&nbsp;: 4&nbsp;862 dans mon bilan, 317 dans ceux des douze autres membres crédités. Ce sont des entrées cumulées au fil des versions, pas des textes uniques ni un taux de couverture. Les 583 ajustements se comptent à part&nbsp;; les 637 relectures sont mon compteur, pas celui du pôle.</p>
+      <p><b>Volumes.</b> Le <a {...sortant(LIENS.bilanFige)}>bilan du pôle, figé au 26/09/2026<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>, déclare 5&nbsp;179 nouvelles traductions&nbsp;: 4&nbsp;862 dans mon bilan, 317 dans ceux des douze autres membres du bilan. Ce sont des entrées cumulées au fil des versions, pas des textes uniques ni un taux de couverture. Les 583 ajustements se comptent à part&nbsp;; les 637 relectures sont mon compteur, pas celui du pôle. Le journal détaillé de mon bilan donne 4&nbsp;853 nouvelles traductions et 293 ajustements&nbsp;: les synthèses et les journaux présentent ces écarts, conservés tels quels.</p>
       <p><b>Pull requests.</b> Les <a {...sortant(LIENS.prs)}>35 pull requests<span class="fleche" aria-hidden="true">&nbsp;↗</span></a> ont été ouvertes par mon compte entre le 16/10/2025 et le 26/09/2026, et toutes fusionnées&nbsp;; elles ne correspondent pas à 35 semaines consécutives. La 4.0&nbsp;: textes d’origine versés le 20/09/2026, pull request française fusionnée le 26/09, version multilingue publiée le 01/10.</p>
-      <p><b>Rôles et équipe.</b> Dates des rôles et des arrivées&nbsp;: journaux publics des membres du pôle, dont <a {...sortant(LIENS.journalFige)}>le mien<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>&nbsp;; c’est aussi là que se lisent les corrections citées. Les 20 personnes formées, le pic de dix contributeurs en même temps, le tableau commun, le classement hebdomadaire, les récapitulatifs individuels et le rythme d’une pull request par semaine viennent de mon témoignage du 13/10/2026&nbsp;; aucun message privé n’est reproduit. Les extraits de menus viennent des <a {...sortant(LIENS.textesSources)}>textes sources, lignes 40 à 51<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>.</p>
+      <p><b>Rôles et équipe.</b> Dates des rôles et des arrivées&nbsp;: journaux publics des membres du pôle, dont <a {...sortant(LIENS.journalFige)}>le mien<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>&nbsp;; c’est aussi là que se lisent les corrections citées. Ma première pull request, ouverte le 16/10/2025 et fusionnée le 21/10, précède mon entrée au journal comme traducteur, datée du 21/10/2025. Ces journaux ne consignent que neuf arrivées, sur les vingt personnes formées. Les 20 personnes formées, le pic de dix contributeurs en même temps, le tableau commun, le classement hebdomadaire, les récapitulatifs individuels et le rythme d’une pull request par semaine viennent de mon témoignage du 13/10/2026&nbsp;; aucun message privé n’est reproduit. Les extraits de menus viennent des <a {...sortant(LIENS.textesSources)}>textes sources, lignes 40 à 51<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>.</p>
     </SourcesProjet>
   </CorpsProjet>
 </Base>
