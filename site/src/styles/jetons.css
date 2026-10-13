@@ -14,10 +14,11 @@
  * L’impression repasse en encre sur papier, quel que soit le thème.
  *
  * Contrastes (WCAG 2.x) calculés : design/refonte/c-lanterne/README.md, plus
- * l’acte bleu nuit et l’aplat bleu roi ci-dessous. L’acte de veille, la nuit
- * (#141a2b) : 1,12:1 contre la suie, donc cerné du filet porteur (--trait,
- * 3,9:1 contre la suie, 3,5:1 contre l’acte) ; encre 14,0:1, éteint 6,1:1,
- * lien 9,3:1 (règle B6 ; tests/unit/contrastes.test.ts).
+ * l’acte bleu nuit et l’aplat bleu roi ci-dessous. La nuit, les trois actes
+ * restent proches de la suie (veille #141a2b 1,12:1, teinté #12151c 1,06:1,
+ * bleu #101b3e) : chacun est cerné du filet porteur (--trait, 3,9:1 contre la
+ * suie ; global.css), l’autre voie de la règle B6. Dans l’acte de veille :
+ * encre 14,0:1, éteint 6,1:1, lien 9,3:1 (tests/unit/contrastes.test.ts).
  */
 
 :root {

@@ -74,3 +74,14 @@ describe('les erreurs de saisie (--erreur)', () => {
     }
   });
 });
+
+describe('l’acte teinté et l’acte bleu, la nuit (règle B6)', () => {
+  const suie = jeton(nuit, 'fond');
+  const bleu = bloc('/* Acte bleu nuit');
+
+  it('restent proches de la suie : le filet porteur qui les cerne (global.css) tient 3:1', () => {
+    expect(contraste(jeton(nuit, 'acte'), suie)).toBeLessThan(1.15);
+    expect(contraste(jeton(nuit, 'trait'), suie)).toBeGreaterThanOrEqual(3);
+    expect(contraste(jeton(bleu, 'trait'), suie)).toBeGreaterThanOrEqual(3);
+  });
+});

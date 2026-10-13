@@ -206,30 +206,29 @@ button {
   color: var(--encre);
 }
 
-:root[data-theme='nuit'] .acte-bleu {
-  box-shadow: inset 0 1px 0 var(--filet), inset 0 -1px 0 var(--filet);
+/* La nuit, les actes restent une rupture : proches de la suie, chacun est
+   cerné du filet porteur (--trait, 3,9:1 contre la suie, règle B6). L’acte de
+   veille passe au bleu nuit franc, et la lanterne l’éclaire de l’intérieur,
+   côté visuel (--veille-foyer, à droite par défaut). */
+:root[data-theme='nuit'] :is(.acte-teinte, .acte-bleu, .acte-veille) {
+  box-shadow: inset 0 0 0 1px var(--trait);
 }
 
-/* La nuit, l’acte de veille reste une rupture : un bleu nuit franc, cerné du
-   filet porteur (3,9:1 contre la suie, règle B6), et la lanterne qui l’éclaire
-   de l’intérieur, côté visuel (--veille-foyer, à droite par défaut). */
 :root[data-theme='nuit'] .acte-veille {
   background:
     radial-gradient(40% 60% at var(--veille-foyer, 85% 40%), var(--veille-lueur), transparent),
     var(--veille-nuit);
-  box-shadow: inset 0 0 0 1px var(--trait);
 }
 
 @media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) :is(.acte-teinte, .acte-bleu, .acte-veille) {
+    box-shadow: inset 0 0 0 1px var(--trait);
+  }
+
   :root:not([data-theme]) .acte-veille {
     background:
       radial-gradient(40% 60% at var(--veille-foyer, 85% 40%), var(--veille-lueur), transparent),
       var(--veille-nuit);
-    box-shadow: inset 0 0 0 1px var(--trait);
-  }
-
-  :root:not([data-theme]) .acte-bleu {
-    box-shadow: inset 0 1px 0 var(--filet), inset 0 -1px 0 var(--filet);
   }
 }
 

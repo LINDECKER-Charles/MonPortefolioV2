@@ -266,20 +266,6 @@ const omnicard = projetDeLaVitrine('omnicard');
     margin-top: var(--s8);
   }
 
-  /* La nuit, l’acte teinté et le bleu de la suite se confondraient presque
-     avec le fond (1,06:1) : un filet porteur les dessine (3,9:1). Correctif
-     local, en attendant des teintes de nuit plus claires dans les jetons
-     partagés. L’acte de veille a déjà le sien (global.css). */
-  :global(:root[data-theme='nuit'] .panneau:not(.acte-veille)) {
-    border: 1px solid var(--trait);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :global(:root:not([data-theme]) .panneau:not(.acte-veille)) {
-      border: 1px solid var(--trait);
-    }
-  }
-
   .quand {
     font-family: var(--police-titre);
     font-style: italic;
