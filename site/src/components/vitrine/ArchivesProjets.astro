@@ -1,0 +1,74 @@
+---
+/**
+ * Les projets archivés : un volet discret et replié (demande de Charles du
+ * 08/10/2026), pour qu’un projet quitte la vitrine sans perdre sa page ni son
+ * adresse. Tant qu’il est vide, il le dit ; son nombre n’apparaît qu’à partir
+ * d’un projet archivé. Liste : PROJETS_ARCHIVES (config/projets.ts).
+ */
+import { PROJETS_ARCHIVES } from '../../config/projets';
+import { typo } from '../../lib/typo';
+---
+
+<div class="conteneur">
+  <details class="archives" id="projets-archives">
+    <summary>Projets archivés{PROJETS_ARCHIVES.length > 0 && <span> ({PROJETS_ARCHIVES.length})</span>}</summary>
+    {
+      PROJETS_ARCHIVES.length === 0 ? (
+        <p>Aucun projet archivé pour le moment.</p>
+      ) : (
+        <ul>
+          {PROJETS_ARCHIVES.map((projet) => (
+            <li>
+              <a href={projet.href}>{projet.nom}<span class="fleche" aria-hidden="true">&nbsp;→</span></a>
+              <p>{typo(projet.resume)}</p>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </details>
+</div>
+
+<style>
+  .archives {
+    margin-top: var(--s6);
+    padding-top: var(--s2);
+    border-top: 1px solid var(--filet);
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  summary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s2);
+    min-height: 44px;
+    cursor: pointer;
+  }
+
+  summary:hover {
+    color: var(--encre);
+  }
+
+  .archives p {
+    max-width: 60ch;
+    padding-bottom: var(--s3);
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    padding-block: var(--s2);
+  }
+
+  li a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: var(--t-s);
+  }
+</style>
