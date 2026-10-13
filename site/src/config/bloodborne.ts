@@ -94,9 +94,9 @@ export const DECISIONS: readonly Decision[] = [
     lien: { href: LIENS.journal, libelle: 'Le journal, 06 et 07/09/2026' },
   },
   {
-    contrainte: 'Trois gestes d’allumage cohabitaient selon le type d’objectif, et le joueur se heurtait à chaque changement.',
+    contrainte: 'Trois gestes d’allumage cohabitaient dans l’application.',
     choix: 'Un seul geste, l’appui maintenu, qui enregistre la réussite avant de lancer sa cérémonie.',
-    effet: 'Un geste à apprendre, une mise en scène par type d’objectif.',
+    effet: 'Un seul geste à apprendre ; la famille de l’objectif décide de la mise en scène.',
     lien: { href: LIENS.journal, libelle: 'Le journal, 08/09/2026' },
   },
   {
@@ -118,7 +118,7 @@ export const REPRISE = [
   { titre: 'Une prochaine étoile', detail: 'L’objectif suivant, et ce qu’il faut faire pour l’allumer.' },
 ] as const;
 
-/** Les quatre allumages enregistrés (public/demos/bloodborne/README.md). */
+/** Les quatre allumages enregistrés (assets/projets/bloodborne/allumages/README.md). */
 export const RITUELS = [
   {
     id: 'boss',

@@ -6,7 +6,9 @@
  * puis la livraison construite une fois et promue telle quelle.
  *
  * Les dessins des couches sont des emplacements du registre (BLR-08 à
- * BLR-10) ; les logos sont les SVG officiels (assets/projets/README.md).
+ * BLR-10) ; les pictogrammes de la livraison (assets/pictos/bloodborne/)
+ * suivent la grille de 24 et le trait de 1,4 de la lanterne (GLO-03) ; les
+ * logos sont les SVG officiels (assets/projets/README.md).
  */
 import Picto from '../../ui/Picto.astro';
 import Visuel from '../../ui/Visuel.astro';
@@ -53,9 +55,9 @@ const couches = [
 ];
 const liaisons = ['HTTPS', 'Écriture'];
 const etapes = [
-  { titre: 'Construire', detail: 'Les images de l’application', picto: 'colis' },
-  { titre: 'Valider en test', detail: 'La version à livrer', picto: 'colis-valide' },
-  { titre: 'Promouvoir', detail: 'Les mêmes images en production', picto: 'colis-valide' },
+  { titre: 'Construire', detail: 'Les images de l’application', picto: 'bloodborne/construire' },
+  { titre: 'Valider en test', detail: 'La version à livrer', picto: 'bloodborne/valider' },
+  { titre: 'Promouvoir', detail: 'Les mêmes images en production', picto: 'bloodborne/promouvoir' },
 ];
 ---
 

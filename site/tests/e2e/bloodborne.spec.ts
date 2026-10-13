@@ -313,6 +313,9 @@ test('les accès : web public et de test, APK de test, Google Play à venir', as
   await expect(acces.locator('.blr-acces__magasin')).toContainText('Google Play');
   await expect(acces.locator('.blr-acces__magasin')).toContainText('À venir');
   await expect(acces.locator('[data-visuel]')).toHaveCount(2);
+  // BLR-06 et BLR-07 sont dessinés : plus de cadre hachuré.
+  await expect(acces.locator('[data-visuel][data-manquant]')).toHaveCount(0);
+  await expect(acces.locator('[data-visuel="BLR-06"] img')).toHaveAttribute('alt', '');
 });
 
 test('les couches de l’application s’explorent au clavier, puis la livraison', async ({ page }) => {
@@ -327,6 +330,46 @@ test('les couches de l’application s’explorent au clavier, puis la livraison
   await expect(technique.locator('.blr-fab__detail--donnees')).toContainText('PostgreSQL');
   await expect(technique.locator('.blr-fab__etapes > li')).toHaveCount(3);
   expect(await technique.locator('[data-visuel]').evaluateAll((v) => v.map((e) => e.getAttribute('data-visuel')))).toEqual(['BLR-08', 'BLR-09', 'BLR-10']);
+  await expect(technique.locator('[data-visuel][data-manquant]')).toHaveCount(0);
+});
+
+test('la vidéo prise au clavier montre son anneau de focus sur le cadre du téléphone', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const video = page.locator('[data-blr-rituel="boss"] video');
+  await page.locator('#rituel-gemme').focus();
+  for (let i = 0; i < 10 && !(await video.evaluate((v) => v === document.activeElement)); i++) await page.keyboard.press('Tab');
+  await expect(video).toBeFocused();
+  const cadre = page.locator('[data-blr-rituel="boss"] .capture__cadre');
+  expect(await cadre.evaluate((c) => getComputedStyle(c).outlineStyle)).toBe('solid');
+  expect(await cadre.evaluate((c) => getComputedStyle(c).outlineWidth)).toBe('2px');
+});
+
+test('sur mobile, les deux séries d’écrans défilent avec un compteur et le bord du suivant', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const mobile = (page.viewportSize()?.width ?? 1440) < 860;
+  for (const serie of [page.locator('#reprendre .blr-serie'), page.locator('#amis .blr-serie')]) {
+    const compteurs = serie.locator('.blr-serie__compte');
+    expect(await compteurs.allTextContents()).toEqual(['1 / 3', '2 / 3', '3 / 3']);
+    await expect(compteurs.first()).toHaveAttribute('aria-hidden', 'true');
+    if (!mobile) {
+      await expect(compteurs.first()).toBeHidden();
+      continue;
+    }
+    await expect(compteurs.first()).toBeVisible();
+    const [largeurSerie, largeurEcran] = await serie.evaluate((ol) => [ol.clientWidth, (ol.firstElementChild as HTMLElement).offsetWidth]);
+    expect(largeurEcran).toBeLessThan(largeurSerie);
+    expect(largeurEcran).toBeGreaterThan(largeurSerie * 0.7);
+    // Le titre de l’écran tient en entier dans sa diapositive.
+    const titre = serie.locator('.blr-serie__tete strong').nth(1);
+    expect(await titre.evaluate((t) => t.scrollWidth <= t.clientWidth)).toBe(true);
+  }
+});
+
+test('la documentation des allumages n’est pas servie avec les vidéos', async ({ request }) => {
+  for (const fichier of ['README.md', 'captures.json']) {
+    expect((await request.get(`/demos/bloodborne/${fichier}`)).status()).toBe(404);
+  }
+  expect((await request.get('/demos/bloodborne/boss.mp4')).ok()).toBe(true);
 });
 
 test('la sortie : projet suivant et précédent de la vitrine, « Discutons » vers /contact', async ({ page }) => {

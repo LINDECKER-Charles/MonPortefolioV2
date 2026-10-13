@@ -8,7 +8,7 @@
  * se rejoue d’un clic ou au clavier sur le téléphone
  * (scripts/bloodborne-allumage.ts). En mouvement réduit, le poster reste :
  * la dernière image de la cérémonie, l’étoile allumée sur la carte
- * (boss-fin-poster.webp, public/demos/bloodborne/README.md). Sans JavaScript,
+ * (boss-fin-poster.webp, assets/projets/bloodborne/allumages/README.md). Sans JavaScript,
  * les commandes natives du lecteur restent. Sur mobile, seul le téléphone :
  * la carte d’ordinateur y serait illisible, et la légende ne la nomme plus.
  */
@@ -124,6 +124,12 @@ import yharnam from '../../../assets/projets/bloodborne/yharnam.webp';
   .blr-tete__telephone :global(video) {
     aspect-ratio: 390 / 844;
     background: var(--cadre);
+  }
+
+  /* L’anneau de focus de la vidéo, rogné dans le cadre, se porte sur lui. */
+  .blr-tete__telephone :global(.capture__cadre:has(video:focus-visible)) {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
   }
 
   .blr-tete__rejouer {

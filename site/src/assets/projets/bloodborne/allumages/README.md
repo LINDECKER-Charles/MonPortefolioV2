@@ -1,5 +1,9 @@
 # Allumages de Bloodborne Legendary Run
 
+Les vidéos et leurs posters sont servis depuis `site/public/demos/bloodborne/`. Ce relevé et
+`captures.json` restent ici, hors de `public/` : ils documentent les captures et ne sont pas
+publiés avec le site.
+
 Vidéos enregistrées le **9 octobre 2026** dans le vrai front Angular de
 `Bloodborne-Legendary-Run`, au format mobile **390 × 844**. Elles utilisent le build local
 disponible du **5 octobre 2026** (`front/dist/front/browser/index.html`, modifié à 13 h 58,

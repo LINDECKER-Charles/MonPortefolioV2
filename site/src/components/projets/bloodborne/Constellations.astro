@@ -58,11 +58,20 @@ const milliers = (n: number) => n.toLocaleString('fr-FR').replace(/\s/g, ' ');
     gap: var(--s2) var(--s6);
   }
 
+  /* Un titre de section comme les autres (Instrument Serif) ; les deux
+     chiffres-preuves en Sans 600, chiffres tabulaires. */
   .blr-planche__titre {
+    font-family: var(--police-titre);
+    font-size: var(--t-2xl);
+    font-weight: 400;
+    line-height: 1.05;
+  }
+
+  .blr-planche__titre .chiffres {
+    font-family: var(--police-texte);
     font-size: var(--t-xl);
     font-weight: 600;
-    line-height: 1.15;
-    font-variant-numeric: tabular-nums;
+    letter-spacing: var(--ls-0);
   }
 
   .blr-planche__note {
