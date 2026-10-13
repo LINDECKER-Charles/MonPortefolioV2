@@ -107,7 +107,8 @@
   --s8: 64px;
   --s9: 96px;
   --gouttiere: clamp(16px, 3.6vw, 48px);
-  --section: clamp(64px, 7vw, 112px);
+  --section: clamp(64px, 7vw, 112px);   /* marges d’un acte bord à bord */
+  --entre-sections: var(--s8);          /* d’une section de page à la suivante (48 px sous 860 px) */
   --largeur: 1344px;
   --mesure: 35rem;            /* ≈ 62 caractères */
 
@@ -133,6 +134,7 @@
 @media (max-width: 860px) {
   :root {
     --entete: 60px;
+    --entre-sections: var(--s7);
   }
 }
 
