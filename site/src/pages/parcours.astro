@@ -36,8 +36,8 @@ const couloirs = [
     nom: 'Formation',
     lignes: [
       { cle: 'dwwm', href: '/parcours/formation#dwwm', libelle: `Titre ${DIPLOME.sigle}, Elan Formation`, periode: 'Formation, avril – octobre 2025', nature: 'formation', debut: DIPLOME.debut, fin: DIPLOME.fin },
-      // Connu à l’année seulement (2023–2024) : bords estompés, sans mois inventé à l’affichage.
-      { cle: 'reseaux', href: '/parcours/formation#reseaux', libelle: 'BUT Réseaux & Télécoms', periode: 'Formation, 2023–2024', nature: 'formation', debut: '2023-09', fin: '2024-06', bornesFloues: true },
+      // Connu à l’année seulement (2023–2024) : placé sur l’année universitaire, sans mois affiché.
+      { cle: 'reseaux', href: '/parcours/formation#reseaux', libelle: 'BUT Réseaux & Télécoms', periode: 'Formation, 2023–2024', nature: 'formation', debut: '2023-09', fin: '2024-06' },
     ],
   },
   { nom: 'Travail', lignes: parNature(false) },
@@ -105,7 +105,7 @@ const faits: Record<string, string[]> = {
     </header>
 
     <section class="hub-frise" aria-label="Le parcours dans le temps">
-      <Frise id="frise-parcours" titre="De septembre 2023 à aujourd’hui" debut="2023-09" couloirs={couloirs} />
+      <Frise id="frise-parcours" titre="De 2023 à aujourd’hui" debut="2023-09" couloirs={couloirs} />
     </section>
 
     <nav class="hub-portes" aria-label="Explorer le parcours">

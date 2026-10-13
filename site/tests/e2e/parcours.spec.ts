@@ -62,9 +62,9 @@ test.describe('hub', () => {
     await expect(portes).not.toContainText('↗');
   });
 
-  test('la frise montre le parcours de septembre 2023 à aujourd’hui, chaque ligne vers sa fiche', async ({ page }) => {
+  test('la frise montre le parcours de 2023 à aujourd’hui, chaque ligne vers sa fiche', async ({ page }) => {
     await page.goto('/parcours');
-    const frise = page.getByRole('figure', { name: 'De septembre 2023 à aujourd’hui' });
+    const frise = page.getByRole('figure', { name: 'De 2023 à aujourd’hui' });
     await expect(frise).toBeVisible();
     const liens = frise.getByRole('link');
     await expect(liens).toHaveCount(8);
@@ -126,7 +126,7 @@ test.describe('mise en page', () => {
     await page.goto('/parcours');
     const fin = await page.locator('main').evaluate((main) => main.getBoundingClientRect().bottom + window.scrollY);
     expect(fin).toBeLessThan(2 * 900);
-    const frise = await page.getByRole('figure', { name: 'De septembre 2023 à aujourd’hui' }).boundingBox();
+    const frise = await page.getByRole('figure', { name: 'De 2023 à aujourd’hui' }).boundingBox();
     expect(frise!.y).toBeLessThan(900);
   });
 
