@@ -4,7 +4,7 @@
 
 ## La mission
 
-Tu produis les visuels de la refonte du portfolio de Charles Lindecker. Le registre recense **126 emplacements** (82 « socle », 44 « élargi »). Pour chaque fiche ci-dessous, livre le **fichier attendu**, au chemin indiqué, en respectant le sujet, la composition et le format. Les règles communes valent pour toutes les fiches.
+Tu produis les visuels de la refonte du portfolio de Charles Lindecker. Le registre recense **129 emplacements** (85 « socle », 44 « élargi »). Pour chaque fiche ci-dessous, livre le **fichier attendu**, au chemin indiqué, en respectant le sujet, la composition et le format. Les règles communes valent pour toutes les fiches.
 
 - **Socle** : nécessaire au lancement de la refonte. À produire d’abord.
 - **Élargi** : enrichit le site et peut suivre.
@@ -51,7 +51,7 @@ Exceptions à la règle 3 : le nom dans les déclinaisons du logo, et les images
 | Identité et éléments globaux | 13 | 7 | IMG 2 · SVG 9 · FIG 0 · CAP 0 · PHO 0 · OG 2 |
 | Accueil | 16 | 10 | IMG 10 · SVG 1 · FIG 3 · CAP 1 · PHO 1 · OG 0 |
 | Projets (hub) | 12 | 5 | IMG 10 · SVG 0 · FIG 0 · CAP 2 · PHO 0 · OG 0 |
-| PvZ Fusion | 17 | 13 | IMG 10 · SVG 0 · FIG 6 · CAP 0 · PHO 0 · OG 1 |
+| PvZ Fusion | 20 | 16 | IMG 13 · SVG 0 · FIG 6 · CAP 0 · PHO 0 · OG 1 |
 | League Of Data Base | 7 | 4 | IMG 3 · SVG 2 · FIG 2 · CAP 0 · PHO 0 · OG 0 |
 | Omnicard | 8 | 5 | IMG 2 · SVG 4 · FIG 1 · CAP 0 · PHO 0 · OG 1 |
 | Bloodborne Legendary Run | 7 | 4 | IMG 4 · SVG 1 · FIG 1 · CAP 0 · PHO 0 · OG 1 |
@@ -60,7 +60,7 @@ Exceptions à la règle 3 : le nom dans les déclinaisons du logo, et les images
 | Contact | 4 | 3 | IMG 3 · SVG 0 · FIG 0 · CAP 0 · PHO 1 · OG 0 |
 | Blog | 2 | 1 | IMG 2 · SVG 0 · FIG 0 · CAP 0 · PHO 0 · OG 0 |
 | États : 404 et hors ligne | 2 | 1 | IMG 1 · SVG 1 · FIG 0 · CAP 0 · PHO 0 · OG 0 |
-| **Total** | **126** | **82** | IMG 73 · SVG 23 · FIG 19 · CAP 3 · PHO 3 · OG 5 |
+| **Total** | **129** | **85** | IMG 76 · SVG 23 · FIG 19 · CAP 3 · PHO 3 · OG 5 |
 
 ## File de travail « socle »
 
@@ -69,7 +69,7 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Identité et éléments globaux** : GLO-01 (SVG), GLO-02 (SVG), GLO-03 (SVG), GLO-04 (SVG), GLO-05 (SVG), GLO-06 (SVG), GLO-07 (OG)
 - **Accueil** : ACC-03 (IMG), ACC-04 (IMG), ACC-08 (IMG), ACC-09 (IMG), ACC-11 (IMG)
 - **Projets (hub)** : PRJ-01 (IMG), PRJ-02 (IMG)
-- **PvZ Fusion** : PVZ-01 (IMG), PVZ-02 (IMG), PVZ-04 (IMG), PVZ-05 (IMG), PVZ-06 (IMG), PVZ-07 (IMG), PVZ-08 (IMG), PVZ-11 (IMG)
+- **PvZ Fusion** : PVZ-01 (IMG), PVZ-02a (IMG), PVZ-02b (IMG), PVZ-02c (IMG), PVZ-04 (IMG), PVZ-05 (IMG), PVZ-06 (IMG), PVZ-07 (IMG), PVZ-08 (IMG), PVZ-11 (IMG)
 - **League Of Data Base** : LOD-03 (SVG), LOD-04 (IMG)
 - **Omnicard** : OMN-01 (IMG), OMN-03 (SVG), OMN-04 (SVG), OMN-06 (SVG)
 - **Bloodborne Legendary Run** : BLR-01 (IMG), BLR-02 (SVG), BLR-04 (IMG)
@@ -514,21 +514,54 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Emplacement** : `/projets/pvz-fusion` · En-tête _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Traduction et équipe
 - **Composition** : Jardin-plateau en coupe, plantes génériques stylisées ; de petites silhouettes posent des étiquettes ; une seule à gauche, un groupe à droite ; derrière, une pile de fiches qui grossit
-- **Format** : 4:3, 1600 × 1200 ; 1:1 mobile (recadrage mobile 1:1)
+- **Format** : 4:3, 1600 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-01_1600x1200.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un jardin en coupe où de petites silhouettes posent des étiquettes sur des plantes, une seule à gauche, un groupe à droite. »
-- **Note** : Posé dans l’en-tête de la page (components/projets/gabarit/EnTeteProjet.astro, slot « visuel ») : 4:3 sur ordinateur, 1:1 sous 860 px.
+- **Note** : Posé dans l’en-tête de la page (components/projets/gabarit/EnTeteProjet.astro, slot « visuel ») : 4:3 à toutes les largeurs, à droite du titre au-delà de 1 100 px, centré sous les repères chiffrés en dessous (640 px au plus). Garder le sujet lisible au centre : en mobile, l’image fait 358 × 268 px.
 
 ### PVZ-02 · Accueillir, former, faire confiance
 
-- **Priorité** : socle · **Méthode** : IMG, à générer (image)
+- **Priorité** : socle · **Méthode** : IMG, rien à produire, le fichier est celui d’un autre emplacement
 - **Emplacement** : `/projets/pvz-fusion` · § 2, l’équipe _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Accueillir, former, faire confiance
-- **Composition** : Triptyque dans le même décor : une personne montre une fiche annotée à une nouvelle venue ; la nouvelle venue travaille ; elle relit seule la fiche d’un troisième
-- **Format** : 3:1 ; 3 × 4:3 mobile (recadrage mobile 4:3)
-- **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-02_1800x600.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Trois moments dans le même décor : montrer une fiche annotée à une nouvelle venue, la voir travailler, puis relire seule. »
-- **Note** : Au-dessus des trois temps de la formation (Accueillir, Former et relire, Faire confiance), dont les intitulés restent en HTML : les trois cases du triptyque leur répondent de gauche à droite.
+- **Composition** : Triptyque en trois fichiers de même main et même décor (PVZ-02a, PVZ-02b, PVZ-02c) : montrer une fiche annotée à une nouvelle venue, la voir travailler, puis la laisser relire seule
+- **Format** : 3 × 4:3, juxtaposés en bureau
+- **Fichier attendu** : aucun, reprend `PVZ-02a`, `PVZ-02b`, `PVZ-02c`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Trois moments dans le même décor : montrer une fiche annotée à une nouvelle venue, la voir travailler, puis la laisser relire seule. »
+- **Note** : Bureau : les trois cases se touchent, sans gouttière, et se lisent comme un seul triptyque ; chacune coiffe son temps (Accueillir, Former et relire, Faire confiance), dont l’intitulé reste en HTML. Sous 860 px, chaque case passe au-dessus de son temps : aucun recadrage ne fait disparaître une case.
+
+### PVZ-02a · Accueillir : montrer la fiche
+
+- **Priorité** : socle · **Méthode** : IMG, à générer (image)
+- **Emplacement** : `/projets/pvz-fusion` · § 2, l’équipe, case 1 du triptyque, au-dessus de « Accueillir » _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Accueillir : montrer la fiche
+- **Composition** : Une table de travail vue de trois quarts ; à gauche, une silhouette debout tend une fiche annotée à une nouvelle venue assise ; la lanterne posée sur la table éclaire la fiche seule, le reste dans l’ombre. Décor commun aux trois cases : même table, même lanterne, même cadrage, horizon à mi-hauteur
+- **Format** : 4:3, 1200 × 900
+- **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-02a_1200x900.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une personne montre une fiche annotée à une nouvelle venue, à la lumière d’une lanterne. »
+- **Note** : Première case du triptyque PVZ-02 : même main, même décor, même lumière que PVZ-02b et PVZ-02c. Le bord droit se raccorde au bord gauche de PVZ-02b (table continue), sans cadre ni marge.
+
+### PVZ-02b · Former et relire : la voir travailler
+
+- **Priorité** : socle · **Méthode** : IMG, à générer (image)
+- **Emplacement** : `/projets/pvz-fusion` · § 2, l’équipe, case 2 du triptyque, au-dessus de « Former et relire » _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Former et relire : la voir travailler
+- **Composition** : La même table et la même lanterne ; la nouvelle venue écrit sur la fiche, la silhouette de la case 1 se tient en retrait derrière son épaule et désigne une ligne du doigt ; la lumière tombe sur la main qui écrit
+- **Format** : 4:3, 1200 × 900
+- **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-02b_1200x900.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « La nouvelle venue écrit sur la fiche, accompagnée par la personne qui l’a accueillie. »
+- **Note** : Case centrale du triptyque PVZ-02 : se raccorde à PVZ-02a à gauche et à PVZ-02c à droite.
+
+### PVZ-02c · Faire confiance : relire seule
+
+- **Priorité** : socle · **Méthode** : IMG, à générer (image)
+- **Emplacement** : `/projets/pvz-fusion` · § 2, l’équipe, case 3 du triptyque, au-dessus de « Faire confiance » _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Faire confiance : relire seule
+- **Composition** : La même table et la même lanterne ; la nouvelle venue, seule, relit la fiche d’une troisième personne posée devant elle et la coche ; la chaise de la silhouette de la case 1 est vide ; la lanterne éclaire la fiche relue
+- **Format** : 4:3, 1200 × 900
+- **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-02c_1200x900.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « La nouvelle venue relit seule la fiche d’un autre membre, à la lumière de la lanterne. »
+- **Note** : Dernière case du triptyque PVZ-02 : son bord gauche se raccorde à PVZ-02b.
 
 ### PVZ-03 · La boucle
 
@@ -557,44 +590,44 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
 - **Emplacement** : `/projets/pvz-fusion` · § 3, carte 1 de la semaine type, Organiser (accueil : les quatre gestes) _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Organiser : un tableau commun
-- **Composition** : Tableau de cartes épinglées en trois colonnes, sans marque ni texte ; plusieurs mains anonymes prennent chacune une carte ; la lanterne posée au pied du tableau
+- **Composition** : Un seul motif centré : trois cartes vierges épinglées côte à côte ; une main anonyme, en silhouette, en décroche une ; la lanterne, en bas à droite, éclaire la carte prise
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-05_480x480.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Organiser : un tableau commun »
-- **Note** : Vignette de carte, affichée entre 96 et 136 px : le sujet doit se lire en petit, sujet principal au centre, sans détail fin.
+- **Note** : Vignette de carte, affichée à 136 px de large en bureau, 96 px entre 1 101 et 1 240 px et sous 760 px : un seul motif centré, en silhouette, qui occupe au moins 60 % du cadre, sans détail fin. Gravure en réserve sur papier, recolorée par les jetons du thème courant (papier le jour, nuit la nuit). Exception assumée à la règle B8 (320 px au moins) : une vignette de carte, pas une illustration de section, à faire valider par Charles.
 
 ### PVZ-06 · Traduire, relire, tester
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
 - **Emplacement** : `/projets/pvz-fusion` · § 4, le métier de traducteur, à côté des corrections et de la démonstration _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Traduire, relire, tester
-- **Composition** : Une plume posée sur une fiche barrée puis récrite, une coche de relecture dans la marge, une loupe sur un écran de jeu générique sans personnage ni interface lisible
+- **Composition** : Un seul motif centré : une plume posée en travers d’une fiche dont une ligne est barrée ; la lanterne, hors champ à droite, éclaire la plume
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-06_480x480.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Traduire, relire, tester »
-- **Note** : Vignette de titre, affichée à 72 px : silhouette simple, lisible en petit.
+- **Note** : Vignette de titre, affichée à 96 px de large à toutes les largeurs, à gauche du titre « Traduire, c’est suivre des règles qui changent » : silhouette simple, lisible en petit, sans détail fin. Gravure en réserve sur papier, recolorée par les jetons du thème courant. Exception assumée à la règle B8 (320 px au moins), à faire valider par Charles.
 
 ### PVZ-07 · Livrer : une proposition par semaine
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
 - **Emplacement** : `/projets/pvz-fusion` · § 3, carte 2 de la semaine type, Livrer (accueil : les quatre gestes) _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Livrer : une proposition par semaine
-- **Composition** : Calendrier de semaines, chacune cochée d’un colis scellé qui rejoint un tronc commun ; plusieurs petites étiquettes sans nom nouées sur le colis de la semaine
+- **Composition** : Un seul motif centré : un colis scellé, noué d’une ficelle où pendent quelques étiquettes vierges, sans nom ni chiffre ; la lanterne posée à côté éclaire les étiquettes
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-07_480x480.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Livrer : une proposition par semaine »
-- **Note** : Vignette de carte, affichée entre 96 et 136 px.
+- **Note** : Vignette de carte, affichée à 136 px de large en bureau, 96 px entre 1 101 et 1 240 px et sous 760 px : un seul motif centré, en silhouette, qui occupe au moins 60 % du cadre, sans détail fin. Gravure en réserve sur papier, recolorée par les jetons du thème courant (papier le jour, nuit la nuit). Exception assumée à la règle B8 (320 px au moins) : une vignette de carte, pas une illustration de section, à faire valider par Charles.
 
 ### PVZ-08 · Motiver : le classement de la semaine
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
 - **Emplacement** : `/projets/pvz-fusion` · § 3, carte 3 de la semaine type, Motiver (accueil : les quatre gestes) _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Motiver : le classement de la semaine
-- **Composition** : Petit podium de trois marches sans chiffre, trois silhouettes anonymes de tailles proches, une étoile au-dessus de la plus haute marche, éclairée par la lanterne, sans lettre ni ruban
+- **Composition** : Un seul motif centré : un podium vide de trois marches, sans chiffre ni lettre, sous une étoile ; la lanterne posée sur la plus haute marche éclaire l’étoile
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-08_480x480.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Motiver : le classement de la semaine »
-- **Note** : Ancienne station « Reconnaître » scindée le 13/10/2026 : le podium ici, la lettre en PVZ-11, pour les quatre cartes conservées de la gestion de projet.
+- **Note** : Ancienne station « Reconnaître » scindée le 13/10/2026 : le podium ici, la lettre en PVZ-11, pour les quatre cartes conservées de la gestion de projet. Vignette de carte, affichée à 136 px de large en bureau, 96 px entre 1 101 et 1 240 px et sous 760 px : un seul motif centré, en silhouette, qui occupe au moins 60 % du cadre, sans détail fin. Gravure en réserve sur papier, recolorée par les jetons du thème courant (papier le jour, nuit la nuit). Exception assumée à la règle B8 (320 px au moins) : une vignette de carte, pas une illustration de section, à faire valider par Charles.
 
 ### PVZ-09 · Rattraper, puis ne plus décrocher
 
@@ -622,11 +655,11 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
 - **Emplacement** : `/projets/pvz-fusion` · § 3, carte 4 de la semaine type, Remercier (accueil : les quatre gestes) _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Remercier : le récapitulatif individuel
-- **Composition** : Une lettre personnelle pliée, nouée d’un ruban, tendue par une main anonyme vers une autre ; derrière, une petite pile de fiches de la semaine ; la lanterne éclaire la lettre seule
+- **Composition** : Un seul motif centré : une lettre pliée, nouée d’un ruban, sans écriture lisible ; la lanterne, juste derrière, éclaire la lettre seule
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-11_480x480.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Remercier : le récapitulatif individuel »
-- **Note** : Ajouté le 13/10/2026 : la moitié « lettre » de l’ancienne station PVZ-08, pour la quatrième carte de gestion de projet. Même série, même main que PVZ-05, PVZ-07 et PVZ-08.
+- **Note** : Ajouté le 13/10/2026 : la moitié « lettre » de l’ancienne station PVZ-08, pour la quatrième carte de gestion de projet. Même série, même main que PVZ-05, PVZ-07 et PVZ-08. Vignette de carte, affichée à 136 px de large en bureau, 96 px entre 1 101 et 1 240 px et sous 760 px : un seul motif centré, en silhouette, qui occupe au moins 60 % du cadre, sans détail fin. Gravure en réserve sur papier, recolorée par les jetons du thème courant (papier le jour, nuit la nuit). Exception assumée à la règle B8 (320 px au moins) : une vignette de carte, pas une illustration de section, à faire valider par Charles.
 
 ### PVZ-F1 · Courbe du rattrapage
 
