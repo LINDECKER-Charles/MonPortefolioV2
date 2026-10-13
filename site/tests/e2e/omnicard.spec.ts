@@ -76,14 +76,15 @@ test('la fiche : sept cases, statut hors ligne à forme et mot, dates à confirm
   }
 });
 
-test('trois repères sourcés, un seul surligné : les trois mois de travail', async ({ page }) => {
+test('trois repères sourcés, un seul surligné : les 181 cartes, la durée ensuite', async ({ page }) => {
   await page.goto(CHEMIN);
   const preuves = page.locator('[data-pli="preuve"] .preuve-chiffree');
-  await expect(preuves.locator('.preuve-chiffree__valeur')).toHaveText([`≈${NBSP}3${NBSP}mois`, '181', '5']);
+  await expect(preuves.locator('.preuve-chiffree__valeur')).toHaveText(['181', `≈${NBSP}3${NBSP}mois`, '5']);
   for (const preuve of await preuves.all()) await expect(preuve.locator('.preuve-chiffree__source')).not.toBeEmpty();
   const surligne = page.locator('.projet-tete mark');
   await expect(surligne).toHaveCount(1);
-  await expect(surligne).toHaveAttribute('data-source', /Témoignage/);
+  await expect(surligne).toHaveText('181');
+  await expect(surligne).toHaveAttribute('data-source', /Galerie publique, version 1\.2\.0/);
 });
 
 test('un seul lien de code, le dépôt de présentation public ; aucune démo hors ligne', async ({ page }) => {

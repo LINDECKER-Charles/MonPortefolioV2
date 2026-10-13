@@ -49,20 +49,25 @@ export const EN_TETE = {
   ] satisfies LienProjet[],
 };
 
+/**
+ * Le chiffre surligné est le plus parlant des faits sourcés : les 181 cartes
+ * du catalogue public. La durée, approximative et déclarée, vient ensuite,
+ * sans surlignage : seule, elle ferait lire un petit projet.
+ */
 export const PREUVES: readonly PreuveEnTete[] = [
-  {
-    valeur: '≈ 3 mois',
-    libelle: 'de travail cumulé, seul',
-    source: 'Témoignage',
-    date: 'questionnaire D1 et D2',
-    surligne: true,
-  },
   {
     valeur: '181',
     libelle: 'cartes dans le catalogue public, réparties en trois univers',
     source: 'Galerie publique, version 1.2.0',
     date: 'relevée le 13/10/2026',
     href: '#partie',
+    surligne: true,
+  },
+  {
+    valeur: '≈ 3 mois',
+    libelle: 'de travail cumulé, seul',
+    source: 'Témoignage',
+    date: 'questionnaire D1 et D2',
   },
   {
     valeur: '5',
