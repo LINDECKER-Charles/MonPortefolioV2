@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+  <title>Une page de registre dont une case vide porte un signet</title>
+  <path class="p-aplat" d="M15 20.5h18v9.5H15z" fill="currentColor" fill-opacity=".1" stroke="none"/>
+  <path d="M11 5.5h20l6 6v31H11zM31 5.5v6h6"/>
+  <path class="p-doux" d="M15 12h12M15 16h18M15 34.5h18M15 38.5h12" stroke-width="1.25" stroke-opacity=".55"/>
+  <path class="p-pointille" d="M15 20.5h18v9.5H15z" stroke-dasharray="2 2.6"/>
+  <path class="p-plein" d="M25.5 18.5h5v10l-2.5-2-2.5 2z" fill="currentColor"/>
+</svg>

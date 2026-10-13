@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+  <title>Une porte entrouverte sur la lumière</title>
+  <path class="p-lumiere" d="M26 9 35 6.5V40l-9-1.5zM26 40.5h9l7.5 5H20z" fill="#f0b24a" fill-opacity=".6" stroke="none"/>
+  <path class="p-aplat" d="M13 6.5 26 9v29.5L13 40z" fill="currentColor" fill-opacity=".1" stroke="none"/>
+  <path d="M13 40.5V6.5h22v34M13 6.5 26 9v29.5L13 40.5"/>
+  <path d="M4 40.5h40"/>
+  <circle cx="22.5" cy="24.5" r="1.25" fill="currentColor" stroke="none"/>
+</svg>
