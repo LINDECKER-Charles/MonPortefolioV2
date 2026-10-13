@@ -215,6 +215,8 @@ test('la part de chacun : la contribution extérieure est dite, le lot administr
   // La note de sources dit d’où viennent la règle Chocolatey et le lot administrateur, preuves à l’appui.
   const sources = page.locator('#sources');
   await expect(sources).toContainText('La règle des codes 3010 et 1641 de Chocolatey et le lot administrateur unique viennent d’une contribution extérieure de mai 2026');
+  // La note est repliée : ses liens ne sont exposés qu’une fois ouverte.
+  await sources.locator('summary').click();
   await expect(sources.getByRole('link', { name: /n°\s22/ })).toHaveAttribute('href', 'https://github.com/LINDECKER-Charles/gup/pull/22');
   await expect(sources.getByRole('link', { name: /n°\s23/ })).toHaveAttribute('href', 'https://github.com/LINDECKER-Charles/gup/pull/23');
   await expect(page.locator('.projet-tete')).not.toContainText(/conçu, écrit/);
