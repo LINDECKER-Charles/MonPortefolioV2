@@ -9,10 +9,12 @@
  * sont un contrat (scripts/opposition.ts, tests/e2e/mesure.spec.ts) ; la page
  * Contact renvoie vers #donnees.
  *
- * Les faits d’hébergement viennent des mentions de la V1 ; les durées des
- * journaux et de la session, de la configuration du serveur. Ce qui n’est pas
- * encore établi (durée de conservation des messages, service d’envoi des
- * notifications) reste marqué « à confirmer ». Texte à faire relire par Charles.
+ * Les faits d’hébergement viennent des mentions de la V1. Durée de la session
+ * (12 h) : backend/src/admin.rs. Durée du journal : relevé de l’administration
+ * du serveur, à faire confirmer par Charles (aucune source dans ce dépôt).
+ * Ce qui n’est pas encore établi (durée de conservation des messages, service
+ * d’envoi des notifications) reste marqué « à confirmer ». Texte à faire
+ * relire par Charles.
  */
 import Base from '../layouts/Base.astro';
 import FilAriane from '../components/pages/FilAriane.astro';
@@ -41,9 +43,9 @@ const courriel = `mailto:${CONTACT.email}`;
   <div class="conteneur document">
     <FilAriane courant="Mentions légales" />
     <header class="document__tete">
-      <h1>Mentions légales</h1>
+      <h1 data-pli="titre">Mentions légales</h1>
       <p class="document__maj">Dernière mise à jour&nbsp;: <time datetime={majour.iso}>{majour.texte}</time></p>
-      <p class="document__resume chapeau">
+      <p class="document__resume chapeau" data-pli="identite">
         En bref&nbsp;: ce site personnel ne dépose aucun cookie et n’affiche aucune publicité. Il compte ses visites avec
         un outil hébergé sur son propre serveur, sans vous identifier, et vous pouvez vous y opposer d’un clic.
       </p>
@@ -54,7 +56,7 @@ const courriel = `mailto:${CONTACT.email}`;
         <h2 id="editeur-titre">Éditeur</h2>
         <p>
           Ce site est édité par {SITE.nom}, à titre personnel, qui en est aussi le directeur de la publication. Contact&nbsp;:
-          <a href={courriel} data-umami-event="contact-email" data-umami-event-emplacement="mentions">{CONTACT.email}</a>.
+          <a href={courriel} data-umami-event="contact-email" data-umami-event-emplacement="mentions">{CONTACT.email}<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>.
         </p>
       </section>
 
@@ -122,7 +124,7 @@ const courriel = `mailto:${CONTACT.email}`;
           </li>
           <li>
             Vous pouvez demander l’accès à vos données, leur correction ou leur effacement en écrivant à
-            <a href={courriel} data-umami-event="contact-email" data-umami-event-emplacement="mentions">{CONTACT.email}</a>.
+            <a href={courriel} data-umami-event="contact-email" data-umami-event-emplacement="mentions">{CONTACT.email}<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>.
             En cas de désaccord, vous pouvez saisir la
             <a href="https://www.cnil.fr/fr/plaintes" rel="external">CNIL<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>.
           </li>
