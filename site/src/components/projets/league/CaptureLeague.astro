@@ -1,0 +1,167 @@
+---
+/**
+ * Une capture réelle de League Of Data Base, qui suit la largeur de l’écran
+ * comme l’application (validé par Charles le 12/10/2026) : l’écran
+ * d’ordinateur dans un cadre de navigateur au-delà de 860 px, l’écran de
+ * téléphone dans un cadre de téléphone en dessous, quand la capture mobile
+ * existe. Les deux s’agrandissent dans la visionneuse partagée
+ * (<Visionneuse />, à poser une fois dans la page).
+ *
+ *   <CaptureLeague nom="histoire-version" adresse="league-of-data-base.com/fr/3.6.14/champions"
+ *     alt="…ce que la capture prouve…" legende="…"
+ *     cible={{ x: 87, y: 17 }} loupe={{ x: 87, y: 16, zoom: 2.4, coin: 'bas-gauche' }}
+ *     mobile={{ ratio: '1 / 1' }} />
+ *
+ * Fichiers : src/assets/projets/league-of-database/<nom>.webp et, s’il
+ * existe, <nom>-mobile.webp (provenance : src/assets/projets/README.md).
+ * Avec une cible ou une loupe, l’écran d’ordinateur passe par CaptureAnnotee
+ * (cadre 16:10) ; sans, par CadreCapture, entier ou recadré par `ratio`.
+ * `mobile={false}` garde l’écran d’ordinateur à toutes les largeurs.
+ */
+import type { ImageMetadata } from 'astro';
+import CadreCapture from '../../ui/CadreCapture.astro';
+import CaptureAnnotee from '../../ui/CaptureAnnotee.astro';
+import { typo } from '../../../lib/typo';
+
+interface Loupe {
+  x: number;
+  y: number;
+  zoom: number;
+  largeur?: number;
+  ratio?: string;
+  coin?: 'bas-droite' | 'bas-gauche' | 'haut-droite' | 'haut-gauche';
+}
+
+interface VueMobile {
+  /** Recadrage du téléphone (« 1 / 1 », « 4 / 5 ») ; entier sans lui. */
+  ratio?: string;
+  position?: string;
+  cible?: { x: number; y: number };
+}
+
+interface Props {
+  nom: string;
+  alt: string;
+  legende: string;
+  /** Adresse affichée dans la barre du navigateur, sans https://. */
+  adresse?: string;
+  ratio?: string;
+  position?: string;
+  cible?: { x: number; y: number };
+  loupe?: Loupe;
+  mobile?: VueMobile | false;
+  sizes?: string;
+  loading?: 'lazy' | 'eager';
+  class?: string;
+}
+
+const {
+  nom,
+  alt: altBrut,
+  legende,
+  adresse,
+  ratio,
+  position,
+  cible,
+  loupe,
+  mobile = {},
+  sizes = '(max-width: 860px) 100vw, 60vw',
+  loading = 'lazy',
+  class: classe,
+} = Astro.props;
+
+const captures = import.meta.glob<ImageMetadata>('/src/assets/projets/league-of-database/*.webp', { eager: true, import: 'default' });
+const chemin = (fichier: string) => `/src/assets/projets/league-of-database/${fichier}.webp`;
+const bureau = captures[chemin(nom)];
+if (!bureau) throw new Error(`<CaptureLeague nom="${nom}"> : capture absente de src/assets/projets/league-of-database/.`);
+const telephone = mobile === false ? undefined : captures[chemin(`${nom}-mobile`)];
+const vueMobile = mobile === false ? {} : mobile;
+const annotee = Boolean(cible || loupe);
+// L’alt suit la typographie du texte visible (espaces insécables avant « : ; ! ? »).
+const alt = typo(altBrut);
+---
+
+<div class:list={['capture-league', { 'capture-league--double': telephone }, classe]} data-capture-league={nom}>
+  {
+    annotee ? (
+      <CaptureAnnotee
+        class="capture-league__bureau"
+        src={bureau}
+        type="navigateur"
+        adresse={adresse}
+        alt={alt}
+        legende={legende}
+        ratio={ratio}
+        position={position}
+        cible={cible}
+        loupe={loupe}
+        agrandir
+        sizes={sizes}
+        loading={loading}
+      />
+    ) : (
+      <CadreCapture class="capture-league__bureau" type="navigateur" adresse={adresse} src={bureau} alt={alt} legende={legende} ratio={ratio} position={position} agrandir sizes={sizes} loading={loading} />
+    )
+  }
+  {
+    telephone &&
+      (vueMobile.cible ? (
+        <CaptureAnnotee
+          class="capture-league__mobile"
+          src={telephone}
+          type="telephone"
+          alt={alt}
+          legende={legende}
+          ratio={vueMobile.ratio ?? '860 / 1864'}
+          position={vueMobile.position}
+          cible={vueMobile.cible}
+          agrandir
+          sizes="(max-width: 860px) 340px, 1px"
+          loading="lazy"
+        />
+      ) : (
+        <CadreCapture
+          class="capture-league__mobile"
+          type="telephone"
+          src={telephone}
+          alt={alt}
+          legende={legende}
+          ratio={vueMobile.ratio}
+          position={vueMobile.position}
+          agrandir
+          sizes="(max-width: 860px) 340px, 1px"
+          loading="lazy"
+        />
+      ))
+  }
+</div>
+
+<style>
+  .capture-league {
+    min-width: 0;
+  }
+
+  /* Correctif local (demande partagée) : la règle de recadrage de CadreCapture
+     (.capture--recadree .capture__vue img : hauteur 100 %, object-fit cover)
+     atteint aussi l’image de la loupe de CaptureAnnotee et la déforme. */
+  .capture-league :global(.capture--recadree .capture__vue .loupe > img) {
+    height: auto;
+    object-fit: fill;
+  }
+
+  .capture-league--double :global(.capture-league__mobile) {
+    display: none;
+  }
+
+  @media (max-width: 860px) {
+    .capture-league--double :global(.capture-league__bureau) {
+      display: none;
+    }
+
+    .capture-league--double :global(.capture-league__mobile) {
+      display: block;
+      width: min(100%, 340px);
+      margin-inline: auto;
+    }
+  }
+</style>

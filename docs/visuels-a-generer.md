@@ -4,7 +4,7 @@
 
 ## La mission
 
-Tu produis les visuels de la refonte du portfolio de Charles Lindecker. Le registre recense **136 emplacements** (93 « socle », 43 « élargi »). Pour chaque fiche ci-dessous, livre le **fichier attendu**, au chemin indiqué, en respectant le sujet, la composition et le format. Les règles communes valent pour toutes les fiches.
+Tu produis les visuels de la refonte du portfolio de Charles Lindecker. Le registre recense **147 emplacements** (98 « socle », 49 « élargi »). Pour chaque fiche ci-dessous, livre le **fichier attendu**, au chemin indiqué, en respectant le sujet, la composition et le format. Les règles communes valent pour toutes les fiches.
 
 - **Socle** : nécessaire au lancement de la refonte. À produire d’abord.
 - **Élargi** : enrichit le site et peut suivre.
@@ -52,7 +52,7 @@ Exceptions à la règle 3 : le nom dans les déclinaisons du logo, et les images
 | Accueil | 23 | 18 | IMG 15 · SVG 3 · FIG 3 · CAP 1 · PHO 1 · OG 0 |
 | Projets (hub) | 12 | 5 | IMG 10 · SVG 0 · FIG 0 · CAP 2 · PHO 0 · OG 0 |
 | PvZ Fusion | 20 | 16 | IMG 13 · SVG 0 · FIG 6 · CAP 0 · PHO 0 · OG 1 |
-| League Of Data Base | 7 | 4 | IMG 3 · SVG 2 · FIG 2 · CAP 0 · PHO 0 · OG 0 |
+| League Of Data Base | 18 | 9 | IMG 3 · SVG 9 · FIG 6 · CAP 0 · PHO 0 · OG 0 |
 | Omnicard | 8 | 5 | IMG 2 · SVG 4 · FIG 1 · CAP 0 · PHO 0 · OG 1 |
 | Bloodborne Legendary Run | 7 | 4 | IMG 4 · SVG 1 · FIG 1 · CAP 0 · PHO 0 · OG 1 |
 | gup | 6 | 2 | IMG 2 · SVG 1 · FIG 3 · CAP 0 · PHO 0 · OG 0 |
@@ -60,7 +60,7 @@ Exceptions à la règle 3 : le nom dans les déclinaisons du logo, et les images
 | Contact | 4 | 3 | IMG 3 · SVG 0 · FIG 0 · CAP 0 · PHO 1 · OG 0 |
 | Blog | 2 | 1 | IMG 2 · SVG 0 · FIG 0 · CAP 0 · PHO 0 · OG 0 |
 | États : 404 et hors ligne | 2 | 1 | IMG 1 · SVG 1 · FIG 0 · CAP 0 · PHO 0 · OG 0 |
-| **Total** | **136** | **93** | IMG 81 · SVG 25 · FIG 19 · CAP 3 · PHO 3 · OG 5 |
+| **Total** | **147** | **98** | IMG 81 · SVG 32 · FIG 23 · CAP 3 · PHO 3 · OG 5 |
 
 ## File de travail « socle »
 
@@ -70,7 +70,7 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Accueil** : ACC-03 (IMG), ACC-04 (IMG), ACC-08 (IMG), ACC-09 (IMG), ACC-11 (IMG), ACC-14 (SVG), ACC-17 (SVG), ACC-18 (IMG), ACC-19 (IMG), ACC-20 (IMG), ACC-21 (IMG), ACC-22 (IMG), ACC-23 (IMG)
 - **Projets (hub)** : PRJ-01 (IMG), PRJ-02 (IMG)
 - **PvZ Fusion** : PVZ-01 (IMG), PVZ-02a (IMG), PVZ-02b (IMG), PVZ-02c (IMG), PVZ-04 (IMG), PVZ-05 (IMG), PVZ-06 (IMG), PVZ-07 (IMG), PVZ-08 (IMG), PVZ-11 (IMG)
-- **League Of Data Base** : LOD-03 (SVG), LOD-04 (IMG)
+- **League Of Data Base** : LOD-03 (SVG), LOD-04 (IMG), LOD-06 (SVG), LOD-07 (SVG), LOD-08 (SVG), LOD-09 (SVG)
 - **Omnicard** : OMN-01 (IMG), OMN-03 (SVG), OMN-04 (SVG), OMN-06 (SVG)
 - **Bloodborne Legendary Run** : BLR-01 (IMG), BLR-02 (SVG), BLR-04 (IMG)
 - **gup** : GUP-02 (SVG)
@@ -841,56 +841,183 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Format** : 21:9, faible contraste
 - **Fichier attendu** : `site/src/assets/visuels/league-of-database/LOD-02_2100x900.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Le voyage dans le temps »
+- **Note** : Non posé dans la refonte du 13 octobre 2026 : le tableau d’Ahri se lit mieux sur un fond uni. À poser seulement si une version très claire (aplat à moins de 6 % d’opacité) ne gêne pas la lecture.
 
-### LOD-03 · Les pièges de la donnée
+### LOD-03 · Une donnée qui manque, rangée proprement
 
 - **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
-- **Emplacement** : `/projets/league-of-database` · § 4, une icône par piège (5) _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Les pièges de la donnée
-- **Composition** : (a) page de données trouée ; (b) bulle de langue qui renvoie vers une bulle « par défaut » ; (c) deux objets jumeaux reliés par un fil ; (d) pellicule sans date ; (e) éclair qui ne laisse pas de trace
-- **Format** : 5 × 1:1, grille 48
-- **Fichier attendu** : `site/src/assets/visuels/league-of-database/LOD-03.svg` (lot de 5)
+- **Emplacement** : `/projets/league-of-database` · § « Ce que les données ne disent pas », carte 1 (les runes absentes des anciens patchs) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Une donnée qui manque, rangée proprement
+- **Composition** : Une page de registre vue de face, lignes tracées en réserve ; au milieu, une case découpée laisse voir le vide, et un petit signet posé dans le trou dit que l’absence est notée, pas oubliée. Trait constant, deux aplats (encre, papier), la flamme de la lanterne en point de lumière sur le signet. Aucun texte ni chiffre
+- **Format** : 1:1, grille 48, affiché à 96 px
+- **Fichier attendu** : `site/src/assets/visuels/league-of-database/LOD-03.svg`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Premier des cinq pictos des pièges de la donnée (LOD-03, LOD-06 à LOD-09), dessinés de la même main : grille de 48, trait de 1,75 en currentColor, aucun texte. Posé en tête de la carte, au-dessus de son titre sur ordinateur et à sa gauche sur mobile.
 
 ### LOD-04 · Changer de moteur sans perdre personne
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/projets/league-of-database` · § 5, en tête _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/projets/league-of-database` · § « Changer de moteur sans perdre personne », en tête _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Changer de moteur sans perdre personne
-- **Composition** : Coupe d’un train : moteur ancien à trois engrenages remplacé par un moteur à deux engrenages pendant que des voyageurs restent assis
+- **Composition** : Coupe horizontale d’un train de nuit en gravure en réserve : à gauche, un moteur ancien à trois engrenages de tailles inégales, détaché, posé sur le quai et éteint ; à droite, un moteur neuf à deux engrenages déjà attelé. Au centre, un wagon dont les silhouettes de voyageurs restent assises, sans visage reconnaissable. Une seule lanterne accrochée entre le wagon et le moteur neuf éclaire l’attelage ; le reste reste dans l’ombre. Aucun logo, aucun texte
 - **Format** : 16:9, 1600 × 900
 - **Fichier attendu** : `site/src/assets/visuels/league-of-database/LOD-04_1600x900.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Changer de moteur sans perdre personne »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un train dont on remplace le moteur pendant que les voyageurs restent assis. »
+- **Note** : À côté du texte de la réécriture, au-dessus de la frise LOD-F6 ; 16:9 aussi sur mobile, le sujet (l’attelage éclairé) au centre du cadre.
 
-### LOD-05 · Quatre jalons
+### LOD-05 · Le premier jet
 
 - **Priorité** : élargi · **Méthode** : SVG, à dessiner (vectoriel)
-- **Emplacement** : `/projets/league-of-database` · § 5, frise _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Quatre jalons
-- **Composition** : Brouillon, carnet de décisions, balance, porte qui s’ouvre
-- **Format** : 4 × 1:1 ou bande 4:1
-- **Fichier attendu** : `site/src/assets/visuels/league-of-database/LOD-05.svg` (lot de 4)
+- **Emplacement** : `/projets/league-of-database` · § « Changer de moteur sans perdre personne », frise LOD-F6, jalon 1 (août 2025, la première version) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Le premier jet
+- **Composition** : Une feuille de brouillon froissée puis dépliée, couverte de traits illisibles, un crayon posé en travers. Trait constant, deux aplats (encre, papier). Aucun texte ni chiffre
+- **Format** : 1:1, grille 48, affiché à 96 px
+- **Fichier attendu** : `site/src/assets/visuels/league-of-database/LOD-05.svg`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Premier des quatre pictos des jalons de la réécriture (LOD-05, LOD-10 à LOD-12), de la main des pictos LOD-03 : grille de 48, trait de 1,75 en currentColor. Le jalon atteint (la bascule, LOD-12) porte seul la lumière de la lanterne.
 
-### LOD-F1 · Ahri 2013 / 2026
+### LOD-06 · Une langue qui manque renvoie à la langue commune
+
+- **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
+- **Emplacement** : `/projets/league-of-database` · § « Ce que les données ne disent pas », carte 2 (les langues absentes d’une version) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Une langue qui manque renvoie à la langue commune
+- **Composition** : Deux bulles de parole : la première, vide et en pointillé, porte une petite flèche courbe qui la renvoie vers une seconde bulle pleine, plus grande, tracée en trait continu. Aucune lettre, aucun drapeau, aucun texte
+- **Format** : 1:1, grille 48, affiché à 96 px
+- **Fichier attendu** : `site/src/assets/visuels/league-of-database/LOD-06.svg`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Série des pictos des pièges : voir LOD-03.
+
+### LOD-07 · Deux jumeaux reliés
+
+- **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
+- **Emplacement** : `/projets/league-of-database` · § « Ce que les données ne disent pas », carte 3 (les objets en double pour une autre édition du jeu) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Deux jumeaux reliés
+- **Composition** : Deux petits objets identiques (deux gemmes taillées de face), l’un en trait plein, l’autre en trait double, reliés par un fil tendu qui fait une boucle à mi-chemin. Aucun objet de jeu reconnaissable, aucun texte
+- **Format** : 1:1, grille 48, affiché à 96 px
+- **Fichier attendu** : `site/src/assets/visuels/league-of-database/LOD-07.svg`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Série des pictos des pièges : voir LOD-03.
+
+### LOD-08 · Une image sans date
+
+- **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
+- **Emplacement** : `/projets/league-of-database` · § « Ce que les données ne disent pas », carte 4 (les illustrations et vidéos non versionnées) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Une image sans date
+- **Composition** : Une bande de pellicule de trois images vues de face ; l’étiquette de bord, là où une date s’écrirait, est vide et barrée d’un petit trait. Les images restent des rectangles sans sujet. Aucun texte ni chiffre
+- **Format** : 1:1, grille 48, affiché à 96 px
+- **Fichier attendu** : `site/src/assets/visuels/league-of-database/LOD-08.svg`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Série des pictos des pièges : voir LOD-03.
+
+### LOD-09 · Un éclair qui ne laisse pas de trace
+
+- **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
+- **Emplacement** : `/projets/league-of-database` · § « Ce que les données ne disent pas », carte 5 (une erreur passagère n’est jamais enregistrée comme une absence) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Un éclair qui ne laisse pas de trace
+- **Composition** : Un petit éclair qui frappe un registre fermé ; sous l’impact, la couverture reste intacte, sans brûlure ni marque, et le signet du registre (le même que LOD-03) n’a pas bougé. Aucun texte
+- **Format** : 1:1, grille 48, affiché à 96 px
+- **Fichier attendu** : `site/src/assets/visuels/league-of-database/LOD-09.svg`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Série des pictos des pièges : voir LOD-03.
+
+### LOD-10 · Un carnet de décisions
+
+- **Priorité** : élargi · **Méthode** : SVG, à dessiner (vectoriel)
+- **Emplacement** : `/projets/league-of-database` · § « Changer de moteur sans perdre personne », frise LOD-F6, jalon 2 (24 septembre 2026, les dix décisions écrites) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Un carnet de décisions
+- **Composition** : Un carnet ouvert vu de trois quarts, dix onglets de couleur unie qui dépassent de la tranche, un ruban marque-page. Pages couvertes de traits illisibles. Aucun texte ni chiffre
+- **Format** : 1:1, grille 48, affiché à 96 px
+- **Fichier attendu** : `site/src/assets/visuels/league-of-database/LOD-10.svg`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Série des pictos des jalons : voir LOD-05.
+
+### LOD-11 · Une balance à l’équilibre
+
+- **Priorité** : élargi · **Méthode** : SVG, à dessiner (vectoriel)
+- **Emplacement** : `/projets/league-of-database` · § « Changer de moteur sans perdre personne », frise LOD-F6, jalon 3 (26 septembre 2026, la parité vérifiée) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Une balance à l’équilibre
+- **Composition** : Une balance à deux plateaux parfaitement de niveau ; sur chaque plateau, une même petite pile de feuilles. Le fléau est horizontal. Aucun texte ni chiffre
+- **Format** : 1:1, grille 48, affiché à 96 px
+- **Fichier attendu** : `site/src/assets/visuels/league-of-database/LOD-11.svg`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Série des pictos des jalons : voir LOD-05.
+
+### LOD-12 · Une porte qui s’ouvre sur la lumière
+
+- **Priorité** : élargi · **Méthode** : SVG, à dessiner (vectoriel)
+- **Emplacement** : `/projets/league-of-database` · § « Changer de moteur sans perdre personne », frise LOD-F6, jalon 4 (4 octobre 2026, la bascule en production) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Une porte qui s’ouvre sur la lumière
+- **Composition** : Une porte entrouverte vue de face ; par l’ouverture, la lumière de la lanterne trace un trapèze au sol. Seul picto de la série à porter l’aplat de lumière. Aucun texte
+- **Format** : 1:1, grille 48, affiché à 96 px
+- **Fichier attendu** : `site/src/assets/visuels/league-of-database/LOD-12.svg`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Série des pictos des jalons : voir LOD-05.
+
+### LOD-F1 · Ahri, patch 3.6.14 et patch 16.20.1
 
 - **Priorité** : socle · **Méthode** : FIG, à coder (figure de données), rien à générer
-- **Emplacement** : `/projets/league-of-database` · § 1 _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Ahri 2013 / 2026
-- **Composition** : Tableau HTML côte à côte, une ligne surlignée
+- **Emplacement** : `/projets/league-of-database` · § « Ce n’était pas la même Ahri » _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Ahri, patch 3.6.14 et patch 16.20.1
+- **Composition** : Tableau HTML côte à côte, une ligne surlignée (les points de vie) ; les deux panneaux de statistiques réels à côté, agrandissables
 - **Format** : —
 - **Fichier attendu** : aucune image, figure codée
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Ahri en 2013 et en 2026, côte à côte »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Ahri au patch 3.6.14 et au patch 16.20.1, côte à côte »
+- **Note** : Codée en HTML : components/projets/league/ComparaisonAhri.astro, depuis config/league-of-database.ts (COMPARAISON). Relevés dans docs/matiere-premiere.md.
 
 ### LOD-F2 · Le trafic
 
 - **Priorité** : élargi · **Méthode** : FIG, à coder (figure de données), rien à générer
-- **Emplacement** : `/projets/league-of-database` · § 6 _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/projets/league-of-database` · § « En production », le trafic _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Le trafic
 - **Composition** : Schéma simplifié : cache du patch actuel, cache des archives, préparation d’un nouveau patch
 - **Format** : 16:9
 - **Fichier attendu** : aucune image, figure codée
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Le trafic »
+- **Note** : Codée en HTML et SVG : components/projets/league/Fabrication.astro (#trafic).
+
+### LOD-F3 · Une copie ailleurs, un retour vérifiable
+
+- **Priorité** : élargi · **Méthode** : FIG, à coder (figure de données), rien à générer
+- **Emplacement** : `/projets/league-of-database` · § « En production », les sauvegardes _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Une copie ailleurs, un retour vérifiable
+- **Composition** : Chaîne en quatre étapes (base, copie, chiffrement, stockage hors du serveur) séparées par la frontière du serveur, puis le retour : restauration dans une base temporaire et journal des passes
+- **Format** : libre, 4:1 sur ordinateur, en pile sur mobile
+- **Fichier attendu** : aucune image, figure codée
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « La chaîne des sauvegardes et de la restauration »
+- **Note** : Codée en HTML et SVG : components/projets/league/Fabrication.astro (#sauvegardes). Le dispositif est celui du dépôt public ; son activation en production reste à confirmer.
+
+### LOD-F4 · Construire une fois, livrer la même version
+
+- **Priorité** : élargi · **Méthode** : FIG, à coder (figure de données), rien à générer
+- **Emplacement** : `/projets/league-of-database` · § « En production », la livraison _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Construire une fois, livrer la même version
+- **Composition** : Trois étapes (construire, valider en test, promouvoir en production) portant le même colis de trois images (API, web, serveur web), coché après le test
+- **Format** : libre, 3:1 sur ordinateur, en pile sur mobile
+- **Fichier attendu** : aucune image, figure codée
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « La livraison des mêmes images, du test à la production »
+- **Note** : Codée en HTML : components/projets/league/Fabrication.astro (#livraison), avec les logos de src/assets/stacks/.
+
+### LOD-F5 · Le trajet d’un événement de mesure
+
+- **Priorité** : élargi · **Méthode** : FIG, à coder (figure de données), rien à générer
+- **Emplacement** : `/projets/league-of-database` · § « En production », la mesure d’audience _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Le trajet d’un événement de mesure
+- **Composition** : Trois étapes : une fiche ouverte (page, langue, patch), un usage mesuré (recherche, partage), le tableau d’audience. Aucun chiffre ni écran simulé
+- **Format** : libre, 3:1 sur ordinateur, en pile sur mobile
+- **Fichier attendu** : aucune image, figure codée
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Le trajet d’un événement de mesure d’audience »
+- **Note** : Codée en HTML et SVG : components/projets/league/Fabrication.astro (#audience). La capture du tableau attend un lien de partage public.
+
+### LOD-F6 · Quatre jalons datés de la réécriture
+
+- **Priorité** : socle · **Méthode** : FIG, à coder (figure de données), rien à générer
+- **Emplacement** : `/projets/league-of-database` · § « Changer de moteur sans perdre personne », la frise _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Quatre jalons datés de la réécriture
+- **Composition** : Frise horizontale de quatre jalons datés (première version, dix décisions, parité vérifiée, bascule), le dernier marqué à la lanterne ; verticale sur mobile. Pictos LOD-05, LOD-10, LOD-11 et LOD-12
+- **Format** : libre, 4:1 sur ordinateur, en pile sur mobile
+- **Fichier attendu** : aucune image, figure codée
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « La réécriture en quatre jalons, d’août 2025 au 4 octobre 2026 »
+- **Note** : Codée en HTML : components/projets/league/FriseReecriture.astro, depuis config/league-of-database.ts (JALONS).
 
 ## Omnicard
 

@@ -1,0 +1,81 @@
+---
+/**
+ * « Ce que les données ne disent pas » : cinq pièges de Data Dragon et la
+ * réponse de l’application, chacun avec son picto (LOD-03, LOD-06 à LOD-09,
+ * emplacements du registre). Source : héritage de la réécriture, § 5 et § 6
+ * (config/league-of-database.ts, PIEGES ; docs/matiere-premiere.md).
+ */
+import Visuel from '../../ui/Visuel.astro';
+import { PIEGES } from '../../../config/league-of-database';
+import { typo } from '../../../lib/typo';
+---
+
+<ul class="pieges" aria-label="Cinq pièges des données, et ma réponse">
+  {
+    PIEGES.map((piege) => (
+      <li class="piege">
+        <Visuel id={piege.visuel} class="piege__picto" sizes="96px" />
+        <h3 class="piege__titre">{typo(piege.piege)}</h3>
+        <p class="piege__reponse"><span class="sr">Réponse&nbsp;: </span>{typo(piege.reponse)}</p>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .pieges {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12.5rem), 1fr));
+    gap: 1px;
+    margin: var(--s6) 0 0;
+    padding: 0;
+    list-style: none;
+    border: 1px solid var(--filet);
+    border-radius: var(--r2);
+    background: var(--filet);
+    overflow: hidden;
+  }
+
+  .piege {
+    display: grid;
+    align-content: start;
+    gap: var(--s2);
+    padding: var(--s4);
+    background: var(--surface);
+  }
+
+  .piege :global(.piege__picto) {
+    width: 96px;
+    margin-bottom: var(--s1);
+  }
+
+  .piege__titre {
+    font-family: var(--police-texte);
+    font-size: var(--t-s);
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  .piege__reponse {
+    position: relative;
+    padding-top: var(--s2);
+    border-top: 1px solid var(--filet);
+    font-size: var(--t-s);
+    line-height: 1.45;
+    color: var(--eteint);
+  }
+
+  @media (max-width: 860px) {
+    .piege {
+      grid-template-columns: 96px minmax(0, 1fr);
+      column-gap: var(--s3);
+      padding: var(--s3);
+    }
+
+    .piege :global(.piege__picto) {
+      grid-row: span 2;
+      width: 96px;
+      margin: 0;
+    }
+  }
+</style>

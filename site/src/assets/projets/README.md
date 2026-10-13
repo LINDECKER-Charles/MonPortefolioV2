@@ -125,7 +125,12 @@ et la note de bascule du README du projet ne reflètent plus l’interface obser
 Aucun compte connecté ni fixture, aucune mutation distante. Les données du catalogue,
 les illustrations et les vidéos de capacités proviennent de Riot Games.
 
-Les fichiers sont dans `site/public/images/league-of-database/`. Les captures de viewport
+Les fichiers sont dans `site/public/images/league-of-database/`. Depuis la refonte du
+13 octobre 2026, la page en importe des copies identiques depuis
+`site/src/assets/projets/league-of-database/` (28 fichiers, octet pour octet) : Astro en
+dérive les formats AVIF et WebP, les largeurs servies et l’original agrandi par la
+visionneuse partagée. Les originaux publics restent en place tant qu’une autre page les cite.
+Les captures de viewport
 sont converties en WebP (qualité 94), sans recomposition de l’interface ni retouche.
 Les variantes mobiles sont servies dans des éléments `picture` ; le clic agrandit l’écran
 réellement affiché. Les viewports restent 1440 × 1000 et 430 × 932, avec un DPR de 2 : la netteté vient des captures natives, sans agrandissement artificiel. La visionneuse de l’application est également montrée dans l’onglet « En grand ».
