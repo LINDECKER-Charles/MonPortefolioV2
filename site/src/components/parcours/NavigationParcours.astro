@@ -1,24 +1,140 @@
 ---
+/**
+ * Les onglets du parcours (direction « Lanterne ») : Vue d’ensemble,
+ * Professionnel, Compétences, Formation. L’onglet courant porte
+ * aria-current="page" et un trait d’encre.
+ *
+ *   <NavigationParcours chemin="/parcours/formation" />
+ *
+ * Sur mobile, la barre défile : l’onglet courant est ramené au début, sans
+ * être coupé, et un fondu signale ce qui dépasse (petit module ci-dessous).
+ * Sans JavaScript, la barre défile au doigt, le fondu reste à droite.
+ */
 import { PAGES_PARCOURS } from '../../config/parcours';
-interface Props { chemin: string; }
+
+interface Props {
+  chemin: string;
+}
+
 const { chemin } = Astro.props;
-const liens = [{ href: '/parcours', titre: 'Vue d’ensemble' }, ...PAGES_PARCOURS];
+const liens = [{ href: '/parcours', court: 'Vue d’ensemble' }, ...PAGES_PARCOURS];
 ---
 
-<nav class="navigation-parcours ne-pas-imprimer" aria-label="Navigation du parcours">
-  <p class="navigation-parcours__repere">Dans le parcours</p>
+<nav class="onglets-parcours ne-pas-imprimer" aria-label="Navigation du parcours" data-onglets>
   <ul role="list">
-    {liens.map((lien) => <li><a href={lien.href} aria-current={chemin === lien.href ? 'page' : undefined}>{lien.titre}</a></li>)}
+    {
+      liens.map((lien) => (
+        <li>
+          <a href={lien.href} aria-current={chemin === lien.href ? 'page' : undefined}>
+            {lien.court}
+          </a>
+        </li>
+      ))
+    }
   </ul>
 </nav>
 
+<script>
+  // L’onglet courant au début de la barre, sans coupure ; fondus de débordement.
+  for (const barre of document.querySelectorAll<HTMLElement>('[data-onglets] ul')) {
+    const nav = barre.parentElement;
+    const bords = () => {
+      nav?.classList.toggle('onglets-parcours--defile', barre.scrollLeft > 2);
+      nav?.classList.toggle('onglets-parcours--fin', barre.scrollLeft + barre.clientWidth >= barre.scrollWidth - 2);
+    };
+    const aligner = () => {
+      const actif = barre.querySelector<HTMLElement>('[aria-current="page"]');
+      const max = barre.scrollWidth - barre.clientWidth;
+      if (actif && max > 1) {
+        const origine = barre.getBoundingClientRect().left - barre.scrollLeft;
+        const debutActif = actif.getBoundingClientRect().left - origine;
+        let cible = 0;
+        for (const onglet of barre.querySelectorAll<HTMLElement>('a')) {
+          const debut = onglet.getBoundingClientRect().left - origine;
+          if (debut <= Math.min(max, debutActif) + 1) cible = Math.max(cible, debut);
+        }
+        // Au bout de la barre, le dernier onglet ne doit pas rester sous le fondu.
+        barre.scrollLeft = debutActif >= max ? max : cible;
+      }
+      bords();
+    };
+    aligner();
+    // Les polices changent la largeur des onglets : on réaligne une fois chargées.
+    document.fonts?.ready.then(aligner);
+    barre.addEventListener('scroll', bords, { passive: true });
+    window.addEventListener('resize', bords, { passive: true });
+  }
+</script>
+
 <style>
-  .navigation-parcours { margin-bottom: var(--s7); padding-block: var(--s4); border-block: 1px solid var(--filet); }
-  .navigation-parcours__repere { margin-bottom: var(--s2); color: var(--graphite); font-size: var(--t-etiquette); }
-  ul { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s5); list-style: none; margin: 0; padding: var(--s2) 0; }
-  a { display: flex; align-items: center; min-height: 48px; padding: var(--s2) var(--s3); border: 1px solid transparent; border-radius: var(--rayon); color: var(--encre); font-size: var(--t-petit); text-decoration: none; }
-  a:hover { color: var(--encre); text-decoration: underline; }
-  a[aria-current='page'] { border-color: var(--bleu); background: var(--bleu); color: var(--sur-bleu); font-weight: 700; }
-  @media (max-width: 760px) { ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s2); } a { height: 100%; padding-inline: var(--s2); line-height: 1.35; } }
-  @media (max-width: 360px) { ul { grid-template-columns: minmax(0, 1fr); } }
+  /* Le filet de base est dessiné dans la barre elle-même : rien ne dépasse de
+     la zone qui défile, l’onglet courant reste entier. */
+  ul {
+    display: flex;
+    box-shadow: inset 0 -1px 0 var(--filet);
+    gap: var(--s1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  ul::-webkit-scrollbar {
+    display: none;
+  }
+
+  li {
+    flex: none;
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    padding-inline: var(--s4);
+    border-bottom: 2px solid transparent;
+    color: var(--eteint);
+    font-size: var(--t-s);
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  a:hover {
+    color: var(--encre);
+    border-bottom-color: var(--trait);
+  }
+
+  a[aria-current='page'] {
+    color: var(--encre);
+    font-weight: 600;
+    border-bottom-color: var(--encre);
+  }
+
+  a:focus-visible {
+    outline-offset: -2px;
+  }
+
+  @media (max-width: 760px) {
+    ul {
+      mask-image: linear-gradient(90deg, #000 calc(100% - 48px), transparent);
+    }
+
+    .onglets-parcours--defile ul {
+      mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 48px), transparent);
+    }
+
+    .onglets-parcours--fin ul {
+      mask-image: none;
+    }
+
+    .onglets-parcours--defile.onglets-parcours--fin ul {
+      mask-image: linear-gradient(90deg, transparent, #000 12px);
+    }
+
+    a {
+      padding-inline: var(--s3);
+    }
+  }
 </style>
