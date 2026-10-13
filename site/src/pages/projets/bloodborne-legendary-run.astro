@@ -88,6 +88,7 @@ const LIENS_SORTIE = [
               <p class="blr-serie__tete">
                 <span class="blr-serie__rang" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
                 <strong>{etape.titre}</strong>
+                <span class="blr-serie__compte chiffres" aria-hidden="true">{index + 1} / {REPRISE.length}</span>
               </p>
               <p class="blr-serie__detail">{typo(etape.detail)}</p>
               <CadreCapture type="telephone" src={capturesReprise[index].src} alt={capturesReprise[index].alt} widths={[390, 780]} sizes="(max-width: 860px) 64vw, 220px" agrandir />
@@ -140,6 +141,7 @@ const LIENS_SORTIE = [
               <p class="blr-serie__tete">
                 <span class="blr-serie__rang" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
                 <strong>{etape.titre}</strong>
+                <span class="blr-serie__compte chiffres" aria-hidden="true">{index + 1} / {SOCIAL.length}</span>
               </p>
               <p class="blr-serie__detail">{typo(etape.detail)}</p>
               <CadreCapture type="telephone" src={capturesAmis[index].src} alt={capturesAmis[index].alt} widths={[390, 780]} sizes="(max-width: 860px) 64vw, 220px" agrandir />
@@ -226,6 +228,13 @@ const LIENS_SORTIE = [
 
   .blr-serie__tete strong {
     font-weight: 600;
+  }
+
+  .blr-serie__compte {
+    display: none;
+    margin-left: auto;
+    font-size: var(--t-xs);
+    color: var(--eteint);
   }
 
   .blr-serie__rang,
@@ -372,9 +381,24 @@ const LIENS_SORTIE = [
       scrollbar-width: thin;
     }
 
+    /* Un écran presque entier, le bord du suivant en vue ; le compteur
+       « 1 / 3 » de la boutique remplace le rang. La liste ordonnée dit déjà la
+       position aux lecteurs d’écran : le compteur est aria-hidden. */
     .blr-serie li {
-      flex: 0 0 min(64%, 230px);
+      flex: 0 0 calc(100% - 3rem);
       scroll-snap-align: start;
+    }
+
+    .blr-serie__rang {
+      display: none;
+    }
+
+    .blr-serie__compte {
+      display: inline;
+    }
+
+    .blr-serie li > :global(.capture) {
+      width: min(100%, 230px);
     }
   }
 
