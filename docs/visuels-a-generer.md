@@ -4,7 +4,7 @@
 
 ## La mission
 
-Tu produis les visuels de la refonte du portfolio de Charles Lindecker. Le registre recense **124 emplacements** (80 « socle », 44 « élargi »). Pour chaque fiche ci-dessous, livre le **fichier attendu**, au chemin indiqué, en respectant le sujet, la composition et le format. Les règles communes valent pour toutes les fiches.
+Tu produis les visuels de la refonte du portfolio de Charles Lindecker. Le registre recense **126 emplacements** (82 « socle », 44 « élargi »). Pour chaque fiche ci-dessous, livre le **fichier attendu**, au chemin indiqué, en respectant le sujet, la composition et le format. Les règles communes valent pour toutes les fiches.
 
 - **Socle** : nécessaire au lancement de la refonte. À produire d’abord.
 - **Élargi** : enrichit le site et peut suivre.
@@ -51,7 +51,7 @@ Exceptions à la règle 3 : le nom dans les déclinaisons du logo, et les images
 | Identité et éléments globaux | 13 | 7 | IMG 2 · SVG 9 · FIG 0 · CAP 0 · PHO 0 · OG 2 |
 | Accueil | 16 | 10 | IMG 10 · SVG 1 · FIG 3 · CAP 1 · PHO 1 · OG 0 |
 | Projets (hub) | 12 | 5 | IMG 10 · SVG 0 · FIG 0 · CAP 2 · PHO 0 · OG 0 |
-| PvZ Fusion | 15 | 11 | IMG 10 · SVG 0 · FIG 4 · CAP 0 · PHO 0 · OG 1 |
+| PvZ Fusion | 17 | 13 | IMG 10 · SVG 0 · FIG 6 · CAP 0 · PHO 0 · OG 1 |
 | League Of Data Base | 7 | 4 | IMG 3 · SVG 2 · FIG 2 · CAP 0 · PHO 0 · OG 0 |
 | Omnicard | 8 | 5 | IMG 2 · SVG 4 · FIG 1 · CAP 0 · PHO 0 · OG 1 |
 | Bloodborne Legendary Run | 7 | 4 | IMG 4 · SVG 1 · FIG 1 · CAP 0 · PHO 0 · OG 1 |
@@ -60,7 +60,7 @@ Exceptions à la règle 3 : le nom dans les déclinaisons du logo, et les images
 | Contact | 4 | 3 | IMG 3 · SVG 0 · FIG 0 · CAP 0 · PHO 1 · OG 0 |
 | Blog | 2 | 1 | IMG 2 · SVG 0 · FIG 0 · CAP 0 · PHO 0 · OG 0 |
 | États : 404 et hors ligne | 2 | 1 | IMG 1 · SVG 1 · FIG 0 · CAP 0 · PHO 0 · OG 0 |
-| **Total** | **124** | **80** | IMG 73 · SVG 23 · FIG 17 · CAP 3 · PHO 3 · OG 5 |
+| **Total** | **126** | **82** | IMG 73 · SVG 23 · FIG 19 · CAP 3 · PHO 3 · OG 5 |
 
 ## File de travail « socle »
 
@@ -69,7 +69,7 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Identité et éléments globaux** : GLO-01 (SVG), GLO-02 (SVG), GLO-03 (SVG), GLO-04 (SVG), GLO-05 (SVG), GLO-06 (SVG), GLO-07 (OG)
 - **Accueil** : ACC-03 (IMG), ACC-04 (IMG), ACC-08 (IMG), ACC-09 (IMG), ACC-11 (IMG)
 - **Projets (hub)** : PRJ-01 (IMG), PRJ-02 (IMG)
-- **PvZ Fusion** : PVZ-01 (IMG), PVZ-02 (IMG), PVZ-03 (IMG), PVZ-04 (IMG), PVZ-05 (IMG), PVZ-06 (IMG), PVZ-07 (IMG), PVZ-08 (IMG)
+- **PvZ Fusion** : PVZ-01 (IMG), PVZ-02 (IMG), PVZ-04 (IMG), PVZ-05 (IMG), PVZ-06 (IMG), PVZ-07 (IMG), PVZ-08 (IMG), PVZ-11 (IMG)
 - **League Of Data Base** : LOD-03 (SVG), LOD-04 (IMG)
 - **Omnicard** : OMN-01 (IMG), OMN-03 (SVG), OMN-04 (SVG), OMN-06 (SVG)
 - **Bloodborne Legendary Run** : BLR-01 (IMG), BLR-02 (SVG), BLR-04 (IMG)
@@ -365,9 +365,9 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Priorité** : socle · **Méthode** : IMG, rien à produire, le fichier est celui d’un autre emplacement
 - **Emplacement** : `/` · 02, à plusieurs _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Les quatre gestes
-- **Composition** : Réutilise PVZ-05 à PVZ-08
+- **Composition** : Réutilise les quatre cartes de gestion de projet de la page PvZ Fusion : organiser (PVZ-05), livrer (PVZ-07), motiver (PVZ-08), remercier (PVZ-11)
 - **Format** : 1:1
-- **Fichier attendu** : aucun, reprend `PVZ-05`, `PVZ-06`, `PVZ-07`, `PVZ-08`
+- **Fichier attendu** : aucun, reprend `PVZ-05`, `PVZ-07`, `PVZ-08`, `PVZ-11`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Les quatre gestes »
 
 ### ACC-16 · La lanterne posée sur un livre ouvert, un chemin éclairé devant
@@ -516,7 +516,8 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Composition** : Jardin-plateau en coupe, plantes génériques stylisées ; de petites silhouettes posent des étiquettes ; une seule à gauche, un groupe à droite ; derrière, une pile de fiches qui grossit
 - **Format** : 4:3, 1600 × 1200 ; 1:1 mobile (recadrage mobile 1:1)
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-01_1600x1200.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Traduction et équipe »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un jardin en coupe où de petites silhouettes posent des étiquettes sur des plantes, une seule à gauche, un groupe à droite. »
+- **Note** : Posé dans l’en-tête de la page (components/projets/gabarit/EnTeteProjet.astro, slot « visuel ») : 4:3 sur ordinateur, 1:1 sous 860 px.
 
 ### PVZ-02 · Accueillir, former, faire confiance
 
@@ -526,68 +527,74 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Composition** : Triptyque dans le même décor : une personne montre une fiche annotée à une nouvelle venue ; la nouvelle venue travaille ; elle relit seule la fiche d’un troisième
 - **Format** : 3:1 ; 3 × 4:3 mobile (recadrage mobile 4:3)
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-02_1800x600.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Accueillir, former, faire confiance »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Trois moments dans le même décor : montrer une fiche annotée à une nouvelle venue, la voir travailler, puis relire seule. »
+- **Note** : Au-dessus des trois temps de la formation (Accueillir, Former et relire, Faire confiance), dont les intitulés restent en HTML : les trois cases du triptyque leur répondent de gauche à droite.
 
 ### PVZ-03 · La boucle
 
-- **Priorité** : socle · **Méthode** : IMG, à générer (image)
+- **Priorité** : socle · **Méthode** : FIG, à coder (figure de données), rien à générer
 - **Emplacement** : `/projets/pvz-fusion` · § 3, la semaine type _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : La boucle
-- **Composition** : Cercle à cinq stations, flèches dans le sens horaire, stations détachables pour l’interaction
-- **Format** : 1:1, 1200 × 1200
-- **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-03_1200x1200.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « La boucle »
-- **Note** : IMG ou SVG selon la direction.
+- **Composition** : Les quatre cartes de gestion de projet (organiser, livrer, motiver, remercier) disposées deux sur deux dans le sens horaire, reliées par des flèches, « une semaine » au centre ; une liste ordonnée sur mobile
+- **Format** : libre, suit la grille des cartes
+- **Fichier attendu** : aucune image, figure codée
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « La semaine type, en quatre gestes »
+- **Note** : Dessinée en HTML et CSS, sans image à générer : components/projets/pvz/BoucleSemaine.astro. Les vignettes des cartes sont PVZ-05, PVZ-07, PVZ-08 et PVZ-11.
 
 ### PVZ-04 · Repérer
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/projets/pvz-fusion` · § 3, station 1 _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/projets/pvz-fusion` · § 3, bloc de l’outil du pôle (repérer ce qui manque) _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Repérer
-- **Composition** : Loupe sur un fichier, lignes manquantes en creux
+- **Composition** : Une loupe tenue au-dessus d’une longue feuille de lignes régulières, où quelques lignes manquent, laissées en creux ; la lumière de la lanterne passe par la loupe et éclaire seulement les creux
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-04_480x480.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Repérer »
+- **Note** : Posé dans l’acte de veille de l’outil : la gravure doit rester lisible sur fond sombre. À compléter par la capture réelle du Console Manager (CAP-PVZ-2, cahier § 6.12) quand elle existe.
 
-### PVZ-05 · Distribuer
+### PVZ-05 · Organiser : un tableau commun
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/projets/pvz-fusion` · § 3, station 2 (accueil : Trello) _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Distribuer
-- **Composition** : Tableau de cartes épinglées en colonnes, des mains qui prennent chacune une carte ; aucune marque
+- **Emplacement** : `/projets/pvz-fusion` · § 3, carte 1 de la semaine type, Organiser (accueil : les quatre gestes) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Organiser : un tableau commun
+- **Composition** : Tableau de cartes épinglées en trois colonnes, sans marque ni texte ; plusieurs mains anonymes prennent chacune une carte ; la lanterne posée au pied du tableau
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-05_480x480.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Distribuer »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Organiser : un tableau commun »
+- **Note** : Vignette de carte, affichée entre 96 et 136 px : le sujet doit se lire en petit, sujet principal au centre, sans détail fin.
 
 ### PVZ-06 · Traduire, relire, tester
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/projets/pvz-fusion` · § 3, station 3 _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/projets/pvz-fusion` · § 4, le métier de traducteur, à côté des corrections et de la démonstration _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Traduire, relire, tester
-- **Composition** : Plume, coche de relecture, loupe sur un écran de jeu générique
+- **Composition** : Une plume posée sur une fiche barrée puis récrite, une coche de relecture dans la marge, une loupe sur un écran de jeu générique sans personnage ni interface lisible
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-06_480x480.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Traduire, relire, tester »
+- **Note** : Vignette de titre, affichée à 72 px : silhouette simple, lisible en petit.
 
-### PVZ-07 · Livrer
+### PVZ-07 · Livrer : une proposition par semaine
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/projets/pvz-fusion` · § 3, station 4 (accueil : une PR par semaine) _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Livrer
-- **Composition** : Calendrier de semaines, chacune cochée d’un colis scellé qui rejoint un tronc commun
+- **Emplacement** : `/projets/pvz-fusion` · § 3, carte 2 de la semaine type, Livrer (accueil : les quatre gestes) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Livrer : une proposition par semaine
+- **Composition** : Calendrier de semaines, chacune cochée d’un colis scellé qui rejoint un tronc commun ; plusieurs petites étiquettes sans nom nouées sur le colis de la semaine
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-07_480x480.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Livrer »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Livrer : une proposition par semaine »
+- **Note** : Vignette de carte, affichée entre 96 et 136 px.
 
-### PVZ-08 · Reconnaître
+### PVZ-08 · Motiver : le classement de la semaine
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/projets/pvz-fusion` · § 3, station 5 (accueil : classement et récapitulatif) _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Reconnaître
-- **Composition** : Petit podium de la semaine et une lettre personnelle nouée d’un ruban
+- **Emplacement** : `/projets/pvz-fusion` · § 3, carte 3 de la semaine type, Motiver (accueil : les quatre gestes) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Motiver : le classement de la semaine
+- **Composition** : Petit podium de trois marches sans chiffre, trois silhouettes anonymes de tailles proches, une étoile au-dessus de la plus haute marche, éclairée par la lanterne, sans lettre ni ruban
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-08_480x480.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Reconnaître »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Motiver : le classement de la semaine »
+- **Note** : Ancienne station « Reconnaître » scindée le 13/10/2026 : le podium ici, la lettre en PVZ-11, pour les quatre cartes conservées de la gestion de projet.
 
 ### PVZ-09 · Rattraper, puis ne plus décrocher
 
@@ -610,46 +617,71 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Le Console Manager »
 - **Note** : À remplacer par la capture CAP-PVZ-2 dès qu’elle existe.
 
+### PVZ-11 · Remercier : le récapitulatif individuel
+
+- **Priorité** : socle · **Méthode** : IMG, à générer (image)
+- **Emplacement** : `/projets/pvz-fusion` · § 3, carte 4 de la semaine type, Remercier (accueil : les quatre gestes) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Remercier : le récapitulatif individuel
+- **Composition** : Une lettre personnelle pliée, nouée d’un ruban, tendue par une main anonyme vers une autre ; derrière, une petite pile de fiches de la semaine ; la lanterne éclaire la lettre seule
+- **Format** : 1:1, 480
+- **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-11_480x480.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Remercier : le récapitulatif individuel »
+- **Note** : Ajouté le 13/10/2026 : la moitié « lettre » de l’ancienne station PVZ-08, pour la quatrième carte de gestion de projet. Même série, même main que PVZ-05, PVZ-07 et PVZ-08.
+
 ### PVZ-F1 · Courbe du rattrapage
 
 - **Priorité** : socle · **Méthode** : FIG, à coder (figure de données), rien à générer
 - **Emplacement** : `/projets/pvz-fusion` · § 4 _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Courbe du rattrapage
-- **Composition** : Deux séries mensuelles (taille du jeu, entrées françaises manquantes) depuis le tableau de l’audit PvZ § 2.1, après consignation
+- **Composition** : Huit relevés de l’historique public, du 16/10/2025 au 12/10/2026 (docs/matiere-premiere.md) : entrées anglaises (la ligne), part traduite en encre, manquant en hachures, août 2026 marqué à la lanterne
 - **Format** : 16:9 ; 4:5 mobile (recadrage mobile 4:5)
 - **Fichier attendu** : aucune image, figure codée
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Courbe du rattrapage »
+- **Note** : Codée : components/projets/pvz/FigureRattrapage.astro, scène qui se trace à son arrivée et se rejoue au clic ; tableau des relevés en dessous.
 
 ### PVZ-F2 · La 4.0 en six jours
 
 - **Priorité** : socle · **Méthode** : FIG, à coder (figure de données), rien à générer
 - **Emplacement** : `/projets/pvz-fusion` · § 4 _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : La 4.0 en six jours
-- **Composition** : 20/09 textes chinois → 26/09 PR française fusionnée → 01/10 sortie multilingue
+- **Composition** : 20/09 textes d’origine versés au dépôt → 26/09 PR française fusionnée → 01/10 sortie multilingue
 - **Format** : 4:1
 - **Fichier attendu** : aucune image, figure codée
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « La 4.0 en six jours »
+- **Note** : Codée en HTML : components/projets/pvz/FigureQuatreZero.astro.
 
 ### PVZ-F3 · Frise des arrivées
 
 - **Priorité** : élargi · **Méthode** : FIG, à coder (figure de données), rien à générer
 - **Emplacement** : `/projets/pvz-fusion` · § 2 _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Frise des arrivées
-- **Composition** : Points datés (journal public), silhouettes anonymes ; pseudonymes seulement avec accord
+- **Composition** : Neuf arrivées datées des journaux publics (08/12/2025 → 23/03/2026), en silhouettes anonymes empilées quand deux dates se touchent ; aucun pseudonyme
 - **Format** : 4:1
 - **Fichier attendu** : aucune image, figure codée
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Frise des arrivées »
+- **Note** : Réunie avec PVZ-F4 dans une seule figure codée : components/projets/pvz/FigureEquipe.astro.
 
 ### PVZ-F4 · Traducteur → Lead → Mainteneur
 
 - **Priorité** : socle · **Méthode** : FIG, à coder (figure de données), rien à générer
 - **Emplacement** : `/projets/pvz-fusion` · En-tête, § 2 _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Traducteur → Lead → Mainteneur
-- **Composition** : Trois jalons datés (dates)
+- **Composition** : Trois jalons datés : traducteur le 21/10/2025, lead du pôle le 05/12/2025 (journal public), mainteneur au plus tard le 26/09/2026 (il fusionne la PR #223)
 - **Format** : 3:1
 - **Fichier attendu** : aucune image, figure codée
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Traducteur → Lead → Mainteneur »
-- **Note** : À confirmer.
+- **Note** : Réunie avec PVZ-F3 : components/projets/pvz/FigureEquipe.astro. Une scène : les arrivées apparaissent une à une, rejouable au clic.
+
+### PVZ-F5 · Le retard à l’arrivée, par catégorie
+
+- **Priorité** : socle · **Méthode** : FIG, à coder (figure de données), rien à générer
+- **Emplacement** : `/projets/pvz-fusion` · § 1, le point de départ _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Le retard à l’arrivée, par catégorie
+- **Composition** : Trois barres au 16/10/2025 (plantes, zombies, textes d’interface) : traduit en encre, manquant en hachures, nombres et pourcentages en texte
+- **Format** : libre, trois barres horizontales
+- **Fichier attendu** : aucune image, figure codée
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Entrées anglaises sans équivalent français, le 16 octobre 2025 »
+- **Note** : Codée en HTML : components/projets/pvz/FigureDepart.astro, depuis le premier relevé.
 
 ### PVZ-OG · Version simplifiée de PVZ-01
 
