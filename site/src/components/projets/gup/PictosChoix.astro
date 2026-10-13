@@ -1,0 +1,48 @@
+---
+/**
+ * GUP-02 : les choix d’ingénierie de gup en six pictogrammes, au-dessus de
+ * « Et deux choix de plus » (registre config/visuels.ts). Les quatre premiers
+ * répondent aux quatre décisions, les deux derniers aux deux choix qui
+ * suivent ; chaque texte dit déjà ce que le dessin montre : l’image est
+ * décorative (alt vide au registre, `aria-hidden`).
+ *
+ * Le dessin (src/assets/visuels/gup/GUP-02.svg) est inséré en ligne, et non
+ * en <img> : son trait suit `currentColor` et son accent la lanterne du
+ * thème, jour comme nuit.
+ *
+ *   <PictosChoix class="gup-autres__visuel" />
+ */
+import brut from '../../../assets/visuels/gup/GUP-02.svg?raw';
+
+interface Props {
+  class?: string;
+}
+
+const { class: classe } = Astro.props;
+
+// Le titre du fichier ne sert qu’hors de la page : ici, le dessin est muet.
+const dessin = brut
+  .replace(/<title>[\s\S]*?<\/title>\s*/, '')
+  .replace(/<!--[\s\S]*?-->\s*/g, '')
+  .replace('<svg ', '<svg aria-hidden="true" focusable="false" ');
+---
+
+<div class:list={['gup-choix', classe]} data-visuel="GUP-02" set:html={dessin} />
+
+<style>
+  .gup-choix {
+    width: 576px;
+    max-width: 100%;
+    color: var(--encre);
+  }
+
+  .gup-choix :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .gup-choix :global(.accent) {
+    fill: var(--lanterne);
+  }
+</style>

@@ -23,7 +23,7 @@ import DemoGup from '../../components/projets/gup/DemoGup.astro';
 import FigureCommandes from '../../components/projets/gup/FigureCommandes.astro';
 import FigureSources from '../../components/projets/gup/FigureSources.astro';
 import FigureVersions from '../../components/projets/gup/FigureVersions.astro';
-import AConfirmer from '../../components/ui/AConfirmer.astro';
+import PictosChoix from '../../components/projets/gup/PictosChoix.astro';
 import CadreCapture from '../../components/ui/CadreCapture.astro';
 import CaptureAnnotee from '../../components/ui/CaptureAnnotee.astro';
 import LienAction from '../../components/ui/LienAction.astro';
@@ -55,12 +55,10 @@ const capture = (nom: string) => {
       type="terminal"
       src={selection}
       alt="gup en français : douze paquets à mettre à jour, classés par source, dont cinq cochés ; l’analyse de Scoop a échoué sans bloquer les autres."
-      legende="La vraie interface, sur la machine d’exemple du dépôt. Un clic l’affiche en entier."
+      legende="La vraie interface, fenêtre entière, sur la machine d’exemple du dépôt. Un clic l’agrandit."
       class="gup-entete-capture"
-      region={{ x: 27, y: 11.3, l: 71, h: 83.7 }}
-      regionMobile={{ x: 29.7, y: 11.3, l: 43.6, h: 84.1 }}
-      sizes="(max-width: 860px) 225vw, (max-width: 1100px) 141vw, 780px"
-      widths={[800, 1200, 1600, 2436]}
+      sizes="(max-width: 860px) 100vw, (max-width: 1100px) 640px, 560px"
+      widths={[640, 1200, 1600, 2436]}
       loading="eager"
       agrandir
     />
@@ -150,7 +148,7 @@ const capture = (nom: string) => {
 
     <DecisionsProjet decisions={DECISIONS} chapeau="Quatre choix d’architecture qui ne se voient pas à l’écran, et pourquoi.">
       <div class="gup-autres">
-        <Visuel id="GUP-02" alt="" class="gup-autres__visuel" largeur="576px" sizes="(max-width: 640px) 100vw, 576px" />
+        <PictosChoix class="gup-autres__visuel" />
         <h3>Et deux choix de plus</h3>
         <ul>
           {
@@ -166,15 +164,16 @@ const capture = (nom: string) => {
       </div>
     </DecisionsProjet>
 
-    <SortieProjet projet="gup" liens={LIENS_SORTIE}>
-      <p>Absorber les exceptions de chaque outil, pour qu’il ne reste qu’un geste.<AConfirmer titre="Formulation proposée, à valider par Charles" /></p>
+    <SortieProjet projet="gup" titre="En une phrase" liens={LIENS_SORTIE}>
+      <p>Un seul travail, tenu sur 153&nbsp;sources et trois systèmes&nbsp;: mettre à jour ce qui est déjà installé sur une machine, quel que soit l’outil qui l’a installé.</p>
     </SortieProjet>
 
     <SourcesProjet>
       <p><b>Sources.</b> Les 153 sont comptées à l’exécution dans le <a {...sortant(LIENS.registre)}>registre de gup<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>, à la release 0.5.3 (commit 0c0e85a du 06/10/2026), le 13/10/2026. La famille est le dossier de la source dans le code&nbsp;; le système, l’ensemble déclaré par la source dans le <a {...sortant(LIENS.catalogue)}>catalogue<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>&nbsp;: 14 sources grisées sous Windows, 21 sous macOS, 27 sous Linux.</p>
       <p><b>Versions.</b> Douze versions publiées sur npm, de la 0.1.0 (19/05/2026) à la 0.5.3 (06/10/2026), d’après les dates du registre npm relevées le 13/10/2026. La <a {...sortant(LIENS.quatreZero)}>0.4.0<span class="fleche" aria-hidden="true">&nbsp;↗</span></a> n’a jamais été publiée. Les téléchargements npm ne sont pas affichés&nbsp;: ils se concentrent les jours de publication et ne mesurent pas un usage.</p>
       <p><b>Écrans et démonstration.</b> Les quatre écrans et celui de l’en-tête sont produits par le générateur de captures du dépôt, à la release 0.5.3, interface en français, sur sa <a {...sortant(LIENS.captures)}>machine d’exemple<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>&nbsp;: des versions inventées, aucune machine réelle, aucun gestionnaire lancé. La démonstration reprend les mêmes paquets. Les commandes de la première figure sont lues dans les fichiers des sources, à la même révision.</p>
-      <p><b>Le problème.</b> «&nbsp;Dix à quinze commandes, plusieurs fois par mois&nbsp;» traduit la <a {...sortant(LIENS.pourquoi)}>page de cadrage du projet<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. Les décisions d’architecture sont décrites dans <a {...sortant(LIENS.decisions)}>ses décisions notables<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. La règle «&nbsp;sans shell&nbsp;» a une exception écrite&nbsp;: Scoop, lancé par un shell sur une liste blanche (<a {...sortant(LIENS.exceptionScoop)}>architecture, ligne 484<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>).</p>
+      <p><b>Le problème.</b> «&nbsp;Dix à quinze commandes, plusieurs fois par mois&nbsp;» traduit la <a {...sortant(LIENS.pourquoi)}>page de cadrage du projet<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. Les décisions d’architecture sont décrites dans <a {...sortant(LIENS.decisions)}>ses décisions notables<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. La règle «&nbsp;sans shell&nbsp;» a une exception écrite&nbsp;: Scoop, lancé par un shell sur une liste blanche (<a {...sortant(LIENS.exceptionScoop)}>architecture, ligne 484<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>). La phrase de clôture traduit la première ligne de la <a {...sortant(LIENS.cadrage)}>page de cadrage<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>, avec les relevés de l’en-tête.</p>
+      <p><b>Contributions.</b> La règle des codes 3010 et 1641 de Chocolatey et le lot administrateur unique viennent d’une contribution extérieure de mai 2026&nbsp;: les pull requests <a {...sortant(LIENS.prAdministrateur)}>n°&nbsp;22<span class="fleche" aria-hidden="true">&nbsp;↗</span></a> et <a {...sortant(LIENS.prChocolatey)}>n°&nbsp;23<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>, fusionnées le 20/05/2026. Le reste de l’historique, à la release 0.5.3&nbsp;: 856&nbsp;commits de l’auteur et 29 de Dependabot.</p>
     </SourcesProjet>
   </CorpsProjet>
 

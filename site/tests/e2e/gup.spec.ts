@@ -195,6 +195,10 @@ test('la sortie : projet précédent de la vitrine, retour à la vitrine, « Dis
   await expect(sortie.getByRole('link', { name: /Projet précédent\s+Bloodborne Legendary Run/ })).toHaveAttribute('href', '/projets/bloodborne-legendary-run');
   await expect(sortie.getByRole('link', { name: /Tous les projets/ })).toHaveAttribute('href', '/projets');
   await expect(sortie).not.toContainText('Projet suivant');
+  // La phrase de clôture est sourcée : aucune formulation « à confirmer ».
+  await expect(sortie.getByRole('heading', { level: 2 })).toHaveText('En une phrase');
+  await expect(sortie).toContainText('quel que soit l’outil qui l’a installé');
+  await expect(sortie.locator('.a-confirmer')).toHaveCount(0);
   // Le guide de contribution vit dans l’encart de « Tenu comme un produit », pas dans la sortie.
   await expect(sortie.getByRole('link', { name: /guide de contribution/ })).toHaveCount(0);
   await expect(page.locator('#produit').getByRole('link', { name: /guide de contribution/ })).toHaveAttribute('href', /CONTRIBUTING\.md/);
@@ -206,8 +210,13 @@ test('la part de chacun : la contribution extérieure est dite, le lot administr
   const fiche = page.getByRole('group', { name: 'Fiche du projet' });
   await expect(fiche.locator('.fiche-projet__case--part')).toContainText('l’essentiel de son code');
   const equipe = fiche.locator('.fiche-projet__case--equipe');
-  await expect(equipe).toContainText('une contribution extérieure en mai 2026');
-  await expect(equipe.locator('.a-confirmer')).toHaveCount(1);
+  await expect(equipe).toContainText('deux pull requests extérieures fusionnées en mai 2026');
+  await expect(equipe.locator('.a-confirmer')).toHaveCount(0);
+  // La note de sources dit d’où viennent la règle Chocolatey et le lot administrateur, preuves à l’appui.
+  const sources = page.locator('#sources');
+  await expect(sources).toContainText('La règle des codes 3010 et 1641 de Chocolatey et le lot administrateur unique viennent d’une contribution extérieure de mai 2026');
+  await expect(sources.getByRole('link', { name: /n°\s22/ })).toHaveAttribute('href', 'https://github.com/LINDECKER-Charles/gup/pull/22');
+  await expect(sources.getByRole('link', { name: /n°\s23/ })).toHaveAttribute('href', 'https://github.com/LINDECKER-Charles/gup/pull/23');
   await expect(page.locator('.projet-tete')).not.toContainText(/conçu, écrit/);
   // Le lot administrateur unique vient d’une contribution extérieure : pas une décision « à moi ».
   expect((await page.locator('#construit .decision').allInnerTexts()).join(' ')).not.toMatch(/UAC|administrateur/);
@@ -227,15 +236,17 @@ test('les cibles autonomes font au moins 44 px : liens de trace et choix du syst
   }
 });
 
-test('l’en-tête recadre l’écran sur le volet des paquets ; la visionneuse garde l’écran entier', async ({ page }) => {
+test('l’en-tête montre la fenêtre entière, barre de titre comprise ; la visionneuse l’agrandit', async ({ page }) => {
   await page.goto(CHEMIN);
   const vue = page.locator('.gup-entete-capture .capture__vue');
   const image = vue.locator('img');
   const [cadre, rendu] = await Promise.all([vue.boundingBox(), image.boundingBox()]);
-  // L’image déborde la vue des deux côtés : seul le volet « Paquets » se voit.
-  expect(rendu!.width).toBeGreaterThan(cadre!.width * 1.35);
-  expect(rendu!.x).toBeLessThan(cadre!.x);
-  expect(rendu!.y).toBeLessThan(cadre!.y);
+  // Aucun recadrage : l’image remplit la vue sans la déborder, au ratio de la capture.
+  expect(Math.abs(rendu!.x - cadre!.x)).toBeLessThan(1);
+  expect(Math.abs(rendu!.y - cadre!.y)).toBeLessThan(1);
+  expect(Math.abs(rendu!.width - cadre!.width)).toBeLessThan(1);
+  expect(rendu!.width / rendu!.height).toBeCloseTo(2436 / 1578, 1);
+  await expect(page.locator('.gup-entete-capture')).not.toHaveClass(/capture--region/);
   const agrandir = vue.locator('a[data-agrandir]');
   await agrandir.click();
   const visionneuse = page.locator('dialog[data-visionneuse]');
@@ -272,6 +283,16 @@ test('une seule navigation de page, sans la note de sources', async ({ page }) =
   expect(await navigation.locator('a').evaluateAll((liens) => liens.map((lien) => lien.getAttribute('href')))).toEqual(attendus);
   for (const ancre of attendus) await expect(page.locator(ancre)).toHaveCount(1);
   await expect(page.locator('#sources')).toContainText('0.4.0');
+});
+
+test('GUP-02 : six pictos dessinés, en ligne et muets, à la place du cadre hachuré', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const pictos = page.locator('#construit [data-visuel="GUP-02"]');
+  await expect(pictos).toHaveCount(1);
+  await expect(pictos).not.toHaveAttribute('data-manquant', /.*/);
+  await expect(pictos.locator('svg')).toHaveAttribute('aria-hidden', 'true');
+  await expect(pictos.locator('svg > g')).toHaveCount(6);
+  await expect(page.locator('[data-manquant][data-visuel="GUP-02"]')).toHaveCount(0);
 });
 
 for (const theme of ['jour', 'nuit'] as const) {

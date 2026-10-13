@@ -166,13 +166,13 @@ describe('registre des visuels : liste des manquants', () => {
     expect(etat.manquantsSocle.map((v: { id: string }) => v.id)).toContain('GLO-02');
   });
 
-  it('sur le dépôt réel, ne signale comme présents que les photos (couverture, parcours, contact, 404), la figure du plafond, l’emblème seul, la lanterne de la bascule, les pictos des trois verbes, les cadres d’appareil, l’image de partage par défaut, les deux dessins animés de l’accueil, les deux captures de la vitrine, les neuf pictos de League Of Data Base, le serveur arbitre d’Omnicard et les cinq dessins de Bloodborne', () => {
+  it('sur le dépôt réel, ne signale comme présents que les photos (couverture, parcours, contact, 404), la figure du plafond, l’emblème seul, la lanterne de la bascule, les pictos des trois verbes, les cadres d’appareil, l’image de partage par défaut, les deux dessins animés de l’accueil, les deux captures de la vitrine, les neuf pictos de League Of Data Base, le serveur arbitre d’Omnicard, les cinq dessins de Bloodborne et les pictos des choix de gup', () => {
     const etat = etatDesVisuels(SITE);
-    expect(etat.presents).toBe(29);
-    expect(etat.manquantsSocle).toHaveLength(62);
-    for (const id of ['GLO-01', 'GLO-03', 'GLO-04', 'GLO-05', 'GLO-07', 'ACC-14', 'ACC-17', 'PRJ-04', 'PRJ-05', 'PAR-PHO', 'CON-PHO', 'ERR-PHO', 'LOD-03', 'LOD-06', 'LOD-07', 'LOD-08', 'LOD-09', 'OMN-04', 'BLR-06', 'BLR-07', 'BLR-08', 'BLR-09', 'BLR-10']) expect(etat.manquantsSocle.map((v: { id: string }) => v.id)).not.toContain(id);
+    expect(etat.presents).toBe(30);
+    expect(etat.manquantsSocle).toHaveLength(61);
+    for (const id of ['GLO-01', 'GLO-03', 'GLO-04', 'GLO-05', 'GLO-07', 'ACC-14', 'ACC-17', 'PRJ-04', 'PRJ-05', 'PAR-PHO', 'CON-PHO', 'ERR-PHO', 'LOD-03', 'LOD-06', 'LOD-07', 'LOD-08', 'LOD-09', 'OMN-04', 'BLR-06', 'BLR-07', 'BLR-08', 'BLR-09', 'BLR-10', 'GUP-02']) expect(etat.manquantsSocle.map((v: { id: string }) => v.id)).not.toContain(id);
     for (const id of ['LOD-05', 'LOD-10', 'LOD-11', 'LOD-12']) expect(etat.manquantsElargi.map((v: { id: string }) => v.id)).not.toContain(id);
-    expect(resume(etat)).toMatch(/62 visuels « socle » manquants/);
+    expect(resume(etat)).toMatch(/61 visuels « socle » manquants/);
   });
 
   afterAll(() => rmSync(racine, { recursive: true, force: true }));

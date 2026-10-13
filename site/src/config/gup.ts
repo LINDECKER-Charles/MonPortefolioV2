@@ -51,6 +51,11 @@ export const LIENS = {
   doublons: fige('src/core/superseded.ts#L64'),
   path: fige('docs/releases/0.5.0.md'),
   quatreZero: fige('docs/releases/0.4.0.md'),
+  /** Première phrase de la page de cadrage : « gup has one job ». */
+  cadrage: fige('docs/guide/scope.md'),
+  /** Les deux pull requests extérieures, fusionnées le 20/05/2026. */
+  prAdministrateur: `${DEPOT}/pull/22`,
+  prChocolatey: `${DEPOT}/pull/23`,
 } as const;
 
 /* ------------------------------------------------------------------ */
@@ -94,16 +99,13 @@ export const FICHE: DonneesFiche = {
   part: 'J’ai conçu l’outil et écrit l’essentiel de son code, de son architecture à ses 153 sources, avec ses tests et sa documentation ; je relis les contributions et je publie les versions.',
   role: 'Auteur et mainteneur',
   periode: 'Depuis mai 2026',
-  equipe: 'Projet personnel mené par son mainteneur, ouvert aux contributions ; une contribution extérieure en mai 2026',
+  equipe: 'Projet personnel mené par son mainteneur, ouvert aux contributions ; deux pull requests extérieures fusionnées en mai 2026',
   statut: { texte: 'Open source, sur npm', etat: 'ouvert' },
   liens: [
     { href: DEPOT, libelle: 'Le code' },
     { href: LIENS.site, libelle: 'Le site de gup' },
     { href: LIENS.npm, libelle: 'Le paquet npm' },
   ],
-  aConfirmer: {
-    equipe: 'Contribution extérieure du 20/05/2026 (lot administrateur, codes 3010 et 1641 de Chocolatey) : présentation à valider par Charles',
-  },
 };
 
 /** Les sections du corps : sommaire de l’en-tête et navigation de page. */
@@ -114,7 +116,7 @@ export const SECTIONS: readonly EntreeSommaire[] = [
   { id: 'regles', titre: 'Les règles de 153 outils' },
   { id: 'produit', titre: 'Tenu comme un produit' },
   { id: 'construit', titre: 'Comment je l’ai construit' },
-  { id: 'retiens', titre: 'Ce que j’en retiens' },
+  { id: 'retiens', titre: 'En une phrase' },
 ];
 
 /* ------------------------------------------------------------------ */
