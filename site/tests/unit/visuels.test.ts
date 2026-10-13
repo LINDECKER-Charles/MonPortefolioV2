@@ -166,12 +166,12 @@ describe('registre des visuels : liste des manquants', () => {
     expect(etat.manquantsSocle.map((v: { id: string }) => v.id)).toContain('GLO-02');
   });
 
-  it('sur le dépôt réel, ne signale comme présents que les photos (couverture, parcours, contact, 404), la figure du plafond, l’emblème seul, la lanterne de la bascule, les pictos des trois verbes, les cadres d’appareil, les deux dessins animés de l’accueil et les deux captures de la vitrine', () => {
+  it('sur le dépôt réel, ne signale comme présents que les photos (couverture, parcours, contact, 404), la figure du plafond, l’emblème seul, la lanterne de la bascule, les pictos des trois verbes, les cadres d’appareil, l’image de partage par défaut, les deux dessins animés de l’accueil et les deux captures de la vitrine', () => {
     const etat = etatDesVisuels(SITE);
-    expect(etat.presents).toBe(13);
-    expect(etat.manquantsSocle).toHaveLength(74);
-    for (const id of ['GLO-01', 'GLO-03', 'GLO-04', 'GLO-05', 'ACC-14', 'ACC-17', 'PRJ-04', 'PRJ-05', 'PAR-PHO', 'CON-PHO', 'ERR-PHO']) expect(etat.manquantsSocle.map((v: { id: string }) => v.id)).not.toContain(id);
-    expect(resume(etat)).toMatch(/74 visuels « socle » manquants/);
+    expect(etat.presents).toBe(14);
+    expect(etat.manquantsSocle).toHaveLength(73);
+    for (const id of ['GLO-01', 'GLO-03', 'GLO-04', 'GLO-05', 'GLO-07', 'ACC-14', 'ACC-17', 'PRJ-04', 'PRJ-05', 'PAR-PHO', 'CON-PHO', 'ERR-PHO']) expect(etat.manquantsSocle.map((v: { id: string }) => v.id)).not.toContain(id);
+    expect(resume(etat)).toMatch(/73 visuels « socle » manquants/);
   });
 
   afterAll(() => rmSync(racine, { recursive: true, force: true }));
