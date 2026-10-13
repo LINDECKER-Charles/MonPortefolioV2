@@ -264,8 +264,10 @@ const omnicard = projetDeLaVitrine('omnicard');
     border-radius: var(--r2);
   }
 
+  /* Entre deux sous-sections du récit : l’écart d’une section de page
+     (64 px, 48 sous 860 px). */
   :global(.chapitre.panneau) {
-    margin-top: var(--s8);
+    margin-top: var(--entre-sections);
   }
 
   .quand {
@@ -332,7 +334,7 @@ const omnicard = projetDeLaVitrine('omnicard');
   }
 
   .moment--portes {
-    margin-top: var(--s8);
+    margin-top: var(--entre-sections);
     grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
   }
 
@@ -381,7 +383,7 @@ const omnicard = projetDeLaVitrine('omnicard');
 
   /* Gwent, la méthode : l’acte teinté. */
   :global(.gwent-recit) {
-    margin-top: var(--s8);
+    margin-top: var(--entre-sections);
   }
 
   .gwent-recit__haut,
@@ -410,7 +412,7 @@ const omnicard = projetDeLaVitrine('omnicard');
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--s8) var(--s7);
-    margin-top: var(--s8);
+    margin-top: var(--entre-sections);
   }
 
   .moment-court .quand {
@@ -448,7 +450,7 @@ const omnicard = projetDeLaVitrine('omnicard');
   }
 
   .construire {
-    margin-top: var(--s8);
+    margin-top: var(--entre-sections);
   }
 
   .construire > h3 {
@@ -457,7 +459,7 @@ const omnicard = projetDeLaVitrine('omnicard');
 
   /* Du solo au collectif. */
   .collectif-recit {
-    margin-top: var(--s8);
+    margin-top: var(--entre-sections);
   }
 
   .collectif-recit__haut {
@@ -465,7 +467,7 @@ const omnicard = projetDeLaVitrine('omnicard');
     grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
     gap: var(--s6) var(--s8);
     align-items: center;
-    margin-bottom: var(--s8);
+    margin-bottom: var(--s7);
   }
 
   .collectif-recit__haut :global(.lien-action) {
@@ -483,7 +485,7 @@ const omnicard = projetDeLaVitrine('omnicard');
     grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
     gap: var(--s5) var(--s8);
     align-items: center;
-    margin-top: var(--s8);
+    margin-top: var(--entre-sections);
     padding-top: var(--s6);
     border-top: 1px solid var(--trait);
   }
@@ -527,16 +529,9 @@ const omnicard = projetDeLaVitrine('omnicard');
       padding: var(--s5) var(--s4);
     }
 
-    :global(.chapitre.panneau),
-    .moment--portes,
-    .diptyque,
-    .collectif-recit {
-      margin-top: var(--s8);
-    }
-
     .diptyque {
       grid-template-columns: minmax(0, 1fr);
-      gap: var(--s8);
+      gap: var(--entre-sections);
     }
 
     .moment__scenes {
@@ -553,12 +548,11 @@ const omnicard = projetDeLaVitrine('omnicard');
     }
 
     .collectif-recit__haut {
-      margin-bottom: var(--s7);
+      margin-bottom: var(--s6);
     }
 
-    .collectif-recit :global(.gestes),
-    .conclusion {
-      margin-top: var(--s7);
+    .collectif-recit :global(.gestes) {
+      margin-top: var(--s6);
     }
 
     /* Les titres-liens des cartes : une cible d’au moins 44 px (E7). */
