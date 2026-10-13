@@ -153,6 +153,12 @@ restent des navigations ordinaires.
 
 L’emplacement `preuves` reste actif sur les pages de projets qui utilisent le composant `Fiche`.
 
+Depuis le 2026-10-13, la vitrine `/projets` n’ajoute aucune valeur : les liens publics des cartes
+de projet et de la rangée « Aussi » utilisent `lien-sortant` avec l’emplacement `preuves` ; les
+guides de contribution et « Tous mes dépôts publics » du bloc « Contribuer » sont l’invitation
+open source de l’objectif O3 (`lien-sortant`, emplacement `discutons`, domaine `github.com`) ;
+« Discutons » utilise `contact-page` avec l’emplacement `discutons`.
+
 Depuis le 2026-10-09, les liens officiels des technologies et de Trello sur `/parcours/competences`
 utilisent `lien-sortant` avec l’emplacement `competences` et le seul nom d’hôte de leur cible.
 Ces clics indiquent une consultation technique, sans constituer un objectif de prise de contact.
