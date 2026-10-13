@@ -35,6 +35,7 @@
   --accent-texte: #ffffff;    /* 6,8:1 sur le bleu */
   --accent-survol: #173fae;
   --laiton: #7a4f10;          /* marques secondaires des figures, 5,9:1 */
+  --erreur: #a4271a;          /* erreurs de saisie, 6,0:1 ; 7,0:1 sur la surface */
   --surligneur: #f2cf3a;      /* colza, un seul par preuve */
   --sur-surligneur: #141312;  /* 12,2:1 */
   --focus: #1f4fd1;
@@ -149,6 +150,7 @@
   --accent-texte: #0b0d12;
   --accent-survol: #c7d2ff;
   --laiton: #f0b24a;
+  --erreur: #ff9d8a;          /* 9,7:1 ; 8,3:1 sur la surface */
   --surligneur: #e8c75a;
   --sur-surligneur: #0b0d12;  /* 11,8:1 */
   --focus: #f0b24a;           /* la lanterne éclaire ce qu’on touche */
@@ -178,6 +180,7 @@
     --accent-texte: #0b0d12;
     --accent-survol: #c7d2ff;
     --laiton: #f0b24a;
+    --erreur: #ff9d8a;
     --surligneur: #e8c75a;
     --sur-surligneur: #0b0d12;
     --focus: #f0b24a;
@@ -260,6 +263,7 @@
     --filet: #bbbbbb;
     --accent: #1f4fd1;
     --accent-texte: #ffffff;
+    --erreur: #a4271a;
     --surligneur: #f2cf3a;
     --sur-surligneur: #000000;
     --lumiere: transparent;

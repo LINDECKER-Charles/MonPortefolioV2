@@ -369,11 +369,11 @@ const profils = [
     border-color: var(--accent);
   }
 
-  /* L’erreur se distingue du focus par sa forme : la nuit, le laiton et
-     l’anneau de focus ont la même teinte. */
+  /* L’erreur a sa couleur (--erreur) et sa forme, un filet en tirets : elle
+     ne repose jamais sur la couleur seule. */
   .contact-champ [aria-invalid='true'] {
     padding: 10px 13px;
-    border: 2px dashed var(--laiton);
+    border: 2px dashed var(--erreur);
   }
 
   .contact-champ [aria-invalid='true']:focus {
@@ -384,7 +384,7 @@ const profils = [
     display: flex;
     gap: var(--s2);
     margin-top: var(--s2);
-    color: var(--laiton);
+    color: var(--erreur);
     font-size: var(--t-xs);
     font-weight: 600;
     line-height: 1.4;
@@ -398,7 +398,7 @@ const profils = [
     width: 1.3em;
     height: 1.3em;
     border-radius: 50%;
-    background: var(--laiton);
+    background: var(--erreur);
     color: var(--surface);
     font-size: 0.85em;
     line-height: 1;
@@ -464,7 +464,7 @@ const profils = [
   }
 
   .contact-longueur [data-state='error'] {
-    color: var(--laiton);
+    color: var(--erreur);
     font-weight: 700;
   }
 
@@ -592,7 +592,7 @@ const profils = [
   }
 
   .contact-statut[data-state='error'] {
-    color: var(--laiton);
+    color: var(--erreur);
   }
 
   .contact-retour__suite {

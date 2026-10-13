@@ -66,3 +66,11 @@ describe('l’acte de veille, le jour', () => {
     expect(contraste(veille, jeton(jour, 'fond'))).toBeGreaterThanOrEqual(3);
   });
 });
+
+describe('les erreurs de saisie (--erreur)', () => {
+  it('se lisent à 4,5:1 au moins sur le fond et la surface, le jour comme la nuit', () => {
+    for (const [nom, theme] of [['jour', jour], ['nuit', nuit]] as const) {
+      for (const fond of ['fond', 'surface']) expect(contraste(jeton(theme, 'erreur'), jeton(theme, fond)), `${nom}, ${fond}`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+});
