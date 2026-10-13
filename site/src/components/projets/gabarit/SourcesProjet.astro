@@ -1,0 +1,63 @@
+---
+/**
+ * La note de sources d’une page de projet : en pied de page, hors du
+ * sommaire. D’où vient chaque chiffre, à quelle date, avec quelle méthode et
+ * quelles limites ; les permaliens figés y vivent.
+ *
+ *   <SourcesProjet>
+ *     <p><b>Couverture.</b> …</p>
+ *   </SourcesProjet>
+ *
+ * Texte en petit corps, colonne de lecture. Les liens sortants du slot
+ * portent leur mesure (`lien-sortant`, emplacement `preuves`) : LienAction
+ * ou `attributsMesure` de lib/liens.ts.
+ */
+interface Props {
+  id?: string;
+  titre?: string;
+}
+
+const { id = 'sources', titre = 'Sources et méthode' } = Astro.props;
+---
+
+<aside id={id} class="sources-projet" aria-labelledby={`${id}-titre`}>
+  <h2 class="sources-projet__titre" id={`${id}-titre`}>{titre}</h2>
+  <div class="sources-projet__texte">
+    <slot />
+  </div>
+</aside>
+
+<style>
+  .sources-projet {
+    margin-top: var(--s7);
+    padding-top: var(--s5);
+    border-top: 1px solid var(--filet);
+  }
+
+  .sources-projet__titre {
+    font-family: var(--police-texte);
+    font-size: var(--t-s);
+    font-weight: 600;
+    letter-spacing: var(--ls-petit);
+    line-height: 1.4;
+  }
+
+  .sources-projet__texte {
+    display: grid;
+    gap: var(--s3);
+    max-width: 50rem;
+    margin-top: var(--s3);
+    font-size: var(--t-xs);
+    line-height: 1.6;
+    color: var(--eteint);
+  }
+
+  .sources-projet__texte :global(b) {
+    font-weight: 600;
+    color: var(--encre);
+  }
+
+  .sources-projet__texte :global(a) {
+    overflow-wrap: anywhere;
+  }
+</style>
