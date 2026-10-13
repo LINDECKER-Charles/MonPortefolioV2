@@ -31,7 +31,7 @@ export const LIENS = {
   journalFige: `${FORK}/blob/${REVISION_BILAN}/Docs/french-contributor/lindecker-charles.md`,
   prs: `${AMONT}/pulls?q=is%3Apr+is%3Amerged+author%3ALINDECKER-Charles+created%3A2025-10-16..2026-09-26`,
   pr110: `${AMONT}/pull/110`,
-  /** Les versions publiées par le projet multilingue (25 du 12/08/2025 au 01/10/2026). */
+  /** Les publications du projet multilingue : 15 versions du jeu en 25 publications (PC, Android, préversions), du 12/08/2025 au 01/10/2026. */
   versions: `${AMONT}/releases`,
   readmeDepart: `${AMONT}/blob/${REVISION_DEPART}/README.md`,
   /** L’intégration du Console Manager au dépôt officiel, fusionnée le 31/10/2025. */
@@ -49,7 +49,7 @@ export const EN_TETE = {
   /** Une phrase par ligne : le parallèle des deux phrases ne se casse pas. */
   titre: ['Traduire un jeu.', 'Faire grandir une équipe.'],
   chapeau:
-    'PvZ Fusion change toutes les deux ou trois semaines. Quand je suis arrivé, la traduction française avait plusieurs versions de retard. Dix mois plus tard, avec l’équipe que j’ai recrutée et formée, il ne manquait plus une seule entrée.',
+    'PvZ Fusion change sans cesse : quinze versions en quatorze mois. Quand je suis arrivé, la traduction française avait plusieurs versions de retard. Dix mois plus tard, avec l’équipe que j’ai recrutée et formée, il ne manquait plus une seule entrée dans les fiches et les textes d’interface.',
   liens: [{ href: AMONT, libelle: 'Le projet multilingue' }],
 };
 
@@ -66,7 +66,7 @@ export const PREUVES: readonly PreuveEnTete[] = [
 ];
 
 export const FICHE: DonneesFiche = {
-  besoin: 'Rattraper, à plusieurs, la traduction française d’un jeu qui change toutes les deux ou trois semaines.',
+  besoin: 'Rattraper, à plusieurs, la traduction française d’un jeu qui sort une nouvelle version chaque mois environ.',
   part: 'J’ai recruté et formé l’équipe, construit l’outil qui transforme chaque mise à jour en liste de tâches, et livré son travail au projet officiel en créditant chacun.',
   role: 'Traducteur, puis lead du pôle francophone et mainteneur du projet multilingue',
   periode: 'Depuis octobre 2025 ; lead depuis décembre 2025',
@@ -157,7 +157,7 @@ export const QUATRE_ZERO = [
 export const PARCOURS_EQUIPE = [
   { visuel: 'PVZ-02a', titre: 'Accueillir', texte: 'Faire une place aux nouveaux et les accompagner dans leurs premières contributions.' },
   { visuel: 'PVZ-02b', titre: 'Former et relire', texte: 'Apprendre en faisant, expliquer les corrections et construire des repères communs.' },
-  { visuel: 'PVZ-02c', titre: 'Faire confiance', texte: 'Laisser chacun contribuer en autonomie et prendre sa place dans le pôle.' },
+  { visuel: 'PVZ-02c', titre: 'Contribuer en autonomie', texte: 'Faire confiance : laisser chacun avancer seul et prendre sa place dans le pôle.' },
 ] as const;
 
 /* ------------------------------------------------------------------ */
@@ -196,7 +196,7 @@ export const GESTES: readonly Geste[] = [
     visuel: 'PVZ-08',
     outil: 'Classement hebdomadaire',
     titre: 'Donner envie de se dépasser.',
-    texte: 'Chaque semaine, un classement mettait en avant les contributions et donnait au groupe un nouveau rendez-vous.',
+    texte: 'Chaque semaine, un classement mettait en avant les contributions de chacun.',
   },
   {
     id: 'remercier',
@@ -239,7 +239,7 @@ export const COMMANDES = [
 
 export const DECISIONS = [
   {
-    contrainte: 'Une version sort toutes les deux ou trois semaines, et personne ne sait ce qui manque.',
+    contrainte: 'Une nouvelle version du jeu sort chaque mois environ, et personne ne sait ce qui manque.',
     choix: 'Un outil qui compare chaque langue à l’anglais et écrit le bloc exact à traduire.',
     effet: 'Chaque version devient une liste de tâches, entrée par entrée.',
     lien: { href: LIENS.outilCode, libelle: 'Le code du Console Manager' },
@@ -247,12 +247,12 @@ export const DECISIONS = [
   {
     contrainte: 'Des bénévoles qui arrivent sans savoir par où commencer.',
     choix: 'Une carte de tâche par entrée manquante : chacun prend ce qu’il peut traduire.',
-    effet: 'Jusqu’à dix contributeurs en même temps.',
+    effet: 'Chacun prend une tâche à sa mesure, jusqu’à dix en même temps au plus fort.',
   },
   {
     contrainte: 'Un travail bénévole reste invisible si personne ne le nomme.',
     choix: 'Une pull request par semaine qui crédite chacun, et un bilan individuel tiré de l’outil.',
-    effet: 'Douze personnes créditées en plus de moi, jusqu’à huit dans une même PR.',
+    effet: 'Douze personnes créditées en plus de moi ; la PR #110 en crédite huit, moi compris.',
     lien: { href: LIENS.pr110, libelle: 'La PR #110' },
   },
 ] as const;

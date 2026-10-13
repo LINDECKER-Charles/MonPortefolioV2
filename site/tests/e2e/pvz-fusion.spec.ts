@@ -94,6 +94,25 @@ test('trois chiffres sourcés et datés, un seul surligné, la part personnelle 
   await expect(page.locator('main').getByText(/4\s862/)).toHaveCount(1);
 });
 
+test('la cadence, le rattrapage et ses limites sont dits tels que les sources les donnent', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const main = page.locator('main');
+  // 15 versions du jeu en 25 publications : pas « toutes les deux ou trois semaines ».
+  await expect(main).not.toContainText(/deux ou trois semaines/);
+  await expect(page.locator('.projet-tete')).toContainText('quinze versions en quatorze mois');
+  await expect(page.locator('#sources')).toContainText(/25\spublications .* pour 15\sversions distinctes du jeu/);
+  // Le retard a disparu, sans promettre qu’il ne revient plus.
+  await expect(page.locator('#resultat h2')).toHaveText('Rattraper le retard');
+  await expect(page.locator('#resultat')).toContainText(/la 4\.0\.5 ajoute 29\sentrées à traduire/);
+  await expect(main).not.toContainText(/ne plus décrocher|avant même sa sortie/);
+  // Les écarts du bilan, conservés tels quels.
+  await expect(page.locator('#sources')).toContainText(/4\s853 nouvelles traductions et 293 ajustements/);
+  await expect(page.locator('#sources')).toContainText('douze autres membres du bilan');
+  await expect(page.locator('#equipe')).toContainText('ma première pull request date du 16');
+  await expect(page.locator('#equipe .pvz-temps h3')).toHaveText(['Accueillir', 'Former et relire', 'Contribuer en autonomie']);
+  await expect(page.locator('#construit')).toContainText('la PR #110 en crédite huit');
+});
+
 test('aucun lien hors de la liste blanche, chaque sortie mesurée, le fork seulement dans les sources', async ({ page }) => {
   await page.goto(CHEMIN);
   const liens = await liensSortants(page);
