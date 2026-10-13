@@ -8,7 +8,8 @@
  * Une scène : elle se joue à son arrivée dans l’écran (les arrivées
  * apparaissent une à une), puis se rejoue d’un clic sur le dessin ou au
  * clavier (scripts/figure-animations.ts). Mouvement réduit, impression et
- * sans JavaScript : l’état final, complet.
+ * sans JavaScript : l’état final, complet ; sans JavaScript, le bouton est
+ * désactivé (hors de la tabulation), le script le réactive.
  */
 import { ARRIVEES, ROLES } from '../../../config/pvz-fusion';
 
@@ -85,7 +86,7 @@ const versions = (['large', 'compacte'] as const).map((nom) => {
 });
 ---
 
-<button type="button" class="scene equipe" data-scene="pvz-equipe" data-rejouer data-figure-animation aria-label="Rejouer l’animation : mes rôles et les arrivées dans le pôle">
+<button type="button" class="scene equipe" data-scene="pvz-equipe" data-rejouer data-figure-animation disabled aria-label="Rejouer l’animation : mes rôles et les arrivées dans le pôle">
   {
     versions.map(({ nom, g }) => (
       <svg class:list={['equipe__dessin', `version-${nom}`]} viewBox={`0 0 ${g.largeur} ${g.hauteur}`} aria-hidden="true" focusable="false">

@@ -202,6 +202,8 @@ test.describe('sans JavaScript', () => {
       await expect(dessin).toHaveCount(1);
       await dessin.scrollIntoViewIfNeeded();
       await expect(dessin).toBeVisible();
+      // Rien ne rejouerait la scène : le bouton est désactivé, hors de la tabulation.
+      await expect(page.locator(`[data-scene="${scene}"]`)).toBeDisabled();
     }
     const demo = page.locator('[data-pvz-traduction]');
     await expect(demo.locator('#extraits-francais')).toBeVisible();

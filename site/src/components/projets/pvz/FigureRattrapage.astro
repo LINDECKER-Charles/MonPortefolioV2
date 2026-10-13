@@ -103,7 +103,7 @@ const { class: classe } = Astro.props;
 
 <figure class:list={['rattrapage', classe]}>
 <figcaption class="rattrapage__titre">Le rattrapage de la traduction française, relevé après relevé</figcaption>
-<button type="button" class="scene rattrapage__scene" data-scene="pvz-rattrapage" data-rejouer data-figure-animation aria-label="Rejouer l’animation : le rattrapage de la traduction française">
+<button type="button" class="scene rattrapage__scene" data-scene="pvz-rattrapage" data-rejouer data-figure-animation disabled aria-label="Rejouer l’animation : le rattrapage de la traduction française">
   {
     dessins.map(({ g, x, y, points, ligne, manque, fait, atteint, premier }) => (
       <svg class:list={['rattrapage__dessin', `version-${g.nom}`]} viewBox={`0 0 ${g.largeur} ${g.hauteur}`} aria-hidden="true" focusable="false" style={`--taille:${g.texte}px`}>
