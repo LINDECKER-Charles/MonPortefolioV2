@@ -1859,17 +1859,17 @@ Rien ici n’est à générer : les dessins vectoriels s’écrivent à la main,
 - **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-02.svg`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une pile de fiches devient, d’un trait, un arbre d’étoiles parti d’une seule racine. »
 
-#### BLR-C1 · Une galaxie entière, en arbre, sur ordinateur
+#### BLR-C1 · Une constellation entière, en arbre, sur ordinateur
 
 - **Priorité** : élargi · **Méthode** : CAP, capture réelle, rien à générer
 - **Produit par** : équipe Bloodborne Legendary Run
 - **Emplacement** : `/projets/bloodborne-legendary-run` · § Ranger 1 289 objectifs _(contexte : ne pas le recopier dans un prompt)_
-- **Élargi, non posé** : la section pose déjà la planche des 22 galaxies (BLR-F1).
-- **Sujet** : Une galaxie entière, en arbre, sur ordinateur
-- **Composition** : Capture réelle du front local, une galaxie entière dépliée en arbre sur ordinateur, avec les fixtures du dépôt (aucun compte réel)
+- **Élargi, non posé** : la section pose déjà la planche des 22 constellations (BLR-F1).
+- **Sujet** : Une constellation entière, en arbre, sur ordinateur
+- **Composition** : Capture réelle du front local, une constellation entière dépliée en arbre sur ordinateur, avec les fixtures du dépôt (aucun compte réel)
 - **Format** : 1440 × 900, densité 2
 - **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-C1_2880x1800.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une galaxie de Bloodborne Legendary Run dépliée en arbre, sur ordinateur. »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une constellation de Bloodborne Legendary Run dépliée en arbre, sur ordinateur. »
 - **Note** : CAP-BLR-1 du cahier (§ 6.12) : par l’équipe avec les fixtures du dépôt, ou par Charles.
 
 #### BLR-C2 · Le journal public
@@ -1898,14 +1898,14 @@ Rien ici n’est à générer : les dessins vectoriels s’écrivent à la main,
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « La table d’amélioration d’une arme, dans le guide de Bloodborne Legendary Run. »
 - **Note** : CAP-BLR-3 du cahier (§ 6.12) : capture à faire par l’équipe.
 
-#### BLR-OG · Trois silhouettes de galaxies
+#### BLR-OG · Trois silhouettes de constellations
 
 - **Priorité** : élargi · **Méthode** : OG, à composer en HTML puis rendre en PNG
 - **Produit par** : équipe Bloodborne Legendary Run
 - **Emplacement** : `/projets/bloodborne-legendary-run` · Partage _(contexte : ne pas le recopier dans un prompt)_
 - **Élargi, non posé** : layouts/Base.astro ne pose que l’image de partage par défaut (GLO-07) ; ce visuel sert la déclinaison GLO-08-bloodborne-legendary-run.
-- **Sujet** : Trois silhouettes de galaxies
-- **Composition** : Titre à gauche, galaxies à droite
+- **Sujet** : Trois silhouettes de constellations
+- **Composition** : Titre à gauche, constellations à droite
 - **Format** : 1200 × 630
 - **Fichier attendu** : `site/public/og/BLR-OG_1200x630.png`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Bloodborne Legendary Run — Charles Lindecker »
@@ -2114,10 +2114,10 @@ Fiches pour mémoire : rien à produire.
 - **Emplacement** : `/projets` · Carte Bloodborne _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/pages/projets/index.astro`
 - **Sujet** : Le ciel des objectifs
-- **Composition** : Capture réelle de l’atlas sur téléphone (écran /fr/sky à 390 × 844, densité 2), montrée entière dans le cadre téléphone (GLO-05) sur ordinateur, coupée sous la première galaxie sur mobile
+- **Composition** : Capture réelle de l’atlas sur téléphone (écran /fr/sky à 390 × 844, densité 2), montrée entière dans le cadre téléphone (GLO-05) sur ordinateur, coupée sous la première constellation sur mobile
 - **Format** : 9:19,5, 780 × 1688 ; 4:5 mobile (recadrage mobile 4:5)
 - **Fichier attendu** : `site/src/assets/projets/bloodborne/atlas.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « L’atlas de Bloodborne Legendary Run sur téléphone : chaque galaxie d’objectifs avec sa progression, et la chasse à reprendre en tête. »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « L’atlas de Bloodborne Legendary Run sur téléphone : chaque constellation d’objectifs avec sa progression, et la chasse à reprendre en tête. »
 - **Note** : Capture existante du 8 octobre 2026, provenance dans src/assets/projets/README.md. Posée par CadreCapture, pas par Visuel.
 
 #### PRJ-05 · La sélection des mises à jour
@@ -2518,17 +2518,17 @@ Fiches pour mémoire : rien à produire.
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
 - **Note** : Livré le 13 octobre 2026 : dessin vectoriel écrit à la main, inséré en ligne par <Visuel> : sa feuille de style interne, bornée à la classe v-blr, ne lit que les jetons du site, jour et nuit ; seul, il prend les valeurs recopiées sur svg:root. Série BLR-08 à BLR-10. Décoratif : la carte dit « La sauvegarde » et sa fonction.
 
-#### BLR-F1 · Les 22 galaxies réelles
+#### BLR-F1 · Les 22 constellations réelles
 
 - **Priorité** : socle · **Méthode** : FIG, figure codée depuis des données, rien à générer
 - **Produit par** : équipe Bloodborne Legendary Run
 - **Emplacement** : `/projets/bloodborne-legendary-run` · § 3 _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/pages/projets/bloodborne-legendary-run.astro`
-- **Sujet** : Les 22 galaxies réelles
+- **Sujet** : Les 22 constellations réelles
 - **Composition** : Planche des 22 silhouettes dessinées depuis constellation.json (poses et traits), nom et nombre d’étoiles en HTML
 - **Format** : 16:9 ; 3:4 mobile (recadrage mobile 3:4)
 - **Composant** : `site/src/components/projets/bloodborne/Constellations.astro`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Planche des 22 silhouettes de galaxies, dessinées depuis les données du ciel. »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Planche des 22 silhouettes de constellations, dessinées depuis les données du ciel. »
 - **Note** : Codée depuis config/bloodborne-constellations.ts (généré par tools/extraire-constellations.mjs depuis constellation.json). Une scène : les constellations s’allument l’une après l’autre à l’arrivée, rejouable au clic.
 
 #### BLR-C4 · Les posters des vidéos d’allumage

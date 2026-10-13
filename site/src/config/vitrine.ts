@@ -95,8 +95,8 @@ export const CARTES: Readonly<Record<ProjetVitrine['id'], CarteVitrine>> = {
   },
   bloodborne: {
     // Matière première, « Bloodborne Legendary Run — vérification du 2026-10-08 » :
-    // 22 galaxies, 1 289 objectifs uniques affichés ; web public et Android de test.
-    besoin: 'Retrouver ce qu’il reste à faire dans le jeu Bloodborne, parmi des objectifs rangés en 22 galaxies.',
+    // 22 galaxies (les constellations de la page), 1 289 objectifs uniques affichés ; web public et Android de test.
+    besoin: 'Retrouver ce qu’il reste à faire dans le jeu Bloodborne, parmi des objectifs rangés en 22 constellations.',
     chiffre: { valeur: '1 289', libelle: 'objectifs' },
     role: 'Conception et développement',
     statut: { texte: 'En ligne, web ; Android en test' },
