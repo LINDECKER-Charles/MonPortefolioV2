@@ -7,7 +7,10 @@
  * la plus forte, la seule éclairée de l’écran, son chiffre en grand.
  *
  * Pictos au trait des trois verbes : GLO-04 (ui/PictoVerbe.astro, registre
- * ACC-02). Un seul surlignage par preuve.
+ * ACC-02). Un seul surlignage par preuve, sur ce qui reste vrai quand on
+ * clique : Omnicard est hors ligne, c’est son moteur de règles qui prouve la
+ * réinvention, pas le « jeu en ligne ». La preuve d’Emmener porte la formule
+ * de la page PvZ Fusion, « personnes formées au pôle francophone ».
  */
 import PictoVerbe from '../ui/PictoVerbe.astro';
 import Surligneur from '../ui/Surligneur.astro';
@@ -26,14 +29,14 @@ import Surligneur from '../ui/Surligneur.astro';
       <a class="preuve__lien" href="/projets/omnicard">
         <PictoVerbe verbe="reinventer" class="preuve__picto" />
         <span class="preuve__verbe">Réinventer</span>
-        <span class="preuve__texte">Mon jeu de cartes papier devenu un <Surligneur source="docs/questions.md, D1">jeu en ligne</Surligneur>, avec son moteur de règles<span class="fleche" aria-hidden="true">&nbsp;→</span></span>
+        <span class="preuve__texte">Mon jeu de cartes papier devenu un jeu en ligne, arbitré par mon <Surligneur source="docs/matiere-premiere.md, Omnicard, complément du 13/10/2026">moteur de règles</Surligneur><span class="fleche" aria-hidden="true">&nbsp;→</span></span>
       </a>
     </li>
     <li class="preuve preuve--forte foyer">
       <a class="preuve__lien" href="/projets/pvz-fusion">
         <PictoVerbe verbe="emmener" class="preuve__picto" />
         <span class="preuve__verbe">Emmener</span>
-        <span class="preuve__texte"><span class="preuve__chiffre"><Surligneur source="docs/matiere-premiere.md, PvZ Fusion, confirmé le 13/10/2026">20</Surligneur></span> contributeurs formés sur PvZ&nbsp;Fusion<span class="fleche" aria-hidden="true">&nbsp;→</span></span>
+        <span class="preuve__texte"><span class="preuve__chiffre"><Surligneur source="docs/matiere-premiere.md, PvZ Fusion, confirmé le 13/10/2026">20</Surligneur></span> personnes formées au pôle francophone de PvZ&nbsp;Fusion<span class="fleche" aria-hidden="true">&nbsp;→</span></span>
       </a>
     </li>
   </ul>

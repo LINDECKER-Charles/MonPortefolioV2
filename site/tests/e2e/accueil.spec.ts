@@ -65,6 +65,10 @@ test('le bandeau des preuves : Maîtriser, Réinventer, Emmener, et Emmener en p
     await expect(preuve.locator('mark')).toHaveAttribute('data-source', /.+/);
   }
   await expect(preuves.nth(2).locator('mark')).toHaveText('20');
+  // Ce qui reste vrai quand on clique : Omnicard est hors ligne, son moteur de règles prouve la réinvention.
+  await expect(preuves.nth(1).locator('mark')).toHaveText('moteur de règles');
+  // La même formule que la page PvZ Fusion.
+  await expect(preuves.nth(2)).toContainText('personnes formées au pôle francophone');
   // La case « Emmener » est la plus forte : la seule éclairée, la plus large, le verbe le plus grand.
   const cases = page.locator('[data-pli="preuve"] li');
   await expect(cases.nth(2)).toHaveClass(/foyer/);
@@ -136,6 +140,7 @@ test('les faits du récit : C puis C++, lead depuis décembre 2025, « Seul on v
   // Les trois repères du pôle : un seul surligné, chacun sa source.
   const reperes = page.getByRole('list', { name: 'Le pôle francophone en trois chiffres' });
   await expect(reperes.locator('.preuve-chiffree__valeur')).toHaveText(['20', '10', '35']);
+  await expect(reperes.locator('li').first()).toContainText('personnes formées au pôle francophone');
   await expect(reperes.locator('mark')).toHaveCount(1);
   // La citation d’Omnicard attend la réponse de Charles (Q8) : pas affichée.
   await expect(page.locator('main')).not.toContainText('un moment j’en ai eu marre');
