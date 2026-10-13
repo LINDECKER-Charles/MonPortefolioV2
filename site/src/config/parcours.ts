@@ -81,6 +81,8 @@ export interface Experience {
   /** Statut honnête, en un mot ou deux (composant Statut). */
   statut: { texte: string; etat: 'actif' | 'ouvert' | 'eteint' };
   mission: string;
+  /** Situation actuelle, quand le statut seul prêterait à confusion (Dev-Mates). */
+  situation?: string;
   preuve?: PreuveExperience;
   /** Contexte replié : le résumé est l’intitulé, les paragraphes s’ouvrent au clic. */
   contexte?: { resume: string; paragraphes: readonly string[] };
@@ -167,9 +169,12 @@ export const EXPERIENCES: readonly Experience[] = [
     fin: null,
     statut: { texte: 'Société ouverte', etat: 'ouvert' },
     mission: 'Des applications sur mesure, de la conception à la mise en production.',
+    // B3 et matière première : « toujours ouverte, mais sans client en ce moment ».
+    situation: 'Ma société reste ouverte, sans client actuellement.',
     contexte: {
       resume: 'Le travail chez Dev-Mates',
-      paragraphes: ['J’y ai développé des sites et des applications web. Le travail comprenait aussi le conseil et la relation client.'],
+      // Matière première : « relation client » ; le conseil n’est pas sourcé.
+      paragraphes: ['J’y ai développé des sites et des applications web. Le travail comprenait aussi la relation client.'],
     },
     visuel: 'PRO-06',
     frise: 'Indépendant, Dev-Mates',

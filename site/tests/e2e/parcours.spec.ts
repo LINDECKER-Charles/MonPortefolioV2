@@ -260,8 +260,9 @@ test.describe('page Professionnel', () => {
       await expect(page.locator('#architecture')).toContainText('Je travaille sur le développement web et le DevOps.');
       // Fins inconnues : jamais extrapolées.
       for (const id of ['elan', 'mission-locale']) await expect(page.locator(`#${id} .a-confirmer`)).toHaveText('fin à confirmer');
-      // Q9 : la mention « sans client actuellement » est retirée.
-      await expect(page.locator('main')).not.toContainText(/sans client/i);
+      // Dev-Mates : la société ouverte, mais sans client ; rien de non sourcé (« conseil »).
+      await expect(page.locator('#devmates .fiche__situation')).toHaveText('Ma société reste ouverte, sans client actuellement.');
+      await expect(page.locator('#devmates')).not.toContainText(/conseil/i);
     });
 
     test('PvZ Fusion : traducteur, puis lead en décembre 2025, et la preuve chiffrée sourcée', async ({ page }) => {
