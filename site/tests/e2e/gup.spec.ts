@@ -195,6 +195,10 @@ test('la sortie : projet précédent de la vitrine, retour à la vitrine, « Dis
   await expect(sortie.getByRole('link', { name: /Projet précédent\s+Bloodborne Legendary Run/ })).toHaveAttribute('href', '/projets/bloodborne-legendary-run');
   await expect(sortie.getByRole('link', { name: /Tous les projets/ })).toHaveAttribute('href', '/projets');
   await expect(sortie).not.toContainText('Projet suivant');
+  // La phrase de clôture est sourcée : aucune formulation « à confirmer ».
+  await expect(sortie.getByRole('heading', { level: 2 })).toHaveText('En une phrase');
+  await expect(sortie).toContainText('quel que soit l’outil qui l’a installé');
+  await expect(sortie.locator('.a-confirmer')).toHaveCount(0);
   // Le guide de contribution vit dans l’encart de « Tenu comme un produit », pas dans la sortie.
   await expect(sortie.getByRole('link', { name: /guide de contribution/ })).toHaveCount(0);
   await expect(page.locator('#produit').getByRole('link', { name: /guide de contribution/ })).toHaveAttribute('href', /CONTRIBUTING\.md/);
@@ -206,8 +210,13 @@ test('la part de chacun : la contribution extérieure est dite, le lot administr
   const fiche = page.getByRole('group', { name: 'Fiche du projet' });
   await expect(fiche.locator('.fiche-projet__case--part')).toContainText('l’essentiel de son code');
   const equipe = fiche.locator('.fiche-projet__case--equipe');
-  await expect(equipe).toContainText('une contribution extérieure en mai 2026');
-  await expect(equipe.locator('.a-confirmer')).toHaveCount(1);
+  await expect(equipe).toContainText('deux pull requests extérieures fusionnées en mai 2026');
+  await expect(equipe.locator('.a-confirmer')).toHaveCount(0);
+  // La note de sources dit d’où viennent la règle Chocolatey et le lot administrateur, preuves à l’appui.
+  const sources = page.locator('#sources');
+  await expect(sources).toContainText('La règle des codes 3010 et 1641 de Chocolatey et le lot administrateur unique viennent d’une contribution extérieure de mai 2026');
+  await expect(sources.getByRole('link', { name: /n°\s22/ })).toHaveAttribute('href', 'https://github.com/LINDECKER-Charles/gup/pull/22');
+  await expect(sources.getByRole('link', { name: /n°\s23/ })).toHaveAttribute('href', 'https://github.com/LINDECKER-Charles/gup/pull/23');
   await expect(page.locator('.projet-tete')).not.toContainText(/conçu, écrit/);
   // Le lot administrateur unique vient d’une contribution extérieure : pas une décision « à moi ».
   expect((await page.locator('#construit .decision').allInnerTexts()).join(' ')).not.toMatch(/UAC|administrateur/);
