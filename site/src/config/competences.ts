@@ -35,8 +35,8 @@ export const QUOTIDIEN = [
 ] as const;
 
 /**
- * Pratiqué, par famille. `pile` relie une famille au schéma « Interface ↔ API
- * ↔ Données » qui coiffe les trois familles du milieu.
+ * Pratiqué, par famille. Les trois familles du milieu (web, backend, données)
+ * sont coiffées par le schéma « Interface ↔ API ↔ Données » de la page.
  */
 export const PRATIQUE = [
   { nom: 'Langages', outils: ['JavaScript', 'PHP', 'Python', 'Java', 'SQL'] },

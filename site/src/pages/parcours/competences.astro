@@ -25,6 +25,13 @@ const SECTIONS = [
   { id: 'livraison', titre: 'Tests et livraison' },
   { id: 'humaines', titre: 'Compétences humaines' },
 ] as const;
+
+/** Le schéma « Interface ↔ API ↔ Données », au-dessus des trois familles du milieu. */
+const PILE = [
+  { categorie: 'interface', nom: 'Interface' },
+  { categorie: 'backend', nom: 'API' },
+  { categorie: 'donnees', nom: 'Données' },
+] as const;
 ---
 
 <Parcours
@@ -52,13 +59,21 @@ const SECTIONS = [
         <p>Mis en œuvre dans mes projets ou en formation</p>
       </header>
       <p class="sr">Une interface échange avec une API, qui échange avec les données.</p>
+      <div class="pile" aria-hidden="true">
+        <div class="pile__rangee">
+          {PILE.map(({ categorie, nom }, index) => (
+            <span class="pile__etape">
+              {index > 0 && <span class="pile__lien">↔</span>}
+              <span class="pile__repere"><RepereCompetence categorie={categorie} /></span>
+              <span class="pile__nom">{nom}</span>
+            </span>
+          ))}
+        </div>
+      </div>
       <div class="familles familles--cinq">
         {PRATIQUE.map((famille, index) => (
-          <section class:list={['famille', { 'famille--pile': 'pile' in famille }]} aria-labelledby={`f-pratique-${index}`}>
-            <h3 id={`f-pratique-${index}`} class="famille__titre">
-              {'pile' in famille && <span class="famille__repere"><RepereCompetence categorie={famille.pile} /></span>}
-              {famille.nom}
-            </h3>
+          <section class="famille" aria-labelledby={`f-pratique-${index}`}>
+            <h3 id={`f-pratique-${index}`} class="famille__titre">{famille.nom}</h3>
             <ul class="famille__liste" role="list">
               {famille.outils.map((outil) => <li><LienTechno nom={outil} /></li>)}
             </ul>
@@ -244,32 +259,92 @@ const SECTIONS = [
     line-height: 1.3;
   }
 
-  .famille__repere {
+  /* Le schéma « Interface ↔ API ↔ Données » : une rangée compacte, puis,
+     au-delà de 1 100 px, posé sur les trois colonnes des familles du milieu. */
+  .pile {
+    margin-bottom: var(--s5);
+  }
+
+  .pile__rangee {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s2) var(--s3);
+  }
+
+  .pile__etape {
+    display: grid;
+    grid-template-areas: 'lien repere' 'lien nom';
+    align-items: center;
+    justify-items: center;
+    gap: var(--s1) var(--s3);
+  }
+
+  .pile__lien {
+    grid-area: lien;
+    color: var(--laiton);
+    font-size: var(--t-l);
+    line-height: 1;
+  }
+
+  .pile__repere {
+    grid-area: repere;
     display: block;
-    width: 24px;
-    height: 24px;
-    flex: none;
+    width: 40px;
+    height: 40px;
     color: var(--encre);
   }
 
-  /* Le schéma « Interface ↔ API ↔ Données », porté par les trois familles du milieu. */
+  .pile__repere :global(svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .pile__nom {
+    grid-area: nom;
+    color: var(--encre);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
   @media (min-width: 1101px) {
-    .famille--pile {
-      position: relative;
+    .pile {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      column-gap: var(--s4);
     }
 
-    .famille--pile + .famille--pile::before {
-      content: '↔' / '';
+    .pile__rangee {
+      grid-column: 2 / 5;
+      display: grid;
+      grid-template-columns: subgrid;
+      gap: 0 var(--s4);
+      padding-bottom: var(--s3);
+      border-bottom: 1px solid var(--laiton);
+    }
+
+    .pile__etape {
+      position: relative;
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .pile__lien {
       position: absolute;
       left: calc(-1 * var(--s4) / 2);
-      top: 33px;
-      z-index: 1;
+      top: 50%;
       transform: translate(-50%, -50%);
-      padding: 0 2px;
-      background: var(--fond);
-      color: var(--laiton);
+    }
+
+    .pile__repere {
+      width: 48px;
+      height: 48px;
+    }
+
+    .pile__nom {
       font-size: var(--t-s);
-      line-height: 1;
     }
   }
 
