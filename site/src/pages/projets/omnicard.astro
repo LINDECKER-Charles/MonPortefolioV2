@@ -3,98 +3,159 @@ import { Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import FilAriane from '../../components/pages/FilAriane.astro';
 import ContinuerLecture from '../../components/pages/ContinuerLecture.astro';
-import { DEMOS, SITE } from '../../config/site';
-import capture from '../../assets/captures/omnicard.webp';
+import { SITE } from '../../config/site';
+import collection from '../../assets/projets/omnicard/collection.webp';
+import deck from '../../assets/projets/omnicard/deck.webp';
+import ouverture from '../../assets/projets/omnicard/ouverture.webp';
+import gehrman from '../../assets/projets/omnicard/carte-gehrman.webp';
+import jonathan from '../../assets/projets/omnicard/carte-jonathan.webp';
+import floppa from '../../assets/projets/omnicard/carte-floppa.webp';
+import gitgud from '../../assets/projets/omnicard/carte-gitgud.webp';
+import angular from '../../assets/projets/bloodborne/technos/angular.svg';
+import dotnet from '../../assets/projets/bloodborne/technos/dotnet.svg';
+import postgresql from '../../assets/projets/bloodborne/technos/postgresql.svg';
 import '../../styles/profondeur.css';
+import '../../styles/omnicard.css';
 
-const titre = `Omnicard, du papier au navigateur — ${SITE.nom}`;
-const description = 'Omnicard transforme un jeu de cartes papier en jeu dans le navigateur. Charles Lindecker raconte le moteur maison, la stack choisie et les apprentissages.';
+const titre = `Omnicard, imaginer et construire son jeu — ${SITE.nom}`;
+const description = 'Du jeu de cartes papier au moteur maison : découvrez Omnicard, un projet de Charles Lindecker où la créativité pousse à apprendre et à construire de zéro.';
+const depot = 'https://github.com/LINDECKER-Charles/public-Omnicard';
+const cartes = [
+  { id: 'gehrman', univers: 'Bloodborne', nom: 'Gehrman, Premier Chasseur', image: gehrman, mecanique: 'Invoquer', detail: 'En fin de tour, il invoque un chasseur. Une carte peut en faire entrer une autre en jeu.' },
+  { id: 'jonathan', univers: 'JoJo', nom: 'Jonathan Joestar', image: jonathan, mecanique: 'Transformer', detail: 'Il se transforme selon les alliés sur sa ligne. Les cartes se répondent et changent la façon de jouer.' },
+  { id: 'floppa', univers: 'WTF', nom: 'Floppa Mage', image: floppa, mecanique: 'Combiner', detail: 'Il pioche en fin de tour et gagne une esquive si la carte est un sort. Même un chat a sa stratégie.' },
+];
+const ecrans = [
+  { id: 'collection', titre: 'Collectionner', sousTitre: 'Des cartes de plusieurs univers', image: collection, alt: 'La collection Omnicard affiche les cartes, leur nombre d’exemplaires et des filtres par type, rareté et série.', detail: 'Retrouver ses cartes, explorer leurs effets et filtrer par univers, type ou rareté.' },
+  { id: 'deck', titre: 'Composer son deck', sousTitre: 'Faire des choix qui se répondent', image: deck, alt: 'Le deck Chasse Sanglante à gauche et le catalogue des cartes à droite dans le créateur de deck Omnicard.', detail: 'Un deck, c’est le jeu de cartes que l’on prépare pour la partie. À gauche, sa sélection. À droite, les cartes à y ajouter.' },
+  { id: 'ouverture', titre: 'Ouvrir un booster', sousTitre: 'Découvrir de nouvelles possibilités', image: ouverture, alt: 'L’écran d’ouverture de booster Omnicard révèle les nouvelles cartes obtenues.', detail: 'Un booster est un paquet de cartes à découvrir. De quoi enrichir sa collection et imaginer de nouvelles combinaisons.' },
+];
 ---
 
 <Base titre={titre} description={description} chemin="/projets/omnicard">
-  <article class="wrap profondeur cas-omnicard">
-    <FilAriane courant="Omnicard" projet />
-    <header class="page-hero omnicard-hero">
-      <div>
-        <h1>Omnicard, du papier au navigateur.</h1>
-        <p class="page-hero__intro">Avec mon cousin, j’ai inventé un jeu de cartes et passé des après-midi à le plastifier. Quand le passage au jeu vidéo a trop traîné, j’ai repris le projet et construit mon propre moteur.</p>
-        <p class="page-hero__meta">Projet personnel en cours</p>
-      </div>
-      <div class="omnicard-origine" role="group" aria-label="Le passage du jeu papier au jeu vidéo">
-        <p>Les cartes papier</p>
-        <span aria-hidden="true">↓</span>
-        <p>Les règles de jeu</p>
-        <span aria-hidden="true">↓</span>
-        <p>Un moteur dans le navigateur</p>
+  <article class="profondeur oc-page" data-omnicard-page>
+    <div class="wrap"><FilAriane courant="Omnicard" projet /></div>
+    <header class="oc-hero wrap">
+      <h1>Omnicard.<br /><span>Imaginer le jeu.<br />Construire les règles.</span></h1>
+      <fieldset class="oc-cartes">
+        <legend class="sr">Explorer les univers et les effets des cartes</legend>
+        {cartes.map((carte, index) => <input class="oc-radio" type="radio" name="univers" id={`univers-${carte.id}`} checked={index === 1} />)}
+        <div class="oc-eventail">
+          {cartes.map((carte) => <label class={`oc-carte oc-carte--${carte.id}`} for={`univers-${carte.id}`}>
+            <Picture src={carte.image} formats={['avif']} fallbackFormat="webp" widths={[240, 400, 600]} sizes="(min-width: 1000px) 230px, (min-width: 600px) 220px, 145px" alt={`Carte ${carte.nom}, univers ${carte.univers}`} loading="eager" />
+          </label>)}
+        </div>
+        <div class="oc-univers" aria-label="Univers de la carte">
+          {cartes.map((carte) => <label for={`univers-${carte.id}`}>{carte.univers}</label>)}
+        </div>
+        <div class="oc-cartes__details">
+          {cartes.map((carte) => <div class={`oc-effet oc-effet--${carte.id}`}><p><strong>{carte.mecanique}.</strong> {carte.detail}</p></div>)}
+        </div>
+        <p class="oc-invitation note">Choisissez une carte. Découvrez ce qu’elle change.</p>
+      </fieldset>
+      <div class="oc-hero__texte">
+        <p class="oc-intro">Un jeu de cartes stratégique né sur papier avec mon cousin, devenu un jeu dans le navigateur. Des univers qui se croisent, des règles inventées et un moteur maison pour leur donner vie.</p>
+        <div class="oc-actions">
+          <a class="btn btn--plein" href="#le-jeu">Voir le jeu</a>
+          <a class="oc-lien" href={depot} data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="preuves">Le projet sur GitHub <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 17 10-10M7 7h10v10" /></svg></a>
+        </div>
+        <p class="oc-statut">Projet personnel · Hors ligne, en attente de refonte.</p>
       </div>
     </header>
 
-    <div class="omnicard-corps">
-      <div class="omnicard-recit">
-        <section class="prose omnicard-section" aria-labelledby="papier-titre">
-          <h2 id="papier-titre">D’abord, un jeu fait à la main</h2>
-          <p>Ce projet commence pendant l’adolescence. Avec mon cousin, on invente des cartes, on les imprime et on les plastifie. On sort un nombre incalculable d’éditions, parce qu’une règle ou une carte appelle toujours une nouvelle idée.</p>
-          <p>Le passage au jeu vidéo tarde. À un moment, j’en ai marre&nbsp;: je reprends le projet, je rééquilibre mes cartes et je commence à coder.</p>
-        </section>
+    <nav class="oc-sommaire wrap" aria-label="Dans cette page">
+      <a href="#le-jeu">Le jeu en images</a><a href="#l-origine">L’envie de créer</a><a href="#la-fabrication">La fabrication</a>
+    </nav>
 
-        <section class="prose omnicard-section" aria-labelledby="stack-titre">
-          <h2 id="stack-titre">Partir avec ce que je connais</h2>
-          <p>Je choisis Angular et .NET. Ce n’est pas une stack pensée pour faire un jeu, mais je la maîtrise et je veux démarrer tout de suite. Le moteur de règles est maison, modulaire et optimisé pour tourner dans le navigateur.</p>
-          <blockquote class="page-citation"><p>«&nbsp;Je voulais me lancer direct et pas perdre de temps.&nbsp;»</p></blockquote>
-          <p>Ce choix m’oblige à travailler les contraintes du web. Le projet devient un terrain pour apprendre le temps réel avec SignalR, la gestion du cache, le prérendu serveur et les optimisations de déploiement.</p>
-        </section>
+    <section id="le-jeu" class="oc-jeu wrap" aria-labelledby="jeu-titre">
+      <fieldset class="oc-galerie">
+        <legend class="sr">Choisir un écran d’Omnicard</legend>
+        <div class="oc-galerie__menu">
+          <h2 id="jeu-titre">L’idée devient <br />un jeu.</h2>
+          <p>Une collection à explorer, un deck à préparer, puis des duels en temps réel.</p>
+          <div class="oc-galerie__choix">
+            {ecrans.map((ecran, index) => <label for={`ecran-${ecran.id}`}>
+              <input class="oc-radio" type="radio" name="ecran" id={`ecran-${ecran.id}`} checked={index === 0} />
+              <strong>{ecran.titre}</strong><span>{ecran.sousTitre}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6" /></svg>
+            </label>)}
+          </div>
+          <p class="oc-note">Captures de la version précédente. <br />Cliquez sur une image pour l’agrandir.</p>
+        </div>
+        <div class="oc-galerie__ecrans">
+          {ecrans.map((ecran) => <figure class={`oc-ecran oc-ecran--${ecran.id}`}>
+            <a href={ecran.image.src} data-oc-capture aria-label={`Agrandir — ${ecran.titre}`}>
+              <Picture src={ecran.image} formats={['avif']} fallbackFormat="webp" widths={[600, 900, 1536]} sizes="(min-width: 1000px) 760px, calc(100vw - 48px)" alt={ecran.alt} loading="lazy" />
+            </a>
+            <figcaption><h3>{ecran.titre}</h3><p>{ecran.detail}</p></figcaption>
+          </figure>)}
+        </div>
+      </fieldset>
+    </section>
 
-        <section class="prose omnicard-section" aria-labelledby="apprendre-titre">
-          <h2 id="apprendre-titre">Faire tenir le jeu dans le navigateur</h2>
-          <p>Il ne s’agit plus seulement d’afficher des cartes. Il faut traduire les règles du papier en un moteur de jeu, construire l’interface et faire fonctionner les échanges en temps réel.</p>
-          <p>J’y ai consacré environ <mark class="surligne">trois mois</mark> de travail cumulé. C’est le projet qui m’a fait le plus apprendre, parce que les limites rencontrées m’ont forcé à comprendre plus profondément les outils que je pensais déjà connaître.</p>
-          {DEMOS.omnicard && <div class="page-liens">
-            <a href={DEMOS.omnicard} data-umami-event="lien-sortant" data-umami-event-domaine={new URL(DEMOS.omnicard).hostname} data-umami-event-emplacement="preuves">Découvrir la démo d’Omnicard</a>
-          </div>}
-        </section>
+    <section id="l-origine" class="oc-origine" aria-labelledby="origine-titre">
+      <div class="wrap oc-origine__interieur">
+        <div>
+          <h2 id="origine-titre">Au départ, <br />on plastifiait <br /><em>nos idées.</em></h2>
+          <p class="oc-origine__note">Du papier au navigateur, la même envie d’inventer.</p>
+        </div>
+        <div class="oc-origine__recit">
+          <p>Adolescents, avec mon cousin, on invente un jeu de cartes. On imprime, on plastifie et on recommence. Une nouvelle règle appelle une nouvelle carte, puis une nouvelle édition.</p>
+          <p>Le passage au jeu vidéo traîne. Alors je reprends le projet, je rééquilibre mes cartes et je me lance avec les outils que je connais&nbsp;: Angular et .NET.</p>
+          <p><strong>L’un de mes premiers gros projets techniques.</strong> Je ne voulais pas seulement afficher des cartes&nbsp;: je voulais que mes idées deviennent jouables. Chaque limite rencontrée m’a obligé à aller plus loin.</p>
+        </div>
       </div>
+    </section>
 
-      <aside class="omnicard-apercu" aria-labelledby="apercu-titre">
-        <h2 id="apercu-titre">Le jeu prend forme</h2>
-        <figure class="page-capture">
-          <Picture src={capture} formats={['avif']} fallbackFormat="webp" widths={[480, 768, 1080]} sizes="(min-width: 1000px) 42vw, calc(100vw - 48px)" alt="Le catalogue d’Omnicard, avec les cartes disponibles, les filtres et un deck en cours de composition." loading="eager" />
-          <figcaption class="legende">Le catalogue de cartes et la composition d’un deck dans Omnicard.</figcaption>
+    <section id="la-fabrication" class="wrap oc-fabrication" aria-labelledby="fabrication-titre">
+      <div class="oc-fabrication__entete">
+        <h2 id="fabrication-titre">Sous les cartes,<br />du code fait maison.</h2>
+        <p>Les outils existaient. Le jeu restait à construire. J’ai développé le moteur de règles, les effets des cartes et leur orchestration, puis relié le tout à l’interface.</p>
+      </div>
+      <div class="oc-moteur">
+        <figure class="oc-gitgud">
+          <Picture src={gitgud} formats={['avif']} fallbackFormat="webp" widths={[240, 400, 600]} sizes="(min-width: 700px) 200px, 140px" alt="La carte GitGud, un sort de l’univers WTF, illustre l’humour du jeu." loading="lazy" />
+          <figcaption class="note">Même «&nbsp;GitGud&nbsp;» a sa carte.</figcaption>
         </figure>
-        <dl class="omnicard-matiere">
-          <div><dt>Moteur et serveur</dt><dd>C#, .NET, SignalR</dd></div>
-          <div><dt>Interface</dt><dd>Angular</dd></div>
-          <div><dt>Données et tests</dt><dd>PostgreSQL, xUnit</dd></div>
-        </dl>
-      </aside>
-    </div>
+        <div class="oc-coulisses">
+          <details open>
+            <summary>Traduire une idée en règle <span>C# · .NET</span></summary>
+            <div><p>Invoquer un personnage, transformer une carte, déclencher un effet en fin de tour&nbsp;: le moteur C# résout les règles côté serveur. Les cartes s’appuient sur des effets et des conditions que l’on peut combiner.</p><p class="oc-precision">Moteur développé de zéro, sans moteur de jeu comme Unity.</p></div>
+          </details>
+          <details>
+            <summary>Donner vie aux cartes <span>Angular</span></summary>
+            <div><p>J’ai construit le rendu des cartes, le catalogue, les filtres et l’éditeur de decks. L’interface transforme les règles du jeu en actions que le joueur peut comprendre et manipuler.</p></div>
+          </details>
+          <details>
+            <summary>Faire jouer deux personnes ensemble <span>SignalR</span></summary>
+            <div><p>Le navigateur transmet l’action au serveur. Le moteur la vérifie, applique les effets et envoie l’état de la partie aux joueurs grâce à SignalR, la liaison en temps réel.</p></div>
+          </details>
+        </div>
+      </div>
+      <div class="oc-trajet" role="group" aria-label="Le trajet d’une action de jeu">
+        <div><img src={angular.src} alt="" width="36" height="36" loading="lazy" /><p><strong>Le joueur choisit</strong><span>Interface Angular</span></p></div>
+        <svg viewBox="0 0 44 24" aria-hidden="true"><path d="M2 12h38m-7-6 7 6-7 6" /></svg>
+        <div><img src={dotnet.src} alt="" width="36" height="36" loading="lazy" /><p><strong>Le moteur résout</strong><span>Règles C# · échanges SignalR</span></p></div>
+        <svg viewBox="0 0 44 24" aria-hidden="true"><path d="M2 12h38m-7-6 7 6-7 6" /></svg>
+        <div><img src={angular.src} alt="" width="36" height="36" loading="lazy" /><p><strong>La partie se met à jour</strong><span>Un état partagé avec les joueurs</span></p></div>
+      </div>
+      <p class="oc-stockage"><img src={postgresql.src} alt="" width="24" height="24" loading="lazy" /> Collections et decks conservés dans PostgreSQL.</p>
+      <div class="oc-bilan">
+        <h3>Apprendre en dépassant<br />ce que je savais faire.</h3>
+        <div><p>Environ <mark class="surligne">trois mois</mark> de travail cumulé. Le temps réel, le cache, le prérendu serveur et le déploiement&nbsp;: les contraintes de ce jeu m’ont fait approfondir les outils que je pensais connaître.</p><p>Omnicard est aujourd’hui hors ligne, en attente de refonte. Les règles, les guides et les cartes restent consultables sur le dépôt public.</p><a class="oc-lien" href={depot} data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="preuves">Voir le dépôt public d’Omnicard <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 17 10-10M7 7h10v10" /></svg></a></div>
+      </div>
+    </section>
 
-    <ContinuerLecture liens={[
-      { href: '/projets/gup', titre: 'gup', detail: 'Un autre projet né d’un besoin quotidien.' },
-      { href: '/projets/pvz-fusion', titre: 'PvZ Fusion', detail: 'Construire et transmettre à plusieurs.' },
+    <div class="wrap"><ContinuerLecture liens={[
+      { href: '/projets/bloodborne-legendary-run', titre: 'Bloodborne Legendary Run', detail: 'Une autre façon de prolonger le jeu.' },
+      { href: '/projets/gup', titre: 'gup', detail: 'Un outil né d’un besoin quotidien.' },
       { href: '/projets', titre: 'Tous les projets', detail: 'Revenir aux réalisations.' },
       { href: '/contact', titre: 'Discutons', detail: 'Parlons de création et de technique.' },
-    ]} />
+    ]} /></div>
+    <dialog class="oc-zoom" aria-label="Capture d’Omnicard agrandie" data-oc-dialog>
+      <button class="oc-zoom__fermer" type="button" data-oc-close aria-label="Fermer la capture"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" /></svg></button>
+      <img data-oc-zoom-image src={collection.src} alt="" loading="lazy" hidden />
+      <p class="oc-zoom__statut" role="status" data-oc-zoom-status></p>
+    </dialog>
   </article>
+  <script>import '../../scripts/omnicard.ts';</script>
 </Base>
-
-<style>
-  .omnicard-hero { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.7fr); gap: var(--s8); align-items: center; }
-  .omnicard-origine { max-width: 24rem; border-left: 2px solid var(--bleu); padding: var(--s5) var(--s6); display: grid; justify-items: start; gap: var(--s3); }
-  .omnicard-origine > p { font-family: var(--font-note); font-style: italic; font-size: 1.5rem; line-height: 1.2; color: var(--bleu); }
-  .omnicard-origine > span { color: var(--trait-doux); font-size: 1.25rem; }
-  .omnicard-corps { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: clamp(48px, 7vw, 104px); align-items: start; }
-  .omnicard-section { padding-block: var(--s7); border-top: 1px solid var(--filet); }
-  .omnicard-section:first-child { padding-top: var(--s6); }
-  .omnicard-section h2 { font-size: clamp(2rem, 1.3rem + 2vw, 3rem); line-height: 1.08; max-width: 20ch; letter-spacing: -0.035em; }
-  .omnicard-section .page-citation { margin-block: var(--s6); }
-  .omnicard-section .page-citation p { max-width: 28ch; }
-  .omnicard-apercu { border-top: 1px solid var(--filet); padding-top: var(--s6); }
-  .omnicard-apercu h2 { font-size: 1.25rem; margin-bottom: var(--s5); color: var(--graphite); }
-  .omnicard-apercu .page-capture { padding: var(--s4); background: color-mix(in srgb, var(--bleu) 6%, var(--papier)); }
-  .omnicard-matiere { margin-top: var(--s6); font-size: var(--t-petit); }
-  .omnicard-matiere > div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: var(--s4); padding-block: var(--s4); border-top: 1px solid var(--filet); }
-  .omnicard-matiere dt { color: var(--graphite); }
-  @media (min-width: 1000px) { .omnicard-apercu { position: sticky; top: calc(var(--hauteur-entete) + var(--s6)); } }
-  @media (max-width: 999px) { .omnicard-hero { grid-template-columns: minmax(0, 1fr); gap: var(--s7); } .omnicard-origine { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1.3fr); max-width: none; align-items: center; padding-left: var(--s5); } .omnicard-origine > span { transform: rotate(-90deg); } .omnicard-corps { grid-template-columns: minmax(0, 1fr); gap: var(--s7); } .omnicard-apercu { order: -1; } .omnicard-apercu .page-capture { max-width: 650px; margin-inline: auto; } .omnicard-matiere { max-width: 650px; margin-inline: auto; } }
-  @media (max-width: 640px) { .omnicard-origine { grid-template-columns: minmax(0, 1fr); gap: var(--s3); } .omnicard-origine > span { transform: none; } .omnicard-origine > p { font-size: 1.35rem; } .omnicard-matiere > div { grid-template-columns: minmax(0, 1fr); gap: var(--s1); } }
-</style>

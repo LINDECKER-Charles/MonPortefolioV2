@@ -10,7 +10,7 @@ const PAGES = [
   { chemin: '/', maj: '2026-10-08' },
   { chemin: '/projets', maj: '2026-10-12' },
   { chemin: '/projets/pvz-fusion', maj: '2026-10-08' },
-  { chemin: '/projets/omnicard', maj: '2026-10-08' },
+  { chemin: '/projets/omnicard', maj: '2026-10-13' },
   { chemin: '/projets/gup', maj: '2026-10-08' },
   { chemin: '/projets/bloodborne-legendary-run', maj: '2026-10-08' },
   { chemin: '/projets/league-of-database', maj: '2026-10-12' },
