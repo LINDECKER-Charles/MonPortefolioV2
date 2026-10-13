@@ -130,7 +130,8 @@ test('les statuts sont honnêtes : une forme et un mot', async ({ page }) => {
   await expect(carte(page, 'omnicard').locator('.statut')).toHaveText('Hors ligne, en attente de refonte');
   await expect(carte(page, 'gup').locator('.statut')).toHaveClass(/statut--ouvert/);
   await expect(carte(page, 'bloodborne').locator('.statut')).toHaveText('En ligne, web ; Android en test');
-  await expect(carte(page, 'league').locator('.a-confirmer')).toHaveText('nom à confirmer');
+  // La réserve sur le nom est dite une fois, dans la note de sources de la page League.
+  await expect(carte(page, 'league').locator('.a-confirmer')).toHaveCount(0);
 });
 
 test('l’index des preuves mène à chaque carte, sans rien masquer', async ({ page }) => {

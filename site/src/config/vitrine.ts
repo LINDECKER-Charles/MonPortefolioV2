@@ -7,8 +7,9 @@
  *
  * Chaque fait vient de docs/matiere-premiere.md, d’un README public ou d’une
  * page publique du projet (source notée à côté). Un fait que Charles n’a pas
- * confirmé n’entre pas ici (Q8 : rien d’affiché sans réponse) : le nom
- * « League Of Data Base » garde sa marque « à confirmer ».
+ * confirmé n’entre pas ici (Q8 : rien d’affiché sans réponse). La réserve sur
+ * le nom « League Of Data Base » est dite une fois, dans la note de sources
+ * de sa page, et non sur chaque carte.
  *
  * Liens : seulement les dépôts publics de la liste blanche
  * (config/liens-publics.ts), les sites en ligne des projets et leurs paquets.
@@ -77,7 +78,6 @@ export const CARTES: Readonly<Record<ProjetVitrine['id'], CarteVitrine>> = {
       { src: angular, alt: 'Angular' },
       { src: postgresql, alt: 'PostgreSQL' },
     ],
-    aConfirmer: 'Nom officiel à confirmer (question Q8)',
   },
   omnicard: {
     // Questions D1 et matière première : jeu papier inventé avec son cousin,
