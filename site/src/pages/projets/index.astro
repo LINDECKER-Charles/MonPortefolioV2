@@ -26,7 +26,8 @@ import atlas from '../../assets/projets/bloodborne/atlas.webp';
 import gup from '../../assets/projets/gup-selection.webp';
 import { SITE } from '../../config/site';
 import { VITRINE } from '../../config/projets';
-import { CARTES } from '../../config/vitrine';
+import { CARTES, RELEVE } from '../../config/vitrine';
+import { typo } from '../../lib/typo';
 
 const titre = `Projets — ${SITE.nom}`;
 const description = 'Cinq projets menés au bout, rangés par ce qu’ils prouvent : une équipe bénévole, un système en production, un jeu inventé, un produit complet, un outil open source.';
@@ -100,6 +101,7 @@ const description = 'Cinq projets menés au bout, rangés par ce qu’ils prouve
         })
       }
     </Vitrine>
+    <p class="petit vitrine-releve">{typo(RELEVE)}</p>
   </div>
 
   <RangeeAussi />
@@ -179,6 +181,11 @@ const description = 'Cinq projets menés au bout, rangés par ce qu’ils prouve
 
   .vitrine-corps :global(.vitrine-terminal) {
     width: 100%;
+  }
+
+  .vitrine-releve {
+    margin-top: var(--s4);
+    color: var(--eteint);
   }
 
   .vitrine-fin {

@@ -96,7 +96,7 @@ export const CARTES: Readonly<Record<ProjetVitrine['id'], CarteVitrine>> = {
   bloodborne: {
     // Matière première, « Bloodborne Legendary Run — vérification du 2026-10-08 » :
     // 22 galaxies, 1 289 objectifs uniques affichés ; web public et Android de test.
-    besoin: 'Retrouver ce qu’il reste à faire dans Bloodborne, parmi des objectifs rangés en 22 galaxies.',
+    besoin: 'Retrouver ce qu’il reste à faire dans le jeu Bloodborne, parmi des objectifs rangés en 22 galaxies.',
     chiffre: { valeur: '1 289', libelle: 'objectifs' },
     role: 'Conception et développement',
     statut: { texte: 'En ligne, web ; Android en test' },
@@ -145,7 +145,7 @@ export const AUSSI: readonly ProjetAussi[] = [
     id: 'githealth',
     nom: 'GitHealth',
     visuel: 'PRJ-06',
-    description: 'Voir quelles branches Git comptent encore, sans toucher au dépôt. Une application de bureau, locale.',
+    description: 'Voir quelles branches Git comptent encore, sans toucher au dépôt : une application de bureau qui travaille en local.',
     liens: [{ href: 'https://github.com/LINDECKER-Charles/App.GitHealth', libelle: 'Le code' }],
   },
   {
@@ -187,12 +187,19 @@ export const CONTRIBUER: readonly { nom: string; texte: string; lien: LienPublic
     lien: { href: 'https://github.com/LINDECKER-Charles/gup/blob/main/.github/CONTRIBUTING.md', libelle: 'Guide de contribution' },
   },
   {
-    nom: 'PVZF Console Manager',
+    nom: 'Console Manager de PvZ Fusion',
     // README : comparer chaque langue à la source, exporter le reliquat, documenter les contributeurs.
     texte: 'L’outil du pôle francophone de PvZ Fusion : il compare chaque langue à l’anglais et liste ce qu’il reste à traduire.',
     lien: { href: 'https://github.com/LINDECKER-Charles/PVZ-Fuzion-ConsolManager/blob/main/CONTRIBUTING.md', libelle: 'Guide de contribution' },
   },
 ];
+
+/**
+ * La date des chiffres des cartes, affichée sous la vitrine (règle C1 : un
+ * chiffre a sa source et sa date). Les patchs de League Of Data Base
+ * augmentent toutes les deux semaines : cette ligne change avec eux.
+ */
+export const RELEVE = 'Chiffres au 13 octobre 2026 ; objectifs de Bloodborne Legendary Run au 8 octobre 2026.';
 
 /** Tous les dépôts publics de Charles, sur son profil GitHub. */
 export const TOUS_LES_DEPOTS = 'https://github.com/LINDECKER-Charles?tab=repositories';
