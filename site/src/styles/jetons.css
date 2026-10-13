@@ -264,6 +264,9 @@
     --sur-surligneur: #000000;
     --lumiere: transparent;
     --lueur: transparent;
+    --veille-lueur: transparent;
+    --emplacement: #ffffff;
+    --hachure: rgb(0 0 0 / 0.06);
     --ombre-1: none;
     --ombre-2: none;
     --bouton: #ffffff;

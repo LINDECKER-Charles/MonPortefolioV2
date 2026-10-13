@@ -161,6 +161,7 @@ const cases: { champ: ChampFiche; titre: string; large?: boolean }[] = [
     }
   }
 
+  /* L’adresse complète figure dans la note de sources : pas d’URL ajoutée. */
   @media print {
     .fiche-projet dl {
       background: transparent;
@@ -169,6 +170,10 @@ const cases: { champ: ChampFiche; titre: string; large?: boolean }[] = [
 
     .fiche-projet__case {
       border: 1px solid var(--trait);
+    }
+
+    ul a::after {
+      content: none !important;
     }
   }
 </style>
