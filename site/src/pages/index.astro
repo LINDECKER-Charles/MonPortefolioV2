@@ -40,6 +40,7 @@ import Visuel from '../components/ui/Visuel.astro';
 import { CHAPITRES } from '../config/chapitres';
 import { GLOSSAIRE } from '../config/glossaire';
 import { projetDeLaVitrine } from '../config/projets';
+import { CARTES } from '../config/vitrine';
 
 const titre = 'Charles Lindecker — architecte logiciel';
 const description =
@@ -60,7 +61,8 @@ const ENTREES = [
 const omnicard = projetDeLaVitrine('omnicard');
 /* Sur l’accueil, la carte d’Omnicard ne porte pas le rang de la vitrine, qui
    n’a de sens que dans l’index de /projets. Son étiquette de preuve est celle
-   de la vitrine, « Réinventer », le verbe du bandeau des preuves. */
+   de la vitrine, « Réinventer », le verbe du bandeau des preuves ; son chiffre
+   et son lien aussi (config/vitrine.ts, règle E6). */
 ---
 
 <Base titre={titre} description={description} chemin="/" accueil sommaire={SOMMAIRE}>
@@ -99,10 +101,10 @@ const omnicard = projetDeLaVitrine('omnicard');
           nom={omnicard.projet.nom}
           preuve={omnicard.projet.preuve}
           besoin="Ce jeu de cartes, je l’ai repris seul et transformé en jeu en ligne, avec un moteur de règles en C# qui arbitre chaque partie côté serveur."
-          chiffre={{ valeur: '3 mois', libelle: 'de travail cumulé, environ' }}
+          chiffre={CARTES.omnicard.chiffre}
           role="Seul : règles, équilibrage des cartes, moteur de jeu"
           statut={{ texte: 'Hors ligne, en attente de refonte', etat: 'eteint' }}
-          liens={[{ href: 'https://github.com/LINDECKER-Charles/public-Omnicard', libelle: 'Présentation publique (GitHub)' }]}
+          liens={[...CARTES.omnicard.liens]}
         >
           <Visuel slot="visuel" id="OMN-01" sizes="(max-width: 860px) 100vw, 560px" />
         </CarteProjet>
@@ -227,7 +229,7 @@ const omnicard = projetDeLaVitrine('omnicard');
             <LienAction href="/projets/pvz-fusion">Le pôle francophone de PvZ Fusion</LienAction>
           </div>
           <PreuvesChiffrees label="Le pôle francophone en trois chiffres" disposition="pile" class="foyer collectif-recit__chiffres">
-            <PreuveChiffree valeur="20" libelle="contributeurs formés" source="Témoignage" date="confirmé le 13/10/2026" surligne />
+            <PreuveChiffree valeur="20" libelle="personnes formées au pôle francophone" source="Témoignage" date="confirmé le 13/10/2026" surligne />
             <PreuveChiffree valeur="10" libelle="en même temps, au plus fort" source="Témoignage" date="confirmé le 13/10/2026" />
             <PreuveChiffree valeur="35" libelle="pull requests fusionnées dans le projet officiel" source="GitHub" date="du 16/10/2025 au 26/09/2026" />
           </PreuvesChiffrees>
@@ -262,8 +264,10 @@ const omnicard = projetDeLaVitrine('omnicard');
     border-radius: var(--r2);
   }
 
+  /* Entre deux sous-sections du récit : l’écart d’une section de page
+     (64 px, 48 sous 860 px). */
   :global(.chapitre.panneau) {
-    margin-top: var(--s8);
+    margin-top: var(--entre-sections);
   }
 
   .quand {
@@ -330,7 +334,7 @@ const omnicard = projetDeLaVitrine('omnicard');
   }
 
   .moment--portes {
-    margin-top: var(--s8);
+    margin-top: var(--entre-sections);
     grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
   }
 
@@ -379,7 +383,7 @@ const omnicard = projetDeLaVitrine('omnicard');
 
   /* Gwent, la méthode : l’acte teinté. */
   :global(.gwent-recit) {
-    margin-top: var(--s8);
+    margin-top: var(--entre-sections);
   }
 
   .gwent-recit__haut,
@@ -408,7 +412,7 @@ const omnicard = projetDeLaVitrine('omnicard');
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--s8) var(--s7);
-    margin-top: var(--s8);
+    margin-top: var(--entre-sections);
   }
 
   .moment-court .quand {
@@ -446,7 +450,7 @@ const omnicard = projetDeLaVitrine('omnicard');
   }
 
   .construire {
-    margin-top: var(--s8);
+    margin-top: var(--entre-sections);
   }
 
   .construire > h3 {
@@ -455,7 +459,7 @@ const omnicard = projetDeLaVitrine('omnicard');
 
   /* Du solo au collectif. */
   .collectif-recit {
-    margin-top: var(--s8);
+    margin-top: var(--entre-sections);
   }
 
   .collectif-recit__haut {
@@ -463,7 +467,7 @@ const omnicard = projetDeLaVitrine('omnicard');
     grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
     gap: var(--s6) var(--s8);
     align-items: center;
-    margin-bottom: var(--s8);
+    margin-bottom: var(--s7);
   }
 
   .collectif-recit__haut :global(.lien-action) {
@@ -481,7 +485,7 @@ const omnicard = projetDeLaVitrine('omnicard');
     grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
     gap: var(--s5) var(--s8);
     align-items: center;
-    margin-top: var(--s8);
+    margin-top: var(--entre-sections);
     padding-top: var(--s6);
     border-top: 1px solid var(--trait);
   }
@@ -525,16 +529,9 @@ const omnicard = projetDeLaVitrine('omnicard');
       padding: var(--s5) var(--s4);
     }
 
-    :global(.chapitre.panneau),
-    .moment--portes,
-    .diptyque,
-    .collectif-recit {
-      margin-top: var(--s8);
-    }
-
     .diptyque {
       grid-template-columns: minmax(0, 1fr);
-      gap: var(--s8);
+      gap: var(--entre-sections);
     }
 
     .moment__scenes {
@@ -551,12 +548,11 @@ const omnicard = projetDeLaVitrine('omnicard');
     }
 
     .collectif-recit__haut {
-      margin-bottom: var(--s7);
+      margin-bottom: var(--s6);
     }
 
-    .collectif-recit :global(.gestes),
-    .conclusion {
-      margin-top: var(--s7);
+    .collectif-recit :global(.gestes) {
+      margin-top: var(--s6);
     }
 
     /* Les titres-liens des cartes : une cible d’au moins 44 px (E7). */

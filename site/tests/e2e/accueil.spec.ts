@@ -29,7 +29,10 @@ test('le premier écran dit qui, quoi, une preuve et l’action (règle E1)', as
   for (const marque of ['titre', 'identite', 'preuve', 'action']) {
     await expect(page.locator(`[data-pli="${marque}"]`), marque).toBeInViewport();
   }
-  await expect(page.locator('[data-pli="identite"]')).toHaveText(/Architecte logiciel chez B-Hive, à Mulhouse\. Lead du pôle francophone de PvZ\sFusion/);
+  await expect(page.locator('[data-pli="identite"]')).toHaveText(/Architecte logiciel chez B-Hive, à Mulhouse\.\s+Lead du pôle francophone de PvZ\sFusion/);
+  // Le métier d’abord : la ligne d’identité est composée plus grand que l’histoire qui la suit.
+  const corps = (selecteur: string) => page.locator(selecteur).evaluate((e) => Number.parseFloat(getComputedStyle(e).fontSize));
+  expect(await corps('.couverture__identite')).toBeGreaterThan(await corps('.couverture__chapeau'));
   // Les trois preuves tiennent entières au pli, à 1 440 × 900 comme à 390 × 844.
   for (const preuve of await page.locator('[data-pli="preuve"] li').all()) await expect(preuve).toBeInViewport({ ratio: 1 });
 
@@ -62,6 +65,10 @@ test('le bandeau des preuves : Maîtriser, Réinventer, Emmener, et Emmener en p
     await expect(preuve.locator('mark')).toHaveAttribute('data-source', /.+/);
   }
   await expect(preuves.nth(2).locator('mark')).toHaveText('20');
+  // Ce qui reste vrai quand on clique : Omnicard est hors ligne, son moteur de règles prouve la réinvention.
+  await expect(preuves.nth(1).locator('mark')).toHaveText('moteur de règles');
+  // La même formule que la page PvZ Fusion.
+  await expect(preuves.nth(2)).toContainText('personnes formées au pôle francophone');
   // La case « Emmener » est la plus forte : la seule éclairée, la plus large, le verbe le plus grand.
   const cases = page.locator('[data-pli="preuve"] li');
   await expect(cases.nth(2)).toHaveClass(/foyer/);
@@ -113,6 +120,14 @@ test('le récit garde ses moments, ses figures et ses scènes', async ({ page })
   // Le système qui communique en boucle et les lanternes : les dessins du registre, insérés dans la page.
   await expect(page.locator('[data-scene="architecte"] [data-animation-continue] .sys-paquet')).toHaveCount(4);
   await expect(page.locator('[data-scene="lanternes"] .lt-particule')).toHaveCount(2);
+  // Les lanternes au trait, de la même main que la bascule : ni dégradé, ni flou, ni ombre ; un contour d’encre de 1,5 px.
+  const lanternes = page.locator('[data-scene="lanternes"] svg');
+  await expect(lanternes.locator('linearGradient, radialGradient, filter, .lt-ombre, .lt-halo')).toHaveCount(0);
+  for (const trait of await lanternes.locator('.lt-aplat, .lt-flamme').all()) {
+    await expect(trait).toHaveCSS('filter', 'none');
+  }
+  await expect(lanternes.locator('.lt-aplat').first()).toHaveCSS('stroke-width', '1.5px');
+  await expect(lanternes.locator('.lt-aplat').first()).toHaveCSS('vector-effect', 'non-scaling-stroke');
   // Plus aucun dessin de l’ancienne direction.
   await expect(page.locator('.scene-origine, .illustration, .planche')).toHaveCount(0);
   // Les portes portent leurs intitulés en HTML, sans date pour la piscine de 42.
@@ -133,6 +148,7 @@ test('les faits du récit : C puis C++, lead depuis décembre 2025, « Seul on v
   // Les trois repères du pôle : un seul surligné, chacun sa source.
   const reperes = page.getByRole('list', { name: 'Le pôle francophone en trois chiffres' });
   await expect(reperes.locator('.preuve-chiffree__valeur')).toHaveText(['20', '10', '35']);
+  await expect(reperes.locator('li').first()).toContainText('personnes formées au pôle francophone');
   await expect(reperes.locator('mark')).toHaveCount(1);
   // La citation d’Omnicard attend la réponse de Charles (Q8) : pas affichée.
   await expect(page.locator('main')).not.toContainText('un moment j’en ai eu marre');
@@ -150,40 +166,78 @@ test('chaque preuve n’est surlignée qu’une fois dans le récit, en plus du 
   await page.goto('/');
   // Les règles renvoient à la preuve par un lien, sans la surligner de nouveau.
   await expect(page.locator('#regles mark')).toHaveCount(0);
+  // Elles rappellent le moment sans répéter son chiffre : une histoire racontée une fois.
+  for (const preuve of await page.locator('#regles .regle__preuves li').all()) await expect(preuve).not.toContainText(/\d/);
   await expect(page.locator('main mark', { hasText: /^un mois$/ })).toHaveCount(2);
   await expect(page.locator('main mark', { hasText: /^20$/ })).toHaveCount(2);
 });
 
-test('les quatre gestes du pôle : l’image en tête, en grand, sans « semaine type »', async ({ page }) => {
+test('les quatre gestes du pôle : repliés, en vignettes légendées, sans « semaine type »', async ({ page }) => {
   await page.goto('/');
-  const gestes = page.locator('#collectif .gestes');
-  await expect(gestes).toContainText('Comment j’organise le pôle, en quatre gestes');
+  const gestes = page.locator('#collectif details.gestes');
+  await expect(gestes).toHaveCount(1);
+  // Repliés par défaut : la page PvZ Fusion les raconte déjà, le chapitre « Emmener » ne s’y dilue plus.
+  await expect(gestes).not.toHaveAttribute('open', /.*/);
+  const resume = gestes.locator('summary');
+  await expect(resume).toHaveText('Comment j’organise le pôle, en quatre gestes');
   await expect(gestes).not.toContainText('semaine type');
+  expect((await resume.boundingBox())?.height ?? 0).toBeGreaterThanOrEqual(44);
+  await resume.click();
+  await expect(gestes).toHaveAttribute('open', /.*/);
   const visuels = gestes.locator('.geste [data-visuel]');
   await expect(visuels).toHaveCount(4);
-  const minimum = bureau(page.viewportSize()?.width) ? 200 : 150;
-  for (const visuel of await visuels.all()) {
-    const boite = await visuel.boundingBox();
-    expect(boite?.width ?? 0).toBeGreaterThanOrEqual(minimum);
+  const minimum = bureau(page.viewportSize()?.width) ? 160 : 120;
+  for (const geste of await gestes.locator('.geste').all()) {
+    const [image, texte] = await Promise.all([geste.locator('[data-visuel]').boundingBox(), geste.locator('.geste__texte').boundingBox()]);
+    // Une vignette carrée, sa légende en ligne, à sa droite.
+    expect(image?.width ?? 0).toBeGreaterThanOrEqual(minimum);
+    expect(image?.width ?? 0).toBeLessThanOrEqual(200);
+    expect(Math.abs((image?.width ?? 0) - (image?.height ?? 1))).toBeLessThanOrEqual(1);
+    expect(texte?.x ?? 0).toBeGreaterThan((image?.x ?? 0) + (image?.width ?? 0));
     // L’étiquette de l’emplacement tient entière dans son cadre.
-    const etiquette = visuel.locator('.visuel__id');
+    const etiquette = geste.locator('.visuel__id');
     if (await etiquette.count()) {
       expect(await etiquette.evaluate((e) => e.scrollWidth <= e.clientWidth + 1 && e.getBoundingClientRect().right <= (e.closest('.visuel') as Element).getBoundingClientRect().right + 1)).toBe(true);
     }
   }
+  await expect(gestes.getByRole('link', { name: /^Chaque geste en détail/ })).toHaveAttribute('href', '/projets/pvz-fusion#semaine');
 });
 
-test('la figure du plafond se lit : aucun libellé sous 12 px', async ({ page }) => {
+test('les trois étapes du pôle, recadrées en 2:1', async ({ page }) => {
   await page.goto('/');
-  const figure = page.locator('#fig-1 svg:visible');
-  await figure.scrollIntoViewIfNeeded();
-  const tailles = await figure.locator('text').evaluateAll((textes) => textes.map((t) => {
-    const svg = t.closest('svg') as SVGSVGElement;
-    const echelle = svg.getBoundingClientRect().width / svg.viewBox.baseVal.width;
-    return Number.parseFloat(getComputedStyle(t).fontSize) * echelle;
+  for (const visuel of await page.locator('#fig-2 [data-visuel]').all()) {
+    const boite = await visuel.boundingBox();
+    expect((boite?.width ?? 0) / (boite?.height ?? 1)).toBeCloseTo(2, 1);
+  }
+});
+
+test('la figure du plafond se lit : libellés à la taille du texte, sans chevauchement', async ({ page }) => {
+  await page.goto('/');
+  const dessin = page.locator('#fig-1 .plafond__dessin:visible');
+  await expect(dessin).toHaveCount(1);
+  await dessin.scrollIntoViewIfNeeded();
+  const libelles = await dessin.locator('.f-l').evaluateAll((elements) => elements.map((element) => {
+    const r = element.getBoundingClientRect();
+    return { texte: element.textContent ?? '', taille: Number.parseFloat(getComputedStyle(element).fontSize), boite: [r.left, r.top, r.right, r.bottom] };
   }));
-  expect(tailles.length).toBeGreaterThan(5);
-  expect(Math.min(...tailles)).toBeGreaterThanOrEqual(12);
+  expect(libelles.length).toBeGreaterThan(5);
+  // Les libellés ne grandissent pas avec le dessin : ni cri au bureau, ni chuchotement sur mobile.
+  for (const { texte, taille } of libelles) {
+    expect(taille, texte).toBeGreaterThanOrEqual(14);
+    expect(taille, texte).toBeLessThanOrEqual(18);
+  }
+  // Aucun ne touche un autre, tous restent dans le cadre de la figure.
+  const cadre = await page.locator('#fig-1 .plafond__plan').evaluate((e) => {
+    const r = e.getBoundingClientRect();
+    return [r.left, r.top, r.right, r.bottom];
+  });
+  for (const [i, a] of libelles.entries()) {
+    expect(a.boite[0] >= cadre[0] && a.boite[1] >= cadre[1] && a.boite[2] <= cadre[2] && a.boite[3] <= cadre[3], a.texte).toBe(true);
+    for (const b of libelles.slice(i + 1)) {
+      const disjoints = a.boite[2] <= b.boite[0] || b.boite[2] <= a.boite[0] || a.boite[3] <= b.boite[1] || b.boite[3] <= a.boite[1];
+      expect(disjoints, `${a.texte} / ${b.texte}`).toBe(true);
+    }
+  }
 });
 
 test('les cartes de projets suivent l’ordre de la vitrine', async ({ page }) => {
@@ -198,10 +252,17 @@ test('les cartes de projets suivent l’ordre de la vitrine', async ({ page }) =
   for (const carte of await construits.all()) {
     await expect(carte).toContainText('Voir le projet');
     await expect(carte.locator('img').first()).toHaveAttribute('alt', /.{40,}/);
+    // Le chiffre et sa légende partagent la ligne de base du chiffre.
+    const [chiffre, legende] = await carte.locator('.construit__chiffre > *').evaluateAll((elements) => elements.map((e) => e.getBoundingClientRect().top));
+    expect(Math.abs(chiffre - legende)).toBeLessThan(24);
   }
+  // Le chiffre de chaque carte est celui de la vitrine (règle E6).
+  await expect(construits.locator('.construit__chiffre b')).toHaveText(['403', '1 289', '153']);
+  await expect(construits.first().locator('.construit__chiffre')).toContainText('patchs, dans 21 langues');
   const omnicard = page.locator('#omnicard');
   await expect(omnicard.getByRole('link', { name: 'Omnicard', exact: true })).toHaveAttribute('href', '/projets/omnicard');
   await expect(omnicard).toContainText('Hors ligne, en attente de refonte');
+  await expect(omnicard.getByRole('link', { name: /^Règles et cartes \(GitHub\)/ })).toHaveAttribute('href', 'https://github.com/LINDECKER-Charles/public-Omnicard');
   // Omnicard porte le verbe du bandeau, sans rang.
   await expect(omnicard.locator('.carte-projet__rang')).toHaveCount(0);
   await expect(omnicard.locator('.carte-projet__preuve')).toHaveText('Réinventer');

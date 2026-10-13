@@ -39,13 +39,9 @@ const c = chapitre(id);
     position: relative;
   }
 
+  /* D’un chapitre au suivant, l’écart d’une section de page : le titre du
+     chapitre, grand et filé, suffit à marquer la coupure. */
   .chapitre + :global(.chapitre) {
-    margin-top: var(--s9);
-  }
-
-  @media (max-width: 860px) {
-    .chapitre + :global(.chapitre) {
-      margin-top: var(--s8);
-    }
+    margin-top: var(--entre-sections);
   }
 </style>

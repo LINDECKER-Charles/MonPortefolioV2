@@ -4,8 +4,10 @@
  * laisser contribuer en autonomie (réponses C6 et C7). Trois scènes du
  * registre (ACC-21 à ACC-23) : chacune s’allume depuis sa lanterne à son
  * arrivée, puis se rejoue au clic ou au clavier (components/accueil/Scene).
- * Sur mobile, les étapes s’empilent : la scène pleine largeur, en 3:2, au-dessus
- * de son titre.
+ * Les scènes sont recadrées en 2:1 à toutes les largeurs (la bande centrale
+ * de leur gravure 3:2, où se tient la lanterne) : le chapitre « Emmener »
+ * reste ramassé. Sur mobile, les étapes s’empilent, la scène pleine largeur
+ * au-dessus de son titre.
  */
 import Scene from './Scene.astro';
 
@@ -21,7 +23,7 @@ const etapes = [
   <ol class="collectif__etapes">
     {etapes.map((etape, i) => (
       <li class="collectif__etape">
-        <Scene id={etape.visuel} nom={etape.nom} legende={etape.titre} lumiere={etape.lumiere} muette sizes="(max-width: 640px) calc(100vw - 64px), 340px" class="collectif__scene" />
+        <Scene id={etape.visuel} nom={etape.nom} legende={etape.titre} lumiere={etape.lumiere} muette recadrage="2 / 1" recadragePetit="2 / 1" sizes="(max-width: 640px) calc(100vw - 32px), 360px" class="collectif__scene" />
         <p class="collectif__nom"><span class="collectif__rang" aria-hidden="true">{i + 1}</span>{etape.titre}</p>
         <p class="collectif__resume">{etape.resume}</p>
       </li>
@@ -102,11 +104,15 @@ const etapes = [
   @media (max-width: 640px) {
     .collectif__etapes {
       grid-template-columns: minmax(0, 1fr);
-      gap: var(--s6);
+      gap: var(--s4);
+    }
+
+    .collectif__nom {
+      font-size: var(--t-l);
     }
 
     .collectif__etape + .collectif__etape {
-      padding-top: var(--s5);
+      padding-top: var(--s4);
       border-top: 1px solid var(--filet);
     }
 
@@ -118,10 +124,6 @@ const etapes = [
       padding-inline: var(--s2);
       transform: translateX(-50%);
       background: var(--fond);
-    }
-
-    .collectif__nom {
-      font-size: var(--t-l);
     }
   }
 </style>
