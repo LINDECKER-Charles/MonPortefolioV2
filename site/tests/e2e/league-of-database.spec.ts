@@ -1,450 +1,342 @@
-import { expect, test, type Locator, type Page } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+import { expect, test, type Page } from '@playwright/test';
 import { surveillerConsole } from './support/navigateur';
 
+/**
+ * League Of Data Base, sur le gabarit commun des pages de projet (règle E5) :
+ * l’en-tête au pli (E1), la fiche, trois chiffres sourcés et datés, Ahri
+ * côte à côte entre deux patchs, les trois langues et les fiches à explorer
+ * au clavier et sans script, les captures réelles qui suivent la largeur de
+ * l’écran et s’agrandissent dans la visionneuse partagée, les schémas de
+ * l’exploitation gardés, les liens publics seulement, la sortie commune, la
+ * page complète sans JavaScript et accessible jour et nuit.
+ */
+
 const CHEMIN = '/projets/league-of-database';
-async function cadrerFiches(page: Page) {
-  await page.evaluate(() => document.fonts.ready);
-  await page.locator('.lod-fiches').evaluate((element) => {
-    const haut = document.querySelector('.entete')!.getBoundingClientRect().height
-      + document.querySelector('.lod-sommaire')!.getBoundingClientRect().height + 12;
-    window.scrollTo({ top: window.scrollY + element.getBoundingClientRect().top - haut, behavior: 'instant' });
-  });
+const APPLICATION = 'https://league-of-data-base.com/';
+const DEPOT = 'https://github.com/LINDECKER-Charles/LeagueOfDataBaseFinal';
+const ESPACES = /[\s  ]/g;
+
+const sansEspaces = (texte: string | null) => (texte ?? '').replace(ESPACES, '');
+const mobile = (page: Page) => (page.viewportSize()?.width ?? 0) <= 860;
+
+/** Le nom de la capture servie (Astro ajoute une empreinte au nom du fichier). */
+async function captureAffichee(page: Page, conteneur: string, variante: 'bureau' | 'mobile' = mobile(page) ? 'mobile' : 'bureau') {
+  const image = page.locator(`${conteneur} .capture-league__${variante} .capture__vue > a img`).first();
+  await image.scrollIntoViewIfNeeded();
+  await image.evaluate((element: HTMLImageElement) => element.decode());
+  await expect(image).toBeVisible();
+  return new URL(await image.evaluate((element: HTMLImageElement) => element.currentSrc)).pathname;
 }
 
-const DIMENSIONS_CAPTURE = { bureau: { largeur: 2880, hauteur: 2000 }, mobile: { largeur: 860, hauteur: 1864 } };
-const DIMENSIONS_STATISTIQUES = { bureau: { largeur: 672, hauteur: 1302 }, mobile: { largeur: 764, hauteur: 1302 } };
+test('l’en-tête tient dans le premier écran : titre, identité, preuve, action', async ({ page }) => {
+  await page.goto(CHEMIN);
+  for (const marque of ['titre', 'identite', 'preuve', 'action']) {
+    await expect(page.locator(`[data-pli="${marque}"]`), marque).toBeInViewport();
+  }
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Retrouver le jeu tel qu’il était.');
+  if (!mobile(page)) {
+    await expect(page.locator('[data-pli="preuve"] li')).toHaveCount(3);
+    for (const preuve of await page.locator('[data-pli="preuve"] li').all()) await expect(preuve).toBeInViewport({ ratio: 1 });
+    await expect(page.getByRole('group', { name: 'Fiche du projet' })).toBeInViewport({ ratio: 1 });
+  } else {
+    await expect(page.locator('[data-pli="preuve"] li').first()).toBeInViewport({ ratio: 1 });
+  }
+});
 
-async function verifierCaptureEtZoom(page: Page, capture: Locator, nom: string, dimensions = DIMENSIONS_CAPTURE) {
-  const mobile = page.viewportSize()!.width < 800;
-  const image = capture.locator('img');
-  await capture.scrollIntoViewIfNeeded();
-  await image.evaluate((element: HTMLImageElement) => element.decode());
-  expect(new URL(await image.evaluate((element: HTMLImageElement) => element.currentSrc)).pathname)
-    .toMatch(new RegExp(`/${nom}${mobile ? '-mobile' : ''}(?:-\\d+)?\\.webp$`));
-  await expect(image).toBeVisible();
-  await capture.focus();
+test('le nom canonique, l’étiquette de preuve et le chemin vers « Comment je l’ai construit »', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const ariane = page.getByRole('navigation', { name: 'Fil d’Ariane', exact: true });
+  await expect(ariane.locator('[aria-current="page"]')).toHaveText('League Of Data Base');
+  await expect(page.locator('main')).not.toContainText(/League Of Database|League of Database/);
+  const entete = page.locator('.projet-tete');
+  await expect(entete).toContainText('Un système en production');
+  const construit = entete.locator('[data-pli="action"]').getByRole('link', { name: /Comment je l’ai construit/ });
+  await expect(construit).toHaveAttribute('href', '#construit');
+  await construit.click();
+  await expect(page.locator('#construit')).toBeInViewport();
+  await expect(page.locator('#construit .decision')).toHaveCount(3);
+});
+
+test('la fiche technique : sept cases à filets, statut à forme et mot, liens publics mesurés', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const fiche = page.getByRole('group', { name: 'Fiche du projet' });
+  await expect(fiche.locator('dt')).toHaveText(['Besoin', 'Ma part', 'Rôle', 'Période', 'Équipe', 'Statut', 'Liens publics']);
+  await expect(fiche).toContainText('Seul');
+  await expect(fiche.locator('.statut')).toHaveText('En ligne');
+  for (const lien of await fiche.locator('a').all()) {
+    const href = (await lien.getAttribute('href')) ?? '';
+    await expect(lien).toHaveAttribute('data-umami-event', 'lien-sortant');
+    await expect(lien).toHaveAttribute('data-umami-event-domaine', new URL(href).hostname);
+    await expect(lien).toContainText('↗');
+  }
+});
+
+test('trois chiffres sourcés et datés, un seul surligné dans l’en-tête', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const preuves = page.locator('[data-pli="preuve"] .preuve-chiffree');
+  expect((await preuves.locator('.preuve-chiffree__valeur').allTextContents()).map(sansEspaces)).toEqual(['403', '21', '12260']);
+  for (const preuve of await preuves.all()) {
+    await expect(preuve.locator('.preuve-chiffree__source')).toHaveText(/\d{2}\/\d{2}\/\d{4}/);
+  }
+  const surligne = page.locator('.projet-tete mark');
+  await expect(surligne).toHaveCount(1);
+  await expect(surligne).toHaveText('403');
+  await expect(surligne).toHaveAttribute('data-source', /Historique public/);
+});
+
+test('aucun lien hors de l’application et du dépôt public, chaque sortie mesurée, jamais le www', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const liens = await page.locator('main a[href^="http"]').evaluateAll((elements) =>
+    elements.map((lien) => ({
+      href: lien.getAttribute('href') ?? '',
+      evenement: lien.getAttribute('data-umami-event'),
+      domaine: lien.getAttribute('data-umami-event-domaine'),
+      emplacement: lien.getAttribute('data-umami-event-emplacement'),
+      rel: lien.getAttribute('rel'),
+    })),
+  );
+  expect(liens.length).toBeGreaterThan(15);
+  for (const lien of liens) {
+    expect([APPLICATION, DEPOT].some((debut) => lien.href.startsWith(debut)), lien.href).toBe(true);
+    expect(lien.href).not.toContain('www.league-of-data-base.com');
+    expect(lien).toMatchObject({ evenement: 'lien-sortant', domaine: new URL(lien.href).hostname, emplacement: 'preuves', rel: 'external' });
+  }
+  const adresses = liens.map((lien) => lien.href);
+  for (const attendu of [`${APPLICATION}fr/`, `${APPLICATION}fr/3.6.14/champions/Ahri`, `${APPLICATION}fr/16.20.1/champions/Ahri`, DEPOT]) {
+    expect(adresses).toContain(attendu);
+  }
+});
+
+test('Ahri côte à côte : les deux patchs se lisent ensemble, un seul surlignage, deux panneaux réels', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const section = page.locator('#versions');
+  const tableau = section.locator('table');
+  await expect(tableau.locator('thead th')).toHaveText([/Patch 3\.6\.14/, /Patch 16\.20\.1/]);
+  const lignes = await tableau.locator('tbody tr').evaluateAll((rangees) =>
+    Object.fromEntries(rangees.map((rangee) => [rangee.querySelector('th')!.textContent!.trim(), [...rangee.querySelectorAll('td')].map((cellule) => cellule.textContent!.trim())])),
+  );
+  expect(lignes).toMatchObject({
+    Titre: ['Renard à neuf queues', 'Renarde à neuf queues'],
+    'Points de vie': ['380', '590'],
+    Attaque: ['50', '53'],
+    Armure: ['11', '21'],
+    Mana: ['230', '418'],
+  });
+  expect(lignes['Ultime, recharge'].map(sansEspaces)).toEqual(['110/95/80s', '140/120/100s']);
+  const marques = section.locator('mark');
+  await expect(marques).toHaveCount(1);
+  await expect(marques).toHaveText('590');
+  // Côte à côte : les deux valeurs de points de vie sont visibles en même temps.
+  const pointsDeVie = tableau.locator('tbody tr').nth(1).locator('td');
+  await pointsDeVie.first().scrollIntoViewIfNeeded();
+  await expect(pointsDeVie.first()).toBeVisible();
+  await expect(pointsDeVie.last()).toBeVisible();
+  const panneaux = section.getByRole('group', { name: /panneaux de statistiques/ }).locator('a[data-agrandir] img');
+  await expect(panneaux).toHaveCount(2);
+  await expect(panneaux.first()).toHaveAttribute('alt', /3\.6\.14.*points de vie 380/);
+  await expect(panneaux.last()).toHaveAttribute('alt', /16\.20\.1.*points de vie 590/);
+  await expect(section.getByRole('link', { name: 'Ahri au patch 3.6.14', exact: true })).toHaveAttribute('href', `${APPLICATION}fr/3.6.14/champions/Ahri`);
+  await expect(section.getByRole('link', { name: 'Ahri au patch 16.20.1', exact: true })).toHaveAttribute('href', `${APPLICATION}fr/16.20.1/champions/Ahri`);
+});
+
+test('les captures suivent la largeur de l’écran : téléphone sur mobile, navigateur sur ordinateur', async ({ page }) => {
+  const erreurs = surveillerConsole(page);
+  await page.goto(CHEMIN);
+  const variante = mobile(page) ? '-mobile' : '';
+  for (const nom of ['histoire-version', 'histoire-navigation', 'histoire-skins', 'histoire-ahri']) {
+    expect(await captureAffichee(page, `[data-capture-league="${nom}"]`)).toMatch(new RegExp(`/${nom}${variante}\\.`));
+  }
+  // Les deux catalogues restent des écrans d’ordinateur, annotés, à toutes les largeurs.
+  for (const [nom, legende] of [['histoire-champions', '113 champions'], ['champions', '173 champions']]) {
+    const capture = page.locator(`[data-capture-league="${nom}"]`);
+    await expect(capture.locator('.capture__legende')).toContainText(legende);
+    await expect(capture.locator('.cible')).toHaveCount(1);
+    expect(await captureAffichee(page, `[data-capture-league="${nom}"]`, 'bureau')).toMatch(new RegExp(`/${nom}\\.`));
+  }
+  expect(erreurs).toEqual([]);
+});
+
+test('une capture s’agrandit dans la visionneuse partagée, Échap rend le focus et la position', async ({ page }) => {
+  const erreurs = surveillerConsole(page);
+  await page.goto(CHEMIN);
+  const lien = page.locator(`#champions .onglets__vue--ahri .capture-league__${mobile(page) ? 'mobile' : 'bureau'} a[data-agrandir]`);
+  await lien.scrollIntoViewIfNeeded();
+  await lien.focus();
+  const position = await page.evaluate(() => window.scrollY);
   await page.keyboard.press('Enter');
-  const dialogue = page.locator('[data-lod-dialog]');
+  const dialogue = page.locator('dialog[data-visionneuse]');
   await expect(dialogue).toBeVisible();
-  const originale = new URL(`/images/league-of-database/${nom}${mobile ? '-mobile' : ''}.webp`, page.url()).href;
-  await expect(dialogue.locator('img')).toHaveAttribute('src', originale);
-  await dialogue.locator('img').evaluate((element: HTMLImageElement) => element.decode());
-  expect(await dialogue.locator('img').evaluate((element: HTMLImageElement) => ({
-    largeur: element.naturalWidth, hauteur: element.naturalHeight,
-  }))).toEqual(mobile ? dimensions.mobile : dimensions.bureau);
-  await expect(dialogue.locator('img')).toHaveAttribute('alt', await image.getAttribute('alt') ?? '');
+  const image = dialogue.locator('[data-visionneuse-image]');
+  await expect(image).toBeVisible();
+  expect(new URL(await image.evaluate((element: HTMLImageElement) => element.src)).pathname).toBe(new URL((await lien.getAttribute('href'))!, page.url()).pathname);
+  await expect(image).toHaveAttribute('alt', (await lien.locator('img').getAttribute('alt')) ?? '');
+  expect(await image.evaluate((element: HTMLImageElement) => element.naturalWidth)).toBeGreaterThan(mobile(page) ? 800 : 2000);
+  await expect(page.locator('html')).toHaveCSS('overflow', 'hidden');
   await page.keyboard.press('Escape');
   await expect(dialogue).toBeHidden();
-  await expect(capture).toBeFocused();
-}
-
-async function lireValeurs(vue: Locator) {
-  return vue.locator('.lod-valeurs').evaluate((element) => Object.fromEntries(
-    [...element.querySelectorAll('div')].map((valeur) => [
-      valeur.querySelector('dt')!.textContent!.trim(), valeur.querySelector('dd')!.textContent!.trim(),
-    ]),
-  ));
-}
-
-const RUBRIQUES = ['explorer', 'versions', 'anciennes-fiches', 'champions', 'objets', 'langues', 'fabrication', 'trafic', 'audience', 'sauvegardes', 'livraison'];
-
-test('League of Database montre les usages avant son exploitation', async ({ page }) => {
-  const erreurs = surveillerConsole(page);
-  await page.goto(CHEMIN);
-  for (const rubrique of RUBRIQUES) {
-    await expect(page.locator(`#${rubrique}`)).toBeAttached();
-  }
-  const champions = page.locator('#champions');
-  const trafic = page.locator('#trafic');
-  const lecture = ['versions', 'anciennes-fiches', 'champions', 'objets', 'langues', 'fabrication', 'trafic'];
-  expect(await page.evaluate((rubriques) => rubriques.every((rubrique, index) => {
-    const suivante = rubriques[index + 1];
-    return !suivante || Boolean(document.getElementById(rubrique)!
-      .compareDocumentPosition(document.getElementById(suivante)!) & Node.DOCUMENT_POSITION_FOLLOWING);
-  }), lecture)).toBe(true);
-  await expect(page.locator('.lod-hero a.btn')).toHaveAttribute('href', 'https://www.league-of-data-base.com');
-  await expect(page.locator('#versions img').first()).toBeVisible();
-  await expect(page.locator('#anciennes-fiches')).toContainText('3.6.14');
-  await champions.locator('[data-lod-capture]').first().scrollIntoViewIfNeeded();
-  await champions.locator('img').first().evaluate((element: HTMLImageElement) => element.decode());
-  await expect(champions.locator('img').first()).toBeVisible();
-  await expect(page.locator('#objets img').first()).toBeVisible();
-  await expect(trafic.locator('svg').first()).toBeVisible();
-  await expect(page.locator('#sauvegardes svg').first()).toBeVisible();
-  await expect(page.locator('#audience')).toContainText('Umami');
+  await expect(lien).toBeFocused();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(position);
   expect(erreurs).toEqual([]);
 });
 
-test('les archives montrent le bon écran selon l’appareil et l’agrandissent en haute définition', async ({ page }) => {
+test('la même fiche en trois langues, au clavier : les trois titres restent lisibles, une capture à la fois', async ({ page }) => {
   const erreurs = surveillerConsole(page);
   await page.goto(CHEMIN);
-  const captures = [
-    ['explorer', 'histoire-ahri'],
-    ['anciennes-fiches', 'histoire-champions'],
-    ['anciennes-fiches', 'histoire-skins'],
-  ];
-  for (const [rubrique, nom] of captures) {
-    const capture = page.locator(`#${rubrique} [data-lod-capture][href$="/${nom}.webp"]`);
-    await verifierCaptureEtZoom(page, capture, nom);
-  }
-  expect(erreurs).toEqual([]);
-});
-
-test('choisir un ancien patch retrouve ses valeurs et agrandit leur preuve', async ({ page }) => {
-  const erreurs = surveillerConsole(page);
-  await page.goto(CHEMIN);
-  const archive = page.locator('#version-archive');
-  const actuel = page.locator('#version-actuel');
-  const ancienneFiche = page.locator('.lod-version--archive');
-  const ficheActuelle = page.locator('.lod-version--actuel');
-  await expect(archive).toBeChecked();
-  await archive.focus();
-  await page.keyboard.press('ArrowRight');
-  await expect(actuel).toBeChecked();
-  await expect(actuel).toBeFocused();
-  await expect(ficheActuelle).toBeVisible();
-  await expect(ancienneFiche).toBeHidden();
-  expect(await lireValeurs(ficheActuelle)).toEqual({ 'Points de vie': '590', Attaque: '53', Armure: '21', Mana: '418' });
-  await expect(ficheActuelle.getByRole('link', { name: 'Ouvrir cette version dans l’application' }))
-    .toHaveAttribute('href', 'https://www.league-of-data-base.com/fr/16.20.1/champions/Ahri');
-  await verifierCaptureEtZoom(page, ficheActuelle.locator('[data-lod-capture]'), 'ahri-actuel-statistiques', DIMENSIONS_STATISTIQUES);
-
-  await actuel.focus();
-  await page.keyboard.press('ArrowLeft');
-  await expect(archive).toBeChecked();
-  await expect(archive).toBeFocused();
-  await expect(ancienneFiche).toBeVisible();
-  await expect(ficheActuelle).toBeHidden();
-  expect(await lireValeurs(ancienneFiche)).toEqual({ 'Points de vie': '380', Attaque: '50', Armure: '11', Mana: '230' });
-  await expect(ancienneFiche.getByRole('link', { name: 'Ouvrir cette version dans l’application' }))
-    .toHaveAttribute('href', 'https://www.league-of-data-base.com/fr/3.6.14/champions/Ahri');
-  await verifierCaptureEtZoom(page, ancienneFiche.locator('[data-lod-capture]'), 'ahri-archive-statistiques', DIMENSIONS_STATISTIQUES);
-  expect(erreurs).toEqual([]);
-});
-
-test('changer de langue au clavier conserve le patch et ouvre la bonne capture', async ({ page }) => {
-  const erreurs = surveillerConsole(page);
-  await page.goto(CHEMIN);
-  const langues = [
-    { id: 'fr', libelle: 'Français', nom: 'ahri', titre: 'Renarde à neuf queues' },
-    { id: 'en', libelle: 'Anglais', nom: 'ahri-langue-anglaise', titre: 'the Nine-Tailed Fox' },
-    { id: 'ko', libelle: 'Coréen', nom: 'ahri-langue-coreenne', titre: '구미호' },
-  ];
   const section = page.locator('#langues');
-  await section.scrollIntoViewIfNeeded();
-  await section.getByRole('radio', { name: langues[0].libelle, exact: true }).focus();
+  const langues = [
+    { id: 'fr', libelle: 'Français', nom: 'ahri', titre: 'Renarde à neuf queues', langue: 'français' },
+    { id: 'en', libelle: 'Anglais', nom: 'ahri-langue-anglaise', titre: 'the Nine-Tailed Fox', langue: 'anglais' },
+    { id: 'ko', libelle: 'Coréen', nom: 'ahri-langue-coreenne', titre: '구미호', langue: 'coréen' },
+  ];
+  // Le bandeau des trois titres : chacun dans sa langue, tous visibles.
+  for (const langue of langues) {
+    await expect(section.locator(`label[for="langue-ahri-${langue.id}"] [lang="${langue.id}"]`)).toContainText(langue.titre);
+  }
+  await section.getByRole('radio', { name: 'Français', exact: true }).focus();
   for (const [index, langue] of langues.entries()) {
     if (index > 0) await page.keyboard.press('ArrowRight');
     const controle = section.getByRole('radio', { name: langue.libelle, exact: true });
     await expect(controle).toBeChecked();
     await expect(controle).toBeFocused();
-    const vue = section.locator(`.lod-traduction--${langue.id}`);
+    const vue = section.locator(`.onglets__vue--${langue.id}`);
     await expect(vue).toBeVisible();
-    await expect(vue.locator('.lod-traduction__titre')).toContainText(langue.titre);
-    await expect(vue.locator('.lod-traduction__titre')).toContainText('Patch 16.20.1');
-    await expect(vue.locator('figcaption a'))
-      .toHaveAttribute('href', `https://www.league-of-data-base.com/${langue.id}/16.20.1/champions/Ahri`);
-    for (const autre of langues.filter((autre) => autre.id !== langue.id)) {
-      await expect(section.locator(`.lod-traduction--${autre.id}`)).toBeHidden();
-    }
-    await verifierCaptureEtZoom(page, vue.locator('[data-lod-capture]'), langue.nom);
+    for (const autre of langues.filter((autre) => autre.id !== langue.id)) await expect(section.locator(`.onglets__vue--${autre.id}`)).toBeHidden();
+    await expect(vue.getByRole('link', { name: `Consulter cette fiche en ${langue.langue}` })).toHaveAttribute('href', `${APPLICATION}${langue.id}/16.20.1/champions/Ahri`);
+    expect(await captureAffichee(page, `#langues .onglets__vue--${langue.id}`)).toMatch(new RegExp(`/${langue.nom}${mobile(page) ? '-mobile' : ''}\\.`));
     await controle.focus();
   }
   await page.keyboard.press('ArrowRight');
   await expect(section.getByRole('radio', { name: 'Français', exact: true })).toBeChecked();
-  await expect(section.locator('.lod-traduction--fr')).toBeVisible();
   expect(erreurs).toEqual([]);
 });
 
-test('les quatre fiches restent entières avec leurs commandes sur un écran court', async ({ page }) => {
+test('les six fiches à explorer restent entières avec leurs onglets dans l’écran', async ({ page }) => {
   await page.goto(CHEMIN);
   const largeur = page.viewportSize()!.width;
-  const ecrans = largeur < 800
-    ? [page.viewportSize()!, { width: largeur, height: 667 }, { width: 320, height: 568 }, { width: 667, height: 375 }]
-    : [page.viewportSize()!, { width: largeur, height: 600 }, { width: largeur, height: 400 }];
+  const ecrans = mobile(page) ? [page.viewportSize()!, { width: largeur, height: 667 }] : [page.viewportSize()!, { width: largeur, height: 700 }];
+  const fiches = ['ahri', 'ahri-capacites', 'ahri-skins', 'ahri-skin-detail', 'objet-recette', 'runes'];
   for (const ecran of ecrans) {
     await page.setViewportSize(ecran);
-    await cadrerFiches(page);
-    // La première sélection doit aussi cadrer l’atelier si sa fin était hors écran.
-    await page.evaluate(() => window.scrollBy({ top: -80, behavior: 'instant' }));
-    await page.locator('label[for="fiche-ahri-capacites"]').click();
-    for (const nom of ['ahri', 'ahri-capacites', 'ahri-skins', 'ahri-skin-detail']) {
+    for (const nom of fiches) {
       await page.locator(`label[for="fiche-${nom}"]`).click();
-      const fiche = page.locator(`.lod-fiche--${nom}`);
-      await expect(fiche).toBeVisible();
-      await fiche.locator('img').evaluate((image: HTMLImageElement) => image.decode());
-      await expect(fiche.locator('img')).toHaveCSS('object-fit', 'contain');
+      await expect(page.locator(`#fiche-${nom}`)).toBeChecked();
+      const vue = page.locator(`#champions .onglets__vue--${nom}`);
+      await expect(vue).toBeVisible();
+      for (const autre of fiches.filter((autre) => autre !== nom)) await expect(page.locator(`#champions .onglets__vue--${autre}`)).toBeHidden();
+      // L’atelier en haut de l’écran, sous l’en-tête collant : onglets, capture et légende tiennent ensemble.
+      await page.locator('#champions .onglets__choix').evaluate((element) => {
+        const entete = document.querySelector('.entete')!.getBoundingClientRect().height;
+        window.scrollTo({ top: window.scrollY + element.getBoundingClientRect().top - entete - 8, behavior: 'instant' });
+      });
+      const image = vue.locator(`.capture-league__${mobile(page) ? 'mobile' : 'bureau'} .capture__vue img`).first();
+      await image.evaluate((element: HTMLImageElement) => element.decode());
       expect(await page.evaluate((identifiant) => {
-        const fiche = document.querySelector(`.lod-fiche--${identifiant}`)!;
-        const commandes = document.querySelector('.lod-fiches__choix')!.getBoundingClientRect();
-        const image = fiche.querySelector('img')!.getBoundingClientRect();
-        const legende = fiche.querySelector('figcaption')!.getBoundingClientRect();
-        const barre = document.querySelector('.lod-sommaire')!.getBoundingClientRect();
-        const choix = [...document.querySelectorAll('.lod-fiches__choix label')].map((label) => label.getBoundingClientRect());
-        return commandes.top >= barre.bottom
-          && choix.every((cadre) => cadre.left >= 0 && cadre.right <= window.innerWidth)
-          && image.top >= commandes.bottom
-          && image.bottom <= window.innerHeight
-          && legende.bottom <= window.innerHeight;
-      }, nom)).toBe(true);
+        const vue = document.querySelector(`#champions .onglets__vue--${identifiant}`)!;
+        const figure = [...vue.querySelectorAll<HTMLElement>('figure.capture')].find((element) => element.offsetParent !== null)!;
+        const image = figure.querySelector('.capture__vue img')!.getBoundingClientRect();
+        const legende = figure.querySelector('figcaption')!.getBoundingClientRect();
+        const choix = document.querySelector('#champions .onglets__choix')!.getBoundingClientRect();
+        const entete = document.querySelector('.entete')!.getBoundingClientRect();
+        // Sur mobile, les onglets défilent en une rangée : l’onglet choisi reste dans l’écran.
+        const choisi = document.querySelector(`#champions label[for="fiche-${identifiant}"]`)!.getBoundingClientRect();
+        return choix.top >= entete.bottom - 1 && image.top >= choix.bottom && image.bottom <= window.innerHeight && legende.bottom <= window.innerHeight
+          && choisi.left >= 0 && choisi.right <= window.innerWidth;
+      }, nom), `${nom} à ${ecran.width} × ${ecran.height}`).toBe(true);
     }
   }
 });
 
-test('les captures League s’ouvrent au clavier et conservent la position', async ({ page }) => {
-  const erreurs = surveillerConsole(page);
+test('les pièges des données, la réécriture et l’exploitation gardent leurs schémas', async ({ page }) => {
   await page.goto(CHEMIN);
-  const ouvrir = page.locator('#champions [data-lod-capture]').first();
-  const dialogue = page.locator('[data-lod-dialog]');
-  await ouvrir.scrollIntoViewIfNeeded();
-  await ouvrir.focus();
-  const position = await page.evaluate(() => ({
-    x: window.scrollX,
-    y: window.scrollY,
-    overflow: document.documentElement.style.overflow,
-  }));
-  await page.keyboard.press('Enter');
-  await expect(dialogue).toBeVisible();
-  await expect(dialogue).toHaveAttribute('open', '');
-  expect(await dialogue.evaluate((element) => {
-    const cadre = element.getBoundingClientRect();
-    return cadre.width === window.innerWidth && cadre.height === window.innerHeight;
-  })).toBe(true);
-  const image = dialogue.locator('img:visible').first();
-  await image.evaluate((element: HTMLImageElement) => element.decode());
-  expect(await image.evaluate((element) => {
-    const cadre = element.getBoundingClientRect();
-    return cadre.width > 100 && cadre.height > 100
-      && cadre.left >= 0 && cadre.top >= 0
-      && cadre.right <= window.innerWidth && cadre.bottom <= window.innerHeight;
-  })).toBe(true);
-  await expect(page.locator('html')).toHaveCSS('overflow', 'hidden');
-  await page.keyboard.press('Escape');
-  await expect(dialogue).toBeHidden();
-  await expect(ouvrir).toBeFocused();
-  await expect.poll(() => page.evaluate(() => ({
-    x: window.scrollX,
-    y: window.scrollY,
-    overflow: document.documentElement.style.overflow,
-  }))).toEqual(position);
-
-  await page.keyboard.press('Enter');
-  await expect(dialogue).toBeVisible();
-  await image.click();
-  await expect(dialogue).toBeHidden();
-  await expect(ouvrir).toBeFocused();
-  expect(erreurs).toEqual([]);
-});
-
-test('une fiche encore en chargement garde la bonne vue dans le zoom', async ({ page }) => {
-  let liberer!: () => void;
-  const attente = new Promise<void>((resolve) => { liberer = resolve; });
-  await page.route('**/*ahri-capacites*.webp', async (route) => {
-    await attente;
-    await route.continue();
-  });
-  try {
-    await page.goto(CHEMIN);
-    await cadrerFiches(page);
-    await page.locator('label[for="fiche-ahri-capacites"]').click();
-    const capture = page.locator('.lod-fiche--ahri-capacites [data-lod-capture]');
-    await expect(capture).toHaveAttribute('aria-busy', 'true');
-    await expect(capture.locator('[role="status"]')).toContainText('Chargement');
-    await capture.click();
-    const dialogue = page.locator('[data-lod-dialog]');
-    await expect(dialogue).toBeVisible();
-    const image = dialogue.locator('[data-lod-full]');
-    const mobile = page.viewportSize()!.width < 800;
-    await expect(image).toHaveAttribute('src', new URL(`/images/league-of-database/ahri-capacites${mobile ? '-mobile' : ''}.webp`, page.url()).href);
-    await expect(dialogue.locator('.lod-visionneuse__image')).toHaveAttribute('aria-busy', 'true');
-    await expect(dialogue.locator('[role="status"]')).toContainText('Chargement');
-    liberer();
-    await expect(dialogue.locator('.lod-visionneuse__image')).toHaveAttribute('aria-busy', 'false');
-    await expect(dialogue.locator('[role="status"]')).toBeHidden();
-    expect(await image.evaluate((element: HTMLImageElement) => element.naturalWidth)).toBe(mobile ? 860 : 2880);
-    await page.keyboard.press('Escape');
-    await expect(capture).toBeFocused();
-    await expect(capture).toHaveAttribute('aria-busy', 'false');
-  } finally {
-    liberer();
-    await page.unrouteAll({ behavior: 'wait' });
+  await expect(page.locator('#donnees .piege')).toHaveCount(5);
+  await expect(page.locator('#donnees [data-visuel]')).toHaveCount(5);
+  const jalons = page.locator('#reecriture .jalon');
+  await expect(jalons).toHaveCount(4);
+  for (const date of await jalons.locator('time').all()) await expect(date).toHaveAttribute('datetime', /^\d{4}-\d{2}-\d{2}$/);
+  await expect(jalons.last()).toContainText('04/10/2026');
+  await expect(page.locator('#reecriture [data-visuel="LOD-04"]')).toHaveCount(1);
+  for (const bloc of ['#trafic', '#sauvegardes', '#livraison', '#audience']) {
+    await expect(page.locator(`#fabrication ${bloc} figure`), bloc).toHaveCount(1);
   }
+  await expect(page.locator('#audience')).toContainText('Umami');
+  // Le dispositif des sauvegardes est public ; son activation reste à confirmer, et la page le dit.
+  await expect(page.locator('#sauvegardes .a-confirmer')).toContainText('à confirmer');
 });
 
-test('un échec de chargement du zoom permet de revenir et de réessayer', async ({ page }) => {
-  const mobile = page.viewportSize()!.width < 800;
-  const originale = `/images/league-of-database/histoire-ahri${mobile ? '-mobile' : ''}.webp`;
-  let demandes = 0;
-  // Les aperçus peuvent employer l’original sur un téléphone à haute densité.
-  // Cette panne concerne l’ouverture en grand, après le chargement de l’aperçu.
+test('la sortie : projets voisins dans l’ordre de la vitrine, « Discutons » vers /contact', async ({ page }) => {
   await page.goto(CHEMIN);
-  const capture = page.locator('.lod-bureau [data-lod-capture]');
-  await capture.locator('img').evaluate((image: HTMLImageElement) => image.decode());
-  await page.route(`**${originale}`, async (route) => {
-    if (++demandes === 1) await route.abort('failed');
-    else await route.continue();
+  const sortie = page.locator('#retiens');
+  const discutons = sortie.getByRole('link', { name: /^Discutons/ });
+  await expect(discutons).toHaveAttribute('href', '/contact');
+  await expect(discutons).toHaveAttribute('data-umami-event', 'contact-page');
+  await expect(discutons).toHaveAttribute('data-umami-event-emplacement', 'discutons');
+  await expect(sortie.getByRole('link', { name: /Projet suivant\s+Omnicard/ })).toHaveAttribute('href', '/projets/omnicard');
+  await expect(sortie.getByRole('link', { name: /Projet précédent\s+PvZ Fusion, pôle francophone/ })).toHaveAttribute('href', '/projets/pvz-fusion');
+  await expect(sortie.getByRole('link', { name: /Tous les projets/ })).toHaveAttribute('href', '/projets');
+  await expect(page.locator('#sources')).toContainText('sans affiliation à Riot Games');
+});
+
+test('une seule navigation de page, sans la note de sources', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const navigation = page.locator('nav[aria-label="Dans cette page"]');
+  await expect(navigation).toHaveCount(1);
+  if (!mobile(page)) await expect(navigation).toBeVisible();
+  const attendus = ['#versions', '#anciennes-fiches', '#champions', '#plateforme', '#donnees', '#reecriture', '#fabrication', '#construit', '#retiens'];
+  expect(await navigation.locator('a').evaluateAll((liens) => liens.map((lien) => lien.getAttribute('href')))).toEqual(attendus);
+  for (const ancre of attendus) await expect(page.locator(ancre)).toHaveCount(1);
+});
+
+for (const theme of ['jour', 'nuit'] as const) {
+  test.describe(`axe, ${theme}, états ouverts`, () => {
+    test.use({ colorScheme: theme === 'nuit' ? 'dark' : 'light', reducedMotion: 'reduce' });
+
+    test('les onglets choisis et la visionneuse ouverte restent accessibles', async ({ page }) => {
+      await page.goto(CHEMIN);
+      await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+      await page.locator('label[for="langue-ahri-ko"]').click();
+      await page.locator('label[for="fiche-ahri-capacites"]').click();
+      for (const zone of ['.projet-tete', '#versions', '#anciennes-fiches', '#champions', '#fabrication']) {
+        const resultats = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice']).include(zone).analyze();
+        expect(resultats.violations.map((v) => ({ id: v.id, cibles: v.nodes.slice(0, 3).map((n) => n.target) })), zone).toEqual([]);
+      }
+      await page.locator('#versions a[data-agrandir]').first().click();
+      await expect(page.locator('dialog[data-visionneuse] [data-visionneuse-image]')).toBeVisible();
+      // axe ne voit pas le ::backdrop sombre du <dialog> : le contraste de la légende claire
+      // s’y mesure sur la page, dessous. Il est vérifié la nuit, où le fond de page est sombre.
+      const regles = theme === 'jour' ? { 'color-contrast': { enabled: false } } : {};
+      const ouverte = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).options({ rules: regles }).include('dialog[data-visionneuse]').analyze();
+      expect(ouverte.violations.map((v) => v.id)).toEqual([]);
+    });
   });
-  const dialogue = page.locator('[data-lod-dialog]');
-  await capture.focus();
-  await page.keyboard.press('Enter');
-  await expect(dialogue.locator('[role="status"]')).toContainText('Capture indisponible');
-  await expect(dialogue.locator('.lod-visionneuse__image')).toHaveAttribute('aria-busy', 'false');
-  await page.keyboard.press('Escape');
-  await expect(capture).toBeFocused();
-  await page.keyboard.press('Enter');
-  await expect(dialogue).toBeVisible();
-  await expect(dialogue.locator('.lod-visionneuse__image')).toHaveAttribute('aria-busy', 'false');
-  await expect(dialogue.locator('[role="status"]')).toBeHidden();
-  expect(await dialogue.locator('[data-lod-full]').evaluate((image: HTMLImageElement) => image.naturalWidth)).toBe(mobile ? 860 : 2880);
-  expect(demandes).toBe(2);
-  await page.keyboard.press('Escape');
-  await expect(capture).toBeFocused();
-});
+}
 
-test('le zoom réserve la place de son aide sur petit écran et en paysage', async ({ page }) => {
-  await page.goto(CHEMIN);
-  for (const ecran of [{ width: 320, height: 568 }, { width: 667, height: 375 }]) {
-    await page.setViewportSize(ecran);
-    await cadrerFiches(page);
-    await page.locator('label[for="fiche-ahri-capacites"]').click();
-    const capture = page.locator('.lod-fiche--ahri-capacites [data-lod-capture]');
-    await capture.click();
-    const dialogue = page.locator('[data-lod-dialog]');
-    await expect(dialogue).toBeVisible();
-    await expect(dialogue.locator('.lod-visionneuse__image')).toHaveAttribute('aria-busy', 'false');
-    expect(await dialogue.evaluate((element) => {
-      const image = element.querySelector('img')!.getBoundingClientRect();
-      const bouton = element.querySelector('button')!.getBoundingClientRect();
-      const aide = element.querySelector('p')!.getBoundingClientRect();
-      return image.width > 40 && image.height > 40
-        && image.left >= bouton.left && image.right <= bouton.right
-        && image.top >= bouton.top && image.bottom <= bouton.bottom
-        && image.bottom < aide.top && aide.bottom <= window.innerHeight;
-    })).toBe(true);
-    await page.keyboard.press('Escape');
-    await expect(capture).toBeFocused();
-  }
-});
-
-test('les onglets d’Ahri se parcourent au clavier et agrandissent la capture affichée', async ({ page }) => {
-  const erreurs = surveillerConsole(page);
-  await page.goto(CHEMIN);
-  const champion = page.locator('#fiche-ahri');
-  const capacites = page.locator('#fiche-ahri-capacites');
-  const ecran = page.locator('.lod-fiche--ahri-capacites');
-  await cadrerFiches(page);
-  await champion.focus();
-  const position = await page.evaluate(() => window.scrollY);
-  await page.keyboard.press('ArrowRight');
-  await expect(capacites).toBeChecked();
-  await expect(capacites).toBeFocused();
-  await expect(ecran).toBeVisible();
-  await expect(page.locator('.lod-fiche--ahri')).toBeHidden();
-  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(position);
-
-  const capture = ecran.locator('[data-lod-capture]');
-  const apercu = capture.locator('img');
-  await apercu.evaluate((image: HTMLImageElement) => image.decode());
-  const mobile = page.viewportSize()!.width < 800;
-  const source = new URL(`/images/league-of-database/ahri-capacites${mobile ? '-mobile' : ''}.webp`, page.url()).href;
-  expect(new URL(await apercu.evaluate((image: HTMLImageElement) => image.currentSrc)).pathname)
-    .toMatch(new RegExp(`/ahri-capacites${mobile ? '-mobile' : ''}(?:-\\d+)?\\.webp$`));
-  await capture.focus();
-  await page.keyboard.press('Enter');
-  const dialogue = page.locator('[data-lod-dialog]');
-  await expect(dialogue).toBeVisible();
-  await expect(dialogue.locator('img')).toHaveAttribute('src', source);
-  await expect(dialogue.locator('img')).toHaveAttribute('alt', await apercu.getAttribute('alt') ?? '');
-  await page.keyboard.press('Escape');
-  await expect(capture).toBeFocused();
-
-  await expect(dialogue).toBeHidden();
-  await capacites.focus();
-  await page.keyboard.press('ArrowRight');
-  await expect(page.locator('#fiche-ahri-skins')).toBeChecked();
-  await expect(page.locator('#fiche-ahri-skins')).toBeFocused();
-  await page.keyboard.press('ArrowRight');
-  const detail = page.locator('#fiche-ahri-skin-detail');
-  await expect(detail).toBeChecked();
-  await expect(detail).toBeFocused();
-  await expect(ecran).toBeHidden();
-  const detailCapture = page.locator('.lod-fiche--ahri-skin-detail [data-lod-capture]');
-  await expect(detailCapture).toBeVisible();
-  const detailImage = detailCapture.locator('img');
-  await detailImage.evaluate((image: HTMLImageElement) => image.decode());
-  const detailSource = new URL(`/images/league-of-database/ahri-skin-detail${mobile ? '-mobile' : ''}.webp`, page.url()).href;
-  expect(new URL(await detailImage.evaluate((image: HTMLImageElement) => image.currentSrc)).pathname)
-    .toMatch(new RegExp(`/ahri-skin-detail${mobile ? '-mobile' : ''}(?:-\\d+)?\\.webp$`));
-  await detailCapture.focus();
-  await page.keyboard.press('Enter');
-  await expect(dialogue).toBeVisible();
-  await expect(dialogue.locator('img')).toHaveAttribute('src', detailSource);
-  await expect(dialogue.locator('img')).toHaveAttribute('alt', await detailImage.getAttribute('alt') ?? '');
-  await page.keyboard.press('Escape');
-  await expect(detailCapture).toBeFocused();
-  expect(erreurs).toEqual([]);
-});
-
-test.describe('League of Database sans JavaScript', () => {
+test.describe('sans JavaScript', () => {
   test.use({ javaScriptEnabled: false, reducedMotion: 'reduce' });
 
-  test('les valeurs d’un ancien patch et les langues restent consultables', async ({ page }) => {
+  test('la page est complète : en-tête, comparaison, onglets, schémas, captures en lien direct', async ({ page }) => {
     const erreurs = surveillerConsole(page);
     await page.goto(CHEMIN);
-    await page.locator('label[for="version-actuel"]').click();
-    await expect(page.locator('.lod-version--actuel')).toBeVisible();
-    await page.locator('#version-actuel').focus();
-    await page.keyboard.press('ArrowLeft');
-    await expect(page.locator('#version-archive')).toBeChecked();
-    const archive = page.locator('.lod-version--archive');
-    await expect(archive).toBeVisible();
-    await expect(page.locator('.lod-version--actuel')).toBeHidden();
-    expect(await lireValeurs(archive)).toEqual({ 'Points de vie': '380', Attaque: '50', Armure: '11', Mana: '230' });
-    await expect(archive.locator('[data-lod-capture]')).toHaveAttribute('href', '/images/league-of-database/ahri-archive-statistiques.webp');
-
-    const langues = page.locator('#langues');
-    await langues.scrollIntoViewIfNeeded();
-    await langues.getByRole('radio', { name: 'Français', exact: true }).focus();
+    for (const marque of ['titre', 'identite', 'preuve', 'action']) await expect(page.locator(`[data-pli="${marque}"]`)).toBeInViewport();
+    await expect(page.locator('#versions table')).toBeVisible();
+    await expect(page.locator('dialog[data-visionneuse]')).toBeHidden();
+    // Les onglets fonctionnent sans script : un groupe radio et du CSS.
+    await page.locator('#langue-ahri-fr').focus();
     await page.keyboard.press('ArrowRight');
-    await expect(langues.getByRole('radio', { name: 'Anglais', exact: true })).toBeChecked();
-    await expect(langues.locator('.lod-traduction--en')).toBeVisible();
-    await expect(langues.locator('.lod-traduction--en')).toContainText('the Nine-Tailed Fox');
-    await page.keyboard.press('ArrowRight');
-    await expect(langues.getByRole('radio', { name: 'Coréen', exact: true })).toBeChecked();
-    const coreen = langues.locator('.lod-traduction--ko');
-    await expect(coreen).toBeVisible();
-    await expect(coreen.locator('.lod-traduction__titre')).toContainText('구미호');
-    await expect(langues.locator('.lod-traduction--fr')).toBeHidden();
-    await expect(langues.locator('.lod-traduction--en')).toBeHidden();
-    const capture = coreen.locator('[data-lod-capture]');
-    await capture.scrollIntoViewIfNeeded();
-    await capture.locator('img').evaluate((image: HTMLImageElement) => image.decode());
-    const mobile = page.viewportSize()!.width < 800;
-    expect(new URL(await capture.locator('img').evaluate((image: HTMLImageElement) => image.currentSrc)).pathname)
-      .toMatch(new RegExp(`/ahri-langue-coreenne${mobile ? '-mobile' : ''}(?:-\\d+)?\\.webp$`));
-    await capture.click();
-    expect(new URL(page.url()).pathname).toBe('/images/league-of-database/ahri-langue-coreenne.webp');
-    expect(erreurs).toEqual([]);
-  });
-
-  test('les captures restent accessibles et les schémas lisibles', async ({ page }) => {
-    const erreurs = surveillerConsole(page);
-    await page.goto(CHEMIN);
-    await expect(page.locator('[data-lod-dialog]')).toBeHidden();
-    await expect(page.locator('#trafic svg').first()).toBeVisible();
-    await expect(page.locator('#sauvegardes svg').first()).toBeVisible();
-    const captures = page.locator('a[data-lod-capture]');
-    expect(await captures.count()).toBeGreaterThanOrEqual(4);
-    const adresses = await captures.evaluateAll((elements) => [...new Set(elements.map((element) => (element as HTMLAnchorElement).href))]);
-    for (const adresse of adresses) {
-      const reponse = await page.request.get(adresse);
-      expect(reponse.ok()).toBe(true);
-      expect(reponse.headers()['content-type']).toMatch(/^image\//);
-    }
-    const capture = page.locator('#champions a[data-lod-capture]').first();
-    const adresse = await capture.getAttribute('href');
-    expect(adresse).toBeTruthy();
-    await capture.click();
+    await expect(page.locator('#langue-ahri-en')).toBeChecked();
+    await expect(page.locator('#langues .onglets__vue--en')).toBeVisible();
+    await expect(page.locator('#langues .onglets__vue--fr')).toBeHidden();
+    await page.locator('label[for="fiche-ahri-skins"]').click();
+    await expect(page.locator('#champions .onglets__vue--ahri-skins')).toBeVisible();
+    for (const bloc of ['#trafic', '#sauvegardes', '#livraison', '#audience']) await expect(page.locator(`${bloc} figure`)).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
+    // Une capture s’ouvre en grand comme une simple image.
+    const lien = page.locator('#versions a[data-agrandir]').first();
+    const adresse = (await lien.getAttribute('href'))!;
+    const reponse = await page.request.get(adresse);
+    expect(reponse.ok()).toBe(true);
+    expect(reponse.headers()['content-type']).toMatch(/^image\//);
+    await lien.click();
     expect(new URL(page.url()).pathname).toBe(adresse);
     expect(erreurs).toEqual([]);
   });
