@@ -33,8 +33,9 @@ npm run preview      # build + serveur de production, http://127.0.0.1:4000
 | `npm run build` | build statique dans `dist/`, puis contrôles du site (`tools/verifier-site.mjs`) |
 | `npm run check` | vérification des types (`astro check`) |
 | `npm test` | tests unitaires (Vitest) et tests du serveur (`node --test`) ; les garde-fous qui lisent le HTML construit (blog, liens publics, citations, formulations interdites, sitemap) reconstruisent `dist/` s'il est périmé |
-| `npm run visuels` | liste les visuels « socle » manquants du registre `src/config/visuels.ts` (`-- --tout` pour tous, `-- --strict` pour échouer s'il en manque) ; le build en affiche le décompte sans échouer |
+| `npm run visuels` | liste les visuels « socle » manquants du registre `src/config/visuels.ts`, rendus et masters de nuit compris (`-- --tout` pour tous, `-- --verifier` pour contrôler les fichiers livrés, `-- --strict` pour échouer s'il en manque) ; le build en affiche le décompte sans échouer |
 | `npm run visuels:doc` | régénère `docs/visuels-a-generer.md`, la commande de production des images, depuis le registre |
+| `npm run visuels:rendre <ID>` | rend les deux masters d’une image générée (`design/assets/visuels/<série>/<ID>.png` et `<ID>.nuit.png`) aux couleurs des jetons : `<ID>_<l>x<h>.webp` (jour) et `.nuit.webp` (nuit), sous le plafond de poids du registre ; `-- --tout` pour tous les masters déposés |
 | `npm run test:e2e` | build + tests navigateur (Playwright, Chromium à 390 et 1440 px, axe) |
 
 Première exécution des tests navigateur : `npx playwright install chromium`.
@@ -163,13 +164,16 @@ d’architecture fait circuler des messages en boucle
 tant qu’il est visible ; les trois règles apparaissent dans l’ordre. Avec mouvement réduit,
 sans JavaScript ou à l’impression, les illustrations restent complètes.
 
-Les illustrations à générer sont posées par `<Visuel id="…">` depuis le registre
-`site/src/config/visuels.ts`. Tant que le fichier manque, le site en ligne montre un cadre neutre
-au bon ratio, avec l’alt du registre ; en développement (`astro dev`, ou `VISUELS_BROUILLON=1` au
-build), un cadre hachuré affiche la consigne (identifiant, sujet, composition, format). Un dessin
-SVG livré est inséré en ligne et suit les jetons. `npm run visuels` liste ce qu’il reste à
-produire et `npm run visuels:doc` régénère [`docs/visuels-a-generer.md`](docs/visuels-a-generer.md),
-la commande de production des images.
+Les illustrations sont posées par `<Visuel id="…">` depuis le registre
+`site/src/config/visuels.ts`. Une image générée a deux rendus dessinés, le jour et la nuit, tirés
+de ses deux masters (`design/assets/visuels/<série>/`) par `npm run visuels:rendre` : `<Visuel>`
+pose les deux et n’en montre qu’un, selon le thème (la nuit aussi dans un acte sombre, le jour à
+l’impression) ; l’autre n’est ni lu ni téléchargé. Tant qu’un fichier manque, le site en ligne
+montre un cadre neutre au bon ratio, avec l’alt du registre ; en développement (`astro dev`, ou
+`VISUELS_BROUILLON=1` au build), un cadre hachuré affiche la consigne (identifiant, sujet,
+composition, format). Un dessin SVG livré est inséré en ligne et suit les jetons.
+`npm run visuels` liste ce qu’il reste à produire et `npm run visuels:doc` régénère
+[`docs/visuels-a-generer.md`](docs/visuels-a-generer.md), la commande de production des images.
 
 Le hub `/projets` commence par l’index des étiquettes de preuve, puis présente les cinq projets
 dans l’ordre de ce qu’ils prouvent, PvZ Fusion en vedette. Chaque carte donne le besoin, un
