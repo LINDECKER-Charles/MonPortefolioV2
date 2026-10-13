@@ -76,7 +76,7 @@ const capture = (nom: string) => {
       <Fragment slot="texte">
         <p>Sur un poste de développeur, chaque outil a sa commande de mise à jour, son format de sortie et ses angles morts. La documentation de gup le résume ainsi&nbsp;: dix à quinze commandes enchaînées à la main, plusieurs fois par mois, sans savoir laquelle a oublié quoi.</p>
         <p>gup ne remplace aucun de ces outils. Il les interroge tous en parallèle, liste ce qui est en retard et les fait travailler&nbsp;: c’est un chef d’orchestre, pas un gestionnaire de paquets de plus.</p>
-        <Visuel id="GUP-01" class="gup-dispersion" sizes="320px" />
+        <Visuel id="GUP-01" class="gup-dispersion" largeur="320px" sizes="320px" />
       </Fragment>
       <FigureCommandes slot="figure" />
     </SectionProjet>
@@ -155,7 +155,7 @@ const capture = (nom: string) => {
 
     <DecisionsProjet decisions={DECISIONS} chapeau="Quatre choix d’architecture qui ne se voient pas à l’écran, et pourquoi.">
       <div class="gup-autres">
-        <Visuel id="GUP-02" alt="" class="gup-autres__visuel" sizes="(max-width: 640px) 100vw, 576px" />
+        <Visuel id="GUP-02" alt="" class="gup-autres__visuel" largeur="576px" sizes="(max-width: 640px) 100vw, 576px" />
         <h3>Et deux choix de plus</h3>
         <ul>
           {
@@ -230,8 +230,7 @@ const capture = (nom: string) => {
     color: var(--eteint);
   }
 
-  :global(#probleme .gup-dispersion) {
-    max-width: 320px;
+  :global(.gup-dispersion) {
     margin-top: var(--s5);
   }
 
@@ -388,8 +387,7 @@ const capture = (nom: string) => {
   }
 
   /* GUP-02 : un bandeau de six pictos de 96 px, au-dessus de l’intertitre. */
-  :global(#construit .gup-autres__visuel) {
-    width: 576px;
+  :global(.gup-autres__visuel) {
     margin-bottom: var(--s4);
   }
 
@@ -431,7 +429,7 @@ const capture = (nom: string) => {
   }
 
   @media (max-width: 860px) {
-    :global(#probleme .gup-dispersion) {
+    :global(.gup-dispersion) {
       display: none;
     }
 

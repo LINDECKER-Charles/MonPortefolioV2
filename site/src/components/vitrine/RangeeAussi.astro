@@ -70,26 +70,6 @@ import { typo } from '../../lib/typo';
     margin-bottom: var(--s2);
   }
 
-  /* Le format de l’emplacement tient sur une ligne, même dans une vignette étroite. */
-  .aussi__projet :global(.visuel__format) {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-
-  /* Tant que l’image manque, la consigne s’arrête net après quatre lignes
-     (points de suspension) au lieu d’être tranchée à mi-hauteur par le cadre.
-     Sous 260 px, l’emplacement la masque déjà. */
-  @container (min-width: 261px) {
-    .aussi__projet :global(.visuel__consigne) {
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 4;
-      line-clamp: 4;
-      overflow: hidden;
-    }
-  }
-
   h3 {
     padding-top: var(--s3);
     border-top: 1px solid var(--trait);

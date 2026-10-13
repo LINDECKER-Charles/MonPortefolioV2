@@ -75,18 +75,6 @@ import { typo } from '../../lib/typo';
     width: 100%;
   }
 
-  /* Tant que l’image manque, la consigne s’arrête net (points de suspension)
-     au lieu d’être tranchée par le cadre, étroit sur mobile. */
-  @container (min-width: 261px) {
-    .contribuer__bloc :global(.visuel__consigne) {
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 2;
-      line-clamp: 2;
-      overflow: hidden;
-    }
-  }
-
   .contribuer__liste {
     grid-area: liste;
     display: grid;
@@ -132,13 +120,6 @@ import { typo } from '../../lib/typo';
         'liste'
         'visuel';
       gap: var(--s5);
-    }
-
-    @container (min-width: 261px) {
-      .contribuer__bloc :global(.visuel__consigne) {
-        -webkit-line-clamp: 3;
-        line-clamp: 3;
-      }
     }
   }
 </style>

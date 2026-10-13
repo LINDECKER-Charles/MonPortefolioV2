@@ -279,13 +279,6 @@ const debutTexte = moisEnClair(e.debut);
     margin-top: var(--s1);
   }
 
-  /* Emplacement en attente : la consigne tient en quatre lignes. */
-  .fiche :global(.visuel__consigne) {
-    max-height: calc(1.4em * 4);
-    overflow: hidden;
-    mask-image: linear-gradient(180deg, #000 60%, transparent);
-  }
-
   @media (max-width: 760px) {
     .fiche {
       grid-template-columns: minmax(0, 1fr);

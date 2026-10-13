@@ -66,7 +66,8 @@ const description = 'Cinq projets menés au bout, rangés par ce qu’ils prouve
               technos={[...carte.technos]}
               aConfirmer={carte.aConfirmer}
             >
-              {projet.id === 'pvz' && <Visuel slot="visuel" id="PRJ-01" loading="eager" sizes="(max-width: 860px) 100vw, 720px" class="vitrine-visuel vitrine-visuel--vedette" />}
+              {/* La vedette garde le 16:10 sur mobile : son chiffre reste au premier écran. */}
+              {projet.id === 'pvz' && <Visuel slot="visuel" id="PRJ-01" ratioMobile="16 / 10" loading="eager" sizes="(max-width: 860px) 100vw, 720px" class="vitrine-visuel vitrine-visuel--vedette" />}
               {projet.id === 'league' && <Visuel slot="visuel" id="PRJ-02" alt="" sizes="(max-width: 860px) 100vw, 300px" class="vitrine-visuel vitrine-visuel--ligne" />}
               {projet.id === 'omnicard' && <Visuel slot="visuel" id="PRJ-03" alt="" sizes="(max-width: 860px) 100vw, 300px" class="vitrine-visuel vitrine-visuel--ligne" />}
               {
@@ -302,18 +303,6 @@ const description = 'Cinq projets menés au bout, rangés par ce qu’ils prouve
 
     .vitrine-corps :global(.vitrine-telephone) {
       width: min(200px, 70%);
-    }
-
-    /* Tant que l’image manque, la consigne d’un emplacement s’arrête net
-       (points de suspension) au lieu d’être tranchée par le cadre en 16:10. */
-    @container (min-width: 261px) {
-      .vitrine-corps :global(.visuel__consigne) {
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 4;
-        line-clamp: 4;
-        overflow: hidden;
-      }
     }
   }
 </style>

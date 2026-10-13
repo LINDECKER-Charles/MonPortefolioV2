@@ -208,16 +208,6 @@ const LIENS_SORTIE = [
     width: min(100%, 440px);
   }
 
-  /* Emplacement en attente : la consigne tient en trois lignes pour que la
-     ligne de format reste entière ; le registre garde la commande complète. */
-  :global(.blr-probleme .visuel__consigne) {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
-    overflow: hidden;
-  }
-
   /* Trois écrans de téléphone en rang ; une galerie à crans sur mobile. */
   .blr-serie {
     display: grid;
