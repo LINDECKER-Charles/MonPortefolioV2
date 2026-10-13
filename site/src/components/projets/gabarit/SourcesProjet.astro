@@ -8,6 +8,13 @@
  *     <p><b>Couverture.</b> …</p>
  *   </SourcesProjet>
  *
+ * Repliée par défaut (<details>) : la page s’arrête sur ce que j’en retiens,
+ * et la note s’ouvre d’un geste. Son texte reste dans le HTML, lisible sans
+ * JavaScript (le résumé s’ouvre au clavier comme à la souris) et imprimé en
+ * entier. Une ancre qui la vise (#sources, ou un élément qu’elle contient)
+ * l’ouvre : au chargement, au changement d’ancre et au clic sur un lien de la
+ * page, même quand l’ancre est déjà dans l’adresse.
+ *
  * Texte en petit corps, colonne de lecture. Les liens sortants du slot
  * portent leur mesure (`lien-sortant`, emplacement `preuves`) : LienAction
  * ou `attributsMesure` de lib/liens.ts.
@@ -15,38 +22,108 @@
 interface Props {
   id?: string;
   titre?: string;
+  /** Ce que la note contient, après le titre, dans le résumé. */
+  resume?: string;
 }
 
-const { id = 'sources', titre = 'Sources et méthode' } = Astro.props;
+const { id = 'sources', titre = 'Sources et méthode', resume = 'chiffres, dates, méthode et crédits' } = Astro.props;
 ---
 
-<aside id={id} class="sources-projet" aria-labelledby={`${id}-titre`}>
-  <h2 class="sources-projet__titre" id={`${id}-titre`}>{titre}</h2>
+<details id={id} class="sources-projet" data-sources>
+  <summary class="sources-projet__resume">
+    <span><span class="sources-projet__titre">{titre}</span>&nbsp;: {resume}</span>
+  </summary>
   <div class="sources-projet__texte">
     <slot />
   </div>
-</aside>
+</details>
+
+<script>
+  /** Ouvre la note de sources qu’une ancre vise, elle ou un élément qu’elle contient. */
+  function ouvrirSelon(ancre: string): void {
+    if (!ancre || ancre === '#') return;
+    let cible: Element | null = null;
+    try {
+      cible = document.getElementById(decodeURIComponent(ancre.slice(1)));
+    } catch {
+      return;
+    }
+    const note = cible?.closest<HTMLDetailsElement>('details[data-sources]');
+    if (note && !note.open) {
+      note.open = true;
+      if (cible !== note) cible?.scrollIntoView();
+    }
+  }
+
+  ouvrirSelon(location.hash);
+  window.addEventListener('hashchange', () => ouvrirSelon(location.hash));
+  document.addEventListener('click', (evenement) => {
+    const lien = (evenement.target as Element | null)?.closest?.('a[href^="#"]');
+    if (lien) ouvrirSelon(lien.getAttribute('href') ?? '');
+  });
+  window.addEventListener('beforeprint', () => {
+    for (const note of document.querySelectorAll<HTMLDetailsElement>('details[data-sources]')) note.open = true;
+  });
+</script>
 
 <style>
   .sources-projet {
     margin-top: var(--s7);
-    padding-top: var(--s5);
     border-top: 1px solid var(--filet);
+    border-bottom: 1px solid var(--filet);
+  }
+
+  .sources-projet__resume {
+    display: flex;
+    align-items: center;
+    gap: var(--s3);
+    min-height: 48px;
+    padding-block: var(--s3);
+    list-style: none;
+    cursor: pointer;
+    font-size: var(--t-s);
+    line-height: 1.4;
+    color: var(--eteint);
+  }
+
+  .sources-projet__resume::-webkit-details-marker {
+    display: none;
+  }
+
+  /* Le chevron, qui pivote à l’ouverture. */
+  .sources-projet__resume::before {
+    content: '';
+    flex: none;
+    width: 7px;
+    height: 7px;
+    margin-inline: 2px var(--s1);
+    border-right: 1.5px solid var(--encre);
+    border-bottom: 1.5px solid var(--encre);
+    rotate: -45deg;
+    transition: rotate var(--d-ui) var(--courbe);
+  }
+
+  .sources-projet[open] > .sources-projet__resume::before {
+    rotate: 45deg;
+  }
+
+  .sources-projet__resume:hover .sources-projet__titre {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
   }
 
   .sources-projet__titre {
-    font-family: var(--police-texte);
-    font-size: var(--t-s);
     font-weight: 600;
     letter-spacing: var(--ls-petit);
-    line-height: 1.4;
+    color: var(--encre);
   }
 
   .sources-projet__texte {
     display: grid;
     gap: var(--s3);
     max-width: 50rem;
-    margin-top: var(--s3);
+    padding-bottom: var(--s5);
     font-size: var(--t-xs);
     line-height: 1.6;
     color: var(--eteint);
@@ -59,5 +136,17 @@ const { id = 'sources', titre = 'Sources et méthode' } = Astro.props;
 
   .sources-projet__texte :global(a) {
     overflow-wrap: anywhere;
+  }
+
+  /* À l’impression, la note entière, ouverte ou non. */
+  @media print {
+    .sources-projet::details-content {
+      content-visibility: visible;
+      display: block;
+    }
+
+    .sources-projet__resume::before {
+      display: none;
+    }
   }
 </style>
