@@ -538,6 +538,14 @@ describe('composant Visuel', () => {
     ]);
   });
 
+  it('pose les règles de base à spécificité nulle : la classe d’une page l’emporte', () => {
+    const source = readFileSync(path.join(SRC, 'components/ui/Visuel.astro'), 'utf8');
+    const style = source.slice(source.indexOf('<style>'));
+    for (const classe of ['.visuel', '.visuel--manquant', '.visuel--attente']) expect(style, classe).toContain(`:global(:where(${classe})) {`);
+    // Aucune règle de base portée par l’attribut de portée d’Astro, qui la ferait passer devant la classe d’une page.
+    expect(style).not.toMatch(/^\s*:where\(/m);
+  });
+
   it('montre le jour par défaut, la nuit sous les trois portes de jetons.css, et le jour à l’impression', () => {
     const source = readFileSync(path.join(SRC, 'components/ui/Visuel.astro'), 'utf8');
     const style = source.slice(source.indexOf('<style>'));

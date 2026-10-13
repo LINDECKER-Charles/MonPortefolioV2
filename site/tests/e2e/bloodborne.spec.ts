@@ -460,3 +460,13 @@ test.describe('sans JavaScript', () => {
     expect(erreurs).toEqual([]);
   });
 });
+
+test('la classe de la page règle l’image de la section « Ranger » : 440 px de large au plus, détachée du texte', async ({ page }) => {
+  // Les règles de base de <Visuel> ont une spécificité nulle : `:global(.blr-probleme)` l’emporte.
+  await page.goto(CHEMIN);
+  const image = page.locator('figure[data-visuel="BLR-01"]');
+  const { largeur, marge } = await image.evaluate((element) => ({ largeur: element.getBoundingClientRect().width, marge: getComputedStyle(element).marginTop }));
+  const colonne = await image.evaluate((element) => element.parentElement!.getBoundingClientRect().width);
+  expect(largeur).toBeCloseTo(Math.min(colonne, 440), 0);
+  expect(Number.parseFloat(marge)).toBeGreaterThan(0);
+});

@@ -73,8 +73,10 @@
  * que l’identifiant, en petit et sans pastille, sur les hachures. Aucun texte
  * ne déborde du cadre : la page n’a rien à corriger.
  *
- * Les règles du composant ont la spécificité d’une classe (`:where`) : une
- * page qui passe `class` peut les surcharger sans sélecteur d’identifiant.
+ * Les règles de base du composant ont une spécificité nulle
+ * (`:global(:where(…))`, hors de la portée d’Astro, qui leur ajouterait son
+ * attribut) : la classe qu’une page passe par `class` l’emporte toujours,
+ * même posée avec `:global(.ma-classe)`.
  */
 import type { ImageMetadata } from 'astro';
 import ImageAdaptative from './ImageAdaptative.astro';
@@ -217,8 +219,8 @@ const format = [visuel.format, mobile, reprise].filter(Boolean).join(' · ');
 }
 
 <style>
-  /* Spécificité d’une classe (`:where`) : la classe d’une page l’emporte. */
-  :where(.visuel) {
+  /* Spécificité nulle, hors de la portée d’Astro : la classe d’une page l’emporte. */
+  :global(:where(.visuel)) {
     width: var(--visuel-largeur, auto);
     max-width: 100%;
     margin: 0;
@@ -296,7 +298,7 @@ const format = [visuel.format, mobile, reprise].filter(Boolean).join(' · ');
 
   /* L’image manquante : un cadre hachuré qui ne se prend pas pour une image.
      Conteneur en largeur et en hauteur : la commande s’adapte au cadre. */
-  :where(.visuel--manquant) {
+  :global(:where(.visuel--manquant)) {
     position: relative;
     isolation: isolate;
     container-type: size;
@@ -308,7 +310,7 @@ const format = [visuel.format, mobile, reprise].filter(Boolean).join(' · ');
   }
 
   /* En ligne : un aplat neutre au bon ratio, l’emblème en filigrane. */
-  :where(.visuel--attente) {
+  :global(:where(.visuel--attente)) {
     position: relative;
     isolation: isolate;
     background: var(--emplacement);
@@ -484,7 +486,7 @@ const format = [visuel.format, mobile, reprise].filter(Boolean).join(' · ');
   }
 
   @media (max-width: 860px) {
-    :where(.visuel) {
+    :global(:where(.visuel)) {
       aspect-ratio: var(--visuel-ratio-mobile, var(--visuel-ratio));
     }
   }
