@@ -9,7 +9,8 @@
  * JavaScript, la figure marche aussi sans script. Windows est choisi par
  * défaut ; un navigateur sans `:has()` garde la vue Windows. Les comptes par
  * famille sont du texte ; les carrés sont décoratifs (le nom de chaque source
- * reste en info-bulle).
+ * reste en info-bulle). Sous 560 px, seuls les comptes restent : la donnée
+ * est la même, la figure tient en dix lignes.
  */
 import { FAMILLES_SOURCES, type SystemeSource } from '../../../config/gup-sources';
 
@@ -282,7 +283,7 @@ const bilans = SYSTEMES.map((systeme) => {
     }
   }
 
-  @media (max-width: 520px) {
+  @media (max-width: 560px) {
     .sources__choix {
       width: 100%;
     }
@@ -293,21 +294,23 @@ const bilans = SYSTEMES.map((systeme) => {
       padding: 0 var(--s2);
     }
 
+    /* Les comptes seuls, sur deux colonnes : les carrés et leur légende
+       disparaissent, le bilan et les « x / y » portent la donnée. */
+    .sources__familles {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0 var(--s4);
+    }
+
     .sources__familles li {
-      grid-template-columns: minmax(0, 6.6rem) minmax(0, 1fr) 2.6rem;
+      grid-template-columns: minmax(0, 1fr) auto;
       gap: var(--s2);
-      min-height: 30px;
-      padding-block: 4px;
+      min-height: 0;
+      padding-block: 6px;
     }
 
-    .sources__carres {
-      gap: 2px;
-    }
-
-    .sources .carre {
-      width: 8px;
-      height: 8px;
-      border-radius: 1px;
+    .sources__carres,
+    .sources__legende {
+      display: none;
     }
   }
 </style>
