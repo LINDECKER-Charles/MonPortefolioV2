@@ -134,13 +134,20 @@ test('la démonstration ne met à jour que les paquets cochés, et permet de rec
   await demo.locator('input[value="Git"]').check();
   await demo.locator('input[value="ruff"]').check();
   await expect(demo.locator('[data-gup-status]')).toHaveText('2 paquets cochés.');
-  await lancer.click();
+  await lancer.focus();
+  await page.keyboard.press('Enter');
+  // Pendant le déroulé, le bouton reste visible et garde le focus.
+  await expect(lancer).toBeVisible();
+  await expect(lancer).toHaveAttribute('aria-disabled', 'true');
+  await expect(lancer).toBeFocused();
   await expect(demo.locator('[data-gup-status]')).toHaveText('2 paquets mis à jour dans cette démonstration.');
   const ligne = (nom: string) => demo.locator('[data-gup-package]').filter({ has: page.locator(`input[value="${nom}"]`) });
   await expect(ligne('Git').locator('[data-gup-version]')).toHaveText('2.52.0');
   await expect(ligne('Git').locator('[data-gup-state]')).toHaveText('à jour');
   await expect(ligne('typescript').locator('[data-gup-version]')).toHaveText('6.0.2');
   await expect(ligne('typescript').locator('[data-gup-state]')).toHaveText('disponible');
+  await expect(demo.locator('[data-gup-reset]')).toBeFocused();
+  await expect(lancer).toBeHidden();
   await demo.locator('[data-gup-reset]').click();
   await expect(demo.locator('input:checked')).toHaveCount(0);
   await expect(lancer).toBeDisabled();
@@ -188,7 +195,72 @@ test('la sortie : projet précédent de la vitrine, retour à la vitrine, « Dis
   await expect(sortie.getByRole('link', { name: /Projet précédent\s+Bloodborne Legendary Run/ })).toHaveAttribute('href', '/projets/bloodborne-legendary-run');
   await expect(sortie.getByRole('link', { name: /Tous les projets/ })).toHaveAttribute('href', '/projets');
   await expect(sortie).not.toContainText('Projet suivant');
-  await expect(sortie.getByRole('link', { name: /guide de contribution/ })).toHaveAttribute('href', /CONTRIBUTING\.md/);
+  // Le guide de contribution vit dans l’encart de « Tenu comme un produit », pas dans la sortie.
+  await expect(sortie.getByRole('link', { name: /guide de contribution/ })).toHaveCount(0);
+  await expect(page.locator('#produit').getByRole('link', { name: /guide de contribution/ })).toHaveAttribute('href', /CONTRIBUTING\.md/);
+  await expect(page.locator('#produit').getByRole('link', { name: /La gouvernance/ })).toHaveAttribute('href', /GOVERNANCE\.md/);
+});
+
+test('la part de chacun : la contribution extérieure est dite, le lot administrateur ne m’est pas attribué', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const fiche = page.getByRole('group', { name: 'Fiche du projet' });
+  await expect(fiche.locator('.fiche-projet__case--part')).toContainText('l’essentiel de son code');
+  const equipe = fiche.locator('.fiche-projet__case--equipe');
+  await expect(equipe).toContainText('une contribution extérieure en mai 2026');
+  await expect(equipe.locator('.a-confirmer')).toHaveCount(1);
+  await expect(page.locator('.projet-tete')).not.toContainText(/conçu, écrit/);
+  // Le lot administrateur unique vient d’une contribution extérieure : pas une décision « à moi ».
+  expect((await page.locator('#construit .decision').allInnerTexts()).join(' ')).not.toMatch(/UAC|administrateur/);
+  await expect(page.locator('#construit')).toContainText('Un paquet par appel');
+  // L’exception Scoop à la règle « sans shell » est dite, avec sa source.
+  await expect(page.locator('#construit')).toContainText('Seul Scoop');
+  await expect(page.locator('#sources').getByRole('link', { name: /ligne 484/ })).toHaveAttribute('href', /architecture\.md\?plain=1#L484$/);
+});
+
+test('les cibles autonomes font au moins 44 px : liens de trace et choix du système', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const cibles = page.locator('.gup-cas a, .gup-pratiques a, .gup-autres a, [data-visuel="GUP-F2"] .sources__choix label');
+  expect(await cibles.count()).toBeGreaterThan(15);
+  for (const cible of await cibles.all()) {
+    const boite = await cible.boundingBox();
+    expect(boite?.height ?? 0, (await cible.textContent()) ?? '').toBeGreaterThanOrEqual(44);
+  }
+});
+
+test('l’en-tête recadre l’écran sur le volet des paquets ; la visionneuse garde l’écran entier', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const vue = page.locator('.gup-entete-capture .capture__vue');
+  const image = vue.locator('img');
+  const [cadre, rendu] = await Promise.all([vue.boundingBox(), image.boundingBox()]);
+  // L’image déborde la vue des deux côtés : seul le volet « Paquets » se voit.
+  expect(rendu!.width).toBeGreaterThan(cadre!.width * 1.35);
+  expect(rendu!.x).toBeLessThan(cadre!.x);
+  expect(rendu!.y).toBeLessThan(cadre!.y);
+  const agrandir = vue.locator('a[data-agrandir]');
+  await agrandir.click();
+  const visionneuse = page.locator('dialog[data-visionneuse]');
+  await expect(visionneuse).toBeVisible();
+  const entiere = visionneuse.locator('[data-visionneuse-image]');
+  await expect(entiere).toBeVisible();
+  const ratio = await entiere.evaluate((img: HTMLImageElement) => img.naturalWidth / img.naturalHeight);
+  expect(ratio).toBeCloseTo(2436 / 1578, 2);
+});
+
+test('les loupes ne recouvrent pas leur cible ; sous 560 px, elles passent sous l’écran', async ({ page }) => {
+  await page.goto(CHEMIN);
+  for (const etape of await page.locator('#etapes .gup-etape').all()) {
+    await etape.scrollIntoViewIfNeeded();
+    const [loupe, cible, ecran] = await Promise.all([etape.locator('.loupe').boundingBox(), etape.locator('.cible').boundingBox(), etape.locator('.capture__vue > a img').boundingBox()]);
+    const separees = loupe!.x > cible!.x + cible!.width || loupe!.y > cible!.y + cible!.height || loupe!.x + loupe!.width < cible!.x || loupe!.y + loupe!.height < cible!.y;
+    expect(separees).toBe(true);
+    if ((page.viewportSize()?.width ?? 0) <= 560) {
+      expect(loupe!.y).toBeGreaterThanOrEqual(ecran!.y + ecran!.height);
+      expect(loupe!.width).toBeGreaterThan(ecran!.width - 2);
+      // La légende vient après la loupe, sans chevauchement.
+      const legende = await etape.locator('.capture__legende').boundingBox();
+      expect(legende!.y).toBeGreaterThanOrEqual(loupe!.y + loupe!.height);
+    }
+  }
 });
 
 test('une seule navigation de page, sans la note de sources', async ({ page }) => {
