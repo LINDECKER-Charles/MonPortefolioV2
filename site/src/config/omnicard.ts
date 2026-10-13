@@ -49,20 +49,25 @@ export const EN_TETE = {
   ] satisfies LienProjet[],
 };
 
+/**
+ * Le chiffre surligné est le plus parlant des faits sourcés : les 181 cartes
+ * du catalogue public. La durée, approximative et déclarée, vient ensuite,
+ * sans surlignage : seule, elle ferait lire un petit projet.
+ */
 export const PREUVES: readonly PreuveEnTete[] = [
-  {
-    valeur: '≈ 3 mois',
-    libelle: 'de travail cumulé, seul',
-    source: 'Témoignage',
-    date: 'questionnaire D1 et D2',
-    surligne: true,
-  },
   {
     valeur: '181',
     libelle: 'cartes dans le catalogue public, réparties en trois univers',
     source: 'Galerie publique, version 1.2.0',
     date: 'relevée le 13/10/2026',
     href: '#partie',
+    surligne: true,
+  },
+  {
+    valeur: '≈ 3 mois',
+    libelle: 'de travail cumulé, seul',
+    source: 'Témoignage',
+    date: 'questionnaire D1 et D2',
   },
   {
     valeur: '5',
@@ -76,7 +81,7 @@ export const PREUVES: readonly PreuveEnTete[] = [
 export const FICHE: DonneesFiche = {
   besoin: 'Faire enfin passer au numérique le jeu de cartes que nous avions inventé sur papier, mon cousin et moi.',
   part: 'J’ai repris le projet seul : rééquilibré les cartes, écrit le moteur de règles en C# qui arbitre les parties côté serveur, puis construit l’interface Angular.',
-  role: 'Co-auteur du jeu papier, seul pour le jeu en ligne',
+  role: 'Co-auteur du jeu papier ; seul pour le jeu en ligne (équilibrage, moteur, interface)',
   periode: 'Depuis l’adolescence, puis en ligne',
   equipe: 'À deux sur papier, seul pour le code',
   statut: { texte: 'Hors ligne, en attente de refonte', etat: 'eteint' },
@@ -261,7 +266,7 @@ export const DECISIONS: readonly Decision[] = [
   {
     contrainte: 'Des parties en temps réel, sur une stack qui n’était pas pensée pour un jeu.',
     choix: 'SignalR pour le temps réel, puis le cache, le prérendu serveur et un déploiement optimisé.',
-    effet: 'Des outils que je pensais connaître, approfondis un par un.',
+    effet: 'SignalR, le cache, l’optimisation du déploiement et le prérendu serveur : ce que ce projet m’a appris.',
   },
 ];
 

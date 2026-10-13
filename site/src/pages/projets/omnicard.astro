@@ -23,6 +23,7 @@ import EventailCartes from '../../components/projets/omnicard/EventailCartes.ast
 import GalerieEcrans from '../../components/projets/omnicard/GalerieEcrans.astro';
 import PlateauPartie from '../../components/projets/omnicard/PlateauPartie.astro';
 import ReperesPartie from '../../components/projets/omnicard/ReperesPartie.astro';
+import ServeurArbitre from '../../components/projets/omnicard/ServeurArbitre.astro';
 import TrajetAction from '../../components/projets/omnicard/TrajetAction.astro';
 import Visionneuse from '../../components/ui/Visionneuse.astro';
 import Visuel from '../../components/ui/Visuel.astro';
@@ -44,7 +45,7 @@ const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(h
   <CorpsProjet sections={SECTIONS}>
     <SectionProjet id="papier" titre="Au départ, on plastifiait nos idées" alignement="centre">
       <Fragment slot="texte">
-        <p>Adolescents, avec mon cousin, on invente un jeu de cartes. On imprime, on plastifie, on recommence, des après-midi entières pendant les vacances&nbsp;: une nouvelle règle appelle une nouvelle carte, puis une nouvelle édition. On en sortira <span data-citation>«&nbsp;un nombre incalculable d’éditions&nbsp;»</span>.</p>
+        <p>Adolescents, avec mon cousin, on invente un jeu de cartes. On imprime, on plastifie, on recommence, des après-midi entières pendant les vacances. On en sortira <span data-citation>«&nbsp;un nombre incalculable d’éditions&nbsp;»</span>.</p>
         <p>Le passage au jeu vidéo traîne. Alors je reprends le projet, seul, et je me lance avec les outils que je connais&nbsp;: Angular et .NET.</p>
         <blockquote class="citation foyer oc-citation"><p>«&nbsp;Je voulais me lancer direct et pas perdre de temps.&nbsp;»</p></blockquote>
       </Fragment>
@@ -54,7 +55,7 @@ const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(h
       </div>
     </SectionProjet>
 
-    <SectionProjet id="reequilibrer" titre="Rééquilibrer mes propres cartes" alignement="centre">
+    <SectionProjet id="reequilibrer" titre="Rééquilibrer mes propres cartes" alignement="haut">
       <Fragment slot="texte">
         <p>Avant le code, il y a eu les cartes. Je les reprends une à une pour le passage au numérique&nbsp;: un coût qui baisse ou qui monte, des statistiques revues.</p>
         <p>L’archive publique garde la saison&nbsp;1&nbsp;; on y voit, carte par carte, ce qui a changé.</p>
@@ -87,7 +88,7 @@ const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(h
       <div class="oc-arbitre">
         <h3 class="oc-arbitre__titre">Le serveur arbitre, chaque joueur voit sa partie</h3>
         <div class="oc-arbitre__grille">
-          <Visuel id="OMN-04" class="oc-arbitre__visuel" sizes="(max-width: 1100px) 100vw, 640px" />
+          <ServeurArbitre class="oc-arbitre__visuel" />
           <TrajetAction />
         </div>
       </div>
@@ -97,13 +98,13 @@ const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(h
 
     <SortieProjet projet="omnicard" liens={LIENS_SORTIE}>
       <p data-citation>«&nbsp;Le projet qui m’a fait le plus apprendre.&nbsp;»</p>
-      <p>L’un de mes premiers gros projets techniques&nbsp;: je voulais que nos idées deviennent jouables.</p>
+      <p>L’un de mes premiers gros projets techniques, avec beaucoup de choses codées de zéro. Le jeu est aujourd’hui hors ligne, en attente de refonte.</p>
     </SortieProjet>
 
     <SourcesProjet>
       <p><b>Le projet.</b> Le jeu papier, les éditions, la reprise du projet seul, les trois mois de travail cumulé et le choix d’Angular et de .NET viennent de mon témoignage (questionnaire du portfolio, D1 et D2)&nbsp;; le statut hors ligne, en attente de refonte, est confirmé au 13/10/2026. Le moteur de règles en C# déroule les parties côté serveur&nbsp;: mélange, pioche et tours.</p>
       <p><b>Cartes.</b> Les cartes de la saison&nbsp;1 sont celles de <a {...sortant(LIENS.archive)}>l’archive du dépôt de présentation<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. À droite, les exports de l’outil du projet faits le 13/10/2026&nbsp;; le catalogue public 1.2.0 affiche encore 4/8 pour Gehrman et 0/4 pour Floppa&nbsp;: Mage. Les effets cités viennent du <a {...sortant(LIENS.galerie)}>catalogue public, version 1.2.0<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>, qui compte 181&nbsp;cartes&nbsp;: 114 Bloodborne, 51 JoJo et 16 WTF.</p>
-      <p><b>Règles.</b> Points de vie, deck, mana, cristaux, lignes et types de cartes&nbsp;: <a {...sortant(LIENS.regles)}>version joueur des règles du moteur<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. Le compte à rebours de GitGud suit le mot-clé Délai du <a {...sortant(LIENS.motsCles)}>glossaire<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>&nbsp;: le compteur ne baisse qu’à la fin du tour du joueur qui a programmé l’effet. Relevés le 13/10/2026.</p>
+      <p><b>Règles.</b> Points de vie, deck, mana, cristaux, lignes et types de cartes&nbsp;: <a {...sortant(LIENS.regles)}>version joueur des règles du moteur<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. Le compte à rebours de GitGud suit le mot-clé Délai du <a {...sortant(LIENS.motsCles)}>glossaire<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>&nbsp;: le compteur ne baisse qu’à la fin du tour du joueur qui a programmé l’effet, et l’effet est annulé si l’unité qui l’a programmé meurt. Relevés le 13/10/2026.</p>
       <p><b>Captures.</b> Collection, deck et booster&nbsp;: captures d’une version précédente du jeu, conservées par la première version de ce portfolio&nbsp;; leur date n’est pas documentée et leurs compteurs ne sont pas des chiffres actuels.</p>
       <p><b>Univers.</b> Omnicard est un projet de fan, non commercial. Les univers, les personnages et les illustrations des cartes appartiennent à leurs ayants droit&nbsp;; je n’en suis pas l’auteur.</p>
     </SourcesProjet>

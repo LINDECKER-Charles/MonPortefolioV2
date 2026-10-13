@@ -63,6 +63,8 @@ test('la fiche : sept cases, statut hors ligne à forme et mot, dates à confirm
   const fiche = page.getByRole('group', { name: 'Fiche du projet' });
   await expect(fiche.locator('dt')).toHaveText(['Besoin', 'Ma part', 'Rôle', 'Période', 'Équipe', 'Statut', 'Liens publics']);
   await expect(fiche.locator('.statut')).toHaveText('Hors ligne, en attente de refonte');
+  // Un seul rôle : les règles du jeu papier sont co-écrites, le jeu en ligne est fait seul.
+  await expect(fiche.locator('.fiche-projet__case--role dd')).toHaveText(`Co-auteur du jeu papier${NBSP}; seul pour le jeu en ligne (équilibrage, moteur, interface)`);
   await expect(fiche.locator('.statut')).toHaveClass(/statut--eteint/);
   await expect(fiche.locator('.fiche-projet__case--periode .a-confirmer')).toHaveText('à confirmer');
   await expect(fiche).toContainText('moteur de règles en C#');
@@ -74,14 +76,15 @@ test('la fiche : sept cases, statut hors ligne à forme et mot, dates à confirm
   }
 });
 
-test('trois repères sourcés, un seul surligné : les trois mois de travail', async ({ page }) => {
+test('trois repères sourcés, un seul surligné : les 181 cartes, la durée ensuite', async ({ page }) => {
   await page.goto(CHEMIN);
   const preuves = page.locator('[data-pli="preuve"] .preuve-chiffree');
-  await expect(preuves.locator('.preuve-chiffree__valeur')).toHaveText([`≈${NBSP}3${NBSP}mois`, '181', '5']);
+  await expect(preuves.locator('.preuve-chiffree__valeur')).toHaveText(['181', `≈${NBSP}3${NBSP}mois`, '5']);
   for (const preuve of await preuves.all()) await expect(preuve.locator('.preuve-chiffree__source')).not.toBeEmpty();
   const surligne = page.locator('.projet-tete mark');
   await expect(surligne).toHaveCount(1);
-  await expect(surligne).toHaveAttribute('data-source', /Témoignage/);
+  await expect(surligne).toHaveText('181');
+  await expect(surligne).toHaveAttribute('data-source', /Galerie publique, version 1\.2\.0/);
 });
 
 test('un seul lien de code, le dépôt de présentation public ; aucune démo hors ligne', async ({ page }) => {
@@ -187,7 +190,26 @@ test('le compte à rebours de GitGud : neuf fins de tour, cinq comptent, puis l�
   await expect(frise.locator('.etape--adverse .etape__compte')).toHaveText(['4', '3', '2', '1']);
   await expect(frise.locator('.etape--fin')).toContainText('Égalité');
   await expect(page.locator('[data-figure="OMN-05"] figcaption')).toContainText('cinq de mes fins de tour');
-  await expect(page.locator('[data-figure="OMN-05"] figcaption .a-confirmer')).toHaveCount(1);
+  // La règle affichée ne s’appuie que sur le glossaire public : aucune précision incertaine.
+  await expect(page.locator('[data-figure="OMN-05"] figcaption .a-confirmer')).toHaveCount(0);
+  await expect(page.locator('[data-figure="OMN-05"] figcaption')).toContainText('jamais à la fin du tour adverse');
+});
+
+test('le serveur arbitre : le dessin OMN-04 posé, suivi des trois étapes en texte', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const dessin = page.locator('#moteur [data-visuel="OMN-04"]');
+  await expect(dessin).not.toHaveAttribute('data-manquant');
+  await expect(dessin.getByRole('img', { name: /Deux navigateurs envoient leurs actions à un serveur/ })).toBeVisible();
+  await expect(page.getByRole('list', { name: 'Le trajet d’une action de jeu' }).locator('li')).toHaveCount(3);
+});
+
+test('« Rééquilibrer » remonte sous la citation : pas de vide au-dessus du titre', async ({ page }) => {
+  test.skip((page.viewportSize()?.width ?? 0) <= 1100, 'Colonnes côte à côte seulement au-delà de 1 100 px.');
+  await page.goto(CHEMIN);
+  const titre = (await page.locator('#reequilibrer-titre').boundingBox())!;
+  const comparateur = (await page.getByRole('group', { name: 'Une carte, deux versions' }).boundingBox())!;
+  // Le titre s’aligne sur le haut du comparateur au lieu de se centrer sur sa hauteur.
+  expect(Math.abs(titre.y - comparateur.y)).toBeLessThan(40);
 });
 
 test.describe('la scène se rejoue au clic', () => {
@@ -196,6 +218,7 @@ test.describe('la scène se rejoue au clic', () => {
   test('un clic sur la frise relance l’allumage des fins de tour', async ({ page }) => {
     await page.goto(CHEMIN);
     const frise = page.getByRole('button', { name: 'Rejouer l’animation : le compte à rebours de GitGud' });
+    await expect(frise).toBeEnabled();
     await frise.scrollIntoViewIfNeeded();
     await expect(frise).not.toHaveClass(/animation-en-cours/, { timeout: 8000 });
     await frise.click();
@@ -313,6 +336,8 @@ test.describe('sans JavaScript', () => {
     await expect(comparateur.locator('.comparaison:visible dd')).toHaveText(['13 → devient 10']);
 
     await expect(page.locator('[data-figure="OMN-05"] .etape:visible')).toHaveCount(10);
+    // Rien ne rejouerait la frise : son bouton reste désactivé, hors de la tabulation.
+    await expect(page.getByRole('button', { name: 'Rejouer l’animation : le compte à rebours de GitGud' })).toBeDisabled();
 
     const galerie = page.getByRole('group', { name: 'Choisir un écran d’Omnicard' });
     for (const lien of await galerie.locator('a[data-agrandir]').all()) {
