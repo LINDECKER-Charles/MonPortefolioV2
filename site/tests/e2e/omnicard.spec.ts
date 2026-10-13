@@ -48,7 +48,7 @@ test('le nom canonique, l’étiquette de preuve et le chemin vers « Comment je
   await page.goto(CHEMIN);
   await expect(page.getByRole('navigation', { name: 'Fil d’Ariane', exact: true }).locator('[aria-current="page"]')).toHaveText('Omnicard');
   const entete = page.locator('.projet-tete');
-  await expect(entete).toContainText('Inventer');
+  await expect(entete).toContainText('Réinventer');
   const construit = entete.locator('[data-pli="action"]').getByRole('link', { name: /Comment je l’ai construit/ });
   await expect(construit).toHaveAttribute('href', '#construit');
   // « Le jeu en images », l’appel de l’ancienne page, reste une action de l’en-tête.

@@ -14,7 +14,7 @@ import { surveillerConsole } from './support/navigateur';
 const PROJETS = [
   { id: 'pvz', nom: 'PvZ Fusion, pôle francophone', preuve: 'Mener une équipe', chemin: '/projets/pvz-fusion', chiffre: '20' },
   { id: 'league', nom: 'League Of Data Base', preuve: 'Un système en production', chemin: '/projets/league-of-database', chiffre: '403' },
-  { id: 'omnicard', nom: 'Omnicard', preuve: 'Inventer', chemin: '/projets/omnicard', chiffre: '≈ 3 mois' },
+  { id: 'omnicard', nom: 'Omnicard', preuve: 'Réinventer', chemin: '/projets/omnicard', chiffre: '≈ 3 mois' },
   { id: 'bloodborne', nom: 'Bloodborne Legendary Run', preuve: 'Un produit de bout en bout', chemin: '/projets/bloodborne-legendary-run', chiffre: '1 289' },
   { id: 'gup', nom: 'gup', preuve: 'Un outil open source', chemin: '/projets/gup', chiffre: '153' },
 ] as const;
