@@ -26,6 +26,10 @@
  *
  * Une scène très large (21:9) est basse sur mobile : la commande d’un
  * emplacement vide n’y garde que son identifiant, son sujet et son format.
+ *
+ * Une seule zone éclairée par écran : la nuit, au repos, une scène garde sa
+ * lanterne allumée. Quand deux scènes partagent un écran, la seconde passe
+ * `foyer={false}` : elle s’allume à son arrivée, puis sa lanterne s’éteint.
  */
 import Visuel from '../ui/Visuel.astro';
 import { visuelParId } from '../../config/visuels';
@@ -40,10 +44,12 @@ interface Props {
   muette?: boolean;
   recadrage?: string;
   recadragePetit?: string;
+  /** La scène éclairée de son écran (par défaut) ; `false` : lanterne éteinte au repos. */
+  foyer?: boolean;
   class?: string;
 }
 
-const { id, nom, legende, lumiere, sizes = '(max-width: 860px) 100vw, 480px', muette = false, recadrage, recadragePetit, class: classe } = Astro.props;
+const { id, nom, legende, lumiere, sizes = '(max-width: 860px) 100vw, 480px', muette = false, recadrage, recadragePetit, foyer = true, class: classe } = Astro.props;
 const style = [recadrage && `--scene-recadrage:${recadrage}`, recadragePetit && `--scene-recadrage-petit:${recadragePetit}`].filter(Boolean).join(';') || undefined;
 const visuel = visuelParId(id);
 if (!visuel) throw new Error(`<Scene id="${id}"> : identifiant absent de src/config/visuels.ts`);
@@ -55,7 +61,7 @@ const texte = typo(legende);
 const gid = `scene-${nom}`;
 ---
 
-<figure class:list={['scene', { 'scene--recadree': recadrage, 'scene--recadree-petit': recadragePetit }, classe]} data-scene={nom} data-figure-animation style={style}>
+<figure class:list={['scene', { 'scene--recadree': recadrage, 'scene--recadree-petit': recadragePetit, 'scene--eteinte': !foyer }, classe]} data-scene={nom} data-figure-animation style={style}>
   <div class="scene__plan">
     <Visuel id={id} alt="" sizes={sizes} />
     <button type="button" class="scene__rejouer" data-rejouer disabled aria-label={`Rejouer l’animation : ${texte}`}>
@@ -84,7 +90,8 @@ const gid = `scene-${nom}`;
 <style>
   .scene {
     margin: 0;
-    /* Lumière au repos : aucune le jour, la lanterne reste allumée la nuit. */
+    /* Lumière au repos : aucune le jour ; la nuit, la lanterne du foyer
+       reste allumée, celle d’une scène voisine s’éteint. */
     --scene-halo: 0;
     --scene-ombre: 0.62;
   }
@@ -92,14 +99,22 @@ const gid = `scene-${nom}`;
   :global(:root[data-theme='nuit']) .scene,
   :global(.acte-veille) .scene,
   :global(.acte-bleu) .scene {
-    --scene-halo: 0.55;
     --scene-ombre: 0.82;
+  }
+
+  :global(:root[data-theme='nuit']) .scene:not(.scene--eteinte),
+  :global(.acte-veille) .scene:not(.scene--eteinte),
+  :global(.acte-bleu) .scene:not(.scene--eteinte) {
+    --scene-halo: 0.55;
   }
 
   @media (prefers-color-scheme: dark) {
     :global(:root:not([data-theme])) .scene {
-      --scene-halo: 0.55;
       --scene-ombre: 0.82;
+    }
+
+    :global(:root:not([data-theme])) .scene:not(.scene--eteinte) {
+      --scene-halo: 0.55;
     }
   }
 

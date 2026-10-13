@@ -122,6 +122,20 @@ test('une scène s’allume depuis la lanterne de son image, et le bouton couvre
   expect(centre.y).toBeCloseTo(0.58, 2);
 });
 
+test.describe('la nuit, au repos', () => {
+  test.use({ colorScheme: 'dark', reducedMotion: 'reduce' });
+
+  test('une seule lanterne reste allumée là où deux scènes partagent l’écran', async ({ page }) => {
+    await page.goto('/');
+    const halo = (scene: string) => page.locator(`figure[data-scene="${scene}"] .scene__halo`).evaluate((c) => Number(getComputedStyle(c).opacity));
+    expect(await halo('pc')).toBeCloseTo(0.55, 2);
+    expect(await halo('cartes')).toBe(0);
+    expect(await halo('pole-accueillir')).toBe(0);
+    expect(await halo('pole-former')).toBe(0);
+    expect(await halo('pole-autonomie')).toBeCloseTo(0.55, 2);
+  });
+});
+
 test('le retour vers une scène ne la rejoue pas et le clic reste disponible', async ({ page }) => {
   await page.goto('/');
   const figure = page.locator('figure[data-scene="pc"]');

@@ -7,14 +7,15 @@
  * Les scènes sont recadrées en 2:1 à toutes les largeurs (la bande centrale
  * de leur gravure 3:2, où se tient la lanterne) : le chapitre « Emmener »
  * reste ramassé. Sur mobile, les étapes s’empilent, la scène pleine largeur
- * au-dessus de son titre.
+ * au-dessus de son titre. Une seule lanterne reste allumée la nuit, au
+ * repos : celle de l’autonomie, où mènent les deux premières.
  */
 import Scene from './Scene.astro';
 
 const etapes = [
-  { titre: 'Accueillir', resume: 'Donner une place aux nouveaux.', visuel: 'ACC-21', nom: 'pole-accueillir', lumiere: [46, 24] },
-  { titre: 'Former et relire', resume: 'Apprendre en contribuant.', visuel: 'ACC-22', nom: 'pole-former', lumiere: [50, 56] },
-  { titre: 'Contribuer en autonomie', resume: 'Devenir un pilier du pôle.', visuel: 'ACC-23', nom: 'pole-autonomie', lumiere: [30, 48] },
+  { titre: 'Accueillir', resume: 'Donner une place aux nouveaux.', visuel: 'ACC-21', nom: 'pole-accueillir', lumiere: [46, 24], foyer: false },
+  { titre: 'Former et relire', resume: 'Apprendre en contribuant.', visuel: 'ACC-22', nom: 'pole-former', lumiere: [50, 56], foyer: false },
+  { titre: 'Contribuer en autonomie', resume: 'Devenir un pilier du pôle.', visuel: 'ACC-23', nom: 'pole-autonomie', lumiere: [30, 48], foyer: true },
 ] as const;
 ---
 
@@ -23,7 +24,7 @@ const etapes = [
   <ol class="collectif__etapes">
     {etapes.map((etape, i) => (
       <li class="collectif__etape">
-        <Scene id={etape.visuel} nom={etape.nom} legende={etape.titre} lumiere={etape.lumiere} muette recadrage="2 / 1" recadragePetit="2 / 1" sizes="(max-width: 640px) calc(100vw - 32px), 360px" class="collectif__scene" />
+        <Scene id={etape.visuel} nom={etape.nom} legende={etape.titre} lumiere={etape.lumiere} foyer={etape.foyer} muette recadrage="2 / 1" recadragePetit="2 / 1" sizes="(max-width: 640px) calc(100vw - 32px), 360px" class="collectif__scene" />
         <p class="collectif__nom"><span class="collectif__rang" aria-hidden="true">{i + 1}</span>{etape.titre}</p>
         <p class="collectif__resume">{etape.resume}</p>
       </li>
