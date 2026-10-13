@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { COMPTE_GITHUB, DEPOT_BLOODBORNE, DEPOTS_PUBLICS, DOMAINES_HORS_LIGNE } from '../../src/config/liens-publics';
-import { pagesConstruites } from './support/dist';
+import { DELAI_BUILD, pagesConstruites } from './support/dist';
 
 /**
  * Garde-fou « liens publics » : le HTML construit ne mène que vers des dépôts
@@ -84,5 +84,5 @@ describe('liens publics dans le HTML construit', () => {
     expect(pages.length).toBeGreaterThan(10);
     const fautes = pages.flatMap(({ url, html }) => fautesLiens(html).map((f) => `${url} : ${f}`));
     expect(fautes).toEqual([]);
-  });
+  }, DELAI_BUILD);
 });
