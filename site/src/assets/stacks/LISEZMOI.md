@@ -67,8 +67,11 @@ Les fichiers sont inchangés, seul leur nom local est raccourci. Chemins dans le
 
 La variante monochrome de Linux évite les 194 ko du SVG couleur pour une icône de 32 px.
 Les logos monochromes Linux, Symfony, Express, Rust, Tokio, xUnit et MCP sont adaptés au mode
-nuit par CSS. Bash, Leaflet, Photino.NET et OpenTelemetry conservent leurs couleurs
-sur un petit support blanc. Spring Boot utilise la marque Spring.
+nuit par CSS. Bash, Photino.NET et OpenTelemetry, sombres, sont éclaircis la nuit par CSS
+(inversion puis teinte rétablie), sans support blanc. Spring Boot utilise la marque Spring.
+Les fichiers `nginx.svg`, `phpunit.png`, `api-platform.svg` et `leaflet.svg` restent dans le
+dossier mais ne sont plus affichés : ces mots-symboles sont illisibles à 18-28 px, la page
+les remplace par des pictogrammes de repli (ci-dessous).
 
 ## .NET
 
@@ -159,6 +162,10 @@ Ils représentent la fonction de l’outil et ne prétendent pas être des logos
 | Codex | Chevrons et barre oblique de code | [Codex](https://openai.com/codex/) |
 | Kokoro | Haut-parleur et ondes sonores | [hexgrad/Kokoro](https://huggingface.co/hexgrad/Kokoro-82M) |
 | Piper | Barres d’égaliseur (voix synthétisée) | [OHF-Voice/piper1-gpl](https://github.com/OHF-Voice/piper1-gpl) |
+| Nginx | Boîte traversée par une flèche (serveur et proxy) | [nginx.org](https://nginx.org/) |
+| PHPUnit | Presse-papiers et coche (test réussi) | [PHPUnit](https://phpunit.de/) |
+| API Platform | Cube (plateforme d’API) | [API Platform](https://api-platform.com/) |
+| Leaflet | Repère de carte | [Leaflet](https://leafletjs.com/) |
 
 Les visuels Claude, Codex, Kokoro et Piper sont des illustrations créées pour le portfolio,
 pas des logos de ces produits. Ils utilisent `currentColor`, suivent les couleurs du thème
