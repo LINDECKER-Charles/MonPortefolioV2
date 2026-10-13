@@ -317,7 +317,7 @@ const actif = (href: string) => pageActive(href, chemin);
   }
 
   /* Téléphone : l’emblème, Sommaire, Contact, Menu et la lanterne tiennent
-     sur une ligne dès 340 px. */
+     sur une ligne dès 320 px. */
   @media (max-width: 430px) {
     .entete__barre,
     .entete__mobile {
@@ -343,6 +343,18 @@ const actif = (href: string) => pageActive(href, chemin);
     .deroulant > summary,
     .entete__lien {
       padding-inline: 5px;
+    }
+  }
+
+  /* Sous 340 px (la largeur de référence de WCAG pour la redistribution est
+     320 px) : les chevrons cèdent leur place, rien ne déborde. */
+  @media (max-width: 339px) {
+    .deroulant > summary {
+      gap: 0;
+    }
+
+    .deroulant > summary::after {
+      display: none;
     }
   }
 
