@@ -3,7 +3,10 @@
  * Un emplacement de visuel de l’inventaire de la refonte (config/visuels.ts).
  *
  * Le fichier attendu existe : l’image s’affiche, au ratio du registre, avec
- * l’alt prévu. Il manque : un cadre hachuré au bon ratio, dans la lumière de
+ * l’alt prévu. Un dessin vectoriel (SVG) est inséré en ligne, et non par un
+ * <img> : son trait en `currentColor` suit la couleur du texte et les jetons
+ * (lune la nuit, encre le jour, clair dans un acte de veille) ; son alt
+ * devient son nom accessible, ou il est décoratif. Il manque : un cadre hachuré au bon ratio, dans la lumière de
  * la direction « Lanterne », porte la commande — identifiant, méthode et
  * priorité, sujet, composition, format. La page garde ainsi sa mise en page
  * avant que l’image arrive, et `npm run visuels` liste ce qu’il reste à
@@ -29,6 +32,7 @@ import type { ImageMetadata } from 'astro';
 import { Picture } from 'astro:assets';
 import { fichiersAttendus, visuelParId } from '../../config/visuels';
 import { typo } from '../../lib/typo';
+import { svgEnLigne } from '../../lib/visuels';
 
 interface Props {
   id: string;
@@ -55,20 +59,23 @@ if (!visuel) throw new Error(`<Visuel id="${id}"> : identifiant absent de src/co
 
 /** Fichiers déjà livrés : le dossier des visuels et les photos de Charles. */
 const images = import.meta.glob<ImageMetadata>(
-  ['/src/assets/visuels/**/*.{webp,png,jpg,jpeg,avif,svg}', '/src/assets/photos/*.webp'],
+  ['/src/assets/visuels/**/*.{webp,png,jpg,jpeg,avif}', '/src/assets/photos/*.webp'],
   { eager: true, import: 'default' },
 );
+/** Les dessins vectoriels, insérés en ligne : ils suivent `currentColor`. */
+const dessins = import.meta.glob<string>('/src/assets/visuels/**/*.svg', { eager: true, query: '?raw', import: 'default' });
 
 const attendus = fichiersAttendus(visuel);
 // Un emplacement qui reprend plusieurs fichiers (ACC-15) se compose de plusieurs <Visuel>.
 const fichier = attendus.length === 1 ? attendus[0] : undefined;
 const image = fichier ? images[`/${fichier}`] : undefined;
+const dessin = fichier ? dessins[`/${fichier}`] : undefined;
 
 const alt = altPropre ?? visuel.alt;
 const ratio = ratioPropre ?? visuel.ratio ?? '16 / 10';
 const ratioMobile = ratioMobilePropre ?? visuel.ratioMobile;
 const style = [`--visuel-ratio:${ratio}`, ratioMobile && `--visuel-ratio-mobile:${ratioMobile}`, largeur && `--visuel-largeur:${largeur}`].filter(Boolean).join(';');
-const largeurs = image && image.format !== 'svg' ? [...new Set([Math.round(image.width / 2), image.width])].filter((l) => l >= 320 || l === image.width) : [];
+const largeurs = image ? [...new Set([Math.round(image.width / 2), image.width])].filter((l) => l >= 320 || l === image.width) : [];
 
 const NATURE = { IMG: 'Image à générer', SVG: 'Dessin à faire', FIG: 'Figure à coder', CAP: 'Capture à faire', PHO: 'Photo réelle', OG: 'Image de partage' } as const;
 const reprise = visuel.reprend?.length ? `reprend ${visuel.reprend.join(', ')}` : '';
@@ -77,13 +84,11 @@ const format = [visuel.format, mobile, reprise].filter(Boolean).join(' · ');
 ---
 
 {
-  image ? (
+  dessin ? (
+    <figure class:list={['visuel', 'visuel--dessin', { foyer }, classe]} style={style} data-visuel={id} set:html={svgEnLigne(dessin, { alt })} />
+  ) : image ? (
     <figure class:list={['visuel', { foyer }, classe]} style={style} data-visuel={id}>
-      {image.format === 'svg' ? (
-        <img src={image.src} width={image.width} height={image.height} alt={alt} loading={loading} decoding="async" />
-      ) : (
-        <Picture src={image} formats={['avif']} fallbackFormat="webp" widths={largeurs} sizes={sizes} alt={alt} loading={loading} decoding="async" />
-      )}
+      <Picture src={image} formats={['avif']} fallbackFormat="webp" widths={largeurs} sizes={sizes} alt={alt} loading={loading} decoding="async" />
     </figure>
   ) : (
     <figure class:list={['visuel', 'visuel--manquant', { 'visuel--foyer': foyer, 'visuel--capture': visuel.methode === 'CAP' }, classe]} style={style} data-visuel={id} data-manquant>
@@ -117,6 +122,17 @@ const format = [visuel.format, mobile, reprise].filter(Boolean).join(' · ');
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  /* Un dessin vectoriel, en ligne : son trait suit la couleur du texte. */
+  .visuel--dessin {
+    color: var(--encre);
+  }
+
+  .visuel--dessin > :global(svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
   }
 
   /* L’image manquante : un cadre hachuré qui ne se prend pas pour une image.

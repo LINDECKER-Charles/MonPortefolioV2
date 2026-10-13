@@ -189,3 +189,20 @@ describe('Visuel manquant', () => {
     expect(html).toMatch(/class="visuel__format[^"]*"[^>]*>16:10, 1600 × 1000/);
   });
 });
+
+describe('Visuel dessiné (méthode SVG)', () => {
+  it('insère le dessin en ligne : son trait en currentColor suit le thème, jamais un <img src=*.svg>', async () => {
+    const html = await rendre(Visuel, { id: 'ACC-14' });
+    expect(html).toContain('visuel--dessin');
+    expect(html).toMatch(/<svg[^>]*stroke="currentColor"/);
+    expect(html).toMatch(/<svg[^>]*role="img"[^>]*aria-label="Trois lanternes/);
+    expect(html).not.toMatch(/<img\b[^>]*src="[^"]*\.svg/);
+    expect(html).not.toContain('<title>');
+  });
+
+  it('reste décoratif quand l’alt est vide', async () => {
+    const html = await rendre(Visuel, { id: 'ACC-14', alt: '' });
+    expect(html).toMatch(/<svg[^>]*aria-hidden="true"/);
+    expect(html).not.toContain('role="img"');
+  });
+});
