@@ -48,7 +48,7 @@ Aucune nouvelle illustration n’a été créée.
 Source : l’archive du [dépôt de présentation public](https://github.com/LINDECKER-Charles/public-Omnicard),
 dossier `Archive/Carte/saison_01/`, révision `8be9cbb` du 19 mai 2026, relue le 13 octobre 2026.
 Ces cartes servent au comparateur « Rééquilibrer mes propres cartes » : la même carte dans
-la saison 1 et dans le jeu en ligne (exports ci-dessus).
+la saison 1 et dans la version actuelle du projet (exports ci-dessus).
 
 | Fichier livré | Fichier source | Valeurs lues sur la carte |
 | --- | --- | --- |
@@ -59,8 +59,9 @@ la saison 1 et dans le jeu en ligne (exports ci-dessus).
 Cartes copiées telles quelles, réduites à 720 px de largeur et converties en WebP, qualité 90.
 Le catalogue public (`docs/cards/*.md`) affiche encore 4/8 pour Gehrman et 0/4 pour
 Floppa : Mage, et une capture historique de la collection montre Gehrman à 4/8 dans une
-version en ligne antérieure. La page dit « jeu en ligne » pour les exports actuels ; la
-version exacte reste à confirmer par Charles.
+version en ligne antérieure. La page dit « Version actuelle du projet » pour les exports,
+avec la marque « à confirmer », et le rappelle dans sa note de sources ; la version en ligne
+de ces valeurs reste à confirmer par Charles.
 
 ## Limites et contenu
 
