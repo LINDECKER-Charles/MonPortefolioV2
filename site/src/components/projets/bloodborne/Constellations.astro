@@ -180,10 +180,27 @@ const milliers = (n: number) => n.toLocaleString('fr-FR').replace(/\s/g, ' ');
     }
   }
 
+  /* Sous 860 px, des vignettes plus basses : la planche entière tient en
+     moins d’écrans, quatre colonnes tant que les noms y tiennent, trois en
+     dessous de 520 px. */
   @media (max-width: 860px) {
     .blr-planche__liste {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--s3) var(--s3);
+    }
+
+    .blr-planche__liste svg {
+      aspect-ratio: 2 / 1;
+    }
+
+    .blr-planche__nom {
+      margin-top: var(--s1);
+    }
+  }
+
+  @media (max-width: 520px) {
+    .blr-planche__liste {
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: var(--s4) var(--s3);
     }
   }
 
