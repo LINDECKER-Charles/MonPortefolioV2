@@ -120,7 +120,7 @@ Ces textes sont ceux des 74 paires livrées le 13 octobre 2026 (prompts exacts d
 3. **Aucun texte dans l’image**, chiffres compris : les libellés, dates et légendes sont en HTML.
 4. **Jamais une image générée présentée comme une capture ou comme une donnée** : les courbes, frises et schémas chiffrés sont des figures codées (FIG), les écrans sont des captures réelles (CAP).
 5. **Une seule famille de style**, celle de la direction « Lanterne », retenue le 13 octobre 2026 (`design/refonte/c-lanterne/`) : **gravure en réserve** au trait économe (voir « Moins image générée ») ; la lanterne comme seule source de lumière de la scène, qui éclaire une seule chose et laisse le reste dans l’ombre, le jour comme la nuit (voir « Version de nuit »). Même trait, même lumière, même angle par série (voir « Séries »). Aucun ornement de jeu, aucun cadre doré. La lanterne du logo est le motif récurrent des états (vide, succès, 404).
-6. **Deux versions dessinées, jour et nuit** (tranché le 13 octobre 2026) : chaque image a deux masters en trois couleurs de clé franches, noir `#000000`, blanc `#FFFFFF` et rouge `#FF0000`, dessinés au même cadrage au pixel près : le jour `<ID>.png`, puis la nuit `<ID>.nuit.png`, faite en édition depuis le master de jour (voir « Version de nuit »). Dans `site/`, `npm run visuels:rendre <ID>` les rend aux couleurs des jetons de `src/styles/jetons.css` : le jour `<ID>_<l>x<h>.webp` (blanc → `--surface`, noir → `--encre`, rouge → `--lanterne`, thème clair), la nuit `<ID>_<l>x<h>.nuit.webp` (noir → `--fond`, blanc → `--encre`, rouge → `--lanterne`, thème nuit). Sans master de nuit, il écrit une nuit de repli « clair de lune » tirée du jour et la signale : ce n’est pas une livraison. Une image « socle » sans ses deux rendus fait échouer `npm run visuels -- --strict`.
+6. **Deux versions dessinées, jour et nuit** (tranché le 13 octobre 2026) : chaque image a deux masters en trois couleurs de clé franches, noir `#000000`, blanc `#FFFFFF` et rouge `#FF0000`, dessinés au même cadrage au pixel près : le jour `<ID>.png`, puis la nuit `<ID>.nuit.png`, faite en édition depuis le master de jour (voir « Version de nuit »). Dans `site/`, `npm run visuels:rendre <ID>` les rend aux couleurs des jetons de `src/styles/jetons.css` : le jour `<ID>_<l>x<h>.webp` (blanc → `--surface`, noir → `--encre`, rouge → `--lanterne`, thème clair), la nuit `<ID>_<l>x<h>.nuit.webp` (noir → `--surface` pour un fond rempli ou une image posée sur une carte, `--fond` sinon ; blanc → `--encre`, rouge → `--lanterne`, thème nuit), une plaque dans les deux thèmes pour un fond rempli. Sans master de nuit, il écrit une nuit de repli « clair de lune » tirée du jour et la signale : ce n’est pas une livraison. Une image « socle » sans ses deux rendus fait échouer `npm run visuels -- --strict`.
 7. **Livrables** : les deux masters PNG, à la définition du générateur, au ratio exact de la fiche (à 1 % près) et de mêmes dimensions, dans `design/assets/visuels/<série>/` ; le script les met aux dimensions exactes du nom et écrit les deux WebP (qualité 82, abaissée pour le seul rendu qui dépasse son plafond ; alpha conservé) dans `site/src/assets/visuels/<série>/`. Poids d’un WebP : 40 Ko au plus jusqu’à 480 px de grand côté, 120 Ko jusqu’à 1 200 px, 250 Ko au-delà. Prompts du jour et de la nuit, date et provenance consignés dans `design/assets/visuels/<série>/README.md` et `site/src/assets/visuels/<série>/README.md`.
 8. **Lisibilité mobile** : le sujet principal occupe au moins 60 % du cadre et se comprend à 390 px.
 
@@ -159,7 +159,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 - **Image générée** : deux masters PNG en trois couleurs de clé (encre `#000000`, aplat `#FFFFFF`, lumière `#FF0000`), à la définition du générateur et au ratio exact de la fiche (à 1 % près), de mêmes dimensions au pixel près : le jour `design/assets/visuels/<série>/<ID>.png`, la nuit `design/assets/visuels/<série>/<ID>.nuit.png`. Puis, dans `site/` : `npm run visuels:rendre <ID>`. Le script contrôle le ratio et les dimensions des deux masters, les met aux dimensions exactes du nom et écrit, en WebP qualité 82 avec alpha (débarrassé du bruit du générateur), aux couleurs lues dans `src/styles/jetons.css` :
   - le rendu de jour `<ID>_<largeur>x<hauteur>.webp`, depuis le master de jour, thème clair : encre (`#000000`) → `--encre`, aplat (`#FFFFFF`) → `--surface`, lumière (`#FF0000`) → `--lanterne` ;
-  - le rendu de nuit `<ID>_<largeur>x<hauteur>.nuit.webp`, depuis le master de nuit, thème nuit : noir `#000000` → `--fond`, blanc `#FFFFFF` → `--encre`, rouge `#FF0000` → `--lanterne`.
+  - le rendu de nuit `<ID>_<largeur>x<hauteur>.nuit.webp`, depuis le master de nuit, thème nuit : noir `#000000` → `--fond`, blanc `#FFFFFF` → `--encre`, rouge `#FF0000` → `--lanterne` ; pour un fond rempli, ou une image transparente toujours posée sur une carte (`support: 'surface'`), noir `#000000` → `--surface`, blanc `#FFFFFF` → `--encre`, rouge `#FF0000` → `--lanterne` : la plaque de nuit répond à celle du jour, sans pavé plus noir que la carte qui la porte.
 - **Sans master de nuit**, le script écrit une nuit de repli « clair de lune » tirée du jour, sans inversion (encre (`#000000`) → `--fond`, aplat (`#FFFFFF`) → `--papier-lune`, lumière (`#FF0000`) → `--lanterne`), et le signale : ce n’est pas une livraison, `npm run visuels` la liste jusqu’à ce que le master de nuit arrive.
 - **Poids d’un WebP** (chacun des deux rendus), selon son plus grand côté : 40 Ko jusqu’à 480 px, 120 Ko jusqu’à 1 200 px, 250 Ko au-delà. Un rendu plus lourd en qualité 82 est réencodé, pour lui seul, à la qualité qui le fait tenir (pas de 2, jamais sous 50), et le script le signale ; un master trop chargé pour tenir même à 50 est à simplifier.
 - **Dessin vectoriel** : `<ID>.svg`, au chemin attendu. Un lot est un sprite : un `<symbol id>` par pièce, aux identifiants listés par la fiche (« Pièces du fichier »).
@@ -243,7 +243,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Composition** : PRJ-02 recadré en 1:1 et en 1200 × 630, sans nouvelle image
 - **Format** : 16:10, 1:1, 1200 × 630
 - **Fichier attendu** : aucun, reprend `PRJ-02`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un registre ouvert dont les pages s’éventaillent, un marque-page glissé dans les plus anciennes. »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un registre ouvert sur un pupitre, éclairé par une lanterne, un marque-page de tissu glissé entre ses pages. »
 
 #### OMN-02 · Les éditions sans fin
 
@@ -353,16 +353,16 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Emplacement** : `/` · 01, la voie qui marche : scène « Un mois pour parcourir le programme DWWM », rejouable au clic _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/pages/index.astro`
 - **Sujet** : Le programme parcouru au pas de course
-- **Composition (pour le prompt)** : Un grand chronomètre posé au-dessus de trois grands dossiers empilés en perspective, ses aiguilles presque revenues à leur point de départ ; devant, un rouleau de diplôme noué d’un ruban et scellé ; une lanterne à gauche (vers 22 % de la largeur et 40 % de la hauteur) éclaire le rouleau ; cadran sans chiffre, dossiers sans inscription
-- **Lanterne : 22 % × 40 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche). À 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Composition (pour le prompt)** : Un grand chronomètre posé au-dessus de trois grands dossiers empilés en perspective, ses aiguilles presque revenues à leur point de départ ; devant, un rouleau de diplôme noué d’un ruban et scellé ; une lanterne à gauche (vers 23 % de la largeur et 41 % de la hauteur) éclaire le rouleau ; cadran sans chiffre, dossiers sans inscription
+- **Lanterne : 23 % × 41 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche). À 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = dossiers, chronomètre et rouleau ; lumière (#FF0000) = flamme et rouleau éclairé · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Affichée recadrée en 2:1 au centre sur ordinateur (la bande centrale de 1600 × 800) : tout le sujet et la lanterne tiennent dans cette bande, rien d’important dans le sixième du haut ni dans le sixième du bas ; entière, en 4:3, sur mobile.
+- **Cadrage (pour vérifier)** : Affichée recadrée en 8:5 au centre sur ordinateur (la bande centrale de 1600 × 1000) : tout le sujet et la lanterne tiennent dans cette bande, rien d’important dans le douzième du haut ni dans le douzième du bas ; entière, en 4:3, sur mobile. Le master livré occupe sa toile de haut en bas : le 2:1 coupait l’anneau de la lanterne et le sceau du diplôme (audit du 14 octobre 2026).
 - **Format** : 4:3, 1600 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-09_1600x1200.webp`
 - **Masters** : jour `design/assets/visuels/accueil/ACC-09.png` ; nuit `design/assets/visuels/accueil/ACC-09.nuit.png`, en édition depuis le jour, même cadrage au pixel près
 - **Rendus** : `npm run visuels:rendre ACC-09` écrit le jour `ACC-09_1600x1200.webp` et la nuit `ACC-09_1600x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un chronomètre posé sur trois grands dossiers, devant un rouleau de diplôme noué. »
-- **Note** : Composition validée le 8 octobre 2026. Scène animée de l’accueil, comme ACC-03. Recadrée en 2:1 au-delà de 860 px (components/accueil/Scene.astro, propriété recadrage), entière en 4:3 en dessous.
+- **Note** : Composition validée le 8 octobre 2026. Scène animée de l’accueil, comme ACC-03. Recadrée en 8:5 au-delà de 860 px (components/accueil/Scene.astro, propriété recadrage), entière en 4:3 en dessous.
 
 #### ACC-11 · La classe vue depuis le pupitre du formateur
 
@@ -371,16 +371,16 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Emplacement** : `/` · 01, de l’autre côté du bureau : scène « Passer de l’apprenant au formateur », rejouable au clic _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/pages/index.astro`
 - **Sujet** : La classe vue depuis le pupitre du formateur
-- **Composition (pour le prompt)** : Une salle de formation vue de trois quarts depuis l’estrade, derrière l’épaule du formateur : au premier plan, le pupitre et la silhouette du formateur, de dos ; devant lui, une dizaine de postes en deux rangées, des apprenants en silhouettes sans visage, penchés sur leurs écrans ; au mur, un tableau couvert d’un schéma de trois blocs reliés (interface, service, base de données) dessiné au trait, sans aucun mot ; une lanterne posée sur le pupitre (vers 30 % de la largeur et 70 % de la hauteur) éclaire la salle depuis l’avant
-- **Lanterne : 30 % × 70 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche). À 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Composition (pour le prompt)** : Une salle de formation vue de trois quarts depuis l’estrade, derrière l’épaule du formateur : au premier plan, le pupitre et la silhouette du formateur, de dos ; devant lui, une dizaine de postes en deux rangées, des apprenants en silhouettes sans visage, penchés sur leurs écrans ; au mur, un tableau couvert d’un schéma de trois blocs reliés (interface, service, base de données) dessiné au trait, sans aucun mot ; une lanterne posée sur le pupitre (vers 31 % de la largeur et 71 % de la hauteur) éclaire la salle depuis l’avant
+- **Lanterne : 31 % × 71 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche). À 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = salle, postes, tableau et silhouettes ; lumière (#FF0000) = flamme et salle éclairée depuis le pupitre · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Affichée recadrée en 2:1 au centre sur ordinateur (la bande centrale de 1600 × 800) : tout le sujet et la lanterne tiennent dans cette bande, rien d’important dans le sixième du haut ni dans le sixième du bas ; entière, en 4:3, sur mobile.
+- **Cadrage (pour vérifier)** : Affichée recadrée en 8:5 au centre sur ordinateur (la bande centrale de 1600 × 1000) : tout le sujet et la lanterne tiennent dans cette bande, rien d’important dans le douzième du haut ni dans le douzième du bas ; entière, en 4:3, sur mobile. La scène livrée est en pleine page : le 2:1 coupait le haut des trois blocs du schéma (audit du 14 octobre 2026), d’où le 8:5, comme ACC-09 à côté.
 - **Format** : 4:3, 1600 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-11_1600x1200.webp`
 - **Masters** : jour `design/assets/visuels/accueil/ACC-11.png` ; nuit `design/assets/visuels/accueil/ACC-11.nuit.png`, en édition depuis le jour, même cadrage au pixel près
 - **Rendus** : `npm run visuels:rendre ACC-11` écrit le jour `ACC-11_1600x1200.webp` et la nuit `ACC-11_1600x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une salle de formation vue depuis le pupitre : une dizaine de postes, un tableau couvert d’un schéma. »
-- **Note** : Scène animée de l’accueil, comme ACC-03. Recadrée en 2:1 au-delà de 860 px (components/accueil/Scene.astro, propriété recadrage), entière en 4:3 en dessous.
+- **Note** : Scène animée de l’accueil, comme ACC-03. Recadrée en 8:5 au-delà de 860 px (components/accueil/Scene.astro, propriété recadrage), entière en 4:3 en dessous.
 
 #### ACC-16 · La lanterne posée sur un livre ouvert, un chemin éclairé devant
 
@@ -461,15 +461,15 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Emplacement** : `/` · 02, du solo au collectif : scène 1 « Accueillir », rejouable au clic _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/components/accueil/FigureCollectif.astro`
 - **Sujet** : Accueillir les nouveaux
-- **Composition (pour le prompt)** : Une porte ouverte sur une pièce de travail ; sur le seuil, une silhouette accueille d’un geste de la main une nouvelle venue qui arrive avec un sac en bandoulière ; quelques traces de pas mènent à la porte ; une lanterne accrochée au chambranle (vers 46 % de la largeur et 24 % de la hauteur) éclaire l’arrivante ; silhouettes sans visage, aucune inscription
-- **Lanterne : 46 % × 24 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche). À 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Composition (pour le prompt)** : Une porte ouverte sur une pièce de travail ; sur le seuil, une silhouette accueille d’un geste de la main une personne qui arrive avec un sac en bandoulière ; quelques traces de pas mènent à la porte ; une lanterne accrochée au chambranle (vers 48 % de la largeur et 25 % de la hauteur) éclaire la personne qui arrive ; silhouettes sans visage, aucune inscription
+- **Lanterne : 48 % × 25 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche). À 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = porte, pièce et silhouettes ; lumière (#FF0000) = flamme et arrivante éclairée · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Affichée recadrée en 2:1 à toutes les largeurs (la bande centrale de l’image, de 12,5 à 87,5 % de sa hauteur), de 300 à 360 px de large, empilée en pleine largeur sur mobile : sujet principal et lanterne dans cette bande, au centre, sans détail fin.
+- **Cadrage (pour vérifier)** : Affichée recadrée en 2:1 à toutes les largeurs, de 300 à 360 px de large, empilée en pleine largeur sur mobile : sujet principal et lanterne dans la bande affichée, sans détail fin. La lanterne livrée est accrochée haut (anneau vers 12 %) : la bande est calée vers le haut, de 6,25 à 81,25 % de la hauteur (ancrage à 25 %, components/accueil/Scene.astro), et les pieds sortent du cadre.
 - **Format** : 3:2, 1800 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-21_1800x1200.webp`
 - **Masters** : jour `design/assets/visuels/accueil/ACC-21.png` ; nuit `design/assets/visuels/accueil/ACC-21.nuit.png`, en édition depuis le jour, même cadrage au pixel près
 - **Rendus** : `npm run visuels:rendre ACC-21` écrit le jour `ACC-21_1800x1200.webp` et la nuit `ACC-21_1800x1200.nuit.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une silhouette accueille une nouvelle venue sur le seuil d’une porte éclairée. »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une silhouette accueille une personne qui arrive, sac à l’épaule, sur le seuil d’une porte éclairée. »
 - **Note** : Série de trois scènes (ACC-21 à ACC-23) : même décor et mêmes silhouettes d’une scène à l’autre. La lumière part de la lanterne à l’arrivée puis à chaque clic (components/accueil/FigureCollectif.astro).
 
 #### ACC-22 · Former et relire
@@ -497,8 +497,8 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Emplacement** : `/` · 02, du solo au collectif : scène 3 « Contribuer en autonomie », rejouable au clic _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/components/accueil/FigureCollectif.astro`
 - **Sujet** : Contribuer en autonomie
-- **Composition (pour le prompt)** : Une silhouette seule à son poste, de trois quarts dos, envoie une feuille terminée qui rejoint une petite pile de feuilles cochées sur une étagère ; sa propre lanterne, posée à côté de l’écran (vers 30 % de la largeur et 48 % de la hauteur), est allumée ; silhouette sans visage, écran sans interface lisible
-- **Lanterne : 30 % × 48 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche). À 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Composition (pour le prompt)** : Une silhouette seule à son poste, de trois quarts dos, envoie une feuille terminée qui rejoint une petite pile de feuilles cochées sur une étagère ; sa propre lanterne, posée à côté de l’écran (vers 33 % de la largeur et 49 % de la hauteur), est allumée ; silhouette sans visage, écran sans interface lisible
+- **Lanterne : 33 % × 49 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche). À 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = poste, étagère, feuilles et silhouette ; lumière (#FF0000) = flamme et feuille envoyée · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Comme ACC-21 : recadrée en 2:1 à toutes les largeurs, de 300 à 360 px de large, sujet et lanterne dans la bande centrale.
 - **Format** : 3:2, 1800 × 1200
@@ -535,12 +535,12 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Composition (pour le prompt)** : Un registre relié, ouvert sur un pupitre, vu de trois quarts : ses pages sont des couches minces superposées qui s’éventaillent vers la droite comme un éventail de cartes, chacune avec une tranche marquée de simples traits, sans chiffre ni lettre ; un marque-page de tissu glissé loin dans les pages anciennes ; la lanterne, à gauche (vers 30 % de la largeur et 50 % de la hauteur), éclaire la page marquée, les couches récentes s’estompent dans l’ombre ; aucun personnage
 - **Lanterne : 30 % × 50 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = pupitre et pages du registre ; lumière (#FF0000) = flamme et page marquée · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Le registre ouvert, la page marquée et la lanterne tiennent dans le tiers central du cadre : l’image reste lisible recadrée en portrait 2:3 (carte de la vitrine sur ordinateur, environ 300 × 450 px) et en 1:1 (LOD-01).
+- **Cadrage (pour vérifier)** : Recadrée en portrait dans la carte de la vitrine sur ordinateur (environ 300 × 450 px) : la fenêtre se cale à 29 % de la largeur (object-position), pour garder la lanterne, le marque-page et la page éclairée, entre 18 et 57 % de la largeur de l’image livrée, où la lanterne est à gauche (cage entre 20 et 35 %) ; en 1:1, centrée vers 40 % (LOD-01).
 - **Format** : 16:10 + 1:1 ; portrait 2:3 recadré dans la carte
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-02_1600x1000.webp`
 - **Masters** : jour `design/assets/visuels/projets/PRJ-02.png` ; nuit `design/assets/visuels/projets/PRJ-02.nuit.png`, en édition depuis le jour, même cadrage au pixel près
 - **Rendus** : `npm run visuels:rendre PRJ-02` écrit le jour `PRJ-02_1600x1000.webp` et la nuit `PRJ-02_1600x1000.nuit.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un registre ouvert dont les pages datées s’éventaillent, un marque-page glissé dans les plus anciennes. »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un registre ouvert sur un pupitre, éclairé par une lanterne, un marque-page de tissu glissé entre ses pages. »
 - **Note** : Dans la carte de la vitrine, le visuel remplit tout son panneau : en 16:10 sur mobile, recadré en portrait sur ordinateur ; décoratif (alt vide), le nom de la carte dit le reste. LOD-01 (partage) le reprend, non posé.
 
 #### PRJ-06 · Décider quoi faire d’une branche
@@ -647,7 +647,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-11_1800x600.webp`
 - **Masters** : jour `design/assets/visuels/projets/PRJ-11.png` ; nuit `design/assets/visuels/projets/PRJ-11.nuit.png`, en édition depuis le jour, même cadrage au pixel près
 - **Rendus** : `npm run visuels:rendre PRJ-11` écrit le jour `PRJ-11_1800x600.webp` et la nuit `PRJ-11_1800x600.nuit.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un chemin qui mène à trois boîtes ouvertes, une lanterne allumée sur la première, les deux autres prêtes. »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un chemin qui mène à trois boîtes ; la première, ouverte, porte une lanterne allumée, les deux autres attendent la leur. »
 - **Note** : Posé dans l’acte de veille (sombre, jour et nuit) du bloc « Contribuer », aligné sur la fin de la liste. Décoratif, le texte voisin dit la même chose.
 
 #### PRJ-12 · La version précédente
@@ -696,12 +696,12 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Composition (pour le prompt)** : Une table de travail vue de trois quarts ; à gauche, une silhouette debout tend une fiche annotée à une nouvelle venue assise ; la lanterne posée sur la table (vers 56 % de la largeur et 58 % de la hauteur) éclaire la fiche seule, le reste dans l’ombre ; silhouettes sans visage. Décor commun aux trois cases : même table, même lanterne, même cadrage, horizon à mi-hauteur
 - **Lanterne : 56 % × 58 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, chaises et silhouettes ; lumière (#FF0000) = flamme et fiche tendue · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Environ 380 px de large dans le triptyque ; le bord droit se raccorde au bord gauche de PVZ-02b (table continue), sans cadre ni marge.
+- **Cadrage (pour vérifier)** : Environ 370 px de large dans le triptyque : trois cases séparées, au même décor (même table, même lanterne, même horizon), chacune lisible seule ; les cases livrées ne se raccordent pas bord à bord.
 - **Format** : 4:3, 1200 × 900
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-02a_1200x900.webp`
 - **Masters** : jour `design/assets/visuels/pvz-fusion/PVZ-02a.png` ; nuit `design/assets/visuels/pvz-fusion/PVZ-02a.nuit.png`, en édition depuis le jour, même cadrage au pixel près
 - **Rendus** : `npm run visuels:rendre PVZ-02a` écrit le jour `PVZ-02a_1200x900.webp` et la nuit `PVZ-02a_1200x900.nuit.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une personne montre une fiche annotée à une nouvelle venue, à la lumière d’une lanterne. »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une personne tend une fiche à une nouvelle venue, à la lumière d’une lanterne. »
 - **Note** : Première case du triptyque PVZ-02 : même main, même décor, même lumière que PVZ-02b et PVZ-02c.
 
 #### PVZ-02b · Former et relire : la voir travailler
@@ -713,7 +713,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Sujet** : Former et relire : la voir travailler
 - **Composition (pour le prompt)** : La même table et la même lanterne ; la nouvelle venue écrit sur la fiche, la silhouette de la case 1 se tient en retrait derrière son épaule et désigne un point de la fiche du doigt ; la lumière tombe sur la main qui écrit ; silhouettes sans visage
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, chaises et silhouettes ; lumière (#FF0000) = flamme et main qui écrit · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Case centrale du triptyque : se raccorde à PVZ-02a à gauche et à PVZ-02c à droite.
+- **Cadrage (pour vérifier)** : Case centrale du triptyque, séparée de PVZ-02a et de PVZ-02c, au même décor.
 - **Format** : 4:3, 1200 × 900
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-02b_1200x900.webp`
 - **Masters** : jour `design/assets/visuels/pvz-fusion/PVZ-02b.png` ; nuit `design/assets/visuels/pvz-fusion/PVZ-02b.nuit.png`, en édition depuis le jour, même cadrage au pixel près
@@ -730,7 +730,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Sujet** : Contribuer en autonomie : relire seule
 - **Composition (pour le prompt)** : La même table et la même lanterne ; la nouvelle venue, seule, relit la fiche d’une troisième personne posée devant elle et la coche ; la chaise de la silhouette de la case 1 est vide ; la lanterne éclaire la fiche relue ; silhouette sans visage
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, chaises et silhouette ; lumière (#FF0000) = flamme et fiche relue · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Dernière case du triptyque : son bord gauche se raccorde à PVZ-02b.
+- **Cadrage (pour vérifier)** : Dernière case du triptyque, séparée de PVZ-02b, au même décor.
 - **Format** : 4:3, 1200 × 900
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-02c_1200x900.webp`
 - **Masters** : jour `design/assets/visuels/pvz-fusion/PVZ-02c.png` ; nuit `design/assets/visuels/pvz-fusion/PVZ-02c.nuit.png`, en édition depuis le jour, même cadrage au pixel près
@@ -766,7 +766,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Composition (pour le prompt)** : Un seul motif centré : trois cartes vierges épinglées côte à côte ; une main anonyme, en silhouette, en décroche une ; la lanterne, en bas à droite (vers 78 % de la largeur et 80 % de la hauteur), éclaire la carte prise
 - **Lanterne : 78 % × 80 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = cartes et main ; lumière (#FF0000) = flamme et carte décrochée · **Fond** : transparent, de jour comme de nuit
-- **Cadrage (pour vérifier)** : Vignette de carte, affichée à 136 px de large en bureau, 96 px entre 1 101 et 1 240 px et sous 760 px, 128 à 176 px dans les quatre gestes, repliés, de l’accueil : un seul motif centré, en silhouette, qui occupe au moins 60 % du cadre, sans détail fin.
+- **Cadrage (pour vérifier)** : Vignette de carte, affichée à 136 px de large en bureau, 96 px entre 1 101 et 1 240 px, 112 px sous 760 px, 128 à 176 px dans les quatre gestes, repliés, de l’accueil : un seul motif centré, en silhouette, qui occupe au moins 60 % du cadre, sans détail fin.
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-05_480x480.webp`
 - **Masters** : jour `design/assets/visuels/pvz-fusion/PVZ-05.png` ; nuit `design/assets/visuels/pvz-fusion/PVZ-05.nuit.png`, en édition depuis le jour, même cadrage au pixel près
@@ -781,15 +781,14 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Emplacement** : `/projets/pvz-fusion` · § 4, le métier de traducteur, à côté des corrections et de la démonstration _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/pages/projets/pvz-fusion.astro`
 - **Sujet** : Traduire, relire, tester
-- **Composition (pour le prompt)** : Un seul motif centré : une plume posée en travers d’une fiche dont une case est barrée d’une croix ; la lanterne, hors champ à droite (sa lumière entre vers 90 % de la largeur et 40 % de la hauteur), éclaire la plume
-- **Lanterne : 90 % × 40 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Composition (pour le prompt)** : Un seul motif centré : une plume posée en travers d’une fiche où un trait est barré ; la lanterne reste hors champ, à droite : sa lumière entre par le bord droit et éclaire le haut de la plume
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = plume et fiche ; lumière (#FF0000) = lumière sur la plume · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Vignette de titre, affichée à 96 px de large à toutes les largeurs : silhouette simple, lisible en petit, sans détail fin.
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-06_480x480.webp`
 - **Masters** : jour `design/assets/visuels/pvz-fusion/PVZ-06.png` ; nuit `design/assets/visuels/pvz-fusion/PVZ-06.nuit.png`, en édition depuis le jour, même cadrage au pixel près
 - **Rendus** : `npm run visuels:rendre PVZ-06` écrit le jour `PVZ-06_480x480.webp` et la nuit `PVZ-06_480x480.nuit.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une plume posée en travers d’une fiche dont une case est barrée d’une croix. »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une plume posée en travers d’une fiche où un trait est barré. »
 - **Note** : À gauche du titre « Traduire, c’est suivre des règles qui changent ». Exception à la règle B8 (320 px au moins) : une vignette de carte, pas une illustration de section ; question ouverte, à faire trancher par Charles.
 
 #### PVZ-07 · Livrer : une proposition par semaine
@@ -802,7 +801,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Composition (pour le prompt)** : Un seul motif centré : un colis scellé, noué d’une ficelle où pendent quelques étiquettes vierges, sans nom ni chiffre ; la lanterne posée à côté (vers 76 % de la largeur et 70 % de la hauteur) éclaire les étiquettes
 - **Lanterne : 76 % × 70 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = colis, ficelle et étiquettes ; lumière (#FF0000) = flamme et étiquettes éclairées · **Fond** : transparent, de jour comme de nuit
-- **Cadrage (pour vérifier)** : Vignette de carte, affichée à 136 px de large en bureau, 96 px entre 1 101 et 1 240 px et sous 760 px, 128 à 176 px dans les quatre gestes, repliés, de l’accueil : un seul motif centré, en silhouette, qui occupe au moins 60 % du cadre, sans détail fin.
+- **Cadrage (pour vérifier)** : Vignette de carte, affichée à 136 px de large en bureau, 96 px entre 1 101 et 1 240 px, 112 px sous 760 px, 128 à 176 px dans les quatre gestes, repliés, de l’accueil : un seul motif centré, en silhouette, qui occupe au moins 60 % du cadre, sans détail fin.
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-07_480x480.webp`
 - **Masters** : jour `design/assets/visuels/pvz-fusion/PVZ-07.png` ; nuit `design/assets/visuels/pvz-fusion/PVZ-07.nuit.png`, en édition depuis le jour, même cadrage au pixel près
@@ -820,7 +819,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Composition (pour le prompt)** : Un seul motif centré : un podium vide de trois marches, sans chiffre ni lettre, sous une étoile ; la lanterne posée sur la plus haute marche (vers 50 % de la largeur et 46 % de la hauteur) éclaire l’étoile
 - **Lanterne : 50 % × 46 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = podium ; lumière (#FF0000) = flamme et étoile · **Fond** : transparent, de jour comme de nuit
-- **Cadrage (pour vérifier)** : Vignette de carte, affichée à 136 px de large en bureau, 96 px entre 1 101 et 1 240 px et sous 760 px, 128 à 176 px dans les quatre gestes, repliés, de l’accueil : un seul motif centré, en silhouette, qui occupe au moins 60 % du cadre, sans détail fin.
+- **Cadrage (pour vérifier)** : Vignette de carte, affichée à 136 px de large en bureau, 96 px entre 1 101 et 1 240 px, 112 px sous 760 px, 128 à 176 px dans les quatre gestes, repliés, de l’accueil : un seul motif centré, en silhouette, qui occupe au moins 60 % du cadre, sans détail fin.
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-08_480x480.webp`
 - **Masters** : jour `design/assets/visuels/pvz-fusion/PVZ-08.png` ; nuit `design/assets/visuels/pvz-fusion/PVZ-08.nuit.png`, en édition depuis le jour, même cadrage au pixel près
@@ -872,7 +871,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Composition (pour le prompt)** : Un seul motif centré : une lettre pliée, nouée d’un ruban, sans écriture lisible ; la lanterne, juste derrière (vers 62 % de la largeur et 36 % de la hauteur), éclaire la lettre seule
 - **Lanterne : 62 % × 36 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = lettre et ruban ; lumière (#FF0000) = flamme et lettre éclairée · **Fond** : transparent, de jour comme de nuit
-- **Cadrage (pour vérifier)** : Vignette de carte, affichée à 136 px de large en bureau, 96 px entre 1 101 et 1 240 px et sous 760 px, 128 à 176 px dans les quatre gestes, repliés, de l’accueil : un seul motif centré, en silhouette, qui occupe au moins 60 % du cadre, sans détail fin.
+- **Cadrage (pour vérifier)** : Vignette de carte, affichée à 136 px de large en bureau, 96 px entre 1 101 et 1 240 px, 112 px sous 760 px, 128 à 176 px dans les quatre gestes, repliés, de l’accueil : un seul motif centré, en silhouette, qui occupe au moins 60 % du cadre, sans détail fin.
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-11_480x480.webp`
 - **Masters** : jour `design/assets/visuels/pvz-fusion/PVZ-11.png` ; nuit `design/assets/visuels/pvz-fusion/PVZ-11.nuit.png`, en édition depuis le jour, même cadrage au pixel près
@@ -907,7 +906,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Composition (pour le prompt)** : Coupe horizontale d’un train en gravure en réserve : à gauche, un moteur ancien à trois engrenages de tailles inégales, détaché, posé sur le quai et éteint ; à droite, un moteur neuf à deux engrenages déjà attelé. Au centre, un wagon dont les voyageurs, des silhouettes sans visage, restent assis. Une seule lanterne accrochée entre le wagon et le moteur neuf (vers 64 % de la largeur et 40 % de la hauteur) éclaire l’attelage ; le reste reste dans l’ombre. Aucun logo, aucun texte
 - **Lanterne : 64 % × 40 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = quai, moteurs, wagon et silhouettes ; lumière (#FF0000) = flamme et attelage éclairé · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : 16:9 aussi sur mobile, le sujet (l’attelage éclairé) au centre du cadre ; affichée jusqu’à 540 px de large.
+- **Cadrage (pour vérifier)** : Affichée en 21:9 à toutes les largeurs, jusqu’à 540 px de large : la bande de 12 à 88 % de la hauteur du 16:9 livré, où le train (entre 30 et 73 %) reste entier, l’attelage éclairé au centre ; sans la réserve vide du haut et du bas.
 - **Format** : 16:9, 1600 × 900
 - **Fichier attendu** : `site/src/assets/visuels/league-of-database/LOD-04_1600x900.webp`
 - **Masters** : jour `design/assets/visuels/league-of-database/LOD-04.png` ; nuit `design/assets/visuels/league-of-database/LOD-04.nuit.png`, en édition depuis le jour, même cadrage au pixel près
@@ -1009,7 +1008,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Emplacement** : `/projets/gup` · § 1, le problème : sous les deux paragraphes, à gauche de la figure des commandes (GUP-F1) ; 320 px de large sur ordinateur, masqué sous 860 px _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/pages/projets/gup.astro`
 - **Sujet** : Dispersé, puis un seul geste
-- **Composition (pour le prompt)** : Une douzaine de petites machines toutes différentes, chacune avec son propre levier ou sa propre manivelle, reliées par des fils emmêlés qui convergent vers une seule boîte nette marquée d’une flèche circulaire ; la lanterne posée sur la boîte (vers 76 % de la largeur et 40 % de la hauteur) l’éclaire, les machines restent dans la pénombre ; aucun caractère, aucune lettre, aucun chiffre, aucun logo
+- **Composition (pour le prompt)** : Six petites machines toutes différentes, chacune avec son propre levier ou sa propre manivelle, reliées par des fils emmêlés qui convergent vers une seule boîte nette marquée d’une flèche circulaire ; la lanterne posée sur la boîte (vers 76 % de la largeur et 40 % de la hauteur) l’éclaire, les machines restent dans la pénombre ; aucun caractère, aucune lettre, aucun chiffre, aucun logo
 - **Lanterne : 76 % × 40 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = machines, fils et boîte ; lumière (#FF0000) = flamme et boîte éclairée · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Affichée à 320 px de large sur ordinateur, masquée sous 860 px : la boîte éclairée et les fils se lisent à cette taille.
@@ -1017,7 +1016,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Fichier attendu** : `site/src/assets/visuels/gup/GUP-01_1200x900.webp`
 - **Masters** : jour `design/assets/visuels/gup/GUP-01.png` ; nuit `design/assets/visuels/gup/GUP-01.nuit.png`, en édition depuis le jour, même cadrage au pixel près
 - **Rendus** : `npm run visuels:rendre GUP-01` écrit le jour `GUP-01_1200x900.webp` et la nuit `GUP-01_1200x900.nuit.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une douzaine de petites machines dont les fils emmêlés convergent vers une seule boîte éclairée par une lanterne. »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Six petites machines dont les fils emmêlés convergent vers une seule boîte éclairée par une lanterne. »
 - **Note** : Posé dans la section « probleme », à gauche de la figure des commandes (GUP-F1), qui porte le fait ; l’image ne fait que le faire sentir.
 
 #### GUP-03 · Une commande, tout mettre à jour
@@ -1041,14 +1040,14 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image) · **Série** : Parcours
 - **Produit par** : Codex
-- **Emplacement** : `/parcours` · Hub, porte Professionnel : en tête de la carte (bandeau 2:1 pleine largeur de la carte, pour garder les portes près du pli ; 16:9 sur mobile) _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours` · Hub, porte Professionnel : en tête de la carte (bandeau 2:1 pleine largeur de la carte, pour garder les portes près du pli, à toutes les largeurs) _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/config/parcours.ts`, `src/pages/parcours.astro`
 - **Sujet** : Concevoir
 - **Composition (pour le prompt)** : Une table à dessin vue de trois quarts, en légère plongée : un plan d’architecture logicielle déplié (blocs rectangulaires reliés par des flèches, trois couches empilées, sans aucune lettre), tenu à plat par une règle et un compas ; la lanterne posée à l’angle supérieur droit (vers 76 % de la largeur et 30 % de la hauteur) éclaire le plan en cône et laisse les bords dans l’ombre ; aucun personnage, aucun écran
 - **Lanterne : 76 % × 30 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, plan, règle et compas ; lumière (#FF0000) = flamme et cône de lumière sur le plan · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Bandeau 2:1 pleine largeur de la carte (environ 420 px) ; recadré en 16:9 sur mobile : sujet et lanterne dans la moitié centrale.
-- **Format** : 2:1, 1600 × 800 ; 16:9 sur mobile (recadrage mobile 16:9)
+- **Cadrage (pour vérifier)** : Bandeau 2:1 pleine largeur de la carte (environ 420 px, 360 px sur mobile), jamais recadré : un 16:9 sur mobile rognait le montant gauche de la boîte à outils de PAR-02, dont la poignée touche déjà le haut du master (audit du 14 octobre 2026) ; les trois portes gardent le même format.
+- **Format** : 2:1, 1600 × 800
 - **Fichier attendu** : `site/src/assets/visuels/parcours/PAR-01_1600x800.webp`
 - **Masters** : jour `design/assets/visuels/parcours/PAR-01.png` ; nuit `design/assets/visuels/parcours/PAR-01.nuit.png`, en édition depuis le jour, même cadrage au pixel près
 - **Rendus** : `npm run visuels:rendre PAR-01` écrit le jour `PAR-01_1600x800.webp` et la nuit `PAR-01_1600x800.nuit.webp`
@@ -1059,14 +1058,14 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image) · **Série** : Parcours
 - **Produit par** : Codex
-- **Emplacement** : `/parcours` · Hub, porte Compétences : en tête de la carte (bandeau 2:1 pleine largeur de la carte, pour garder les portes près du pli ; 16:9 sur mobile) _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours` · Hub, porte Compétences : en tête de la carte (bandeau 2:1 pleine largeur de la carte, pour garder les portes près du pli, à toutes les largeurs) _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/config/parcours.ts`, `src/pages/parcours.astro`
 - **Sujet** : La boîte à outils
 - **Composition (pour le prompt)** : Une boîte à outils en bois ouverte, vue de trois quarts en légère plongée, à quatre compartiments reconnaissables à leur forme et non à un mot : une équerre et des gabarits (l’interface), des engrenages imbriqués (l’API), des tiroirs de fiches empilées (les données), une caisse scellée prête à partir (la livraison) ; la lanterne accrochée à la poignée (vers 50 % de la largeur et 26 % de la hauteur) éclaire l’intérieur ; aucun logo
 - **Lanterne : 50 % × 26 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = boîte et outils ; lumière (#FF0000) = flamme et intérieur de la boîte · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Bandeau 2:1 pleine largeur de la carte (environ 420 px) ; recadré en 16:9 sur mobile : sujet et lanterne dans la moitié centrale.
-- **Format** : 2:1, 1600 × 800 ; 16:9 sur mobile (recadrage mobile 16:9)
+- **Cadrage (pour vérifier)** : Bandeau 2:1 pleine largeur de la carte (environ 420 px, 360 px sur mobile), jamais recadré : un 16:9 sur mobile rognait le montant gauche de la boîte à outils de PAR-02, dont la poignée touche déjà le haut du master (audit du 14 octobre 2026) ; les trois portes gardent le même format.
+- **Format** : 2:1, 1600 × 800
 - **Fichier attendu** : `site/src/assets/visuels/parcours/PAR-02_1600x800.webp`
 - **Masters** : jour `design/assets/visuels/parcours/PAR-02.png` ; nuit `design/assets/visuels/parcours/PAR-02.nuit.png`, en édition depuis le jour, même cadrage au pixel près
 - **Rendus** : `npm run visuels:rendre PAR-02` écrit le jour `PAR-02_1600x800.webp` et la nuit `PAR-02_1600x800.nuit.webp`
@@ -1077,14 +1076,14 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image) · **Série** : Parcours
 - **Produit par** : Codex
-- **Emplacement** : `/parcours` · Hub, porte Formation : en tête de la carte (bandeau 2:1 pleine largeur de la carte, pour garder les portes près du pli ; 16:9 sur mobile) _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours` · Hub, porte Formation : en tête de la carte (bandeau 2:1 pleine largeur de la carte, pour garder les portes près du pli, à toutes les largeurs) _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/config/parcours.ts`, `src/pages/parcours.astro`
 - **Sujet** : Ce que j’ai dans mon sac
 - **Composition (pour le prompt)** : Une pile de livres reliés couchés, vue de trois quarts en légère plongée, dos sans titre, de tailles décroissantes ; au sommet, un diplôme roulé noué d’un ruban ; quelques fiches volantes (des certificats, sans texte ni sceau lisible) glissées entre deux livres ; la lanterne sert de serre-livre à droite (vers 74 % de la largeur et 56 % de la hauteur) et éclaire la tranche des livres ; aucune marque d’école
 - **Lanterne : 74 % × 56 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = livres, diplôme et fiches ; lumière (#FF0000) = flamme et tranche des livres · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Bandeau 2:1 pleine largeur de la carte (environ 420 px) ; recadré en 16:9 sur mobile : sujet et lanterne dans la moitié centrale.
-- **Format** : 2:1, 1600 × 800 ; 16:9 sur mobile (recadrage mobile 16:9)
+- **Cadrage (pour vérifier)** : Bandeau 2:1 pleine largeur de la carte (environ 420 px, 360 px sur mobile), jamais recadré : un 16:9 sur mobile rognait le montant gauche de la boîte à outils de PAR-02, dont la poignée touche déjà le haut du master (audit du 14 octobre 2026) ; les trois portes gardent le même format.
+- **Format** : 2:1, 1600 × 800
 - **Fichier attendu** : `site/src/assets/visuels/parcours/PAR-03_1600x800.webp`
 - **Masters** : jour `design/assets/visuels/parcours/PAR-03.png` ; nuit `design/assets/visuels/parcours/PAR-03.nuit.png`, en édition depuis le jour, même cadrage au pixel près
 - **Rendus** : `npm run visuels:rendre PAR-03` écrit le jour `PAR-03_1600x800.webp` et la nuit `PAR-03_1600x800.nuit.webp`
@@ -1095,14 +1094,14 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image) · **Série** : Parcours
 - **Produit par** : Codex
-- **Emplacement** : `/parcours/professionnel` · Professionnel, fiche du poste actuel : colonne de droite de la fiche (320 px) ; sur mobile, bandeau 16:9 pleine largeur sous le texte, pour que le rôle reste en tête _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours/professionnel` · Professionnel, fiche du poste actuel : colonne de droite de la fiche (320 px) ; sur mobile, en 3:2 pleine largeur sous le texte, pour que le rôle reste en tête _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/config/parcours.ts`, `src/components/parcours/FicheExperience.astro`
 - **Sujet** : Architecture logicielle
 - **Composition (pour le prompt)** : Une maquette d’architecte d’un petit bâtiment à trois étages, présentée en coupe et vue de trois quarts en légère plongée : chaque étage est une couche (en bas, des casiers de rangement pour les données ; au milieu, des salles reliées par des escaliers et des passerelles pour les services ; en haut, une galerie vitrée pour l’interface) ; des conduits verticaux relient les étages ; la lanterne posée au rez-de-chaussée, au centre (vers 50 % de la largeur et 72 % de la hauteur), éclaire la coupe de bas en haut ; aucun personnage, aucune lettre, aucun élément qui identifie un employeur
 - **Lanterne : 50 % × 72 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = socle, étages, casiers et conduits ; lumière (#FF0000) = flamme et coupe éclairée · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Affiché à 320 px de large dans la colonne de la fiche ; bandeau 16:9 pleine largeur sur mobile : sujet centré, rien d’important dans le huitième du haut ni dans le huitième du bas.
-- **Format** : 3:2, 1800 × 1200 ; 16:9 sur mobile (recadrage mobile 16:9)
+- **Cadrage (pour vérifier)** : Affiché à 320 px de large dans la colonne de la fiche, en 3:2 pleine largeur sur mobile, jamais recadré : la coupe livrée occupe sa toile de 2 à 98 % de la hauteur, et un bandeau 16:9 rognait le faîte du toit et le socle (audit du 14 octobre 2026).
+- **Format** : 3:2, 1800 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/parcours/PRO-01_1800x1200.webp`
 - **Masters** : jour `design/assets/visuels/parcours/PRO-01.png` ; nuit `design/assets/visuels/parcours/PRO-01.nuit.png`, en édition depuis le jour, même cadrage au pixel près
 - **Rendus** : `npm run visuels:rendre PRO-01` écrit le jour `PRO-01_1800x1200.webp` et la nuit `PRO-01_1800x1200.nuit.webp`
@@ -1383,13 +1382,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image) · **Série** : Stations de la formation
 - **Produit par** : Codex
-- **Emplacement** : `/parcours/formation` · Formation, station du chemin d’avant le titre : vignette carrée de 56 px à gauche de l’intitulé (au-dessus de lui dans une colonne étroite), 72 px à gauche du texte sur mobile : la station reste compacte, le titre obtenu domine _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours/formation` · Formation, station du chemin d’avant le titre : vignette carrée de 72 px à gauche de l’intitulé, sur ordinateur comme sur mobile (56 px au-dessus de lui dans une colonne étroite) : la station reste compacte, le titre obtenu domine _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/config/formation.ts`, `src/pages/parcours/formation.astro`
 - **Sujet** : Autodidacte vers 13 ans
 - **Composition (pour le prompt)** : Un seul objet : un livre ouvert à plat, vu de trois quarts, pages vierges ; la lanterne (vers 80 % de la largeur et 22 % de la hauteur) éclaire la page de droite
 - **Lanterne : 80 % × 22 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = livre ; lumière (#FF0000) = flamme et page de droite · **Fond** : transparent, de jour comme de nuit
-- **Cadrage (pour vérifier)** : Vignette de 56 px (72 px sur mobile) : un seul objet silhouetté, qui occupe 80 % du cadre, sans aucun détail fin ni second objet.
+- **Cadrage (pour vérifier)** : Vignette de 72 px (56 px dans une colonne étroite) : un seul objet silhouetté, qui occupe 80 % du cadre, sans aucun détail fin ni second objet.
 - **Format** : 1:1, 384
 - **Fichier attendu** : `site/src/assets/visuels/parcours/FOR-03_384x384.webp`
 - **Masters** : jour `design/assets/visuels/parcours/FOR-03.png` ; nuit `design/assets/visuels/parcours/FOR-03.nuit.png`, en édition depuis le jour, même cadrage au pixel près
@@ -1401,13 +1400,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image) · **Série** : Stations de la formation
 - **Produit par** : Codex
-- **Emplacement** : `/parcours/formation` · Formation, station du chemin d’avant le titre : vignette carrée de 56 px à gauche de l’intitulé (au-dessus de lui dans une colonne étroite), 72 px à gauche du texte sur mobile : la station reste compacte, le titre obtenu domine _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours/formation` · Formation, station du chemin d’avant le titre : vignette carrée de 72 px à gauche de l’intitulé, sur ordinateur comme sur mobile (56 px au-dessus de lui dans une colonne étroite) : la station reste compacte, le titre obtenu domine _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/config/formation.ts`, `src/pages/parcours/formation.astro`
 - **Sujet** : BUT Informatique
-- **Composition (pour le prompt)** : Un seul objet : un grand losange de décision d’organigramme, en relief, d’où partent deux flèches courtes ; la lanterne (vers 78 % de la largeur et 22 % de la hauteur) éclaire sa face
-- **Lanterne : 78 % × 22 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Composition (pour le prompt)** : Un seul objet : un grand losange de décision d’organigramme, en relief, d’où partent deux flèches courtes ; la lanterne (vers 76 % de la largeur et 26 % de la hauteur) éclaire sa face
+- **Lanterne : 76 % × 26 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = losange et flèches ; lumière (#FF0000) = flamme et face du losange · **Fond** : transparent, de jour comme de nuit
-- **Cadrage (pour vérifier)** : Vignette de 56 px (72 px sur mobile) : un seul objet silhouetté, qui occupe 80 % du cadre, sans aucun détail fin ni second objet.
+- **Cadrage (pour vérifier)** : Vignette de 72 px (56 px dans une colonne étroite) : un seul objet silhouetté, qui occupe 80 % du cadre, sans aucun détail fin ni second objet. Le master livré touchait le haut et la droite de sa toile : une marge transparente d’environ 3,5 % a été ajoutée autour du jour et de la nuit (14 octobre 2026), la flamme passe de 78 × 22 à 76 × 26.
 - **Format** : 1:1, 384
 - **Fichier attendu** : `site/src/assets/visuels/parcours/FOR-04_384x384.webp`
 - **Masters** : jour `design/assets/visuels/parcours/FOR-04.png` ; nuit `design/assets/visuels/parcours/FOR-04.nuit.png`, en édition depuis le jour, même cadrage au pixel près
@@ -1419,13 +1418,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image) · **Série** : Stations de la formation
 - **Produit par** : Codex
-- **Emplacement** : `/parcours/formation` · Formation, station du chemin d’avant le titre : vignette carrée de 56 px à gauche de l’intitulé (au-dessus de lui dans une colonne étroite), 72 px à gauche du texte sur mobile : la station reste compacte, le titre obtenu domine _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours/formation` · Formation, station du chemin d’avant le titre : vignette carrée de 72 px à gauche de l’intitulé, sur ordinateur comme sur mobile (56 px au-dessus de lui dans une colonne étroite) : la station reste compacte, le titre obtenu domine _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/config/formation.ts`, `src/pages/parcours/formation.astro`
 - **Sujet** : Physique-chimie
 - **Composition (pour le prompt)** : Un seul objet : un erlenmeyer à moitié rempli ; la lanterne (vers 76 % de la largeur et 28 % de la hauteur) éclaire le liquide
 - **Lanterne : 76 % × 28 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = verre du flacon ; lumière (#FF0000) = flamme et liquide éclairé · **Fond** : transparent, de jour comme de nuit
-- **Cadrage (pour vérifier)** : Vignette de 56 px (72 px sur mobile) : un seul objet silhouetté, qui occupe 80 % du cadre, sans aucun détail fin ni second objet.
+- **Cadrage (pour vérifier)** : Vignette de 72 px (56 px dans une colonne étroite) : un seul objet silhouetté, qui occupe 80 % du cadre, sans aucun détail fin ni second objet.
 - **Format** : 1:1, 384
 - **Fichier attendu** : `site/src/assets/visuels/parcours/FOR-05_384x384.webp`
 - **Masters** : jour `design/assets/visuels/parcours/FOR-05.png` ; nuit `design/assets/visuels/parcours/FOR-05.nuit.png`, en édition depuis le jour, même cadrage au pixel près
@@ -1437,13 +1436,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image) · **Série** : Stations de la formation
 - **Produit par** : Codex
-- **Emplacement** : `/parcours/formation` · Formation, station du chemin d’avant le titre : vignette carrée de 56 px à gauche de l’intitulé (au-dessus de lui dans une colonne étroite), 72 px à gauche du texte sur mobile : la station reste compacte, le titre obtenu domine _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours/formation` · Formation, station du chemin d’avant le titre : vignette carrée de 72 px à gauche de l’intitulé, sur ordinateur comme sur mobile (56 px au-dessus de lui dans une colonne étroite) : la station reste compacte, le titre obtenu domine _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/config/formation.ts`, `src/pages/parcours/formation.astro`
 - **Sujet** : BUT Réseaux & Télécoms
-- **Composition (pour le prompt)** : Un seul objet : un commutateur réseau vu de trois quarts, trois câbles branchés sur sa face avant ; la lanterne (vers 76 % de la largeur et 26 % de la hauteur) éclaire les prises ; aucune marque d’équipement
-- **Lanterne : 76 % × 26 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Composition (pour le prompt)** : Un seul objet : un commutateur réseau vu de trois quarts, trois câbles branchés sur sa face avant ; la lanterne (vers 73 % de la largeur et 29 % de la hauteur) éclaire les prises ; aucune marque d’équipement
+- **Lanterne : 73 % × 29 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = boîtier et câbles ; lumière (#FF0000) = flamme et prises éclairées · **Fond** : transparent, de jour comme de nuit
-- **Cadrage (pour vérifier)** : Vignette de 56 px (72 px sur mobile) : un seul objet silhouetté, qui occupe 80 % du cadre, sans aucun détail fin ni second objet.
+- **Cadrage (pour vérifier)** : Vignette de 72 px (56 px dans une colonne étroite) : un seul objet silhouetté, qui occupe 80 % du cadre, sans aucun détail fin ni second objet.
 - **Format** : 1:1, 384
 - **Fichier attendu** : `site/src/assets/visuels/parcours/FOR-06_384x384.webp`
 - **Masters** : jour `design/assets/visuels/parcours/FOR-06.png` ; nuit `design/assets/visuels/parcours/FOR-06.nuit.png`, en édition depuis le jour, même cadrage au pixel près
@@ -1455,13 +1454,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image) · **Série** : Stations de la formation
 - **Produit par** : Codex
-- **Emplacement** : `/parcours/formation` · Formation, station du chemin d’avant le titre : vignette carrée de 56 px à gauche de l’intitulé (au-dessus de lui dans une colonne étroite), 72 px à gauche du texte sur mobile : la station reste compacte, le titre obtenu domine _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours/formation` · Formation, station du chemin d’avant le titre : vignette carrée de 72 px à gauche de l’intitulé, sur ordinateur comme sur mobile (56 px au-dessus de lui dans une colonne étroite) : la station reste compacte, le titre obtenu domine _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/config/formation.ts`, `src/pages/parcours/formation.astro`
 - **Sujet pour le prompt** : Une échelle de bassin de piscine
-- **Composition (pour le prompt)** : Un seul objet : une échelle de bassin de piscine, deux montants courbes et trois marches qui plongent dans une eau en aplat ; la lanterne posée sur le bord du bassin (vers 78 % de la largeur et 24 % de la hauteur) éclaire la marche du haut ; sans logo ni nom d’école
-- **Lanterne : 78 % × 24 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Composition (pour le prompt)** : Un seul objet : une échelle de bassin de piscine, deux montants courbes et trois marches qui plongent dans une eau en aplat ; la lanterne posée sur le bord du bassin (vers 81 % de la largeur et 26 % de la hauteur) éclaire la marche du haut ; sans logo ni nom d’école
+- **Lanterne : 81 % × 26 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = échelle et bord du bassin ; lumière (#FF0000) = flamme et marche du haut · **Fond** : transparent, de jour comme de nuit
-- **Cadrage (pour vérifier)** : Vignette de 56 px (72 px sur mobile) : un seul objet silhouetté, qui occupe 80 % du cadre, sans aucun détail fin ni second objet.
+- **Cadrage (pour vérifier)** : Vignette de 72 px (56 px dans une colonne étroite) : un seul objet silhouetté, qui occupe 80 % du cadre, sans aucun détail fin ni second objet.
 - **Format** : 1:1, 384
 - **Fichier attendu** : `site/src/assets/visuels/parcours/FOR-07_384x384.webp`
 - **Masters** : jour `design/assets/visuels/parcours/FOR-07.png` ; nuit `design/assets/visuels/parcours/FOR-07.nuit.png`, en édition depuis le jour, même cadrage au pixel près
@@ -1546,10 +1545,10 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Emplacement** : `/blog` · Article sans image de couverture, et image de partage d’un article _(contexte : ne pas le recopier dans un prompt)_
 - **Élargi, non posé** : le rendu des articles (server/blog.mjs) ne sait pas encore poser une couverture de secours : à brancher avec le serveur, hors refonte des pages.
 - **Sujet** : Couverture de secours : la lanterne sur une page de livre
-- **Composition (pour le prompt)** : Cadrage large : le coin d’une page de livre ouvert à gauche, la lanterne du logo à droite du centre (vers 62 % de la largeur et 50 % de la hauteur), sa lumière tombe sur la page ; grand espace calme à gauche. Aucun texte
-- **Lanterne : 62 % × 50 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Composition (pour le prompt)** : Cadrage large : le coin d’une page de livre ouvert à gauche, la lanterne du logo à droite du centre (vers 69 % de la largeur et 55 % de la hauteur), sa lumière tombe sur la page ; grand espace calme à gauche. Aucun texte
+- **Lanterne : 69 % × 55 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = page du livre ; lumière (#FF0000) = flamme et page éclairée, en hachures · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Espace calme à gauche pour qu’un titre posé en HTML reste lisible par-dessus ; déclinaison 1200 × 630 pour le partage.
+- **Cadrage (pour vérifier)** : Espace calme à gauche pour qu’un titre posé en HTML reste lisible par-dessus ; déclinaison 1200 × 630 pour le partage, prise dans la bande haute (anneau et pied de la lanterne compris). Les masters livrés sont recadrés en 16:9 depuis le coin haut gauche (0, 0, 1568, 882 px) pour ôter un objet coupé au coin bas droit, aux découpes qui imitaient des lettres (14 octobre 2026).
 - **Format** : 16:9, 1600 × 900 ; déclinaison 1200 × 630 pour le partage
 - **Fichier attendu** : `site/src/assets/visuels/blog/BLG-02_1600x900.webp`
 - **Masters** : jour `design/assets/visuels/blog/BLG-02.png` ; nuit `design/assets/visuels/blog/BLG-02.nuit.png`, en édition depuis le jour, même cadrage au pixel près
@@ -1566,7 +1565,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Composition (pour le prompt)** : Un manuel relié ouvert à plat, vu en légère plongée ; au milieu, le talon d’une page arrachée (bord déchiré net, quelques fibres) ; la lanterne du logo, posée sur la page de droite (vers 62 % de la largeur et 40 % de la hauteur), éclaire précisément le vide laissé par la page, le reste du livre est dans l’ombre. Aucune écriture, aucun numéro de page
 - **Lanterne : 62 % × 40 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = papier du manuel ; lumière (#FF0000) = flamme, halo et vide de la page · **Fond** : transparent, de jour comme de nuit
-- **Cadrage (pour vérifier)** : Le livre occupe 75 % de la largeur ; le coin bas droit reste calme : un médaillon photo (ERR-PHO) s’y pose.
+- **Cadrage (pour vérifier)** : Le livre occupe 75 à 90 % de la largeur ; affichée jusqu’à 560 px de large, à droite du titre (sous lui sur mobile). Le portrait ERR-PHO se pose dans la colonne du titre, pas sur l’image.
 - **Format** : 4:3, 1280 × 960, fond transparent
 - **Fichier attendu** : `site/src/assets/visuels/etats/ERR-01_1280x960.webp`
 - **Masters** : jour `design/assets/visuels/etats/ERR-01.png` ; nuit `design/assets/visuels/etats/ERR-01.nuit.png`, en édition depuis le jour, même cadrage au pixel près
@@ -2878,7 +2877,7 @@ Fiches pour mémoire : rien à produire.
 
 - **Priorité** : socle · **Méthode** : PHO, photo réelle, traitements déterministes seulement
 - **Produit par** : équipe États : 404 et hors ligne
-- **Emplacement** : `/404` · 404, médaillon posé sur le coin bas droit de l’illustration ERR-01, le regard tourné vers elle _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/404` · 404, médaillon dans la colonne du titre, à droite du chapeau et du bouton « Revenir à l’accueil », le regard tourné vers eux ; l’illustration ERR-01 est à côté (dessous sur mobile) _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/pages/404.astro`
 - **Sujet** : Portrait de Charles qui regarde ailleurs
 - **Composition** : Photo réelle n° 1 de la séance (sous-bois, chemise bleu roi, cravate rayée, regard vers la gauche), recadrée en buste, visage dans le tiers haut. Recadrage et redimensionnement seulement, aucune retouche ; la nuit, voile de lune et lueur de lanterne posés en CSS par le composant Portrait
