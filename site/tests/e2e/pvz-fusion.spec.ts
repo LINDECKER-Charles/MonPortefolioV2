@@ -149,6 +149,18 @@ test('une seule navigation de page, sans la note de sources, et ses intitulés e
   for (const ancre of attendus) await expect(page.locator(ancre)).toHaveCount(1);
 });
 
+test('dépliés, les relevés défilent dans leur cadre sans élargir la page', async ({ page }) => {
+  await page.goto(CHEMIN);
+  await page.locator('.rattrapage__releves summary').click();
+  const largeur = page.viewportSize()?.width ?? 0;
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
+  const titre = await page.locator('figcaption.rattrapage__titre').boundingBox();
+  expect(titre!.x + titre!.width).toBeLessThanOrEqual(largeur);
+  const [visible, totale] = await page.locator('.rattrapage__table').evaluate((cadre) => [cadre.clientWidth, cadre.scrollWidth]);
+  expect(visible).toBeLessThanOrEqual(largeur);
+  if (largeur < 600) expect(totale).toBeGreaterThan(visible);
+});
+
 test('les relevés du rattrapage s’ouvrent au clavier, en tableau', async ({ page }) => {
   await page.goto(CHEMIN);
   const releves = page.locator('.rattrapage__releves');

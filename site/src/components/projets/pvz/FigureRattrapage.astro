@@ -184,8 +184,11 @@ const { class: classe } = Astro.props;
 </figure>
 
 <style>
+  /* Une colonne qui ne s’élargit jamais à son contenu : déplié, le tableau
+     des relevés défile seul (WCAG 1.4.10), la figure garde sa largeur. */
   .rattrapage {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--s4);
   }
 
