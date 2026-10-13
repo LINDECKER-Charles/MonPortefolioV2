@@ -227,15 +227,17 @@ test('les cibles autonomes font au moins 44 px : liens de trace et choix du syst
   }
 });
 
-test('l’en-tête recadre l’écran sur le volet des paquets ; la visionneuse garde l’écran entier', async ({ page }) => {
+test('l’en-tête montre la fenêtre entière, barre de titre comprise ; la visionneuse l’agrandit', async ({ page }) => {
   await page.goto(CHEMIN);
   const vue = page.locator('.gup-entete-capture .capture__vue');
   const image = vue.locator('img');
   const [cadre, rendu] = await Promise.all([vue.boundingBox(), image.boundingBox()]);
-  // L’image déborde la vue des deux côtés : seul le volet « Paquets » se voit.
-  expect(rendu!.width).toBeGreaterThan(cadre!.width * 1.35);
-  expect(rendu!.x).toBeLessThan(cadre!.x);
-  expect(rendu!.y).toBeLessThan(cadre!.y);
+  // Aucun recadrage : l’image remplit la vue sans la déborder, au ratio de la capture.
+  expect(Math.abs(rendu!.x - cadre!.x)).toBeLessThan(1);
+  expect(Math.abs(rendu!.y - cadre!.y)).toBeLessThan(1);
+  expect(Math.abs(rendu!.width - cadre!.width)).toBeLessThan(1);
+  expect(rendu!.width / rendu!.height).toBeCloseTo(2436 / 1578, 1);
+  await expect(page.locator('.gup-entete-capture')).not.toHaveClass(/capture--region/);
   const agrandir = vue.locator('a[data-agrandir]');
   await agrandir.click();
   const visionneuse = page.locator('dialog[data-visionneuse]');
