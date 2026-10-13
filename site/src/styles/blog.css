@@ -44,8 +44,9 @@
   margin-top: var(--s2);
   font-family: var(--police-titre);
   font-style: italic;
-  font-size: var(--t-2xl);
-  line-height: 1.1;
+  font-size: var(--t-xl);
+  line-height: 1.15;
+  max-width: 24ch;
   color: var(--encre);
 }
 
@@ -65,8 +66,8 @@
     min-height: calc(min(100vw - 2 * var(--gouttiere), var(--largeur)) * 0.375 + var(--s5) + var(--s7));
   }
 
-  .blog-scene:has(.blog-vide) .blog-entete,
-  .blog-vide__texte {
+  /* `.blog-vide` porte déjà ses 46 % : son texte prend toute cette largeur. */
+  .blog-scene:has(.blog-vide) .blog-entete {
     max-width: 46%;
   }
 
@@ -228,7 +229,8 @@
   max-width: none;
   margin-inline: auto;
   padding-inline: 0;
-  padding-block: var(--s4) var(--s9);
+  /* « Pour continuer » (blog-modele.astro) suit l’article et porte l’écart. */
+  padding-block: var(--s4) 0;
 }
 
 /* Le fil d’Ariane rendu par le serveur, au dessin de FilAriane. */
@@ -242,10 +244,21 @@
   color: var(--eteint);
 }
 
-.blog-article__nav > * {
+.blog-article__nav a {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
+  color: var(--eteint);
+}
+
+/* Le maillon courant reste sur la ligne des liens, tronqué s’il le faut. */
+.blog-article__nav [aria-current] {
+  display: block;
+  flex: 1 1 0;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .blog-article__nav > * + *::before {
@@ -253,10 +266,6 @@
   display: inline-block;
   margin-right: var(--s2);
   color: var(--trait);
-}
-
-.blog-article__nav a {
-  color: var(--eteint);
 }
 
 .blog-article__nav a:hover {
@@ -447,10 +456,5 @@
 
   .blog-list__article:first-child h2 {
     font-size: var(--t-2xl);
-  }
-
-  .blog-article,
-  .wrap.blog-article {
-    padding-bottom: var(--s7);
   }
 }

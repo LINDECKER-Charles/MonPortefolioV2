@@ -29,16 +29,16 @@ const description = 'Les articles de Charles Lindecker sur le développement, le
     <FilAriane courant="Blog" />
     <div class="blog-scene">
       <header class="blog-entete">
-        <h1>Le blog</h1>
-        <p class="chapeau">Prendre le temps d’expliquer ce que j’apprends et ce que je construis.</p>
+        <h1 data-pli="titre">Le blog</h1>
+        <p class="chapeau" data-pli="identite">Prendre le temps d’expliquer ce que j’apprends et ce que je construis.</p>
       </header>
 
       <div id="blog-publications">
       <section class="blog-vide" aria-labelledby="blog-vide-titre">
         <div class="blog-vide__texte">
           <p class="blog-vide__etat">Aucun article publié pour l’instant</p>
-          <p class="blog-vide__phrase" id="blog-vide-titre">Le premier article reste à écrire.</p>
-          <LienAction href="/projets">En attendant, lire les projets</LienAction>
+          <p class="blog-vide__phrase" id="blog-vide-titre">Le premier article reste à&nbsp;écrire.</p>
+          <LienAction href="/projets" attributs={{ 'data-pli': 'action' }}>En attendant, lire les projets</LienAction>
         </div>
         <Visuel id="BLG-01" alt="" foyer loading="eager" class="blog-vide__visuel" sizes="(max-width: 860px) 100vw, 640px" />
       </section>
