@@ -1,9 +1,11 @@
 ---
 /**
  * Un petit système, en plan (ACC-17, src/assets/visuels/accueil/ACC-17.svg) :
- * un poste, un service, une base de données et une livraison, reliés par des
- * messages — des points de lumière qui circulent dans l’ordre requête,
- * données, réponse, livraison. Gardé le 13/10/2026 : il communique en boucle
+ * une lanterne, seule source de lumière, émet les messages — des points de
+ * lumière qui traversent trois blocs vus de dessus, sans pictogramme (un
+ * service, un stockage, une livraison), dans l’ordre requête, données,
+ * réponse, livraison. Même main que les lanternes (ACC-14) et le logo : trait
+ * d’encre, réserve hachurée, aplats de surface et de lanterne. Gardé le 13/10/2026 : il communique en boucle
  * tant qu’il est dans l’écran, s’arrête hors de l’écran, dans un onglet
  * masqué, à l’impression et en mouvement réduit ; un clic ou le clavier
  * relance la boucle (scripts/figure-animations.ts, `data-animation-continue`).
@@ -72,6 +74,11 @@ const svg = dessin
     opacity: 0;
   }
 
+  .systeme__plan :global(.sys-flamme) {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+  }
+
   .systeme__legende {
     margin-top: var(--s2);
     font-family: var(--police-titre);
@@ -101,8 +108,19 @@ const svg = dessin
       animation: systeme-signal 5.6s ease infinite;
     }
 
+    /* La flamme se ravive à chaque message qu’elle émet. */
+    .systeme__plan:global(.est-visible) :global(.sys-flamme) {
+      animation: systeme-flamme 5.6s ease infinite;
+    }
+
+    @keyframes systeme-flamme {
+      0%, 12%, 100% { transform: scale(1); }
+      3% { transform: scale(1.18, 1.25); }
+      7% { transform: scale(0.94, 0.96); }
+    }
+
     @keyframes systeme-requete {
-      0%, 5% { transform: translate(78px, 142px); opacity: 0; }
+      0%, 5% { transform: translate(66px, 142px); opacity: 0; }
       6% { opacity: 1; }
       12% { transform: translate(106px, 142px); }
       19% { transform: translate(106px, 110px); }
@@ -111,7 +129,7 @@ const svg = dessin
     }
 
     @keyframes systeme-donnees {
-      0%, 29% { transform: translate(174px, 110px); opacity: 0; }
+      0%, 29% { transform: translate(176px, 110px); opacity: 0; }
       30% { opacity: 1; }
       38% { transform: translate(209px, 110px); }
       45% { transform: translate(209px, 142px); }
@@ -127,8 +145,8 @@ const svg = dessin
       70% { transform: translate(143px, 125px); }
       75% { transform: translate(118px, 125px); }
       81% { transform: translate(118px, 157px); }
-      88% { transform: translate(78px, 157px); opacity: 1; }
-      91%, 100% { transform: translate(78px, 157px); opacity: 0; }
+      88% { transform: translate(66px, 157px); opacity: 1; }
+      91%, 100% { transform: translate(66px, 157px); opacity: 0; }
     }
 
     @keyframes systeme-livraison {
