@@ -35,10 +35,10 @@ export const DEPOTS_PUBLICS: readonly DepotPublic[] = [
   { nom: 'public-Omnicard', usage: 'Omnicard : règles et cartes, seul dépôt Omnicard public', statut: 'lie', verifie: '2026-10-13' },
   { nom: 'gup', usage: 'gup : le code, open source', statut: 'lie', verifie: '2026-10-13' },
   { nom: 'ShrekSophone', usage: 'Projets, « Aussi » : clin d’œil final (démo GitHub Pages)', statut: 'lie', verifie: '2026-10-13' },
-  { nom: 'App.GitHealth', usage: 'Projets, « Aussi » : GitHealth', statut: 'prevu', verifie: '2026-10-13' },
-  { nom: 'app-life-pixel', usage: 'Projets, « Aussi » : Life Pixel', statut: 'prevu', verifie: '2026-10-13' },
-  { nom: 'Web-Image-Formateur', usage: 'Projets, « Aussi » : img-convertor', statut: 'prevu', verifie: '2026-10-13' },
-  { nom: 'Piscine42-Mulhouse-2024', usage: 'Parcours, formation : piscine de 42 (date à confirmer)', statut: 'prevu', verifie: '2026-10-13' },
+  { nom: 'App.GitHealth', usage: 'Projets, « Aussi » : GitHealth', statut: 'lie', verifie: '2026-10-13' },
+  { nom: 'app-life-pixel', usage: 'Projets, « Aussi » : Life Pixel', statut: 'lie', verifie: '2026-10-13' },
+  { nom: 'Web-Image-Formateur', usage: 'Projets, « Aussi » : img-convertor', statut: 'lie', verifie: '2026-10-13' },
+  { nom: 'Piscine42-Mulhouse-2024', usage: 'Parcours, formation : piscine de 42 (date à confirmer)', statut: 'lie', verifie: '2026-10-13' },
 ];
 
 /**
