@@ -11,3 +11,6 @@ Thumbs.db
 /data/
 .idea/
 .vscode/
+
+# Captures de vérification locales, hors assets du site.
+.impeccable/review/
