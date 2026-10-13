@@ -13,6 +13,22 @@ const SUCCES = 'Votre message a bien été envoyé. Je vous répondrai par e-mai
 const repondre = (route: Route, status: number, body: Record<string, unknown>) =>
   route.fulfill({ status, contentType: 'application/json; charset=utf-8', body: JSON.stringify(body) });
 
+// Règle E1 : ce qui dit où l’on est et quoi faire tient dans le premier écran.
+// Sur mobile, le formulaire de Contact suit le titre : son bouton est plus bas.
+for (const [chemin, marques, marquesMobile] of [
+  ['/contact', ['titre', 'identite', 'action'], ['titre', 'identite']],
+  ['/blog', ['titre', 'identite', 'action'], ['titre', 'identite', 'action']],
+  ['/une-page-qui-n-existe-pas', ['titre', 'identite', 'action'], ['titre', 'identite', 'action']],
+  ['/mentions-legales', ['titre', 'identite'], ['titre', 'identite']],
+] as const) {
+  test(`${chemin} : titre, identité et action au pli`, async ({ page, isMobile }) => {
+    await page.goto(chemin);
+    for (const marque of isMobile ? marquesMobile : marques) {
+      await expect(page.locator(`[data-pli="${marque}"]`), marque).toBeInViewport({ ratio: 1 });
+    }
+  });
+}
+
 test.describe('contact', () => {
   test('« Discutons » titre la page, avec le portrait réel et les autres canaux', async ({ page }) => {
     const erreurs = surveillerConsole(page);
@@ -32,7 +48,11 @@ test.describe('contact', () => {
   test('sur ordinateur, le bouton d’envoi tient dans le premier écran', async ({ page, isMobile }) => {
     test.skip(isMobile, 'sur mobile, le formulaire suit le titre');
     await page.goto('/contact');
-    await expect(page.getByRole('button', { name: 'Envoyer le message', exact: true })).toBeInViewport();
+    const bouton = page.getByRole('button', { name: 'Envoyer le message', exact: true });
+    await expect(bouton).toBeInViewport({ ratio: 1 });
+    // Une marge sous le bouton, pour qu’une police un peu plus grande ne le pousse pas sous le pli.
+    const boite = await bouton.boundingBox();
+    expect(boite!.y + boite!.height).toBeLessThanOrEqual(900 - 40);
   });
 
   test('sur mobile, le premier champ arrive dans le premier écran', async ({ page, isMobile }) => {
@@ -68,6 +88,9 @@ test.describe('contact', () => {
     await page.getByRole('button', { name: 'Envoyer le message', exact: true }).click();
     await expect(page.locator('[data-contact-status]')).toHaveText(SUCCES);
     await expect(suite).toBeVisible();
+    // Le panneau, sous le formulaire, est amené dans l’écran (sur mobile surtout).
+    await expect(page.locator('.contact-retour')).toBeInViewport({ ratio: 1 });
+    await expect(page.locator('[data-contact-status]')).toBeFocused();
     await expect(suite.getByRole('link', { name: 'les projets' })).toHaveAttribute('href', '/projets');
     await expect(suite.getByRole('link', { name: 'le parcours' })).toHaveAttribute('href', '/parcours');
     // Le formulaire vidé, les puces le sont aussi.
@@ -93,6 +116,10 @@ test.describe('blog', () => {
     await expect(vide).toContainText('Le premier article reste à écrire.');
     await expect(vide.locator('[data-visuel="BLG-01"]')).toBeVisible();
     await expect(vide.getByRole('link', { name: /lire les projets/ })).toHaveAttribute('href', '/projets');
+    // La phrase reste une phrase, pas un second grand titre cassé en colonne.
+    const phrase = vide.locator('.blog-vide__phrase');
+    const lignes = await phrase.evaluate((el) => el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight));
+    expect(lignes).toBeLessThanOrEqual(2.4);
     // Le bloc que le serveur remplace se ferme bien sur </section></div>.
     const html = await page.content();
     expect(html).toMatch(/<div id="blog-publications"[^>]*>[\s\S]*?<\/section>\s*<\/div>/);
@@ -128,6 +155,13 @@ test.describe('404', () => {
 });
 
 test.describe('mentions légales', () => {
+  test('les adresses e-mail portent la flèche de sortie, comme les autres liens externes', async ({ page }) => {
+    await page.goto('/mentions-legales');
+    const adresses = page.locator('main a[href^="mailto:"]');
+    await expect(adresses).toHaveCount(2);
+    for (const adresse of await adresses.all()) await expect(adresse.locator('.fleche')).toHaveText(/↗/);
+  });
+
   test('un sommaire d’ancres, le tableau des données et la date de mise à jour', async ({ page }) => {
     await page.goto('/mentions-legales');
     await expect(page.locator('time[datetime="2026-10-13"]')).toBeVisible();
