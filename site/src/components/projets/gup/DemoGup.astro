@@ -136,13 +136,15 @@ const sources: readonly Source[] = [
 
     lancer.addEventListener('click', async () => {
       const selection = choix.filter((c) => c.checked);
-      if (selection.length === 0) return;
+      if (selection.length === 0 || lancer.getAttribute('aria-disabled') === 'true') return;
       const monTour = ++tour;
       // Les paquets ordinaires d’abord, puis le lot administrateur, comme gup.
       const ordinaires = selection.filter((c) => !ligne(c)?.dataset.admin);
       const admin = selection.filter((c) => ligne(c)?.dataset.admin);
       liste.disabled = true;
-      lancer.hidden = true;
+      // Le bouton reste visible et garde le focus pendant le déroulé ; il ne
+      // disparaît qu’à la fin, quand « Recommencer » prend le focus.
+      lancer.setAttribute('aria-disabled', 'true');
       selection.forEach((c) => etat(c, 'en attente', 'attente'));
       resultat.textContent = `Mise à jour de ${pluriel(selection.length, 'paquet')}…`;
 
@@ -174,6 +176,8 @@ const sources: readonly Source[] = [
       resultat.textContent = admin.length > 0 ? `${fin} Le paquet administrateur est passé en dernier, derrière une seule demande de droits.` : fin;
       recommencer.hidden = false;
       recommencer.focus();
+      lancer.hidden = true;
+      lancer.removeAttribute('aria-disabled');
     });
 
     recommencer.addEventListener('click', () => {
@@ -188,6 +192,7 @@ const sources: readonly Source[] = [
         etat(c, 'disponible');
       });
       liste.disabled = false;
+      lancer.removeAttribute('aria-disabled');
       lancer.hidden = false;
       recommencer.hidden = true;
       afficherSelection();
@@ -404,7 +409,8 @@ const sources: readonly Source[] = [
     gap: var(--s3) var(--s5);
   }
 
-  .demo-gup__boutons .bouton:disabled {
+  .demo-gup__boutons .bouton:disabled,
+  .demo-gup__boutons .bouton[aria-disabled='true'] {
     background: transparent;
     box-shadow: inset 0 0 0 1px var(--trait);
     color: var(--eteint);
