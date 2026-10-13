@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { analyser, fautesTypo } from '../../tools/verifier-site.mjs';
+import { analyser, fautesTypo, urlsDuSrcset } from '../../tools/verifier-site.mjs';
 
 describe('vérificateur du site : typographie', () => {
   it('refuse l’apostrophe droite et l’espace ordinaire avant les signes doubles', () => {
@@ -36,5 +36,19 @@ describe('vérificateur du site : lecture d’une page', () => {
     expect(page.texte).toContain('Texte lu');
     expect(page.texte).not.toContain('l\'axe');
     expect(page.texte).not.toContain('l\'exemple');
+  });
+});
+
+describe('srcset', () => {
+  it('découpe les candidats comme le navigateur : une adresse data: garde sa virgule', () => {
+    expect(urlsDuSrcset('/a.avif 480w, /b.avif 960w')).toEqual(['/a.avif', '/b.avif']);
+    expect(urlsDuSrcset('data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==')).toEqual(['data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==']);
+    expect(urlsDuSrcset('/a.webp, /b.webp 2x')).toEqual(['/a.webp', '/b.webp']);
+    expect(urlsDuSrcset('  /a.webp 1x,\n/b.webp 2x  ')).toEqual(['/a.webp', '/b.webp']);
+  });
+
+  it('ne compte pas la source neutre d’une image comme un lien relatif', () => {
+    const page = analyser('<picture><source media="(scripting: none)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><img src="/_astro/a.webp" alt=""></picture>');
+    expect(page.liens.map((l: { url: string }) => l.url)).toEqual(['data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==', '/_astro/a.webp']);
   });
 });
