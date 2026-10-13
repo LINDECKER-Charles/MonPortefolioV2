@@ -302,12 +302,14 @@ button {
   box-shadow: inset 0 0 0 1px var(--trait);
 }
 
+/* En ligne, pas en flex : sur deux lignes, la flèche reste collée au dernier
+   mot (espace insécable) au lieu de partir au bord du bloc. Cible de 48 px. */
 .lien-action {
-  display: inline-flex;
-  align-items: center;
-  min-height: 48px;
+  display: inline-block;
+  padding-block: var(--s3);
   font-size: var(--t-s);
   font-weight: 600;
+  line-height: 1.5;
 }
 
 .fleche {
