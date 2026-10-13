@@ -260,14 +260,16 @@ import { LIENS } from '../../../config/league-of-database';
   }
 
   /* Les preuves d’un même bloc restent groupées, même empilées : une cible
-     de 36 px (au-dessus des 24 px de WCAG 2.2) au lieu de 48, sans écart. */
+     de 36 px (au-dessus des 24 px de WCAG 2.2) au lieu de 48, sans écart.
+     Le lien d’action tient sa hauteur de son padding (global.css) : 6 px de
+     part et d’autre d’une ligne de 24 px. */
   .bloc__liens {
     margin-top: var(--s1);
     row-gap: 0;
   }
 
   .bloc__liens :global(.lien-action) {
-    min-height: 36px;
+    padding-block: 6px;
   }
 
   .schema {
