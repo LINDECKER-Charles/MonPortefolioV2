@@ -125,8 +125,12 @@ const faits: Record<string, string[]> = {
                   )}
                   <p class="porte__faits" id={`porte-faits-${index}`}>
                     {page.href === '/parcours/competences' && <span class="porte__faits-titre">Au quotidien&nbsp;: </span>}
-                    {faits[page.href].map((fait) => <span class="porte__fait">{fait}</span>)}
-                    {page.href === '/parcours/competences' && <AConfirmer titre="Hiérarchie des technologies à confirmer (Q9)">niveaux à confirmer</AConfirmer>}
+                    {faits[page.href].map((fait) => (
+                      <span class="porte__fait">
+                        {fait}
+                        {page.href === '/parcours/competences' && <AConfirmer titre="Hiérarchie des technologies à confirmer (Q9)">niveaux à confirmer</AConfirmer>}
+                      </span>
+                    ))}
                   </p>
                   <p class="porte__action" aria-hidden="true">{page.action}<span class="fleche">&nbsp;→</span></p>
                 </div>
@@ -324,9 +328,10 @@ const faits: Record<string, string[]> = {
     display: block;
   }
 
+  /* La marque suit la liste sur sa ligne : la porte garde sa hauteur. */
   .porte__faits :global(.a-confirmer) {
-    align-self: flex-start;
-    margin: 2px 0 0;
+    font-weight: 400;
+    white-space: nowrap;
   }
 
   .porte__action {
