@@ -158,7 +158,9 @@ const profils = [
       'moi lettre';
     gap: var(--s7) clamp(40px, 6vw, 96px);
     align-items: start;
-    padding-block: var(--s4) var(--s8);
+    /* « Pour continuer » apporte sa propre marge (--entre-sections) : pas
+       de vide de plus sous le formulaire. */
+    padding-block: var(--s4) 0;
   }
 
   .contact__tete { grid-area: tete; }
@@ -186,6 +188,15 @@ const profils = [
     gap: var(--s4) var(--s5);
     padding-top: var(--s6);
     border-top: 1px solid var(--trait);
+  }
+
+  /* Sur ordinateur, la carte d’identité accompagne la lecture du formulaire,
+     plus long qu’elle : la page ne paraît pas s’arrêter sous elle. */
+  @media (min-width: 861px) {
+    .contact__moi {
+      position: sticky;
+      top: calc(var(--entete) + var(--s5));
+    }
   }
 
   .contact__portrait {
@@ -624,7 +635,6 @@ const profils = [
         'lettre'
         'moi';
       gap: var(--s6);
-      padding-bottom: 0;
     }
 
     .contact__tete h1 {
