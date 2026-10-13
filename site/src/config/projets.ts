@@ -43,6 +43,16 @@ export const PROJETS_ACTIFS = [
     resume: 'Dans Plants vs. Zombies Fusion, on combine des plantes pour défendre son jardin. La traduction française rend les menus et les capacités des plantes compréhensibles.',
     resultat: 'Les joueurs francophones peuvent lire les menus et les capacités des plantes.',
   },
+  {
+    id: 'league',
+    nom: 'League of Database',
+    href: '/projets/league-of-database',
+    categories: ['jeux'],
+    usage: 'Historique des données de League of Legends',
+    promesse: 'Retrouver les données du jeu dans un ancien patch.',
+    resume: 'Une application web pour consulter les champions, objets, runes et sorts de League of Legends dans leurs versions passées, sur ordinateur et mobile.',
+    resultat: 'Les données du jeu restent consultables par langue et par version.',
+  },
 ] as const;
 
 export type ProjetActif = (typeof PROJETS_ACTIFS)[number];

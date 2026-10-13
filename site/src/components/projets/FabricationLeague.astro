@@ -1,0 +1,331 @@
+---
+import angular from '../../assets/stacks/angular.svg?url';
+import dotnet from '../../assets/stacks/dotnet.svg?url';
+import nginx from '../../assets/stacks/nginx.svg?url';
+import postgres from '../../assets/stacks/postgresql.svg?url';
+import docker from '../../assets/stacks/docker.svg?url';
+import actions from '../../assets/stacks/github-actions.svg?url';
+---
+
+<div class="lod-tech">
+  <section class="lod-tech__section" id="trafic" aria-labelledby="lod-trafic-titre">
+    <header class="lod-tech__heading">
+      <h2 id="lod-trafic-titre">La bonne réponse,<br />sans tout recalculer.</h2>
+      <p>Le cache répond aux demandes répétées. Les rendus et les téléchargements ont chacun leur budget.</p>
+    </header>
+
+    <figure class="lod-traffic" aria-labelledby="lod-trafic-titre" aria-describedby="lod-trafic-legende">
+      <div class="lod-traffic__warm">
+        <div class="lod-node lod-node--visitor">
+          <svg class="lod-drawing" viewBox="0 0 160 100" aria-hidden="true">
+            <rect class="lod-surface" x="17" y="15" width="112" height="68" rx="4" />
+            <path d="M17 29h112M25 22h2m5 0h2m5 0h2M51 90h46M73 83v7" />
+            <rect class="lod-surface" x="109" y="41" width="34" height="52" rx="5" />
+            <path d="M119 47h14m-10 39h7M29 42h31m-31 9h43m-43 9h36" />
+            <path class="lod-highlight" d="m84 53 8 8 16-19" />
+          </svg>
+          <strong>Une page demandée</strong>
+          <span>Navigateur ou robot</span>
+        </div>
+        <div class="lod-route"><span>HTTPS</span><svg viewBox="0 0 64 24" aria-hidden="true"><path d="M2 12h56m-9-8 9 8-9 8" /></svg></div>
+        <div class="lod-node lod-node--cache">
+          <svg class="lod-drawing" viewBox="0 0 160 100" aria-hidden="true">
+            <path class="lod-surface" d="M43 28v46c0 9 16 16 37 16s37-7 37-16V28Z" />
+            <ellipse class="lod-surface" cx="80" cy="28" rx="37" ry="16" />
+            <path d="M43 45c0 9 16 16 37 16s37-7 37-16M43 61c0 9 16 16 37 16s37-7 37-16" />
+            <path class="lod-highlight" d="m69 28 8 7 15-17" />
+            <path class="lod-motion-line" d="M15 44h17M12 56h20M17 68h15M127 44h17M127 56h22M127 68h17" />
+          </svg>
+          <strong>Cache de pages</strong>
+          <span class="lod-logo"><img src={nginx} width="23" height="23" alt="" loading="lazy" />nginx</span>
+          <div class="lod-traffic__stores"><span>Patch actuel</span><span>Archives</span></div>
+        </div>
+        <div class="lod-route lod-route--warm"><span>Déjà en cache</span><svg viewBox="0 0 64 24" aria-hidden="true"><path d="M2 12h56m-9-8 9 8-9 8" /></svg></div>
+        <div class="lod-node lod-node--answer">
+          <svg class="lod-drawing" viewBox="0 0 160 100" aria-hidden="true">
+            <rect class="lod-surface" x="37" y="12" width="86" height="77" rx="4" />
+            <path d="M37 26h86M47 19h2m5 0h2m5 0h2M49 64h47m-47 9h36" />
+            <rect class="lod-tint" x="49" y="35" width="24" height="21" rx="2" />
+            <path class="lod-highlight" d="m84 44 8 8 16-19" />
+          </svg>
+          <strong>La page est servie</strong>
+          <span>Sans nouveau rendu</span>
+        </div>
+      </div>
+
+      <div class="lod-traffic__cold">
+        <div class="lod-traffic__branch"><svg viewBox="0 0 48 54" aria-hidden="true"><path d="M24 2v44m-8-9 8 9 8-9" /></svg><strong>Absente du cache</strong></div>
+        <div class="lod-traffic__render">
+          <div class="lod-render-slots" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+          <div><strong>Rendre la page</strong><span class="lod-logo"><img src={angular} width="24" height="24" alt="" loading="lazy" />Angular SSR</span></div>
+          <span class="lod-traffic__bound">Rendus simultanés limités</span>
+        </div>
+        <div class="lod-route"><span>Lire le catalogue</span><svg viewBox="0 0 64 24" aria-hidden="true"><path d="M2 12h56m-9-8 9 8-9 8" /></svg></div>
+        <div class="lod-traffic__catalog">
+          <span class="lod-logo"><img src={dotnet} width="30" height="30" alt="" loading="lazy" /><strong>API .NET</strong></span>
+          <svg class="lod-traffic__catalog-line" viewBox="0 0 52 18" aria-hidden="true"><path d="M2 9h44m-7-6 7 6-7 6" /></svg>
+          <span class="lod-logo"><img src={postgres} width="30" height="30" alt="" loading="lazy" />Catalogue conservé</span>
+        </div>
+        <p class="lod-traffic__return"><svg viewBox="0 0 34 24" aria-hidden="true"><path d="M30 18H9V4m-6 6 6-6 6 6" /></svg>Une copie rejoint le cache</p>
+      </div>
+
+      <div class="lod-traffic__workers">
+        <div class="lod-traffic__workers-title"><strong>Préparer les nouveaux patchs</strong><span>En arrière-plan, avant leur publication</span></div>
+        <div class="lod-worker-flow">
+          <div><svg viewBox="0 0 72 54" aria-hidden="true"><path class="lod-surface" d="M14 39a12 12 0 0 1-1-24 18 18 0 0 1 34-3 13 13 0 0 1 9 25H14Z" /><path class="lod-highlight" d="M36 22v22m-7-7 7 7 7-7" /></svg><strong>Riot</strong><span>Data Dragon</span></div>
+          <svg class="lod-worker-arrow" viewBox="0 0 54 20" aria-hidden="true"><path d="M2 10h46m-8-6 8 6-8 6" /></svg>
+          <div><svg viewBox="0 0 72 54" aria-hidden="true"><rect class="lod-surface" x="17" y="5" width="38" height="44" rx="3" /><path d="M24 17h24m-24 10h24m-24 10h24" /><circle class="lod-solid" cx="29" cy="17" r="3" /><circle class="lod-solid" cx="42" cy="27" r="3" /><circle class="lod-solid" cx="34" cy="37" r="3" /></svg><strong>Ingestion</strong><span>Données puis images</span></div>
+          <svg class="lod-worker-arrow" viewBox="0 0 54 20" aria-hidden="true"><path d="M2 10h46m-8-6 8 6-8 6" /></svg>
+          <div><svg viewBox="0 0 72 54" aria-hidden="true"><path class="lod-surface" d="M10 14h22l6 7h24v26H10Z" /><path d="M10 27h52" /><path class="lod-highlight" d="m27 36 6 6 12-13" /></svg><strong>Prêt à consulter</strong><span>Fichiers dédupliqués</span></div>
+        </div>
+      </div>
+      <figcaption id="lod-trafic-legende">Les anciens patchs ont leur propre cache. Une exploration des archives laisse de la place au patch actuel.</figcaption>
+    </figure>
+  </section>
+
+  <slot />
+
+  <section class="lod-tech__section" id="sauvegardes" aria-labelledby="lod-sauvegardes-titre">
+    <header class="lod-tech__heading">
+      <h2 id="lod-sauvegardes-titre">Une copie ailleurs.<br />Un retour vérifiable.</h2>
+      <p>La chaîne prévoit une sauvegarde chaque nuit et une restauration réelle chaque mois.</p>
+    </header>
+
+    <figure class="lod-backup" aria-labelledby="lod-sauvegardes-titre" aria-describedby="lod-sauvegardes-legende">
+      <div class="lod-backup__boundary"><span>Sur le serveur</span><span>Hors du serveur</span></div>
+      <ol class="lod-backup__journey">
+        <li class="lod-backup__database">
+          <svg class="lod-drawing" viewBox="0 0 120 100" aria-hidden="true"><path class="lod-surface" d="M27 25v52c0 9 15 16 33 16s33-7 33-16V25Z" /><ellipse class="lod-surface" cx="60" cy="25" rx="33" ry="16" /><path d="M27 43c0 9 15 16 33 16s33-7 33-16M27 61c0 9 15 16 33 16s33-7 33-16" /></svg>
+          <strong>PostgreSQL</strong><span>Les données du projet</span>
+          <span class="lod-backup__tag">Accès en lecture</span>
+        </li>
+        <li class="lod-backup__dump">
+          <svg class="lod-drawing" viewBox="0 0 120 100" aria-hidden="true"><path class="lod-surface" d="M35 10h34l20 20v59H35Z" /><path d="M69 10v20h20M46 43h30m-30 10h30m-30 10h21" /><path class="lod-highlight" d="M59 69v17m-7-7 7 7 7-7" /></svg>
+          <strong>pg_dump</strong><span>Une copie de la base</span>
+        </li>
+        <li class="lod-backup__restic">
+          <svg class="lod-drawing" viewBox="0 0 120 100" aria-hidden="true"><path class="lod-surface" d="m23 31 37-20 37 20v42L60 93 23 73Z" /><path d="m23 31 37 20 37-20M60 51v42" /><rect class="lod-surface" x="42" y="40" width="36" height="29" rx="4" /><path class="lod-highlight" d="M49 40V29a11 11 0 0 1 22 0v11" /><circle class="lod-solid" cx="60" cy="53" r="3" /><path class="lod-highlight" d="M60 55v6" /></svg>
+          <strong>restic</strong><span>Chiffrer et dédupliquer</span>
+        </li>
+        <li class="lod-backup__s3">
+          <svg class="lod-drawing" viewBox="0 0 120 100" aria-hidden="true"><path class="lod-surface" d="M25 68a18 18 0 0 1-2-36 28 28 0 0 1 53-5 20 20 0 0 1 15 39H25Z" /><path class="lod-surface" d="m60 44 17 7v14c0 11-17 20-17 20S43 76 43 65V51Z" /><path class="lod-highlight" d="m52 64 6 6 11-14" /></svg>
+          <strong>Stockage S3</strong><span>Objets verrouillés</span>
+          <span class="lod-backup__tag">Copie hors hôte</span>
+        </li>
+      </ol>
+      <div class="lod-backup__restore">
+        <div class="lod-backup__restore-path"><span class="lod-backup__restore-line" aria-hidden="true"></span><span>Rejouer la sauvegarde</span></div>
+        <div class="lod-backup__restore-target">
+          <svg viewBox="0 0 84 72" aria-hidden="true"><path class="lod-surface" d="M17 18v35c0 7 12 12 27 12s27-5 27-12V18Z" /><ellipse class="lod-surface" cx="44" cy="18" rx="27" ry="12" /><path d="M17 36c0 7 12 12 27 12s27-5 27-12" /><circle class="lod-surface" cx="20" cy="52" r="17" /><path class="lod-highlight" d="m11 52 6 6 13-14" /></svg>
+          <div><strong>Restaurer pour de vrai</strong><span>Dans un PostgreSQL temporaire</span></div>
+        </div>
+        <div class="lod-backup__journal"><svg viewBox="0 0 58 56" aria-hidden="true"><path class="lod-surface" d="M11 4h36v47H11Z" /><path d="M21 15h17m-17 10h17m-17 10h11" /><path class="lod-highlight" d="m33 42 5 5 12-13" /></svg><div><strong>Garder une trace</strong><span>Journal des passes et alertes</span></div></div>
+      </div>
+      <figcaption id="lod-sauvegardes-legende">Avant une migration, un dump supplémentaire permet aussi le retour à la version précédente.</figcaption>
+    </figure>
+  </section>
+
+  <section class="lod-tech__section" id="livraison" aria-labelledby="lod-livraison-titre">
+    <header class="lod-tech__heading">
+      <h2 id="lod-livraison-titre">Construire une fois.<br />Livrer la même version.</h2>
+      <p>Les images validées en test passent en production avec la même empreinte, après une promotion manuelle.</p>
+    </header>
+    <figure class="lod-delivery" aria-labelledby="lod-livraison-titre" aria-describedby="lod-livraison-legende">
+      <div class="lod-delivery__tools"><span class="lod-logo"><img src={actions} width="32" height="32" alt="" loading="lazy" />GitHub Actions</span><span class="lod-logo"><img src={docker} width="38" height="32" alt="" loading="lazy" />Docker</span></div>
+      <ol class="lod-delivery__steps">
+        <li><span class="lod-delivery__step">1</span><h3>Construire</h3><div class="lod-package" aria-hidden="true"><span><img src={dotnet} width="24" height="24" alt="" loading="lazy" /></span><span><img src={angular} width="24" height="24" alt="" loading="lazy" /></span><span><img src={nginx} width="24" height="24" alt="" loading="lazy" /></span></div><span>API · web · nginx</span></li>
+        <li><span class="lod-delivery__step">2</span><h3>Valider en test</h3><div class="lod-package lod-package--checked" aria-hidden="true"><span><img src={dotnet} width="24" height="24" alt="" loading="lazy" /></span><span><img src={angular} width="24" height="24" alt="" loading="lazy" /></span><span><img src={nginx} width="24" height="24" alt="" loading="lazy" /></span><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" /><path d="m11 20 6 6 12-14" /></svg></div><span>Contrôles et déploiement</span></li>
+        <li><span class="lod-delivery__step">3</span><h3>Promouvoir en production</h3><div class="lod-package lod-package--checked" aria-hidden="true"><span><img src={dotnet} width="24" height="24" alt="" loading="lazy" /></span><span><img src={angular} width="24" height="24" alt="" loading="lazy" /></span><span><img src={nginx} width="24" height="24" alt="" loading="lazy" /></span><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" /><path d="m11 20 6 6 12-14" /></svg></div><span>Les mêmes images</span></li>
+      </ol>
+      <figcaption id="lod-livraison-legende"><svg viewBox="0 0 26 26" aria-hidden="true"><path d="m5 13 5 5L21 6" /></svg>Même empreinte d’un environnement à l’autre.</figcaption>
+    </figure>
+  </section>
+</div>
+
+<style>
+  .lod-tech { --lod-accent: #075d68; min-width: 0; }
+  :global(:root[data-theme='nuit']) .lod-tech { --lod-accent: #72d7df; }
+  .lod-tech__section { padding-block: clamp(48px, 6vw, 88px); border-top: 1px solid var(--filet); scroll-margin-top: 140px; }
+  .lod-tech__heading { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, .8fr); gap: 32px; align-items: end; margin-bottom: 32px; }
+  .lod-tech__heading h2 { font-size: clamp(2rem, 3.2vw, 3.5rem); line-height: 1.05; letter-spacing: -.035em; }
+  .lod-tech__heading p { max-width: 38ch; color: var(--graphite); font-size: 1.0625rem; line-height: 1.5; }
+  .lod-tech figure { margin: 0; }
+  .lod-tech svg { fill: none; stroke: var(--trait); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .lod-tech .lod-surface { fill: var(--blanc); }
+  .lod-tech .lod-tint { fill: color-mix(in srgb, var(--lod-accent) 10%, var(--blanc)); stroke: var(--lod-accent); }
+  .lod-tech .lod-highlight, .lod-tech .lod-motion-line { stroke: var(--lod-accent); stroke-width: 2.5; }
+  .lod-tech .lod-solid { fill: var(--lod-accent); stroke: var(--lod-accent); }
+  .lod-drawing { display: block; width: 160px; height: 100px; max-width: 100%; }
+  .lod-logo { display: inline-flex; align-items: center; gap: 9px; font-size: .9375rem; line-height: 1.3; }
+  .lod-logo img { flex-shrink: 0; object-fit: contain; }
+  .lod-tech figcaption { color: var(--graphite); font-size: .9375rem; line-height: 1.5; }
+  .lod-traffic { background: var(--blanc); border: 1px solid var(--filet); }
+  .lod-traffic__warm { display: grid; grid-template-columns: minmax(0, 1fr) 74px minmax(0, 1.2fr) 100px minmax(0, 1fr); align-items: center; gap: 10px; padding: 32px 28px 24px; }
+  .lod-node { display: flex; align-items: center; flex-direction: column; gap: 6px; text-align: center; }
+  .lod-node > strong { font-size: 1.1875rem; line-height: 1.25; }
+  .lod-node > span:not(.lod-logo) { color: var(--graphite); font-size: .875rem; }
+  .lod-node--cache { position: relative; }
+  .lod-node--cache::before { position: absolute; z-index: 0; inset: 0 -8px -14px; border: 1px solid color-mix(in srgb, var(--lod-accent) 30%, var(--filet)); background: color-mix(in srgb, var(--lod-accent) 5%, var(--blanc)); content: ''; }
+  .lod-node--cache > * { z-index: 1; }
+  .lod-traffic__stores { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; margin-top: 5px; }
+  .lod-traffic__stores span { padding: 3px 8px; color: var(--lod-accent); border: 1px solid color-mix(in srgb, var(--lod-accent) 30%, var(--filet)); font-size: .75rem; line-height: 1.3; background: var(--blanc); }
+  .lod-route { display: flex; align-items: center; flex-direction: column; gap: 6px; text-align: center; color: var(--graphite); font-size: .8125rem; line-height: 1.3; }
+  .lod-route svg { width: 100%; max-width: 64px; height: 24px; stroke: var(--lod-accent); }
+  .lod-route--warm { color: var(--lod-accent); font-weight: 700; }
+  .lod-traffic__cold { display: grid; grid-template-columns: minmax(0, 1.2fr) 90px minmax(0, 1.15fr); gap: 16px; align-items: center; padding: 0 28px 28px 28%; }
+  .lod-traffic__branch { grid-column: 1 / -1; display: flex; align-items: center; gap: 4px; color: var(--bleu); font-size: .875rem; }
+  .lod-traffic__branch svg { width: 36px; height: 54px; stroke: var(--bleu); }
+  .lod-traffic__render { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+  .lod-traffic__render > div:not(.lod-render-slots) { display: flex; flex-direction: column; gap: 7px; }
+  .lod-traffic__render strong { font-size: 1.0625rem; }
+  .lod-render-slots { display: grid; grid-template-columns: repeat(4, 13px); grid-template-rows: repeat(2, 18px); gap: 4px; }
+  .lod-render-slots span { border: 1.5px solid var(--lod-accent); background: color-mix(in srgb, var(--lod-accent) 10%, var(--blanc)); }
+  .lod-render-slots span:nth-child(n + 4) { background: var(--blanc); border-color: var(--trait-doux); }
+  .lod-traffic__bound { flex-basis: 100%; color: var(--graphite); font-size: .8125rem; }
+  .lod-traffic__catalog { display: flex; flex-direction: column; gap: 8px; }
+  .lod-traffic__catalog-line { align-self: center; width: 28px; height: 22px; transform: rotate(90deg); stroke: var(--lod-accent) !important; }
+  .lod-traffic__return { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; color: var(--lod-accent); font-size: .8125rem; }
+  .lod-traffic__return svg { width: 34px; height: 24px; stroke: var(--lod-accent); }
+  .lod-traffic__workers { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); align-items: center; gap: 30px; padding: 28px; border-top: 1px dashed var(--trait-doux); background: var(--papier); }
+  .lod-traffic__workers-title { display: flex; flex-direction: column; gap: 10px; }
+  .lod-traffic__workers-title strong { max-width: 25ch; font-size: 1.25rem; line-height: 1.2; }
+  .lod-traffic__workers-title span { color: var(--graphite); font-size: .875rem; }
+  .lod-worker-flow { display: grid; grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr) 40px minmax(0, 1.2fr); align-items: center; gap: 10px; }
+  .lod-worker-flow > div { display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .lod-worker-flow > div svg { width: 72px; height: 54px; margin-bottom: 8px; }
+  .lod-worker-flow strong { font-size: .9375rem; line-height: 1.25; }
+  .lod-worker-flow span { margin-top: 4px; color: var(--graphite); font-size: .75rem; line-height: 1.3; }
+  .lod-worker-arrow { width: 40px; height: 20px; stroke: var(--lod-accent) !important; }
+  .lod-traffic figcaption { padding: 18px 28px; border-top: 1px solid var(--filet); }
+  .lod-backup { overflow: hidden; border: 1px solid var(--filet); background: var(--blanc); }
+  .lod-backup__boundary { display: grid; grid-template-columns: 3fr 1fr; border-bottom: 1px solid var(--filet); font-size: .875rem; color: var(--graphite); }
+  .lod-backup__boundary span { padding: 12px 24px; }
+  .lod-backup__boundary span + span { border-left: 1px dashed var(--trait-doux); color: var(--lod-accent); background: color-mix(in srgb, var(--lod-accent) 5%, var(--blanc)); }
+  .lod-backup__journey { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 0; margin: 0; list-style: none; }
+  .lod-backup__journey li { position: relative; display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 25px 12px; text-align: center; }
+  .lod-backup__journey li + li::before { position: absolute; top: 74px; left: -7px; width: 13px; height: 13px; border-top: 2px solid var(--lod-accent); border-right: 2px solid var(--lod-accent); transform: rotate(45deg); content: ''; }
+  .lod-backup__journey li:nth-child(4) { background: color-mix(in srgb, var(--lod-accent) 5%, var(--blanc)); border-left: 1px dashed var(--trait-doux); }
+  .lod-backup__journey .lod-drawing { width: 120px; }
+  .lod-backup__journey strong { font-size: 1.125rem; line-height: 1.25; }
+  .lod-backup__journey li > span { color: var(--graphite); font-size: .875rem; line-height: 1.4; }
+  .lod-backup__journey .lod-backup__tag { margin-top: 8px; color: var(--lod-accent); font-size: .75rem; font-weight: 700; }
+  .lod-backup__restore { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, .8fr); gap: 16px 32px; padding: 0 28px 28px; }
+  .lod-backup__restore-path { grid-column: 1 / -1; display: flex; align-items: center; flex-direction: row-reverse; justify-content: space-between; gap: 16px; color: var(--lod-accent); font-size: .8125rem; }
+  .lod-backup__restore-path .lod-backup__restore-line { position: relative; flex: 1; max-width: 75%; height: 24px; margin-top: 0; border-bottom: 1.5px solid var(--lod-accent); border-right: 1.5px solid var(--lod-accent); }
+  .lod-backup__restore-line::before { position: absolute; left: 0; bottom: -5px; width: 9px; height: 9px; border-left: 1.5px solid var(--lod-accent); border-bottom: 1.5px solid var(--lod-accent); transform: rotate(45deg); content: ''; }
+  .lod-backup__restore-target, .lod-backup__journal { display: flex; align-items: center; gap: 16px; }
+  .lod-backup__restore-target > svg { flex-shrink: 0; width: 84px; height: 72px; }
+  .lod-backup__journal > svg { flex-shrink: 0; width: 58px; height: 56px; }
+  .lod-backup__restore strong { display: block; font-size: 1.0625rem; line-height: 1.3; }
+  .lod-backup__restore div > span { display: block; margin-top: 6px; color: var(--graphite); font-size: .875rem; line-height: 1.4; }
+  .lod-backup figcaption { padding: 18px 28px; border-top: 1px solid var(--filet); background: var(--papier); }
+  .lod-delivery { border: 1px solid var(--filet); background: var(--blanc); }
+  .lod-delivery__tools { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 18px; padding: 20px 28px; border-bottom: 1px solid var(--filet); }
+  .lod-delivery__tools .lod-logo { font-weight: 700; }
+  .lod-delivery__steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; margin: 0; padding: 0; list-style: none; }
+  .lod-delivery__steps li { position: relative; display: flex; flex-direction: column; align-items: center; padding: 28px 18px; text-align: center; }
+  .lod-delivery__steps li + li::before { position: absolute; top: 50%; left: -9px; width: 18px; height: 18px; border-top: 2px solid var(--bleu); border-right: 2px solid var(--bleu); transform: rotate(45deg); content: ''; }
+  .lod-delivery__step { color: var(--bleu); font: italic 1.75rem/1 var(--font-note); }
+  .lod-delivery__steps h3 { margin-top: 10px; min-height: 2.7em; font-size: 1.125rem; line-height: 1.35; }
+  .lod-delivery__steps li > span:last-child { margin-top: 16px; color: var(--graphite); font-size: .875rem; line-height: 1.3; }
+  .lod-package { position: relative; display: flex; width: 140px; height: 92px; align-items: center; justify-content: center; gap: 8px; background: color-mix(in srgb, var(--bleu) 6%, var(--blanc)); border: 1.5px solid var(--bleu); }
+  .lod-package::before, .lod-package::after { position: absolute; height: 4px; right: 7px; left: 7px; border: 1px solid var(--bleu); background: var(--blanc); content: ''; }
+  .lod-package::before { top: -6px; }
+  .lod-package::after { top: -11px; left: 14px; right: 14px; }
+  .lod-package > span { display: flex; align-items: center; justify-content: center; width: 34px; height: 36px; background: #fff; }
+  .lod-package img { object-fit: contain; }
+  .lod-package > svg { position: absolute; width: 40px; height: 40px; right: -12px; bottom: -12px; }
+  .lod-package > svg circle { fill: var(--blanc); stroke: var(--lod-accent); }
+  .lod-package > svg path { stroke: var(--lod-accent); stroke-width: 2.5; }
+  .lod-delivery figcaption { display: flex; justify-content: center; align-items: center; gap: 9px; padding: 18px 28px; color: var(--lod-accent); border-top: 1px solid var(--filet); }
+  .lod-delivery figcaption svg { width: 26px; height: 26px; flex-shrink: 0; stroke: var(--lod-accent); }
+  @media (prefers-color-scheme: dark) { :global(:root:not([data-theme])) .lod-tech { --lod-accent: #72d7df; } }
+  @media (max-width: 960px) {
+    .lod-traffic__warm { grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1.2fr) 70px minmax(0, 1fr); padding-inline: 18px; gap: 7px; }
+    .lod-node > strong { font-size: 1.0625rem; }
+    .lod-route { font-size: .75rem; }
+    .lod-traffic__cold { padding-inline: 18px; padding-left: 25%; grid-template-columns: minmax(0, 1fr) 65px minmax(0, 1fr); }
+    .lod-traffic__workers { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+    .lod-traffic__workers-title { flex-direction: row; align-items: center; gap: 24px; }
+    .lod-traffic__workers-title strong { max-width: 28ch; }
+    .lod-backup__restore { padding-inline: 18px; }
+  }
+  @media (max-width: 680px) {
+    .lod-tech__heading { grid-template-columns: minmax(0, 1fr); gap: 18px; margin-bottom: 24px; }
+    .lod-tech__heading p { max-width: 45ch; font-size: 1rem; }
+    .lod-traffic__warm { grid-template-columns: minmax(0, 1fr); padding: 24px 20px; gap: 12px; }
+    .lod-node { display: grid; grid-template-columns: 95px minmax(0, 1fr); text-align: left; column-gap: 16px; row-gap: 5px; align-items: center; }
+    .lod-node > svg { grid-row: 1 / 4; width: 95px; height: 78px; }
+    .lod-node > strong { font-size: 1.125rem; }
+    .lod-node > span { grid-column: 2; }
+    .lod-node--cache { padding: 12px 0; }
+    .lod-node--cache::before { inset: 0 -8px; }
+    .lod-traffic__stores { grid-column: 2; justify-content: flex-start; margin-top: 1px; }
+    .lod-route { flex-direction: row; gap: 10px; padding-left: 31px; text-align: left; font-size: .8125rem; }
+    .lod-route svg { order: -1; width: 24px; height: 30px; transform: rotate(90deg); }
+    .lod-traffic__cold { grid-template-columns: minmax(0, 1fr); padding: 0 24px 24px; gap: 18px; border-top: 1px solid var(--filet); background: color-mix(in srgb, var(--bleu) 3%, var(--blanc)); }
+    .lod-traffic__branch { grid-column: 1; }
+    .lod-traffic__render { padding-left: 7px; }
+    .lod-traffic__render .lod-traffic__bound { padding-left: 83px; }
+    .lod-traffic__cold > .lod-route { padding-left: 22px; }
+    .lod-traffic__catalog { padding-left: 7px; align-items: flex-start; gap: 9px; }
+    .lod-traffic__catalog-line { align-self: flex-start; width: 28px; height: 24px; transform: rotate(90deg); }
+    .lod-traffic__return { grid-column: 1; }
+    .lod-traffic__workers { padding: 24px; }
+    .lod-traffic__workers-title { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .lod-traffic__workers-title strong { font-size: 1.1875rem; }
+    .lod-worker-flow { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+    .lod-worker-flow > div { display: grid; grid-template-columns: 62px minmax(0, 1fr); gap: 0 16px; text-align: left; align-items: center; }
+    .lod-worker-flow > div svg { grid-row: 1 / 3; width: 62px; margin: 0; }
+    .lod-worker-flow strong { font-size: 1rem; }
+    .lod-worker-flow span { font-size: .8125rem; }
+    .lod-worker-arrow { width: 24px; height: 26px; margin-left: 19px; transform: rotate(90deg); }
+    .lod-traffic figcaption, .lod-backup figcaption { padding: 18px 24px; }
+    .lod-backup__boundary { display: none; }
+    .lod-backup__journey { grid-template-columns: minmax(0, 1fr); padding: 8px 24px 0; }
+    .lod-backup__journey li { display: grid; grid-template-columns: 84px minmax(0, 1fr); align-items: center; text-align: left; column-gap: 16px; row-gap: 5px; padding: 18px 0 23px; }
+    .lod-backup__journey li > svg { grid-row: 1 / 4; width: 84px; height: 86px; }
+    .lod-backup__journey strong { font-size: 1.125rem; }
+    .lod-backup__journey li > span { grid-column: 2; }
+    .lod-backup__journey li + li::before { top: -5px; left: 36px; width: 11px; height: 11px; transform: rotate(135deg); }
+    .lod-backup__journey li:nth-child(4) { margin-inline: -24px; padding-inline: 24px; border-left: 0; border-top: 1px dashed var(--trait-doux); }
+    .lod-backup__journey .lod-backup__tag { margin-top: 1px; }
+    .lod-backup__restore { grid-template-columns: minmax(0, 1fr); padding: 18px 24px 24px; border-top: 1px solid var(--filet); gap: 18px; }
+    .lod-backup__restore-path { grid-column: 1; flex-direction: row; justify-content: flex-start; gap: 10px; }
+    .lod-backup__restore-path .lod-backup__restore-line { flex: 0 0 24px; width: 24px; height: 34px; margin-right: 10px; border-right: 1.5px solid var(--lod-accent); border-bottom: 0; }
+    .lod-backup__restore-line::before { left: auto; right: -5px; bottom: 0; transform: rotate(-45deg); }
+    .lod-backup__restore-target { gap: 16px; }
+    .lod-backup__restore-target > svg { width: 72px; height: 62px; }
+    .lod-backup__journal { gap: 16px; padding-left: 10px; }
+    .lod-backup__journal > svg { width: 52px; }
+    .lod-backup__restore strong { font-size: 1rem; }
+    .lod-delivery__tools { padding: 18px 24px; }
+    .lod-delivery__steps { grid-template-columns: minmax(0, 1fr); padding: 12px 24px; }
+    .lod-delivery__steps li { display: grid; grid-template-columns: 25px minmax(0, 1fr) 92px; text-align: left; align-items: center; padding: 28px 0; gap: 8px 12px; }
+    .lod-delivery__step { grid-row: 1 / 3; font-size: 1.5rem; }
+    .lod-delivery__steps h3 { margin: 0; min-height: 0; font-size: 1rem; }
+    .lod-delivery__steps li > span:last-child { margin: 0; grid-column: 2; font-size: .8125rem; }
+    .lod-package { grid-column: 3; grid-row: 1 / 3; width: 88px; height: 65px; gap: 4px; }
+    .lod-package > span { width: 22px; height: 26px; }
+    .lod-package img { width: 18px; height: 18px; }
+    .lod-package > svg { width: 30px; height: 30px; right: -7px; bottom: -8px; }
+    .lod-delivery__steps li + li::before { left: 10px; top: -6px; width: 12px; height: 12px; transform: rotate(135deg); }
+    .lod-delivery figcaption { padding: 18px 24px; justify-content: flex-start; font-size: .875rem; }
+  }
+  @media (max-width: 360px) {
+    .lod-node { grid-template-columns: 72px minmax(0, 1fr); column-gap: 10px; }
+    .lod-node > svg { width: 72px; }
+    .lod-traffic__warm, .lod-traffic__cold, .lod-traffic__workers { padding-inline: 18px; }
+    .lod-delivery__steps { padding-inline: 18px; }
+    .lod-delivery__steps li { grid-template-columns: 20px minmax(0, 1fr) 75px; gap: 8px; }
+    .lod-package { width: 74px; }
+    .lod-package > span { width: 19px; }
+    .lod-package img { width: 16px; }
+  }
+  @media print {
+    .lod-tech { --lod-accent: #075d68; }
+    .lod-tech__section { padding-block: 24px; break-inside: avoid; }
+    .lod-tech__heading h2 { font-size: 1.8rem; }
+    .lod-traffic, .lod-backup, .lod-delivery { break-inside: avoid; }
+  }
+</style>

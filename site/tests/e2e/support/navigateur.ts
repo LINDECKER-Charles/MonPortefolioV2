@@ -27,6 +27,7 @@ export function fileDeMesure(page: Page): Promise<[string, Record<string, unknow
 export const PAGES = [
   '/', '/projets', '/projets/pvz-fusion', '/projets/omnicard', '/projets/gup',
   '/projets/bloodborne-legendary-run',
+  '/projets/league-of-database',
   '/parcours', '/parcours/professionnel', '/parcours/competences', '/parcours/formation',
   '/contact', '/blog', '/mentions-legales',
 ] as const;

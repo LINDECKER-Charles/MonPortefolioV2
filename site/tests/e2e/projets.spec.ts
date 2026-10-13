@@ -3,7 +3,7 @@ import { surveillerConsole } from './support/navigateur';
 
 test('le hub garde les archives discrètes et les pages accessibles', async ({ page }) => {
   await page.goto('/projets');
-  await expect(page.locator('[data-project-card]')).toHaveCount(3);
+  await expect(page.locator('[data-project-card]')).toHaveCount(4);
   const archives = page.locator('#projets-archives');
   await expect(archives).not.toHaveAttribute('open');
   await archives.locator('summary').focus();
@@ -235,7 +235,7 @@ test.describe('Bloodborne sans JavaScript', () => {
     await page.goBack();
     await page.getByRole('navigation', { name: 'Fil d’Ariane', exact: true }).getByRole('link', { name: 'Projets', exact: true }).click();
     await expect(page).toHaveURL(/\/projets$/);
-    await expect(page.locator('[data-project-card]')).toHaveCount(3);
+    await expect(page.locator('[data-project-card]')).toHaveCount(4);
     expect(erreurs).toEqual([]);
   });
 });

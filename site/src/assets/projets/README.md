@@ -116,3 +116,78 @@ le carrousel et restent agrandissables.
 
 Source de la mécanique : `docs/guides/boutique.md`. Les échos gagnés achètent des fonds, des
 bannières et des portraits. Les titres sont gagnés par les réussites ; ils ne s’achètent pas.
+
+## League Of Database — 12 octobre 2026
+
+Captures authentiques du [site en production](https://www.league-of-data-base.com),
+version affichée **3.0.0**, langue française et patch **16.20.1**. Le crawl ancien du site
+et la note de bascule du README du projet ne reflètent plus l’interface observée.
+Aucun compte connecté ni fixture, aucune mutation distante. Les données du catalogue,
+les illustrations et les vidéos de capacités proviennent de Riot Games.
+
+Les fichiers sont dans `site/public/images/league-of-database/`. Les captures de viewport
+sont converties en WebP (qualité 94), sans recomposition de l’interface ni retouche.
+Les variantes mobiles sont servies dans des éléments `picture` ; le clic agrandit l’écran
+réellement affiché. Les viewports restent 1440 × 1000 et 430 × 932, avec un DPR de 2 : la netteté vient des captures natives, sans agrandissement artificiel. La visionneuse de l’application est également montrée dans l’onglet « En grand ».
+
+Les aperçus du dossier `apercus/` sont dérivés de ces mêmes WebP avec Sharp 0.35.5,
+sans recadrage ni recomposition : réduction proportionnelle avec `withoutEnlargement: true`,
+puis WebP qualité 92. Les captures desktop affichées ont des largeurs de 720, 1440 et
+2160 pixels ; leurs variantes mobiles ont un aperçu de 430 pixels. Le téléphone du héros
+(`histoire-ahri-mobile`) dispose aussi d’une largeur de 320 pixels. `srcset` et `sizes`
+sélectionnent l’aperçu adapté à sa place dans la page et à la densité de l’écran. Les
+originaux restent intacts et servent à l’agrandissement, ainsi qu’au lien sans JavaScript.
+
+| Fichier | Route et geste | Dimensions |
+|---|---|---|
+| `champions.webp` | `/fr/champions`, catalogue et filtres | 2880 × 2000 |
+| `ahri.webp` | `/fr/champions/Ahri`, présentation | 2880 × 2000 |
+| `ahri-capacites.webp` | même fiche, Q sélectionné et vidéo jouée | 2880 × 2000 |
+| `ahri-skins.webp` | même fiche, galerie et chromas chargés | 2880 × 2000 |
+| `ahri-skin-detail.webp` | même fiche, premier skin ouvert en grand | 2880 × 2000 |
+| `objets.webp` | `/fr/items`, catalogue et recherche | 2880 × 2000 |
+| `objet-recette.webp` | `/fr/items/3089-rabadons-deathcap`, recette de Rabadon | 2880 × 2000 |
+| `runes.webp` | `/fr/runes/8000-precision`, arbre Précision | 2880 × 2000 |
+| `versions-langues.webp` | `/fr/champions`, menu Patch & langue ouvert | 2880 × 2000 |
+| `ahri-skin-detail-mobile.webp` | même fiche, premier skin ouvert en grand | 860 × 1864 |
+| `ahri-mobile.webp` | `/fr/champions/Ahri`, présentation | 860 × 1864 |
+| `ahri-capacites-mobile.webp` | même fiche, Q, vidéo et description | 860 × 1864 |
+| `ahri-skins-mobile.webp` | même fiche, galerie et chromas | 860 × 1864 |
+| `objets-mobile.webp` | `/fr/items`, liste et recherche | 860 × 1864 |
+| `objet-recette-mobile.webp` | fiche de Rabadon, défilement de 250 px pour montrer l’arbre | 860 × 1864 |
+| `versions-langues-mobile.webp` | `/fr/champions`, menu ouvert | 860 × 1864 |
+| `runes-mobile.webp` | arbre Précision et première rune | 860 × 1864 |
+
+La capture Umami n’est pas disponible : `stats.league-of-data-base.com` mène à une
+connexion, et aucun lien de partage public n’est présent dans les sources.
+La rubrique montre le trajet de la mesure, sans reproduire ni inventer un dashboard.
+
+### Historique des données — reprise du 12 octobre
+
+Le parcours commence par l’historique, puis les données d’une version réellement consultée.
+Les captures `histoire-*` viennent exclusivement des routes publiques explicites du
+patch **3.6.14** ; choisir simplement ce patch dans le menu du catalogue courant ne suffisait
+pas à garantir le contexte de la liste. La table de l’historique reste sur `/fr/patches`.
+Le clic agrandit la véritable variante mobile ou desktop affichée.
+
+Chaque ligne ci-dessous désigne une paire `nom.webp` / `nom-mobile.webp`, respectivement
+**2880 × 2000** et **860 × 1864**, DPR 2, WebP qualité 94. Capture de viewport, sans
+recomposition de l’interface, compte connecté ni donnée d’exemple.
+
+| Noms des paires | Route et geste |
+|---|---|
+| `historique-patchs` | `/fr/patches`, tête de l’historique |
+| `historique-anciens-patchs` | même page, patch 3.6.14 centré parmi les versions voisines |
+| `histoire-champions` | `/fr/3.6.14/champions`, 113 champions du patch |
+| `histoire-version` | même catalogue, menu Patch & langue ouvert |
+| `histoire-ahri` | `/fr/3.6.14/champions/Ahri`, présentation |
+| `histoire-ahri-statistiques` | même fiche, statistiques de base au niveau 1 |
+| `histoire-ahri-capacites` | même fiche, Q sélectionné |
+| `histoire-skins` | même fiche, galerie des trois apparences du patch |
+| `histoire-navigation` | même fiche, liens vers les six patchs précédents |
+
+Les données et les icônes correspondent au patch. Les vidéos de compétences restent celles
+de la version actuelle des sorts, comme l’indique l’avertissement de l’application ; elles
+ne sont pas présentées comme des vidéos historiques. Les illustrations des skins utilisent
+elles aussi des adresses sans patch : c’est la liste d’apparences disponibles qui sert de
+preuve historique.

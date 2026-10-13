@@ -6,6 +6,7 @@ const PROJETS = [
   { id: 'bloodborne', nom: 'Bloodborne Legendary Run', chemin: '/projets/bloodborne-legendary-run' },
   { id: 'gup', nom: 'GUP', chemin: '/projets/gup' },
   { id: 'pvz', nom: 'PVZF Translation', chemin: '/projets/pvz-fusion' },
+  { id: 'league', nom: 'League of Database', chemin: '/projets/league-of-database' },
 ] as const;
 const REGLES = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'];
 
@@ -17,12 +18,13 @@ function entreeProjet(page: Page, projet: (typeof PROJETS)[number]) {
 
 async function verifierThemes(page: Page) {
   const visibles = page.locator('[data-project-card]:visible');
-  await expect(visibles).toHaveCount(3);
+  await expect(visibles).toHaveCount(4);
   const jeux = page.locator('[data-project-section="jeux"]');
   const outils = page.locator('[data-project-section="outils"]');
-  await expect(jeux.locator('[data-project-card]')).toHaveCount(2);
+  await expect(jeux.locator('[data-project-card]')).toHaveCount(3);
   await expect(jeux.locator('[data-project-card="bloodborne"]')).toBeVisible();
   await expect(jeux.locator('[data-project-card="pvz"]')).toBeVisible();
+  await expect(jeux.locator('[data-project-card="league"]')).toBeVisible();
   await expect(outils.locator('[data-project-card]')).toHaveCount(1);
   await expect(outils.locator('[data-project-card="gup"]')).toBeVisible();
   for (const theme of ['jeux', 'outils']) {
@@ -32,7 +34,7 @@ async function verifierThemes(page: Page) {
     await page.keyboard.press('Enter');
     expect(new URL(page.url()).hash).toBe(`#theme-${theme}`);
     await expect(page.locator(`[data-project-section="${theme}"]`)).toBeInViewport();
-    await expect(visibles).toHaveCount(3);
+    await expect(visibles).toHaveCount(4);
   }
 }
 
@@ -117,7 +119,7 @@ for (const theme of ['jour', 'nuit'] as const) {
 test.describe('le hub sans JavaScript', () => {
   test.use({ javaScriptEnabled: false, reducedMotion: 'reduce' });
 
-  test('les thèmes mènent à leurs sections en gardant les trois projets visibles', async ({ page }) => {
+  test('les thèmes mènent à leurs sections en gardant les quatre projets visibles', async ({ page }) => {
     await page.goto('/projets');
     await verifierThemes(page);
   });

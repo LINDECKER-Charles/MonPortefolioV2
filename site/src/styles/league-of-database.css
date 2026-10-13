@@ -1,0 +1,139 @@
+.cas-league { --lod-accent: #075d68; --lod-pale: #dceef0; }
+:root[data-theme='nuit'] .cas-league { --lod-accent: #72d7df; --lod-pale: #182e3b; }
+.lod-hero { display: grid; grid-template-columns: .85fr 1.25fr; align-items: center; gap: 48px; padding-block: 34px 66px; }
+.lod-nom { color: var(--lod-accent); font-size: 1.125rem; font-weight: 700; margin-bottom: 22px; }
+.lod-hero h1 { font-size: clamp(2.6rem, 4.2vw, 4rem); letter-spacing: -.045em; line-height: 1.05; }
+.lod-intro { font-size: 1.125rem; max-width: 35ch; margin-block: 24px; color: var(--graphite); }
+.lod-hero .btn { gap: 18px; }
+.lod-role { font-size: .8125rem; color: var(--graphite); margin-top: 22px; max-width: 35ch; }
+.lod-hero__visuel { position: relative; padding: 30px 55px 60px 0; }
+.lod-hero__visuel::before { content: ''; position: absolute; inset: 0 10px 40px 30px; background: var(--lod-pale); border-radius: 50% 0 0 0; z-index: -1; }
+.lod-bureau { border: 5px solid #12232b; border-radius: 9px; box-shadow: 0 16px 34px #09292b22; overflow: hidden; }
+.lod-capture { position: relative; display: block; cursor: zoom-in; text-decoration: none; }
+.lod-capture img { width: 100%; height: auto; display: block; }
+.lod-capture__statut { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; text-align: center; font-size: .9375rem; font-weight: 400; line-height: 1.5; color: var(--graphite); }
+.lod-capture__statut[hidden] { display: none; }
+.lod-capture[aria-busy='true'] img, .lod-capture[data-erreur] img, .lod-visionneuse__image[aria-busy='true'] img, .lod-visionneuse__image[data-erreur] img { visibility: hidden; }
+.lod-mobile { position: absolute; width: 150px; right: 0; bottom: 43px; border: 5px solid #12232b; border-radius: 18px; overflow: hidden; box-shadow: 0 12px 20px #09292b33; }
+.lod-hero__visuel > figcaption { font-family: var(--font-note); font-style: italic; color: var(--lod-accent); font-size: 1rem; margin-top: 18px; padding-right: 80px; }
+.lod-sommaire { position: sticky; top: var(--hauteur-entete); background: var(--voile); backdrop-filter: blur(12px); border-block: 1px solid var(--filet); z-index: 10; }
+.lod-sommaire .wrap { display: flex; gap: 8px 28px; overflow-x: auto; }
+.lod-sommaire a { flex-shrink: 0; display: block; padding-block: 17px; font-size: .9375rem; font-weight: 700; text-decoration: none; color: var(--encre); }
+.lod-sommaire a:hover { color: var(--bleu); text-decoration: underline; }
+.cas-league section[id] { scroll-margin-top: 75px; }
+.lod-section { padding-block: 76px; }
+.lod-section + .lod-section { border-top: 1px solid var(--filet); }
+.lod-tete { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; margin-bottom: 32px; }
+.lod-tete h2 { font-size: clamp(2rem, 3.6vw, 3.1rem); letter-spacing: -.035em; line-height: 1.1; }
+.lod-tete > p { font-size: 1rem; color: var(--graphite); max-width: 34ch; }
+.lod-historique__etapes { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; list-style: none; padding: 0; margin: 0; }
+.lod-historique__etapes li { min-width: 0; }
+.lod-historique__legende { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; min-height: 52px; }
+.lod-historique__legende > span { color: var(--lod-accent); font-size: 1.5rem; }
+.lod-historique__legende h3 { font-size: 1.125rem; line-height: 1.3; }
+.lod-historique .lod-capture { border: 1px solid var(--filet); border-radius: 7px; overflow: hidden; }
+.lod-historique__patch { font-size: .9375rem; color: var(--graphite); margin-top: 14px; }
+.lod-historique__patch strong { color: var(--lod-accent); }
+.lod-archives__donnees { padding: 24px; background: var(--lod-pale); border-radius: 8px; }
+.lod-archives__donnees .lod-capture { border-radius: 5px; overflow: hidden; }
+.lod-archives__donnees figcaption { color: var(--graphite); font-size: .9375rem; margin-top: 16px; }
+.lod-archives__suite { display: grid; grid-template-columns: .7fr 1.3fr; gap: 32px; align-items: center; margin-top: 40px; }
+.lod-archives__suite h3 { font-size: 1.75rem; max-width: 19ch; }
+.lod-archives__suite p { margin-top: 16px; max-width: 31ch; font-size: 1rem; color: var(--graphite); }
+.lod-archives__suite .lod-capture { border-radius: 7px; overflow: hidden; border: 1px solid var(--filet); }
+.lod-fiches { --lod-fiche-reserve: 260px; --lod-fiche-hauteur: clamp(48px, calc(100svh - var(--hauteur-entete) - var(--lod-fiche-reserve)), 700px); min-width: 0; margin: 0; padding: 0; border: 0; }
+.lod-fiches__choix { display: flex; gap: 8px; margin-bottom: 20px; }
+.lod-fiches__choix label { cursor: pointer; padding: 10px 22px; border: 1px solid var(--filet); border-radius: 4px; font-weight: 700; font-size: 1rem; }
+#fiche-ahri:checked ~ .lod-fiches__choix label[for='fiche-ahri'], #fiche-ahri-capacites:checked ~ .lod-fiches__choix label[for='fiche-ahri-capacites'], #fiche-ahri-skins:checked ~ .lod-fiches__choix label[for='fiche-ahri-skins'], #fiche-ahri-skin-detail:checked ~ .lod-fiches__choix label[for='fiche-ahri-skin-detail'] { background: var(--bleu); color: var(--sur-bleu); border-color: var(--bleu); }
+#fiche-ahri:focus-visible ~ .lod-fiches__choix label[for='fiche-ahri'], #fiche-ahri-capacites:focus-visible ~ .lod-fiches__choix label[for='fiche-ahri-capacites'], #fiche-ahri-skins:focus-visible ~ .lod-fiches__choix label[for='fiche-ahri-skins'], #fiche-ahri-skin-detail:focus-visible ~ .lod-fiches__choix label[for='fiche-ahri-skin-detail'] { outline: 2px solid var(--bleu); outline-offset: 3px; }
+.lod-fiche { display: none; }
+#fiche-ahri:checked ~ .lod-fiches__ecrans .lod-fiche--ahri, #fiche-ahri-capacites:checked ~ .lod-fiches__ecrans .lod-fiche--ahri-capacites, #fiche-ahri-skins:checked ~ .lod-fiches__ecrans .lod-fiche--ahri-skins, #fiche-ahri-skin-detail:checked ~ .lod-fiches__ecrans .lod-fiche--ahri-skin-detail { display: block; }
+.lod-fiches__ecrans { padding: 24px; border-radius: 10px; background: var(--lod-pale); }
+.lod-fiche .lod-capture { display: grid; place-items: center; height: var(--lod-fiche-hauteur); }
+.lod-fiche .lod-capture picture { display: flex; align-items: center; justify-content: center; min-height: 0; width: 100%; height: 100%; }
+.lod-fiche .lod-capture img { width: auto; height: auto; max-width: 100%; max-height: var(--lod-fiche-hauteur); object-fit: contain; border-radius: 5px; border: 1px solid #12232b; }
+.lod-fiche figcaption { min-height: 3.2em; margin-top: 16px; font-size: .9375rem; color: var(--graphite); }
+.lod-objets { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.lod-objets .lod-capture { border-radius: 7px; overflow: hidden; border: 1px solid var(--filet); }
+.lod-objets figcaption { display: flex; align-items: center; gap: 12px; margin-top: 20px; }
+.lod-objets figcaption span { color: var(--lod-accent); font-size: 1.5rem; }
+.lod-objets figcaption strong { font-size: 1.125rem; }
+.lod-runes { display: grid; grid-template-columns: .7fr 1.3fr; gap: 32px; align-items: center; margin-top: 48px; padding: 24px; background: var(--lod-pale); border-radius: 8px; }
+.lod-runes h3 { font-size: 1.75rem; max-width: 16ch; }
+.lod-runes p { font-size: .9375rem; color: var(--graphite); margin-top: 18px; max-width: 29ch; }
+.lod-runes .lod-capture { overflow: hidden; border-radius: 5px; }
+.lod-fabrication { background: color-mix(in srgb, var(--blanc) 60%, var(--papier)); border-block: 1px solid var(--filet); }
+.lod-tech-intro { padding-top: 72px; }
+.lod-tech-intro > p { color: var(--lod-accent); margin-bottom: 16px; font-weight: 700; font-size: 1rem; }
+.lod-tech-intro h2 { font-size: clamp(2.5rem, 4.5vw, 4.25rem); letter-spacing: -.04em; overflow-wrap: anywhere; }
+.lod-tech-intro > a { display: inline-block; margin-top: 24px; font-size: 1rem; }
+.lod-mesure { display: grid; grid-template-columns: 1fr 48px 1fr 48px 1fr; align-items: center; padding: 30px; border: 1px solid var(--filet); background: var(--papier); border-radius: 8px; }
+.lod-mesure > div:not(.lod-mesure__fleche) { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.lod-mesure svg { width: 90px; height: 76px; stroke: var(--lod-accent); fill: none; stroke-width: 2; margin-bottom: 18px; }
+.lod-mesure h3 { font-size: 1.125rem; }
+.lod-mesure p { color: var(--graphite); font-size: .9375rem; margin-top: 10px; }
+.lod-mesure__fleche { color: var(--bleu); font-size: 2rem; text-align: center; }
+.lod-note { color: var(--graphite); font-size: .875rem; max-width: 76ch; margin-top: 20px; }
+.lod-credits { color: var(--graphite); font-size: .8125rem; padding-block: 32px 0; max-width: 100ch; }
+.lod-visionneuse { position: fixed; inset: 0; width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 16px; border: 0; background: #081018f5; color: #fff; }
+.lod-visionneuse[open] { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 12px; }
+.lod-visionneuse::backdrop { background: #081018; }
+.lod-visionneuse__image { position: relative; display: grid; place-items: center; width: 100%; height: 100%; padding: 0; border: 0; background: transparent; cursor: zoom-out; min-height: 0; }
+.lod-visionneuse__image .lod-capture__statut { color: #fff; }
+.lod-visionneuse__image img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.lod-visionneuse > p { font-size: .8125rem; text-align: center; }
+@media (max-width: 1050px) { .lod-hero { gap: 24px; grid-template-columns: 1fr 1.2fr; } .lod-mobile { width: 120px; } .lod-hero__visuel { padding-right: 35px; } .lod-hero h1 { font-size: 3rem; } }
+@media (max-width: 799px) {
+  .lod-hero { grid-template-columns: minmax(0, 1fr); gap: 16px; padding-block: 24px 36px; }
+  .lod-hero h1 { font-size: clamp(2.5rem, 7vw, 3.75rem); max-width: 19ch; }
+  .lod-intro { max-width: 43ch; margin-block: 18px; }
+  .lod-role { max-width: none; margin-top: 16px; }
+  .lod-hero__visuel { padding: 20px 35px 65px 0; }
+  .lod-hero__visuel > figcaption { padding-right: 0; max-width: 26ch; }
+  .lod-mobile { width: 25%; max-width: 150px; bottom: 65px; border-width: 3px; border-radius: 12px; }
+  .lod-sommaire a { padding-block: 13px; font-size: .875rem; }
+  .lod-sommaire .wrap { gap: 24px; }
+  .lod-section { padding-block: 46px; }
+  .lod-tete { display: block; margin-bottom: 24px; }
+  .lod-tete > p { max-width: 40ch; margin-top: 16px; }
+  .lod-fiches__choix { gap: 8px; }
+  .lod-fiches__choix label { padding: 12px 10px; flex: 1; text-align: center; font-size: .875rem; }
+  .lod-fiches__ecrans { padding: 8px; border-radius: 6px; }
+  .lod-fiche figcaption { margin: 12px 8px 6px; }
+  .lod-objets { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .lod-objets figcaption { margin-top: 12px; }
+  .lod-runes { grid-template-columns: minmax(0, 1fr); padding: 16px; gap: 24px; }
+  .lod-runes h3, .lod-runes p { max-width: none; }
+  .lod-runes p { margin-top: 12px; }
+  .lod-historique__etapes { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .lod-historique__legende { min-height: 0; }
+  .lod-archives__donnees { padding: 8px; }
+  .lod-archives__donnees figcaption { margin: 12px 8px 6px; }
+  .lod-archives__suite { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .lod-archives__suite h3, .lod-archives__suite p { max-width: none; }
+  .lod-tech-intro { padding-top: 46px; }
+  .lod-mesure { grid-template-columns: minmax(0, 1fr); gap: 14px; padding: 24px; }
+  .lod-mesure svg { width: 76px; height: 58px; margin-bottom: 12px; }
+  .lod-mesure__fleche { transform: rotate(90deg); font-size: 1.8rem; }
+}
+@media (max-width: 399px) {
+  .lod-fiches { --lod-fiche-reserve: 294px; }
+  .lod-fiches__choix { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lod-fiches__choix label { min-width: 0; overflow-wrap: anywhere; }
+}
+@media (max-height: 500px) {
+  .lod-fiches__ecrans { padding: 8px; }
+  .lod-fiche figcaption { min-height: 1.6em; margin-top: 10px; }
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .cas-league { --lod-accent: #72d7df; --lod-pale: #182e3b; }
+}
+@media print {
+  .lod-sommaire { position: static; }
+  .lod-fiche { display: block !important; margin-bottom: 24px; }
+  .lod-fiche .lod-capture, .lod-fiche .lod-capture picture { height: auto; }
+  .lod-fiche .lod-capture img { width: 100%; max-height: none; }
+  .lod-fiches__choix { display: none; }
+  .lod-mobile { display: none; }
+  .lod-fabrication { background: transparent; }
+}
