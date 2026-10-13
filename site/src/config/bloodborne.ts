@@ -59,7 +59,7 @@ export const FICHE: DonneesFiche = {
   statut: { texte: 'En ligne', etat: 'actif' },
   liens: [
     { href: LIENS.application, libelle: 'L’application' },
-    { href: LIENS.journal, libelle: 'Le journal' },
+    { href: LIENS.journal, libelle: 'Le journal du projet' },
   ],
 };
 
