@@ -39,7 +39,7 @@ const SECTIONS = [
     <section class="niveau" id="quotidien" aria-labelledby="t-quotidien">
       <header class="niveau__tete">
         <h2 id="t-quotidien">Au quotidien</h2>
-        <p>La stack de mon CV<AConfirmer titre="Hiérarchie des technologies en trois niveaux, à valider (Q9)">niveaux à confirmer</AConfirmer></p>
+        <p>Le cœur de mon CV<AConfirmer titre="Hiérarchie des technologies en trois niveaux, à valider (Q9)">niveaux à confirmer</AConfirmer></p>
       </header>
       <ul class="quotidien foyer" role="list" data-pli="preuve">
         {QUOTIDIEN.map(({ nom, role }) => <li><LienTechno nom={nom} variante="tuile" role={role} /></li>)}
@@ -433,10 +433,6 @@ const SECTIONS = [
 
   .humaine__outil {
     margin-top: var(--s1);
-  }
-
-  .humaine__outil :global(.techno) {
-    min-height: 32px;
   }
 
   @media (max-width: 1100px) {
