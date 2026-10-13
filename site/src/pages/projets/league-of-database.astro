@@ -364,5 +364,29 @@ const ADRESSE = 'league-of-data-base.com';
       margin-inline: calc(-1 * var(--gouttiere));
       border-radius: 0;
     }
+
+    /* Sur téléphone, les fonctions se lisent en liste : un filet, sans carte. */
+    .plateforme {
+      gap: var(--s3);
+      margin-top: var(--s5);
+    }
+
+    .plateforme li {
+      padding: var(--s3) 0 0;
+      border-top-width: 1px;
+      background: none;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    /* L’emplacement de la réécriture grandit avec sa consigne. */
+    :global(#reecriture .visuel--manquant[data-visuel="LOD-04"]) {
+      aspect-ratio: auto;
+      min-block-size: 0;
+    }
+
+    :global(#reecriture .visuel--manquant[data-visuel="LOD-04"] .visuel__contenu) {
+      position: relative;
+    }
   }
 </style>

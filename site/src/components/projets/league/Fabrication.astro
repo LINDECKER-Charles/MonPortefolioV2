@@ -259,8 +259,15 @@ import { LIENS } from '../../../config/league-of-database';
     color: var(--eteint);
   }
 
+  /* Les preuves d’un même bloc restent groupées, même empilées : une cible
+     de 36 px (au-dessus des 24 px de WCAG 2.2) au lieu de 48, sans écart. */
   .bloc__liens {
     margin-top: var(--s1);
+    row-gap: 0;
+  }
+
+  .bloc__liens :global(.lien-action) {
+    min-height: 36px;
   }
 
   .schema {
