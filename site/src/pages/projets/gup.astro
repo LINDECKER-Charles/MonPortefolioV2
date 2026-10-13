@@ -308,13 +308,14 @@ const capture = (nom: string) => {
     line-height: 1.5;
   }
 
+  /* Liens de trace autonomes : cibles de 44 px (WCAG 2.5.8, contrat du site). */
   .gup-cas a,
   .gup-pratiques a,
   .gup-autres a {
     display: inline-flex;
     align-items: center;
     align-self: flex-start;
-    min-height: 32px;
+    min-height: 44px;
     font-size: var(--t-xs);
     font-weight: 600;
   }
