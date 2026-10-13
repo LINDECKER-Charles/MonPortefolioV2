@@ -202,11 +202,14 @@ const etiquette = (id: string) => SECTIONS.find((section) => section.id === id)?
   }
 
   /* Les trois temps de la formation, chacun sous sa case du triptyque
-     PVZ-02 : en bureau, les trois cases se touchent et se lisent d’un seul
-     regard ; sous 860 px, chaque case passe au-dessus de son temps. */
+     PVZ-02 : en bureau, trois cases séparées, au même décor, qui se lisent
+     d’un seul regard (les dessins livrés ne se raccordent pas bord à bord :
+     collés, ils montraient deux coutures) ; sous 860 px, chaque case passe
+     au-dessus de son temps. */
   .pvz-temps {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: var(--s3);
     margin: var(--s7) 0 0;
     padding: 0;
     list-style: none;
@@ -216,18 +219,6 @@ const etiquette = (id: string) => SECTIONS.find((section) => section.id === id)?
     display: grid;
     grid-template-rows: auto 1fr;
     min-width: 0;
-  }
-
-  .pvz-temps__temps :global(.pvz-temps__visuel) {
-    border-radius: 0;
-  }
-
-  .pvz-temps__temps:first-child :global(.pvz-temps__visuel) {
-    border-radius: var(--r2) 0 0 var(--r2);
-  }
-
-  .pvz-temps__temps:last-child :global(.pvz-temps__visuel) {
-    border-radius: 0 var(--r2) var(--r2) 0;
   }
 
   .pvz-temps__texte {
@@ -381,12 +372,6 @@ const etiquette = (id: string) => SECTIONS.find((section) => section.id === id)?
     .pvz-temps {
       grid-template-columns: minmax(0, 1fr);
       gap: var(--s6);
-    }
-
-    .pvz-temps__temps :global(.pvz-temps__visuel),
-    .pvz-temps__temps:first-child :global(.pvz-temps__visuel),
-    .pvz-temps__temps:last-child :global(.pvz-temps__visuel) {
-      border-radius: var(--r2);
     }
 
     .pvz-temps__texte {

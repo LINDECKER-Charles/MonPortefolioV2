@@ -164,6 +164,24 @@ const duProjet = /^[aeiouyhâéèêîôû]/i.test(nom) ? ` d’${nom}` : ` de ${
     background: radial-gradient(60% 70% at 50% 55%, var(--lanterne-halo), transparent);
   }
 
+  /* Une image générée est une gravure à fond perdu, avec sa lanterne
+     dessinée : elle remplit tout le panneau, sans passe-partout ni lueur
+     ajoutée. Les captures gardent leur marge. */
+  .carte-projet__visuel:has(:global(.visuel--jour-nuit)) {
+    align-items: stretch;
+    padding: 0;
+  }
+
+  .carte-projet__visuel:has(:global(.visuel--jour-nuit))::before {
+    content: none;
+  }
+
+  .carte-projet__visuel > :global(.visuel--jour-nuit) {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+
   .carte-projet__corps {
     display: grid;
     gap: var(--s3);
@@ -373,6 +391,10 @@ const duProjet = /^[aeiouyhâéèêîôû]/i.test(nom) ? ` d’${nom}` : ` de ${
 
     .carte-projet__visuel {
       padding: 10px;
+    }
+
+    .carte-projet__visuel:has(:global(.visuel--jour-nuit)) {
+      padding: 0;
     }
 
     .carte-projet--vedette .carte-projet__corps,

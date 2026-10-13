@@ -24,6 +24,13 @@
  * si `recadragePetit` en donne un autre (« 1 / 1 » pour une vignette). La
  * lumière suit le même recadrage.
  *
+ * `ancrage` cale verticalement un recadrage plus large que l’image (en % : 0
+ * garde le haut, 50 le centre, 100 le bas), quand la lanterne dessinée se
+ * tient trop haut ou trop bas pour la bande centrale (ACC-21, ancrage 25).
+ * Il exige le même recadrage à toutes les largeurs (`recadrage` et
+ * `recadragePetit` égaux) : la lumière se dessine alors dans la seule bande
+ * visible de l’image, aux mêmes coordonnées que la lanterne.
+ *
  * Une scène très large (21:9) est basse sur mobile : la commande d’un
  * emplacement vide n’y garde que son identifiant, son sujet et son format.
  *
@@ -46,11 +53,14 @@ interface Props {
   recadragePetit?: string;
   /** La scène éclairée de son écran (par défaut) ; `false` : lanterne éteinte au repos. */
   foyer?: boolean;
+  /** Calage vertical du recadrage, en % (50 : centré). */
+  ancrage?: number;
   class?: string;
 }
 
-const { id, nom, legende, lumiere, sizes = '(max-width: 860px) 100vw, 480px', muette = false, recadrage, recadragePetit, foyer = true, class: classe } = Astro.props;
-const style = [recadrage && `--scene-recadrage:${recadrage}`, recadragePetit && `--scene-recadrage-petit:${recadragePetit}`].filter(Boolean).join(';') || undefined;
+const { id, nom, legende, lumiere, sizes = '(max-width: 860px) 100vw, 480px', muette = false, recadrage, recadragePetit, foyer = true, ancrage, class: classe } = Astro.props;
+if (ancrage !== undefined && (!recadrage || recadrage !== recadragePetit)) throw new Error(`<Scene id="${id}"> : un ancrage exige le même recadrage à toutes les largeurs (recadrage et recadragePetit)`);
+const style = [recadrage && `--scene-recadrage:${recadrage}`, recadragePetit && `--scene-recadrage-petit:${recadragePetit}`, ancrage !== undefined && `--scene-ancrage:${ancrage}%`].filter(Boolean).join(';') || undefined;
 const visuel = visuelParId(id);
 if (!visuel) throw new Error(`<Scene id="${id}"> : identifiant absent de src/config/visuels.ts`);
 // La lumière part de la lanterne dessinée : la position que le registre impose à l’image, jour et nuit.
@@ -59,6 +69,18 @@ const [a, b] = (visuel.ratio ?? '4 / 3').split(' / ').map(Number);
 const largeur = Math.round((100 * a) / b);
 const cx = Math.round(lumiere[0] * largeur) / 100;
 const cy = lumiere[1];
+/**
+ * La boîte du dessin de lumière : toute l’image, recadrée au centre par
+ * `slice` comme l’image par object-fit ; avec un ancrage, la seule bande
+ * visible du recadrage, calée comme l’image par object-position.
+ */
+const viewBox = (() => {
+  if (ancrage === undefined || !recadrage) return `0 0 ${largeur} 100`;
+  const [ra, rb] = recadrage.split('/').map(Number);
+  const visible = Math.min(100, (largeur * rb) / ra);
+  const haut = Math.round(((100 - visible) * ancrage) / 100 * 100) / 100;
+  return `0 ${haut} ${largeur} ${Math.round(visible * 100) / 100}`;
+})();
 const texte = typo(legende);
 const gid = `scene-${nom}`;
 ---
@@ -67,7 +89,7 @@ const gid = `scene-${nom}`;
   <div class="scene__plan">
     <Visuel id={id} alt="" sizes={sizes} />
     <button type="button" class="scene__rejouer" data-rejouer disabled aria-label={`Rejouer l’animation : ${texte}`}>
-      <svg class="scene__lumiere" viewBox={`0 0 ${largeur} 100`} preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+      <svg class="scene__lumiere" viewBox={viewBox} preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
         <defs>
           <radialGradient id={`${gid}-nuit`} gradientUnits="userSpaceOnUse" cx={cx} cy={cy} r="64">
             <stop offset="0" class="scene__trou" />
@@ -129,6 +151,10 @@ const gid = `scene-${nom}`;
 
   .scene__plan :global(.visuel) {
     border-radius: 0;
+  }
+
+  .scene__plan :global(.visuel img) {
+    object-position: 50% var(--scene-ancrage, 50%);
   }
 
   @media (min-width: 861px) {

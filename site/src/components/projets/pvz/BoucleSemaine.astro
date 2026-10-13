@@ -26,7 +26,7 @@ import { typo } from '../../../lib/typo';
       GESTES.map((geste, index) => (
         <li class:list={['geste', `geste--${geste.id}`]}>
           <div class="geste__visuel">
-            <Visuel id={geste.visuel} alt="" sizes="(max-width: 860px) 96px, 140px" />
+            <Visuel id={geste.visuel} alt="" sizes="(max-width: 760px) 112px, 136px" />
           </div>
           <div class="geste__texte">
             <p class="geste__outil">
@@ -207,9 +207,18 @@ import { typo } from '../../../lib/typo';
     rotate: 270deg;
   }
 
-  @media (max-width: 1240px) and (min-width: 1101px), (max-width: 760px) {
+  @media (max-width: 1240px) and (min-width: 1101px) {
     .geste {
       grid-template-columns: 96px minmax(0, 1fr);
+      gap: var(--s3);
+    }
+  }
+
+  /* Sur mobile, chaque geste a la largeur de l’écran : la vignette passe à
+     112 px, où la gravure de nuit (aplats d’encre au trait fin) se lit encore. */
+  @media (max-width: 760px) {
+    .geste {
+      grid-template-columns: 112px minmax(0, 1fr);
       gap: var(--s3);
     }
   }

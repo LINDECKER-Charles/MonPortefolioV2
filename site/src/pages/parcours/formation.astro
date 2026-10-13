@@ -85,7 +85,7 @@ const preuve = (href: string) => attributsMesure(href, { emplacement: 'preuves' 
           ETUDES_AVANT.map((etude) => (
             <li class="etape etape--station" id={etude.id}>
               <article class="station" aria-labelledby={`${etude.id}-titre`}>
-                <Visuel id={etude.visuel} alt="" class="station__visuel" sizes="(max-width: 760px) 72px, 64px" />
+                <Visuel id={etude.visuel} alt="" class="station__visuel" sizes="72px" />
                 <div class="station__texte">
                   <p class="station__quand">
                     {etude.quand?.debut ? (
@@ -347,21 +347,27 @@ const preuve = (href: string) => attributsMesure(href, { emplacement: 'preuves' 
     background: var(--fond);
   }
 
+  /* La vignette à 72 px à gauche de l’intitulé, comme sur mobile : à 56 px,
+     la nuit n’en laissait qu’un gris sur noir et une lanterne de 5 px. */
   .station {
     display: grid;
-    grid-template-columns: 56px minmax(0, 1fr);
+    grid-template-columns: 72px minmax(0, 1fr);
     gap: var(--s3);
     align-items: start;
   }
 
   .station :global(.station__visuel) {
-    width: 56px;
+    width: 72px;
   }
 
   @container (max-width: 180px) {
     .station {
       grid-template-columns: minmax(0, 1fr);
       gap: var(--s2);
+    }
+
+    .station :global(.station__visuel) {
+      width: 56px;
     }
   }
 

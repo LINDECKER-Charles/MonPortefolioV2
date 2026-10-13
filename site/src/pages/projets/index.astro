@@ -180,6 +180,13 @@ const description = 'Cinq projets menés au bout, rangés par ce qu’ils prouve
       aspect-ratio: auto;
     }
 
+    /* Le panneau portrait ne montre qu’environ 40 % de la largeur du 16:10 de
+       PRJ-02 : la fenêtre se cale sur la lanterne (entre 20 et 35 %), le
+       marque-page et la page éclairée, au lieu du centre qui coupe la cage. */
+    .vitrine-corps :global(.visuel[data-visuel='PRJ-02'] img) {
+      object-position: 29% 50%;
+    }
+
     /* gup : le terminal remplit le panneau, recadré sur la liste des paquets
        (sources, versions, et Scoop en échec) ; entier sur mobile. */
     .vitrine-corps :global(.carte-projet__visuel:has(.vitrine-terminal)) {
