@@ -99,7 +99,7 @@ const preuve = (href: string) => attributsMesure(href, { emplacement: 'preuves' 
                   <h3 id={`${etude.id}-titre`}>{etude.titre}</h3>
                   <p class="station__organisme">{etude.organisme}</p>
                   {etude.suivi && <p class="station__suivi">{etude.suivi}</p>}
-                  {etude.statut && <p class="station__statut">{etude.statut}</p>}
+                  {etude.statut && <Statut etat="eteint" class="station__statut">{etude.statut}</Statut>}
                   {etude.lien && <LienAction href={etude.lien.href} emplacement="preuves" class="station__lien">{etude.lien.libelle}</LienAction>}
                 </div>
               </article>
@@ -263,7 +263,8 @@ const preuve = (href: string) => attributsMesure(href, { emplacement: 'preuves' 
     gap: var(--s4) var(--s5);
     align-items: center;
     padding: var(--s4);
-    border: 1px dashed var(--trait);
+    /* Contenu réel : un filet plein (le pointillé reste aux emplacements à générer). */
+    border: 1px solid var(--filet);
     border-radius: var(--r2);
   }
 
@@ -394,12 +395,8 @@ const preuve = (href: string) => attributsMesure(href, { emplacement: 'preuves' 
     color: var(--encre);
   }
 
-  .station__statut {
+  .station :global(.station__statut) {
     margin-top: var(--s1);
-    font-size: var(--t-xs);
-    font-variant-caps: all-small-caps;
-    letter-spacing: var(--ls-petit);
-    color: var(--eteint);
   }
 
   .station :global(.station__lien) {
