@@ -53,6 +53,8 @@ const { id, nom, legende, lumiere, sizes = '(max-width: 860px) 100vw, 480px', mu
 const style = [recadrage && `--scene-recadrage:${recadrage}`, recadragePetit && `--scene-recadrage-petit:${recadragePetit}`].filter(Boolean).join(';') || undefined;
 const visuel = visuelParId(id);
 if (!visuel) throw new Error(`<Scene id="${id}"> : identifiant absent de src/config/visuels.ts`);
+// La lumière part de la lanterne dessinée : la position que le registre impose à l’image, jour et nuit.
+if (visuel.lumiere?.join() !== lumiere.join()) throw new Error(`<Scene id="${id}"> : lumière en ${lumiere.join(' × ')} %, le registre place la lanterne en ${visuel.lumiere?.join(' × ') ?? '(rien)'} %`);
 const [a, b] = (visuel.ratio ?? '4 / 3').split(' / ').map(Number);
 const largeur = Math.round((100 * a) / b);
 const cx = Math.round(lumiere[0] * largeur) / 100;

@@ -11,6 +11,7 @@ import {
   fichierMaster,
   fichierMasterNuit,
   fichierNuit,
+  fichierNuitAffiche,
   fichiersAttendus,
   ORDRE_SERIES,
   positionLanterne,
@@ -265,6 +266,14 @@ describe('registre des visuels : fichiers attendus', () => {
     expect(CLES).toEqual(['encre', 'aplat', 'lumiere']);
   });
 
+  it('suit une reprise jusqu’au rendu de nuit de l’image reprise, et seulement une reprise d’une seule image', () => {
+    expect(fichierNuitAffiche(visuelParId('PRJ-01')!)).toBe(fichierNuit(visuelParId('PRJ-01')!));
+    expect(fichierNuitAffiche(visuelParId('PRJ-03')!)).toBe('src/assets/visuels/omnicard/OMN-01_1600x1200.nuit.webp');
+    expect(fichierNuitAffiche(visuelParId('OMN-02')!)).toBe('src/assets/visuels/accueil/ACC-04_1800x1200.nuit.webp');
+    expect(fichierNuitAffiche(visuelParId('LOD-01')!)).toBe('src/assets/visuels/projets/PRJ-02_1600x1000.nuit.webp');
+    for (const id of ['ACC-15', 'PVZ-02', 'ACC-02', 'LOD-03', 'PAR-PHO']) expect(fichierNuitAffiche(visuelParId(id)!), id).toBeNull();
+  });
+
   it('lit la position de la lanterne : celle de la scène animée, sinon celle de la composition', () => {
     expect(positionLanterne(visuelParId('ACC-03')!)).toEqual([28, 58]);
     expect(positionLanterne(visuelParId('PVZ-05')!)).toEqual([78, 80]);
@@ -461,6 +470,47 @@ describe('composant Visuel', () => {
     const conteneur = await AstroContainer.create();
     const html = await conteneur.renderToString(Visuel, { props: { id: 'PRJ-01' } });
     expect(html).toContain('--visuel-ratio-mobile:4 / 5');
+  });
+
+  it('pose les deux rendus d’une image générée livrée, le jour puis la nuit, avec le même alt, les mêmes tailles et le même chargement', async () => {
+    const conteneur = await AstroContainer.create();
+    for (const [props, chargement] of [[{ id: 'ACC-03' }, 'lazy'], [{ id: 'PVZ-01', loading: 'eager', sizes: '(max-width: 1100px) 100vw, 520px' }, 'eager'], [{ id: 'PRJ-03' }, 'lazy']] as const) {
+      // Une reprise (PRJ-03) montre les deux rendus de l’image qu’elle reprend (OMN-01).
+      const v = visuelParId(props.id === 'PRJ-03' ? 'OMN-01' : props.id)!;
+      const html = await conteneur.renderToString(Visuel, { props });
+      expect(html, props.id).not.toContain('visuel--manquant');
+      expect(html, props.id).toContain('visuel--jour-nuit');
+      const pictures = [...html.matchAll(/<picture\b([^>]*)>([\s\S]*?)<\/picture>/g)];
+      expect(pictures.map((p) => /class="([^"]+)"/.exec(p[1])?.[1]), props.id).toEqual(['visuel__jour', 'visuel__nuit']);
+      const imgs = pictures.map((p) => /<img\b[^>]*>/.exec(p[2])![0]);
+      const attr = (img: string, nom: string) => new RegExp(`\\s${nom}="([^"]*)"`).exec(img)?.[1];
+      for (const nom of ['alt', 'sizes', 'loading', 'decoding', 'width', 'height']) expect(attr(imgs[1], nom), `${props.id} ${nom}`).toBe(attr(imgs[0], nom));
+      expect(attr(imgs[0], 'alt'), props.id).toBe(visuelParId(props.id)!.alt);
+      expect(attr(imgs[0], 'loading'), props.id).toBe(chargement);
+      if ('sizes' in props) expect(attr(imgs[0], 'sizes')).toBe(props.sizes);
+      // Mêmes largeurs, l’une tirée du rendu de jour, l’autre du rendu de nuit.
+      const largeurs = (img: string) => attr(img, 'srcset')!.split(', ').map((x) => x.split(' ')[1]);
+      expect(largeurs(imgs[1]), props.id).toEqual(largeurs(imgs[0]));
+      const nom = path.posix.basename(v.fichier!, '.webp');
+      expect(attr(imgs[0], 'src'), props.id).toContain(`${nom}.webp`);
+      expect(attr(imgs[1], 'src'), props.id).toContain(path.posix.basename(fichierNuit(v)!));
+    }
+  });
+
+  it('montre le jour par défaut, la nuit sous les trois portes de jetons.css, et le jour à l’impression', () => {
+    const source = readFileSync(path.join(SRC, 'components/ui/Visuel.astro'), 'utf8');
+    const style = source.slice(source.indexOf('<style>'));
+    for (const porte of [":root[data-theme='nuit']", '.acte-veille', '.acte-bleu']) {
+      expect(style, porte).toContain(`:global(${porte}) .visuel > :global(.visuel__jour)`);
+      expect(style, porte).toContain(`:global(${porte}) .visuel > :global(.visuel__nuit)`);
+    }
+    expect(style).toMatch(/@media \(prefers-color-scheme: dark\) \{\s*:global\(:root:not\(\[data-theme\]\)\) \.visuel > :global\(\.visuel__jour\) \{\s*display: none;/);
+    expect(style).toMatch(/@media print \{[\s\S]*\.visuel__jour\) \{\s*display: block;[\s\S]*\.visuel__nuit\) \{\s*display: none;/);
+    expect(style).toMatch(/\.visuel > :global\(\.visuel__nuit\) \{\s*display: none;/);
+    // Les mêmes portes que les jetons de nuit.
+    const jetons = readFileSync(path.join(SRC, 'styles/jetons.css'), 'utf8');
+    expect(jetons).toMatch(/:root\[data-theme='nuit'\],\s*\.acte-veille,\s*\.acte-bleu \{/);
+    expect(jetons).toMatch(/@media \(prefers-color-scheme: dark\) \{\s*:root:not\(\[data-theme\]\) \{/);
   });
 
   it('insère en ligne le dessin livré, sans cadre hachuré ni <img>', async () => {

@@ -212,6 +212,14 @@ describe('Visuel manquant', () => {
     expect(html).toMatch(/class="visuel__format[^"]*"[^>]*>16:10, 1600 × 1000/);
   });
 
+  it('une image livrée ne laisse ni cadre ni commande, même en brouillon', async () => {
+    process.env.VISUELS_BROUILLON = '1';
+    const html = await rendre(Visuel, { id: 'PRJ-01' });
+    expect(html).not.toContain('data-manquant');
+    expect(html).not.toContain('Image à générer');
+    expect(html).toContain('visuel__jour');
+    expect(html).toContain('visuel__nuit');
+  });
 });
 
 describe('Visuel dessiné (méthode SVG)', () => {

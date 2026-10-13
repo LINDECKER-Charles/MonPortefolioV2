@@ -3587,6 +3587,19 @@ export function fichierNuit(visuel: EntreeVisuel): string | null {
   return aSonMaster(visuel) ? visuel.fichier!.replace(/\.webp$/, '.nuit.webp') : null;
 }
 
+/**
+ * Le rendu de nuit qu’affiche un emplacement (`components/ui/Visuel.astro`) :
+ * le sien, ou celui de l’image générée dont il reprend le fichier (PRJ-03
+ * montre OMN-01, OMN-02 ACC-04). `null` s’il n’affiche pas une seule image
+ * générée.
+ */
+export function fichierNuitAffiche(visuel: EntreeVisuel): string | null {
+  const propre = fichierNuit(visuel);
+  if (propre || visuel.fichier || visuel.declinaisons?.length || visuel.reprend?.length !== 1) return propre;
+  const source = PAR_ID.get(visuel.reprend[0]);
+  return source ? fichierNuitAffiche(source) : null;
+}
+
 /** Les trois couleurs de clé d’un master, dans l’ordre du prompt. */
 export const CLES = ['encre', 'aplat', 'lumiere'] as const;
 export type CleVisuel = (typeof CLES)[number];

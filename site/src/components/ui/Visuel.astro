@@ -8,6 +8,19 @@
  * (lune la nuit, encre le jour, clair dans un acte de veille) ; son alt
  * devient son nom accessible, ou il est décoratif.
  *
+ * Une image générée a deux rendus dessinés, le jour (`fichier`) et la nuit
+ * (`<ID>_<l>x<h>.nuit.webp`, `fichierNuitAffiche`, qui suit aussi une reprise
+ * comme PRJ-03) : les deux sont posés, avec le
+ * même alt, les mêmes tailles et le même chargement, et un seul s’affiche,
+ * selon les trois portes de la nuit de styles/jetons.css : le jour par défaut,
+ * la nuit sous `:root[data-theme='nuit']`, dans un acte sombre
+ * (`.acte-veille`, `.acte-bleu`) et, sans JavaScript, sous
+ * `prefers-color-scheme: dark` ; l’impression repasse au jour. L’autre est en
+ * `display: none` : hors de l’arbre d’accessibilité, il n’est lu par aucun
+ * lecteur d’écran et, chargé à la demande (`loading="lazy"`, le défaut), il
+ * n’est pas téléchargé. Pas de fondu entre les deux : la bascule de thème
+ * (View Transitions, ou couleurs qui glissent) ne montre jamais deux images.
+ *
  * Le fichier manque : deux rendus, selon le moment.
  *   - En ligne (le build de production, par défaut) : un cadre neutre au bon
  *     ratio, l’aplat des emplacements de la direction « Lanterne » et, dès
@@ -49,7 +62,7 @@
  */
 import type { ImageMetadata } from 'astro';
 import { Picture } from 'astro:assets';
-import { fichiersAttendus, visuelParId } from '../../config/visuels';
+import { fichierNuitAffiche, fichiersAttendus, visuelParId } from '../../config/visuels';
 import { typo } from '../../lib/typo';
 import { svgEnLigne, visuelsEnBrouillon } from '../../lib/visuels';
 
@@ -92,6 +105,9 @@ const attendus = fichiersAttendus(visuel);
 const fichier = attendus.length === 1 ? attendus[0] : undefined;
 const image = fichier ? images[`/${fichier}`] : undefined;
 const dessin = fichier ? dessins[`/${fichier}`] : undefined;
+// Le rendu de nuit d’une image générée (la sienne, ou celle qu’il reprend), s’il est livré.
+const nuit = image ? fichierNuitAffiche(visuel) : null;
+const imageNuit = nuit ? images[`/${nuit}`] : undefined;
 
 const alt = altPropre ?? visuel.alt;
 const ratio = ratioPropre ?? visuel.ratio ?? '16 / 10';
@@ -110,8 +126,9 @@ const format = [visuel.format, mobile, reprise].filter(Boolean).join(' · ');
   dessin ? (
     <figure class:list={['visuel', 'visuel--dessin', { foyer }, classe]} style={style} data-visuel={id} set:html={svgEnLigne(dessin, { alt })} />
   ) : image ? (
-    <figure class:list={['visuel', { foyer }, classe]} style={style} data-visuel={id}>
-      <Picture src={image} formats={['avif']} fallbackFormat="webp" widths={largeurs} sizes={sizes} alt={alt} loading={loading} decoding="async" />
+    <figure class:list={['visuel', { foyer, 'visuel--jour-nuit': imageNuit }, classe]} style={style} data-visuel={id}>
+      <Picture src={image} formats={['avif']} fallbackFormat="webp" widths={largeurs} sizes={sizes} alt={alt} loading={loading} decoding="async" pictureAttributes={imageNuit ? { class: 'visuel__jour', 'data-rendu': 'jour' } : {}} />
+      {imageNuit && <Picture src={imageNuit} formats={['avif']} fallbackFormat="webp" widths={largeurs} sizes={sizes} alt={alt} loading={loading} decoding="async" pictureAttributes={{ class: 'visuel__nuit', 'data-rendu': 'nuit' }} />}
     </figure>
   ) : !brouillon ? (
     <figure
@@ -153,6 +170,54 @@ const format = [visuel.format, mobile, reprise].filter(Boolean).join(' · ');
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  /* Deux rendus d’une image générée : un seul s’affiche, l’autre n’existe ni
+     pour la page, ni pour les lecteurs d’écran, ni pour le réseau tant qu’il
+     reste caché (chargement à la demande). Les trois portes de la nuit de
+     styles/jetons.css, puis l’impression, qui repasse au jour. */
+  .visuel > :global(.visuel__nuit) {
+    display: none;
+  }
+
+  :global(:root[data-theme='nuit']) .visuel > :global(.visuel__jour),
+  :global(.acte-veille) .visuel > :global(.visuel__jour),
+  :global(.acte-bleu) .visuel > :global(.visuel__jour) {
+    display: none;
+  }
+
+  :global(:root[data-theme='nuit']) .visuel > :global(.visuel__nuit),
+  :global(.acte-veille) .visuel > :global(.visuel__nuit),
+  :global(.acte-bleu) .visuel > :global(.visuel__nuit) {
+    display: block;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme])) .visuel > :global(.visuel__jour) {
+      display: none;
+    }
+
+    :global(:root:not([data-theme])) .visuel > :global(.visuel__nuit) {
+      display: block;
+    }
+  }
+
+  @media print {
+    .visuel > :global(.visuel__jour),
+    :global(:root[data-theme='nuit']) .visuel > :global(.visuel__jour),
+    :global(:root:not([data-theme])) .visuel > :global(.visuel__jour),
+    :global(.acte-veille) .visuel > :global(.visuel__jour),
+    :global(.acte-bleu) .visuel > :global(.visuel__jour) {
+      display: block;
+    }
+
+    .visuel > :global(.visuel__nuit),
+    :global(:root[data-theme='nuit']) .visuel > :global(.visuel__nuit),
+    :global(:root:not([data-theme])) .visuel > :global(.visuel__nuit),
+    :global(.acte-veille) .visuel > :global(.visuel__nuit),
+    :global(.acte-bleu) .visuel > :global(.visuel__nuit) {
+      display: none;
+    }
   }
 
   /* Un dessin vectoriel, en ligne : son trait suit la couleur du texte. */
