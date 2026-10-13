@@ -22,7 +22,7 @@ describe('commande de production des visuels', () => {
       expect(doc, v.id).toContain(`### ${v.id} · `);
       if (v.fichier) expect(doc, v.id).toContain(`site/${v.fichier}`);
     }
-    expect((doc.match(/^### /gm) ?? []).length).toBe(126);
+    expect((doc.match(/^### /gm) ?? []).length).toBe(137);
     for (let i = 1; i <= 8; i++) expect(doc).toContain(`\n${i}. `);
     expect(doc).toContain('Ne jamais nommer un jeu, un studio ou une marque dans le prompt');
   });
