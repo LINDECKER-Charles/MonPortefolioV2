@@ -1390,3 +1390,12 @@ Negative prompt: text, letters, numbers, digits, signature, watermark, logo, bra
 Le premier fichier joint correspond au jour natif sélectionné, avant le recalage déterministe appliqué aux deux variantes.
 
 </details>
+
+## Retouches déterministes du 14 octobre 2026
+
+Corrections demandées par l’audit des images et la relecture en situation, faites dans le dépôt avec Pillow (Python), sans génération ni édition générative : les opérations ci-dessous, aux coordonnées en pixels des masters. Les masters retouchés remplacent les précédents ; `npm run visuels:rendre <ID>` a refait leurs rendus.
+
+| Fichier | Opération | Après |
+|---|---|---|
+| `ACC-09.nuit.png` | Vitres de la lanterne ramenées aux couleurs de clé : dans la zone x 220–450, y 330–565, hors coupelle de la bougie (x 268–404, y ≥ 518), chaque pixel à plus de 70 des trois clés (le remplissage beige rosé, par exemple (190, 139, 108), qui donnait un voile gris aux couleurs du site) devient rouge si sa part de lumière, R − min(V, B), dépasse 110, noir sinon. | Vitres noires à hachures rouges, comme le jour ; flamme inchangée (≈ 23 × 40 %). |
+| `ACC-19.nuit.png` | La croix de la feuille 1 et la coche de la feuille 3, dessinées à l’encre le jour, disparaissaient dans le noir. Report en blanc `#FFFFFF` des traits épais du jour, avec leur antialiasing : ouverture morphologique de 9 px (seuls les traits plus épais restent, sans contours ni hachures), dans les boîtes x 40–315, y 700–880 (croix) et x 545–765, y 925–1100 (coche). Les feuilles de jour et de nuit coïncident. | La carte raconte de nouveau l’essai raté et l’essai réussi ; noir à 92 %. Le cercle de la feuille 2 et la bande de hachures sous le socle restent à reprendre. |

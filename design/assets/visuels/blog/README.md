@@ -164,3 +164,11 @@ EDIT image 1, the final DAY master. Images 2–5 are the four common style refer
 
 Negative prompt: text, letters, numbers, digits, signature, watermark, logo, brand mark, recognisable face, portrait, real person, character, card or symbol from an existing game or franchise, ornate gold frame, decorative border, gradient, soft glow, airbrush, photographic or 3D render, grey shading, any colour other than black, white and red, glow, halo, light rays, sparkle lines, lens flare, hyper-detailed, intricate micro-detail, uniform texture, digital painting, smooth airbrush, detailed anatomy, fake text lines
 ```
+
+## Retouches déterministes du 14 octobre 2026
+
+Corrections demandées par l’audit des images et la relecture en situation, faites dans le dépôt avec Pillow (Python), sans génération ni édition générative : les opérations ci-dessous, aux coordonnées en pixels des masters. Les masters retouchés remplacent les précédents ; `npm run visuels:rendre <ID>` a refait leurs rendus.
+
+| Fichier | Opération | Après |
+|---|---|---|
+| `BLG-02.png`, `BLG-02.nuit.png` | Recadrage commun en 16:9 depuis le coin haut gauche, (0, 0, 1568, 882) px : il retire l’objet noir coupé du coin bas droit, dont les découpes blanches imitaient des lettres. | Masters de 1568 × 882 ; anneau et pied de la lanterne gardés, flamme vers 69 × 55 % (composition du registre mise à jour). Le rendu reste en 1600 × 900. |

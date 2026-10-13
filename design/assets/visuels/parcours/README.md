@@ -2643,3 +2643,13 @@ Opérations locales retenues, coordonnées en pixels :
 SHA-256 livré : `0caabedb704341e15712ea5da498503029390046eeb4b830e87fe6f55fe4f065`.
 
 Master copié depuis ce PNG natif, sans retouche raster après cette dernière génération.
+
+## Retouches déterministes du 14 octobre 2026
+
+Corrections demandées par l’audit des images et la relecture en situation, faites dans le dépôt avec Pillow (Python), sans génération ni édition générative : les opérations ci-dessous, aux coordonnées en pixels des masters. Les masters retouchés remplacent les précédents ; `npm run visuels:rendre <ID>` a refait leurs rendus.
+
+| Fichier | Opération | Après |
+|---|---|---|
+| `PRO-06.png` | Résidu du repère d’alignement : les colonnes 767 et 768, plus claires dans tous les noirs (≈ 99 contre ≈ 35 autour, de y ≈ 280 à 960), remplacées sur toute la hauteur par l’interpolation linéaire entre les colonnes 766 et 769. Nuit inchangée. | Plus de trait vertical dans la lanterne, le toit, le socle ni la règle. |
+| `CMP-04.nuit.png` | Recalage sur le jour : redimensionné en 1191 × 1216 px (Lanczos), collé sur une toile transparente de 1254 × 1254 au décalage (+32, −16) px. | Superposition des silhouettes opaques avec le jour : IoU 0,85 → 0,97 ; points d’interrogation, cadres, accolade, crayon et lanterne coïncident. |
+| `FOR-04.png`, `FOR-04.nuit.png` | Marge transparente d’environ 3,5 % : chaque master posé au centre d’une toile de 1340 × 1340 px, puis ramené à 1254 × 1254 (Lanczos), à l’identique le jour et la nuit. | Boîte du jour (0, 1, 1238, 1226) → (40, 41, 1199, 1188) : l’anneau et les pointes des flèches respirent. Flamme vers 76 × 26 %, reportée dans la composition du registre. |

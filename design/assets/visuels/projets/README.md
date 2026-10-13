@@ -461,3 +461,11 @@ Empreintes SHA-256 des masters livrés :
 
 - `PRJ-12.png` : `663b5bb8d944cbbf47cb28b4c5f32228cb17ab44e67df18d549c7026c159b0d0`.
 - `PRJ-12.nuit.png` : `4592c9564c15ce837bc16cddaaaa44bcf6109d92a40eee17ef5ba9b7e851af50`.
+
+## Retouches déterministes du 14 octobre 2026
+
+Corrections demandées par l’audit des images et la relecture en situation, faites dans le dépôt avec Pillow (Python), sans génération ni édition générative : les opérations ci-dessous, aux coordonnées en pixels des masters. Les masters retouchés remplacent les précédents ; `npm run visuels:rendre <ID>` a refait leurs rendus.
+
+| Fichier | Opération | Après |
+|---|---|---|
+| `PRJ-10.nuit.png` | Les notes de musique, restées noires sur fond transparent, disparaissaient sur le fond de nuit. Report en blanc des traits du jour, sans ouverture, dans les boîtes x 900–1010, y 20–320 et x 1010–1160, y 20–368, avec l’opacité du jour. | Les trois notes en blanc, à la même place que le jour. |

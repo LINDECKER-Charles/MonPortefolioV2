@@ -122,3 +122,11 @@ Empreintes SHA-256 des masters livrés :
 
 - `GUP-03.png` : `32b7e520e31df440c0089e9e29b75de9fea69f920b42a9bed7049625bf3c7cfe`.
 - `GUP-03.nuit.png` : `2697f077392718421e5756fafdf54d6be22c0ad27847d09d780bdd01876e7991`.
+
+## Retouches déterministes du 14 octobre 2026
+
+Corrections demandées par l’audit des images et la relecture en situation, faites dans le dépôt avec Pillow (Python), sans génération ni édition générative : les opérations ci-dessous, aux coordonnées en pixels des masters. Les masters retouchés remplacent les précédents ; `npm run visuels:rendre <ID>` a refait leurs rendus.
+
+| Fichier | Opération | Après |
+|---|---|---|
+| `GUP-01.nuit.png` | La flèche circulaire de la face de la boîte avait disparu. Report en blanc des traits épais du jour (ouverture de 9 px), boîte x 1030–1210, y 620–800 du jour, décalée de (+25, +10) px : la boîte de nuit est un peu plus grande et décalée par rapport au jour. | La face de la boîte porte de nouveau sa flèche. Restent, à reprendre : la flèche qui se lit comme un « C », le lavis rouge de la cage. |

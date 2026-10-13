@@ -832,3 +832,11 @@ EDIT image 1, the final DAY master. Images 2–5 are the four common style refer
 
 Negative prompt: text, letters, numbers, digits, signature, watermark, logo, brand mark, recognisable face, portrait, real person, character, card or symbol from an existing game or franchise, ornate gold frame, decorative border, gradient, soft glow, airbrush, photographic or 3D render, grey shading, any colour other than black, white and red, glow, halo, light rays, sparkle lines, lens flare, hyper-detailed, intricate micro-detail, uniform texture, digital painting, smooth airbrush, detailed anatomy, fake text lines
 ```
+
+## Retouches déterministes du 14 octobre 2026
+
+Corrections demandées par l’audit des images et la relecture en situation, faites dans le dépôt avec Pillow (Python), sans génération ni édition générative : les opérations ci-dessous, aux coordonnées en pixels des masters. Les masters retouchés remplacent les précédents ; `npm run visuels:rendre <ID>` a refait leurs rendus.
+
+| Fichier | Opération | Après |
+|---|---|---|
+| `PVZ-02c.nuit.png` | La coche de la fiche avait disparu. Report en rouge `#FF0000` de la coche rouge du jour (part de lumière, ouverture de 5 px), boîte x 795–865, y 765–830 du jour, décalée de (+18, +12) px vers la fiche de nuit ; master gardé en RVB. | La fiche relue porte sa coche, dans la lumière de la lanterne. |

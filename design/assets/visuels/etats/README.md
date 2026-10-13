@@ -101,3 +101,11 @@ EDIT image 1. Restore the small damaged paper patch immediately to the RIGHT of 
 
 Negative prompt: text, letters, numbers, digits, signature, watermark, logo, brand mark, recognisable face, portrait, real person, character, card or symbol from an existing game or franchise, ornate gold frame, decorative border, gradient, soft glow, airbrush, photographic or 3D render, grey shading, any colour other than black, white and red, glow, halo, light rays, sparkle lines, lens flare, hyper-detailed, intricate micro-detail, uniform texture, digital painting, smooth airbrush, detailed anatomy, fake text lines
 ```
+
+## Retouches déterministes du 14 octobre 2026
+
+Corrections demandées par l’audit des images et la relecture en situation, faites dans le dépôt avec Pillow (Python), sans génération ni édition générative : les opérations ci-dessous, aux coordonnées en pixels des masters. Les masters retouchés remplacent les précédents ; `npm run visuels:rendre <ID>` a refait leurs rendus.
+
+| Fichier | Opération | Après |
+|---|---|---|
+| `ERR-01.png`, `ERR-01.nuit.png` | Raccords du déplacement de la lanterne. Encoche du coin bas droit du socle (polygone (1032, 581), (1007, 605), (1033, 612)) comblée par les hachures voisines prises à (+28, −7) px, le long des hachures. Marche du bord haut de la page, à droite de la cage : le jour, colonnes x 1030–1040 recopiées depuis 12 px à droite, y 336–366 telles quelles et y 366–384 à 3 px plus haut ; la nuit, x 1035–1040, y 336–372, depuis 10 px à droite. | Bord de page continu jusqu’à la cage, socle refermé. La coupure verticale des hachures à gauche du socle (x 792–800) reste, peu visible : à reprendre avec la consigne de l’audit si besoin. |
