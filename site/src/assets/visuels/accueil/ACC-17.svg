@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" width="320" height="240" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <title>Un petit système en plan</title>
+  <g class="sys-doux" stroke-width="1.1">
+    <path d="M22 203h276M32 198v10m64-10v10m64-10v10m64-10v10m64-10v10"/>
+  </g>
+  <g class="sys-liaisons" stroke-width="1.3">
+    <path d="M78 142h28v-32h37M174 110h35v32h30M169 80V50h62M267 68v33h-58"/>
+  </g>
+  <path class="sys-retour" d="M239 156h-41v-31h-24M143 125h-25v32H78" stroke-width="1.1" stroke-dasharray="3 5"/>
+  <g class="sys-client">
+    <path class="sys-aplat" d="M29 119h49v38H29zM24 164h59l-5-7H29z" fill="#ffffff"/>
+    <path d="m43 131-7 6 7 6m19-12 7 6-7 6m-10-15-5 18M46 161h15"/>
+    <path class="sys-hachure" d="M26 170h56M32 174h44" stroke-width="0.8"/>
+  </g>
+  <g class="sys-service">
+    <path class="sys-aplat" d="m143 78 31-8 17 10v79l-31 8-17-10z" fill="#ffffff"/>
+    <path d="m143 78 17 10 31-8m-31 8v79m7-66 17-4m-17 15 17-4m-17 15 17-4m-17 15 17-4M149 96v39"/>
+    <path class="sys-hachure" d="m145 104 12 7m-12 5 12 7m-12 5 12 7m-12 5 12 7m-12 5 12 7" stroke-width="0.8"/>
+    <path class="sys-doux" d="m132 175 30 17 42-12" stroke-width="1.1"/>
+  </g>
+  <g class="sys-stockage">
+    <path class="sys-aplat" d="M239 128c0-12 49-12 49 0v37c0 12-49 12-49 0z" fill="#ffffff"/>
+    <ellipse cx="263.5" cy="128" rx="24.5" ry="9"/>
+    <path d="M239 141c0 12 49 12 49 0m-49 13c0 12 49 12 49 0"/>
+    <path class="sys-hachure" d="M277 138v28m5-30v27m4.5-31v24" stroke-width="0.8"/>
+    <path class="sys-doux" d="M254 162v4m8-3v4m8-4v4" stroke-width="1.1"/>
+  </g>
+  <g class="sys-livraison">
+    <path class="sys-aplat" d="M231 28h56v40h-56z" fill="#ffffff"/>
+    <path d="M231 38h56m-50-5h1m5 0h1m5 0h1m-1 18 7 7 15-15"/>
+  </g>
+  <g class="sys-lumiere" fill="#f0b24a" stroke="none">
+    <circle class="sys-signal" cx="177" cy="150" r="3"/>
+    <circle class="sys-temoin" cx="72" cy="124" r="1.6"/>
+    <circle class="sys-paquet sys-paquet--requete" r="3.5" opacity="0"/>
+    <circle class="sys-paquet sys-paquet--donnees" r="3.5" opacity="0"/>
+    <circle class="sys-paquet sys-paquet--reponse" r="3.5" opacity="0"/>
+    <circle class="sys-paquet sys-paquet--livraison" r="3.5" opacity="0"/>
+  </g>
+</svg>
