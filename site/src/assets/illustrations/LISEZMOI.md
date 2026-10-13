@@ -1,7 +1,9 @@
 # Planches du site
 
-Masques alpha monochromes (traits opaques sur fond transparent), colorés en CSS par
-`src/components/ui/Planche.astro` : bleu le jour, bleu de lune la nuit.
+Masques alpha monochromes (traits opaques sur fond transparent) de la direction « Mode
+d’emploi », colorés en CSS par `src/components/ui/Planche.astro` : bleu le jour, bleu de lune
+la nuit. Plus aucune page ne les pose depuis la refonte « Lanterne » : le composant a été retiré
+au lot 6 (son code reste dans l’historique), les fichiers sont gardés.
 
 Les originaux sont dans `design/assets/illustrations/` et `design/assets/etudes-de-cas/`.
 Ici, ils sont **recadrés sur le dessin**, avec une marge régulière : les originaux gardent
