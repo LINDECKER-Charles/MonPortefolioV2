@@ -1,5 +1,8 @@
 # Visuels du parcours
 
-| Fichier | Visuel | Provenance |
-|---|---|---|
-| `PAR-PHO_960x1200.webp` | Portrait du hub du parcours : Charles en chemise bleu roi, la main au menton, devant un parc. | Photo réelle n° 3 de la séance (`design/assets/photos/sources/1536x2304_charles-3.webp`), recadrée en 4:5 (lignes 300 à 2 220 sur toute la largeur), réduite à 960 × 1 200 et enregistrée en WebP qualité 82 avec sharp. Aucune retouche ni détourage ; la nuit, le voile de lune et la lueur de lanterne viennent du composant `Portrait`. Recadrée le 13 octobre 2026. |
+Chaque fichier livré prend une ligne : le prompt exact d’une image générée (sinon « — » et la méthode), la date de livraison et la provenance (master, script, source). Les images générées arrivent par `node tools/separer-calques.mjs <ID>` (dans `site/`), depuis leur master `design/assets/visuels/<série>/<ID>.png` : consigner le rendu et ses trois calques sur la même ligne. Consignes : `docs/visuels-a-generer.md`.
+
+| Fichier | Visuel | Prompt | Date | Provenance |
+|---|---|---|---|---|
+| `PAR-PHO_960x1200.webp` | Portrait du hub du parcours : Charles en chemise bleu roi, la main au menton, devant un parc. | — (photo réelle) | 13 octobre 2026 | Photo réelle n° 3 de la séance (`design/assets/photos/sources/1536x2304_charles-3.webp`), recadrée en 4:5 (lignes 300 à 2 220 sur toute la largeur), réduite à 960 × 1 200 et enregistrée en WebP qualité 82 avec sharp. Aucune retouche ni détourage ; la nuit, le voile de lune et la lueur de lanterne viennent du composant `Portrait`. Recadrée le 13 octobre 2026. |
+| `FOR-09_1600x1000.webp` | Mosaïque de six solutions Frontend Mentor publiées sur le profil public : Room Homepage, Loopstudios landing page, E-commerce product page, News Homepage, REST Countries API with color theme switcher, Time tracking dashboard. | — (captures réelles) | 13 octobre 2026 | Captures des sites en ligne liés depuis https://www.frontendmentor.io/profile/LINDECKER-Charles, prises dans Chromium à 1 440 × 1 351 px (haut de page, thème clair), réduites à la même échelle (533 × 500 px) et assemblées en grille de 3 × 2 avec un filet de 1 px, WebP qualité 82 avec sharp. Aucune retouche. |
