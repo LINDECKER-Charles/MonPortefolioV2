@@ -147,10 +147,10 @@ Ils représentent la fonction de l’outil et ne prétendent pas être des logos
 
 | Outil | Illustration | Source officielle |
 |---|---|---|
-| SQL | Cylindre de base de données | [ISO/IEC 9075](https://www.iso.org/standard/76583.html) |
+| SQL | Cylindre de base de données | [Langage SQL, documentation PostgreSQL](https://www.postgresql.org/docs/current/sql.html) |
 | Axum | Deux blocs reliés (requête, route) | [tokio-rs/axum](https://github.com/tokio-rs/axum) |
 | SQLx | Base de données et coche de requête validée | [transact-rs/sqlx](https://github.com/transact-rs/sqlx) |
-| Stockage S3 compatible | Seau d’objets | [API S3](https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html) |
+| Stockage S3 compatible | Seau d’objets | [object_store](https://docs.rs/object_store/latest/object_store/), bibliothèque de l’adaptateur de Life Pixel |
 | Dompdf | Feuille cornée et lignes | [Dompdf](https://dompdf.github.io/) |
 | OpenTUI | Fenêtre de terminal et invite | [OpenTUI](https://opentui.com/) |
 | Make | Trois nœuds en arbre (cibles et dépendances) | [GNU Make](https://www.gnu.org/software/make/) |
@@ -165,7 +165,8 @@ pas des logos de ces produits. Ils utilisent `currentColor`, suivent les couleur
 et restent lisibles à l’impression ainsi qu’en mode de contraste forcé.
 
 Le logo AWS S3 n’est pas utilisé pour représenter la compatibilité avec son protocole.
-La référence S3 documente l’API ; elle n’ajoute pas AWS aux technologies pratiquées.
+Le lien mène à la bibliothèque `object_store` réellement employée par l’adaptateur de stockage
+de Life Pixel ; il n’ajoute pas AWS aux technologies pratiquées.
 Les liens vers les sites des éditeurs, mainteneurs et organismes de normalisation sont
 centralisés dans `site/src/config/competences.ts`, vérifiés le 2026-10-09.
 

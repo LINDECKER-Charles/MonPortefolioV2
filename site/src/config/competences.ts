@@ -80,7 +80,8 @@ type Technologie =
   | (typeof DOMAINES_IA)[number]['outils'][number]
   | (typeof DOMAINES_QUALITE)[number]['outils'][number];
 
-// Sites des éditeurs, mainteneurs ou organismes de normalisation vérifiés le 2026-10-09.
+// Sites des éditeurs, mainteneurs ou organismes de normalisation vérifiés le 2026-10-09 ;
+// SQL et stockage S3 revus le 2026-10-13 : documentations publiques de ce que j’utilise.
 export const SITES_OFFICIELS = {
   TypeScript: 'https://www.typescriptlang.org/',
   JavaScript: 'https://tc39.es/',
@@ -91,7 +92,7 @@ export const SITES_OFFICIELS = {
   Rust: 'https://rust-lang.org/',
   Go: 'https://go.dev/',
   C: 'https://www.open-std.org/jtc1/sc22/wg14/',
-  SQL: 'https://www.iso.org/standard/76583.html',
+  SQL: 'https://www.postgresql.org/docs/current/sql.html',
   HTML: 'https://html.spec.whatwg.org/multipage/',
   CSS: 'https://www.w3.org/Style/CSS/',
   Angular: 'https://angular.dev/',
@@ -127,7 +128,8 @@ export const SITES_OFFICIELS = {
   'EF Core': 'https://learn.microsoft.com/ef/core/',
   Doctrine: 'https://www.doctrine-project.org/',
   SQLx: 'https://github.com/transact-rs/sqlx',
-  'Stockage S3 compatible': 'https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html',
+  // La bibliothèque de l’adaptateur de Life Pixel (crates/server/src/storage/objects.rs), pas AWS.
+  'Stockage S3 compatible': 'https://docs.rs/object_store/latest/object_store/',
   Ionic: 'https://ionicframework.com/',
   Capacitor: 'https://capacitorjs.com/',
   Tauri: 'https://tauri.app/',
