@@ -2,10 +2,13 @@
 /**
  * Pictos de repère de la page Compétences, au trait sur une grille de 48 :
  * le schéma « Interface ↔ API ↔ Données » (interface, backend, donnees), les
- * trois capacités de l’intégration IA (agents, mcp, voix ; CMP-09), et les
+ * trois capacités de l’intégration IA (agents, mcp, voix ; CMP-09, lues dans
+ * src/assets/visuels/parcours/CMP-09.svg), et les
  * repères historiques des compétences humaines, remplacés dans la page par
  * les illustrations CMP-02 à CMP-08. Décoratifs, à la couleur du texte.
  */
+import sprite from '../../assets/visuels/parcours/CMP-09.svg?raw';
+
 interface Props {
   categorie:
     | 'interface'
@@ -24,6 +27,12 @@ interface Props {
 }
 
 const { categorie } = Astro.props;
+
+/** Les trois capacités de l’intégration IA viennent du fichier livré du registre (CMP-09). */
+const ia = ['agents', 'mcp', 'voix'].includes(categorie)
+  ? sprite.match(new RegExp(`<symbol\\b[^>]*\\bdata-categorie="${categorie}"[^>]*>([\\s\\S]*?)</symbol>`))?.[1]
+  : undefined;
+if (['agents', 'mcp', 'voix'].includes(categorie) && !ia) throw new Error(`Picto « ${categorie} » absent de src/assets/visuels/parcours/CMP-09.svg.`);
 ---
 
 <svg
@@ -133,30 +142,9 @@ const { categorie } = Astro.props;
       <path d="M24 19c-3-2-6-3-10-2v14c4-1 7 0 10 2 3-2 6-3 10-2V17c-4-1-7 0-10 2Zm0 0v14" />
     </>
   )}
-  {categorie === 'agents' && (
-    <>
-      <path class="teinte" d="M6 8h28v20H20l-8 7v-7H6V8Z" />
-      <path d="M6 8h28v20H20l-8 7v-7H6V8Z" />
-      <path d="m14 15-3 3 3 3m12-6 3 3-3 3m-4-8-4 10" />
-      <path d="M38 18h4v16h-4v5l-6-5H24v-2" />
-    </>
-  )}
 
-  {categorie === 'mcp' && (
-    <>
-      <path class="teinte" d="M14 20h20v8a10 10 0 0 1-20 0v-8Z" />
-      <path d="M14 20h20v8a10 10 0 0 1-20 0v-8ZM19 20v-9m10 9v-9M24 38v6M10 44h28" />
-      <circle cx="24" cy="28" r="2.5" />
-    </>
-  )}
 
-  {categorie === 'voix' && (
-    <>
-      <rect class="teinte" x="17" y="5" width="14" height="24" rx="7" />
-      <rect x="17" y="5" width="14" height="24" rx="7" />
-      <path d="M11 22a13 13 0 0 0 26 0M24 35v7m-7 0h14M5 17v8m36-8v8M44 19v4M2 19v4" />
-    </>
-  )}
+  {ia && <Fragment set:html={ia} />}
 </svg>
 
 <style>
@@ -166,18 +154,19 @@ const { categorie } = Astro.props;
     height: 100%;
   }
 
-  .plein {
+  /* :global : les dessins de CMP-09 sont injectés sans l’attribut de portée. */
+  .repere-competence :global(.plein) {
     fill: currentColor;
     stroke: none;
   }
 
-  .teinte {
+  .repere-competence :global(.teinte) {
     fill: currentColor;
     fill-opacity: 0.08;
     stroke: none;
   }
 
   @media (forced-colors: active) {
-    .teinte { fill-opacity: 0.15; }
+    .repere-competence :global(.teinte) { fill-opacity: 0.15; }
   }
 </style>
