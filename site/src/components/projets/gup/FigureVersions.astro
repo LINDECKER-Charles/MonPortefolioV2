@@ -1,0 +1,241 @@
+---
+/**
+ * GUP-F3 · Les versions : les douze versions publiées sur npm, de la 0.1.0
+ * (19/05/2026) à la 0.5.3 (06/10/2026), placées sur une frise à l’échelle du
+ * temps. Figure codée depuis VERSIONS (config/gup.ts, registre npm relevé le
+ * 13/10/2026). Les versions publiées à quelques jours d’écart partagent un
+ * repère. Sur mobile, la frise devient une liste.
+ */
+import { VERSIONS } from '../../../config/gup';
+
+interface Props {
+  class?: string;
+}
+
+const { class: classe } = Astro.props;
+
+const jour = (iso: string) => Date.parse(`${iso}T12:00:00Z`);
+const debut = jour('2026-05-15');
+const fin = jour('2026-10-15');
+const position = (iso: string) => ((jour(iso) - debut) / (fin - debut)) * 100;
+const court = (iso: string) => `${iso.slice(8, 10)}/${iso.slice(5, 7)}`;
+
+/** Les versions à moins de quatre jours d’écart partagent un repère. */
+const reperes: { premiere: string; derniere: string; versions: string[] }[] = [];
+for (const { version, date } of VERSIONS) {
+  const dernier = reperes.at(-1);
+  if (dernier && jour(date) - jour(dernier.premiere) < 4 * 86_400_000) {
+    dernier.versions.push(version);
+    dernier.derniere = date;
+  } else {
+    reperes.push({ premiere: date, derniere: date, versions: [version] });
+  }
+}
+
+const MOIS = ['juin', 'juil.', 'août', 'sept.', 'oct.'].map((nom, index) => ({ nom, x: position(`2026-${String(index + 6).padStart(2, '0')}-01`) }));
+---
+
+<figure class:list={['versions', classe]} data-visuel="GUP-F3">
+  <figcaption class="versions__titre">{VERSIONS.length}&nbsp;versions publiées sur npm, de mai à octobre 2026</figcaption>
+  <div class="versions__frise">
+    <span class="versions__axe" aria-hidden="true"></span>
+    {MOIS.map((mois) => <span class="versions__mois" style={`--x:${mois.x.toFixed(2)}%`} aria-hidden="true">{mois.nom}</span>)}
+    <ol>
+      {
+        reperes.map((repere, index) => (
+          <li style={`--x:${position(repere.premiere).toFixed(2)}%`} class:list={{ 'versions__repere--haut': index % 2 === 0, 'versions__repere--fin': index === reperes.length - 1 }}>
+            <span class="versions__point" aria-hidden="true" />
+            <span class="versions__texte">
+              <b class="chiffres">{repere.versions.length > 2 ? `${repere.versions[0]} → ${repere.versions.at(-1)}` : repere.versions.join(' · ')}</b>
+              <time datetime={repere.premiere} class="chiffres">
+                {repere.premiere === repere.derniere ? court(repere.premiere) : `${court(repere.premiere)}–${court(repere.derniere)}`}
+              </time>
+            </span>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+  <p class="versions__source">Registre npm, relevé le 13/10/2026. La 0.4.0, préparée dans le dépôt, n’a jamais été publiée&nbsp;: tout son contenu est sorti avec la 0.5.0.</p>
+</figure>
+
+<style>
+  .versions {
+    display: grid;
+    gap: var(--s3);
+    margin: 0;
+  }
+
+  .versions__titre {
+    font-size: var(--t-s);
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  /* Les repères au-dessus de l’axe, sur deux hauteurs qui alternent ; les
+     mois en dessous. */
+  .versions__frise {
+    --axe: 112px;
+    position: relative;
+    height: calc(var(--axe) + 28px);
+    margin-inline: 0 var(--s4);
+  }
+
+  .versions__axe {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: var(--axe);
+    height: 1px;
+    background: var(--trait);
+  }
+
+  .versions__mois {
+    position: absolute;
+    left: var(--x);
+    top: var(--axe);
+    padding: 6px 0 0 4px;
+    border-left: 1px solid var(--trait);
+    font-size: var(--t-xs);
+    line-height: 1.2;
+    color: var(--eteint);
+  }
+
+  .versions ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .versions li {
+    position: absolute;
+    left: var(--x);
+    top: calc(var(--axe) - 50px);
+    height: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .versions li.versions__repere--haut {
+    top: calc(var(--axe) - 104px);
+    height: 104px;
+  }
+
+  .versions__texte {
+    display: grid;
+    order: 0;
+    padding: 0 0 var(--s1) var(--s2);
+    margin-left: -1px;
+    border-left: 1px solid var(--trait);
+    font-size: var(--t-xs);
+    line-height: 1.3;
+    white-space: nowrap;
+  }
+
+  .versions li::after {
+    content: '';
+    flex: 1;
+    order: 1;
+    border-left: 1px solid var(--trait);
+    margin-left: -1px;
+  }
+
+  .versions__texte b {
+    font-weight: 600;
+  }
+
+  .versions__texte time {
+    color: var(--eteint);
+  }
+
+  .versions__point {
+    order: 2;
+    width: 11px;
+    height: 11px;
+    margin: 0 0 -5px -6px;
+    border-radius: 50%;
+    background: var(--encre);
+    box-shadow: 0 0 0 3px var(--fond);
+  }
+
+  .versions__repere--fin {
+    align-items: flex-end !important;
+    translate: -100% 0;
+  }
+
+  .versions__repere--fin .versions__texte {
+    margin: 0 -1px 0 0;
+    padding: 0 var(--s2) var(--s1) 0;
+    border-left: 0;
+    border-right: 1px solid var(--trait);
+    text-align: right;
+  }
+
+  .versions__repere--fin::after {
+    margin: 0 -1px 0 0;
+    border-left: 0;
+    border-right: 1px solid var(--trait);
+  }
+
+  .versions__repere--fin .versions__point {
+    margin: 0 -6px -5px 0;
+    background: var(--laiton);
+  }
+
+  .versions__source {
+    font-size: var(--t-xs);
+    line-height: 1.5;
+    color: var(--eteint);
+  }
+
+  @media (max-width: 860px) {
+    .versions__frise {
+      height: auto;
+      margin: 0;
+    }
+
+    .versions__axe,
+    .versions__mois,
+    .versions li::after {
+      display: none;
+    }
+
+    .versions ol {
+      display: grid;
+      margin-left: 5px;
+      border-left: 1px solid var(--trait);
+    }
+
+    .versions li,
+    .versions li.versions__repere--haut {
+      position: static;
+      height: auto;
+      flex-direction: row;
+      align-items: center;
+      gap: var(--s3);
+      padding-block: var(--s2);
+      translate: none;
+    }
+
+    .versions__point,
+    .versions__repere--fin .versions__point {
+      order: 0;
+      margin: 0 0 0 -6px;
+    }
+
+    .versions__texte,
+    .versions__repere--fin .versions__texte {
+      display: flex;
+      gap: var(--s3);
+      margin: 0;
+      padding: 0;
+      border: 0;
+      text-align: left;
+    }
+
+    .versions__repere--fin {
+      align-items: center !important;
+    }
+  }
+</style>

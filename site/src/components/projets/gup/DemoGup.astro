@@ -1,0 +1,481 @@
+---
+/**
+ * La démonstration de gup (conservée, restylée dans un cadre de terminal) :
+ * cocher des paquets, lancer, regarder gup passer de l’un à l’autre. Elle
+ * montre ce que la première version taisait : une source en échec qui ne
+ * bloque pas les autres, et le paquet qui demande les droits administrateur,
+ * passé en dernier derrière une seule demande.
+ *
+ * Données : la machine d’exemple du dépôt public de gup
+ * (scripts/screenshots/fixtures/scan.ts, release 0.5.3) ; les noms sont
+ * écrits comme gup les affiche. Rien n’est installé : c’est une simulation
+ * dans la page, annoncée comme telle.
+ *
+ * Sans JavaScript : la liste reste lisible, les commandes sont masquées
+ * ([data-js-seulement]) et une phrase, masquée dès que html.js existe,
+ * renvoie aux quatre vrais écrans.
+ * Mouvement réduit : chaque paquet passe directement à son état final.
+ */
+interface Paquet {
+  nom: string;
+  version: string;
+  prochaine: string;
+  admin?: boolean;
+}
+
+interface Source {
+  nom: string;
+  paquets: readonly Paquet[];
+  echec?: string;
+}
+
+const sources: readonly Source[] = [
+  {
+    nom: 'Winget',
+    paquets: [
+      { nom: 'Git', version: '2.51.0', prochaine: '2.52.0' },
+      { nom: 'PowerToys', version: '0.94.1', prochaine: '0.95.0' },
+    ],
+  },
+  { nom: 'npm (global)', paquets: [{ nom: 'typescript', version: '6.0.2', prochaine: '6.0.3' }] },
+  { nom: 'pipx', paquets: [{ nom: 'ruff', version: '0.13.0', prochaine: '0.13.2' }] },
+  { nom: 'Chocolatey', paquets: [{ nom: 'nodejs-lts', version: '24.8.0', prochaine: '24.9.0', admin: true }] },
+  { nom: 'Scoop', paquets: [], echec: 'scoop status failed (code 1)' },
+];
+---
+
+<div class="demo-gup" data-gup-demo>
+  <div class="demo-gup__barre" aria-hidden="true">
+    <span class="demo-gup__points"></span>
+    <span class="demo-gup__titre">gup — Paquets · démonstration</span>
+  </div>
+  <div class="demo-gup__corps">
+    <p class="demo-gup__mention">Données d’exemple du dépôt de gup&nbsp;: rien n’est installé.</p>
+    <fieldset class="demo-gup__liste">
+      <legend class="sr">Les paquets à mettre à jour, par source</legend>
+      {
+        sources.map((source) =>
+          source.echec ? (
+            <p class="demo-gup__echec" data-gup-echec>
+              <span class="demo-gup__marque" aria-hidden="true">×</span>
+              <b>{source.nom}</b>
+              <span>
+                analyse en échec&nbsp;: <code>{source.echec}</code>. Les autres sources continuent.
+              </span>
+            </p>
+          ) : (
+            source.paquets.map((paquet, index) => (
+              <label class="demo-gup__paquet" data-gup-package data-admin={paquet.admin ? 'true' : undefined}>
+                <input type="checkbox" value={paquet.nom} data-version={paquet.version} data-prochaine={paquet.prochaine} />
+                <span class="demo-gup__nom">
+                  {paquet.nom}
+                  {paquet.admin && <span class="demo-gup__admin">admin</span>}
+                </span>
+                <span class="demo-gup__source">
+                  <span class="sr">, source&nbsp;: {source.nom}</span>
+                  <span aria-hidden="true" class:list={{ 'demo-gup__source--suite': index > 0 }}>{source.nom}</span>
+                </span>
+                <span class="demo-gup__versions">
+                  <span class="sr">, version installée&nbsp;: </span>
+                  <span class="demo-gup__version" data-gup-version>{paquet.version}</span>
+                  <span data-gup-next>
+                    <span aria-hidden="true"> → </span>
+                    <span class="sr">version disponible&nbsp;: </span>
+                    <span class="demo-gup__prochaine">{paquet.prochaine}</span>
+                  </span>
+                </span>
+                <span class="demo-gup__etat" data-gup-state>disponible</span>
+              </label>
+            ))
+          ),
+        )
+      }
+    </fieldset>
+    <div class="demo-gup__actions" data-js-seulement>
+      <p class="demo-gup__resultat" role="status" aria-live="polite" aria-atomic="true" data-gup-status>Aucun paquet coché.</p>
+      <div class="demo-gup__boutons">
+        <button type="button" class="bouton" data-gup-update disabled>Simuler la mise à jour</button>
+        <button type="button" class="lien-action demo-gup__recommencer" data-gup-reset hidden>Recommencer</button>
+      </div>
+    </div>
+    <p class="demo-gup__sans-script">Sans JavaScript, la démonstration reste figée&nbsp;: les quatre écrans ci-dessus montrent le vrai déroulé.</p>
+  </div>
+</div>
+
+<script>
+  const PAUSE = 520;
+  const pluriel = (n: number, mot: string) => `${n} ${mot}${n > 1 ? 's' : ''}`;
+
+  document.querySelectorAll<HTMLElement>('[data-gup-demo]').forEach((demo) => {
+    const choix = [...demo.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')];
+    const liste = demo.querySelector<HTMLFieldSetElement>('fieldset');
+    const lancer = demo.querySelector<HTMLButtonElement>('[data-gup-update]');
+    const recommencer = demo.querySelector<HTMLButtonElement>('[data-gup-reset]');
+    const resultat = demo.querySelector<HTMLElement>('[data-gup-status]');
+    if (!liste || !lancer || !recommencer || !resultat) return;
+    const reduit = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let tour = 0;
+
+    const ligne = (caseACocher: HTMLInputElement) => caseACocher.closest<HTMLElement>('[data-gup-package]');
+    const etat = (caseACocher: HTMLInputElement, texte: string, valeur?: string) => {
+      const l = ligne(caseACocher);
+      if (!l) return;
+      const zone = l.querySelector<HTMLElement>('[data-gup-state]');
+      if (zone) zone.textContent = texte;
+      if (valeur) l.dataset.etat = valeur;
+      else delete l.dataset.etat;
+    };
+    const attendre = (ms: number) => new Promise<void>((fin) => setTimeout(fin, reduit.matches ? 0 : ms));
+
+    const afficherSelection = () => {
+      const nombre = choix.filter((c) => c.checked).length;
+      lancer.disabled = nombre === 0;
+      resultat.textContent = nombre === 0 ? 'Aucun paquet coché.' : `${pluriel(nombre, 'paquet')} coché${nombre > 1 ? 's' : ''}.`;
+    };
+    choix.forEach((c) => c.addEventListener('change', afficherSelection));
+
+    lancer.addEventListener('click', async () => {
+      const selection = choix.filter((c) => c.checked);
+      if (selection.length === 0) return;
+      const monTour = ++tour;
+      // Les paquets ordinaires d’abord, puis le lot administrateur, comme gup.
+      const ordinaires = selection.filter((c) => !ligne(c)?.dataset.admin);
+      const admin = selection.filter((c) => ligne(c)?.dataset.admin);
+      liste.disabled = true;
+      lancer.hidden = true;
+      selection.forEach((c) => etat(c, 'en attente', 'attente'));
+      resultat.textContent = `Mise à jour de ${pluriel(selection.length, 'paquet')}…`;
+
+      const passer = async (c: HTMLInputElement, enCours: string) => {
+        etat(c, enCours, 'cours');
+        await attendre(PAUSE);
+        if (monTour !== tour) return;
+        const l = ligne(c);
+        const version = l?.querySelector<HTMLElement>('[data-gup-version]');
+        const prochaine = l?.querySelector<HTMLElement>('[data-gup-next]');
+        if (version) version.textContent = c.dataset.prochaine ?? '';
+        if (prochaine) prochaine.hidden = true;
+        etat(c, 'à jour', 'fait');
+      };
+
+      for (const c of ordinaires) {
+        await passer(c, 'en cours…');
+        if (monTour !== tour) return;
+      }
+      if (admin.length > 0) {
+        resultat.textContent = 'Lot administrateur\u00a0: une seule demande de droits.';
+        await attendre(PAUSE);
+        for (const c of admin) {
+          await passer(c, 'en cours (admin)…');
+          if (monTour !== tour) return;
+        }
+      }
+      const fin = `${pluriel(selection.length, 'paquet')} mis à jour dans cette démonstration.`;
+      resultat.textContent = admin.length > 0 ? `${fin} Le paquet administrateur est passé en dernier, derrière une seule demande de droits.` : fin;
+      recommencer.hidden = false;
+      recommencer.focus();
+    });
+
+    recommencer.addEventListener('click', () => {
+      tour += 1;
+      choix.forEach((c) => {
+        c.checked = false;
+        const l = ligne(c);
+        const version = l?.querySelector<HTMLElement>('[data-gup-version]');
+        const prochaine = l?.querySelector<HTMLElement>('[data-gup-next]');
+        if (version) version.textContent = c.dataset.version ?? '';
+        if (prochaine) prochaine.hidden = false;
+        etat(c, 'disponible');
+      });
+      liste.disabled = false;
+      lancer.hidden = false;
+      recommencer.hidden = true;
+      afficherSelection();
+      choix[0]?.focus();
+    });
+
+    afficherSelection();
+  });
+</script>
+
+<style>
+  /* Un terminal du système : le cadre des captures, sans marque. */
+  .demo-gup {
+    overflow: hidden;
+    border: 1px solid var(--cadre-filet);
+    border-radius: var(--r2);
+    background: var(--cadre);
+    color: var(--encre);
+    box-shadow: 0 0 90px -24px var(--lanterne-eclat);
+  }
+
+  .demo-gup__barre {
+    display: flex;
+    align-items: center;
+    gap: var(--s3);
+    height: 30px;
+    padding-inline: var(--s3);
+    border-bottom: 1px solid var(--cadre-filet);
+    background: var(--cadre-barre);
+    color: var(--cadre-texte);
+    font-size: var(--t-xs);
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .demo-gup__points {
+    flex: none;
+    width: 34px;
+    height: 8px;
+    background: radial-gradient(circle 4px at 4px 4px, var(--cadre-point) 98%, transparent) 0 0 / 13px 8px repeat-x;
+  }
+
+  .demo-gup__titre {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .demo-gup__corps {
+    padding: var(--s4) var(--s5) var(--s5);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: var(--t-s);
+  }
+
+  .demo-gup__mention {
+    color: var(--eteint);
+    font-family: var(--police-texte);
+    font-size: var(--t-xs);
+  }
+
+  .demo-gup__liste {
+    min-width: 0;
+    margin: var(--s3) 0 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .demo-gup__source {
+    grid-area: source;
+    color: var(--eteint);
+    font-size: var(--t-xs);
+    white-space: nowrap;
+  }
+
+  /* Le nom de la source une fois par groupe, comme dans gup. */
+  .demo-gup__source--suite {
+    visibility: hidden;
+  }
+
+  .demo-gup__paquet {
+    display: grid;
+    grid-template-columns: 22px minmax(7rem, 1fr) 7.5rem auto 7.5rem;
+    grid-template-areas: 'case nom source versions etat';
+    align-items: center;
+    gap: 0 var(--s3);
+    min-height: 44px;
+    padding: var(--s1) var(--s2);
+    border-bottom: 1px solid var(--cadre-filet);
+    border-radius: var(--r1);
+    cursor: pointer;
+    transition: background-color var(--d-ui) var(--courbe);
+  }
+
+  .demo-gup__paquet:hover,
+  .demo-gup__paquet:has(input:focus-visible) {
+    background: var(--cadre-barre);
+  }
+
+  .demo-gup__paquet input {
+    grid-area: case;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--lanterne);
+    cursor: pointer;
+  }
+
+  .demo-gup__nom {
+    grid-area: nom;
+    white-space: nowrap;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--s2);
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .demo-gup__admin {
+    padding: 0 var(--s1);
+    border: 1px solid var(--trait);
+    border-radius: var(--r1);
+    color: var(--eteint);
+    font-family: var(--police-texte);
+    font-size: var(--t-xs);
+    line-height: 1.4;
+  }
+
+  .demo-gup__versions {
+    grid-area: versions;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .demo-gup__version {
+    color: var(--laiton);
+  }
+
+  .demo-gup__prochaine {
+    color: var(--accent);
+  }
+
+  .demo-gup__etat {
+    grid-area: etat;
+    color: var(--eteint);
+    font-family: var(--police-texte);
+    font-size: var(--t-xs);
+    line-height: 1.5;
+  }
+
+  .demo-gup__paquet[data-etat='cours'] .demo-gup__etat {
+    color: var(--laiton);
+  }
+
+  .demo-gup__paquet[data-etat='fait'] .demo-gup__etat {
+    color: var(--encre);
+    font-weight: 600;
+  }
+
+  .demo-gup__paquet[data-etat='fait'] .demo-gup__etat::before {
+    content: '✓ ';
+  }
+
+  .demo-gup__liste:disabled .demo-gup__paquet {
+    cursor: default;
+  }
+
+  .demo-gup__echec {
+    display: grid;
+    grid-template-columns: 22px auto minmax(0, 1fr);
+    align-items: baseline;
+    gap: var(--s1) var(--s3);
+    margin-top: var(--s2);
+    padding: var(--s2) var(--s2) var(--s2) var(--s4);
+    border: 1px dashed var(--trait);
+    border-radius: var(--r1);
+  }
+
+  .demo-gup__marque {
+    font-weight: 700;
+    color: var(--laiton);
+  }
+
+  .demo-gup__echec span:last-child {
+    color: var(--eteint);
+    font-family: var(--police-texte);
+    font-size: var(--t-xs);
+    line-height: 1.5;
+  }
+
+  .demo-gup__echec code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: var(--encre);
+  }
+
+  .demo-gup__actions {
+    display: grid;
+    gap: var(--s3);
+    margin-top: var(--s4);
+    padding-top: var(--s4);
+    border-top: 1px solid var(--cadre-filet);
+    font-family: var(--police-texte);
+  }
+
+  .demo-gup__resultat {
+    min-height: 3em;
+    font-size: var(--t-s);
+    line-height: 1.5;
+  }
+
+  .demo-gup__boutons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s3) var(--s5);
+  }
+
+  .demo-gup__boutons .bouton:disabled {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px var(--trait);
+    color: var(--eteint);
+    cursor: default;
+  }
+
+  .demo-gup__recommencer {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 0.22em;
+    cursor: pointer;
+  }
+
+  /* Le mot d’explication ne s’affiche que sans script (html.js posé par theme.js). */
+  :global(html.js) .demo-gup__sans-script {
+    display: none;
+  }
+
+  .demo-gup__sans-script {
+    margin-top: var(--s4);
+    color: var(--eteint);
+    font-family: var(--police-texte);
+    font-size: var(--t-xs);
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  @media (max-width: 720px) {
+    .demo-gup__paquet {
+      grid-template-columns: 22px minmax(0, 1fr) auto;
+      grid-template-areas:
+        'case nom versions'
+        '. source etat';
+    }
+  }
+
+  @media (max-width: 520px) {
+    .demo-gup__corps {
+      padding-inline: var(--s3);
+      font-size: var(--t-xs);
+    }
+
+    .demo-gup__paquet {
+      grid-template-columns: 22px minmax(0, 1fr);
+      grid-template-areas:
+        'case nom'
+        '. versions'
+        '. etat';
+      padding-left: var(--s1);
+    }
+
+    .demo-gup__source {
+      display: none;
+    }
+
+    .demo-gup__echec {
+      grid-template-columns: 18px minmax(0, 1fr);
+      padding-left: var(--s3);
+    }
+
+    .demo-gup__echec span:last-child {
+      grid-column: 2;
+    }
+
+    .demo-gup__boutons .bouton {
+      flex: 1 1 100%;
+    }
+  }
+</style>
