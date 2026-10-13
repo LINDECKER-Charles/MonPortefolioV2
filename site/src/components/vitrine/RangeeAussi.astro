@@ -21,7 +21,7 @@ import { typo } from '../../lib/typo';
       AUSSI.map((projet) => (
         <li class="aussi__projet" id={projet.id}>
           <Visuel id={projet.visuel} alt="" sizes="(max-width: 860px) 45vw, 300px" class="aussi__visuel" />
-          <h3>{projet.nom}</h3>
+          <h3 class:list={[{ 'aussi__nom--technique': projet.technique }]}>{projet.nom}</h3>
           <p>{typo(projet.description)}</p>
           <div class="aussi__liens">
             {projet.liens.map((lien) => <LienAction href={lien.href} emplacement="preuves">{lien.libelle}</LienAction>)}
@@ -77,6 +77,16 @@ import { typo } from '../../lib/typo';
     line-height: 1.1;
   }
 
+  /* Un nom de dépôt en linéale : le trait d’union de la sérif s’ouvrirait (« img - convertor »). */
+  h3.aussi__nom--technique {
+    font-family: var(--police-texte);
+    font-weight: 500;
+    font-size: var(--t-l);
+    /* La hauteur de ligne des titres en sérif : les phrases restent alignées d’une carte à l’autre. */
+    line-height: calc(var(--t-xl) * 1.1);
+    letter-spacing: -0.01em;
+  }
+
   .aussi__projet p {
     font-size: var(--t-s);
     line-height: 1.5;
@@ -107,6 +117,11 @@ import { typo } from '../../lib/typo';
 
     h3 {
       font-size: var(--t-l);
+    }
+
+    h3.aussi__nom--technique {
+      font-size: var(--t-m);
+      line-height: calc(var(--t-l) * 1.1);
     }
 
     .aussi__projet p {

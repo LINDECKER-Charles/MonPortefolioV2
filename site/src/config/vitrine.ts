@@ -135,6 +135,8 @@ export interface ProjetAussi {
   id: string;
   nom: string;
   visuel: string;
+  /** Nom de dépôt technique (« img-convertor ») : composé en linéale, son trait d’union ne s’ouvre pas. */
+  technique?: boolean;
   description: string;
   liens: readonly LienPublic[];
 }
@@ -158,6 +160,7 @@ export const AUSSI: readonly ProjetAussi[] = [
   {
     id: 'img-convertor',
     nom: 'img-convertor',
+    technique: true,
     visuel: 'PRJ-08',
     description: 'Convertir un dossier d’images et en tirer les déclinaisons adaptées à chaque largeur d’écran (WebP, AVIF…).',
     liens: [{ href: 'https://github.com/LINDECKER-Charles/Web-Image-Formateur', libelle: 'Le code' }],

@@ -205,6 +205,9 @@ test('« Aussi » : quatre projets publics, et la démo de Shreksophone en ligne
   await expect(aussi.getByRole('heading', { level: 3 })).toHaveText(['GitHealth', 'Life Pixel', 'img-convertor', 'Shreksophone']);
   await expect(aussi.getByRole('link', { name: /La démo/ })).toHaveAttribute('href', 'https://lindecker-charles.github.io/ShrekSophone/');
   await expect(page.locator('a[href*="shrek.charles-lindecker.com"]')).toHaveCount(0);
+  // Un nom de dépôt en linéale : son trait d’union ne s’ouvre pas comme dans la sérif.
+  const depot = aussi.getByRole('heading', { level: 3, name: 'img-convertor' });
+  expect(await depot.evaluate((h) => getComputedStyle(h).fontFamily)).toMatch(/Instrument Sans/);
 });
 
 test('les liens sortants sont publics, marqués « ↗ » et mesurés', async ({ page }) => {
