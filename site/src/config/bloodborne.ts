@@ -94,9 +94,9 @@ export const DECISIONS: readonly Decision[] = [
     lien: { href: LIENS.journal, libelle: 'Le journal, 06 et 07/09/2026' },
   },
   {
-    contrainte: 'Trois gestes d’allumage cohabitaient selon le type d’objectif, et le joueur se heurtait à chaque changement.',
+    contrainte: 'Trois gestes d’allumage cohabitaient dans l’application.',
     choix: 'Un seul geste, l’appui maintenu, qui enregistre la réussite avant de lancer sa cérémonie.',
-    effet: 'Un geste à apprendre, une mise en scène par type d’objectif.',
+    effet: 'Un seul geste à apprendre ; la famille de l’objectif décide de la mise en scène.',
     lien: { href: LIENS.journal, libelle: 'Le journal, 08/09/2026' },
   },
   {
