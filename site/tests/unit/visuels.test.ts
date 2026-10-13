@@ -18,15 +18,15 @@ const MARQUES = /\b(?:pvz|plants vs\.? zombies|riot|league of legends|sony|froms
 const tous = (cle: 'sujet' | 'composition' | 'alt' | 'emplacement' | 'format' | 'note') => VISUELS.flatMap((v) => (v[cle] ? [[v.id, v[cle] as string] as const] : []));
 
 describe('registre des visuels : l’inventaire', () => {
-  it('recense les 124 emplacements, dont 80 « socle » et 44 « élargi »', () => {
-    expect(VISUELS).toHaveLength(124);
-    expect(VISUELS.filter((v) => v.priorite === 'socle')).toHaveLength(80);
+  it('recense les 126 emplacements, dont 82 « socle » et 44 « élargi »', () => {
+    expect(VISUELS).toHaveLength(126);
+    expect(VISUELS.filter((v) => v.priorite === 'socle')).toHaveLength(82);
     expect(VISUELS.filter((v) => v.priorite === 'elargi')).toHaveLength(44);
   });
 
   it('répartit les méthodes comme l’inventaire', () => {
     const par = (m: string) => VISUELS.filter((v) => v.methode === m).length;
-    expect({ IMG: par('IMG'), SVG: par('SVG'), FIG: par('FIG'), CAP: par('CAP'), PHO: par('PHO'), OG: par('OG') }).toEqual({ IMG: 73, SVG: 23, FIG: 17, CAP: 3, PHO: 3, OG: 5 });
+    expect({ IMG: par('IMG'), SVG: par('SVG'), FIG: par('FIG'), CAP: par('CAP'), PHO: par('PHO'), OG: par('OG') }).toEqual({ IMG: 73, SVG: 23, FIG: 19, CAP: 3, PHO: 3, OG: 5 });
   });
 
   it('donne un identifiant unique, de la forme PREFIXE-NN, PREFIXE-FN, PREFIXE-OG ou PREFIXE-PHO', () => {
@@ -146,11 +146,11 @@ describe('registre des visuels : liste des manquants', () => {
 
   it('compte tout comme manquant dans un dossier vide, sans compter deux fois les reprises', () => {
     const etat = etatDesVisuels(racine);
-    expect(etat.total).toBe(124);
+    expect(etat.total).toBe(126);
     expect(etat.presents).toBe(0);
     expect(etat.reprises).toBe(5);
-    expect(etat.figuresACoder).toHaveLength(16); // les 17 figures, moins celle du plafond, dont le composant est nommé
-    expect(etat.manquants).toHaveLength(124 - 5 - 16);
+    expect(etat.figuresACoder).toHaveLength(18); // les 19 figures, moins celle du plafond, dont le composant est nommé
+    expect(etat.manquants).toHaveLength(126 - 5 - 18);
     expect(etat.manquantsSocle.length + etat.manquantsElargi.length).toBe(etat.manquants.length);
   });
 
