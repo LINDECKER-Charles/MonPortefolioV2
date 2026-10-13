@@ -14,7 +14,10 @@
  * L’impression repasse en encre sur papier, quel que soit le thème.
  *
  * Contrastes (WCAG 2.x) calculés : design/refonte/c-lanterne/README.md, plus
- * l’acte bleu nuit et l’aplat bleu roi ci-dessous.
+ * l’acte bleu nuit et l’aplat bleu roi ci-dessous. L’acte de veille, la nuit
+ * (#141a2b) : 1,12:1 contre la suie, donc cerné du filet porteur (--trait,
+ * 3,9:1 contre la suie, 3,5:1 contre l’acte) ; encre 14,0:1, éteint 6,1:1,
+ * lien 9,3:1 (règle B6 ; tests/unit/contrastes.test.ts).
  */
 
 :root {
@@ -54,7 +57,8 @@
   --lanterne-eclat: rgb(240 178 74 / 0.55);
   --suie: #0b0d12;
   --lune: #e4e7ee;
-  --veille-nuit: #10131a;     /* acte sombre, la nuit */
+  --veille-nuit: #141a2b;     /* acte sombre, la nuit : bleu nuit franc, 1,12:1 sur la suie */
+  --veille-lueur: rgb(240 178 74 / 0.1);      /* la lanterne dans l’acte, la nuit */
   --bleu-nuit: #101b3e;       /* acte « La suite » */
   --bleu-roi: #1f4fd1;        /* l’identité : la chemise des quatre photos */
   --cadre: #0e1016;           /* cadres d’appareil des captures */

@@ -364,6 +364,8 @@ const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(h
 
     .pvz-outil {
       grid-template-columns: minmax(0, 1fr);
+      /* Le reliquat éclairé côté visuel : sous le texte, sur mobile. */
+      --veille-foyer: 50% 88%;
     }
 
     .pvz-outil :global(.pvz-outil__visuel) {
