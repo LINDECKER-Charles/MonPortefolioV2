@@ -48,10 +48,10 @@ const sections = [
         <div class="actions introuvable__actions">
           <Bouton href="/" attributs={{ 'data-pli': 'action' }}>Revenir à l’accueil</Bouton>
         </div>
+        <Portrait src={photo} alt="Charles Lindecker en chemise bleu roi, le regard tourné vers la gauche." widths={[160, 320]} sizes="(max-width: 560px) 104px, 160px" cadrage="50% 30%" lueur="40% 32%" loading="eager" class="introuvable__portrait" />
       </div>
       <div class="introuvable__image">
         <Visuel id="ERR-01" alt="" foyer loading="eager" sizes="(max-width: 860px) 80vw, 560px" />
-        <Portrait src={photo} alt="Charles Lindecker en chemise bleu roi, le regard tourné vers la gauche." widths={[200, 400]} sizes="(max-width: 860px) 72px, 150px" cadrage="50% 30%" lueur="40% 32%" loading="eager" class="introuvable__portrait" />
       </div>
     </section>
 
@@ -147,20 +147,28 @@ const sections = [
     margin-top: var(--s6);
   }
 
-  /* L’illustration, seule zone éclairée, et la photo posée sur son coin. */
-  .introuvable__image {
-    position: relative;
-    margin-bottom: var(--s5);
+  /* La photo, à part de l’illustration : à droite du texte, alignée sur le
+     bouton, le regard tourné vers le titre. L’illustration reste seule
+     éclairée dans sa colonne. */
+  .introuvable__texte {
+    display: grid;
+    grid-template-columns: minmax(0, max-content) 160px;
+    justify-content: start;
+    column-gap: var(--s7);
   }
 
-  .introuvable__image :global(.introuvable__portrait) {
-    position: absolute;
-    right: calc(-1 * var(--s3));
-    bottom: calc(-1 * var(--s6));
-    width: 150px;
+  .introuvable__texte > :not(:global(.introuvable__portrait)) {
+    grid-column: 1;
+  }
+
+  .introuvable__texte :global(.introuvable__portrait) {
+    grid-column: 2;
+    grid-row: 1 / span 4;
+    align-self: end;
+    width: 160px;
     aspect-ratio: 4 / 5;
     border-radius: var(--r2);
-    box-shadow: 0 0 0 4px var(--fond), var(--ombre-2);
+    box-shadow: var(--ombre-1);
   }
 
   .introuvable__suite {
@@ -290,18 +298,6 @@ const sections = [
       grid-template-columns: minmax(0, 1fr);
     }
 
-    /* L’illustration laisse une marge à droite : le médaillon y chevauche
-       son bord sans en masquer le centre, et regarde toujours vers elle. */
-    .introuvable__image {
-      width: 78%;
-    }
-
-    .introuvable__image :global(.introuvable__portrait) {
-      right: calc(-1 * (72px - var(--s4)));
-      bottom: calc(-1 * var(--s6));
-      width: 72px;
-    }
-
     .introuvable__suite {
       margin-top: var(--s6);
     }
@@ -316,6 +312,28 @@ const sections = [
 
     .introuvable__nom {
       font-size: var(--t-l);
+    }
+  }
+
+  /* Sur téléphone, la photo se range à côté du chapeau et du bouton. */
+  @media (max-width: 560px) {
+    .introuvable__texte {
+      grid-template-columns: minmax(0, 1fr) 104px;
+      column-gap: var(--s4);
+    }
+
+    .introuvable__texte > :not(:global(.introuvable__portrait)) {
+      grid-column: 1 / -1;
+    }
+
+    .introuvable__texte > .chapeau,
+    .introuvable__texte > .introuvable__actions {
+      grid-column: 1;
+    }
+
+    .introuvable__texte :global(.introuvable__portrait) {
+      grid-row: 3 / span 2;
+      width: 104px;
     }
   }
 </style>
