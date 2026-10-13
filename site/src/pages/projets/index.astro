@@ -67,8 +67,8 @@ const description = 'Cinq projets menés au bout, rangés par ce qu’ils prouve
               aConfirmer={carte.aConfirmer}
             >
               {projet.id === 'pvz' && <Visuel slot="visuel" id="PRJ-01" loading="eager" sizes="(max-width: 860px) 100vw, 720px" class="vitrine-visuel vitrine-visuel--vedette" />}
-              {projet.id === 'league' && <Visuel slot="visuel" id="PRJ-02" sizes="(max-width: 860px) 100vw, 300px" class="vitrine-visuel" />}
-              {projet.id === 'omnicard' && <Visuel slot="visuel" id="PRJ-03" sizes="(max-width: 860px) 100vw, 300px" class="vitrine-visuel" />}
+              {projet.id === 'league' && <Visuel slot="visuel" id="PRJ-02" alt="" sizes="(max-width: 860px) 100vw, 300px" class="vitrine-visuel vitrine-visuel--ligne" />}
+              {projet.id === 'omnicard' && <Visuel slot="visuel" id="PRJ-03" alt="" sizes="(max-width: 860px) 100vw, 300px" class="vitrine-visuel vitrine-visuel--ligne" />}
               {
                 projet.id === 'bloodborne' && (
                   <CadreCapture
@@ -188,6 +188,53 @@ const description = 'Cinq projets menés au bout, rangés par ce qu’ils prouve
     color: var(--eteint);
   }
 
+  /* Sur ordinateur, le visuel d’une carte « ligne » remplit tout son panneau
+     (portrait) au lieu d’un 16:10 perdu au milieu du noir ; la composition
+     du registre se lit recadrée au centre (consigne de PRJ-02 et PRJ-03). */
+  @media (min-width: 861px) {
+    .vitrine-corps :global(.carte-projet--ligne .carte-projet__visuel:has(.vitrine-visuel--ligne)) {
+      align-items: stretch;
+    }
+
+    .vitrine-corps :global(.vitrine-visuel--ligne) {
+      height: 100%;
+      min-height: 240px;
+      aspect-ratio: auto;
+    }
+
+    /* gup : le terminal remplit le panneau, recadré sur la liste des paquets
+       (sources, versions, et Scoop en échec) ; entier sur mobile. */
+    .vitrine-corps :global(.carte-projet__visuel:has(.vitrine-terminal)) {
+      align-items: stretch;
+      padding: var(--s3);
+    }
+
+    .vitrine-corps :global(.vitrine-terminal),
+    .vitrine-corps :global(.vitrine-terminal .capture__cadre) {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .vitrine-corps :global(.vitrine-terminal .capture__cadre),
+    .vitrine-corps :global(.vitrine-terminal .capture__vue) {
+      flex: 1;
+    }
+
+    .vitrine-corps :global(.vitrine-terminal .capture__vue) {
+      min-height: 240px;
+      overflow: hidden;
+    }
+
+    .vitrine-corps :global(.vitrine-terminal .capture__vue img) {
+      position: absolute;
+      inset: 0;
+      height: 100%;
+      object-fit: cover;
+      object-position: 56% 0;
+    }
+  }
+
   .vitrine-fin {
     padding-bottom: var(--s8);
   }
@@ -255,6 +302,18 @@ const description = 'Cinq projets menés au bout, rangés par ce qu’ils prouve
 
     .vitrine-corps :global(.vitrine-telephone) {
       width: min(200px, 70%);
+    }
+
+    /* Tant que l’image manque, la consigne d’un emplacement s’arrête net
+       (points de suspension) au lieu d’être tranchée par le cadre en 16:10. */
+    @container (min-width: 261px) {
+      .vitrine-corps :global(.visuel__consigne) {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 4;
+        line-clamp: 4;
+        overflow: hidden;
+      }
     }
   }
 </style>
