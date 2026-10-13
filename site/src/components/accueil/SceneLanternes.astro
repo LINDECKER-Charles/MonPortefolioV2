@@ -20,7 +20,7 @@ const svg = dessin
 ---
 
 <figure class="lanternes" data-scene="lanternes">
-  <button type="button" class="lanternes__plan" data-rejouer data-figure-animation aria-label={`Rejouer l’animation : ${legende}`}>
+  <button type="button" class="lanternes__plan" data-rejouer data-figure-animation disabled aria-label={`Rejouer l’animation : ${legende}`}>
     <Fragment set:html={svg} />
   </button>
   <figcaption class="lanternes__legende">{legende}</figcaption>

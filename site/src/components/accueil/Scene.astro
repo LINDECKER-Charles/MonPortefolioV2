@@ -6,6 +6,8 @@
  * dessin ou au clavier, la scène s’allume depuis elle — la lanterne s’allume,
  * puis sa lumière gagne l’image (scripts/figure-animations.ts). Mouvement
  * réduit, impression et sans JavaScript : l’état final, l’image entière.
+ * Le bouton de rejeu est rendu `disabled` : sans JavaScript, rien ne le
+ * rejouerait, il reste hors de la tabulation ; le script le réactive.
  *
  *   <Scene id="ACC-03" nom="pc" lumiere={[28, 58]} legende="Un vieux PC, en vue éclatée." />
  *
@@ -53,7 +55,7 @@ const gid = `scene-${nom}`;
 <figure class:list={['scene', { 'scene--recadree': recadrage }, classe]} data-scene={nom} data-figure-animation style={recadrage ? `--scene-recadrage:${recadrage}` : undefined}>
   <div class="scene__plan">
     <Visuel id={id} alt="" sizes={sizes} />
-    <button type="button" class="scene__rejouer" data-rejouer aria-label={`Rejouer l’animation : ${texte}`}>
+    <button type="button" class="scene__rejouer" data-rejouer disabled aria-label={`Rejouer l’animation : ${texte}`}>
       <svg class="scene__lumiere" viewBox={`0 0 ${largeur} 100`} preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
         <defs>
           <radialGradient id={`${gid}-nuit`} gradientUnits="userSpaceOnUse" cx={cx} cy={cy} r="64">

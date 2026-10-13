@@ -44,7 +44,7 @@ const cartes = [
           <div class="gwent__fenetre">
             <Visuel id={carte.visuel} alt="" sizes="(max-width: 599px) 50vw, 210px" />
           </div>
-          <button type="button" class="gwent__visuel" data-rejouer aria-label={`Rejouer l’animation : ${carte.titre}`}>
+          <button type="button" class="gwent__visuel" data-rejouer disabled aria-label={`Rejouer l’animation : ${carte.titre}`}>
             <svg class="gwent__dessin" viewBox="0 0 220 312" aria-hidden="true" focusable="false">
               <defs>
                 <clipPath id={`gwent-fenetre-${i}`}><path d={FENETRE} /></clipPath>

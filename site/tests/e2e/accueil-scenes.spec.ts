@@ -187,9 +187,31 @@ test('les commandes de rejeu enveloppent les dessins sans bouton ajouté à côt
   // Cinq scènes du récit, trois cartes, trois étapes du pôle, le plafond, le système et les lanternes.
   await expect(boutons).toHaveCount(14);
   for (const bouton of await boutons.all()) {
+    // Rendues désactivées, réactivées par le script qui les rejoue.
+    await expect(bouton).toBeEnabled();
     await expect(bouton.locator('svg:visible')).toHaveCount(1);
     await expect(bouton.locator('span').filter({ hasText: '↻' })).toHaveCount(0);
   }
+});
+
+test.describe('sans JavaScript', () => {
+  test.use({ javaScriptEnabled: false });
+
+  test('aucune commande de rejeu inerte dans l’ordre de tabulation', async ({ page }) => {
+    await page.goto('/');
+    const boutons = page.locator('[data-rejouer]');
+    await expect(boutons).toHaveCount(14);
+    // Le dessin est déjà dans son état final : rien à rejouer, rien à atteindre au clavier.
+    for (const bouton of await boutons.all()) {
+      await expect(bouton).toBeDisabled();
+      await expect(bouton).toBeVisible();
+    }
+    const focalisables = await boutons.evaluateAll((elements) => elements.filter((element) => {
+      (element as HTMLElement).focus();
+      return document.activeElement === element;
+    }).length);
+    expect(focalisables).toBe(0);
+  });
 });
 
 test('le graphique retrace le plafond puis interrompt le mouvement sur demande', async ({ page }) => {
