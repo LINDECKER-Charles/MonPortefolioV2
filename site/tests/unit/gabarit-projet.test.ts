@@ -23,7 +23,7 @@ const rendre = async (composant: Parameters<AstroContainer['renderToString']>[0]
 describe('la vitrine, source des noms canoniques', () => {
   it('range les cinq projets dans l’ordre de ce qu’ils prouvent', () => {
     expect(VITRINE.map((projet) => projet.id)).toEqual(['pvz', 'league', 'omnicard', 'bloodborne', 'gup']);
-    expect(VITRINE[0]).toMatchObject({ nom: 'PvZ Fusion, pôle francophone', href: '/projets/pvz-fusion', preuve: 'Mener une équipe' });
+    expect(VITRINE[0]).toMatchObject({ nom: 'PvZ Fusion, pôle francophone', href: '/projets/pvz-fusion', preuve: 'Une équipe formée et menée' });
   });
 
   it('donne le rang et les voisins d’un projet, sans boucler', () => {
@@ -83,7 +83,7 @@ describe('EnTeteProjet', () => {
   it('reprend le nom canonique et l’étiquette de la vitrine, et mène d’abord à « Comment je l’ai construit »', async () => {
     const html = await rendre(EnTeteProjet, props);
     expect(html).toContain('PvZ Fusion, pôle francophone');
-    expect(html).toContain('Mener une équipe');
+    expect(html).toContain('Une équipe formée et menée');
     expect(html).toMatch(/aria-current="page"[^>]*>PvZ Fusion, pôle francophone</);
     const actions = html.slice(html.indexOf('data-pli="action"'));
     expect(actions.match(/<a [^>]*href="([^"]+)"/)?.[1]).toBe('#construit');

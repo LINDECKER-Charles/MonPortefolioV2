@@ -12,7 +12,7 @@ import { surveillerConsole } from './support/navigateur';
  */
 
 const PROJETS = [
-  { id: 'pvz', nom: 'PvZ Fusion, pôle francophone', preuve: 'Mener une équipe', chemin: '/projets/pvz-fusion', chiffre: '20' },
+  { id: 'pvz', nom: 'PvZ Fusion, pôle francophone', preuve: 'Une équipe formée et menée', chemin: '/projets/pvz-fusion', chiffre: '20' },
   { id: 'league', nom: 'League Of Data Base', preuve: 'Un système en production', chemin: '/projets/league-of-database', chiffre: '403' },
   { id: 'omnicard', nom: 'Omnicard', preuve: 'Réinventer', chemin: '/projets/omnicard', chiffre: '≈ 3 mois' },
   { id: 'bloodborne', nom: 'Bloodborne Legendary Run', preuve: 'Un produit de bout en bout', chemin: '/projets/bloodborne-legendary-run', chiffre: '1 289' },
