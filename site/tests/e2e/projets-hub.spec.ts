@@ -14,7 +14,7 @@ import { surveillerConsole } from './support/navigateur';
 const PROJETS = [
   { id: 'pvz', nom: 'PvZ Fusion, pôle francophone', preuve: 'Une équipe formée et menée', chemin: '/projets/pvz-fusion', chiffre: '20' },
   { id: 'league', nom: 'League Of Data Base', preuve: 'Un système en production', chemin: '/projets/league-of-database', chiffre: '403' },
-  { id: 'omnicard', nom: 'Omnicard', preuve: 'Réinventer', chemin: '/projets/omnicard', chiffre: '≈ 3 mois' },
+  { id: 'omnicard', nom: 'Omnicard', preuve: 'Réinventer', chemin: '/projets/omnicard', chiffre: '181' },
   { id: 'bloodborne', nom: 'Bloodborne Legendary Run', preuve: 'Un produit de bout en bout', chemin: '/projets/bloodborne-legendary-run', chiffre: '1 289' },
   { id: 'gup', nom: 'gup', preuve: 'Un outil open source', chemin: '/projets/gup', chiffre: '153' },
 ] as const;
@@ -25,6 +25,7 @@ const SORTIES_ADMISES = [
   'https://league-of-data-base.com/fr/',
   'https://github.com/LINDECKER-Charles/LeagueOfDataBaseFinal',
   'https://github.com/LINDECKER-Charles/public-Omnicard',
+  'https://github.com/LINDECKER-Charles/public-Omnicard/blob/main/docs/rules.md',
   'https://bloodborne-legendary-run.com/fr/sky',
   'https://github.com/LINDECKER-Charles/gup',
   'https://www.npmjs.com/package/@charles_lindecker/gup',
@@ -126,7 +127,7 @@ test('cinq projets dans l’ordre de ce qu’ils prouvent, une seule fois chacun
 test('les statuts sont honnêtes : une forme et un mot', async ({ page }) => {
   await page.goto('/projets');
   await expect(carte(page, 'omnicard').locator('.statut')).toHaveClass(/statut--eteint/);
-  await expect(carte(page, 'omnicard').locator('.statut')).toHaveText('Hors ligne, en refonte');
+  await expect(carte(page, 'omnicard').locator('.statut')).toHaveText('Hors ligne, en attente de refonte');
   await expect(carte(page, 'gup').locator('.statut')).toHaveClass(/statut--ouvert/);
   await expect(carte(page, 'bloodborne').locator('.statut')).toHaveText('En ligne, web ; Android en test');
   await expect(carte(page, 'league').locator('.a-confirmer')).toHaveText('nom à confirmer');

@@ -262,7 +262,10 @@ test('les cartes de projets suivent l’ordre de la vitrine', async ({ page }) =
   const omnicard = page.locator('#omnicard');
   await expect(omnicard.getByRole('link', { name: 'Omnicard', exact: true })).toHaveAttribute('href', '/projets/omnicard');
   await expect(omnicard).toContainText('Hors ligne, en attente de refonte');
-  await expect(omnicard.getByRole('link', { name: /^Règles et cartes \(GitHub\)/ })).toHaveAttribute('href', 'https://github.com/LINDECKER-Charles/public-Omnicard');
+  // Le lien et le rôle de la vitrine : les règles, jamais la racine du dépôt ; co-auteur du jeu papier.
+  await expect(omnicard.getByRole('link', { name: /^Règles du jeu \(GitHub\)/ })).toHaveAttribute('href', 'https://github.com/LINDECKER-Charles/public-Omnicard/blob/main/docs/rules.md');
+  await expect(omnicard).toContainText('Co-auteur du jeu papier');
+  await expect(omnicard).not.toContainText('Seul : règles');
   // Omnicard porte le verbe du bandeau, sans rang.
   await expect(omnicard.locator('.carte-projet__rang')).toHaveCount(0);
   await expect(omnicard.locator('.carte-projet__preuve')).toHaveText('Réinventer');

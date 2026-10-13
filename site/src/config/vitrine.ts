@@ -81,12 +81,15 @@ export const CARTES: Readonly<Record<ProjetVitrine['id'], CarteVitrine>> = {
   },
   omnicard: {
     // Questions D1 et matière première : jeu papier inventé avec son cousin,
-    // moteur de règles C# côté serveur, ≈ 3 mois cumulés, hors ligne en attente de refonte.
+    // moteur de règles C# côté serveur, hors ligne en attente de refonte.
+    // Chiffre et rôle de la page Omnicard (config/omnicard.ts) : 181 cartes de la
+    // galerie publique 1.2.0, relevée le 13/10/2026. Le lien mène aux règles,
+    // jamais à la racine du dépôt, dont le README promet encore un jeu en ligne.
     besoin: 'Le jeu de cartes inventé sur papier avec mon cousin, devenu un jeu en ligne avec son moteur de règles.',
-    chiffre: { valeur: '≈ 3 mois', libelle: 'de travail cumulé' },
-    role: 'Conception et développement',
-    statut: { texte: 'Hors ligne, en refonte', etat: 'eteint' },
-    liens: [{ href: 'https://github.com/LINDECKER-Charles/public-Omnicard', libelle: 'Règles et cartes (GitHub)' }],
+    chiffre: { valeur: '181', libelle: 'cartes dans le catalogue public' },
+    role: 'Co-auteur du jeu papier ; seul pour le jeu en ligne (équilibrage, moteur, interface)',
+    statut: { texte: 'Hors ligne, en attente de refonte', etat: 'eteint' },
+    liens: [{ href: 'https://github.com/LINDECKER-Charles/public-Omnicard/blob/main/docs/rules.md', libelle: 'Règles du jeu (GitHub)' }],
     technos: [
       { src: csharp, alt: 'C#' },
       { src: angular, alt: 'Angular' },

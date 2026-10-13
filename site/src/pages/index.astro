@@ -102,8 +102,8 @@ const omnicard = projetDeLaVitrine('omnicard');
           preuve={omnicard.projet.preuve}
           besoin="Ce jeu de cartes, je l’ai repris seul et transformé en jeu en ligne, avec un moteur de règles en C# qui arbitre chaque partie côté serveur."
           chiffre={CARTES.omnicard.chiffre}
-          role="Seul : règles, équilibrage des cartes, moteur de jeu"
-          statut={{ texte: 'Hors ligne, en attente de refonte', etat: 'eteint' }}
+          role={CARTES.omnicard.role}
+          statut={CARTES.omnicard.statut}
           liens={[...CARTES.omnicard.liens]}
         >
           <Visuel slot="visuel" id="OMN-01" sizes="(max-width: 860px) 100vw, 560px" />
