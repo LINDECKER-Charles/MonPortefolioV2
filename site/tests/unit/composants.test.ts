@@ -186,30 +186,32 @@ describe('Visuel manquant', () => {
     delete process.env.VISUELS_BROUILLON;
   });
 
+  // Toutes les images générées sont livrées (13 octobre 2026) : une capture « élargi » sert d’exemple.
   it('en ligne, montre un cadre neutre au bon ratio, avec l’alt du registre, jamais la commande', async () => {
     process.env.VISUELS_BROUILLON = '0';
-    const html = await rendre(Visuel, { id: 'PRJ-01' });
+    const html = await rendre(Visuel, { id: 'OMN-08' });
     expect(html).toContain('visuel--attente');
     expect(html).toContain('data-manquant');
     expect(html).toContain('--visuel-ratio:16 / 10');
     expect(html).toMatch(/role="img"[^>]*aria-label="[^"]+"|aria-label="[^"]+"[^>]*role="img"/);
-    for (const commande of ['PRJ-01</strong>', 'Image à générer', 'visuel__consigne', 'visuel__format', '1600 × 1000']) expect(html).not.toContain(commande);
-    const decoratif = await rendre(Visuel, { id: 'PRJ-01', alt: '' });
+    for (const commande of ['OMN-08</strong>', 'Capture à faire', 'visuel__consigne', 'visuel__format', '1600 × 1000']) expect(html).not.toContain(commande);
+    const decoratif = await rendre(Visuel, { id: 'OMN-08', alt: '' });
     expect(decoratif).toContain('aria-hidden="true"');
     expect(decoratif).not.toContain('role="img"');
   });
 
   it('en brouillon (VISUELS_BROUILLON=1), affiche la commande', async () => {
     process.env.VISUELS_BROUILLON = '1';
-    expect(await rendre(Visuel, { id: 'PRJ-01' })).toContain('Image à générer · socle');
+    expect(await rendre(Visuel, { id: 'OMN-08' })).toContain('Capture à faire · élargi');
   });
 
   it('affiche la commande complète en développement : identifiant, nature, sujet, composition et format', async () => {
-    const html = await rendre(Visuel, { id: 'PRJ-01', foyer: true });
+    const html = await rendre(Visuel, { id: 'OMN-08', foyer: true });
     expect(html).toContain('visuel--foyer');
-    expect(html).toContain('Image à générer · socle');
+    expect(html).toContain('Capture à faire · élargi');
     expect(html).toMatch(/class="visuel__format[^"]*"[^>]*>16:10, 1600 × 1000/);
   });
+
 });
 
 describe('Visuel dessiné (méthode SVG)', () => {

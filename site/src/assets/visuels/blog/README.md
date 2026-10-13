@@ -4,5 +4,5 @@ Chaque fichier livré prend une ligne : le prompt exact d’une image générée
 
 | Fichier | Visuel | Prompt | Date | Provenance |
 |---|---|---|---|---|
-
-Aucun fichier livré pour l’instant : les fiches de la série sont dans `docs/visuels-a-generer.md`.
+| `BLG-01_960x720.webp`, `BLG-01_960x720.nuit.webp` | Les pages à écrire : le livre du logo ouvert, éclairé par la lanterne | Prompts exacts dans le README des masters : [jour et nuit](../../../../../design/assets/visuels/blog/README.md#blg-01). | 13 octobre 2026 (masters) ; rendus le 14 octobre 2026 | Masters `design/assets/visuels/blog/BLG-01.png` et `BLG-01.nuit.png`, générés par Codex (outil intégré `image_gen`), la nuit en édition du jour. Rendus par `npm run visuels:rendre BLG-01` aux couleurs de `jetons.css`, WebP qualité 82. |
+| `BLG-02_1600x900.webp`, `BLG-02_1600x900.nuit.webp` | Couverture de secours : la lanterne sur une page de livre | Prompts exacts dans le README des masters : [jour et nuit](../../../../../design/assets/visuels/blog/README.md#blg-02). | 13 octobre 2026 (masters) ; rendus le 14 octobre 2026 | Masters `design/assets/visuels/blog/BLG-02.png` et `BLG-02.nuit.png`, générés par Codex (outil intégré `image_gen`), la nuit en édition du jour. Rendus par `npm run visuels:rendre BLG-02` aux couleurs de `jetons.css`, WebP qualité 82. |

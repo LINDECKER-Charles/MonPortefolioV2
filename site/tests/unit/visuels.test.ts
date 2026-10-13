@@ -19,6 +19,7 @@ import {
   sujetPourGenerateur,
   visuelParId,
   VISUELS,
+  type EntreeVisuel,
 } from '../../src/config/visuels';
 import { dimensionsDuNom, etatDesVisuels, rapport, resume, verifierLivres } from '../../tools/visuels-manquants.mjs';
 
@@ -378,15 +379,28 @@ describe('registre des visuels : liste des manquants', () => {
 
   it('sur le dépôt réel : les photos, les dessins et captures livrés, les images de partage, les composants des figures', () => {
     const etat = etatDesVisuels(SITE);
-    expect(etat.presents).toBe(57);
+    // 57 fichiers de l’équipe, puis les 74 images générées livrées le 13 octobre 2026, jour et nuit.
+    expect(etat.presents).toBe(131);
+    const images = etat.livres.filter((v: { methode: string }) => v.methode === 'IMG');
+    expect(images).toHaveLength(74);
     expect(etat.nuitsManquantes).toHaveLength(0);
     expect(etat.nuitsDeRepli).toHaveLength(0);
-    expect(etat.manquantsSocle).toHaveLength(60);
-    const manquants = etat.manquantsSocle.map((v: { id: string }) => v.id);
-    for (const id of ['GLO-01', 'GLO-03', 'GLO-04', 'GLO-05', 'GLO-07', 'GLO-08', 'ACC-14', 'ACC-17', 'PRJ-04', 'PRJ-05', 'PAR-PHO', 'CON-PHO', 'ERR-PHO', 'LOD-03', 'LOD-12', 'BLR-06', 'BLR-10', 'GUP-02', 'OMN-04', 'FOR-09', 'CMP-09', 'CMP-10', 'BLR-C4', 'GUP-C1']) expect(manquants).not.toContain(id);
-    // Seules restent les images à générer.
-    expect(etat.manquantsSocle.filter((v: { methode: string }) => v.methode !== 'IMG').map((v: { id: string }) => v.id)).toEqual([]);
-    expect(resume(etat)).toMatch(/60 visuels « socle » manquants/);
+    // Plus aucun « socle » manquant : les images générées étaient les dernières.
+    expect(etat.manquantsSocle).toHaveLength(0);
+    expect(etat.manquants.every((v: { methode: string }) => v.methode !== 'IMG')).toBe(true);
+    expect(resume(etat)).toMatch(/^\[visuels\] 0 visuels « socle » manquants, 36 « élargi », 0 figures « socle » à coder \(/);
+  });
+
+  it('consigne chaque image générée livrée : ses deux rendus dans le README du site, ses prompts dans celui des masters', () => {
+    for (const v of (etatDesVisuels(SITE).livres as EntreeVisuel[]).filter((x) => x.methode === 'IMG' && x.fichier)) {
+      const site = readFileSync(path.join(SITE, 'src/assets/visuels', v.serie, 'README.md'), 'utf8');
+      const ligne = site.split('\n').find((l) => l.startsWith(`| \`${path.posix.basename(v.fichier!)}\``));
+      expect(ligne, v.id).toBeDefined();
+      expect(ligne, v.id).toContain(`\`${path.posix.basename(fichierNuit(v)!)}\``);
+      expect(ligne, v.id).toContain(`npm run visuels:rendre ${v.id}`);
+      const masters = readFileSync(path.join(SITE, '..', 'design/assets/visuels', v.serie, 'README.md'), 'utf8');
+      expect(masters, v.id).toContain(`${v.id}.nuit.png`);
+    }
   });
 
   it('contrôle les fichiers livrés du dépôt : dimensions, ratio, pièces et titre des SVG', async () => {
@@ -433,13 +447,13 @@ describe('emplacements <Visuel> du site', () => {
 describe('composant Visuel', () => {
   it('affiche un cadre hachuré au bon ratio, avec l’identifiant et la consigne, quand le fichier manque', async () => {
     const conteneur = await AstroContainer.create();
-    const html = await conteneur.renderToString(Visuel, { props: { id: 'ACC-03' } });
+    const html = await conteneur.renderToString(Visuel, { props: { id: 'OMN-08' } });
     expect(html).toContain('visuel--manquant');
-    expect(html).toContain('data-visuel="ACC-03"');
-    expect(html).toContain('--visuel-ratio:3 / 2');
-    expect(html).toMatch(/<strong[^>]*>ACC-03<\/strong>/);
-    expect(html).toContain('Démonter de vieux PC avec son père');
-    expect(html).toContain('deux paires de mains');
+    expect(html).toContain('data-visuel="OMN-08"');
+    expect(html).toContain('--visuel-ratio:16 / 10');
+    expect(html).toMatch(/<strong[^>]*>OMN-08<\/strong>/);
+    expect(html).toContain('Une partie en cours contre l’ordinateur');
+    expect(html).toContain('Capture réelle d’une partie');
     expect(html).not.toContain('<img');
   });
 

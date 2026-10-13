@@ -9,7 +9,7 @@ Tu produis **uniquement les images générées (IMG)** de la refonte du portfoli
 **Ce document est la seule référence de la série.** Il porte les retours de Charles sur la planche d’essai du 13 octobre 2026 (moins « image générée », une vraie version de nuit) et remplace toute consigne antérieure. Lis-le de haut en bas avant la première image.
 
 - **Deux masters par image**, dessinés au même cadrage au pixel près, dans les trois mêmes couleurs de clé : le jour `<ID>.png`, puis la nuit `<ID>.nuit.png`, faite **en édition depuis le master de jour** (section « Version de nuit »). Le site affiche l’un ou l’autre selon le thème.
-- Le registre recense **176 emplacements** (122 « socle », 54 « élargi »), dont **74 images à générer** : 74 restent à livrer, dont 60 « socle ».
+- Le registre recense **176 emplacements** (122 « socle », 54 « élargi »), dont **74 images à générer** : 0 restent à livrer, dont 0 « socle ».
 - **Socle** : posé sur une page du site, qui affiche un cadre hachuré tant que le fichier manque. À produire d’abord.
 - **Élargi** : aucune page ne l’attend encore ; chaque fiche dit pourquoi. Peut suivre.
 - **Le prompt de jour** se rédige en anglais : le bloc de style, la phrase de fond, puis la traduction des seuls champs **Sujet** et **Composition** de la fiche, le calage de la lanterne quand la fiche la place, enfin le prompt négatif. Le champ **Emplacement** donne le contexte et peut nommer une marque ou un jeu : il ne va jamais dans un prompt.
@@ -188,34 +188,75 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 ## Partie 1 — Commande Codex : les images à générer
 
-**Déjà livrées** : aucune.
+**Déjà livrées** : ACC-03, ACC-04, ACC-05, ACC-07, ACC-08, ACC-09, ACC-11, ACC-16, ACC-18, ACC-19, ACC-20, ACC-21, ACC-22, ACC-23, PRJ-01, PRJ-02, PRJ-06, PRJ-07, PRJ-08, PRJ-09, PRJ-10, PRJ-11, PRJ-12, PVZ-01, PVZ-02a, PVZ-02b, PVZ-02c, PVZ-04, PVZ-05, PVZ-06, PVZ-07, PVZ-08, PVZ-09, PVZ-10, PVZ-11, LOD-02, LOD-04, OMN-01, BLR-01, BLR-03, BLR-04, BLR-05, GUP-01, GUP-03, PAR-01, PAR-02, PAR-03, PRO-01, PRO-02, PRO-03, PRO-04, PRO-05, PRO-06, CMP-01, CMP-02, CMP-03, CMP-04, CMP-05, CMP-06, CMP-07, CMP-08, FOR-01, FOR-02, FOR-03, FOR-04, FOR-05, FOR-06, FOR-07, CON-01, CON-02, CON-03, BLG-01, BLG-02, ERR-01.
 
-**File « socle »**, dans l’ordre des séries :
+**File « socle »** : vide, toutes ses images sont livrées. Une image à refaire se reprend depuis sa fiche (« Images déjà livrées ») et remplace ses deux masters.
 
-- Accueil : ACC-03, ACC-04, ACC-08, ACC-09, ACC-11, ACC-18, ACC-19, ACC-20, ACC-21, ACC-22, ACC-23
-- Projets (vitrine) : PRJ-01, PRJ-02, PRJ-06, PRJ-07, PRJ-08, PRJ-10, PRJ-11
-- PvZ Fusion : PVZ-01, PVZ-02a, PVZ-02b, PVZ-02c, PVZ-04, PVZ-05, PVZ-06, PVZ-07, PVZ-08, PVZ-11
-- League Of Data Base : LOD-04
-- Omnicard : OMN-01
-- Bloodborne Legendary Run : BLR-01
-- gup : GUP-01
-- Parcours : hub, professionnel, compétences, formation : PAR-01, PAR-02, PAR-03, PRO-01, PRO-02, PRO-03, PRO-04, PRO-05, PRO-06, CMP-02, CMP-03, CMP-04, CMP-05, CMP-06, CMP-07, CMP-08, FOR-01, FOR-02, FOR-03, FOR-04, FOR-05, FOR-06, FOR-07
-- Contact : CON-01, CON-02, CON-03
-- Blog : BLG-01
-- États : 404 et hors ligne : ERR-01
+**File « élargi »** : vide, toutes ses images sont livrées. Une image à refaire se reprend depuis sa fiche (« Images déjà livrées ») et remplace ses deux masters.
 
-**File « élargi »**, dans l’ordre des séries :
+### Reprises : rien à générer, mais leur cadrage contraint l’image d’origine
 
-- Accueil : ACC-05, ACC-07, ACC-16
-- Projets (vitrine) : PRJ-09, PRJ-12
-- PvZ Fusion : PVZ-09, PVZ-10
-- League Of Data Base : LOD-02
-- Bloodborne Legendary Run : BLR-03, BLR-04, BLR-05
-- gup : GUP-03
-- Parcours : hub, professionnel, compétences, formation : CMP-01
-- Blog : BLG-02
+#### ACC-15 · Les quatre gestes
 
-### Socle · Accueil
+- **Priorité** : socle · **Méthode** : IMG, rien à produire, le fichier est celui d’un autre emplacement
+- **Emplacement** : `/` · 02, du solo au collectif : « Comment j’organise le pôle, en quatre gestes » _(contexte : ne pas le recopier dans un prompt)_
+- **Posé dans** : `src/components/accueil/GestesPole.astro`, `src/config/pvz-fusion.ts`
+- **Sujet** : Les quatre gestes
+- **Composition** : Les quatre images carrées de la semaine type de PvZ Fusion, sans nouvelle image : organiser (PVZ-05), livrer (PVZ-07), motiver (PVZ-08), remercier (PVZ-11)
+- **Cadrage (pour vérifier)** : Quatre images carrées en tête de chaque geste, sur toute la largeur de sa colonne : environ 230 px sur ordinateur (quatre colonnes), 160 à 300 px sur tablette et mobile (deux colonnes). Les images doivent rester lisibles à 160 px.
+- **Format** : 1:1
+- **Fichier attendu** : aucun, reprend `PVZ-05`, `PVZ-07`, `PVZ-08`, `PVZ-11`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Posé par components/accueil/GestesPole.astro, avec les textes de config/pvz-fusion.ts ; décoratif (alt vide), chaque geste porte son intitulé.
+
+#### PRJ-03 · Du papier au jeu en ligne
+
+- **Priorité** : socle · **Méthode** : IMG, rien à produire, le fichier est celui d’un autre emplacement
+- **Emplacement** : `/projets` · Carte Omnicard _(contexte : ne pas le recopier dans un prompt)_
+- **Posé dans** : `src/pages/projets/index.astro`
+- **Sujet** : Du papier au jeu en ligne
+- **Composition** : Recadrage d’OMN-01, sans nouvelle image : la carte plastifiée à la main (pochette visible, coin corné) à cheval sur le bord d’une fenêtre de navigateur, moitié papier, moitié numérique
+- **Cadrage (pour vérifier)** : Le recadrage garde au centre le bord de la fenêtre qui traverse la carte, les deux moitiés de la carte entières et la lumière de la lanterne sur la moitié papier ; il coupe d’abord le fond de la fenêtre et la table. Deux cadres : 16:10 sur mobile, portrait 2:3 (environ 300 × 450 px) sur ordinateur, où la carte, droite, doit tenir entière en hauteur.
+- **Format** : 16:10 ; portrait 2:3 recadré dans la carte
+- **Fichier attendu** : aucun, reprend `OMN-01`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une carte de jeu plastifiée à la main qui passe le bord d’une fenêtre de navigateur et y devient numérique. »
+- **Note** : Si OMN-01 ne laisse pas la carte entière dans le portrait 2:3, demander une variante en 2:3 (1000 × 1500) plutôt qu’un recadrage qui la coupe. Décoratif sur la vitrine (alt vide), le nom de la carte dit le reste.
+
+#### PVZ-02 · Accueillir, former, faire confiance
+
+- **Priorité** : socle · **Méthode** : IMG, rien à produire, le fichier est celui d’un autre emplacement
+- **Emplacement** : `/projets/pvz-fusion` · § 2, l’équipe _(contexte : ne pas le recopier dans un prompt)_
+- **Posé dans** : `src/pages/projets/pvz-fusion.astro`, `src/config/pvz-fusion.ts`
+- **Sujet** : Accueillir, former, faire confiance
+- **Composition** : Triptyque en trois images de même main et même décor (PVZ-02a, PVZ-02b, PVZ-02c) : montrer une fiche annotée à une nouvelle venue, la voir travailler, puis la laisser relire seule
+- **Cadrage (pour vérifier)** : Bureau : les trois cases se touchent, sans gouttière, et se lisent comme un seul triptyque ; chacune coiffe son temps (Accueillir, Former et relire, Faire confiance), dont l’intitulé reste en HTML. Sous 860 px, chaque case passe au-dessus de son temps : aucun recadrage ne fait disparaître une case.
+- **Format** : 3 × 4:3, juxtaposés en bureau
+- **Fichier attendu** : aucun, reprend `PVZ-02a`, `PVZ-02b`, `PVZ-02c`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Trois moments dans le même décor : montrer une fiche annotée à une nouvelle venue, la voir travailler, puis la laisser relire seule. »
+
+#### LOD-01 · Archive versionnée
+
+- **Priorité** : élargi · **Méthode** : IMG, rien à produire, le fichier est celui d’un autre emplacement
+- **Emplacement** : `/projets/league-of-database` · Hub, partage _(contexte : ne pas le recopier dans un prompt)_
+- **Élargi, non posé** : la page du projet ouvre sur une capture réelle ; seule une image de partage le reprendrait.
+- **Sujet** : Archive versionnée
+- **Composition** : PRJ-02 recadré en 1:1 et en 1200 × 630, sans nouvelle image
+- **Format** : 16:10, 1:1, 1200 × 630
+- **Fichier attendu** : aucun, reprend `PRJ-02`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un registre ouvert dont les pages s’éventaillent, un marque-page glissé dans les plus anciennes. »
+
+#### OMN-02 · Les éditions sans fin
+
+- **Priorité** : socle · **Méthode** : IMG, rien à produire, le fichier est celui d’un autre emplacement
+- **Emplacement** : `/projets/omnicard` · « Le jeu papier », à côté du récit des éditions _(contexte : ne pas le recopier dans un prompt)_
+- **Posé dans** : `src/pages/projets/omnicard.astro`
+- **Sujet** : Les éditions sans fin
+- **Composition** : ACC-04, sans nouvelle image : table d’après-midi d’été vue de dessus, cartes imprimées, plastifieuse et mains d’adolescents
+- **Format** : 3:2
+- **Fichier attendu** : aucun, reprend `ACC-04`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Deux adolescents découpent et plastifient leurs cartes sur une table d’été. »
+
+### Images déjà livrées
 
 #### ACC-03 · Démonter de vieux PC avec son père
 
@@ -252,6 +293,40 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Rendus** : `npm run visuels:rendre ACC-04` écrit le jour `ACC-04_1800x1200.webp` et la nuit `ACC-04_1800x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Des mains d’adolescents plastifient à la main des cartes imprimées, sur une table d’été. »
 - **Note** : Scène animée de l’accueil, comme ACC-03 ; même image reprise par OMN-02.
+
+#### ACC-05 · Apprendre le C, pour passer ensuite au C++ et coder des jeux
+
+- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Scènes du récit
+- **Produit par** : Codex
+- **Emplacement** : `/` · 01, vers 13 ans _(contexte : ne pas le recopier dans un prompt)_
+- **Élargi, non posé** : aucune scène de l’accueil ne l’appelle ; la frise de la formation garde l’autodidacte en vignette (FOR-03).
+- **Sujet** : Apprendre le C, pour passer ensuite au C++ et coder des jeux
+- **Composition (pour le prompt)** : Une chambre d’adolescent vue de trois quarts, en léger surplomb : un vieux PC à écran bombé allumé sur un bureau, un livre de programmation ouvert à plat près du clavier, une liasse de listing pliée en accordéon, vierge ; au mur, un croquis de niveau de jeu épinglé (plateformes et échelles en simples traits) ; la lanterne posée sur le bureau, à gauche de l’écran (vers 30 % de la largeur et 55 % de la hauteur), éclaire le livre ; aucun personnage, aucune manette ni console de marque, aucun caractère lisible à l’écran ni sur les feuilles
+- **Lanterne : 30 % × 55 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = murs, bureau, feuilles et écran ; lumière (#FF0000) = flamme, livre ouvert et écran · **Fond** : rempli d’aplat
+- **Cadrage (pour vérifier)** : Recadrable en 4:5 sur mobile autour du bureau et de la lanterne.
+- **Format** : 4:3, 1600 × 1200
+- **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-05_1600x1200.webp`
+- **Masters** : jour `design/assets/visuels/accueil/ACC-05.png` ; nuit `design/assets/visuels/accueil/ACC-05.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre ACC-05` écrit le jour `ACC-05_1600x1200.webp` et la nuit `ACC-05_1600x1200.nuit.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un vieux PC allumé dans une chambre d’adolescent, un livre de programmation ouvert et un croquis de niveau au mur. »
+
+#### ACC-07 · Le plateau puis la percée
+
+- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Scènes du récit
+- **Produit par** : Codex
+- **Emplacement** : `/` · 01, Gwent, ouverture _(contexte : ne pas le recopier dans un prompt)_
+- **Élargi, non posé** : la figure du plafond (ACC-06) et les cartes de la méthode (ACC-18 à ACC-20) portent déjà cette partie du récit.
+- **Sujet** : Le plateau puis la percée
+- **Composition (pour le prompt)** : Un joueur en silhouette, de dos et sans visage, assis devant une table vue de trois quarts : devant lui, une colonne de cartes identiques, dos visibles, bute sous une barre de lumière tendue au-dessus de la table comme un plafond ; une seule carte, retournée face visible (une forme géométrique simple), traverse la barre et monte au-dessus ; la lanterne posée sur la table, à droite (vers 70 % de la largeur et 60 % de la hauteur), éclaire la carte qui perce ; aucune carte, aucun symbole ni logo d’un jeu existant, aucun chiffre
+- **Lanterne : 70 % × 60 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, cartes et silhouette ; lumière (#FF0000) = flamme, barre de lumière et carte qui perce · **Fond** : rempli d’aplat
+- **Cadrage (pour vérifier)** : Recadrable en 4:5 sur mobile autour de la colonne de cartes et de la carte qui perce.
+- **Format** : 16:9, 1920 × 1080
+- **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-07_1920x1080.webp`
+- **Masters** : jour `design/assets/visuels/accueil/ACC-07.png` ; nuit `design/assets/visuels/accueil/ACC-07.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre ACC-07` écrit le jour `ACC-07_1920x1080.webp` et la nuit `ACC-07_1920x1080.nuit.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un joueur de dos devant une colonne de cartes bloquée sous une barre de lumière, qu’une seule carte retournée traverse. »
 
 #### ACC-08 · Les portes qui ne s’ouvrent pas
 
@@ -306,6 +381,24 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Rendus** : `npm run visuels:rendre ACC-11` écrit le jour `ACC-11_1600x1200.webp` et la nuit `ACC-11_1600x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une salle de formation vue depuis le pupitre : une dizaine de postes, un tableau couvert d’un schéma. »
 - **Note** : Scène animée de l’accueil, comme ACC-03. Recadrée en 2:1 au-delà de 860 px (components/accueil/Scene.astro, propriété recadrage), entière en 4:3 en dessous.
+
+#### ACC-16 · La lanterne posée sur un livre ouvert, un chemin éclairé devant
+
+- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Scènes du récit
+- **Produit par** : Codex
+- **Emplacement** : `/` · 03, conclusion _(contexte : ne pas le recopier dans un prompt)_
+- **Élargi, non posé** : la conclusion de l’accueil, « La suite », est un acte bleu nuit sans image, avec l’aplat bleu roi derrière « Discutons » (décision du 13/10/2026).
+- **Sujet** : La lanterne posée sur un livre ouvert, un chemin éclairé devant
+- **Composition (pour le prompt)** : Un livre ouvert posé à plat sur une table, vu de trois quarts en légère plongée, dans la moitié gauche du cadre ; la lanterne posée sur la page de droite (vers 34 % de la largeur et 46 % de la hauteur) projette devant le livre un chemin de lumière qui file vers le bord droit ; la moitié droite reste un aplat calme, sans détail ; aucun personnage, aucune écriture sur les pages
+- **Lanterne : 34 % × 46 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table et pages du livre ; lumière (#FF0000) = flamme et chemin de lumière · **Fond** : rempli d’aplat
+- **Cadrage (pour vérifier)** : Moitié droite libre pour un bouton posé en HTML ; recadrage 4:5 sur mobile centré sur le livre et la lanterne.
+- **Format** : 16:9, 1920 × 1080
+- **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-16_1920x1080.webp`
+- **Masters** : jour `design/assets/visuels/accueil/ACC-16.png` ; nuit `design/assets/visuels/accueil/ACC-16.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre ACC-16` écrit le jour `ACC-16_1920x1080.webp` et la nuit `ACC-16_1920x1080.nuit.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une lanterne posée sur un livre ouvert éclaire un chemin qui file vers la droite. »
+- **Note** : Reprend ILL-08 de docs/assets-complementaires.md (direction précédente).
 
 #### ACC-18 · Lire le jeu
 
@@ -415,8 +508,6 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une silhouette, seule à son poste, envoie une feuille qui rejoint une pile de feuilles cochées. »
 - **Note** : Troisième scène de la série ACC-21 à ACC-23.
 
-### Socle · Projets (vitrine)
-
 #### PRJ-01 · La traduction comme travail d’équipe
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image) · **Série** : Vitrine des projets
@@ -506,6 +597,23 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une image et ses quatre déclinaisons, de la plus large à la plus étroite. »
 - **Note** : Posé dans la rangée « Aussi » de la vitrine (config/vitrine.ts, components/vitrine/RangeeAussi.astro) : décoratif, le texte voisin dit la même chose.
 
+#### PRJ-09 · La veille qui devient lecture
+
+- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Vitrine des projets
+- **Produit par** : Codex
+- **Emplacement** : `/projets` · « Aussi », MaVeille (si le site revient) _(contexte : ne pas le recopier dans un prompt)_
+- **Élargi, non posé** : MaVeille n’est pas dans la rangée « Aussi » tant que son site n’est pas de retour en ligne.
+- **Sujet** : La veille qui devient lecture
+- **Composition (pour le prompt)** : Sur une table vue de trois quarts en légère plongée, une pile de rapports imprimés à gauche, aux tranches marquées de simples traits ; à droite, une seule page reliée, ouverte, dont la marge porte un sommaire en traits courts ; un ruban de lumière relie le haut de la pile à la page ; la lanterne posée derrière la page (vers 66 % de la largeur et 40 % de la hauteur) l’éclaire ; aucun chiffre, aucune date ni lettre lisible
+- **Lanterne : 66 % × 40 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, rapports et page ; lumière (#FF0000) = flamme, ruban de lumière et page ouverte · **Fond** : rempli d’aplat
+- **Cadrage (pour vérifier)** : Vignette de la rangée « Aussi », 4:3, environ 300 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.
+- **Format** : 4:3
+- **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-09_1600x1200.webp`
+- **Masters** : jour `design/assets/visuels/projets/PRJ-09.png` ; nuit `design/assets/visuels/projets/PRJ-09.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PRJ-09` écrit le jour `PRJ-09_1600x1200.webp` et la nuit `PRJ-09_1600x1200.nuit.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une pile de rapports imprimés, reliée par un ruban de lumière à une page ouverte et son sommaire. »
+
 #### PRJ-10 · L’absurde assumé
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image) · **Série** : Vitrine des projets
@@ -542,7 +650,23 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un chemin qui mène à trois boîtes ouvertes, une lanterne allumée sur la première, les deux autres prêtes. »
 - **Note** : Posé dans l’acte de veille (sombre, jour et nuit) du bloc « Contribuer », aligné sur la fin de la liste. Décoratif, le texte voisin dit la même chose.
 
-### Socle · PvZ Fusion
+#### PRJ-12 · La version précédente
+
+- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Vitrine des projets
+- **Produit par** : Codex
+- **Emplacement** : `/projets` · Archives (quand elles existent) _(contexte : ne pas le recopier dans un prompt)_
+- **Élargi, non posé** : le volet des projets archivés est vide ; il reste une simple ligne tant qu’il ne contient aucun projet.
+- **Sujet** : La version précédente
+- **Composition (pour le prompt)** : Une étagère vue de face, en légère plongée : à gauche, un livre plus ancien, fermé, debout, au dos usé et sans titre ; à droite, posé à plat sur la tablette, un manuel neuf ouvert ; la lanterne posée entre les deux (vers 50 % de la largeur et 58 % de la hauteur) éclaire le dos de l’ancien livre ; aucun titre, aucune lettre
+- **Lanterne : 50 % × 58 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = étagère et livres ; lumière (#FF0000) = flamme et dos de l’ancien livre · **Fond** : rempli d’aplat
+- **Cadrage (pour vérifier)** : Vignette 4:3 d’environ 300 px de large : les deux livres se lisent à cette taille.
+- **Format** : 4:3
+- **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-12_1600x1200.webp`
+- **Masters** : jour `design/assets/visuels/projets/PRJ-12.png` ; nuit `design/assets/visuels/projets/PRJ-12.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PRJ-12` écrit le jour `PRJ-12_1600x1200.webp` et la nuit `PRJ-12_1600x1200.nuit.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un livre ancien debout sur une étagère, à côté d’un manuel neuf ouvert, éclairé par une lanterne. »
+- **Note** : Reprend ILL-10 de docs/assets-complementaires.md (direction précédente).
 
 #### PVZ-01 · Traduction et équipe
 
@@ -704,6 +828,40 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un podium vide de trois marches, sous une étoile. »
 - **Note** : Ancienne station « Reconnaître » scindée le 13/10/2026 : le podium ici, la lettre en PVZ-11. Carte « Motiver » de la semaine type, reprise dans les quatre gestes de l’accueil (ACC-15). Exception à la règle B8 (320 px au moins) : une vignette de carte, pas une illustration de section ; question ouverte, à faire trancher par Charles.
 
+#### PVZ-09 · Rattraper le retard
+
+- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : PvZ Fusion, scènes
+- **Produit par** : Codex
+- **Emplacement** : `/projets/pvz-fusion` · § 4, à côté de la courbe _(contexte : ne pas le recopier dans un prompt)_
+- **Élargi, non posé** : la courbe du rattrapage (PVZ-F1) porte le fait ; l’image ne ferait que le répéter.
+- **Sujet** : Rattraper le retard
+- **Composition (pour le prompt)** : Diptyque en une seule image, deux moitiés séparées par un filet vertical, vues de profil, horizon à mi-hauteur : à gauche, une petite équipe de silhouettes sans visage marche derrière un long train de wagons chargés de fiches, qui s’allonge et la distance ; à droite, la même équipe marche à hauteur de la locomotive ; la lanterne, tenue par la silhouette de tête dans la moitié droite (vers 72 % de la largeur et 46 % de la hauteur), éclaire la locomotive ; aucun texte ni chiffre
+- **Lanterne : 72 % × 46 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = train, wagons, fiches et silhouettes ; lumière (#FF0000) = flamme et locomotive éclairée · **Fond** : rempli d’aplat
+- **Cadrage (pour vérifier)** : Sur mobile, les deux moitiés passent l’une au-dessus de l’autre : chacune doit se lire seule en 8:9.
+- **Format** : 16:9
+- **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-09_1600x900.webp`
+- **Masters** : jour `design/assets/visuels/pvz-fusion/PVZ-09.png` ; nuit `design/assets/visuels/pvz-fusion/PVZ-09.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PVZ-09` écrit le jour `PVZ-09_1600x900.webp` et la nuit `PVZ-09_1600x900.nuit.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Deux moments : une petite équipe derrière un long train de fiches, puis à sa hauteur. »
+
+#### PVZ-10 · Un outil en ligne de commande dans un terminal
+
+- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : PvZ Fusion, scènes
+- **Produit par** : Codex
+- **Emplacement** : `/projets/pvz-fusion` · § 3, bloc outil _(contexte : ne pas le recopier dans un prompt)_
+- **Élargi, non posé** : le bloc de l’outil pose PVZ-04 ; la capture réelle du Console Manager (PVZ-C2) prendra cette place dès qu’elle existe.
+- **Sujet pour le prompt** : Un outil en ligne de commande dans un terminal
+- **Composition (pour le prompt)** : Une fenêtre de terminal générique vue de face, en légère plongée, sur un bureau : deux colonnes de cases régulières, sans aucun caractère ; dans la colonne de droite, quelques cases manquent et laissent des creux ; la lanterne posée devant la fenêtre, à droite (vers 78 % de la largeur et 70 % de la hauteur), éclaire seulement les creux ; aucun caractère, aucune lettre, aucun chiffre, aucune marque
+- **Lanterne : 78 % × 70 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = bureau, fenêtre et cases ; lumière (#FF0000) = flamme et creux éclairés · **Fond** : rempli d’aplat
+- **Cadrage (pour vérifier)** : Recadrable en 1:1 autour des deux colonnes.
+- **Format** : 4:3
+- **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-10_1600x1200.webp`
+- **Masters** : jour `design/assets/visuels/pvz-fusion/PVZ-10.png` ; nuit `design/assets/visuels/pvz-fusion/PVZ-10.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PVZ-10` écrit le jour `PVZ-10_1600x1200.webp` et la nuit `PVZ-10_1600x1200.nuit.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un terminal à deux colonnes de cases, dont les cases manquantes sont éclairées par une lanterne. »
+
 #### PVZ-11 · Remercier : le récapitulatif individuel
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image) · **Série** : Vignettes à motif unique
@@ -722,7 +880,22 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une lettre pliée, nouée d’un ruban. »
 - **Note** : Ajouté le 13/10/2026 : la moitié « lettre » de l’ancienne station PVZ-08. Carte « Remercier » de la semaine type, reprise dans les quatre gestes de l’accueil (ACC-15). Même série, même main que PVZ-05, PVZ-07 et PVZ-08. Exception à la règle B8 (320 px au moins) : une vignette de carte, pas une illustration de section ; question ouverte, à faire trancher par Charles.
 
-### Socle · League Of Data Base
+#### LOD-02 · Le voyage dans le temps
+
+- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Pages de projet
+- **Produit par** : Codex
+- **Emplacement** : `/projets/league-of-database` · § 1, fond _(contexte : ne pas le recopier dans un prompt)_
+- **Élargi, non posé** : le tableau d’Ahri se lit mieux sur un fond uni (refonte du 13 octobre 2026) ; à poser seulement si une version très claire ne gêne pas la lecture.
+- **Sujet** : Le voyage dans le temps
+- **Composition (pour le prompt)** : Un sablier stylisé vu de face, dans le tiers gauche du cadre (vers 18 % de la largeur), dont le sable est fait de minuscules signes géométriques (points, traits, losanges) ; un aplat très clair, à faible contraste ; les deux tiers droits restent vides, en réserve ; la lanterne posée au pied du sablier (vers 18 % de la largeur et 80 % de la hauteur) éclaire le bulbe du bas ; aucun chiffre ni lettre
+- **Lanterne : 18 % × 80 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = sablier et signes ; lumière (#FF0000) = flamme et bulbe du bas · **Fond** : transparent, de jour comme de nuit
+- **Cadrage (pour vérifier)** : Fond de section 21:9 derrière un tableau posé en HTML à droite : rien dans les deux tiers droits ; aplat à moins de 6 % d’opacité une fois posé.
+- **Format** : 21:9, faible contraste
+- **Fichier attendu** : `site/src/assets/visuels/league-of-database/LOD-02_2100x900.webp`
+- **Masters** : jour `design/assets/visuels/league-of-database/LOD-02.png` ; nuit `design/assets/visuels/league-of-database/LOD-02.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre LOD-02` écrit le jour `LOD-02_2100x900.webp` et la nuit `LOD-02_2100x900.nuit.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un sablier dont le sable est fait de petits signes, à gauche d’un grand espace vide. »
 
 #### LOD-04 · Changer de moteur sans perdre personne
 
@@ -742,8 +915,6 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un train dont on remplace le moteur pendant que les voyageurs restent assis. »
 - **Note** : À côté du texte de la réécriture, au-dessus de la frise LOD-F6.
 
-### Socle · Omnicard
-
 #### OMN-01 · Du papier au jeu en ligne
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image) · **Série** : Pages de projet
@@ -761,8 +932,6 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Rendus** : `npm run visuels:rendre OMN-01` écrit le jour `OMN-01_1600x1200.webp` et la nuit `OMN-01_1600x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une carte plastifiée à la main qui devient numérique en passant dans une fenêtre de navigateur. »
 - **Note** : En tête de la page Omnicard, sur la carte Omnicard de l’accueil, et recadré par PRJ-03.
-
-### Socle · Bloodborne Legendary Run
 
 #### BLR-01 · Quarante trophées, plus de mille objectifs
 
@@ -782,7 +951,56 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un carnet de cases à cocher qui déborde de la page, à côté d’une rangée de quarante médailles. »
 - **Note** : Posé avec un alt vide : le texte voisin dit la même chose (84 étoiles au premier ciel, dont les 40 trophées PlayStation, journal public du 06/09/2026) ; la légende est en HTML.
 
-### Socle · gup
+#### BLR-03 · Du wiki à la fiche française
+
+- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Pages de projet
+- **Produit par** : Codex
+- **Emplacement** : `/projets/bloodborne-legendary-run` · § 4 _(contexte : ne pas le recopier dans un prompt)_
+- **Élargi, non posé** : la section du guide montre la vraie fiche du Père Gascoigne (refonte du 13/10/2026) ; place prévue sous ses trois repères.
+- **Sujet** : Du wiki à la fiche française
+- **Composition (pour le prompt)** : Quatre vignettes reliées par des flèches, de gauche à droite, vues de face : une épaisse liasse de pages source, un tableau à colonnes vides, un dictionnaire ouvert à deux colonnes, puis une fiche nette ; au-dessus du tableau, une loupe sur une cellule vide marquée d’un trait court ; la lanterne posée sous la fiche finale (vers 86 % de la largeur et 72 % de la hauteur) l’éclaire ; aucun caractère lisible, aucune référence visuelle à un jeu
+- **Lanterne : 86 % × 72 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = vignettes, flèches et loupe ; lumière (#FF0000) = flamme et fiche finale · **Fond** : transparent, de jour comme de nuit
+- **Cadrage (pour vérifier)** : Sur mobile, les quatre vignettes passent en grille de deux sur deux : chacune se lit seule.
+- **Format** : 16:9
+- **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-03_1600x900.webp`
+- **Masters** : jour `design/assets/visuels/bloodborne/BLR-03.png` ; nuit `design/assets/visuels/bloodborne/BLR-03.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre BLR-03` écrit le jour `BLR-03_1600x900.webp` et la nuit `BLR-03_1600x900.nuit.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Quatre vignettes reliées, de la page source à la fiche, une loupe sur une cellule vide. »
+
+#### BLR-04 · Une réussite, une étoile
+
+- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Pages de projet
+- **Produit par** : Codex
+- **Emplacement** : `/projets/bloodborne-legendary-run` · § 2, poster de repli _(contexte : ne pas le recopier dans un prompt)_
+- **Élargi, non posé** : les quatre vidéos ont déjà un poster réel pris au milieu de la cérémonie (BLR-C4), qui reste affiché en mouvement réduit.
+- **Sujet** : Une réussite, une étoile
+- **Composition (pour le prompt)** : Une main en silhouette, vue de face, l’index levé ; au bout du doigt, une étoile allumée ; autour de l’étoile, un anneau de progression rempli aux trois quarts ; la lanterne posée en bas à droite (vers 74 % de la largeur et 80 % de la hauteur) éclaire l’étoile ; aucune référence au jeu, aucun chiffre
+- **Lanterne : 74 % × 80 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = main et anneau ; lumière (#FF0000) = flamme et étoile allumée · **Fond** : transparent, de jour comme de nuit
+- **Cadrage (pour vérifier)** : Poster carré, affiché à la taille de la vidéo (390 px de large au plus) : l’étoile au centre.
+- **Format** : 1:1, 800
+- **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-04_800x800.webp`
+- **Masters** : jour `design/assets/visuels/bloodborne/BLR-04.png` ; nuit `design/assets/visuels/bloodborne/BLR-04.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre BLR-04` écrit le jour `BLR-04_800x800.webp` et la nuit `BLR-04_800x800.nuit.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une étoile allumée au bout d’un doigt, entourée d’un anneau rempli aux trois quarts. »
+
+#### BLR-05 · Un ciel dans la main
+
+- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Pages de projet
+- **Produit par** : Codex
+- **Emplacement** : `/projets/bloodborne-legendary-run` · Hub (si les captures ne suffisent pas) _(contexte : ne pas le recopier dans un prompt)_
+- **Élargi, non posé** : les captures réelles de l’en-tête et de l’atlas suffisent.
+- **Sujet** : Un ciel dans la main
+- **Composition (pour le prompt)** : Un téléphone générique tenu dans une main en silhouette, vu de trois quarts : à l’écran, une constellation de six étoiles reliées par des traits ; le pouce se pose sur une étoile, qui s’allume ; la lanterne posée hors champ à droite (sa lumière entre vers 90 % de la largeur et 40 % de la hauteur) éclaire l’écran ; aucune interface lisible, aucune marque
+- **Lanterne : 90 % × 40 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = main et téléphone ; lumière (#FF0000) = étoile allumée et lumière sur l’écran · **Fond** : transparent, de jour comme de nuit
+- **Cadrage (pour vérifier)** : Portrait 4:5 : le téléphone et le pouce au centre.
+- **Format** : 4:5, 960 × 1200
+- **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-05_960x1200.webp`
+- **Masters** : jour `design/assets/visuels/bloodborne/BLR-05.png` ; nuit `design/assets/visuels/bloodborne/BLR-05.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre BLR-05` écrit le jour `BLR-05_960x1200.webp` et la nuit `BLR-05_960x1200.nuit.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un téléphone tenu en main affiche une constellation ; le pouce allume une étoile. »
 
 #### GUP-01 · Dispersé, puis un seul geste
 
@@ -802,7 +1020,22 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une douzaine de petites machines dont les fils emmêlés convergent vers une seule boîte éclairée par une lanterne. »
 - **Note** : Posé dans la section « probleme », à gauche de la figure des commandes (GUP-F1), qui porte le fait ; l’image ne fait que le faire sentir.
 
-### Socle · Parcours : hub, professionnel, compétences, formation
+#### GUP-03 · Une commande, tout mettre à jour
+
+- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Pages de projet
+- **Produit par** : Codex
+- **Emplacement** : `/projets/gup` · Partage, hub de repli _(contexte : ne pas le recopier dans un prompt)_
+- **Élargi, non posé** : la carte de la vitrine et l’image de partage montrent d’abord la vraie capture (src/assets/projets/gup/packages-select.webp) ; celle-ci sert de repli.
+- **Sujet** : Une commande, tout mettre à jour
+- **Composition (pour le prompt)** : Une fenêtre de terminal vide de tout caractère, au centre, éclairée par une lanterne posée devant elle (vers 50 % de la largeur et 70 % de la hauteur), d’où partent de fins pointillés vers une douzaine de paquets génériques disposés en arc, qui s’allument là où le pointillé les touche ; aucun caractère, aucune lettre, aucun logo
+- **Lanterne : 50 % × 70 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = fenêtre et paquets ; lumière (#FF0000) = flamme, pointillés et paquets touchés · **Fond** : rempli d’aplat
+- **Cadrage (pour vérifier)** : Lisible recadrée en 1200 × 630 (partage) : la fenêtre et la lanterne au centre.
+- **Format** : 1200 × 630 ; 16:10
+- **Fichier attendu** : `site/src/assets/visuels/gup/GUP-03_1600x1000.webp`
+- **Masters** : jour `design/assets/visuels/gup/GUP-03.png` ; nuit `design/assets/visuels/gup/GUP-03.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre GUP-03` écrit le jour `GUP-03_1600x1000.webp` et la nuit `GUP-03_1600x1000.nuit.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une fenêtre de terminal éclairée par une lanterne, d’où partent des pointillés vers des paquets. »
 
 #### PAR-01 · Concevoir
 
@@ -965,6 +1198,24 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Rendus** : `npm run visuels:rendre PRO-06` écrit le jour `PRO-06_1800x1200.webp` et la nuit `PRO-06_1800x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un cahier des charges annoté à côté d’une maquette d’application dessinée sur papier. »
 - **Note** : Posé : l’expérience Dev-Mates est gardée (Q9 : seule la mention « sans client actuellement » est retirée). Posé dans la fiche (components/parcours/FicheExperience.astro) ; décoratif à l’usage (alt vide), la fiche dit tout. Série « Parcours » : trois quarts en légère plongée, horizon aux deux tiers, trait gravé, deux ou trois aplats, la lanterne seule source de lumière ; aucun texte, aucun chiffre, aucune marque dans l’image.
+
+#### CMP-01 · L’établi
+
+- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Parcours
+- **Produit par** : Codex
+- **Emplacement** : `/parcours/competences` · Compétences, en-tête (non posé : la page tient en quatre écrans sans lui) _(contexte : ne pas le recopier dans un prompt)_
+- **Élargi, non posé** : la page des compétences tient en quatre écrans sans lui ; à poser seulement si Charles veut une image d’en-tête.
+- **Sujet** : L’établi
+- **Composition (pour le prompt)** : Un panneau perforé d’atelier vu de face : chaque outil est accroché devant sa silhouette peinte, en quatre groupes (gabarits et équerres, connecteurs et câbles, tiroirs de fiches, caisse scellée) ; une silhouette reste vide, l’outil sorti ; la lanterne accrochée en haut à gauche (vers 14 % de la largeur et 22 % de la hauteur) éclaire la silhouette vide ; pas d’écran, pas de personnage, aucun mot
+- **Lanterne : 14 % × 22 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = panneau, outils et silhouettes peintes ; lumière (#FF0000) = flamme et silhouette vide · **Fond** : rempli d’aplat
+- **Cadrage (pour vérifier)** : En-tête 21:9 au-dessus du niveau « Au quotidien » : recadrable en 16:9 sur mobile.
+- **Format** : 21:9, 1600 × 685
+- **Fichier attendu** : `site/src/assets/visuels/parcours/CMP-01_1600x685.webp`
+- **Masters** : jour `design/assets/visuels/parcours/CMP-01.png` ; nuit `design/assets/visuels/parcours/CMP-01.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre CMP-01` écrit le jour `CMP-01_1600x685.webp` et la nuit `CMP-01_1600x685.nuit.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un panneau d’atelier où chaque outil pend devant sa silhouette, l’une vide, éclairée par une lanterne. »
+- **Note** : Passé d’un établi à quatre compartiments, déjà vu en PAR-02, à un panneau d’outils.
 
 #### CMP-02 · Le tableau et la craie
 
@@ -1218,8 +1469,6 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une échelle de bassin de piscine, sa marche du haut éclairée. »
 - **Note** : Série de cinq vignettes (FOR-03 à FOR-07) : même cadrage, même lumière, un seul objet chacune ; posées dans la frise de formation, décoratives à l’usage (alt vide).
 
-### Socle · Contact
-
 #### CON-01 · L’invitation : une enveloppe ouverte éclairée par la lanterne
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image) · **Série** : États et lanterne du logo
@@ -1272,8 +1521,6 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une lanterne à la flamme basse à côté d’un sablier. »
 - **Note** : Décoratif dans la page (le message d’état dit l’erreur) : affiché par CSS seulement quand l’état du formulaire vaut « error ».
 
-### Socle · Blog
-
 #### BLG-01 · Les pages à écrire : le livre du logo ouvert, éclairé par la lanterne
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image) · **Série** : États et lanterne du logo
@@ -1292,7 +1539,22 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un livre ouvert sur des pages blanches, éclairé par une lanterne, un crayon posé dessus. »
 - **Note** : Décoratif dans la page (la phrase dit que le blog est vide). Disparaît avec l’état vide quand le serveur injecte la liste des articles.
 
-### Socle · États : 404 et hors ligne
+#### BLG-02 · Couverture de secours : la lanterne sur une page de livre
+
+- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : États et lanterne du logo
+- **Produit par** : Codex
+- **Emplacement** : `/blog` · Article sans image de couverture, et image de partage d’un article _(contexte : ne pas le recopier dans un prompt)_
+- **Élargi, non posé** : le rendu des articles (server/blog.mjs) ne sait pas encore poser une couverture de secours : à brancher avec le serveur, hors refonte des pages.
+- **Sujet** : Couverture de secours : la lanterne sur une page de livre
+- **Composition (pour le prompt)** : Cadrage large : le coin d’une page de livre ouvert à gauche, la lanterne du logo à droite du centre (vers 62 % de la largeur et 50 % de la hauteur), sa lumière tombe sur la page ; grand espace calme à gauche. Aucun texte
+- **Lanterne : 62 % × 50 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = page du livre ; lumière (#FF0000) = flamme et page éclairée, en hachures · **Fond** : rempli d’aplat
+- **Cadrage (pour vérifier)** : Espace calme à gauche pour qu’un titre posé en HTML reste lisible par-dessus ; déclinaison 1200 × 630 pour le partage.
+- **Format** : 16:9, 1600 × 900 ; déclinaison 1200 × 630 pour le partage
+- **Fichier attendu** : `site/src/assets/visuels/blog/BLG-02_1600x900.webp`
+- **Masters** : jour `design/assets/visuels/blog/BLG-02.png` ; nuit `design/assets/visuels/blog/BLG-02.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre BLG-02` écrit le jour `BLG-02_1600x900.webp` et la nuit `BLG-02_1600x900.nuit.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une lanterne éclaire la page d’un livre ouvert. »
 
 #### ERR-01 · La page qui manque : un manuel ouvert, une page arrachée
 
@@ -1311,325 +1573,6 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Rendus** : `npm run visuels:rendre ERR-01` écrit le jour `ERR-01_1280x960.webp` et la nuit `ERR-01_1280x960.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un manuel ouvert dont une page a été arrachée, éclairé par une lanterne. »
 - **Note** : Reprend ETA-01 de docs/assets-complementaires.md (direction précédente). Décoratif dans la page (le titre dit déjà que la page manque).
-
-### Élargi · Accueil
-
-#### ACC-05 · Apprendre le C, pour passer ensuite au C++ et coder des jeux
-
-- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Scènes du récit
-- **Produit par** : Codex
-- **Emplacement** : `/` · 01, vers 13 ans _(contexte : ne pas le recopier dans un prompt)_
-- **Élargi, non posé** : aucune scène de l’accueil ne l’appelle ; la frise de la formation garde l’autodidacte en vignette (FOR-03).
-- **Sujet** : Apprendre le C, pour passer ensuite au C++ et coder des jeux
-- **Composition (pour le prompt)** : Une chambre d’adolescent vue de trois quarts, en léger surplomb : un vieux PC à écran bombé allumé sur un bureau, un livre de programmation ouvert à plat près du clavier, une liasse de listing pliée en accordéon, vierge ; au mur, un croquis de niveau de jeu épinglé (plateformes et échelles en simples traits) ; la lanterne posée sur le bureau, à gauche de l’écran (vers 30 % de la largeur et 55 % de la hauteur), éclaire le livre ; aucun personnage, aucune manette ni console de marque, aucun caractère lisible à l’écran ni sur les feuilles
-- **Lanterne : 30 % × 55 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
-- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = murs, bureau, feuilles et écran ; lumière (#FF0000) = flamme, livre ouvert et écran · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Recadrable en 4:5 sur mobile autour du bureau et de la lanterne.
-- **Format** : 4:3, 1600 × 1200
-- **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-05_1600x1200.webp`
-- **Masters** : jour `design/assets/visuels/accueil/ACC-05.png` ; nuit `design/assets/visuels/accueil/ACC-05.nuit.png`, en édition depuis le jour, même cadrage au pixel près
-- **Rendus** : `npm run visuels:rendre ACC-05` écrit le jour `ACC-05_1600x1200.webp` et la nuit `ACC-05_1600x1200.nuit.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un vieux PC allumé dans une chambre d’adolescent, un livre de programmation ouvert et un croquis de niveau au mur. »
-
-#### ACC-07 · Le plateau puis la percée
-
-- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Scènes du récit
-- **Produit par** : Codex
-- **Emplacement** : `/` · 01, Gwent, ouverture _(contexte : ne pas le recopier dans un prompt)_
-- **Élargi, non posé** : la figure du plafond (ACC-06) et les cartes de la méthode (ACC-18 à ACC-20) portent déjà cette partie du récit.
-- **Sujet** : Le plateau puis la percée
-- **Composition (pour le prompt)** : Un joueur en silhouette, de dos et sans visage, assis devant une table vue de trois quarts : devant lui, une colonne de cartes identiques, dos visibles, bute sous une barre de lumière tendue au-dessus de la table comme un plafond ; une seule carte, retournée face visible (une forme géométrique simple), traverse la barre et monte au-dessus ; la lanterne posée sur la table, à droite (vers 70 % de la largeur et 60 % de la hauteur), éclaire la carte qui perce ; aucune carte, aucun symbole ni logo d’un jeu existant, aucun chiffre
-- **Lanterne : 70 % × 60 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
-- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, cartes et silhouette ; lumière (#FF0000) = flamme, barre de lumière et carte qui perce · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Recadrable en 4:5 sur mobile autour de la colonne de cartes et de la carte qui perce.
-- **Format** : 16:9, 1920 × 1080
-- **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-07_1920x1080.webp`
-- **Masters** : jour `design/assets/visuels/accueil/ACC-07.png` ; nuit `design/assets/visuels/accueil/ACC-07.nuit.png`, en édition depuis le jour, même cadrage au pixel près
-- **Rendus** : `npm run visuels:rendre ACC-07` écrit le jour `ACC-07_1920x1080.webp` et la nuit `ACC-07_1920x1080.nuit.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un joueur de dos devant une colonne de cartes bloquée sous une barre de lumière, qu’une seule carte retournée traverse. »
-
-#### ACC-16 · La lanterne posée sur un livre ouvert, un chemin éclairé devant
-
-- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Scènes du récit
-- **Produit par** : Codex
-- **Emplacement** : `/` · 03, conclusion _(contexte : ne pas le recopier dans un prompt)_
-- **Élargi, non posé** : la conclusion de l’accueil, « La suite », est un acte bleu nuit sans image, avec l’aplat bleu roi derrière « Discutons » (décision du 13/10/2026).
-- **Sujet** : La lanterne posée sur un livre ouvert, un chemin éclairé devant
-- **Composition (pour le prompt)** : Un livre ouvert posé à plat sur une table, vu de trois quarts en légère plongée, dans la moitié gauche du cadre ; la lanterne posée sur la page de droite (vers 34 % de la largeur et 46 % de la hauteur) projette devant le livre un chemin de lumière qui file vers le bord droit ; la moitié droite reste un aplat calme, sans détail ; aucun personnage, aucune écriture sur les pages
-- **Lanterne : 34 % × 46 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
-- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table et pages du livre ; lumière (#FF0000) = flamme et chemin de lumière · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Moitié droite libre pour un bouton posé en HTML ; recadrage 4:5 sur mobile centré sur le livre et la lanterne.
-- **Format** : 16:9, 1920 × 1080
-- **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-16_1920x1080.webp`
-- **Masters** : jour `design/assets/visuels/accueil/ACC-16.png` ; nuit `design/assets/visuels/accueil/ACC-16.nuit.png`, en édition depuis le jour, même cadrage au pixel près
-- **Rendus** : `npm run visuels:rendre ACC-16` écrit le jour `ACC-16_1920x1080.webp` et la nuit `ACC-16_1920x1080.nuit.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une lanterne posée sur un livre ouvert éclaire un chemin qui file vers la droite. »
-- **Note** : Reprend ILL-08 de docs/assets-complementaires.md (direction précédente).
-
-### Élargi · Projets (vitrine)
-
-#### PRJ-09 · La veille qui devient lecture
-
-- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Vitrine des projets
-- **Produit par** : Codex
-- **Emplacement** : `/projets` · « Aussi », MaVeille (si le site revient) _(contexte : ne pas le recopier dans un prompt)_
-- **Élargi, non posé** : MaVeille n’est pas dans la rangée « Aussi » tant que son site n’est pas de retour en ligne.
-- **Sujet** : La veille qui devient lecture
-- **Composition (pour le prompt)** : Sur une table vue de trois quarts en légère plongée, une pile de rapports imprimés à gauche, aux tranches marquées de simples traits ; à droite, une seule page reliée, ouverte, dont la marge porte un sommaire en traits courts ; un ruban de lumière relie le haut de la pile à la page ; la lanterne posée derrière la page (vers 66 % de la largeur et 40 % de la hauteur) l’éclaire ; aucun chiffre, aucune date ni lettre lisible
-- **Lanterne : 66 % × 40 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
-- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, rapports et page ; lumière (#FF0000) = flamme, ruban de lumière et page ouverte · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Vignette de la rangée « Aussi », 4:3, environ 300 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.
-- **Format** : 4:3
-- **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-09_1600x1200.webp`
-- **Masters** : jour `design/assets/visuels/projets/PRJ-09.png` ; nuit `design/assets/visuels/projets/PRJ-09.nuit.png`, en édition depuis le jour, même cadrage au pixel près
-- **Rendus** : `npm run visuels:rendre PRJ-09` écrit le jour `PRJ-09_1600x1200.webp` et la nuit `PRJ-09_1600x1200.nuit.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une pile de rapports imprimés, reliée par un ruban de lumière à une page ouverte et son sommaire. »
-
-#### PRJ-12 · La version précédente
-
-- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Vitrine des projets
-- **Produit par** : Codex
-- **Emplacement** : `/projets` · Archives (quand elles existent) _(contexte : ne pas le recopier dans un prompt)_
-- **Élargi, non posé** : le volet des projets archivés est vide ; il reste une simple ligne tant qu’il ne contient aucun projet.
-- **Sujet** : La version précédente
-- **Composition (pour le prompt)** : Une étagère vue de face, en légère plongée : à gauche, un livre plus ancien, fermé, debout, au dos usé et sans titre ; à droite, posé à plat sur la tablette, un manuel neuf ouvert ; la lanterne posée entre les deux (vers 50 % de la largeur et 58 % de la hauteur) éclaire le dos de l’ancien livre ; aucun titre, aucune lettre
-- **Lanterne : 50 % × 58 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
-- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = étagère et livres ; lumière (#FF0000) = flamme et dos de l’ancien livre · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Vignette 4:3 d’environ 300 px de large : les deux livres se lisent à cette taille.
-- **Format** : 4:3
-- **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-12_1600x1200.webp`
-- **Masters** : jour `design/assets/visuels/projets/PRJ-12.png` ; nuit `design/assets/visuels/projets/PRJ-12.nuit.png`, en édition depuis le jour, même cadrage au pixel près
-- **Rendus** : `npm run visuels:rendre PRJ-12` écrit le jour `PRJ-12_1600x1200.webp` et la nuit `PRJ-12_1600x1200.nuit.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un livre ancien debout sur une étagère, à côté d’un manuel neuf ouvert, éclairé par une lanterne. »
-- **Note** : Reprend ILL-10 de docs/assets-complementaires.md (direction précédente).
-
-### Élargi · PvZ Fusion
-
-#### PVZ-09 · Rattraper le retard
-
-- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : PvZ Fusion, scènes
-- **Produit par** : Codex
-- **Emplacement** : `/projets/pvz-fusion` · § 4, à côté de la courbe _(contexte : ne pas le recopier dans un prompt)_
-- **Élargi, non posé** : la courbe du rattrapage (PVZ-F1) porte le fait ; l’image ne ferait que le répéter.
-- **Sujet** : Rattraper le retard
-- **Composition (pour le prompt)** : Diptyque en une seule image, deux moitiés séparées par un filet vertical, vues de profil, horizon à mi-hauteur : à gauche, une petite équipe de silhouettes sans visage marche derrière un long train de wagons chargés de fiches, qui s’allonge et la distance ; à droite, la même équipe marche à hauteur de la locomotive ; la lanterne, tenue par la silhouette de tête dans la moitié droite (vers 72 % de la largeur et 46 % de la hauteur), éclaire la locomotive ; aucun texte ni chiffre
-- **Lanterne : 72 % × 46 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
-- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = train, wagons, fiches et silhouettes ; lumière (#FF0000) = flamme et locomotive éclairée · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Sur mobile, les deux moitiés passent l’une au-dessus de l’autre : chacune doit se lire seule en 8:9.
-- **Format** : 16:9
-- **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-09_1600x900.webp`
-- **Masters** : jour `design/assets/visuels/pvz-fusion/PVZ-09.png` ; nuit `design/assets/visuels/pvz-fusion/PVZ-09.nuit.png`, en édition depuis le jour, même cadrage au pixel près
-- **Rendus** : `npm run visuels:rendre PVZ-09` écrit le jour `PVZ-09_1600x900.webp` et la nuit `PVZ-09_1600x900.nuit.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Deux moments : une petite équipe derrière un long train de fiches, puis à sa hauteur. »
-
-#### PVZ-10 · Un outil en ligne de commande dans un terminal
-
-- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : PvZ Fusion, scènes
-- **Produit par** : Codex
-- **Emplacement** : `/projets/pvz-fusion` · § 3, bloc outil _(contexte : ne pas le recopier dans un prompt)_
-- **Élargi, non posé** : le bloc de l’outil pose PVZ-04 ; la capture réelle du Console Manager (PVZ-C2) prendra cette place dès qu’elle existe.
-- **Sujet pour le prompt** : Un outil en ligne de commande dans un terminal
-- **Composition (pour le prompt)** : Une fenêtre de terminal générique vue de face, en légère plongée, sur un bureau : deux colonnes de cases régulières, sans aucun caractère ; dans la colonne de droite, quelques cases manquent et laissent des creux ; la lanterne posée devant la fenêtre, à droite (vers 78 % de la largeur et 70 % de la hauteur), éclaire seulement les creux ; aucun caractère, aucune lettre, aucun chiffre, aucune marque
-- **Lanterne : 78 % × 70 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
-- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = bureau, fenêtre et cases ; lumière (#FF0000) = flamme et creux éclairés · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Recadrable en 1:1 autour des deux colonnes.
-- **Format** : 4:3
-- **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-10_1600x1200.webp`
-- **Masters** : jour `design/assets/visuels/pvz-fusion/PVZ-10.png` ; nuit `design/assets/visuels/pvz-fusion/PVZ-10.nuit.png`, en édition depuis le jour, même cadrage au pixel près
-- **Rendus** : `npm run visuels:rendre PVZ-10` écrit le jour `PVZ-10_1600x1200.webp` et la nuit `PVZ-10_1600x1200.nuit.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un terminal à deux colonnes de cases, dont les cases manquantes sont éclairées par une lanterne. »
-
-### Élargi · League Of Data Base
-
-#### LOD-02 · Le voyage dans le temps
-
-- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Pages de projet
-- **Produit par** : Codex
-- **Emplacement** : `/projets/league-of-database` · § 1, fond _(contexte : ne pas le recopier dans un prompt)_
-- **Élargi, non posé** : le tableau d’Ahri se lit mieux sur un fond uni (refonte du 13 octobre 2026) ; à poser seulement si une version très claire ne gêne pas la lecture.
-- **Sujet** : Le voyage dans le temps
-- **Composition (pour le prompt)** : Un sablier stylisé vu de face, dans le tiers gauche du cadre (vers 18 % de la largeur), dont le sable est fait de minuscules signes géométriques (points, traits, losanges) ; un aplat très clair, à faible contraste ; les deux tiers droits restent vides, en réserve ; la lanterne posée au pied du sablier (vers 18 % de la largeur et 80 % de la hauteur) éclaire le bulbe du bas ; aucun chiffre ni lettre
-- **Lanterne : 18 % × 80 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
-- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = sablier et signes ; lumière (#FF0000) = flamme et bulbe du bas · **Fond** : transparent, de jour comme de nuit
-- **Cadrage (pour vérifier)** : Fond de section 21:9 derrière un tableau posé en HTML à droite : rien dans les deux tiers droits ; aplat à moins de 6 % d’opacité une fois posé.
-- **Format** : 21:9, faible contraste
-- **Fichier attendu** : `site/src/assets/visuels/league-of-database/LOD-02_2100x900.webp`
-- **Masters** : jour `design/assets/visuels/league-of-database/LOD-02.png` ; nuit `design/assets/visuels/league-of-database/LOD-02.nuit.png`, en édition depuis le jour, même cadrage au pixel près
-- **Rendus** : `npm run visuels:rendre LOD-02` écrit le jour `LOD-02_2100x900.webp` et la nuit `LOD-02_2100x900.nuit.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un sablier dont le sable est fait de petits signes, à gauche d’un grand espace vide. »
-
-### Élargi · Bloodborne Legendary Run
-
-#### BLR-03 · Du wiki à la fiche française
-
-- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Pages de projet
-- **Produit par** : Codex
-- **Emplacement** : `/projets/bloodborne-legendary-run` · § 4 _(contexte : ne pas le recopier dans un prompt)_
-- **Élargi, non posé** : la section du guide montre la vraie fiche du Père Gascoigne (refonte du 13/10/2026) ; place prévue sous ses trois repères.
-- **Sujet** : Du wiki à la fiche française
-- **Composition (pour le prompt)** : Quatre vignettes reliées par des flèches, de gauche à droite, vues de face : une épaisse liasse de pages source, un tableau à colonnes vides, un dictionnaire ouvert à deux colonnes, puis une fiche nette ; au-dessus du tableau, une loupe sur une cellule vide marquée d’un trait court ; la lanterne posée sous la fiche finale (vers 86 % de la largeur et 72 % de la hauteur) l’éclaire ; aucun caractère lisible, aucune référence visuelle à un jeu
-- **Lanterne : 86 % × 72 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
-- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = vignettes, flèches et loupe ; lumière (#FF0000) = flamme et fiche finale · **Fond** : transparent, de jour comme de nuit
-- **Cadrage (pour vérifier)** : Sur mobile, les quatre vignettes passent en grille de deux sur deux : chacune se lit seule.
-- **Format** : 16:9
-- **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-03_1600x900.webp`
-- **Masters** : jour `design/assets/visuels/bloodborne/BLR-03.png` ; nuit `design/assets/visuels/bloodborne/BLR-03.nuit.png`, en édition depuis le jour, même cadrage au pixel près
-- **Rendus** : `npm run visuels:rendre BLR-03` écrit le jour `BLR-03_1600x900.webp` et la nuit `BLR-03_1600x900.nuit.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Quatre vignettes reliées, de la page source à la fiche, une loupe sur une cellule vide. »
-
-#### BLR-04 · Une réussite, une étoile
-
-- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Pages de projet
-- **Produit par** : Codex
-- **Emplacement** : `/projets/bloodborne-legendary-run` · § 2, poster de repli _(contexte : ne pas le recopier dans un prompt)_
-- **Élargi, non posé** : les quatre vidéos ont déjà un poster réel pris au milieu de la cérémonie (BLR-C4), qui reste affiché en mouvement réduit.
-- **Sujet** : Une réussite, une étoile
-- **Composition (pour le prompt)** : Une main en silhouette, vue de face, l’index levé ; au bout du doigt, une étoile allumée ; autour de l’étoile, un anneau de progression rempli aux trois quarts ; la lanterne posée en bas à droite (vers 74 % de la largeur et 80 % de la hauteur) éclaire l’étoile ; aucune référence au jeu, aucun chiffre
-- **Lanterne : 74 % × 80 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
-- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = main et anneau ; lumière (#FF0000) = flamme et étoile allumée · **Fond** : transparent, de jour comme de nuit
-- **Cadrage (pour vérifier)** : Poster carré, affiché à la taille de la vidéo (390 px de large au plus) : l’étoile au centre.
-- **Format** : 1:1, 800
-- **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-04_800x800.webp`
-- **Masters** : jour `design/assets/visuels/bloodborne/BLR-04.png` ; nuit `design/assets/visuels/bloodborne/BLR-04.nuit.png`, en édition depuis le jour, même cadrage au pixel près
-- **Rendus** : `npm run visuels:rendre BLR-04` écrit le jour `BLR-04_800x800.webp` et la nuit `BLR-04_800x800.nuit.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une étoile allumée au bout d’un doigt, entourée d’un anneau rempli aux trois quarts. »
-
-#### BLR-05 · Un ciel dans la main
-
-- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Pages de projet
-- **Produit par** : Codex
-- **Emplacement** : `/projets/bloodborne-legendary-run` · Hub (si les captures ne suffisent pas) _(contexte : ne pas le recopier dans un prompt)_
-- **Élargi, non posé** : les captures réelles de l’en-tête et de l’atlas suffisent.
-- **Sujet** : Un ciel dans la main
-- **Composition (pour le prompt)** : Un téléphone générique tenu dans une main en silhouette, vu de trois quarts : à l’écran, une constellation de six étoiles reliées par des traits ; le pouce se pose sur une étoile, qui s’allume ; la lanterne posée hors champ à droite (sa lumière entre vers 90 % de la largeur et 40 % de la hauteur) éclaire l’écran ; aucune interface lisible, aucune marque
-- **Lanterne : 90 % × 40 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
-- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = main et téléphone ; lumière (#FF0000) = étoile allumée et lumière sur l’écran · **Fond** : transparent, de jour comme de nuit
-- **Cadrage (pour vérifier)** : Portrait 4:5 : le téléphone et le pouce au centre.
-- **Format** : 4:5, 960 × 1200
-- **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-05_960x1200.webp`
-- **Masters** : jour `design/assets/visuels/bloodborne/BLR-05.png` ; nuit `design/assets/visuels/bloodborne/BLR-05.nuit.png`, en édition depuis le jour, même cadrage au pixel près
-- **Rendus** : `npm run visuels:rendre BLR-05` écrit le jour `BLR-05_960x1200.webp` et la nuit `BLR-05_960x1200.nuit.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un téléphone tenu en main affiche une constellation ; le pouce allume une étoile. »
-
-### Élargi · gup
-
-#### GUP-03 · Une commande, tout mettre à jour
-
-- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Pages de projet
-- **Produit par** : Codex
-- **Emplacement** : `/projets/gup` · Partage, hub de repli _(contexte : ne pas le recopier dans un prompt)_
-- **Élargi, non posé** : la carte de la vitrine et l’image de partage montrent d’abord la vraie capture (src/assets/projets/gup/packages-select.webp) ; celle-ci sert de repli.
-- **Sujet** : Une commande, tout mettre à jour
-- **Composition (pour le prompt)** : Une fenêtre de terminal vide de tout caractère, au centre, éclairée par une lanterne posée devant elle (vers 50 % de la largeur et 70 % de la hauteur), d’où partent de fins pointillés vers une douzaine de paquets génériques disposés en arc, qui s’allument là où le pointillé les touche ; aucun caractère, aucune lettre, aucun logo
-- **Lanterne : 50 % × 70 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
-- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = fenêtre et paquets ; lumière (#FF0000) = flamme, pointillés et paquets touchés · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Lisible recadrée en 1200 × 630 (partage) : la fenêtre et la lanterne au centre.
-- **Format** : 1200 × 630 ; 16:10
-- **Fichier attendu** : `site/src/assets/visuels/gup/GUP-03_1600x1000.webp`
-- **Masters** : jour `design/assets/visuels/gup/GUP-03.png` ; nuit `design/assets/visuels/gup/GUP-03.nuit.png`, en édition depuis le jour, même cadrage au pixel près
-- **Rendus** : `npm run visuels:rendre GUP-03` écrit le jour `GUP-03_1600x1000.webp` et la nuit `GUP-03_1600x1000.nuit.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une fenêtre de terminal éclairée par une lanterne, d’où partent des pointillés vers des paquets. »
-
-### Élargi · Parcours : hub, professionnel, compétences, formation
-
-#### CMP-01 · L’établi
-
-- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Parcours
-- **Produit par** : Codex
-- **Emplacement** : `/parcours/competences` · Compétences, en-tête (non posé : la page tient en quatre écrans sans lui) _(contexte : ne pas le recopier dans un prompt)_
-- **Élargi, non posé** : la page des compétences tient en quatre écrans sans lui ; à poser seulement si Charles veut une image d’en-tête.
-- **Sujet** : L’établi
-- **Composition (pour le prompt)** : Un panneau perforé d’atelier vu de face : chaque outil est accroché devant sa silhouette peinte, en quatre groupes (gabarits et équerres, connecteurs et câbles, tiroirs de fiches, caisse scellée) ; une silhouette reste vide, l’outil sorti ; la lanterne accrochée en haut à gauche (vers 14 % de la largeur et 22 % de la hauteur) éclaire la silhouette vide ; pas d’écran, pas de personnage, aucun mot
-- **Lanterne : 14 % × 22 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
-- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = panneau, outils et silhouettes peintes ; lumière (#FF0000) = flamme et silhouette vide · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : En-tête 21:9 au-dessus du niveau « Au quotidien » : recadrable en 16:9 sur mobile.
-- **Format** : 21:9, 1600 × 685
-- **Fichier attendu** : `site/src/assets/visuels/parcours/CMP-01_1600x685.webp`
-- **Masters** : jour `design/assets/visuels/parcours/CMP-01.png` ; nuit `design/assets/visuels/parcours/CMP-01.nuit.png`, en édition depuis le jour, même cadrage au pixel près
-- **Rendus** : `npm run visuels:rendre CMP-01` écrit le jour `CMP-01_1600x685.webp` et la nuit `CMP-01_1600x685.nuit.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un panneau d’atelier où chaque outil pend devant sa silhouette, l’une vide, éclairée par une lanterne. »
-- **Note** : Passé d’un établi à quatre compartiments, déjà vu en PAR-02, à un panneau d’outils.
-
-### Élargi · Blog
-
-#### BLG-02 · Couverture de secours : la lanterne sur une page de livre
-
-- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : États et lanterne du logo
-- **Produit par** : Codex
-- **Emplacement** : `/blog` · Article sans image de couverture, et image de partage d’un article _(contexte : ne pas le recopier dans un prompt)_
-- **Élargi, non posé** : le rendu des articles (server/blog.mjs) ne sait pas encore poser une couverture de secours : à brancher avec le serveur, hors refonte des pages.
-- **Sujet** : Couverture de secours : la lanterne sur une page de livre
-- **Composition (pour le prompt)** : Cadrage large : le coin d’une page de livre ouvert à gauche, la lanterne du logo à droite du centre (vers 62 % de la largeur et 50 % de la hauteur), sa lumière tombe sur la page ; grand espace calme à gauche. Aucun texte
-- **Lanterne : 62 % × 50 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
-- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = page du livre ; lumière (#FF0000) = flamme et page éclairée, en hachures · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Espace calme à gauche pour qu’un titre posé en HTML reste lisible par-dessus ; déclinaison 1200 × 630 pour le partage.
-- **Format** : 16:9, 1600 × 900 ; déclinaison 1200 × 630 pour le partage
-- **Fichier attendu** : `site/src/assets/visuels/blog/BLG-02_1600x900.webp`
-- **Masters** : jour `design/assets/visuels/blog/BLG-02.png` ; nuit `design/assets/visuels/blog/BLG-02.nuit.png`, en édition depuis le jour, même cadrage au pixel près
-- **Rendus** : `npm run visuels:rendre BLG-02` écrit le jour `BLG-02_1600x900.webp` et la nuit `BLG-02_1600x900.nuit.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une lanterne éclaire la page d’un livre ouvert. »
-
-### Reprises : rien à générer, mais leur cadrage contraint l’image d’origine
-
-#### ACC-15 · Les quatre gestes
-
-- **Priorité** : socle · **Méthode** : IMG, rien à produire, le fichier est celui d’un autre emplacement
-- **Emplacement** : `/` · 02, du solo au collectif : « Comment j’organise le pôle, en quatre gestes » _(contexte : ne pas le recopier dans un prompt)_
-- **Posé dans** : `src/components/accueil/GestesPole.astro`, `src/config/pvz-fusion.ts`
-- **Sujet** : Les quatre gestes
-- **Composition** : Les quatre images carrées de la semaine type de PvZ Fusion, sans nouvelle image : organiser (PVZ-05), livrer (PVZ-07), motiver (PVZ-08), remercier (PVZ-11)
-- **Cadrage (pour vérifier)** : Quatre images carrées en tête de chaque geste, sur toute la largeur de sa colonne : environ 230 px sur ordinateur (quatre colonnes), 160 à 300 px sur tablette et mobile (deux colonnes). Les images doivent rester lisibles à 160 px.
-- **Format** : 1:1
-- **Fichier attendu** : aucun, reprend `PVZ-05`, `PVZ-07`, `PVZ-08`, `PVZ-11`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
-- **Note** : Posé par components/accueil/GestesPole.astro, avec les textes de config/pvz-fusion.ts ; décoratif (alt vide), chaque geste porte son intitulé.
-
-#### PRJ-03 · Du papier au jeu en ligne
-
-- **Priorité** : socle · **Méthode** : IMG, rien à produire, le fichier est celui d’un autre emplacement
-- **Emplacement** : `/projets` · Carte Omnicard _(contexte : ne pas le recopier dans un prompt)_
-- **Posé dans** : `src/pages/projets/index.astro`
-- **Sujet** : Du papier au jeu en ligne
-- **Composition** : Recadrage d’OMN-01, sans nouvelle image : la carte plastifiée à la main (pochette visible, coin corné) à cheval sur le bord d’une fenêtre de navigateur, moitié papier, moitié numérique
-- **Cadrage (pour vérifier)** : Le recadrage garde au centre le bord de la fenêtre qui traverse la carte, les deux moitiés de la carte entières et la lumière de la lanterne sur la moitié papier ; il coupe d’abord le fond de la fenêtre et la table. Deux cadres : 16:10 sur mobile, portrait 2:3 (environ 300 × 450 px) sur ordinateur, où la carte, droite, doit tenir entière en hauteur.
-- **Format** : 16:10 ; portrait 2:3 recadré dans la carte
-- **Fichier attendu** : aucun, reprend `OMN-01`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une carte de jeu plastifiée à la main qui passe le bord d’une fenêtre de navigateur et y devient numérique. »
-- **Note** : Si OMN-01 ne laisse pas la carte entière dans le portrait 2:3, demander une variante en 2:3 (1000 × 1500) plutôt qu’un recadrage qui la coupe. Décoratif sur la vitrine (alt vide), le nom de la carte dit le reste.
-
-#### PVZ-02 · Accueillir, former, faire confiance
-
-- **Priorité** : socle · **Méthode** : IMG, rien à produire, le fichier est celui d’un autre emplacement
-- **Emplacement** : `/projets/pvz-fusion` · § 2, l’équipe _(contexte : ne pas le recopier dans un prompt)_
-- **Posé dans** : `src/pages/projets/pvz-fusion.astro`, `src/config/pvz-fusion.ts`
-- **Sujet** : Accueillir, former, faire confiance
-- **Composition** : Triptyque en trois images de même main et même décor (PVZ-02a, PVZ-02b, PVZ-02c) : montrer une fiche annotée à une nouvelle venue, la voir travailler, puis la laisser relire seule
-- **Cadrage (pour vérifier)** : Bureau : les trois cases se touchent, sans gouttière, et se lisent comme un seul triptyque ; chacune coiffe son temps (Accueillir, Former et relire, Faire confiance), dont l’intitulé reste en HTML. Sous 860 px, chaque case passe au-dessus de son temps : aucun recadrage ne fait disparaître une case.
-- **Format** : 3 × 4:3, juxtaposés en bureau
-- **Fichier attendu** : aucun, reprend `PVZ-02a`, `PVZ-02b`, `PVZ-02c`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Trois moments dans le même décor : montrer une fiche annotée à une nouvelle venue, la voir travailler, puis la laisser relire seule. »
-
-#### LOD-01 · Archive versionnée
-
-- **Priorité** : élargi · **Méthode** : IMG, rien à produire, le fichier est celui d’un autre emplacement
-- **Emplacement** : `/projets/league-of-database` · Hub, partage _(contexte : ne pas le recopier dans un prompt)_
-- **Élargi, non posé** : la page du projet ouvre sur une capture réelle ; seule une image de partage le reprendrait.
-- **Sujet** : Archive versionnée
-- **Composition** : PRJ-02 recadré en 1:1 et en 1200 × 630, sans nouvelle image
-- **Format** : 16:10, 1:1, 1200 × 630
-- **Fichier attendu** : aucun, reprend `PRJ-02`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un registre ouvert dont les pages s’éventaillent, un marque-page glissé dans les plus anciennes. »
-
-#### OMN-02 · Les éditions sans fin
-
-- **Priorité** : socle · **Méthode** : IMG, rien à produire, le fichier est celui d’un autre emplacement
-- **Emplacement** : `/projets/omnicard` · « Le jeu papier », à côté du récit des éditions _(contexte : ne pas le recopier dans un prompt)_
-- **Posé dans** : `src/pages/projets/omnicard.astro`
-- **Sujet** : Les éditions sans fin
-- **Composition** : ACC-04, sans nouvelle image : table d’après-midi d’été vue de dessus, cartes imprimées, plastifieuse et mains d’adolescents
-- **Format** : 3:2
-- **Fichier attendu** : aucun, reprend `ACC-04`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Deux adolescents découpent et plastifient leurs cartes sur une table d’été. »
 
 ## Partie 2 — À faire par l’équipe : dessins, figures, captures, partage
 
