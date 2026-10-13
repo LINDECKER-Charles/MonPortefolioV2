@@ -1,30 +1,13 @@
 /**
- * Sitemap écrit à la main : une date de mise à jour
- * vraie pour chacune — celle d'un contenu, jamais celle du build, qu'un moteur
- * finit par ignorer si elle change à chaque déploiement.
+ * Sitemap écrit à la main depuis `config/pages.ts` : une date de mise à jour
+ * vraie pour chaque page — celle d'un contenu, jamais celle du build.
  */
 import type { APIRoute } from 'astro';
+import { PAGES_SITEMAP } from '../config/pages';
 import { SITE } from '../config/site';
 
-const PAGES = [
-  { chemin: '/', maj: '2026-10-08' },
-  { chemin: '/projets', maj: '2026-10-12' },
-  { chemin: '/projets/pvz-fusion', maj: '2026-10-08' },
-  { chemin: '/projets/omnicard', maj: '2026-10-13' },
-  { chemin: '/projets/gup', maj: '2026-10-08' },
-  { chemin: '/projets/bloodborne-legendary-run', maj: '2026-10-08' },
-  { chemin: '/projets/league-of-database', maj: '2026-10-12' },
-  { chemin: '/parcours', maj: '2026-10-08' },
-  { chemin: '/parcours/professionnel', maj: '2026-10-08' },
-  { chemin: '/parcours/competences', maj: '2026-10-08' },
-  { chemin: '/parcours/formation', maj: '2026-10-08' },
-  { chemin: '/contact', maj: '2026-10-08' },
-  { chemin: '/blog', maj: '2026-10-08' },
-  { chemin: '/mentions-legales', maj: '2026-10-07' },
-];
-
 export const GET: APIRoute = () => {
-  const urls = PAGES.map(
+  const urls = PAGES_SITEMAP.map(
     ({ chemin, maj }) => `  <url>\n    <loc>${SITE.url}${chemin === '/' ? '/' : chemin}</loc>\n    <lastmod>${maj}</lastmod>\n  </url>`,
   ).join('\n');
   return new Response(
