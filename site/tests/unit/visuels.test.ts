@@ -162,11 +162,12 @@ describe('registre des visuels : liste des manquants', () => {
     expect(etat.manquantsSocle.map((v: { id: string }) => v.id)).toContain('GLO-02');
   });
 
-  it('sur le dépôt réel, ne signale comme présents que la photo de couverture et la figure du plafond', () => {
+  it('sur le dépôt réel, ne signale comme présents que la photo de couverture, la figure du plafond et la lanterne de la bascule', () => {
     const etat = etatDesVisuels(SITE);
-    expect(etat.presents).toBe(2);
-    expect(etat.manquantsSocle).toHaveLength(64);
-    expect(resume(etat)).toMatch(/64 visuels « socle » manquants/);
+    expect(etat.presents).toBe(3);
+    expect(etat.manquantsSocle).toHaveLength(63);
+    expect(etat.manquantsSocle.map((v: { id: string }) => v.id)).not.toContain('GLO-03');
+    expect(resume(etat)).toMatch(/63 visuels « socle » manquants/);
   });
 
   afterAll(() => rmSync(racine, { recursive: true, force: true }));
@@ -195,7 +196,7 @@ describe('emplacements <Visuel> du site', () => {
 });
 
 describe('composant Visuel', () => {
-  it('affiche un cadre pointillé au bon ratio, avec l’identifiant et la consigne, quand le fichier manque', async () => {
+  it('affiche un cadre hachuré au bon ratio, avec l’identifiant et la consigne, quand le fichier manque', async () => {
     const conteneur = await AstroContainer.create();
     const html = await conteneur.renderToString(Visuel, { props: { id: 'ACC-03' } });
     expect(html).toContain('visuel--manquant');
