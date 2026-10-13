@@ -43,6 +43,7 @@ const fleche = href ? FLECHES[sorteDeLien(href)] : '';
   <span class="preuve-chiffree__valeur">
     {surligne ? <mark class="surligneur" data-source={provenance}>{valeur}</mark> : valeur}
   </span>
+  {' '}
   {
     href ? (
       <a class="preuve-chiffree__libelle" href={href}>{typo(libelle)}<span class="fleche" aria-hidden="true">{` ${fleche}`}</span></a>
@@ -50,7 +51,8 @@ const fleche = href ? FLECHES[sorteDeLien(href)] : '';
       <span class="preuve-chiffree__libelle">{typo(libelle)}</span>
     )
   }
-  <span class="preuve-chiffree__source">{provenance}</span>
+  {/* Une espace entre le libellé et la source : lus d’une traite, ils ne se collent pas. */}
+  {' '}<span class="preuve-chiffree__source">{provenance}</span>
 </Element>
 
 <style>
