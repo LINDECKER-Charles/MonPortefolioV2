@@ -37,6 +37,12 @@ des captures du 8 octobre : leur date est celle conservée dans
   `back/src/BloodborneRun.Api/Features/Changelog/Source/captures/full/2026-10-06-roster-after.webp`,
   étape `2026-10-06-character-roster` : le choix du personnage devient visible en place.
 
+- `bloodborne/ciel-lisible-avant.webp` et `bloodborne/ciel-lisible-apres.webp` : 780 × 1688,
+  **8 septembre 2026**. La Nuit de la chasse avant et après l’étape `2026-09-08-readable-sky`
+  (version 12) : les prochaines étapes passent en braise. Copies de
+  `back/src/BloodborneRun.Api/Features/Changelog/Source/captures/full/2026-09-08-readable-sky-before.webp`
+  et `2026-09-08-readable-sky.webp`, ajoutées le 13 octobre 2026.
+
 Les fichiers WebP ont été vérifiés et inspectés ; ils sont copiés sans retouche. Les chiffres
 de progression illustrent une partie et ne mesurent pas l’adoption du projet.
 

@@ -1,0 +1,182 @@
+---
+/**
+ * Essayer l’application : le web public et le web de test, l’APK Android de
+ * test et Google Play annoncé « À venir » (demandes de Charles du 09/10/2026,
+ * gardées le 13/10/2026). Placé juste avant « Comment je l’ai construit ».
+ * Chaque lien est une sortie mesurée (`lien-sortant`, emplacement `preuves`) ;
+ * aucun lien de magasin n’est inventé.
+ */
+import Visuel from '../../ui/Visuel.astro';
+import { LIENS } from '../../../config/bloodborne';
+import { attributsMesure, FLECHES } from '../../../lib/liens';
+
+const supports = [
+  {
+    id: 'web',
+    visuel: 'BLR-06',
+    titre: 'Application web',
+    detail: 'Sur ordinateur, tablette ou téléphone, dans le navigateur.',
+    liens: [
+      { href: LIENS.application, version: 'Version publique', action: 'Ouvrir l’application', principal: true },
+      { href: LIENS.webTest, version: 'Version de test', action: 'Essayer sur le web' },
+    ],
+  },
+  {
+    id: 'android',
+    visuel: 'BLR-07',
+    titre: 'Application Android',
+    detail: 'Une version de test à installer sur un téléphone Android.',
+    liens: [{ href: LIENS.apkTest, version: 'Version de test', action: 'Télécharger l’APK', principal: true }],
+  },
+];
+---
+
+<div class="blr-acces" data-blr-acces>
+  {
+    supports.map((support) => (
+      <article class="blr-acces__support" aria-labelledby={`acces-${support.id}`}>
+        <Visuel id={support.visuel} alt="" class="blr-acces__visuel" sizes="120px" />
+        <div class="blr-acces__contenu">
+          <h3 id={`acces-${support.id}`}>{support.titre}</h3>
+          <p class="blr-acces__detail">{support.detail}</p>
+          <ul class="blr-acces__liens">
+            {support.liens.map((lien) => (
+              <li>
+                <a class:list={['blr-acces__lien', { 'blr-acces__lien--principal': lien.principal }]} href={lien.href} rel="external" {...attributsMesure(lien.href, { emplacement: 'preuves' })}>
+                  <span class="blr-acces__version">{lien.version}</span>
+                  <span class="blr-acces__action">{lien.action}<span class="fleche" aria-hidden="true">&nbsp;{FLECHES.externe}</span></span>
+                </a>
+              </li>
+            ))}
+            {support.id === 'android' && (
+              <li class="blr-acces__magasin">
+                <span>Google Play</span>
+                <span class="blr-acces__bientot">À venir</span>
+              </li>
+            )}
+          </ul>
+        </div>
+      </article>
+    ))
+  }
+</div>
+
+<style>
+  .blr-acces {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s5);
+    margin-top: var(--s6);
+  }
+
+  .blr-acces__support {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: var(--s5);
+    align-items: start;
+    padding: clamp(20px, 2.4vw, 32px);
+    border: 1px solid var(--filet);
+    border-radius: var(--r2);
+    background: var(--surface);
+    box-shadow: var(--ombre-1);
+  }
+
+  .blr-acces__contenu {
+    min-width: 0;
+  }
+
+  .blr-acces__contenu h3 {
+    font-size: var(--t-xl);
+    line-height: 1.1;
+  }
+
+  .blr-acces__detail {
+    margin-top: var(--s2);
+    font-size: var(--t-s);
+    color: var(--eteint);
+  }
+
+  .blr-acces__liens {
+    display: grid;
+    margin: var(--s4) 0 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--filet);
+  }
+
+  .blr-acces__liens > li {
+    border-bottom: 1px solid var(--filet);
+  }
+
+  .blr-acces__lien {
+    display: grid;
+    gap: 2px;
+    padding-block: var(--s3);
+    min-height: 64px;
+    text-decoration: none;
+  }
+
+  .blr-acces__version {
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  .blr-acces__action {
+    font-size: var(--t-s);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+  }
+
+  .blr-acces__lien--principal .blr-acces__action {
+    font-size: var(--t-m);
+  }
+
+  .blr-acces__lien:hover .blr-acces__action {
+    text-decoration-thickness: 2px;
+  }
+
+  .blr-acces__magasin {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s2) var(--s4);
+    min-height: 64px;
+    font-size: var(--t-s);
+  }
+
+  .blr-acces__bientot {
+    font-family: var(--police-titre);
+    font-style: italic;
+    font-size: var(--t-l);
+    color: var(--eteint);
+  }
+
+  @media (max-width: 1100px) {
+    .blr-acces__support {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .blr-acces :global(.blr-acces__visuel) {
+      width: 120px;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .blr-acces {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s4);
+    }
+
+    .blr-acces__support {
+      grid-template-columns: 88px minmax(0, 1fr);
+      gap: var(--s4);
+    }
+
+    .blr-acces :global(.blr-acces__visuel) {
+      width: 88px;
+    }
+  }
+</style>

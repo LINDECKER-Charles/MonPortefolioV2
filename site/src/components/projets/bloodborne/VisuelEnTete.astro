@@ -1,0 +1,185 @@
+---
+/**
+ * Le visuel de l’en-tête de Bloodborne Legendary Run (slot « visuel » de
+ * EnTeteProjet) : la vue de Yharnam en fond, la carte des constellations sur
+ * ordinateur et, devant, le téléphone qui joue l’allumage d’une étoile.
+ *
+ * La vidéo est muette et se joue une fois à son arrivée dans l’écran, puis
+ * se rejoue d’un clic ou au clavier sur le téléphone
+ * (scripts/bloodborne-allumage.ts). En mouvement réduit, le poster reste :
+ * l’image prise au milieu de la cérémonie. Sans JavaScript, les commandes
+ * natives du lecteur restent. Sur mobile, seul le téléphone : la carte
+ * d’ordinateur y serait illisible.
+ */
+import { Picture } from 'astro:assets';
+import CadreCapture from '../../ui/CadreCapture.astro';
+import parcours from '../../../assets/projets/bloodborne/parcours-desktop.webp';
+import yharnam from '../../../assets/projets/bloodborne/yharnam.webp';
+---
+
+<div class="blr-tete">
+  <figure class="blr-tete__scene">
+    <div class="blr-tete__fond" aria-hidden="true">
+      <Picture src={yharnam} formats={['avif']} fallbackFormat="webp" widths={[640, 1100]} sizes="(max-width: 1100px) 100vw, 560px" alt="" loading="eager" />
+    </div>
+    <CadreCapture
+      class="blr-tete__bureau"
+      type="navigateur"
+      adresse="bloodborne-legendary-run.com/fr/sky"
+      src={parcours}
+      alt="La carte des constellations sur ordinateur : la progression du personnage Gehrman et la constellation à reprendre, l’Arsenal de Yharnam."
+      widths={[640, 1100]}
+      sizes="(max-width: 860px) 1px, 420px"
+      loading="eager"
+      agrandir
+    />
+    <div class="blr-tete__telephone">
+      <CadreCapture type="telephone">
+        <video
+          slot="media"
+          data-blr-allumage
+          controls
+          muted
+          playsinline
+          preload="none"
+          poster="/demos/bloodborne/boss-poster.webp"
+          width="390"
+          height="844"
+          aria-label="L’allumage d’une étoile dans l’application"
+          aria-describedby="blr-allumage-description"
+        >
+          <source src="/demos/bloodborne/boss.webm" type="video/webm" />
+          <source src="/demos/bloodborne/boss.mp4" type="video/mp4" />
+        </video>
+      </CadreCapture>
+      <button class="blr-tete__rejouer" type="button" data-blr-rejouer data-js-seulement aria-label="Rejouer l’allumage de l’étoile"></button>
+    </div>
+    <figcaption class="blr-tete__legende">
+      Un boss vaincu&nbsp;: l’étoile s’allume. Derrière, la carte des constellations sur ordinateur.
+    </figcaption>
+  </figure>
+  <p class="sr" id="blr-allumage-description">Un appui maintenu éveille l’étoile du Monstre clérical. Une proclamation annonce la victoire, puis la carte retrouve l’étoile allumée.</p>
+</div>
+
+<script>
+  import { brancherAllumage } from '../../../scripts/bloodborne-allumage';
+  brancherAllumage();
+</script>
+
+<style>
+  .blr-tete {
+    margin: 0;
+  }
+
+  .blr-tete__scene {
+    position: relative;
+    margin: 0;
+    isolation: isolate;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: var(--r2);
+    background: var(--cadre);
+  }
+
+  .blr-tete__fond {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .blr-tete__fond :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 55% 40%;
+  }
+
+  /* La vue de Yharnam reste un décor : assombrie, elle laisse la lumière aux écrans. */
+  .blr-tete__fond::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(175deg, color-mix(in srgb, var(--suie) 12%, transparent), color-mix(in srgb, var(--suie) 55%, transparent) 45%, color-mix(in srgb, var(--suie) 92%, transparent) 82%);
+  }
+
+  .blr-tete :global(.blr-tete__bureau) {
+    position: absolute;
+    top: 8%;
+    left: 5%;
+    width: 70%;
+  }
+
+  .blr-tete__telephone {
+    position: absolute;
+    right: 5%;
+    bottom: 5%;
+    width: 30%;
+  }
+
+  .blr-tete__telephone :global(.capture::before) {
+    opacity: 1;
+  }
+
+  .blr-tete__telephone :global(video) {
+    aspect-ratio: 390 / 844;
+    background: var(--cadre);
+  }
+
+  .blr-tete__rejouer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: 26px;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .blr-tete__rejouer:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 4px;
+  }
+
+  /* La légende, dans le noir de la scène, sous la carte d’ordinateur. */
+  .blr-tete__legende {
+    position: absolute;
+    left: 5%;
+    bottom: 5%;
+    width: 56%;
+    font-size: var(--t-xs);
+    line-height: 1.5;
+    color: var(--lune);
+  }
+
+  /* Sous 860 px : le téléphone seul, centré sur la vue de Yharnam. */
+  @media (max-width: 860px) {
+    .blr-tete__scene {
+      aspect-ratio: auto;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--s4);
+      padding: var(--s5) var(--s4);
+    }
+
+    .blr-tete__legende {
+      position: static;
+      width: auto;
+      max-width: 22rem;
+      text-align: center;
+    }
+
+    .blr-tete :global(.blr-tete__bureau) {
+      display: none;
+    }
+
+    .blr-tete__telephone {
+      position: relative;
+      right: auto;
+      bottom: auto;
+      width: min(52%, 200px);
+    }
+  }
+</style>
