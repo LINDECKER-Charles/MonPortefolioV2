@@ -2357,7 +2357,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     pose: ['components/projets/bloodborne/Acces.astro'],
     alt: '',
     fichier: 'src/assets/visuels/bloodborne/BLR-06.svg',
-    note: 'Livré le 13 octobre 2026 : dessin vectoriel écrit à la main, inséré par <Visuel> en image ; seul, il suit le color-scheme de son conteneur (svg:root et prefers-color-scheme). Pendant de BLR-07 : même angle, même trait, même lanterne. Décoratif : le titre de la carte dit « Application web ».',
+    note: 'Livré le 13 octobre 2026 : dessin vectoriel écrit à la main, inséré en ligne par <Visuel> : sa feuille de style interne, bornée à la classe v-blr, ne lit que les jetons du site, jour et nuit ; seul, il prend les valeurs recopiées sur svg:root. Pendant de BLR-07 : même angle, même trait, même lanterne. Décoratif : le titre de la carte dit « Application web ».',
   },
   {
     id: 'BLR-07',
@@ -2373,7 +2373,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     pose: ['components/projets/bloodborne/Acces.astro'],
     alt: '',
     fichier: 'src/assets/visuels/bloodborne/BLR-07.svg',
-    note: 'Livré le 13 octobre 2026 : dessin vectoriel écrit à la main, inséré par <Visuel> en image ; seul, il suit le color-scheme de son conteneur (svg:root et prefers-color-scheme). Pendant de BLR-06. Décoratif : le titre de la carte dit « Application Android ».',
+    note: 'Livré le 13 octobre 2026 : dessin vectoriel écrit à la main, inséré en ligne par <Visuel> : sa feuille de style interne, bornée à la classe v-blr, ne lit que les jetons du site, jour et nuit ; seul, il prend les valeurs recopiées sur svg:root. Pendant de BLR-06. Décoratif : le titre de la carte dit « Application Android ».',
   },
   {
     id: 'BLR-08',
@@ -2389,7 +2389,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     pose: ['components/projets/bloodborne/Fabrication.astro'],
     alt: '',
     fichier: 'src/assets/visuels/bloodborne/BLR-08.svg',
-    note: 'Livré le 13 octobre 2026 : dessin vectoriel écrit à la main, inséré par <Visuel> en image ; seul, il suit le color-scheme de son conteneur (svg:root et prefers-color-scheme). Série de trois (BLR-08 à BLR-10) dans les cartes cliquables des couches : même cadrage horizontal, même ligne de sol, même lanterne. Sous 860 px, la carte l’affiche à 96 px de large : le sujet doit se lire en petit.',
+    note: 'Livré le 13 octobre 2026 : dessin vectoriel écrit à la main, inséré en ligne par <Visuel> : sa feuille de style interne, bornée à la classe v-blr, ne lit que les jetons du site, jour et nuit ; seul, il prend les valeurs recopiées sur svg:root. Série de trois (BLR-08 à BLR-10) dans les cartes cliquables des couches : même cadrage horizontal, même ligne de sol, même lanterne. Sous 860 px, la carte l’affiche à 96 px de large : le sujet doit se lire en petit.',
   },
   {
     id: 'BLR-09',
@@ -2405,7 +2405,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     pose: ['components/projets/bloodborne/Fabrication.astro'],
     alt: '',
     fichier: 'src/assets/visuels/bloodborne/BLR-09.svg',
-    note: 'Livré le 13 octobre 2026 : dessin vectoriel écrit à la main, inséré par <Visuel> en image ; seul, il suit le color-scheme de son conteneur (svg:root et prefers-color-scheme). Série BLR-08 à BLR-10. Décoratif : la carte dit « L’API » et sa fonction.',
+    note: 'Livré le 13 octobre 2026 : dessin vectoriel écrit à la main, inséré en ligne par <Visuel> : sa feuille de style interne, bornée à la classe v-blr, ne lit que les jetons du site, jour et nuit ; seul, il prend les valeurs recopiées sur svg:root. Série BLR-08 à BLR-10. Décoratif : la carte dit « L’API » et sa fonction.',
   },
   {
     id: 'BLR-10',
@@ -2421,7 +2421,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     pose: ['components/projets/bloodborne/Fabrication.astro'],
     alt: '',
     fichier: 'src/assets/visuels/bloodborne/BLR-10.svg',
-    note: 'Livré le 13 octobre 2026 : dessin vectoriel écrit à la main, inséré par <Visuel> en image ; seul, il suit le color-scheme de son conteneur (svg:root et prefers-color-scheme). Série BLR-08 à BLR-10. Décoratif : la carte dit « La sauvegarde » et sa fonction.',
+    note: 'Livré le 13 octobre 2026 : dessin vectoriel écrit à la main, inséré en ligne par <Visuel> : sa feuille de style interne, bornée à la classe v-blr, ne lit que les jetons du site, jour et nuit ; seul, il prend les valeurs recopiées sur svg:root. Série BLR-08 à BLR-10. Décoratif : la carte dit « La sauvegarde » et sa fonction.',
   },
   {
     id: 'BLR-F1',

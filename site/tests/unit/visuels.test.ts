@@ -432,6 +432,19 @@ describe('composant Visuel', () => {
     expect(html).not.toContain('<img');
   });
 
+  it('garde la classe d’un dessin à feuille de style interne, bornée à cette classe et aux jetons', async () => {
+    const conteneur = await AstroContainer.create();
+    const html = await conteneur.renderToString(Visuel, { props: { id: 'BLR-06' } });
+    expect(html).toMatch(/<svg\b[^>]*class="v-blr"[^>]*aria-hidden="true"/);
+    const style = html.match(/<style>([\s\S]*?)<\/style>/)?.[1] ?? '';
+    expect(style).toContain('.v-blr .t{');
+    // Hors des valeurs de repli de svg:root (fichier ouvert seul), chaque règle est bornée à .v-blr et ne lit que des jetons.
+    for (const regle of style.replace(/@media[^{]*\{\s*svg:root\{[^}]*\}\s*\}/g, '').replace(/svg:root\{[^}]*\}/g, '').match(/[^{}]+\{[^}]*\}/g) ?? []) {
+      expect(regle.trim(), regle).toMatch(/^\.v-blr /);
+      expect(regle, regle).not.toMatch(/#[0-9a-f]{3,6}\b/i);
+    }
+  });
+
   it('refuse un identifiant absent du registre', async () => {
     const conteneur = await AstroContainer.create();
     await expect(conteneur.renderToString(Visuel, { props: { id: 'XXX-99' } })).rejects.toThrow(/XXX-99/);

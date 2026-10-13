@@ -34,6 +34,8 @@ export function svgEnLigne(brut: string, { alt, classe }: { alt: string; classe?
   if (!ouverture) throw new Error('Dessin SVG sans balise <svg>');
   const viewBox = /\sviewBox="([^"]+)"/.exec(ouverture)?.[1];
   const garder = [...ouverture.matchAll(/\s(fill|stroke|stroke-width|stroke-linecap|stroke-linejoin)="([^"]*)"/g)].map(([, cle, valeur]) => ` ${cle}="${valeur}"`).join('');
+  // La classe du fichier (`v-blr`…) porte sa feuille de style interne : elle reste, avec celle de la page.
+  const classes = [/\sclass="([^"]*)"/.exec(ouverture)?.[1], classe].filter(Boolean).join(' ');
   const nom = alt ? ` role="img" aria-label="${echapper(alt)}"` : ' aria-hidden="true"';
   const corps = brut
     .slice(brut.indexOf(ouverture) + ouverture.length, brut.lastIndexOf('</svg>'))
@@ -42,5 +44,5 @@ export function svgEnLigne(brut: string, { alt, classe }: { alt: string; classe?
     .replace(/url\(#([^)]+)\)/g, `url(#${prefixe}$1)`)
     .replace(/(\s(?:xlink:)?href)="#([^"]+)"/g, `$1="#${prefixe}$2"`)
     .trim();
-  return `<svg xmlns="http://www.w3.org/2000/svg"${viewBox ? ` viewBox="${viewBox}"` : ''}${garder}${classe ? ` class="${classe}"` : ''}${nom} focusable="false">${corps}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg"${viewBox ? ` viewBox="${viewBox}"` : ''}${garder}${classes ? ` class="${classes}"` : ''}${nom} focusable="false">${corps}</svg>`;
 }

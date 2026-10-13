@@ -12,10 +12,11 @@ Chaque fichier livré prend une ligne : le prompt exact d’une image générée
 
 Les cinq dessins partagent la lanterne de la bascule jour / nuit (GLO-03, grille de 24), le sol
 au filet et ses hachures, les hachures de gravure à l’ombre et l’étoile à quatre branches.
-Affichés en `<img>` par `<Visuel>`, ils ne lisent pas les jetons du site : leurs couleurs sont
-celles des jetons, recopiées dans leur feuille de style interne, et la nuit passe par
-`prefers-color-scheme`, qui suit le `color-scheme` de la page (le thème choisi et les actes
-sombres), pas seulement celui du système. Aucun texte, aucune marque, aucun visuel du jeu.
+`<Visuel>` les insère en ligne : leur feuille de style interne, bornée à la classe `v-blr` du
+fichier, ne lit que les jetons du site (`currentColor` pour le trait, `--trait`, `--filet`,
+`--surface`, `--laiton`, `--lanterne`), qui suivent le thème choisi et les actes sombres. Ouverts
+seuls, ils prennent les valeurs de jour recopiées sur `svg:root`, et celles de nuit par
+`prefers-color-scheme`. Aucun texte, aucune marque, aucun visuel du jeu.
 
 Les images à générer de la série (BLR-01, BLR-03 à BLR-05) se déposent ici sous leur nom
 attendu (`config/visuels.ts`) ; consigner le prompt, la date et la provenance dans ce tableau.

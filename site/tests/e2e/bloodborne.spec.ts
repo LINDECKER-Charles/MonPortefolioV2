@@ -315,7 +315,11 @@ test('les accès : web public et de test, APK de test, Google Play à venir', as
   await expect(acces.locator('[data-visuel]')).toHaveCount(2);
   // BLR-06 et BLR-07 sont dessinés : plus de cadre hachuré.
   await expect(acces.locator('[data-visuel][data-manquant]')).toHaveCount(0);
-  await expect(acces.locator('[data-visuel="BLR-06"] img')).toHaveAttribute('alt', '');
+  // Inséré en ligne, décoratif, et recoloré par les jetons du site (trait à la couleur du texte).
+  const dessin = acces.locator('[data-visuel="BLR-06"] > svg.v-blr');
+  await expect(dessin).toHaveAttribute('aria-hidden', 'true');
+  const [trait, texte] = await dessin.evaluate((svg) => [getComputedStyle(svg.querySelector('.t')!).stroke, getComputedStyle(svg).color]);
+  expect(trait).toBe(texte);
 });
 
 test('les couches de l’application s’explorent au clavier, puis la livraison', async ({ page }) => {

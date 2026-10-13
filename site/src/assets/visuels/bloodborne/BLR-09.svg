@@ -1,25 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 220" width="440" height="220">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 220" width="440" height="220" class="v-blr">
   <title>Une réussite qui passe par le serveur</title>
   <style>
-    .t{fill:none;stroke:#141312;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-    .f{stroke-width:1}
-    .h{fill:none;stroke:#7b7368;stroke-width:.7;stroke-linecap:round}
-    .a{fill:#e3ded4}
-    .v{fill:#fbfaf7}
-    .halo{fill:#f0b24a;opacity:.24}
-    .rayon{fill:none;stroke:#c98a25;stroke-width:.9;stroke-linecap:round;stroke-dasharray:.1 3.2}
-    .on{fill:#f0b24a;stroke:#9a6614;stroke-width:1;stroke-linejoin:round}
-    .flamme{fill:#f0b24a;stroke:#9a6614;stroke-width:.6;stroke-linejoin:round}
-    @media (prefers-color-scheme:dark){
-      .t{stroke:#e4e7ee}
-      .h{stroke:#687083}
-      .a{fill:#262b37}
-      .v{fill:#12151c}
-      .halo{opacity:.2}
-      .rayon{stroke:#f0b24a}
-      .on{stroke:#f6c670}
-      .flamme{stroke:#f6c670}
-    }
+    svg:root{color:#141312;--trait:#7b7368;--filet:#d2ccc1;--surface:#fbfaf7;--laiton:#7a4f10;--lanterne:#f0b24a}
+    @media (prefers-color-scheme:dark){svg:root{color:#e4e7ee;--trait:#687083;--filet:#262b37;--surface:#1a1e29;--laiton:#f0b24a}}
+    .v-blr .t{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+    .v-blr .f{stroke-width:1}
+    .v-blr .h{fill:none;stroke:var(--trait);stroke-width:.7;stroke-linecap:round}
+    .v-blr .a{fill:var(--filet)}
+    .v-blr .v{fill:var(--surface)}
+    .v-blr .halo{fill:var(--lanterne);opacity:.22}
+    .v-blr .rayon{fill:none;stroke:color-mix(in srgb,var(--lanterne) 70%,var(--laiton));stroke-width:.9;stroke-linecap:round;stroke-dasharray:.1 3.2}
+    .v-blr .on{fill:var(--lanterne);stroke:var(--laiton);stroke-width:1;stroke-linejoin:round}
+    .v-blr .flamme{fill:var(--lanterne);stroke:var(--laiton);stroke-width:.6;stroke-linejoin:round}
   </style>
   <g transform="scale(2)">
   <path class="t f" d="M12 100H208"/>

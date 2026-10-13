@@ -2464,7 +2464,7 @@ Fiches pour mémoire : rien à produire.
 - **Format** : 1:1, viewBox 120 (affiché de 88 à 120 px)
 - **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-06.svg`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
-- **Note** : Livré le 13 octobre 2026 : dessin vectoriel écrit à la main, inséré par <Visuel> en image ; seul, il suit le color-scheme de son conteneur (svg:root et prefers-color-scheme). Pendant de BLR-07 : même angle, même trait, même lanterne. Décoratif : le titre de la carte dit « Application web ».
+- **Note** : Livré le 13 octobre 2026 : dessin vectoriel écrit à la main, inséré en ligne par <Visuel> : sa feuille de style interne, bornée à la classe v-blr, ne lit que les jetons du site, jour et nuit ; seul, il prend les valeurs recopiées sur svg:root. Pendant de BLR-07 : même angle, même trait, même lanterne. Décoratif : le titre de la carte dit « Application web ».
 
 #### BLR-07 · Le ciel dans un téléphone
 
@@ -2477,7 +2477,7 @@ Fiches pour mémoire : rien à produire.
 - **Format** : 1:1, viewBox 120 (affiché de 88 à 120 px)
 - **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-07.svg`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
-- **Note** : Livré le 13 octobre 2026 : dessin vectoriel écrit à la main, inséré par <Visuel> en image ; seul, il suit le color-scheme de son conteneur (svg:root et prefers-color-scheme). Pendant de BLR-06. Décoratif : le titre de la carte dit « Application Android ».
+- **Note** : Livré le 13 octobre 2026 : dessin vectoriel écrit à la main, inséré en ligne par <Visuel> : sa feuille de style interne, bornée à la classe v-blr, ne lit que les jetons du site, jour et nuit ; seul, il prend les valeurs recopiées sur svg:root. Pendant de BLR-06. Décoratif : le titre de la carte dit « Application Android ».
 
 #### BLR-08 · Le même ciel, deux écrans
 
@@ -2490,7 +2490,7 @@ Fiches pour mémoire : rien à produire.
 - **Format** : 2:1, viewBox 440 × 220 (affiché de 96 à 300 px)
 - **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-08.svg`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
-- **Note** : Livré le 13 octobre 2026 : dessin vectoriel écrit à la main, inséré par <Visuel> en image ; seul, il suit le color-scheme de son conteneur (svg:root et prefers-color-scheme). Série de trois (BLR-08 à BLR-10) dans les cartes cliquables des couches : même cadrage horizontal, même ligne de sol, même lanterne. Sous 860 px, la carte l’affiche à 96 px de large : le sujet doit se lire en petit.
+- **Note** : Livré le 13 octobre 2026 : dessin vectoriel écrit à la main, inséré en ligne par <Visuel> : sa feuille de style interne, bornée à la classe v-blr, ne lit que les jetons du site, jour et nuit ; seul, il prend les valeurs recopiées sur svg:root. Série de trois (BLR-08 à BLR-10) dans les cartes cliquables des couches : même cadrage horizontal, même ligne de sol, même lanterne. Sous 860 px, la carte l’affiche à 96 px de large : le sujet doit se lire en petit.
 
 #### BLR-09 · Une réussite qui passe par le serveur
 
@@ -2503,7 +2503,7 @@ Fiches pour mémoire : rien à produire.
 - **Format** : 2:1, viewBox 440 × 220 (affiché de 96 à 300 px)
 - **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-09.svg`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
-- **Note** : Livré le 13 octobre 2026 : dessin vectoriel écrit à la main, inséré par <Visuel> en image ; seul, il suit le color-scheme de son conteneur (svg:root et prefers-color-scheme). Série BLR-08 à BLR-10. Décoratif : la carte dit « L’API » et sa fonction.
+- **Note** : Livré le 13 octobre 2026 : dessin vectoriel écrit à la main, inséré en ligne par <Visuel> : sa feuille de style interne, bornée à la classe v-blr, ne lit que les jetons du site, jour et nuit ; seul, il prend les valeurs recopiées sur svg:root. Série BLR-08 à BLR-10. Décoratif : la carte dit « L’API » et sa fonction.
 
 #### BLR-10 · La partie gardée
 
@@ -2516,7 +2516,7 @@ Fiches pour mémoire : rien à produire.
 - **Format** : 2:1, viewBox 440 × 220 (affiché de 96 à 300 px)
 - **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-10.svg`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
-- **Note** : Livré le 13 octobre 2026 : dessin vectoriel écrit à la main, inséré par <Visuel> en image ; seul, il suit le color-scheme de son conteneur (svg:root et prefers-color-scheme). Série BLR-08 à BLR-10. Décoratif : la carte dit « La sauvegarde » et sa fonction.
+- **Note** : Livré le 13 octobre 2026 : dessin vectoriel écrit à la main, inséré en ligne par <Visuel> : sa feuille de style interne, bornée à la classe v-blr, ne lit que les jetons du site, jour et nuit ; seul, il prend les valeurs recopiées sur svg:root. Série BLR-08 à BLR-10. Décoratif : la carte dit « La sauvegarde » et sa fonction.
 
 #### BLR-F1 · Les 22 galaxies réelles
 
