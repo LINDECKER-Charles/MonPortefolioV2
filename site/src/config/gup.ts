@@ -161,7 +161,7 @@ export interface Etape {
    * `x`/`y` : centre du détail dans l’image ; `zoom` : 1 / part de la largeur
    * de l’image montrée.
    */
-  loupe: { x: number; y: number; zoom: number; largeur: number; ratio: string; coin: 'bas-droite' | 'bas-gauche' | 'haut-droite' | 'haut-gauche' };
+  loupe: { x: number; y: number; zoom: number; largeur: number; ratio: string; coin: 'bas-droite' | 'bas-gauche' | 'haut-droite' | 'haut-gauche'; dessous?: boolean };
 }
 
 export const ETAPES: readonly Etape[] = [
@@ -174,7 +174,7 @@ export const ETAPES: readonly Etape[] = [
     alt: 'L’analyse en cours dans gup : neuf sources sur quatorze ont répondu ; Scoop a échoué, les autres annoncent leurs mises à jour.',
     legende: 'Scoop échoue ; les treize autres sources continuent.',
     cible: { x: 31.3, y: 28.8 },
-    loupe: { x: 79, y: 33.8, zoom: 2.7, largeur: 60, ratio: '4 / 1', coin: 'bas-droite' },
+    loupe: { x: 79, y: 33.8, zoom: 2.7, largeur: 60, ratio: '4 / 1', coin: 'bas-droite', dessous: true },
   },
   {
     id: 'choisir',
@@ -185,7 +185,7 @@ export const ETAPES: readonly Etape[] = [
     alt: 'La confirmation avant la mise à jour : six paquets cochés, dont un qui demande les droits administrateur, avec une seule invite en fin de lot.',
     legende: 'Une seule demande de droits administrateur, en fin de lot.',
     cible: { x: 15.6, y: 61.1 },
-    loupe: { x: 37, y: 62.8, zoom: 2.17, largeur: 60, ratio: '6 / 1', coin: 'bas-droite' },
+    loupe: { x: 37, y: 62.8, zoom: 2.17, largeur: 60, ratio: '6 / 1', coin: 'bas-droite', dessous: true },
   },
   {
     id: 'mettre-a-jour',
@@ -196,7 +196,7 @@ export const ETAPES: readonly Etape[] = [
     alt: 'La mise à jour en cours : trois paquets faits, PowerToys en téléchargement dans le terminal intégré, deux paquets en attente dont un réservé à l’étape administrateur.',
     legende: 'PowerToys se télécharge dans le terminal intégré.',
     cible: { x: 11.5, y: 54.1 },
-    loupe: { x: 25.75, y: 48.4, zoom: 2.15, largeur: 60, ratio: '5 / 1', coin: 'bas-droite' },
+    loupe: { x: 25.75, y: 48.4, zoom: 2.15, largeur: 60, ratio: '5 / 1', coin: 'bas-droite', dessous: true },
   },
   {
     id: 'trace',
@@ -207,7 +207,7 @@ export const ETAPES: readonly Etape[] = [
     alt: 'Le journal de gup sur douze mois d’exemple : mises à jour réussies, échecs, scans, et une carte des mises à jour par jour.',
     legende: 'Douze mois d’activité, échecs compris.',
     cible: { x: 25, y: 16.9 },
-    loupe: { x: 48.5, y: 17.2, zoom: 2, largeur: 60, ratio: '7 / 1', coin: 'bas-droite' },
+    loupe: { x: 48.5, y: 17.2, zoom: 2, largeur: 60, ratio: '7 / 1', coin: 'bas-droite', dessous: true },
   },
 ];
 

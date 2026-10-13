@@ -141,14 +141,6 @@ const alt = typo(altBrut);
     min-width: 0;
   }
 
-  /* Correctif local (demande partagée) : la règle de recadrage de CadreCapture
-     (.capture--recadree .capture__vue img : hauteur 100 %, object-fit cover)
-     atteint aussi l’image de la loupe de CaptureAnnotee et la déforme. */
-  .capture-league :global(.capture--recadree .capture__vue .loupe > img) {
-    height: auto;
-    object-fit: fill;
-  }
-
   .capture-league--double :global(.capture-league__mobile) {
     display: none;
   }

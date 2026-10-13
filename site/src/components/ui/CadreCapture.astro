@@ -16,17 +16,31 @@
  *
  * `ratio` recadre la vue (object-fit: cover, `position` en object-position) ;
  * sans lui, la capture est montrée entière ; `ratioMobile` recadre sous
- * 860 px seulement. `agrandir` fait de l’image un
+ * 860 px seulement. `region` recadre sur les deux axes à la fois, en
+ * pourcentages de l’image (x, y : coin haut-gauche ; l, h : largeur et
+ * hauteur), pour montrer un seul volet d’un écran ; le ratio s’en déduit
+ * (`regionMobile` sous 860 px). Le recadrage ne touche que la capture, jamais
+ * ce qui la survole (loupe de CaptureAnnotee). `agrandir` fait de l’image un
  * lien vers sa version pleine taille, ouverte dans la visionneuse de la page
  * (<Visionneuse />, à poser une fois) ; sans JavaScript, le lien ouvre
  * l’image. Le slot par défaut se superpose à la vue (cibles, loupe :
  * CaptureAnnotee) ; le slot « legende » remplace la légende texte ; le slot
  * « media » remplace l’image (vidéo).
+ *
+ *   <CadreCapture type="terminal" src={ecran} alt="…" region={{ x: 27, y: 11.3, l: 71, h: 83.7 }} agrandir />
  */
 import type { ImageMetadata } from 'astro';
 import { getImage, Picture } from 'astro:assets';
 import Picto from './Picto.astro';
 import { typo } from '../../lib/typo';
+
+/** Une région de l’image, en pourcentages de sa largeur et de sa hauteur. */
+export interface Region {
+  x: number;
+  y: number;
+  l: number;
+  h: number;
+}
 
 interface Props {
   type?: 'navigateur' | 'telephone' | 'terminal';
@@ -40,12 +54,18 @@ interface Props {
   ratio?: string;
   /** Recadrage sous 860 px, s’il diffère (« 5 / 7 » pour un téléphone coupé). */
   ratioMobile?: string;
+  /** Recadrage sur les deux axes (le ratio s’en déduit). */
+  region?: Region;
+  /** Recadrage sur les deux axes sous 860 px. */
+  regionMobile?: Region;
   position?: string;
   widths?: number[];
   sizes?: string;
   loading?: 'lazy' | 'eager';
   agrandir?: boolean;
   class?: string;
+  /** Variables CSS posées sur la figure (`--nom:valeur;…`), pour un composant qui l’enveloppe. */
+  style?: string;
 }
 
 const {
@@ -54,23 +74,38 @@ const {
   src,
   alt = '',
   legende,
-  ratio,
-  ratioMobile,
+  ratio: ratioDonne,
+  ratioMobile: ratioMobileDonne,
+  region,
+  regionMobile,
   position = '50% 0',
   widths,
   sizes = '(max-width: 860px) 100vw, 50vw',
   loading = 'lazy',
   agrandir = false,
   class: classe,
+  style: styleFigure,
 } = Astro.props;
+
+/** Ratio de la vue qui montre exactement la région. */
+const ratioDe = (r: Region | undefined) => (r && src ? `${Math.round(r.l * src.width)} / ${Math.round(r.h * src.height)}` : undefined);
+const varsRegion = (r: Region | undefined, suffixe: string) =>
+  r ? [`--rx${suffixe}:${r.x}`, `--ry${suffixe}:${r.y}`, `--rl${suffixe}:${r.l}`, `--rh${suffixe}:${r.h}`] : [];
+const ratio = ratioDonne ?? ratioDe(region);
+const ratioMobile = ratioMobileDonne ?? ratioDe(regionMobile);
 
 const largeurs = src ? widths ?? [...new Set([Math.min(640, src.width), Math.min(1280, src.width)])] : [];
 const pleineTaille = src && agrandir ? await getImage({ src, format: 'webp', width: Math.min(src.width, 2400) }) : undefined;
-const style = [ratio && `--ratio:${ratio}`, ratioMobile && `--ratio-mobile:${ratioMobile}`, `--position:${position}`].filter(Boolean).join(';');
+const style = [ratio && `--ratio:${ratio}`, ratioMobile && `--ratio-mobile:${ratioMobile}`, `--position:${position}`, ...varsRegion(region, ''), ...varsRegion(regionMobile ?? region, '-m')]
+  .filter(Boolean)
+  .join(';');
 const aLegende = Boolean(legende) || Astro.slots.has('legende');
 ---
 
-<figure class:list={['capture', `capture--${type}`, { 'capture--recadree': ratio, 'capture--recadree-mobile': ratioMobile }, classe]}>
+<figure
+  class:list={['capture', `capture--${type}`, { 'capture--recadree': ratio, 'capture--recadree-mobile': ratioMobile, 'capture--region': region || regionMobile }, classe]}
+  style={styleFigure}
+>
   <div class="capture__cadre">
     {type === 'navigateur' && (
       <div class="capture__barre" aria-hidden="true">
@@ -181,18 +216,30 @@ const aLegende = Boolean(legende) || Astro.slots.has('legende');
     display: contents;
   }
 
-  .capture__vue :global(img),
-  .capture__vue :global(video) {
+  /* La capture elle-même (image ou vidéo), jamais ce qui la survole. */
+  .capture__vue :global(picture img),
+  .capture__vue > :global(video) {
     display: block;
     width: 100%;
     height: auto;
   }
 
-  .capture--recadree .capture__vue :global(img),
-  .capture--recadree .capture__vue :global(video) {
+  .capture--recadree .capture__vue :global(picture img),
+  .capture--recadree .capture__vue > :global(video) {
     height: 100%;
     object-fit: cover;
     object-position: var(--position);
+  }
+
+  /* Recadrage sur les deux axes : l’image déborde la vue de chaque côté. */
+  .capture--region .capture__vue :global(picture img) {
+    position: absolute;
+    left: calc(-100% * var(--rx) / var(--rl));
+    top: calc(-100% * var(--ry) / var(--rh));
+    width: calc(100% * 100 / var(--rl));
+    max-width: none;
+    height: calc(100% * 100 / var(--rh));
+    object-fit: fill;
   }
 
   @media (max-width: 860px) {
@@ -201,11 +248,32 @@ const aLegende = Boolean(legende) || Astro.slots.has('legende');
       overflow: hidden;
     }
 
-    .capture--recadree-mobile .capture__vue :global(img),
-    .capture--recadree-mobile .capture__vue :global(video) {
+    .capture--recadree-mobile .capture__vue :global(picture img),
+    .capture--recadree-mobile .capture__vue > :global(video) {
       height: 100%;
       object-fit: cover;
       object-position: var(--position);
+    }
+
+    .capture--region .capture__vue :global(picture img) {
+      left: calc(-100% * var(--rx-m) / var(--rl-m));
+      top: calc(-100% * var(--ry-m) / var(--rh-m));
+      width: calc(100% * 100 / var(--rl-m));
+      height: calc(100% * 100 / var(--rh-m));
+      object-fit: fill;
+    }
+  }
+
+  /* Sous 560 px, la loupe de CaptureAnnotee peut sortir de la vue et se poser
+     dessous, en pleine largeur (`--loupe-h` : sa hauteur, en % de la largeur). */
+  @media (max-width: 560px) {
+    .capture--loupe-dessous .capture__cadre,
+    .capture--loupe-dessous .capture__vue {
+      overflow: visible;
+    }
+
+    .capture--loupe-dessous .capture__vue {
+      margin-bottom: calc(var(--loupe-h) + var(--s5));
     }
   }
 

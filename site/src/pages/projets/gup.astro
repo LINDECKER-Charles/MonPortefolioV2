@@ -39,11 +39,6 @@ const titre = `gup, une commande pour toute sa machine — ${SITE.nom}`;
 const description = 'gup met à jour en une commande tout ce qu’un poste de développeur a installé : 153 sources, Windows, macOS et Linux. Un outil open source publié sur npm.';
 const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(href, { emplacement: 'preuves' }) });
 
-/** Hauteur de la loupe en % de sa largeur (« 3 / 1 » → 33,3 %), pour la poser sous la capture. */
-const hauteurLoupe = (ratio: string) => {
-  const [largeur, hauteur] = ratio.split('/').map(Number);
-  return `${((hauteur / largeur) * 100).toFixed(2)}%`;
-};
 
 const captures = import.meta.glob<ImageMetadata>('../../assets/projets/gup/*.webp', { eager: true, import: 'default' });
 const capture = (nom: string) => {
@@ -62,8 +57,8 @@ const capture = (nom: string) => {
       alt="gup en français : douze paquets à mettre à jour, classés par source, dont cinq cochés ; l’analyse de Scoop a échoué sans bloquer les autres."
       legende="La vraie interface, sur la machine d’exemple du dépôt. Un clic l’affiche en entier."
       class="gup-entete-capture"
-      ratio="1730 / 1321"
-      ratioMobile="4 / 5"
+      region={{ x: 27, y: 11.3, l: 71, h: 83.7 }}
+      regionMobile={{ x: 29.7, y: 11.3, l: 43.6, h: 84.1 }}
       sizes="(max-width: 860px) 225vw, (max-width: 1100px) 141vw, 780px"
       widths={[800, 1200, 1600, 2436]}
       loading="eager"
@@ -85,7 +80,7 @@ const capture = (nom: string) => {
       <ol class="gup-etapes">
         {
           ETAPES.map((etape, index) => (
-            <li class="gup-etape" id={`etape-${etape.id}`} style={`--gup-loupe-h:${hauteurLoupe(etape.loupe.ratio)}`}>
+            <li class="gup-etape" id={`etape-${etape.id}`}>
               <div class="gup-etape__texte">
                 <span class="gup-etape__rang" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
                 <h3>{etape.titre}</h3>
@@ -232,37 +227,6 @@ const capture = (nom: string) => {
 
   :global(.gup-dispersion) {
     margin-top: var(--s5);
-  }
-
-  /* La loupe agrandit l’écran entier : le recadrage de la capture ne doit pas
-     la toucher (CadreCapture applique height: 100% à toute image de la vue). */
-  .gup-etape :global(.loupe > img) {
-    height: auto !important;
-    object-fit: fill !important;
-  }
-
-  /* L’en-tête montre le volet « Paquets », lisible : la vue recadre la
-     capture sur x 27–98 %, y 11,3–95 % (sous 860 px, 4:5 sur x 29,7–73,3 %,
-     y 11,3–95,4 %). La visionneuse garde l’écran entier. Le sélecteur nomme
-     aussi .capture : à spécificité égale, la largeur de CadreCapture
-     l’emporterait selon l’ordre des feuilles, que le build ne garantit pas. */
-  :global(.capture.gup-entete-capture .capture__vue img) {
-    position: absolute;
-    left: -38.03%;
-    top: -13.5%;
-    width: 140.85%;
-    max-width: none;
-    height: 119.47% !important;
-    object-fit: fill !important;
-  }
-
-  @media (max-width: 860px) {
-    :global(.capture.gup-entete-capture .capture__vue img) {
-      left: -68.12%;
-      top: -13.43%;
-      width: 229.36%;
-      height: 118.86% !important;
-    }
   }
 
   /* La démonstration : la nuit dans le jour, là où le terminal attend. */
@@ -446,22 +410,6 @@ const capture = (nom: string) => {
   @media (max-width: 560px) {
     .gup-pratiques {
       grid-template-columns: minmax(0, 1fr);
-    }
-
-    /* La loupe sort de l’écran qu’elle annote et se pose dessous, en pleine
-       largeur : son texte y redevient lisible. */
-    .gup-etape :global(.capture__cadre) {
-      overflow: visible !important;
-    }
-
-    .gup-etape :global(.capture__vue) {
-      overflow: visible !important;
-      margin-bottom: calc(var(--gup-loupe-h) + var(--s3) + var(--s2));
-    }
-
-    .gup-etape :global(.loupe) {
-      inset: calc(100% + var(--s3)) auto auto 0 !important;
-      width: 100% !important;
     }
   }
 </style>

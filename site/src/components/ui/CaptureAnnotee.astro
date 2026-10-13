@@ -11,11 +11,19 @@
  *     loupe={{ x: 28, y: 38, zoom: 2.4, coin: 'bas-droite' }}
  *     legende="Le patch 3.6.14, en français : les valeurs d’origine." />
  *
- * Coordonnées en pourcentages : `cible` dans le cadre visible ; `loupe.x/y`
- * le point de l’image à centrer dans la loupe ; `zoom` son grossissement ;
- * `largeur` sa largeur en % du cadre (50 par défaut, + 6 sur mobile).
- * La loupe est décorative (le détail est dit par l’alt et la légende).
- * Accepte aussi les props de CadreCapture (agrandir, position, sizes…).
+ * Coordonnées en pourcentages :
+ *   - `cible` : dans le cadre visible (la vue, après recadrage) ;
+ *   - `loupe.x/y` : le point de l’image entière à centrer dans la loupe ;
+ *   - `loupe.largeur` : la largeur de la loupe en % du cadre (50 par défaut,
+ *     + 6 sur mobile) ;
+ *   - `loupe.zoom` : la largeur de l’image dans la loupe, en largeurs de loupe.
+ *     Le grossissement réel, par rapport à l’image entière à la largeur du
+ *     cadre, vaut donc zoom × largeur / 100 (zoom 4, largeur 50 : × 2).
+ * `loupe.dessous` : sous 560 px, la loupe sort de l’écran et se pose dessous,
+ * en pleine largeur, où son texte redevient lisible (la place est réservée).
+ * La loupe est décorative (le détail est dit par l’alt et la légende). Le
+ * recadrage de CadreCapture (ratio) ne touche jamais l’image de la loupe.
+ * Accepte aussi les props de CadreCapture (agrandir, position, widths, sizes…).
  */
 import type { ImageMetadata } from 'astro';
 import { getImage } from 'astro:assets';
@@ -30,6 +38,8 @@ interface Loupe {
   /** Ratio de la loupe (« 4 / 3 » par défaut). */
   ratio?: string;
   coin?: 'bas-droite' | 'bas-gauche' | 'haut-droite' | 'haut-gauche';
+  /** Sous 560 px, sous la capture en pleine largeur. */
+  dessous?: boolean;
 }
 
 interface Props {
@@ -44,20 +54,28 @@ interface Props {
   cible?: { x: number; y: number };
   loupe?: Loupe;
   agrandir?: boolean;
+  widths?: number[];
   sizes?: string;
   loading?: 'lazy' | 'eager';
   class?: string;
 }
 
-const { src, alt, legende, type = 'navigateur', adresse, ratio = '16 / 10', position, cible, loupe, agrandir = false, sizes, loading, class: classe } = Astro.props;
+const { src, alt, legende, type = 'navigateur', adresse, ratio = '16 / 10', position, cible, loupe, agrandir = false, widths, sizes, loading, class: classe } = Astro.props;
 const detail = loupe ? await getImage({ src, format: 'webp', width: Math.min(src.width, 2000) }) : undefined;
 const styleLoupe = loupe
   ? [`--lx:${loupe.x}%`, `--ly:${loupe.y}%`, `--lz:${loupe.zoom}`, `--lw:${loupe.largeur ?? 50}%`, `--lr:${loupe.ratio ?? '4 / 3'}`].join(';')
   : '';
+/** Hauteur de la loupe en % de sa largeur (« 3 / 1 » → 33,33 %) : la place réservée dessous. */
+const hauteurLoupe = (ratioLoupe = '4 / 3') => {
+  const [largeur, hauteur] = ratioLoupe.split('/').map(Number);
+  return `${((hauteur / largeur) * 100).toFixed(2)}%`;
+};
+const dessous = Boolean(loupe?.dessous);
 ---
 
 <CadreCapture
-  class:list={['capture-annotee', classe]}
+  class:list={['capture-annotee', { 'capture--loupe-dessous': dessous }, classe]}
+  style={dessous ? `--loupe-h:${hauteurLoupe(loupe?.ratio)}` : undefined}
   type={type}
   adresse={adresse}
   src={src}
@@ -65,13 +83,14 @@ const styleLoupe = loupe
   ratio={ratio}
   position={position}
   agrandir={agrandir}
+  widths={widths}
   sizes={sizes}
   loading={loading}
 >
   {cible && <span class="cible" style={`--cx:${cible.x}%;--cy:${cible.y}%`} aria-hidden="true"><span class="cible__num">1</span></span>}
   {
     loupe && detail && (
-      <span class:list={['loupe', `loupe--${loupe.coin ?? 'bas-droite'}`]} style={styleLoupe} aria-hidden="true">
+      <span class:list={['loupe', `loupe--${loupe.coin ?? 'bas-droite'}`, { 'loupe--dessous': dessous }]} style={styleLoupe} aria-hidden="true">
         <img src={detail.src} alt="" loading="lazy" decoding="async" />
         {cible && <span class="cible__num loupe__num">1</span>}
       </span>
@@ -172,6 +191,15 @@ const styleLoupe = loupe
   @media (max-width: 860px) {
     .loupe {
       width: calc(var(--lw) + 6%);
+    }
+  }
+
+  /* La loupe sort de l’écran qu’elle annote et se pose dessous, en pleine
+     largeur (CadreCapture réserve sa hauteur sous la vue). */
+  @media (max-width: 560px) {
+    .loupe--dessous {
+      inset: calc(100% + var(--s3)) auto auto 0;
+      width: 100%;
     }
   }
 </style>
