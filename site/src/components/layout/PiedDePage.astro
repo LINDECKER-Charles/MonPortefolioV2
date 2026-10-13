@@ -138,9 +138,11 @@ const profils = [
     column-gap: var(--s6);
   }
 
+  /* Cibles de 44 px de côté au moins (règle E7), même pour « Blog ». */
   li > a {
     display: inline-flex;
     align-items: center;
+    min-width: 44px;
     min-height: 44px;
     color: var(--eteint);
     text-decoration: none;
@@ -233,6 +235,11 @@ const profils = [
 
     .pied__courriel {
       flex-basis: 100%;
+    }
+
+    .pied__courriel :global(.copier--compact) {
+      min-height: 44px;
+      margin-block: 0;
     }
 
     .pied__bas {
