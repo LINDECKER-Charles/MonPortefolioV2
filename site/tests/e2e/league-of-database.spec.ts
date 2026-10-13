@@ -180,6 +180,40 @@ test('une capture s’agrandit dans la visionneuse partagée, Échap rend le foc
   expect(erreurs).toEqual([]);
 });
 
+test('un échec de chargement dans la visionneuse se dit, puis l’agrandissement se réessaie', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const lien = page.locator('#versions a[data-agrandir]').first();
+  const adresse = new URL((await lien.getAttribute('href'))!, page.url()).pathname;
+  let demandes = 0;
+  await page.route(`**${adresse}`, async (route) => {
+    if (++demandes === 1) await route.abort('failed');
+    else await route.continue();
+  });
+  const dialogue = page.locator('dialog[data-visionneuse]');
+  await lien.scrollIntoViewIfNeeded();
+  await lien.click();
+  await expect(dialogue.locator('[data-visionneuse-etat]')).toContainText('Image indisponible');
+  await page.keyboard.press('Escape');
+  await expect(dialogue).toBeHidden();
+  await expect(lien).toBeFocused();
+  await lien.click();
+  const image = dialogue.locator('[data-visionneuse-image]');
+  await expect(image).toBeVisible();
+  await expect(dialogue.locator('[data-visionneuse-etat]')).toHaveText('');
+  // L’image agrandie tient dans l’écran, sous la barre de la visionneuse, même en paysage.
+  for (const ecran of [page.viewportSize()!, { width: 667, height: 375 }]) {
+    await page.setViewportSize(ecran);
+    expect(await image.evaluate((element) => {
+      const cadre = element.getBoundingClientRect();
+      const barre = element.closest('dialog')!.querySelector('.visionneuse__barre')!.getBoundingClientRect();
+      return cadre.width > 40 && cadre.top >= barre.bottom && cadre.bottom <= window.innerHeight && cadre.left >= 0 && cadre.right <= window.innerWidth;
+    }), `${ecran.width} × ${ecran.height}`).toBe(true);
+  }
+  expect(demandes).toBe(2);
+  await page.keyboard.press('Escape');
+  await expect(lien).toBeFocused();
+});
+
 test('la même fiche en trois langues, au clavier : les trois titres restent lisibles, une capture à la fois', async ({ page }) => {
   const erreurs = surveillerConsole(page);
   await page.goto(CHEMIN);
