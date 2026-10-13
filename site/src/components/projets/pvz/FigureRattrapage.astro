@@ -410,21 +410,23 @@ const { class: classe } = Astro.props;
     stroke-width: 1;
   }
 
+  /* La nuit, la part traduite reste un clair bleuté tiré des jetons, pas un
+     gris neutre ; la ligne garde l’encre pleine, le point d’août la lanterne. */
   :global(:root[data-theme='nuit']) .rat-fait {
-    fill: color-mix(in srgb, var(--encre) 42%, var(--fond));
+    fill: color-mix(in oklab, var(--encre) 72%, var(--fond));
   }
 
   :global(:root[data-theme='nuit']) .pastille--fait {
-    background: color-mix(in srgb, var(--encre) 42%, var(--fond));
+    background: color-mix(in oklab, var(--encre) 72%, var(--fond));
   }
 
   @media (prefers-color-scheme: dark) {
     :global(:root:not([data-theme])) .rat-fait {
-      fill: color-mix(in srgb, var(--encre) 42%, var(--fond));
+      fill: color-mix(in oklab, var(--encre) 72%, var(--fond));
     }
 
     :global(:root:not([data-theme])) .pastille--fait {
-      background: color-mix(in srgb, var(--encre) 42%, var(--fond));
+      background: color-mix(in oklab, var(--encre) 72%, var(--fond));
     }
   }
 

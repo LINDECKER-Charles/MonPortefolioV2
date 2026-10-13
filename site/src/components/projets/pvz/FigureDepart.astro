@@ -134,15 +134,17 @@ const lignes = [
     color: var(--eteint);
   }
 
+  /* La nuit, la part traduite : un clair bleuté tiré des jetons, comme la
+     courbe du rattrapage. */
   :global(:root[data-theme='nuit']) .depart__fait,
   :global(:root[data-theme='nuit']) .pastille--fait {
-    background: var(--eteint);
+    background: color-mix(in oklab, var(--encre) 72%, var(--fond));
   }
 
   @media (prefers-color-scheme: dark) {
     :global(:root:not([data-theme])) .depart__fait,
     :global(:root:not([data-theme])) .pastille--fait {
-      background: var(--eteint);
+      background: color-mix(in oklab, var(--encre) 72%, var(--fond));
     }
   }
 </style>
