@@ -134,8 +134,12 @@ test('la sortie : projet suivant de la vitrine, retour à la vitrine, « Discuto
   await expect(sortie).not.toContainText('Projet précédent');
 });
 
-test('une seule navigation de page, sans la note de sources', async ({ page }) => {
+test('une seule navigation de page, sans la note de sources, et ses intitulés en sur-titre des sections', async ({ page }) => {
   await page.goto(CHEMIN);
+  // Après un clic dans le sommaire, le lecteur retrouve le mot choisi au-dessus du titre.
+  for (const [ancre, intitule] of [['#depart', 'Le point de départ'], ['#equipe', 'L’équipe'], ['#semaine', 'La semaine type'], ['#resultat', 'Le résultat']]) {
+    await expect(page.locator(`${ancre} .section-projet__etiquette`)).toHaveText(intitule);
+  }
   // Une seule navigation de page (E4) : en colonne au-delà de 1 100 px, masquée en dessous.
   const navigation = page.locator('nav[aria-label="Dans cette page"]');
   await expect(navigation).toHaveCount(1);

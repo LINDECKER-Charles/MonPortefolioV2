@@ -33,6 +33,8 @@ import { typo } from '../../lib/typo';
 const titre = `PvZ Fusion, pôle francophone — ${SITE.nom}`;
 const description = 'Lead du pôle francophone de PvZ Fusion : rattraper la traduction d’un jeu qui change sans cesse, avec une équipe de bénévoles recrutée et formée.';
 const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(href, { emplacement: 'preuves' }) });
+/** L’intitulé du sommaire, en sur-titre au-dessus d’un titre qui raconte autre chose. */
+const etiquette = (id: string) => SECTIONS.find((section) => section.id === id)?.titre;
 ---
 
 <Base titre={titre} description={description} chemin="/projets/pvz-fusion" sommaire={SECTIONS}>
@@ -41,7 +43,7 @@ const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(h
   </EnTeteProjet>
 
   <CorpsProjet sections={SECTIONS}>
-    <SectionProjet id="depart" titre="Un jeu qui ne s’arrête jamais">
+    <SectionProjet id="depart" etiquette={etiquette('depart')} titre="Un jeu qui ne s’arrête jamais">
       <Fragment slot="texte">
         <p>PvZ Fusion est un jeu amateur dérivé de Plants vs. Zombies&nbsp;: on y combine des plantes pour défendre son jardin. Des bénévoles du monde entier le traduisent. Chaque mise à jour ajoute des plantes et réécrit des règles, et le projet multilingue a publié 25&nbsp;versions entre août 2025 et octobre 2026.</p>
         <p>En octobre 2025, la traduction française en était à la version 2.3.1&nbsp;; le jeu, à la 3.0.1.</p>
@@ -53,7 +55,7 @@ const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(h
       <FigureDepart slot="figure" />
     </SectionProjet>
 
-    <SectionProjet id="equipe" titre="Accueillir, former, faire confiance">
+    <SectionProjet id="equipe" etiquette={etiquette('equipe')} titre="Accueillir, former, faire confiance">
       <Fragment slot="texte">
         <p>Je suis arrivé pour traduire, le 21&nbsp;octobre 2025. Le 5&nbsp;décembre, on m’a confié le pôle&nbsp;; trois jours plus tard, les deux premières recrues arrivaient. En tout, j’ai formé 20&nbsp;personnes.</p>
         <blockquote class="citation foyer pvz-citation"><p>«&nbsp;La seule chose qui a changé, c’est le titre.&nbsp;»</p></blockquote>
@@ -80,7 +82,7 @@ const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(h
       </div>
     </SectionProjet>
 
-    <SectionProjet id="semaine" titre="Une semaine que tout le monde peut suivre" chapeau="Chaque version relançait le travail. J’ai donné au pôle une semaine type, la même pour tous, et un outil pour la faire tourner.">
+    <SectionProjet id="semaine" etiquette={etiquette('semaine')} titre="Une semaine que tout le monde peut suivre" chapeau="Chaque version relançait le travail. J’ai donné au pôle une semaine type, la même pour tous, et un outil pour la faire tourner.">
       <BoucleSemaine />
       <div class="pvz-outil acte-veille">
         <div class="pvz-outil__texte">
@@ -97,7 +99,7 @@ const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(h
       </div>
     </SectionProjet>
 
-    <SectionProjet id="resultat" titre="Rattraper, puis ne plus décrocher" alignement="bas">
+    <SectionProjet id="resultat" etiquette={etiquette('resultat')} titre="Rattraper, puis ne plus décrocher" alignement="bas">
       <p slot="texte">En dix mois, le retard a disparu, alors que le jeu avait gagné près de 200&nbsp;plantes. Depuis, une version majeure est traduite avant même sa sortie multilingue.</p>
       <FigureQuatreZero slot="figure" />
       <FigureRattrapage class="foyer pvz-rattrapage" />
