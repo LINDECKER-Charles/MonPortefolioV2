@@ -4,8 +4,8 @@
  *
  * Chaque emplacement du site est posé par `<Visuel id="…" />`
  * (`components/ui/Visuel.astro`), qui lit ce registre : il affiche l’image
- * quand le fichier attendu existe, sinon un cadre pointillé au bon ratio avec
- * l’identifiant et la consigne. `npm run visuels` liste ce qui manque ;
+ * quand le fichier attendu existe, sinon un cadre hachuré au bon ratio avec
+ * l’identifiant, le sujet, la composition et le format. `npm run visuels` liste ce qui manque ;
  * `npm run visuels:doc` régénère `docs/visuels-a-generer.md`, la commande de
  * production des images.
  *
@@ -26,6 +26,14 @@
  *     (`reprend`).
  *   - `sujetNeutre` : sujet sans nom de marque, à donner au générateur d’image
  *     quand le sujet en nomme une (règle 1 de la commande).
+ *
+ * Famille de style (règle 5 de la commande) : celle de la direction
+ * « Lanterne », retenue le 13 octobre 2026 (design/refonte/c-lanterne/README.md).
+ * Gravure en réserve : trait clair sur fond sombre la nuit, inversé le jour ;
+ * deux ou trois aplats francs et séparables (encre, aplat, lumière), recolorés
+ * par les jetons du site ; la lanterne est la seule source de lumière de la
+ * scène. Aucune propriété intellectuelle de tiers, jamais le visage de
+ * Charles, aucun texte dans l’image.
  *
  * Nommage : `<ID>_<largeur>x<hauteur>.webp` pour une image, `<ID>.svg` pour un
  * dessin vectoriel, `public/og/<ID>_1200x630.png` pour une image de partage.
@@ -106,13 +114,14 @@ export const VISUELS: readonly EntreeVisuel[] = [
     page: 'global',
     emplacement: 'En-tête ordinateur, pied de page',
     sujet: 'Logo horizontal : emblème + nom',
-    composition: 'Emblème à gauche, nom à droite, hauteur 40 px ; nom gothique conservé ou recomposé selon la direction',
+    composition: 'Emblème à gauche, nom à droite, hauteur 40 px ; nom gothique conservé (direction « Lanterne »)',
     format: '≈ 5:1',
     ratio: '5 / 1',
     methode: 'SVG',
     priorite: 'socle',
-    alt: 'Charles Lindecker, mode d’emploi',
+    alt: 'Charles Lindecker',
     fichier: 'src/assets/visuels/global/GLO-02.svg',
+    note: 'En attendant le SVG, l’en-tête et le pied de page composent l’emblème et le nom à partir des images du logo validé (components/ui/Logo.astro).',
   },
   {
     id: 'GLO-03',
@@ -128,6 +137,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     alt: '',
     fichier: 'src/assets/visuels/global/GLO-03.svg',
     lot: 3,
+    note: 'Livré le 13 octobre 2026 : un seul fichier à trois calques (lt-halo, lt-trait, lt-flamme), dont le site anime les états en CSS (components/layout/BasculeLanterne.astro).',
   },
   {
     id: 'GLO-04',
@@ -158,7 +168,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     alt: 'Cadres neutres de navigateur, de téléphone et de terminal',
     fichier: 'src/assets/visuels/global/GLO-05.svg',
     lot: 3,
-    note: 'Trois cadres : navigateur, téléphone, terminal.',
+    note: 'Trois cadres : navigateur, téléphone, terminal. En attendant le SVG, components/ui/CadreCapture.astro les dessine en CSS.',
   },
   {
     id: 'GLO-06',
@@ -179,13 +189,13 @@ export const VISUELS: readonly EntreeVisuel[] = [
     serie: 'global',
     page: 'global',
     emplacement: 'Partage par défaut',
-    sujet: 'Nom, métier, accroche, emblème, photo en bichromie',
-    composition: 'Typographie réelle de la direction',
+    sujet: 'Nom, métier, accroche, emblème, photo en couleur (chemise bleu roi)',
+    composition: 'Typographie réelle de la direction : Instrument Serif pour l’accroche, Instrument Sans pour le nom et le métier, sur la pierre du jour',
     format: '1200 × 630',
     ratio: '1200 / 630',
     methode: 'OG',
     priorite: 'socle',
-    alt: 'Charles Lindecker, mode d’emploi. Je maîtrise d’abord les règles du jeu. Ensuite, je les réinvente.',
+    alt: 'Charles Lindecker, architecte logiciel. Je maîtrise d’abord les règles du jeu. Ensuite, je les réinvente.',
     fichier: 'public/og/GLO-07_1200x630.png',
   },
   {
@@ -2087,8 +2097,8 @@ export const REGLES_COMMUNES: readonly string[] = [
   '**Jamais de visage de Charles généré** ; les personnages sont des silhouettes sans ressemblance. Les portraits sont ses quatre vraies photos (détourage, bichromie et filtres déterministes seulement).',
   '**Aucun texte dans l’image**, chiffres compris : les libellés, dates et légendes sont en HTML.',
   '**Jamais une image générée présentée comme une capture ou comme une donnée** : les courbes, frises et schémas chiffrés sont des figures codées (FIG), les écrans sont des captures réelles (CAP).',
-  '**Une seule famille de style**, fixée par la direction retenue : même trait, même lumière, même angle par série. La lanterne du logo est le motif récurrent des états (vide, succès, 404).',
-  '**Jour et nuit** : par défaut, l’illustration est livrée en deux ou trois aplats francs sur fond transparent (encre, aplat, lumière), puis séparée par script en calques recolorés par les jetons CSS. Elle suit ainsi la bascule de thème sans double téléchargement et sans script en ligne. C’est une extension du masque monochrome actuel (`Planche.astro`), à valider.',
+  '**Une seule famille de style**, celle de la direction « Lanterne », retenue le 13 octobre 2026 (`design/refonte/c-lanterne/`) : **gravure en réserve**, trait clair sur fond sombre la nuit et inversé le jour ; deux ou trois aplats francs et séparables (encre, aplat, lumière) ; la lanterne comme seule source de lumière de la scène, qui éclaire une seule chose et laisse le reste dans l’ombre. Même trait, même lumière, même angle par série. Aucun ornement de jeu, aucun cadre doré. La lanterne du logo est le motif récurrent des états (vide, succès, 404).',
+  '**Jour et nuit** : par défaut, l’illustration est livrée en deux ou trois aplats francs sur fond transparent (encre, aplat, lumière), puis séparée par script en calques recolorés par les jetons CSS. Elle suit ainsi la bascule de thème sans double téléchargement et sans script en ligne. C’est une extension du masque monochrome actuel (`Planche.astro`), retenue le 13 octobre 2026.',
   '**Livrables** : master PNG 2× + WebP ; nommage `<ID>_<largeur>x<hauteur>.webp` ; prompt, date et provenance consignés dans `design/assets/<série>/README.md` et `site/src/assets/…/README.md`.',
   '**Lisibilité mobile** : le sujet principal occupe au moins 60 % du cadre et se comprend à 390 px.',
 ];

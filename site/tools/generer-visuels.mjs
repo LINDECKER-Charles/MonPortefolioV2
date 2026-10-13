@@ -79,7 +79,7 @@ export function rendreCommande(visuels = VISUELS) {
   sortie.push('- **Socle** : nécessaire au lancement de la refonte. À produire d’abord.');
   sortie.push('- **Élargi** : enrichit le site et peut suivre.');
   sortie.push('- Seules les méthodes **IMG**, **SVG** et **OG** se produisent ici. Les figures (**FIG**), les captures (**CAP**) et les photos (**PHO**) sont codées, capturées ou traitées ailleurs : leurs fiches donnent le contexte, pas une tâche de génération.');
-  sortie.push('- La famille de style (règle 5) vient de la direction visuelle de la refonte, choisie après les maquettes. **Tant qu’elle n’est pas arrêtée, ne génère pas les images (IMG)** : elles en dépendent toutes.');
+  sortie.push('- La famille de style (règle 5) est arrêtée : la direction « Lanterne », retenue le 13 octobre 2026 (`design/refonte/c-lanterne/README.md`). Gravure en réserve, deux ou trois aplats séparables (encre, aplat, lumière) recolorés par les jetons, la lanterne comme seule source de lumière.');
   sortie.push('- Le prompt d’une image se rédige en anglais, à partir des seuls champs **Sujet** et **Composition** de la fiche. Le champ **Emplacement** donne le contexte et peut nommer une marque ou un jeu : il ne va jamais dans un prompt.', '');
 
   sortie.push('## Règles communes', '');
