@@ -274,16 +274,19 @@ test('« Discutons » mène à la page Contact et se mesure', async ({ page }) =
   await expect(page).toHaveURL(/\/contact$/);
 });
 
-test('l’index défile sur lui-même sur mobile, jamais la page', async ({ page }) => {
+test('sur mobile, l’index passe à la ligne : cinq preuves entières, rien ne défile', async ({ page }) => {
   test.skip((page.viewportSize()?.width ?? 0) > 860, 'mobile seulement');
   await page.goto('/projets');
   const liste = page.getByRole('navigation', { name: 'Ce que prouve chaque projet', exact: true }).locator('ol');
   const { defile, hauteur } = await liste.evaluate((ol) => ({ defile: ol.scrollWidth > ol.clientWidth, hauteur: ol.getBoundingClientRect().height }));
-  expect(defile).toBe(true);
-  expect(hauteur).toBeLessThan(80);
-  const dernier = liste.getByRole('link').last();
-  await dernier.focus();
-  await expect(dernier).toBeInViewport();
+  expect(defile).toBe(false);
+  // Trois lignes au plus : le chiffre de la vedette reste au premier écran (E1).
+  expect(hauteur).toBeLessThan(110);
+  for (const lien of await liste.getByRole('link').all()) {
+    await expect(lien).toBeInViewport({ ratio: 1 });
+    // Une cible d’au moins 24 px de haut (WCAG 2.5.8).
+    expect((await lien.boundingBox())!.height).toBeGreaterThanOrEqual(24);
+  }
   expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
 });
 

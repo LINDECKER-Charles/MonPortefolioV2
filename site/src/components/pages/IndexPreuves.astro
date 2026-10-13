@@ -10,9 +10,9 @@
  *
  * Les numéros reprennent le `rang` des CarteProjet, sur deux chiffres.
  * Liens d’ancre (↓), la flèche collée au dernier mot. Une colonne à filets
- * sur ordinateur, à côté du titre ; sous 860 px, une seule ligne défilable,
- * avec une ombre au bord qui dit la suite (règle E7) : le chiffre de la carte
- * vedette reste au premier écran (E1).
+ * sur ordinateur, à côté du titre ; sous 860 px, les preuves passent à la
+ * ligne, entières : les cinq restent visibles sans défiler, et le chiffre de
+ * la carte vedette reste au premier écran (E1).
  */
 import { typo } from '../../lib/typo';
 
@@ -83,39 +83,32 @@ const { entrees, label = 'Ce que prouve chaque projet' } = Astro.props;
     color: var(--accent);
   }
 
+  /* Sous 860 px, les cinq preuves passent à la ligne au lieu de défiler :
+     chacune reste entière (aucun nom coupé au bord), et le bloc tient en trois
+     lignes pour que le chiffre de la vedette reste au premier écran (E1). Les
+     cibles gardent au moins 24 px de haut (WCAG 2.5.8). */
   @media (max-width: 860px) {
     ol {
       display: flex;
-      overflow-x: auto;
-      overscroll-behavior-x: contain;
-      scroll-snap-type: x proximity;
-      scrollbar-width: none;
-      background:
-        linear-gradient(to left, var(--fond) 30%, transparent) right / 48px 100% no-repeat local,
-        radial-gradient(farthest-side at 100% 50%, color-mix(in srgb, var(--encre) 18%, transparent), transparent) right / 14px 100% no-repeat scroll;
-    }
-
-    ol::-webkit-scrollbar {
-      display: none;
-    }
-
-    li {
-      flex: none;
-      scroll-snap-align: start;
+      flex-wrap: wrap;
+      gap: 0 var(--s4);
+      padding-top: var(--s1);
+      border-bottom: 1px solid var(--filet);
     }
 
     li + li {
       border-top: 0;
-      border-left: 1px solid var(--filet);
     }
 
     a {
-      padding: var(--s2) var(--s4) var(--s2) var(--s3);
+      min-height: var(--s5);
+      padding: var(--s1) 0;
+      font-size: var(--t-xs);
       white-space: nowrap;
     }
 
-    li:first-child a {
-      padding-left: 0;
+    .index-preuves__rang {
+      margin-right: var(--s1);
     }
   }
 </style>
