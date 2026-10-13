@@ -13,6 +13,7 @@
  * styles/blog.css, partagée avec le gabarit des articles (blog-modele.astro).
  */
 import Base from '../layouts/Base.astro';
+import AppelDiscutons from '../components/pages/AppelDiscutons.astro';
 import FilAriane from '../components/pages/FilAriane.astro';
 import ContinuerLecture from '../components/pages/ContinuerLecture.astro';
 import LienAction from '../components/ui/LienAction.astro';
@@ -45,10 +46,11 @@ const description = 'Les articles de Charles Lindecker sur le développement, le
       </div>
     </div>
 
+    <AppelDiscutons emplacement="discutons">Une idée à confronter, un sujet à creuser&nbsp;?</AppelDiscutons>
+
     <ContinuerLecture liens={[
       { href: '/projets/omnicard', titre: 'Omnicard', detail: 'Le jeu papier devenu jeu en ligne, avec son moteur de règles.' },
       { href: '/parcours', titre: 'Le parcours', detail: 'Apprendre, construire et transmettre.' },
-      { href: '/contact', titre: 'Discutons', detail: 'Écrire en quelques mots, depuis la page Contact.' },
     ]} />
   </div>
 </Base>

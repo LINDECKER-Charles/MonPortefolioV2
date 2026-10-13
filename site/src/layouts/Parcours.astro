@@ -1,18 +1,20 @@
 ---
 /**
  * Gabarit des pages du parcours (Professionnel, Compétences, Formation) :
- * fil d’Ariane, onglets du parcours, titre et une ligne, le contenu, puis la
- * suite de lecture vers les autres pages.
+ * fil d’Ariane, onglets du parcours, titre et une ligne, le contenu, l’appel
+ * « Discutons », puis la suite de lecture vers les autres pages. Le même
+ * ordre que la sortie des pages de projet : l’action principale ferme le
+ * contenu, la navigation vient ensuite.
  *
  *   <Parcours titre description chemin courant introduction sommaire={SECTIONS}>
  *     …
- *     <AppelDiscutons slot="fin" />
+ *     <AppelDiscutons slot="fin" emplacement="discutons">Une phrase.</AppelDiscutons>
  *   </Parcours>
  *
  * `sommaire` (facultatif) : les sections de la page pour le bouton
  * « Sommaire » de l’en-tête sous 1 100 px (la même liste que NavigationPage).
  * Slots : `tete` sous le titre (raccourcis, preuve), défaut pour le contenu,
- * `fin` après « Pour continuer » (l’appel « Discutons »).
+ * `fin` entre le contenu et « Pour continuer » (l’appel « Discutons »).
  * `compact` est gardé pour compatibilité : l’en-tête est toujours compact.
  */
 import Base from './Base.astro';
@@ -53,8 +55,8 @@ const suite = [
       <slot name="tete" />
     </header>
     <slot />
-    <ContinuerLecture liens={suite} />
     <slot name="fin" />
+    <ContinuerLecture liens={suite} />
   </div>
 </Base>
 
