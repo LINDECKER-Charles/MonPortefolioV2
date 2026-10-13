@@ -158,6 +158,8 @@ test('chaque preuve n’est surlignée qu’une fois dans le récit, en plus du 
   await page.goto('/');
   // Les règles renvoient à la preuve par un lien, sans la surligner de nouveau.
   await expect(page.locator('#regles mark')).toHaveCount(0);
+  // Elles rappellent le moment sans répéter son chiffre : une histoire racontée une fois.
+  for (const preuve of await page.locator('#regles .regle__preuves li').all()) await expect(preuve).not.toContainText(/\d/);
   await expect(page.locator('main mark', { hasText: /^un mois$/ })).toHaveCount(2);
   await expect(page.locator('main mark', { hasText: /^20$/ })).toHaveCount(2);
 });
