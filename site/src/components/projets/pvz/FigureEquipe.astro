@@ -10,6 +10,9 @@
  * clavier (scripts/figure-animations.ts). Mouvement réduit, impression et
  * sans JavaScript : l’état final, complet ; sans JavaScript, le bouton est
  * désactivé (hors de la tabulation), le script le réactive.
+ *
+ * Les dates du dessin existent aussi en texte (règle A5) : une liste pour
+ * les lecteurs d’écran, tirée des mêmes données.
  */
 import { ARRIVEES, ROLES } from '../../../config/pvz-fusion';
 
@@ -78,6 +81,18 @@ const jalons = (g: Gabarit) =>
     return { ...role, x, haut, ancre: dernier ? 'end' : 'start', tx: dernier ? x + 6 : x - 6, lead: index === 1 };
   });
 
+/** Les mêmes faits en texte : « deux le 08/12/2025, une le 15/12/2025… ». */
+const jourMois = (date: string) => date.split('-').reverse().join('/');
+const NOMBRES = ['', 'une', 'deux', 'trois', 'quatre'];
+const groupes: { date: string; nombre: number }[] = [];
+for (const date of ARRIVEES) {
+  const dernier = groupes.at(-1);
+  if (dernier?.date === date) dernier.nombre += 1;
+  else groupes.push({ date, nombre: 1 });
+}
+const arriveesEnTexte = groupes.map(({ date, nombre }) => `${NOMBRES[nombre] ?? nombre} le ${jourMois(date)}`).join(', ');
+const rolesEnTexte = ROLES.map((role) => `${role.titre}${role.libelle.startsWith('au plus tard') ? ' ' : ' le '}${role.libelle}`);
+
 /** La hauteur suit le nombre de rangées d’arrivées : la note reste sous les silhouettes. */
 const versions = (['large', 'compacte'] as const).map((nom) => {
   const base = GABARITS[nom];
@@ -118,6 +133,10 @@ const versions = (['large', 'compacte'] as const).map((nom) => {
     ))
   }
 </button>
+<ul class="sr">
+  {rolesEnTexte.map((role) => <li>{role}</li>)}
+  <li>Arrivées consignées dans les journaux publics du pôle&nbsp;: {arriveesEnTexte}.</li>
+</ul>
 
 <style>
   .scene {

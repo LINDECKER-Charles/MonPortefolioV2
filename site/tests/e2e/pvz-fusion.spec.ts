@@ -161,6 +161,18 @@ test('dépliés, les relevés défilent dans leur cadre sans élargir la page', 
   if (largeur < 600) expect(totale).toBeGreaterThan(visible);
 });
 
+test('les dates de la frise de l’équipe existent aussi en texte', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const texte = page.locator('#equipe .pvz-equipe ul.sr');
+  await expect(texte.locator('li')).toHaveText([
+    'Traducteur le 21/10/2025',
+    'Lead du pôle le 05/12/2025',
+    'Mainteneur au plus tard le 26/09/2026',
+    /^Arrivées consignées dans les journaux publics du pôle\s:\sdeux le 08\/12\/2025, une le 15\/12\/2025, une le 22\/12\/2025, une le 16\/02\/2026, une le 20\/02\/2026, une le 02\/03\/2026, deux le 23\/03\/2026\.$/,
+  ]);
+  for (const scene of ['pvz-equipe', 'pvz-rattrapage']) await expect(page.locator(`[data-scene="${scene}"]`)).toBeEnabled();
+});
+
 test('les relevés du rattrapage s’ouvrent au clavier, en tableau', async ({ page }) => {
   await page.goto(CHEMIN);
   const releves = page.locator('.rattrapage__releves');
