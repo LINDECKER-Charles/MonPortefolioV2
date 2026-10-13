@@ -52,7 +52,7 @@ test.describe('hub', () => {
   test('chaque porte porte un fait et son emplacement de visuel', async ({ page }) => {
     await page.goto('/parcours');
     const portes = page.getByRole('navigation', { name: 'Explorer le parcours', exact: true });
-    await expect(portes.getByRole('link', { name: 'Parcours professionnel', exact: true })).toHaveAccessibleDescription(/6 expériences.*20 contributeurs formés/);
+    await expect(portes.getByRole('link', { name: 'Parcours professionnel', exact: true })).toHaveAccessibleDescription(/6 expériences.*20 personnes formées au pôle francophone/);
     // Une seule source pour le cœur de la stack : « Au quotidien » (config/competences.ts).
     await expect(portes.getByRole('link', { name: 'Compétences', exact: true })).toHaveAccessibleDescription(/Au quotidien\s:\sC#, \.NET, Angular, TypeScript, PostgreSQL, Docker, Git, GitHub Actions\sniveaux à confirmer/);
     await expect(portes).not.toContainText(/à valider|MySQL/);

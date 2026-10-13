@@ -197,7 +197,7 @@ export const EXPERIENCES: readonly Experience[] = [
     ],
     // Octobre 2025 : l’arrivée comme traducteur ; lead depuis décembre 2025 (décision du 13/10/2026).
     bascule: { mois: '2025-12', role: 'lead' },
-    preuve: { valeur: '20', libelle: 'contributeurs formés', source: 'Témoignage', date: 'confirmé le 13 octobre 2026', surligne: true },
+    preuve: { valeur: '20', libelle: 'personnes formées au pôle francophone', source: 'Témoignage', date: 'confirmé le 13 octobre 2026', surligne: true },
     liens: [{ href: '/projets/pvz-fusion', libelle: 'Voir le travail avec la communauté' }],
     visuel: 'PRO-03',
     frise: 'Traducteur puis lead, PvZ Fusion',

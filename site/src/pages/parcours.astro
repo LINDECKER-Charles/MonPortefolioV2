@@ -62,7 +62,7 @@ const LOGOS: Record<(typeof QUOTIDIEN)[number]['nom'], string> = {
 const coeur = QUOTIDIEN.map(({ nom }) => ({ nom, logo: LOGOS[nom] }));
 
 const faits: Record<string, string[]> = {
-  '/parcours/professionnel': [`${NOMBRE_EXPERIENCES} expériences`, 'une promotion menée jusqu’au titre', '20 contributeurs formés'],
+  '/parcours/professionnel': [`${NOMBRE_EXPERIENCES} expériences`, 'une promotion menée jusqu’au titre', '20 personnes formées au pôle francophone'],
   '/parcours/competences': [coeur.map((t) => t.nom).join(', ')],
   '/parcours/formation': ['Titre DWWM, RNCP niveau 5', `${NOMBRE_CERTIFICATIONS} certifications`],
 };
