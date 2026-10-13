@@ -210,7 +210,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     ratio: '1200 / 630',
     methode: 'OG',
     priorite: 'elargi',
-    alt: 'Charles Lindecker, mode d’emploi',
+    alt: 'Charles Lindecker, architecte logiciel : le titre et le visuel de la page partagée.',
     fichier: 'public/og/GLO-08_1200x630.png',
     lot: 10,
     note: 'Dix déclinaisons : Projets, Parcours, Contact, Blog, 404 et chaque projet.',

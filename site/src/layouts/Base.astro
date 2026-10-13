@@ -17,11 +17,14 @@
  * `sommaire` : les sections de la page, proposées par le bouton « Sommaire »
  * de l'en-tête sur mobile et tablette.
  */
+import { existsSync } from 'node:fs';
+import path from 'node:path';
 import { Font, getImage } from 'astro:assets';
 import Entete from '../components/layout/Entete.astro';
 import PiedDePage from '../components/layout/PiedDePage.astro';
 import photo from '../assets/photos/charles-4.webp';
 import { SITE } from '../config/site';
+import { visuelParId } from '../config/visuels';
 import type { EntreeSommaire } from '../config/navigation';
 import { absolue, jsonLd, noeudPage, noeudPersonne } from '../lib/seo';
 import '../styles/global.css';
@@ -41,11 +44,17 @@ interface Props {
 
 const { titre, description, chemin, horsIndex = false, accueil = false, sommaire } = Astro.props;
 const canonique = absolue(chemin);
+/* L’image de partage de la direction « Lanterne » (GLO-07) dès qu’elle est
+   livrée, avec l’alt du registre (« mode d’emploi » n’y reste qu’en clin
+   d’œil, décision du 13/10/2026). D’ici là, l’image actuelle, que son alt
+   décrit telle qu’elle est : son titre dit encore « mode d’emploi ». */
+const partage = visuelParId('GLO-07');
+const partageLivre = partage?.fichier ? existsSync(path.resolve(partage.fichier)) : false;
 const imagePartage = {
-  url: absolue('/og/accueil.png'),
+  url: absolue(partageLivre && partage?.fichier ? partage.fichier.replace(/^public/, '') : '/og/accueil.png'),
   largeur: 1200,
   hauteur: 630,
-  alt: 'Charles Lindecker, mode d’emploi. Je maîtrise d’abord les règles du jeu. Ensuite, je les réinvente.',
+  alt: partageLivre && partage ? partage.alt : 'Charles Lindecker, mode d’emploi. Je maîtrise d’abord les règles du jeu. Ensuite, je les réinvente.',
 };
 
 let donnees: string | undefined;
