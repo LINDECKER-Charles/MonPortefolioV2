@@ -69,6 +69,30 @@ test('le premier écran dit quoi et pourquoi : titre, phrase, index des preuves 
   expect(erreurs).toEqual([]);
 });
 
+test('les chiffres des cartes portent leur date (règle C1)', async ({ page }) => {
+  await page.goto('/projets');
+  const releve = page.locator('.vitrine-releve');
+  await expect(releve).toHaveText('Chiffres au 13 octobre 2026 ; objectifs de Bloodborne Legendary Run au 8 octobre 2026.');
+  // Juste sous la vitrine, avant « Aussi ».
+  expect(await releve.evaluate((p) => p.previousElementSibling?.matches('ol.vitrine'))).toBe(true);
+});
+
+test('sur ordinateur, le visuel d’une carte « ligne » remplit son panneau', async ({ page }) => {
+  test.skip((page.viewportSize()?.width ?? 0) <= 860, 'ordinateur seulement');
+  await page.goto('/projets');
+  for (const [id, cible] of [['league', '[data-visuel="PRJ-02"]'], ['omnicard', '[data-visuel="PRJ-03"]'], ['gup', '.capture__vue']] as const) {
+    const panneau = carte(page, id).locator('.carte-projet__visuel');
+    const { interieur, visuel } = await panneau.evaluate((el, selecteur) => {
+      const style = getComputedStyle(el);
+      const cadre = el.querySelector(selecteur)!.getBoundingClientRect();
+      return { interieur: el.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom), visuel: cadre.height };
+    }, cible);
+    expect(visuel / interieur, id).toBeGreaterThan(0.95);
+  }
+  // La capture de gup reste recadrée, jamais étirée.
+  await expect(carte(page, 'gup').locator('.capture__vue img')).toHaveCSS('object-fit', 'cover');
+});
+
 test('cinq projets dans l’ordre de ce qu’ils prouvent, une seule fois chacun, sans catégorie par loisir', async ({ page }) => {
   await page.goto('/projets');
   const cartes = vitrine(page).locator(':scope > li');
@@ -208,6 +232,11 @@ test('« Contribuer » : deux guides de contribution et tous les dépôts public
   await page.goto('/projets#contribuer');
   const contribuer = page.locator('#contribuer');
   await expect(contribuer.getByRole('heading', { level: 2 })).toHaveText('Contribuer');
+  // Les noms constants (règle E6) : le Console Manager comme sur la page PvZ Fusion.
+  await expect(contribuer.getByRole('heading', { level: 3 })).toHaveText(['gup', 'Console Manager de PvZ Fusion']);
+  // Le titre est la zone éclairée de l’écran ; l’illustration reste dans le bloc.
+  await expect(contribuer.locator('.contribuer__tete')).toHaveClass(/\bfoyer\b/);
+  await expect(contribuer.locator('.acte-veille [data-visuel="PRJ-11"]')).toHaveCount(1);
   await expect(contribuer.getByRole('link', { name: /Guide de contribution/ })).toHaveCount(2);
   await expect(contribuer.getByRole('link', { name: /Tous mes dépôts publics/ })).toHaveAttribute('href', 'https://github.com/LINDECKER-Charles?tab=repositories');
 });
@@ -217,9 +246,15 @@ test('les projets archivés restent discrets, repliés et ouvrables au clavier',
   const archives = page.locator('#projets-archives');
   await expect(archives).not.toHaveAttribute('open');
   await expect(archives.locator('summary')).toHaveText('Projets archivés');
+  // Un signe dit qu’il s’ouvre : « + », qui tourne en « × » une fois ouvert.
+  const signe = archives.locator('summary .archives__signe');
+  await expect(signe).toBeVisible();
+  await expect(signe).toHaveAttribute('aria-hidden', 'true');
+  await expect(signe).toHaveCSS('transform', 'none');
   await archives.locator('summary').focus();
   await page.keyboard.press('Enter');
   await expect(archives).toHaveAttribute('open', '');
+  await expect(signe).not.toHaveCSS('transform', 'none');
   await expect(archives).toContainText('Aucun projet archivé pour le moment.');
   await expect(archives.locator('a')).toHaveCount(0);
 });
@@ -256,6 +291,10 @@ for (const theme of ['jour', 'nuit'] as const) {
       await page.goto('/projets');
       await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
       await page.locator('#projets-archives summary').click();
+      await expect(page.locator('#projets-archives')).toHaveAttribute('open', '');
+      // L’en-tête collant recouvre ce qui passe sous lui au défilement :
+      // l’analyse part du haut de la page, comme une arrivée.
+      await page.evaluate(() => window.scrollTo(0, 0));
       expect(await axe(page)).toEqual([]);
     });
   });
