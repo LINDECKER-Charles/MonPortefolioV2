@@ -168,7 +168,7 @@ Les illustrations sont posées par `<Visuel id="…">` depuis le registre
 `site/src/config/visuels.ts`. Une image générée a deux rendus dessinés, le jour et la nuit, tirés
 de ses deux masters (`design/assets/visuels/<série>/`) par `npm run visuels:rendre` : `<Visuel>`
 pose les deux et n’en montre qu’un, selon le thème (la nuit aussi dans un acte sombre, le jour à
-l’impression) ; l’autre n’est ni lu ni téléchargé. Tant qu’un fichier manque, le site en ligne
+l’impression) ; l’autre n’est ni lu ni téléchargé, avec ou sans JavaScript. Tant qu’un fichier manque, le site en ligne
 montre un cadre neutre au bon ratio, avec l’alt du registre ; en développement (`astro dev`, ou
 `VISUELS_BROUILLON=1` au build), un cadre hachuré affiche la consigne (identifiant, sujet,
 composition, format). Un dessin SVG livré est inséré en ligne et suit les jetons.
