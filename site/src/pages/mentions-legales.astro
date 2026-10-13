@@ -21,6 +21,7 @@ import FilAriane from '../components/pages/FilAriane.astro';
 import NavigationPage from '../components/pages/NavigationPage.astro';
 import AConfirmer from '../components/ui/AConfirmer.astro';
 import { CONTACT, SITE } from '../config/site';
+import { attributsMesure } from '../lib/liens';
 
 const majour = { iso: '2026-10-13', texte: '13 octobre 2026' };
 const SECTIONS = [
@@ -32,6 +33,8 @@ const SECTIONS = [
   { id: 'credits', titre: 'Crédits' },
 ] as const;
 const courriel = `mailto:${CONTACT.email}`;
+const HOSTINGER = 'https://www.hostinger.fr';
+const CNIL = 'https://www.cnil.fr/fr/plaintes';
 ---
 
 <Base
@@ -64,7 +67,7 @@ const courriel = `mailto:${CONTACT.email}`;
         <h2 id="hebergement-titre">Hébergement</h2>
         <p>
           Le site est servi par un serveur privé virtuel loué à Hostinger International Ltd., 61 Lordou Vironos Street,
-          6023 Larnaca, Chypre (<a href="https://www.hostinger.fr" rel="external">hostinger.fr<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>). Le logiciel du serveur, du site
+          6023 Larnaca, Chypre (<a href={HOSTINGER} rel="external" {...attributsMesure(HOSTINGER, { emplacement: 'mentions' })}>hostinger.fr<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>). Le logiciel du serveur, du site
           aux certificats de sécurité, est administré par l’éditeur.
         </p>
       </section>
@@ -126,7 +129,7 @@ const courriel = `mailto:${CONTACT.email}`;
             Vous pouvez demander l’accès à vos données, leur correction ou leur effacement en écrivant à
             <a href={courriel} data-umami-event="contact-email" data-umami-event-emplacement="mentions">{CONTACT.email}<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>.
             En cas de désaccord, vous pouvez saisir la
-            <a href="https://www.cnil.fr/fr/plaintes" rel="external">CNIL<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>.
+            <a href={CNIL} rel="external" {...attributsMesure(CNIL, { emplacement: 'mentions' })}>CNIL<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>.
           </li>
         </ul>
       </section>

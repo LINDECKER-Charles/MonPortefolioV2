@@ -34,8 +34,7 @@ for (const chemin of PAGES) {
         problemes.push(`${href} : data-umami-event="contact-email" attendu`);
       }
       const externe = /^https?:/.test(href) && new URL(href).host !== new URL(page.url()).host;
-      const legal = /hostinger\.fr|cnil\.fr/.test(href);
-      if (externe && !legal && evenement !== 'lien-sortant') {
+      if (externe && evenement !== 'lien-sortant') {
         problemes.push(`${href} : data-umami-event="lien-sortant" attendu`);
       }
     }
