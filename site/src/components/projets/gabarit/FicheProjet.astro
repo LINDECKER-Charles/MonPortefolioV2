@@ -7,8 +7,11 @@
  *
  *   <FicheProjet fiche={FICHE} />
  *
- * Bureau : Besoin et Ma part sur une ligne, les cinq autres sur la suivante.
- * Tablette et mobile : deux colonnes, les longues cases sur toute la largeur.
+ * Bureau : Besoin et Ma part sur une ligne, les cinq autres sur la suivante,
+ * sur une grille de douze : Rôle et Période (3 + 3) se coupent sous la
+ * coupure de Besoin et Ma part, à 50 % ; Équipe, Statut et Liens publics
+ * (2 + 2 + 2) se partagent l’autre moitié, un lien par ligne. Tablette et
+ * mobile : deux colonnes, les longues cases sur toute la largeur.
  * Les liens publics sont des sorties du site, mesurées en `lien-sortant`
  * (emplacement `preuves` par défaut). Le statut a une forme et un mot (C9).
  */
@@ -98,7 +101,7 @@ const cases: { champ: ChampFiche; titre: string; large?: boolean }[] = [
   }
 
   .fiche-projet__case--role,
-  .fiche-projet__case--liens {
+  .fiche-projet__case--periode {
     grid-column: span 3;
   }
 
@@ -131,11 +134,19 @@ const cases: { champ: ChampFiche; titre: string; large?: boolean }[] = [
     list-style: none;
   }
 
+  /* En ligne : la flèche reste collée au dernier mot (espace insécable). */
   ul a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 32px;
+    display: inline-block;
+    padding-block: 2px;
+    line-height: 1.5;
     overflow-wrap: anywhere;
+  }
+
+  @media (min-width: 1101px) {
+    .fiche-projet__case--liens ul {
+      flex-direction: column;
+      align-items: flex-start;
+    }
   }
 
   @media (max-width: 1100px) {
@@ -145,7 +156,7 @@ const cases: { champ: ChampFiche; titre: string; large?: boolean }[] = [
 
     .fiche-projet__case,
     .fiche-projet__case--role,
-    .fiche-projet__case--liens {
+    .fiche-projet__case--periode {
       grid-column: span 1;
     }
 
@@ -157,7 +168,7 @@ const cases: { champ: ChampFiche; titre: string; large?: boolean }[] = [
 
   @media (max-width: 860px) {
     ul a {
-      min-height: 44px;
+      padding-block: 10px;
     }
   }
 
