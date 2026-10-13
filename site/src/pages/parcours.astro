@@ -28,7 +28,7 @@ import { DIPLOME, NOMBRE_CERTIFICATIONS } from '../config/formation';
 import { SITE } from '../config/site';
 
 const titre = `Parcours de ${SITE.nom}`;
-const description = 'Découvrez le parcours de Charles Lindecker à travers ses expériences professionnelles, ses compétences, sa formation et ses certifications.';
+const description = 'Le parcours de Charles Lindecker en bref : ses postes, ses compétences et sa formation, du titre DWWM à l’architecture logicielle.';
 
 const parNature = (benevole: boolean) => EXPERIENCES.filter((e) => (e.nature === 'benevolat') === benevole).map((e) => ligneDeFrise(e));
 const couloirs = [
