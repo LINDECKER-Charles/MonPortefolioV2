@@ -20,7 +20,7 @@ import { COMPETENCES_HUMAINES, DOMAINES_IA, DOMAINES_QUALITE, EXPLORE, METHODES,
 const SECTIONS = [
   { id: 'quotidien', titre: 'Au quotidien' },
   { id: 'pratique', titre: 'Pratiqué' },
-  { id: 'explore', titre: 'Exploré' },
+  { id: 'explore', titre: 'Exploré ou ponctuel' },
   { id: 'ia', titre: 'Intégration IA' },
   { id: 'livraison', titre: 'Tests et livraison' },
   { id: 'humaines', titre: 'Compétences humaines' },
@@ -33,20 +33,15 @@ const SECTIONS = [
   chemin="/parcours/competences"
   courant="Compétences"
   introduction="Ce que je pratique au quotidien, ce que j’ai déjà mis en œuvre, et ma façon de travailler avec les autres."
+  sommaire={SECTIONS}
 >
-  <nav class="sections-mobile ne-pas-imprimer" aria-label="Sections de la page">
-    <ul role="list">
-      {SECTIONS.map(({ id, titre }) => <li><a href={`#${id}`}>{titre}</a></li>)}
-    </ul>
-  </nav>
-
   <NavigationPage entrees={SECTIONS} class="competences">
     <section class="niveau" id="quotidien" aria-labelledby="t-quotidien">
       <header class="niveau__tete">
         <h2 id="t-quotidien">Au quotidien</h2>
         <p>La stack de mon CV<AConfirmer titre="Hiérarchie des technologies en trois niveaux, à valider (Q9)">niveaux à confirmer</AConfirmer></p>
       </header>
-      <ul class="quotidien foyer" role="list">
+      <ul class="quotidien foyer" role="list" data-pli="preuve">
         {QUOTIDIEN.map(({ nom, role }) => <li><LienTechno nom={nom} variante="tuile" role={role} /></li>)}
       </ul>
     </section>
@@ -167,47 +162,6 @@ const SECTIONS = [
 </Parcours>
 
 <style>
-  /* Sections de la page sous 1 100 px, où la colonne « Dans cette page » s’efface. */
-  .sections-mobile {
-    display: none;
-  }
-
-  .sections-mobile ul {
-    display: flex;
-    gap: var(--s2);
-    margin: 0;
-    padding: 0 0 var(--s2);
-    overflow-x: auto;
-    list-style: none;
-    scrollbar-width: thin;
-  }
-
-  .sections-mobile a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    padding: 0 var(--s3);
-    border: 1px solid var(--filet);
-    border-radius: var(--r1);
-    background: var(--surface);
-    color: var(--encre);
-    font-size: var(--t-xs);
-    white-space: nowrap;
-    text-decoration: none;
-  }
-
-  .sections-mobile a:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
-  @media (max-width: 1100px) {
-    .sections-mobile {
-      display: block;
-      margin-bottom: var(--s5);
-    }
-  }
-
   /* Les niveaux. */
   .competences {
     padding-bottom: var(--s6);
@@ -550,8 +504,7 @@ const SECTIONS = [
   }
 
   @media (forced-colors: active) {
-    .ia__points li,
-    .sections-mobile a {
+    .ia__points li {
       border-color: CanvasText;
     }
   }
