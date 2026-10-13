@@ -122,6 +122,7 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Format** : 3 × 1:1, 48 et 96 px
 - **Fichier attendu** : `site/src/assets/visuels/global/GLO-04.svg` (lot de 3)
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Livré le 13 octobre 2026 : un fichier à trois <symbol> (maitriser, reinventer, emmener), dessinés à la main d’après la maquette « Lanterne » et insérés dans la page par components/ui/PictoVerbe.astro, qui les recolore par jetons.
 
 ### GLO-05 · Cadres d’appareil neutres : navigateur, téléphone, terminal
 
@@ -162,7 +163,7 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Composition** : Titre à gauche, visuel à droite, emblème en bas
 - **Format** : 1200 × 630 (×10)
 - **Fichier attendu** : `site/public/og/GLO-08_1200x630.png` (lot de 10)
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Charles Lindecker, mode d’emploi »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Charles Lindecker, architecte logiciel : le titre et le visuel de la page partagée. »
 - **Note** : Dix déclinaisons : Projets, Parcours, Contact, Blog, 404 et chaque projet.
 
 ### GLO-09 · Grain de papier très léger, raccordable
@@ -238,7 +239,7 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Format** : —
 - **Fichier attendu** : aucun, reprend `GLO-04`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
-- **Note** : En attendant GLO-04, trois pictos au trait, repris de la maquette « Lanterne », sont dessinés dans le bandeau (components/accueil/BandeauPreuves.astro).
+- **Note** : Le bandeau des preuves pose les trois pictos de GLO-04 par components/ui/PictoVerbe.astro.
 
 ### ACC-03 · Démonter de vieux PC avec son père
 
