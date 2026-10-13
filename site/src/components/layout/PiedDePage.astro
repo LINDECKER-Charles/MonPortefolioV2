@@ -41,7 +41,7 @@ const profils = [
         <h2 class="pied__titre">Me trouver</h2>
         <ul>
           <li class="pied__courriel">
-            <a href={MAILTO} data-adresse data-umami-event="contact-email" data-umami-event-emplacement="pied-de-page">{CONTACT.email}</a>
+            <a href={MAILTO} data-umami-event="contact-email" data-umami-event-emplacement="pied-de-page"><span data-adresse>{CONTACT.email}</span><span class="fleche" aria-hidden="true">&nbsp;↗</span></a>
             <CopierAdresse adresse={CONTACT.email} emplacement="pied-de-page" compact />
           </li>
           {

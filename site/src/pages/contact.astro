@@ -49,7 +49,7 @@ const profils = [
         </div>
         <form method="post" action="/api/contact" data-contact-form aria-labelledby="formulaire-titre">
           <p class="contact-obligatoire"><span class="contact-requis" aria-hidden="true">*</span> Tous les champs sont obligatoires.</p>
-          <noscript><p class="contact-sans-js">Activez JavaScript pour utiliser le formulaire, ou <a href={MAILTO} data-umami-event="contact-email" data-umami-event-emplacement="contact">écrivez-moi directement par e-mail</a>.</p></noscript>
+          <noscript><p class="contact-sans-js">Activez JavaScript pour utiliser le formulaire, ou <a href={MAILTO} data-umami-event="contact-email" data-umami-event-emplacement="contact">écrivez-moi directement par e-mail<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>.</p></noscript>
           <fieldset class="contact-champs">
             <legend class="sr">Votre message</legend>
             <div class="contact-identite">
