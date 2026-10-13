@@ -1,66 +1,108 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-13T08:39:09.955922+00:00",
+  "generatedAt": "2026-10-13T20:00:00+00:00",
   "title": "Design System: MonPortefolioV2",
   "extensions": {
     "colorMeta": {
-      "papier": {
+      "fond": {
         "role": "neutral",
-        "displayName": "Papier froid",
+        "displayName": "Pierre",
         "tonalRamp": [
-          "oklch(15% 0.0034 247.86)",
-          "oklch(25% 0.0034 247.86)",
-          "oklch(35% 0.0034 247.86)",
-          "oklch(45% 0.0034 247.86)",
-          "oklch(55% 0.0034 247.86)",
-          "oklch(65% 0.0034 247.86)",
-          "oklch(80% 0.0034 247.86)",
-          "oklch(95% 0.0034 247.86)"
+          "oklch(15% 0.0087 84.57)",
+          "oklch(25% 0.0087 84.57)",
+          "oklch(35% 0.0087 84.57)",
+          "oklch(45% 0.0087 84.57)",
+          "oklch(55% 0.0087 84.57)",
+          "oklch(65% 0.0087 84.57)",
+          "oklch(80% 0.0087 84.57)",
+          "oklch(95% 0.0087 84.57)"
         ]
       },
-      "blanc": {
+      "surface": {
         "role": "neutral",
-        "displayName": "Planche blanche",
+        "displayName": "Surface",
         "tonalRamp": [
-          "oklch(15% 0.0000 0.00)",
-          "oklch(25% 0.0000 0.00)",
-          "oklch(35% 0.0000 0.00)",
-          "oklch(45% 0.0000 0.00)",
-          "oklch(55% 0.0000 0.00)",
-          "oklch(65% 0.0000 0.00)",
-          "oklch(80% 0.0000 0.00)",
-          "oklch(95% 0.0000 0.00)"
+          "oklch(15% 0.0041 91.45)",
+          "oklch(25% 0.0041 91.45)",
+          "oklch(35% 0.0041 91.45)",
+          "oklch(45% 0.0041 91.45)",
+          "oklch(55% 0.0041 91.45)",
+          "oklch(65% 0.0041 91.45)",
+          "oklch(80% 0.0041 91.45)",
+          "oklch(95% 0.0041 91.45)"
+        ]
+      },
+      "acte": {
+        "role": "neutral",
+        "displayName": "Acte teinté",
+        "tonalRamp": [
+          "oklch(15% 0.0163 82.79)",
+          "oklch(25% 0.0163 82.79)",
+          "oklch(35% 0.0163 82.79)",
+          "oklch(45% 0.0163 82.79)",
+          "oklch(55% 0.0163 82.79)",
+          "oklch(65% 0.0163 82.79)",
+          "oklch(80% 0.0163 82.79)",
+          "oklch(95% 0.0163 82.79)"
         ]
       },
       "encre": {
         "role": "neutral",
         "displayName": "Encre",
         "tonalRamp": [
-          "oklch(15% 0.0105 268.16)",
-          "oklch(25% 0.0105 268.16)",
-          "oklch(35% 0.0105 268.16)",
-          "oklch(45% 0.0105 268.16)",
-          "oklch(55% 0.0105 268.16)",
-          "oklch(65% 0.0105 268.16)",
-          "oklch(80% 0.0105 268.16)",
-          "oklch(95% 0.0105 268.16)"
+          "oklch(15% 0.0026 67.67)",
+          "oklch(25% 0.0026 67.67)",
+          "oklch(35% 0.0026 67.67)",
+          "oklch(45% 0.0026 67.67)",
+          "oklch(55% 0.0026 67.67)",
+          "oklch(65% 0.0026 67.67)",
+          "oklch(80% 0.0026 67.67)",
+          "oklch(95% 0.0026 67.67)"
         ]
       },
-      "graphite": {
+      "eteint": {
         "role": "neutral",
-        "displayName": "Graphite",
+        "displayName": "Éteint",
         "tonalRamp": [
-          "oklch(15% 0.0226 262.91)",
-          "oklch(25% 0.0226 262.91)",
-          "oklch(35% 0.0226 262.91)",
-          "oklch(45% 0.0226 262.91)",
-          "oklch(55% 0.0226 262.91)",
-          "oklch(65% 0.0226 262.91)",
-          "oklch(80% 0.0226 262.91)",
-          "oklch(95% 0.0226 262.91)"
+          "oklch(15% 0.0143 79.71)",
+          "oklch(25% 0.0143 79.71)",
+          "oklch(35% 0.0143 79.71)",
+          "oklch(45% 0.0143 79.71)",
+          "oklch(55% 0.0143 79.71)",
+          "oklch(65% 0.0143 79.71)",
+          "oklch(80% 0.0143 79.71)",
+          "oklch(95% 0.0143 79.71)"
         ]
       },
-      "bleu": {
+      "trait": {
+        "role": "neutral",
+        "displayName": "Trait porteur",
+        "tonalRamp": [
+          "oklch(15% 0.0193 75.99)",
+          "oklch(25% 0.0193 75.99)",
+          "oklch(35% 0.0193 75.99)",
+          "oklch(45% 0.0193 75.99)",
+          "oklch(55% 0.0193 75.99)",
+          "oklch(65% 0.0193 75.99)",
+          "oklch(80% 0.0193 75.99)",
+          "oklch(95% 0.0193 75.99)"
+        ]
+      },
+      "filet": {
+        "role": "neutral",
+        "displayName": "Filet",
+        "tonalRamp": [
+          "oklch(15% 0.0164 82.79)",
+          "oklch(25% 0.0164 82.79)",
+          "oklch(35% 0.0164 82.79)",
+          "oklch(45% 0.0164 82.79)",
+          "oklch(55% 0.0164 82.79)",
+          "oklch(65% 0.0164 82.79)",
+          "oklch(80% 0.0164 82.79)",
+          "oklch(95% 0.0164 82.79)"
+        ]
+      },
+      "accent": {
         "role": "primary",
         "displayName": "Bleu roi",
         "tonalRamp": [
@@ -74,23 +116,23 @@
           "oklch(95% 0.2068 264.29)"
         ]
       },
-      "bleu-survol": {
+      "accent-survol": {
         "role": "primary",
-        "displayName": "Bleu roi au survol",
+        "displayName": "Bleu roi, survol",
         "tonalRamp": [
-          "oklch(15% 0.1754 264.63)",
-          "oklch(25% 0.1754 264.63)",
-          "oklch(35% 0.1754 264.63)",
-          "oklch(45% 0.1754 264.63)",
-          "oklch(55% 0.1754 264.63)",
-          "oklch(65% 0.1754 264.63)",
-          "oklch(80% 0.1754 264.63)",
-          "oklch(95% 0.1754 264.63)"
+          "oklch(15% 0.1823 264.38)",
+          "oklch(25% 0.1823 264.38)",
+          "oklch(35% 0.1823 264.38)",
+          "oklch(45% 0.1823 264.38)",
+          "oklch(55% 0.1823 264.38)",
+          "oklch(65% 0.1823 264.38)",
+          "oklch(80% 0.1823 264.38)",
+          "oklch(95% 0.1823 264.38)"
         ]
       },
-      "sur-bleu": {
+      "accent-texte": {
         "role": "primary",
-        "displayName": "Texte sur bleu",
+        "displayName": "Texte sur bleu roi",
         "tonalRamp": [
           "oklch(15% 0.0000 0.00)",
           "oklch(25% 0.0000 0.00)",
@@ -102,405 +144,521 @@
           "oklch(95% 0.0000 0.00)"
         ]
       },
-      "colza": {
+      "laiton": {
         "role": "secondary",
-        "displayName": "Jaune colza",
+        "displayName": "Laiton des figures",
         "tonalRamp": [
-          "oklch(15% 0.1608 95.56)",
-          "oklch(25% 0.1608 95.56)",
-          "oklch(35% 0.1608 95.56)",
-          "oklch(45% 0.1608 95.56)",
-          "oklch(55% 0.1608 95.56)",
-          "oklch(65% 0.1608 95.56)",
-          "oklch(80% 0.1608 95.56)",
-          "oklch(95% 0.1608 95.56)"
+          "oklch(15% 0.0933 70.48)",
+          "oklch(25% 0.0933 70.48)",
+          "oklch(35% 0.0933 70.48)",
+          "oklch(45% 0.0933 70.48)",
+          "oklch(55% 0.0933 70.48)",
+          "oklch(65% 0.0933 70.48)",
+          "oklch(80% 0.0933 70.48)",
+          "oklch(95% 0.0933 70.48)"
         ]
       },
-      "sur-colza": {
+      "erreur": {
         "role": "secondary",
-        "displayName": "Texte du surligneur",
+        "displayName": "Erreur",
         "tonalRamp": [
-          "oklch(15% 0.0105 268.16)",
-          "oklch(25% 0.0105 268.16)",
-          "oklch(35% 0.0105 268.16)",
-          "oklch(45% 0.0105 268.16)",
-          "oklch(55% 0.0105 268.16)",
-          "oklch(65% 0.0105 268.16)",
-          "oklch(80% 0.0105 268.16)",
-          "oklch(95% 0.0105 268.16)"
+          "oklch(15% 0.1634 30.10)",
+          "oklch(25% 0.1634 30.10)",
+          "oklch(35% 0.1634 30.10)",
+          "oklch(45% 0.1634 30.10)",
+          "oklch(55% 0.1634 30.10)",
+          "oklch(65% 0.1634 30.10)",
+          "oklch(80% 0.1634 30.10)",
+          "oklch(95% 0.1634 30.10)"
         ]
       },
-      "filet": {
-        "role": "neutral",
-        "displayName": "Filet",
+      "surligneur": {
+        "role": "secondary",
+        "displayName": "Colza",
         "tonalRamp": [
-          "oklch(15% 0.0122 259.82)",
-          "oklch(25% 0.0122 259.82)",
-          "oklch(35% 0.0122 259.82)",
-          "oklch(45% 0.0122 259.82)",
-          "oklch(55% 0.0122 259.82)",
-          "oklch(65% 0.0122 259.82)",
-          "oklch(80% 0.0122 259.82)",
-          "oklch(95% 0.0122 259.82)"
+          "oklch(15% 0.1606 95.10)",
+          "oklch(25% 0.1606 95.10)",
+          "oklch(35% 0.1606 95.10)",
+          "oklch(45% 0.1606 95.10)",
+          "oklch(55% 0.1606 95.10)",
+          "oklch(65% 0.1606 95.10)",
+          "oklch(80% 0.1606 95.10)",
+          "oklch(95% 0.1606 95.10)"
         ]
       },
-      "trait": {
-        "role": "neutral",
-        "displayName": "Trait",
+      "sur-surligneur": {
+        "role": "secondary",
+        "displayName": "Encre sur colza",
         "tonalRamp": [
-          "oklch(15% 0.0226 262.91)",
-          "oklch(25% 0.0226 262.91)",
-          "oklch(35% 0.0226 262.91)",
-          "oklch(45% 0.0226 262.91)",
-          "oklch(55% 0.0226 262.91)",
-          "oklch(65% 0.0226 262.91)",
-          "oklch(80% 0.0226 262.91)",
-          "oklch(95% 0.0226 262.91)"
+          "oklch(15% 0.0026 67.67)",
+          "oklch(25% 0.0026 67.67)",
+          "oklch(35% 0.0026 67.67)",
+          "oklch(45% 0.0026 67.67)",
+          "oklch(55% 0.0026 67.67)",
+          "oklch(65% 0.0026 67.67)",
+          "oklch(80% 0.0026 67.67)",
+          "oklch(95% 0.0026 67.67)"
         ]
       },
-      "trait-doux": {
-        "role": "neutral",
-        "displayName": "Trait doux",
+      "focus": {
+        "role": "primary",
+        "displayName": "Focus du jour",
         "tonalRamp": [
-          "oklch(15% 0.0206 260.17)",
-          "oklch(25% 0.0206 260.17)",
-          "oklch(35% 0.0206 260.17)",
-          "oklch(45% 0.0206 260.17)",
-          "oklch(55% 0.0206 260.17)",
-          "oklch(65% 0.0206 260.17)",
-          "oklch(80% 0.0206 260.17)",
-          "oklch(95% 0.0206 260.17)"
+          "oklch(15% 0.2068 264.29)",
+          "oklch(25% 0.2068 264.29)",
+          "oklch(35% 0.2068 264.29)",
+          "oklch(45% 0.2068 264.29)",
+          "oklch(55% 0.2068 264.29)",
+          "oklch(65% 0.2068 264.29)",
+          "oklch(80% 0.2068 264.29)",
+          "oklch(95% 0.2068 264.29)"
         ]
       },
-      "pointille": {
+      "emplacement": {
         "role": "neutral",
-        "displayName": "Pointillé",
+        "displayName": "Emplacement de visuel",
         "tonalRamp": [
-          "oklch(15% 0.0173 259.42)",
-          "oklch(25% 0.0173 259.42)",
-          "oklch(35% 0.0173 259.42)",
-          "oklch(45% 0.0173 259.42)",
-          "oklch(55% 0.0173 259.42)",
-          "oklch(65% 0.0173 259.42)",
-          "oklch(80% 0.0173 259.42)",
-          "oklch(95% 0.0173 259.42)"
+          "oklch(15% 0.0145 84.59)",
+          "oklch(25% 0.0145 84.59)",
+          "oklch(35% 0.0145 84.59)",
+          "oklch(45% 0.0145 84.59)",
+          "oklch(55% 0.0145 84.59)",
+          "oklch(65% 0.0145 84.59)",
+          "oklch(80% 0.0145 84.59)",
+          "oklch(95% 0.0145 84.59)"
         ]
       },
-      "voile": {
+      "veille": {
         "role": "neutral",
-        "displayName": "Voile de l’en-tête",
+        "displayName": "Acte de veille",
         "tonalRamp": [
-          "oklch(15% 0.0029 264.54)",
-          "oklch(25% 0.0029 264.54)",
-          "oklch(35% 0.0029 264.54)",
-          "oklch(45% 0.0029 264.54)",
-          "oklch(55% 0.0029 264.54)",
-          "oklch(65% 0.0029 264.54)",
-          "oklch(80% 0.0029 264.54)",
-          "oklch(95% 0.0029 264.54)"
+          "oklch(15% 0.0123 270.75)",
+          "oklch(25% 0.0123 270.75)",
+          "oklch(35% 0.0123 270.75)",
+          "oklch(45% 0.0123 270.75)",
+          "oklch(55% 0.0123 270.75)",
+          "oklch(65% 0.0123 270.75)",
+          "oklch(80% 0.0123 270.75)",
+          "oklch(95% 0.0123 270.75)"
         ]
       },
-      "nuit-papier": {
+      "nuit-fond": {
         "role": "neutral",
-        "displayName": "Papier froid — nuit",
+        "displayName": "Suie",
         "tonalRamp": [
-          "oklch(15% 0.0338 267.59)",
-          "oklch(25% 0.0338 267.59)",
-          "oklch(35% 0.0338 267.59)",
-          "oklch(45% 0.0338 267.59)",
-          "oklch(55% 0.0338 267.59)",
-          "oklch(65% 0.0338 267.59)",
-          "oklch(80% 0.0338 267.59)",
-          "oklch(95% 0.0338 267.59)"
+          "oklch(15% 0.0111 267.98)",
+          "oklch(25% 0.0111 267.98)",
+          "oklch(35% 0.0111 267.98)",
+          "oklch(45% 0.0111 267.98)",
+          "oklch(55% 0.0111 267.98)",
+          "oklch(65% 0.0111 267.98)",
+          "oklch(80% 0.0111 267.98)",
+          "oklch(95% 0.0111 267.98)"
         ]
       },
-      "nuit-blanc": {
+      "nuit-surface": {
         "role": "neutral",
-        "displayName": "Planche blanche — nuit",
+        "displayName": "Surface de nuit",
         "tonalRamp": [
-          "oklch(15% 0.0427 265.65)",
-          "oklch(25% 0.0427 265.65)",
-          "oklch(35% 0.0427 265.65)",
-          "oklch(45% 0.0427 265.65)",
-          "oklch(55% 0.0427 265.65)",
-          "oklch(65% 0.0427 265.65)",
-          "oklch(80% 0.0427 265.65)",
-          "oklch(95% 0.0427 265.65)"
+          "oklch(15% 0.0221 269.12)",
+          "oklch(25% 0.0221 269.12)",
+          "oklch(35% 0.0221 269.12)",
+          "oklch(45% 0.0221 269.12)",
+          "oklch(55% 0.0221 269.12)",
+          "oklch(65% 0.0221 269.12)",
+          "oklch(80% 0.0221 269.12)",
+          "oklch(95% 0.0221 269.12)"
+        ]
+      },
+      "nuit-acte": {
+        "role": "neutral",
+        "displayName": "Acte de nuit",
+        "tonalRamp": [
+          "oklch(15% 0.0149 266.81)",
+          "oklch(25% 0.0149 266.81)",
+          "oklch(35% 0.0149 266.81)",
+          "oklch(45% 0.0149 266.81)",
+          "oklch(55% 0.0149 266.81)",
+          "oklch(65% 0.0149 266.81)",
+          "oklch(80% 0.0149 266.81)",
+          "oklch(95% 0.0149 266.81)"
         ]
       },
       "nuit-encre": {
         "role": "neutral",
-        "displayName": "Encre — nuit",
+        "displayName": "Clair de lune",
         "tonalRamp": [
-          "oklch(15% 0.0116 264.51)",
-          "oklch(25% 0.0116 264.51)",
-          "oklch(35% 0.0116 264.51)",
-          "oklch(45% 0.0116 264.51)",
-          "oklch(55% 0.0116 264.51)",
-          "oklch(65% 0.0116 264.51)",
-          "oklch(80% 0.0116 264.51)",
-          "oklch(95% 0.0116 264.51)"
+          "oklch(15% 0.0100 267.36)",
+          "oklch(25% 0.0100 267.36)",
+          "oklch(35% 0.0100 267.36)",
+          "oklch(45% 0.0100 267.36)",
+          "oklch(55% 0.0100 267.36)",
+          "oklch(65% 0.0100 267.36)",
+          "oklch(80% 0.0100 267.36)",
+          "oklch(95% 0.0100 267.36)"
         ]
       },
-      "nuit-graphite": {
+      "nuit-eteint": {
         "role": "neutral",
-        "displayName": "Graphite — nuit",
+        "displayName": "Éteint de nuit",
         "tonalRamp": [
-          "oklch(15% 0.0283 262.31)",
-          "oklch(25% 0.0283 262.31)",
-          "oklch(35% 0.0283 262.31)",
-          "oklch(45% 0.0283 262.31)",
-          "oklch(55% 0.0283 262.31)",
-          "oklch(65% 0.0283 262.31)",
-          "oklch(80% 0.0283 262.31)",
-          "oklch(95% 0.0283 262.31)"
-        ]
-      },
-      "nuit-bleu": {
-        "role": "primary",
-        "displayName": "Bleu roi — nuit",
-        "tonalRamp": [
-          "oklch(15% 0.1197 266.30)",
-          "oklch(25% 0.1197 266.30)",
-          "oklch(35% 0.1197 266.30)",
-          "oklch(45% 0.1197 266.30)",
-          "oklch(55% 0.1197 266.30)",
-          "oklch(65% 0.1197 266.30)",
-          "oklch(80% 0.1197 266.30)",
-          "oklch(95% 0.1197 266.30)"
-        ]
-      },
-      "nuit-bleu-survol": {
-        "role": "primary",
-        "displayName": "Bleu roi au survol — nuit",
-        "tonalRamp": [
-          "oklch(15% 0.0769 266.87)",
-          "oklch(25% 0.0769 266.87)",
-          "oklch(35% 0.0769 266.87)",
-          "oklch(45% 0.0769 266.87)",
-          "oklch(55% 0.0769 266.87)",
-          "oklch(65% 0.0769 266.87)",
-          "oklch(80% 0.0769 266.87)",
-          "oklch(95% 0.0769 266.87)"
-        ]
-      },
-      "nuit-sur-bleu": {
-        "role": "primary",
-        "displayName": "Texte sur bleu — nuit",
-        "tonalRamp": [
-          "oklch(15% 0.0338 267.59)",
-          "oklch(25% 0.0338 267.59)",
-          "oklch(35% 0.0338 267.59)",
-          "oklch(45% 0.0338 267.59)",
-          "oklch(55% 0.0338 267.59)",
-          "oklch(65% 0.0338 267.59)",
-          "oklch(80% 0.0338 267.59)",
-          "oklch(95% 0.0338 267.59)"
-        ]
-      },
-      "nuit-colza": {
-        "role": "secondary",
-        "displayName": "Jaune colza — nuit",
-        "tonalRamp": [
-          "oklch(15% 0.1432 93.38)",
-          "oklch(25% 0.1432 93.38)",
-          "oklch(35% 0.1432 93.38)",
-          "oklch(45% 0.1432 93.38)",
-          "oklch(55% 0.1432 93.38)",
-          "oklch(65% 0.1432 93.38)",
-          "oklch(80% 0.1432 93.38)",
-          "oklch(95% 0.1432 93.38)"
-        ]
-      },
-      "nuit-sur-colza": {
-        "role": "secondary",
-        "displayName": "Texte du surligneur — nuit",
-        "tonalRamp": [
-          "oklch(15% 0.0105 268.16)",
-          "oklch(25% 0.0105 268.16)",
-          "oklch(35% 0.0105 268.16)",
-          "oklch(45% 0.0105 268.16)",
-          "oklch(55% 0.0105 268.16)",
-          "oklch(65% 0.0105 268.16)",
-          "oklch(80% 0.0105 268.16)",
-          "oklch(95% 0.0105 268.16)"
-        ]
-      },
-      "nuit-filet": {
-        "role": "neutral",
-        "displayName": "Filet — nuit",
-        "tonalRamp": [
-          "oklch(15% 0.0489 267.49)",
-          "oklch(25% 0.0489 267.49)",
-          "oklch(35% 0.0489 267.49)",
-          "oklch(45% 0.0489 267.49)",
-          "oklch(55% 0.0489 267.49)",
-          "oklch(65% 0.0489 267.49)",
-          "oklch(80% 0.0489 267.49)",
-          "oklch(95% 0.0489 267.49)"
+          "oklch(15% 0.0158 264.46)",
+          "oklch(25% 0.0158 264.46)",
+          "oklch(35% 0.0158 264.46)",
+          "oklch(45% 0.0158 264.46)",
+          "oklch(55% 0.0158 264.46)",
+          "oklch(65% 0.0158 264.46)",
+          "oklch(80% 0.0158 264.46)",
+          "oklch(95% 0.0158 264.46)"
         ]
       },
       "nuit-trait": {
         "role": "neutral",
-        "displayName": "Trait — nuit",
+        "displayName": "Trait de nuit",
         "tonalRamp": [
-          "oklch(15% 0.0283 262.31)",
-          "oklch(25% 0.0283 262.31)",
-          "oklch(35% 0.0283 262.31)",
-          "oklch(45% 0.0283 262.31)",
-          "oklch(55% 0.0283 262.31)",
-          "oklch(65% 0.0283 262.31)",
-          "oklch(80% 0.0283 262.31)",
-          "oklch(95% 0.0283 262.31)"
+          "oklch(15% 0.0312 267.28)",
+          "oklch(25% 0.0312 267.28)",
+          "oklch(35% 0.0312 267.28)",
+          "oklch(45% 0.0312 267.28)",
+          "oklch(55% 0.0312 267.28)",
+          "oklch(65% 0.0312 267.28)",
+          "oklch(80% 0.0312 267.28)",
+          "oklch(95% 0.0312 267.28)"
         ]
       },
-      "nuit-trait-doux": {
+      "nuit-filet": {
         "role": "neutral",
-        "displayName": "Trait doux — nuit",
+        "displayName": "Filet de nuit",
         "tonalRamp": [
-          "oklch(15% 0.0485 266.50)",
-          "oklch(25% 0.0485 266.50)",
-          "oklch(35% 0.0485 266.50)",
-          "oklch(45% 0.0485 266.50)",
-          "oklch(55% 0.0485 266.50)",
-          "oklch(65% 0.0485 266.50)",
-          "oklch(80% 0.0485 266.50)",
-          "oklch(95% 0.0485 266.50)"
+          "oklch(15% 0.0231 267.23)",
+          "oklch(25% 0.0231 267.23)",
+          "oklch(35% 0.0231 267.23)",
+          "oklch(45% 0.0231 267.23)",
+          "oklch(55% 0.0231 267.23)",
+          "oklch(65% 0.0231 267.23)",
+          "oklch(80% 0.0231 267.23)",
+          "oklch(95% 0.0231 267.23)"
         ]
       },
-      "nuit-pointille": {
-        "role": "neutral",
-        "displayName": "Pointillé — nuit",
+      "nuit-accent": {
+        "role": "primary",
+        "displayName": "Lune, liens de nuit",
         "tonalRamp": [
-          "oklch(15% 0.0534 267.22)",
-          "oklch(25% 0.0534 267.22)",
-          "oklch(35% 0.0534 267.22)",
-          "oklch(45% 0.0534 267.22)",
-          "oklch(55% 0.0534 267.22)",
-          "oklch(65% 0.0534 267.22)",
-          "oklch(80% 0.0534 267.22)",
-          "oklch(95% 0.0534 267.22)"
+          "oklch(15% 0.0987 272.59)",
+          "oklch(25% 0.0987 272.59)",
+          "oklch(35% 0.0987 272.59)",
+          "oklch(45% 0.0987 272.59)",
+          "oklch(55% 0.0987 272.59)",
+          "oklch(65% 0.0987 272.59)",
+          "oklch(80% 0.0987 272.59)",
+          "oklch(95% 0.0987 272.59)"
         ]
       },
-      "nuit-voile": {
-        "role": "neutral",
-        "displayName": "Voile de l’en-tête — nuit",
+      "nuit-accent-survol": {
+        "role": "primary",
+        "displayName": "Lune, survol",
         "tonalRamp": [
-          "oklch(15% 0.0338 267.59)",
-          "oklch(25% 0.0338 267.59)",
-          "oklch(35% 0.0338 267.59)",
-          "oklch(45% 0.0338 267.59)",
-          "oklch(55% 0.0338 267.59)",
-          "oklch(65% 0.0338 267.59)",
-          "oklch(80% 0.0338 267.59)",
-          "oklch(95% 0.0338 267.59)"
+          "oklch(15% 0.0636 274.25)",
+          "oklch(25% 0.0636 274.25)",
+          "oklch(35% 0.0636 274.25)",
+          "oklch(45% 0.0636 274.25)",
+          "oklch(55% 0.0636 274.25)",
+          "oklch(65% 0.0636 274.25)",
+          "oklch(80% 0.0636 274.25)",
+          "oklch(95% 0.0636 274.25)"
         ]
       },
-      "lod-accent": {
+      "nuit-accent-texte": {
+        "role": "primary",
+        "displayName": "Texte sur lune",
+        "tonalRamp": [
+          "oklch(15% 0.0111 267.98)",
+          "oklch(25% 0.0111 267.98)",
+          "oklch(35% 0.0111 267.98)",
+          "oklch(45% 0.0111 267.98)",
+          "oklch(55% 0.0111 267.98)",
+          "oklch(65% 0.0111 267.98)",
+          "oklch(80% 0.0111 267.98)",
+          "oklch(95% 0.0111 267.98)"
+        ]
+      },
+      "nuit-erreur": {
         "role": "secondary",
-        "displayName": "Pétrole League Of Database",
+        "displayName": "Erreur de nuit",
         "tonalRamp": [
-          "oklch(15% 0.0736 209.13)",
-          "oklch(25% 0.0736 209.13)",
-          "oklch(35% 0.0736 209.13)",
-          "oklch(45% 0.0736 209.13)",
-          "oklch(55% 0.0736 209.13)",
-          "oklch(65% 0.0736 209.13)",
-          "oklch(80% 0.0736 209.13)",
-          "oklch(95% 0.0736 209.13)"
+          "oklch(15% 0.1211 31.72)",
+          "oklch(25% 0.1211 31.72)",
+          "oklch(35% 0.1211 31.72)",
+          "oklch(45% 0.1211 31.72)",
+          "oklch(55% 0.1211 31.72)",
+          "oklch(65% 0.1211 31.72)",
+          "oklch(80% 0.1211 31.72)",
+          "oklch(95% 0.1211 31.72)"
         ]
       },
-      "lod-pale": {
-        "role": "neutral",
-        "displayName": "Pétrole pâle",
-        "tonalRamp": [
-          "oklch(15% 0.0193 204.85)",
-          "oklch(25% 0.0193 204.85)",
-          "oklch(35% 0.0193 204.85)",
-          "oklch(45% 0.0193 204.85)",
-          "oklch(55% 0.0193 204.85)",
-          "oklch(65% 0.0193 204.85)",
-          "oklch(80% 0.0193 204.85)",
-          "oklch(95% 0.0193 204.85)"
-        ]
-      },
-      "lod-ecran": {
-        "role": "neutral",
-        "displayName": "Fond de visionneuse",
-        "tonalRamp": [
-          "oklch(15% 0.0210 248.76)",
-          "oklch(25% 0.0210 248.76)",
-          "oklch(35% 0.0210 248.76)",
-          "oklch(45% 0.0210 248.76)",
-          "oklch(55% 0.0210 248.76)",
-          "oklch(65% 0.0210 248.76)",
-          "oklch(80% 0.0210 248.76)",
-          "oklch(95% 0.0210 248.76)"
-        ]
-      },
-      "lod-sur-ecran": {
-        "role": "neutral",
-        "displayName": "Texte de visionneuse",
-        "tonalRamp": [
-          "oklch(15% 0.0000 0.00)",
-          "oklch(25% 0.0000 0.00)",
-          "oklch(35% 0.0000 0.00)",
-          "oklch(45% 0.0000 0.00)",
-          "oklch(55% 0.0000 0.00)",
-          "oklch(65% 0.0000 0.00)",
-          "oklch(80% 0.0000 0.00)",
-          "oklch(95% 0.0000 0.00)"
-        ]
-      },
-      "lod-nuit-accent": {
+      "nuit-surligneur": {
         "role": "secondary",
-        "displayName": "Pétrole nuit",
+        "displayName": "Colza de nuit",
         "tonalRamp": [
-          "oklch(15% 0.0951 202.25)",
-          "oklch(25% 0.0951 202.25)",
-          "oklch(35% 0.0951 202.25)",
-          "oklch(45% 0.0951 202.25)",
-          "oklch(55% 0.0951 202.25)",
-          "oklch(65% 0.0951 202.25)",
-          "oklch(80% 0.0951 202.25)",
-          "oklch(95% 0.0951 202.25)"
+          "oklch(15% 0.1325 92.46)",
+          "oklch(25% 0.1325 92.46)",
+          "oklch(35% 0.1325 92.46)",
+          "oklch(45% 0.1325 92.46)",
+          "oklch(55% 0.1325 92.46)",
+          "oklch(65% 0.1325 92.46)",
+          "oklch(80% 0.1325 92.46)",
+          "oklch(95% 0.1325 92.46)"
         ]
       },
-      "lod-nuit-pale": {
-        "role": "neutral",
-        "displayName": "Fond pétrole nuit",
+      "nuit-sur-surligneur": {
+        "role": "secondary",
+        "displayName": "Suie sur colza",
         "tonalRamp": [
-          "oklch(15% 0.0368 235.92)",
-          "oklch(25% 0.0368 235.92)",
-          "oklch(35% 0.0368 235.92)",
-          "oklch(45% 0.0368 235.92)",
-          "oklch(55% 0.0368 235.92)",
-          "oklch(65% 0.0368 235.92)",
-          "oklch(80% 0.0368 235.92)",
-          "oklch(95% 0.0368 235.92)"
+          "oklch(15% 0.0111 267.98)",
+          "oklch(25% 0.0111 267.98)",
+          "oklch(35% 0.0111 267.98)",
+          "oklch(45% 0.0111 267.98)",
+          "oklch(55% 0.0111 267.98)",
+          "oklch(65% 0.0111 267.98)",
+          "oklch(80% 0.0111 267.98)",
+          "oklch(95% 0.0111 267.98)"
+        ]
+      },
+      "nuit-focus": {
+        "role": "primary",
+        "displayName": "Focus de nuit (lanterne)",
+        "tonalRamp": [
+          "oklch(15% 0.1382 77.19)",
+          "oklch(25% 0.1382 77.19)",
+          "oklch(35% 0.1382 77.19)",
+          "oklch(45% 0.1382 77.19)",
+          "oklch(55% 0.1382 77.19)",
+          "oklch(65% 0.1382 77.19)",
+          "oklch(80% 0.1382 77.19)",
+          "oklch(95% 0.1382 77.19)"
+        ]
+      },
+      "veille-nuit": {
+        "role": "neutral",
+        "displayName": "Acte de veille, nuit",
+        "tonalRamp": [
+          "oklch(15% 0.0347 268.64)",
+          "oklch(25% 0.0347 268.64)",
+          "oklch(35% 0.0347 268.64)",
+          "oklch(45% 0.0347 268.64)",
+          "oklch(55% 0.0347 268.64)",
+          "oklch(65% 0.0347 268.64)",
+          "oklch(80% 0.0347 268.64)",
+          "oklch(95% 0.0347 268.64)"
+        ]
+      },
+      "lanterne": {
+        "role": "primary",
+        "displayName": "Lumière de lanterne",
+        "tonalRamp": [
+          "oklch(15% 0.1382 77.19)",
+          "oklch(25% 0.1382 77.19)",
+          "oklch(35% 0.1382 77.19)",
+          "oklch(45% 0.1382 77.19)",
+          "oklch(55% 0.1382 77.19)",
+          "oklch(65% 0.1382 77.19)",
+          "oklch(80% 0.1382 77.19)",
+          "oklch(95% 0.1382 77.19)"
+        ]
+      },
+      "lanterne-survol": {
+        "role": "primary",
+        "displayName": "Lanterne, survol",
+        "tonalRamp": [
+          "oklch(15% 0.1178 80.69)",
+          "oklch(25% 0.1178 80.69)",
+          "oklch(35% 0.1178 80.69)",
+          "oklch(45% 0.1178 80.69)",
+          "oklch(55% 0.1178 80.69)",
+          "oklch(65% 0.1178 80.69)",
+          "oklch(80% 0.1178 80.69)",
+          "oklch(95% 0.1178 80.69)"
+        ]
+      },
+      "lanterne-halo": {
+        "role": "primary",
+        "displayName": "Halo de lanterne",
+        "tonalRamp": [
+          "oklch(15% 0.1382 77.19)",
+          "oklch(25% 0.1382 77.19)",
+          "oklch(35% 0.1382 77.19)",
+          "oklch(45% 0.1382 77.19)",
+          "oklch(55% 0.1382 77.19)",
+          "oklch(65% 0.1382 77.19)",
+          "oklch(80% 0.1382 77.19)",
+          "oklch(95% 0.1382 77.19)"
+        ]
+      },
+      "suie": {
+        "role": "neutral",
+        "displayName": "Suie",
+        "tonalRamp": [
+          "oklch(15% 0.0111 267.98)",
+          "oklch(25% 0.0111 267.98)",
+          "oklch(35% 0.0111 267.98)",
+          "oklch(45% 0.0111 267.98)",
+          "oklch(55% 0.0111 267.98)",
+          "oklch(65% 0.0111 267.98)",
+          "oklch(80% 0.0111 267.98)",
+          "oklch(95% 0.0111 267.98)"
+        ]
+      },
+      "lune": {
+        "role": "neutral",
+        "displayName": "Lune",
+        "tonalRamp": [
+          "oklch(15% 0.0100 267.36)",
+          "oklch(25% 0.0100 267.36)",
+          "oklch(35% 0.0100 267.36)",
+          "oklch(45% 0.0100 267.36)",
+          "oklch(55% 0.0100 267.36)",
+          "oklch(65% 0.0100 267.36)",
+          "oklch(80% 0.0100 267.36)",
+          "oklch(95% 0.0100 267.36)"
+        ]
+      },
+      "bleu-roi": {
+        "role": "primary",
+        "displayName": "Bleu roi d’identité",
+        "tonalRamp": [
+          "oklch(15% 0.2068 264.29)",
+          "oklch(25% 0.2068 264.29)",
+          "oklch(35% 0.2068 264.29)",
+          "oklch(45% 0.2068 264.29)",
+          "oklch(55% 0.2068 264.29)",
+          "oklch(65% 0.2068 264.29)",
+          "oklch(80% 0.2068 264.29)",
+          "oklch(95% 0.2068 264.29)"
+        ]
+      },
+      "bleu-nuit": {
+        "role": "secondary",
+        "displayName": "Bleu nuit, acte « La suite »",
+        "tonalRamp": [
+          "oklch(15% 0.0686 267.73)",
+          "oklch(25% 0.0686 267.73)",
+          "oklch(35% 0.0686 267.73)",
+          "oklch(45% 0.0686 267.73)",
+          "oklch(55% 0.0686 267.73)",
+          "oklch(65% 0.0686 267.73)",
+          "oklch(80% 0.0686 267.73)",
+          "oklch(95% 0.0686 267.73)"
+        ]
+      },
+      "bleu-nuit-surface": {
+        "role": "secondary",
+        "displayName": "Surface de l’acte bleu",
+        "tonalRamp": [
+          "oklch(15% 0.0809 266.80)",
+          "oklch(25% 0.0809 266.80)",
+          "oklch(35% 0.0809 266.80)",
+          "oklch(45% 0.0809 266.80)",
+          "oklch(55% 0.0809 266.80)",
+          "oklch(65% 0.0809 266.80)",
+          "oklch(80% 0.0809 266.80)",
+          "oklch(95% 0.0809 266.80)"
+        ]
+      },
+      "bleu-nuit-encre": {
+        "role": "secondary",
+        "displayName": "Encre de l’acte bleu",
+        "tonalRamp": [
+          "oklch(15% 0.0099 267.36)",
+          "oklch(25% 0.0099 267.36)",
+          "oklch(35% 0.0099 267.36)",
+          "oklch(45% 0.0099 267.36)",
+          "oklch(55% 0.0099 267.36)",
+          "oklch(65% 0.0099 267.36)",
+          "oklch(80% 0.0099 267.36)",
+          "oklch(95% 0.0099 267.36)"
+        ]
+      },
+      "bleu-nuit-eteint": {
+        "role": "secondary",
+        "displayName": "Éteint de l’acte bleu",
+        "tonalRamp": [
+          "oklch(15% 0.0441 270.80)",
+          "oklch(25% 0.0441 270.80)",
+          "oklch(35% 0.0441 270.80)",
+          "oklch(45% 0.0441 270.80)",
+          "oklch(55% 0.0441 270.80)",
+          "oklch(65% 0.0441 270.80)",
+          "oklch(80% 0.0441 270.80)",
+          "oklch(95% 0.0441 270.80)"
+        ]
+      },
+      "aplat-roi-surface": {
+        "role": "secondary",
+        "displayName": "Surface de l’aplat bleu roi",
+        "tonalRamp": [
+          "oklch(15% 0.2107 264.77)",
+          "oklch(25% 0.2107 264.77)",
+          "oklch(35% 0.2107 264.77)",
+          "oklch(45% 0.2107 264.77)",
+          "oklch(55% 0.2107 264.77)",
+          "oklch(65% 0.2107 264.77)",
+          "oklch(80% 0.2107 264.77)",
+          "oklch(95% 0.2107 264.77)"
+        ]
+      },
+      "aplat-roi-eteint": {
+        "role": "secondary",
+        "displayName": "Texte doux sur l’aplat bleu roi",
+        "tonalRamp": [
+          "oklch(15% 0.0322 272.26)",
+          "oklch(25% 0.0322 272.26)",
+          "oklch(35% 0.0322 272.26)",
+          "oklch(45% 0.0322 272.26)",
+          "oklch(55% 0.0322 272.26)",
+          "oklch(65% 0.0322 272.26)",
+          "oklch(80% 0.0322 272.26)",
+          "oklch(95% 0.0322 272.26)"
+        ]
+      },
+      "cadre": {
+        "role": "neutral",
+        "displayName": "Cadre de capture",
+        "tonalRamp": [
+          "oklch(15% 0.0129 270.57)",
+          "oklch(25% 0.0129 270.57)",
+          "oklch(35% 0.0129 270.57)",
+          "oklch(45% 0.0129 270.57)",
+          "oklch(55% 0.0129 270.57)",
+          "oklch(65% 0.0129 270.57)",
+          "oklch(80% 0.0129 270.57)",
+          "oklch(95% 0.0129 270.57)"
         ]
       }
     },
     "typographyMeta": {
-      "display": {
-        "displayName": "display",
-        "purpose": "Échelle de titre du socle global."
+      "affiche": {
+        "displayName": "affiche",
+        "purpose": "L’accroche de l’accueil, seule."
       },
-      "signature": {
-        "displayName": "signature",
-        "purpose": "Nom de Charles dans la couverture uniquement."
+      "titre-page": {
+        "displayName": "titre-page",
+        "purpose": "Titres de page et de chapitre."
       },
-      "headline": {
-        "displayName": "headline",
-        "purpose": "Titres de chapitre du récit."
+      "titre-section": {
+        "displayName": "titre-section",
+        "purpose": "Titres de section."
       },
-      "title": {
-        "displayName": "title",
-        "purpose": "Titre interne compact."
+      "titre": {
+        "displayName": "titre",
+        "purpose": "Titres internes, cartes et décisions."
+      },
+      "citation": {
+        "displayName": "citation",
+        "purpose": "Phrases de Charles, en italique d’Instrument Serif."
       },
       "chapeau": {
         "displayName": "chapeau",
-        "purpose": "Introduction de chapitre."
+        "purpose": "Chapeau sous un titre."
       },
       "body": {
         "displayName": "body",
@@ -510,196 +668,182 @@
         "displayName": "small",
         "purpose": "Informations secondaires."
       },
-      "caption": {
-        "displayName": "caption",
-        "purpose": "Légende de figure."
+      "legende": {
+        "displayName": "legende",
+        "purpose": "Légendes, étiquettes, sources et dates."
       },
-      "metadata": {
-        "displayName": "metadata",
-        "purpose": "Métadonnée de fiche sans capsule."
-      },
-      "note": {
-        "displayName": "note",
-        "purpose": "Annotation Newsreader en italique."
+      "preuve": {
+        "displayName": "preuve",
+        "purpose": "Chiffres-preuves, Instrument Sans 600 tabulaire."
       },
       "button": {
         "displayName": "button",
         "purpose": "Libellé de commande."
-      },
-      "lod-display": {
-        "displayName": "lod-display",
-        "purpose": "Titre de couverture League Of Database."
-      },
-      "lod-headline": {
-        "displayName": "lod-headline",
-        "purpose": "Titre de section League Of Database."
       }
     },
     "shadows": [
       {
-        "name": "lod-couverture",
-        "value": "0 18px 36px rgb(9 41 43 / .13)",
-        "purpose": "Sous la capture de couverture League Of Database ; source : site/src/styles/league-of-database.css."
+        "name": "ombre-1",
+        "value": "0 1px 0 rgb(20 19 18 / 0.04), 0 10px 28px -16px rgb(20 19 18 / 0.28)",
+        "purpose": "Carte, le jour ; la nuit, un filet de 1 px. Source : site/src/styles/jetons.css."
+      },
+      {
+        "name": "ombre-2",
+        "value": "0 30px 70px -30px rgb(20 19 18 / 0.45)",
+        "purpose": "Carte survolée, panneau ; la nuit, un halo de lanterne. Source : site/src/styles/jetons.css."
       }
     ],
     "motion": [
       {
-        "name": "commande-couleur",
-        "value": "150ms ease",
-        "purpose": "Survol des boutons ; source : site/src/styles/global.css."
+        "name": "courbe",
+        "value": "cubic-bezier(0.2, 0.7, 0.2, 1)",
+        "purpose": "La seule courbe du site (règle M2). Source : site/src/styles/jetons.css."
       },
       {
-        "name": "lod-choix",
-        "value": "180ms ease",
-        "purpose": "Fond et texte des labels radio ; source : site/src/styles/league-of-database.css."
+        "name": "d-ui",
+        "value": "200ms",
+        "purpose": "Interface : survols, commandes."
       },
       {
-        "name": "lod-version",
-        "value": "220ms cubic-bezier(.16, 1, .3, 1)",
-        "purpose": "Apparition de .75 à 1 en opacité et de 4px à 0 verticalement ; source : site/src/styles/league-of-database.css."
+        "name": "d-scene",
+        "value": "400ms",
+        "purpose": "Scènes et flamme de la bascule."
       },
       {
-        "name": "theme-rail",
-        "value": "280ms cubic-bezier(.2, .8, .2, 1)",
-        "purpose": "Translation de 32px du curseur Jour / Nuit ; source : site/src/components/layout/Entete.astro."
+        "name": "allumage",
+        "value": "800ms (deux scènes)",
+        "purpose": "Passage jour / nuit en View Transition, masque radial centré sur la lanterne. Source : site/src/styles/theme-transition.css."
       },
       {
-        "name": "theme-page",
-        "value": "380ms ease-in-out",
-        "purpose": "Transition après choix explicite ; source : site/src/styles/theme-transition.css."
+        "name": "plafond",
+        "value": "1.8s cubic-bezier(.4, 0, .2, 1)",
+        "purpose": "Tracé de la figure du plafond à son arrivée. Source : site/src/scripts/figure-plafond.ts."
       },
       {
         "name": "mouvement-reduit",
-        "value": "0.01ms",
-        "purpose": "Garde-fou global ; la surface League Of Database supprime explicitement les transitions et animations. Source : site/src/styles/global.css."
+        "value": "état final",
+        "purpose": "Sans transition ni allumage ; boucle suspendue hors écran et dans un onglet masqué. Source : site/src/scripts/figure-animations.ts."
       }
     ],
     "breakpoints": [
       {
-        "name": "entete-menu",
-        "value": "1099px"
+        "name": "navigation-de-page",
+        "value": "1100px"
       },
       {
-        "name": "entete-compacte",
-        "value": "760px"
+        "name": "mobile",
+        "value": "860px"
       },
       {
-        "name": "figures-compactes",
-        "value": "640px"
+        "name": "etroit",
+        "value": "560px"
       },
       {
-        "name": "lod-intermediaire",
-        "value": "1050px"
-      },
-      {
-        "name": "lod-mobile",
-        "value": "799px"
-      },
-      {
-        "name": "lod-tres-etroit",
-        "value": "399px"
-      },
-      {
-        "name": "lod-ecran-court",
-        "value": "500px (max-height)"
+        "name": "plus-petit-vise",
+        "value": "320px"
       }
     ]
   },
   "components": [
     {
-      "name": "Bouton plein",
+      "name": "Bouton principal",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Action principale ; source : site/src/styles/global.css.",
-      "html": "<button class=\"ds-button ds-primary\" type=\"button\">Découvrir l’application</button>",
-      "css": ".ds-button{display:inline-flex;align-items:center;justify-content:center;gap:.5em;min-height:48px;padding:11px 22px;border:1px solid var(--bleu,#1f4fd1);border-radius:var(--rayon,4px);font:700 1rem/1.2 var(--font-texte,Atkinson Hyperlegible Next,system-ui,sans-serif);cursor:pointer;transition:background-color .15s ease,border-color .15s ease,color .15s ease}.ds-button:focus-visible{outline:2px solid var(--bleu,#1f4fd1);outline-offset:3px;}@media(prefers-reduced-motion:reduce){.ds-button{transition:none}}.ds-primary{background:var(--bleu,#1f4fd1);color:var(--sur-bleu,#ffffff)}.ds-primary:hover{background:var(--bleu-survol,#173ca6);border-color:var(--bleu-survol,#173ca6)}"
+      "description": "Pilule de 48 px, une seule action principale par écran ; bleu roi le jour, lanterne la nuit. Source : site/src/components/ui/Bouton.astro et site/src/styles/global.css.",
+      "html": "<a class=\"ds-bouton\" href=\"/contact\">Discutons&nbsp;→</a>",
+      "css": ".ds-bouton{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 24px;border:0;border-radius:var(--r3,999px);background:var(--bouton,#1f4fd1);color:var(--bouton-texte,#ffffff);font:600 1rem/1.2 var(--police-texte,Instrument Sans,system-ui,sans-serif);letter-spacing:.01em;text-decoration:none;cursor:pointer;transition:background-color 200ms cubic-bezier(.2,.7,.2,1)}.ds-bouton:hover{background:var(--bouton-survol,#173fae)}.ds-bouton:focus-visible{outline:2px solid var(--focus,#1f4fd1);outline-offset:3px}@media(prefers-reduced-motion:reduce){.ds-bouton{transition:none}}"
     },
     {
-      "name": "Bouton contour",
-      "kind": "button",
-      "refersTo": "button-outline",
-      "description": "Action secondaire ; source : site/src/styles/global.css.",
-      "html": "<button class=\"ds-button ds-outline\" type=\"button\">Voir les projets</button>",
-      "css": ".ds-button{display:inline-flex;align-items:center;justify-content:center;gap:.5em;min-height:48px;padding:11px 22px;border:1px solid var(--bleu,#1f4fd1);border-radius:var(--rayon,4px);font:700 1rem/1.2 var(--font-texte,Atkinson Hyperlegible Next,system-ui,sans-serif);cursor:pointer;transition:background-color .15s ease,border-color .15s ease,color .15s ease}.ds-button:focus-visible{outline:2px solid var(--bleu,#1f4fd1);outline-offset:3px;}@media(prefers-reduced-motion:reduce){.ds-button{transition:none}}.ds-outline{background:transparent;color:var(--bleu,#1f4fd1)}.ds-outline:hover{background:color-mix(in srgb,var(--bleu,#1f4fd1) 9%,transparent)}"
+      "name": "Lien d’action",
+      "kind": "link",
+      "refersTo": "lien-action",
+      "description": "Action secondaire soulignée, flèche selon lib/liens.ts. Source : site/src/components/ui/LienAction.astro.",
+      "html": "<a class=\"ds-lien\" href=\"/projets/pvz-fusion\">Voir le projet&nbsp;→</a>",
+      "css": ".ds-lien{display:inline-flex;align-items:center;min-height:48px;color:var(--accent,#1f4fd1);font:400 1.0625rem/1.4 var(--police-texte,Instrument Sans,system-ui,sans-serif);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.22em}.ds-lien:hover{color:var(--accent-survol,#173fae);text-decoration-thickness:2px}.ds-lien:focus-visible{outline:2px solid var(--focus,#1f4fd1);outline-offset:3px;border-radius:4px}"
     },
     {
-      "name": "Bouton à pictogramme",
-      "kind": "button",
-      "refersTo": "button-icon",
-      "description": "Commande compacte ; source : site/src/styles/global.css.",
-      "html": "<button class=\"ds-icon\" type=\"button\" aria-label=\"Ouvrir le sommaire\"><svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" aria-hidden=\"true\"><path d=\"M4 6h16M4 12h16M4 18h16\"/></svg></button>",
-      "css": ".ds-icon{display:inline-grid;place-items:center;width:44px;height:44px;padding:0;border:1px solid var(--filet,#d8dde5);border-radius:var(--rayon,4px);background:transparent;color:var(--encre,#14161b);cursor:pointer;transition:border-color .15s ease,color .15s ease}.ds-icon:hover{border-color:var(--bleu,#1f4fd1);color:var(--bleu,#1f4fd1)}.ds-icon:focus-visible{outline:2px solid var(--bleu,#1f4fd1);outline-offset:3px;}@media(prefers-reduced-motion:reduce){.ds-icon{transition:none}}"
-    },
-    {
-      "name": "Navigation principale",
-      "kind": "nav",
-      "refersTo": "nav-link",
-      "description": "État courant par trait inférieur ; source : site/src/components/layout/Entete.astro.",
-      "html": "<nav class=\"ds-nav\" aria-label=\"Navigation principale\"><a href=\"/\">Accueil</a><a href=\"/projets\" aria-current=\"page\">Projets</a><a href=\"/contact\">Contact</a></nav>",
-      "css": ".ds-nav{display:flex;gap:clamp(16px,2vw,28px);font-family:var(--font-texte,Atkinson Hyperlegible Next,system-ui,sans-serif);}.ds-nav a{display:inline-flex;align-items:center;min-height:44px;padding-top:2px;border-bottom:2px solid transparent;color:var(--graphite,#59606d);text-decoration:none;font-size:.9375rem}.ds-nav a:hover{color:var(--encre,#14161b)}.ds-nav a[aria-current]{border-color:var(--bleu,#1f4fd1);color:var(--encre,#14161b);font-weight:700}.ds-nav a:focus-visible{outline:2px solid var(--bleu,#1f4fd1);outline-offset:3px;}"
-    },
-    {
-      "name": "Métadonnée de fiche",
-      "kind": "chip",
-      "refersTo": "metadata",
-      "description": "Texte simple, sans capsule ; source : site/src/components/accueil/Fiche.astro.",
-      "html": "<span class=\"ds-metadata\">Projet open source</span>",
-      "css": ".ds-metadata{font-family:var(--font-texte,Atkinson Hyperlegible Next,system-ui,sans-serif);color:var(--graphite,#59606d);font-size:var(--t-petit,1rem);line-height:1.4}"
-    },
-    {
-      "name": "Planche de figure",
-      "kind": "card",
-      "refersTo": "figure-panel",
-      "description": "Surface des dessins ; source : site/src/styles/global.css.",
-      "html": "<div class=\"ds-panel\"><svg viewBox=\"0 0 220 70\" width=\"220\" height=\"70\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-label=\"Une planche au trait\"><path d=\"M15 55h190M15 55V10M30 45l45-10 45 6 45-25 30-5\"/></svg></div>",
-      "css": ".ds-panel{background:var(--blanc,#ffffff);border:1px solid var(--filet,#d8dde5);border-radius:var(--rayon,4px);padding:clamp(10px,2.4vw,28px);color:var(--bleu,#1f4fd1)}.ds-panel svg{display:block;max-width:100%;height:auto}"
-    },
-    {
-      "name": "Choix natif League Of Database",
+      "name": "Preuve chiffrée",
       "kind": "custom",
-      "refersTo": "lod-choice",
-      "description": "Labels des radios de patch ; même principe pour fiches et langues. Sources : site/src/pages/projets/league-of-database.astro et site/src/styles/league-of-database.css.",
-      "html": "<fieldset class=\"ds-choices\"><legend>Comparer deux versions de la fiche · Ahri, niveau 1</legend><input class=\"ds-sr\" type=\"radio\" name=\"ds-patch\" id=\"ds-archive\" checked /><input class=\"ds-sr\" type=\"radio\" name=\"ds-patch\" id=\"ds-current\" /><div class=\"ds-choice-labels\"><label for=\"ds-archive\"><span>Patch</span><strong>3.6.14</strong></label><label for=\"ds-current\"><span>Patch</span><strong>16.20.1</strong></label></div></fieldset>",
-      "css": ".ds-choices{margin:0;padding:0;border:0;min-width:0;font-family:var(--font-texte,Atkinson Hyperlegible Next,system-ui,sans-serif);color:var(--encre,#14161b)}.ds-choices legend{color:var(--graphite,#59606d);font-size:.9375rem;margin-bottom:20px}.ds-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}.ds-choice-labels{display:flex;gap:12px}.ds-choice-labels label{display:flex;gap:10px;align-items:baseline;cursor:pointer;border:1px solid var(--trait-doux,#aab2bf);border-radius:var(--rayon,4px);padding:12px 22px;transition:background-color 180ms ease,color 180ms ease}.ds-choice-labels span{font-size:.9375rem}.ds-choice-labels strong{font-size:1.125rem}.ds-choice-labels label:hover{border-color:var(--bleu,#1f4fd1)}#ds-archive:checked~.ds-choice-labels label[for=ds-archive],#ds-current:checked~.ds-choice-labels label[for=ds-current]{color:var(--sur-bleu,#ffffff);background:var(--bleu,#1f4fd1);border-color:var(--bleu,#1f4fd1)}#ds-archive:focus-visible~.ds-choice-labels label[for=ds-archive],#ds-current:focus-visible~.ds-choice-labels label[for=ds-current]{outline:2px solid var(--bleu,#1f4fd1);outline-offset:3px;}@media(max-width:799px){.ds-choice-labels{gap:8px}.ds-choice-labels label{flex:1;justify-content:center;padding:12px;gap:6px}.ds-choice-labels span{font-size:.875rem}.ds-choice-labels strong{font-size:1rem}}@media(prefers-reduced-motion:reduce){.ds-choice-labels label{transition:none}}"
+      "refersTo": "preuve",
+      "description": "Un chiffre, ce qu’il compte, sa source et sa date ; un seul surligné par preuve. Source : site/src/components/ui/PreuveChiffree.astro.",
+      "html": "<div class=\"ds-preuve\"><span class=\"ds-preuve__valeur\"><mark>20</mark></span><span class=\"ds-preuve__libelle\">contributeurs formés</span><span class=\"ds-preuve__source\">Témoignage, confirmé le 13/10/2026</span></div>",
+      "css": ".ds-preuve{display:grid;gap:4px;font-family:var(--police-texte,Instrument Sans,system-ui,sans-serif);color:var(--encre,#141312)}.ds-preuve__valeur{font-size:clamp(2rem,1.4rem + 1.6vw,2.875rem);font-weight:600;line-height:1;font-variant-numeric:tabular-nums lining-nums}.ds-preuve mark{background:var(--surligneur,#f2cf3a);color:var(--sur-surligneur,#141312);border-radius:4px;padding:0 .08em}.ds-preuve__libelle{font-size:1rem}.ds-preuve__source{font-size:.875rem;color:var(--eteint,#59544c)}"
+    },
+    {
+      "name": "Carte de projet",
+      "kind": "card",
+      "refersTo": "carte",
+      "description": "Carte de la vitrine : étiquette de preuve, nom canonique, besoin, un chiffre, « Voir le projet → ». Source : site/src/components/pages/CarteProjet.astro.",
+      "html": "<article class=\"ds-carte\"><p class=\"ds-carte__preuve\">01 · Mener une équipe</p><h3 class=\"ds-carte__nom\">PvZ Fusion, pôle francophone</h3><p>Rattraper, à plusieurs, la traduction française d’un jeu qui change toutes les deux ou trois semaines.</p><a href=\"/projets/pvz-fusion\">Voir le projet&nbsp;→</a></article>",
+      "css": ".ds-carte{display:grid;gap:12px;padding:24px;background:var(--surface,#fbfaf7);border:1px solid var(--filet,#d2ccc1);border-radius:var(--r2,6px);box-shadow:var(--ombre-1);font:400 1.0625rem/1.6 var(--police-texte,Instrument Sans,system-ui,sans-serif);color:var(--encre,#141312)}.ds-carte__preuve{margin:0;font-size:.875rem;color:var(--eteint,#59544c)}.ds-carte__nom{margin:0;font:400 clamp(1.625rem,1.3rem + .9vw,2.125rem)/1.1 var(--police-titre,Instrument Serif,Georgia,serif)}.ds-carte p{margin:0}.ds-carte a{color:var(--accent,#1f4fd1)}"
+    },
+    {
+      "name": "Fiche technique",
+      "kind": "custom",
+      "refersTo": "fiche",
+      "description": "Tableau à filets de l’en-tête des projets (greffe de Banc d’essai) : Besoin, Ma part, Rôle, Période, Équipe, Statut, Liens publics. Source : site/src/components/projets/gabarit/FicheProjet.astro.",
+      "html": "<dl class=\"ds-fiche\"><div><dt>Rôle</dt><dd>Lead du pôle</dd></div><div><dt>Période</dt><dd>Depuis octobre 2025</dd></div><div><dt>Statut</dt><dd>En cours, bénévole</dd></div></dl>",
+      "css": ".ds-fiche{display:grid;grid-template-columns:repeat(3,1fr);margin:0;border-top:1px solid var(--trait,#7b7368);font-family:var(--police-texte,Instrument Sans,system-ui,sans-serif)}.ds-fiche>div{padding:12px 16px 12px 0;border-bottom:1px solid var(--filet,#d2ccc1)}.ds-fiche dt{font-size:.875rem;color:var(--eteint,#59544c)}.ds-fiche dd{margin:4px 0 0;font-size:1rem;color:var(--encre,#141312)}"
+    },
+    {
+      "name": "Statut",
+      "kind": "chip",
+      "refersTo": "etiquette",
+      "description": "Une forme et un mot, jamais la couleur seule. Source : site/src/components/ui/Statut.astro.",
+      "html": "<span class=\"ds-statut\"><span aria-hidden=\"true\">●</span> En ligne</span>",
+      "css": ".ds-statut{display:inline-flex;gap:6px;align-items:center;font:400 .875rem/1.4 var(--police-texte,Instrument Sans,system-ui,sans-serif);color:var(--encre,#141312)}"
+    },
+    {
+      "name": "Appel « Discutons » sur aplat bleu roi",
+      "kind": "custom",
+      "refersTo": "aplat-roi",
+      "description": "La fin de l’accueil (greffe de Banc d’essai) : une phrase, puis le bouton blanc à texte bleu roi le jour, lanterne la nuit. Source : site/src/components/pages/AppelDiscutons.astro.",
+      "html": "<div class=\"ds-aplat\"><p>Une idée à confronter, une équipe à faire grandir, un sujet technique à creuser&nbsp;: la discussion commence ici.</p><a class=\"ds-aplat__bouton\" href=\"/contact\">Discutons&nbsp;→</a></div>",
+      "css": ".ds-aplat{display:grid;gap:24px;padding:48px;background:#1f4fd1;color:#ffffff;border-radius:var(--r2,6px);font:400 clamp(1.1875rem,1.05rem + .5vw,1.375rem)/1.5 var(--police-texte,Instrument Sans,system-ui,sans-serif)}.ds-aplat p{margin:0;max-width:35rem}.ds-aplat__bouton{justify-self:start;display:inline-flex;align-items:center;min-height:48px;padding:0 24px;border-radius:999px;background:#ffffff;color:#1f4fd1;font-weight:600;font-size:1rem;text-decoration:none}.ds-aplat__bouton:focus-visible{outline:2px solid #f2cf3a;outline-offset:3px}"
     }
   ],
   "narrative": {
-    "northStar": "Mode d’emploi",
-    "overview": "Le « Mode d’emploi » validé donne au portfolio la clarté d’un manuel : papier froid, encre nette, figures légendées et annotations au stylo bleu. Atkinson porte la lecture ; Newsreader apporte la voix personnelle. Le logo livre-lanterne reste l’identité de la marque.\n\nLes pages de projets laissent les réalisations occuper l’espace. Les captures authentiques et les figures expliquent les usages ; le texte précise ce que le visuel ne suffit pas à comprendre. Le thème nuit adapte la même hiérarchie sans transformer tout le portfolio en décor de jeu.",
+    "northStar": "Lanterne",
+    "overview": "Une seule source de lumière : sur chaque écran, une seule chose est éclairée (la phrase, le chiffre, la capture) et le reste se tait. Le jour est une aube sur pierre claire où la nuit entre par des actes de veille sombres ; la nuit est un clair de lune bleuté où la lanterne pose un halo ambré sur la zone active.\n\nInstrument Serif porte les titres et la voix de Charles ; Instrument Sans le texte et les chiffres-preuves. Direction retenue le 13 octobre 2026, avec trois greffes de Banc d’essai : la fiche technique en tableau à filets, l’index des étiquettes de preuve et « Voir le projet → » sur chaque carte, l’acte bleu nuit de « La suite » avec un aplat bleu roi derrière « Discutons ».",
     "keyCharacteristics": [
-      "Papier et encre, filets fins et espaces généreux.",
-      "Bleu des actions et annotations ; jaune réservé aux preuves.",
-      "Titres nets, notes en italique et médias lisibles.",
-      "Jour et nuit, clavier, mouvement réduit et impression."
+      "Pierre claire le jour, suie bleutée la nuit ; un changement de lumière à chaque partie.",
+      "Instrument Serif pour la voix, Instrument Sans pour le texte et les preuves.",
+      "Bleu roi pour ce qui se clique, colza pour un chiffre sourcé, lanterne pour la zone éclairée.",
+      "Jour et nuit, clavier, mouvement réduit, impression et lecture sans JavaScript."
     ],
     "rules": [
       {
-        "name": "The Blue Ink Rule",
-        "body": "Le bleu porte les liens, commandes, tracés et notes de l’auteur. Le pétrole reste propre à League Of Database.",
+        "name": "The Single Light Rule",
+        "body": "Une seule zone éclairée par écran (.foyer) : un seul halo de jour, une seule lueur de lanterne la nuit.",
+        "section": "colors"
+      },
+      {
+        "name": "The Click Rule",
+        "body": "Le bleu roi (la lune, la nuit) ne porte que ce qui se clique.",
         "section": "colors"
       },
       {
         "name": "The Evidence Rule",
-        "body": "Le surligneur jaune souligne un seul chiffre sourcé par preuve ; la valeur reste écrite et lisible.",
+        "body": "Le colza souligne un seul chiffre sourcé par preuve ; la valeur reste écrite, avec sa source et sa date.",
         "section": "colors"
       },
       {
         "name": "The Legibility Rule",
-        "body": "Les figures et captures gardent leurs légendes, leurs proportions et une variante adaptée à la largeur disponible.",
+        "body": "Les figures et captures gardent leurs légendes, leurs proportions et une variante lisible à 390 px.",
         "section": "typography"
       }
     ],
     "dos": [
-      "Do reprendre les variables du socle et leurs variantes nuit.",
-      "Do utiliser le logo existant et des captures authentiques, avec provenance.",
-      "Do garder les choix, le focus et les légendes visibles au clavier et sur petit écran.",
-      "Do réserver les overrides d’une étude de cas à sa propre surface."
+      "Do écrire toute valeur dans site/src/styles/jetons.css, jour et nuit, et vérifier ses contrastes.",
+      "Do garder une seule zone éclairée et une seule action principale par écran.",
+      "Do montrer des captures réelles, entières ou annotées, avec leur provenance.",
+      "Do poser chaque illustration par <Visuel id>, avec sa consigne complète au registre."
     ],
     "donts": [
-      "Don’t réintroduire les directions visuelles écartées dans le portfolio.",
-      "Don’t inventer une preuve chiffrée ou présenter des captures comme une application interactive.",
-      "Don’t faire du pétrole ou de la composition League Of Database une règle de toutes les pages.",
-      "Don’t recadrer une capture au point de masquer l’information qu’elle démontre."
+      "Don’t réintroduire D « Mode d’emploi », A « Édition reliée » ni le reste de B ; « mode d’emploi » ne reste qu’en clin d’œil.",
+      "Don’t ajouter d’ornement, de cadre doré ni de lexique de jeu : la nuit ne doit jamais rappeler Nocturne.",
+      "Don’t présenter une image générée comme une capture ou une donnée.",
+      "Don’t recadrer une capture au point de masquer ce qu’elle prouve."
     ]
   }
 }
