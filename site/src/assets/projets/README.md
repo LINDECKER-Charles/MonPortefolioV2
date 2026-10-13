@@ -71,7 +71,8 @@ convertis en WebP avec Sharp, sans recomposition de l’interface.
 Les quatre allumages mobiles sont dans `public/demos/bloodborne/` : boss, découverte, rune et
 gemme, avec MP4, WebM et poster WebP. Chaque vidéo dure 10,4 secondes, sans audio ; le geste,
 la cérémonie et le retour à l’étoile allumée sont conservés. Dates, objectifs et contrôles dans
-[la provenance des vidéos](../../../public/demos/bloodborne/README.md) et `captures.json`.
+[la provenance des vidéos](bloodborne/allumages/README.md) et `captures.json`, rangés hors de
+`public/` pour ne pas être servis.
 Le script `tools/capturer-bloodborne.cjs` permet de les refaire sans modifier le dépôt source.
 
 ## Logos techniques

@@ -118,7 +118,7 @@ export const REPRISE = [
   { titre: 'Une prochaine étoile', detail: 'L’objectif suivant, et ce qu’il faut faire pour l’allumer.' },
 ] as const;
 
-/** Les quatre allumages enregistrés (public/demos/bloodborne/README.md). */
+/** Les quatre allumages enregistrés (assets/projets/bloodborne/allumages/README.md). */
 export const RITUELS = [
   {
     id: 'boss',
