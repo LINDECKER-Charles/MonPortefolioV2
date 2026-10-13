@@ -130,6 +130,10 @@ test.describe('la nuit, au repos', () => {
     const halo = (scene: string) => page.locator(`figure[data-scene="${scene}"] .scene__halo`).evaluate((c) => Number(getComputedStyle(c).opacity));
     expect(await halo('pc')).toBeCloseTo(0.55, 2);
     expect(await halo('cartes')).toBe(0);
+    expect(await halo('diplome')).toBeCloseTo(0.55, 2);
+    expect(await halo('pupitre')).toBe(0);
+    const gwent = await page.locator('.gwent__halo').evaluateAll((cercles) => cercles.map((c) => Number(getComputedStyle(c).opacity)));
+    expect(gwent).toEqual([0, 0, 0.5]);
     expect(await halo('pole-accueillir')).toBe(0);
     expect(await halo('pole-former')).toBe(0);
     expect(await halo('pole-autonomie')).toBeCloseTo(0.55, 2);

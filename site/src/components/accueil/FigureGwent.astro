@@ -39,7 +39,7 @@ const cartes = [
 <figure class="gwent" id="fig-gwent">
   <ol class="gwent__cartes">
     {cartes.map((carte, i) => (
-      <li class="gwent__carte">
+      <li class:list={['gwent__carte', { 'gwent__carte--eteinte': i < cartes.length - 1 }]}>
         <div class="gwent__plan" data-figure-animation>
           <div class="gwent__fenetre">
             <Visuel id={carte.visuel} alt="" sizes="(max-width: 599px) 50vw, 210px" />
@@ -100,6 +100,13 @@ const cartes = [
       --gwent-halo: 0.5;
       --gwent-ombre: 0.82;
     }
+  }
+
+  /* Une seule zone éclairée par écran : la nuit, au repos, seule la carte du
+     contre-pied garde sa lanterne allumée ; les deux autres s’allument à leur
+     tour, puis s’éteignent. */
+  .gwent__carte--eteinte {
+    --gwent-halo: 0;
   }
 
   .gwent__cartes {
