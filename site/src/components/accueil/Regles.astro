@@ -6,7 +6,8 @@
  * `data-revelation-progressive`). Une séquence — d’abord, ensuite, puis —
  * d’où les pastilles numérotées et le trait qui les relie. En conclusion du
  * récit : chaque preuve renvoie à l’endroit qui la raconte, une histoire
- * racontée une fois. Le surligneur ne marque que des chiffres sourcés.
+ * racontée une fois. Aucun surlignage ici : chaque chiffre est déjà surligné
+ * une fois dans le bandeau du pli et une fois là où le récit le raconte.
  */
 ---
 
@@ -17,7 +18,7 @@
     <h4>Maîtriser</h4>
     <p class="regle__sens">Comprendre ce qui fonctionne avant de prendre mes propres décisions.</p>
     <ul class="regle__preuves">
-      <li>Chez Elan, <a href="#voie">le programme de développeur web</a> terminé en <mark class="surligneur" data-source="docs/questions.md, C5">un mois</mark>, puis une grande partie du niveau supérieur étudiée en complément.</li>
+      <li>Chez Elan, <a href="#voie">le programme de développeur web</a> terminé en un mois, puis une grande partie du niveau supérieur étudiée en complément.</li>
       <li><a href="#gwent">Sur Gwent</a>, deux jours à jouer les stratégies dominantes après chaque mise à jour.</li>
     </ul>
   </li>
@@ -37,7 +38,7 @@
     <h4>Emmener</h4>
     <p class="regle__sens">Partager ce que j’ai compris pour que les autres puissent avancer.</p>
     <ul class="regle__preuves">
-      <li>Sur <a href="#collectif">PvZ Fusion</a>, <mark class="surligneur" data-source="docs/matiere-premiere.md, PvZ Fusion, confirmé le 13/10/2026">20</mark> contributeurs accueillis et formés, dont certains sont devenus des piliers du projet.</li>
+      <li>Sur <a href="#collectif">PvZ Fusion</a>, 20 contributeurs accueillis et formés, dont certains sont devenus des piliers du projet.</li>
       <li>Chez Elan, <a href="#bureau">je reprends une promotion en urgence</a> et l’accompagne jusqu’à la soutenance. Tous obtiennent leur titre.</li>
     </ul>
   </li>
@@ -120,10 +121,6 @@
     font-size: var(--t-s);
     line-height: 1.5;
     color: var(--eteint);
-  }
-
-  .regle__preuves mark {
-    white-space: nowrap;
   }
 
   .regle__preuves li::before {
