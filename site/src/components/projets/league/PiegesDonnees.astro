@@ -1,11 +1,12 @@
 ---
 /**
  * « Ce que les données ne disent pas » : cinq pièges de Data Dragon et la
- * réponse de l’application, chacun avec son picto (LOD-03, LOD-06 à LOD-09,
- * emplacements du registre). Source : héritage de la réécriture, § 5 et § 6
- * (config/league-of-database.ts, PIEGES ; docs/matiere-premiere.md).
+ * réponse de l’application, chacun avec son picto au trait (LOD-03, LOD-06 à
+ * LOD-09, dessinés à la main, insérés par PictoLeague). Source : héritage de
+ * la réécriture, § 5 et § 6 (config/league-of-database.ts, PIEGES ;
+ * docs/matiere-premiere.md).
  */
-import Visuel from '../../ui/Visuel.astro';
+import PictoLeague from './PictoLeague.astro';
 import { PIEGES } from '../../../config/league-of-database';
 import { typo } from '../../../lib/typo';
 ---
@@ -14,7 +15,7 @@ import { typo } from '../../../lib/typo';
   {
     PIEGES.map((piege) => (
       <li class="piege">
-        <Visuel id={piege.visuel} class="piege__picto" sizes="96px" />
+        <PictoLeague id={piege.visuel} class="piege__picto" />
         <h3 class="piege__titre">{typo(piege.piege)}</h3>
         <p class="piege__reponse"><span class="sr">Réponse&nbsp;: </span>{typo(piege.reponse)}</p>
       </li>

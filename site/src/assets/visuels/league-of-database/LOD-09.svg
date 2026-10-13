@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+  <title>Un éclair frappe un registre fermé, qui reste intact</title>
+  <path class="p-aplat" d="M13 20.5h23a2 2 0 0 1 2 2V41a2 2 0 0 1-2 2H13z" fill="currentColor" fill-opacity=".1" stroke="none"/>
+  <path d="M13 20.5h23a2 2 0 0 1 2 2V41a2 2 0 0 1-2 2H13zM13 20.5a3 3 0 0 0-3 3V40a3 3 0 0 0 3 3M16.5 20.5V43"/>
+  <path class="p-doux" d="M21.5 27.5h11v5h-11z" stroke-width="1.25" stroke-opacity=".55"/>
+  <path class="p-plein" d="M29.5 17.5h5v10l-2.5-2-2.5 2z" fill="currentColor"/>
+  <path d="M21.5 2.5 15 11h5.5l-3.5 7 8-9.5h-5.5l3.5-6z"/>
+  <path class="p-doux" d="M12.5 17.5 10 15.5M22.5 18l2.5-1.5" stroke-width="1.25" stroke-opacity=".55"/>
+</svg>

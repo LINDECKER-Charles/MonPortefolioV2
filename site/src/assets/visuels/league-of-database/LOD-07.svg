@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+  <title>Deux gemmes identiques reliées par un fil</title>
+  <path class="p-aplat" d="M4 13.5 7.5 9h7l3.5 4.5L11 22zM30 13.5 33.5 9h7l3.5 4.5L37 22z" fill="currentColor" fill-opacity=".1" stroke="none"/>
+  <path d="M4 13.5 7.5 9h7l3.5 4.5L11 22z"/>
+  <path d="M30 13.5 33.5 9h7l3.5 4.5L37 22z" stroke-width="4.75"/>
+  <path class="p-creux" d="M30 13.5 33.5 9h7l3.5 4.5L37 22z" stroke="#ffffff" stroke-width="1.5"/>
+  <path class="p-doux" d="M4.5 13.5h13M9.5 9.5 8.5 13.5l2.5 7.5M12.5 9.5l1 4l-2.5 7.5M30.5 13.5h13M35.5 9.5l-1 4 2.5 7.5M38.5 9.5l1 4-2.5 7.5" stroke-width="1.25" stroke-opacity=".55"/>
+  <path d="M11 24.5V36h10c2.6 0 4.3-1.7 4.3-3.7a2.3 2.3 0 0 0-4.6 0c0 2 1.7 3.7 4.3 3.7H37V24.5"/>
+</svg>

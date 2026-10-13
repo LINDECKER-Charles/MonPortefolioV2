@@ -4,10 +4,12 @@
  * du 4 octobre 2026 (config/league-of-database.ts, JALONS ; sources dans
  * docs/matiere-premiere.md). Une liste ordonnée : frise horizontale sur
  * ordinateur, verticale sur mobile. Le dernier jalon, l’état atteint, porte
- * seul la marque de la lanterne. Chaque jalon a son picto (LOD-05, LOD-10 à
- * LOD-12, emplacements du registre) ; les logos disent les deux piles.
+ * seul la marque de la lanterne, et son picto seul la lumière. Chaque jalon a
+ * son picto au trait (LOD-05, LOD-10 à LOD-12, dessinés à la main, insérés par
+ * PictoLeague) ; les logos disent les deux piles.
  */
-import Visuel from '../../ui/Visuel.astro';
+import PictoLeague from './PictoLeague.astro';
+import AConfirmer from '../../ui/AConfirmer.astro';
 import { JALONS } from '../../../config/league-of-database';
 import { typo } from '../../../lib/typo';
 
@@ -26,8 +28,8 @@ const dernier = JALONS.length - 1;
     JALONS.map((jalon, index) => (
       <li class:list={['jalon', { 'jalon--atteint': index === dernier }]}>
         <span class="jalon__point" aria-hidden="true" />
-        <Visuel id={jalon.visuel} class="jalon__picto" sizes="96px" />
-        <time class="jalon__date" datetime={jalon.date}>{jalon.libelle}</time>
+        <PictoLeague id={jalon.visuel} class="jalon__picto" />
+        <p class="jalon__date"><time datetime={jalon.date}>{jalon.libelle}</time>{'aConfirmer' in jalon && <AConfirmer titre={jalon.aConfirmer} />}</p>
         <h3 class="jalon__titre">{typo(jalon.titre)}</h3>
         <p class="jalon__texte">{typo(jalon.texte)}</p>
         {jalon.logos.length > 0 && (
@@ -47,6 +49,7 @@ const dernier = JALONS.length - 1;
 
 <style>
   .frise {
+    --picto-fond: var(--fond);
     position: relative;
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
