@@ -74,7 +74,7 @@ const resume = (cle: 'ancien' | 'actuel') => lignes.map((ligne) => `${ligne.libe
           class="comparaison__panneau"
           type="terminal"
           src={panneau(PATCHS[cle].capture)}
-          alt={`Le panneau de statistiques d’Ahri au patch ${PATCHS[cle].numero}, niveau 1 : ${resume(cle)}.`}
+          alt={typo(`Le panneau de statistiques d’Ahri au patch ${PATCHS[cle].numero}, niveau 1 : ${resume(cle)}.`)}
           legende={`Patch ${PATCHS[cle].numero}`}
           agrandir
           widths={[336, 672]}
