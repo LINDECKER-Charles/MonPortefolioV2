@@ -23,6 +23,7 @@ import DemoGup from '../../components/projets/gup/DemoGup.astro';
 import FigureCommandes from '../../components/projets/gup/FigureCommandes.astro';
 import FigureSources from '../../components/projets/gup/FigureSources.astro';
 import FigureVersions from '../../components/projets/gup/FigureVersions.astro';
+import PictosChoix from '../../components/projets/gup/PictosChoix.astro';
 import CadreCapture from '../../components/ui/CadreCapture.astro';
 import CaptureAnnotee from '../../components/ui/CaptureAnnotee.astro';
 import LienAction from '../../components/ui/LienAction.astro';
@@ -147,7 +148,7 @@ const capture = (nom: string) => {
 
     <DecisionsProjet decisions={DECISIONS} chapeau="Quatre choix d’architecture qui ne se voient pas à l’écran, et pourquoi.">
       <div class="gup-autres">
-        <Visuel id="GUP-02" alt="" class="gup-autres__visuel" largeur="576px" sizes="(max-width: 640px) 100vw, 576px" />
+        <PictosChoix class="gup-autres__visuel" />
         <h3>Et deux choix de plus</h3>
         <ul>
           {

@@ -285,6 +285,16 @@ test('une seule navigation de page, sans la note de sources', async ({ page }) =
   await expect(page.locator('#sources')).toContainText('0.4.0');
 });
 
+test('GUP-02 : six pictos dessinés, en ligne et muets, à la place du cadre hachuré', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const pictos = page.locator('#construit [data-visuel="GUP-02"]');
+  await expect(pictos).toHaveCount(1);
+  await expect(pictos).not.toHaveAttribute('data-manquant', /.*/);
+  await expect(pictos.locator('svg')).toHaveAttribute('aria-hidden', 'true');
+  await expect(pictos.locator('svg > g')).toHaveCount(6);
+  await expect(page.locator('[data-manquant][data-visuel="GUP-02"]')).toHaveCount(0);
+});
+
 for (const theme of ['jour', 'nuit'] as const) {
   test.describe(`axe, ${theme}, états ouverts`, () => {
     test.use({ colorScheme: theme === 'nuit' ? 'dark' : 'light', reducedMotion: 'reduce' });
