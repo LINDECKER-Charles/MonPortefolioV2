@@ -4,6 +4,7 @@ import DecisionsProjet from '../../src/components/projets/gabarit/DecisionsProje
 import EnTeteProjet from '../../src/components/projets/gabarit/EnTeteProjet.astro';
 import FicheProjet from '../../src/components/projets/gabarit/FicheProjet.astro';
 import SortieProjet from '../../src/components/projets/gabarit/SortieProjet.astro';
+import SourcesProjet from '../../src/components/projets/gabarit/SourcesProjet.astro';
 import { projetDeLaVitrine, VITRINE } from '../../src/config/projets';
 import { anglaises, DECISIONS, EN_TETE, FICHE, manquantes, PREUVES, RELEVE_ATTEINT, RELEVES } from '../../src/config/pvz-fusion';
 
@@ -47,7 +48,7 @@ describe('FicheProjet', () => {
 
   it('mesure chaque lien public comme une sortie, avec son nom d’hôte', async () => {
     const html = await rendre(FicheProjet, { fiche: FICHE });
-    const liens = [...html.matchAll(/<a href="([^"]+)"[^>]*>/g)];
+    const liens = [...html.matchAll(/<a href="(https?:[^"]+)"[^>]*>/g)];
     expect(liens).toHaveLength(FICHE.liens.length);
     for (const [balise, href] of liens) {
       expect(balise).toContain('rel="external"');
@@ -55,6 +56,11 @@ describe('FicheProjet', () => {
       expect(balise).toContain(`data-umami-event-domaine="${new URL(href).hostname}"`);
       expect(balise).toContain('data-umami-event-emplacement="preuves"');
     }
+  });
+
+  it('propose « Discutons de ce projet → » vers /contact, mesuré en fiche-projet', async () => {
+    const html = await rendre(FicheProjet, { fiche: FICHE });
+    expect(html).toMatch(/<a href="\/contact"[^>]*data-umami-event="contact-page"[^>]*data-umami-event-emplacement="fiche-projet"[^>]*>\s*Discutons de ce projet<span class="fleche" aria-hidden="true"[^>]*>\s→<\/span>/);
   });
 
   it('marque ce qui reste à confirmer, case par case', async () => {
@@ -120,10 +126,29 @@ describe('SortieProjet', () => {
     expect(html).toMatch(/<a class="bouton[^"]*" href="\/contact"[^>]*data-umami-event="contact-page"[^>]*data-umami-event-emplacement="discutons"/);
   });
 
-  it('propose le précédent et le suivant au milieu de la vitrine', async () => {
+  it('propose le précédent et le suivant au milieu de la vitrine, chacun avec la flèche de son sens', async () => {
     const html = await rendre(SortieProjet, { projet: 'omnicard' });
     expect(html).toContain('href="/projets/bloodborne-legendary-run"');
     expect(html).toContain('href="/projets/league-of-database"');
+    expect(html).toMatch(/href="\/projets\/league-of-database"[\s\S]*?<span class="fleche" aria-hidden="true"[^>]*>←\s<\/span>League Of Data Base/);
+    expect(html).toMatch(/Bloodborne Legendary Run<span class="fleche" aria-hidden="true"[^>]*>\s→<\/span>/);
+  });
+
+  it('mène le dernier projet de la vitrine aux autres projets publics (« Aussi »)', async () => {
+    const html = await rendre(SortieProjet, { projet: 'gup' });
+    expect(html).not.toContain('Projet suivant');
+    expect(html).toMatch(/<a class="voisin[^"]*" href="\/projets#aussi"/);
+    expect(html).toContain('Les autres projets publics');
+  });
+});
+
+describe('SourcesProjet', () => {
+  it('replie la note dans un <details> fermé, à l’ancre #sources, le texte présent dans le HTML', async () => {
+    const html = await rendre(SourcesProjet, {}, { default: '<p><b>Couverture.</b> Relevé du 13/10/2026.</p>' });
+    expect(html).toMatch(/<details id="sources" class="sources-projet[^"]*" data-sources[ >]/);
+    expect(html).not.toMatch(/<details[^>]*\sopen/);
+    expect(html).toMatch(/<summary[^>]*>[\s\S]*Sources et méthode[\s\S]*<\/summary>/);
+    expect(html).toContain('Relevé du 13/10/2026.');
   });
 });
 
