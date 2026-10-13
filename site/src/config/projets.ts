@@ -49,8 +49,8 @@ export const PROJETS_ACTIFS = [
     href: '/projets/league-of-database',
     categories: ['jeux'],
     usage: 'Historique des données de League of Legends',
-    promesse: 'Retrouver les données du jeu dans un ancien patch.',
-    resume: 'Une application web pour consulter les champions, objets, runes et sorts de League of Legends dans leurs versions passées, sur ordinateur et mobile.',
+    promesse: 'Retrouver les valeurs d’un ancien patch de League.',
+    resume: 'Une encyclopédie multilingue de League of Legends pour retrouver les champions, objets, runes et sorts d’une version précise du jeu.',
     resultat: 'Les données du jeu restent consultables par langue et par version.',
   },
 ] as const;

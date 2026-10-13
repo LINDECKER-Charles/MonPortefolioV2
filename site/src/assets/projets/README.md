@@ -191,3 +191,44 @@ de la version actuelle des sorts, comme l’indique l’avertissement de l’app
 ne sont pas présentées comme des vidéos historiques. Les illustrations des skins utilisent
 elles aussi des adresses sans patch : c’est la liste d’apparences disponibles qui sert de
 preuve historique.
+
+### Retrouver les anciennes valeurs — 13 octobre 2026
+
+Nouvelles captures de la production publique **v3.0.0**, sans compte connecté, fixture,
+masque ni modification de l’interface. Le même champion est consulté au niveau **1**
+dans les patchs **3.6.14** et **16.20.1**. Les polices et les images visibles sont
+chargées avant la capture. La route explicite du patch actuel redirige vers sa route
+courte ; le panneau de statistiques et l’en-tête identifient bien **16.20.1**.
+
+| Nom | Route demandée et geste | Dimensions originales desktop / mobile |
+|---|---|---|
+| `ahri-archive-statistiques` | `/fr/3.6.14/champions/Ahri`, capture native de l’élément `#stats` complet au niveau 1 | 672 × 1302 / 764 × 1302 |
+| `ahri-actuel-statistiques` | `/fr/16.20.1/champions/Ahri` → `/fr/champions/Ahri`, même panneau au niveau 1 | 672 × 1302 / 764 × 1302 |
+| `ahri-langue-anglaise` | `/en/16.20.1/champions/Ahri` → `/en/champions/Ahri`, présentation de la fiche en anglais | 2880 × 2000 / 860 × 1864 |
+| `ahri-langue-coreenne` | `/ko/16.20.1/champions/Ahri` → `/ko/champions/Ahri`, présentation de la fiche en coréen | 2880 × 2000 / 860 × 1864 |
+
+Chaque nom a un original `nom.webp` et une variante `nom-mobile.webp`. Les viewports
+restent **1440 × 1000** et **430 × 932**, avec un **DPR de 2**, et les originaux sont
+convertis en WebP qualité 94. Les panneaux `*-statistiques` conservent exactement leur
+rectangle natif dans l’application, sans agrandissement artificiel ni recomposition.
+Le défilement place le panneau entier au-dessus des indicateurs fixes de l’application.
+Les captures de viewport ont des aperçus proportionnels qualité 92 dans `apercus/`,
+aux largeurs 720, 1440 et 2160 pixels sur ordinateur, et 430 pixels sur mobile.
+La couverture `histoire-ahri` du 12 octobre dispose également de ces quatre nouveaux
+aperçus ; son aperçu mobile de 320 pixels existant reste disponible.
+
+Valeurs lues dans les deux fiches au niveau 1 :
+
+| Statistique d’Ahri | Patch 3.6.14 | Patch 16.20.1 |
+|---|---|---|
+| Points de vie | 380 | 590 |
+| Dégâts d’attaque | 50 | 53 |
+| Armure | 11 | 21 |
+| Mana | 230 | 418 |
+
+Les écrans anglais et coréen montrent la même fiche, le même patch et leurs données
+localisées (`en_US`, `ko_KR`) ; le nom coréen affiché est « 아리 ». Certains libellés
+d’interface restent en anglais dans la locale coréenne. Le périmètre du catalogue est
+celui des versions et langues publiées dans **Data Dragon** ; une langue absente d’un
+ancien dataset peut se replier sur l’anglais. Les illustrations et vidéos non versionnées
+ne constituent toujours pas des preuves de médias historiques.

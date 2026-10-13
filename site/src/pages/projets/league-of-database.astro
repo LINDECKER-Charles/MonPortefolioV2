@@ -9,10 +9,18 @@ import '../../styles/profondeur.css';
 import '../../styles/league-of-database.css';
 
 const titre = `League Of Database — ${SITE.nom}`;
-const description = 'Retrouver les données des anciens patchs de League of Legends, sur ordinateur et mobile, puis découvrir les caches et sauvegardes de League Of Database.';
-const taillesColonnes = '(max-width: 799px) calc(100vw - 48px), (max-width: 1360px) calc((100vw - 144px) / 2), 610px';
+const description = 'Retrouver les valeurs d’un ancien patch de League of Legends : champions, objets, runes et sorts. Une encyclopédie multilingue, sur ordinateur et mobile.';
 const taillesSecondaires = '(max-width: 799px) calc(100vw - 80px), (max-width: 1360px) 55vw, 790px';
-const taillesFiches = '(max-width: 799px) 260px, (max-height: 700px) 500px, 950px';
+const taillesFiches = '(max-width: 799px) 300px, (max-height: 700px) 500px, 950px';
+const versions = [
+  { id: 'archive', patch: '3.6.14', pv: '380', attaque: '50', armure: '11', mana: '230', href: 'https://www.league-of-data-base.com/fr/3.6.14/champions/Ahri' },
+  { id: 'actuel', patch: '16.20.1', pv: '590', attaque: '53', armure: '21', mana: '418', href: 'https://www.league-of-data-base.com/fr/16.20.1/champions/Ahri' },
+];
+const langues = [
+  { id: 'fr', nom: 'Français', capture: 'ahri', titre: 'Ahri', sousTitre: 'Renarde à neuf queues', href: 'https://www.league-of-data-base.com/fr/16.20.1/champions/Ahri' },
+  { id: 'en', nom: 'English', capture: 'ahri-langue-anglaise', titre: 'Ahri', sousTitre: 'the Nine-Tailed Fox', href: 'https://www.league-of-data-base.com/en/16.20.1/champions/Ahri' },
+  { id: 'ko', nom: '한국어', capture: 'ahri-langue-coreenne', titre: '아리', sousTitre: '구미호', href: 'https://www.league-of-data-base.com/ko/16.20.1/champions/Ahri' },
+];
 const fiches = [
   { nom: 'ahri', titre: 'Le champion', alt: 'La fiche d’Ahri dans League Of Database, avec son portrait et ses informations.' },
   { nom: 'ahri-capacites', titre: 'Ses capacités', alt: 'Les capacités d’Ahri, leurs descriptions et leurs valeurs dans la version choisie.' },
@@ -25,36 +33,59 @@ const fiches = [
     <div class="wrap"><FilAriane courant="League Of Database" projet /></div>
     <header class="lod-hero wrap" id="explorer">
       <div class="lod-hero__texte">
-        <p class="lod-nom">League Of Database</p>
-        <h1>Les données de League,<br />patch après patch.</h1>
-        <p class="lod-intro">Une application pour retrouver les champions, objets, runes et sorts de League of Legends dans les anciennes versions du jeu.</p>
-        <a class="btn btn--plein" href="https://www.league-of-data-base.com" data-umami-event="lien-sortant" data-umami-event-domaine="www.league-of-data-base.com" data-umami-event-emplacement="hero">Découvrir l’application <span aria-hidden="true">↗</span></a>
-        <p class="lod-role">Application web · ordinateur et mobile</p>
+        <h1>League change.<br /><span>Ses données restent.</span></h1>
+        <div class="lod-hero__presentation">
+          <p class="lod-intro"><strong>League Of Database</strong> est une encyclopédie multilingue de League of Legends. Elle permet de retrouver les valeurs, les capacités et les objets d’un ancien patch.</p>
+          <a class="btn btn--plein" href="https://www.league-of-data-base.com" data-umami-event="lien-sortant" data-umami-event-domaine="www.league-of-data-base.com" data-umami-event-emplacement="hero">Découvrir l’application <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12" /></svg></a>
+        </div>
       </div>
-      <figure class="lod-hero__visuel">
-        <div class="lod-bureau"><CaptureLeague nom="histoire-champions" alt="Les champions de League of Legends au patch 3.6.14, dans le catalogue de League Of Database." prioritaire adaptatif={false} tailles="(max-width: 799px) calc(100vw - 90px), (max-width: 1050px) 48vw, 650px" /></div>
-        <div class="lod-mobile"><CaptureLeague nom="histoire-ahri-mobile" alt="La fiche d’Ahri au patch 3.6.14, sur téléphone." largeur={430} hauteur={932} tailles="(max-width: 799px) min(144px, 22vw), (max-width: 1050px) 110px, 140px" /></div>
-        <figcaption>Un ancien patch, sur ordinateur comme sur mobile.</figcaption>
-      </figure>
+      <div class="lod-couverture">
+        <figure class="lod-bureau">
+          <CaptureLeague nom="histoire-ahri" alt="La fiche d’Ahri dans League Of Database, en français au patch 3.6.14. Son portrait, ses rôles et les entrées de sa fiche sont visibles." prioritaire tailles="(max-width: 799px) calc(100vw - 48px), (max-width: 1360px) 68vw, 950px" />
+          <figcaption>La véritable application · Ahri au patch 3.6.14</figcaption>
+        </figure>
+        <div class="lod-contexte">
+          <h2>Une fiche.<br />Le bon contexte.</h2>
+          <dl><div><dt>Champion</dt><dd>Ahri</dd></div><div><dt>Patch</dt><dd>3.6.14</dd></div><div><dt>Langue</dt><dd>Français</dd></div></dl>
+          <p>Les règles changent avec les mises à jour. Pour retrouver une ancienne valeur, il faut retrouver sa version.</p>
+          <a href="#versions">Voir ce qui change <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6 18 18M6 18h12V6" /></svg></a>
+        </div>
+      </div>
     </header>
     <nav class="lod-sommaire" aria-label="Dans cette page"><div class="wrap">
-      <a href="#versions">L’historique</a><a href="#anciennes-fiches">Un ancien patch</a><a href="#champions">Les fiches</a><a href="#objets">Les objets</a><a href="#trafic">Le trafic</a><a href="#audience">L’audience</a><a href="#sauvegardes">Les sauvegardes</a>
+      <a href="#versions">Retrouver une valeur</a><a href="#anciennes-fiches">Explorer un patch</a><a href="#langues">Lire dans sa langue</a><a href="#fabrication">La fabrication</a>
     </div></nav>
     <div class="wrap">
-      <section class="lod-section lod-historique" id="versions" aria-labelledby="versions-titre">
-        <div class="lod-tete"><h2 id="versions-titre">Choisir un ancien patch.<br />Ouvrir ses données.</h2><p>Chaque version ouvre ses champions, ses objets, ses runes et ses sorts.</p></div>
-        <ol class="lod-historique__etapes">
-          <li><div class="lod-historique__legende"><span aria-hidden="true">01</span><h3>Parcourir l’historique</h3></div><CaptureLeague nom="historique-anciens-patchs" tailles={taillesColonnes} alt="La partie 3.x de l’historique des patchs dans League Of Database, avec les liens vers les quatre catalogues de chaque ancienne version." /></li>
-          <li><div class="lod-historique__legende"><span aria-hidden="true">02</span><h3>Retrouver le catalogue de l’époque</h3></div><CaptureLeague nom="histoire-champions" tailles={taillesColonnes} alt="Le catalogue des 113 champions disponibles au patch 3.6.14 de League of Legends." /><p class="lod-historique__patch">Exemple : patch <strong>3.6.14</strong></p></li>
-        </ol>
+      <section class="lod-section lod-comparaison" id="versions" aria-labelledby="versions-titre">
+        <div class="lod-tete"><h2 id="versions-titre">Ce n’était pas<br />la même Ahri.</h2><p>Un même champion, deux patchs. La fiche d’aujourd’hui ne répond pas à une question sur le jeu d’hier.</p></div>
+        <fieldset class="lod-versions">
+          <legend>Comparer deux versions de la fiche · Ahri, niveau 1</legend>
+          {versions.map((version, index) => <input class="sr" type="radio" name="version-ahri" id={`version-${version.id}`} checked={index === 0} />)}
+          <div class="lod-versions__choix">{versions.map((version) => <label for={`version-${version.id}`}><span>Patch</span><strong>{version.patch}</strong></label>)}</div>
+          <div class="lod-versions__vues">
+            {versions.map((version) => <div class={`lod-version lod-version--${version.id}`}>
+              <div class="lod-version__lecture">
+                <h3>Ses valeurs au patch {version.patch}.</h3>
+                <dl class="lod-valeurs"><div><dt>Points de vie</dt><dd><span class="surligne">{version.pv}</span></dd></div><div><dt>Attaque</dt><dd>{version.attaque}</dd></div><div><dt>Armure</dt><dd>{version.armure}</dd></div><div><dt>Mana</dt><dd>{version.mana}</dd></div></dl>
+                <p>Valeurs de base au niveau 1, relevées dans la véritable fiche.</p>
+                <a href={version.href} data-umami-event="lien-sortant" data-umami-event-domaine="www.league-of-data-base.com" data-umami-event-emplacement="preuves">Ouvrir cette version dans l’application <svg class="lod-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12" /></svg></a>
+              </div>
+              <figure class="lod-version__preuve"><CaptureLeague nom={`ahri-${version.id}-statistiques`} largeur={336} hauteur={651} largeurMobile={382} hauteurMobile={651} tailles="(max-width: 799px) min(100vw - 96px, 382px), 336px" alt={`Le panneau de statistiques d’Ahri au patch ${version.patch}, au niveau 1 : ${version.pv} points de vie, ${version.attaque} attaque, ${version.armure} armure et ${version.mana} mana.`} /><figcaption>Capture du panneau de statistiques de l’application.</figcaption></figure>
+            </div>)}
+          </div>
+        </fieldset>
+        <p class="lod-note">Cette démonstration présente deux captures. Chaque patch s’ouvre dans sa propre fiche. Le catalogue conserve les versions et les langues publiées dans Data Dragon, la source de données de Riot.</p>
       </section>
       <section class="lod-section lod-archives" id="anciennes-fiches" aria-labelledby="archives-titre">
-        <div class="lod-tete"><h2 id="archives-titre">Ahri, au patch 3.6.14.</h2><p>Les caractéristiques et les capacités de cette version, dans sa fiche.</p></div>
-        <figure class="lod-archives__donnees"><CaptureLeague nom="histoire-ahri-statistiques" alt="Les statistiques d’Ahri au patch 3.6.14, avec 380 points de vie de base et 50 points d’attaque de base." /><figcaption>Les valeurs suivent le patch consulté.</figcaption></figure>
-        <div class="lod-archives__suite"><div><h3>Les apparences disponibles dans ce patch.</h3><p>Trois apparences dans le catalogue d’Ahri au patch 3.6.14.</p></div><CaptureLeague nom="histoire-skins" tailles={taillesSecondaires} alt="Les trois apparences d’Ahri présentes dans le catalogue du patch 3.6.14, avec leurs illustrations." /></div>
+        <div class="lod-tete"><h2 id="archives-titre">Retrouver tout<br />un état du jeu.</h2><p>Le patch détermine aussi le contenu du catalogue : les champions, les objets et les apparences disponibles.</p></div>
+        <div class="lod-catalogue">
+          <figure><CaptureLeague nom="histoire-champions" tailles="(max-width: 799px) calc(100vw - 48px), (max-width: 1360px) 62vw, 860px" alt="Le catalogue des 113 champions disponibles au patch 3.6.14 de League of Legends, avec leur portrait et leurs rôles." /><figcaption><strong>Le catalogue de l’époque.</strong> Champions du patch 3.6.14.</figcaption></figure>
+          <div class="lod-catalogue__lecture"><h3>Ce qui existait.<br />Ce qui n’existait pas encore.</h3><p>Une version passée garde ses propres données. On retrouve le champion dans le contexte du patch consulté.</p><a href="https://www.league-of-data-base.com/fr/3.6.14/champions" data-umami-event="lien-sortant" data-umami-event-domaine="www.league-of-data-base.com" data-umami-event-emplacement="preuves">Explorer ce catalogue <svg class="lod-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12" /></svg></a></div>
+        </div>
+        <div class="lod-archives__suite"><div><h3>Les apparences répertoriées à cette version.</h3><p>La liste suit le patch. Les illustrations proviennent du catalogue Riot.</p></div><CaptureLeague nom="histoire-skins" tailles={taillesSecondaires} alt="La galerie des trois apparences d’Ahri répertoriées au patch 3.6.14." /></div>
       </section>
       <section class="lod-section lod-champions" id="champions" aria-labelledby="champions-titre">
-        <div class="lod-tete"><h2 id="champions-titre">Les fiches à explorer.</h2><p>Exemple : Ahri dans le patch 16.20.1.</p></div>
+        <div class="lod-tete"><h2 id="champions-titre">Comprendre<br />un champion.</h2><p>Ses rôles, les effets de ses capacités et ses apparences. Ici, Ahri au patch 16.20.1.</p></div>
         <fieldset class="lod-fiches">
           <legend class="sr">Explorer la fiche d’Ahri</legend>
           {fiches.map((fiche, index) => <input class="sr" type="radio" name="fiche-ahri" id={`fiche-${fiche.nom}`} checked={index === 0} />)}
@@ -63,16 +94,30 @@ const fiches = [
         </fieldset>
       </section>
       <section class="lod-section" id="objets" aria-labelledby="objets-titre">
-        <div class="lod-tete"><h2 id="objets-titre">Les objets, leurs effets,<br />leurs recettes.</h2><p>Prix, caractéristiques et composants du patch consulté.</p></div>
-        <div class="lod-objets">
-          <figure><CaptureLeague nom="objets" tailles={taillesColonnes} alt="Le catalogue des objets de League of Legends dans League Of Database." /><figcaption><span>01</span><strong>Parcourir les objets</strong></figcaption></figure>
-          <figure><CaptureLeague nom="objet-recette" tailles={taillesColonnes} alt="La fiche de la Coiffe de Rabadon avec son prix, ses effets et les composants de sa recette." /><figcaption><span>02</span><strong>Comprendre la recette</strong></figcaption></figure>
+        <div class="lod-tete"><h2 id="objets-titre">De quoi se compose<br />cet objet ?</h2><p>Le prix, les effets et la recette, réunis dans la même fiche. Exemple : la Coiffe de Rabadon au patch 16.20.1.</p></div>
+        <div class="lod-objet-detail">
+          <figure><CaptureLeague nom="objet-recette" tailles="(max-width: 799px) calc(100vw - 48px), (max-width: 1360px) 62vw, 860px" alt="La fiche de la Coiffe de Rabadon au patch 16.20.1, avec son prix de 3 500 pièces d’or et sa recette composée de deux Baguettes trop grosses." /><figcaption><strong>La recette en un regard.</strong> Chaque composant ouvre sa fiche.</figcaption></figure>
+          <div class="lod-objet-detail__lecture"><h3>Du résultat<br />aux composants.</h3><p>La recette montre le lien entre les objets. On peut suivre chaque composant pour en consulter les détails.</p><a href="https://www.league-of-data-base.com/fr/16.20.1/items/3089-rabadons-deathcap" data-umami-event="lien-sortant" data-umami-event-domaine="www.league-of-data-base.com" data-umami-event-emplacement="preuves">Ouvrir la recette <svg class="lod-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12" /></svg></a></div>
         </div>
-        <div class="lod-runes"><div><h3>Une rune, dans son arbre.</h3><p>Les runes et les sorts d’invocateur complètent le catalogue.</p></div><CaptureLeague nom="runes" tailles={taillesSecondaires} alt="L’arbre de runes Précision et les effets de la rune Attaque soutenue dans League Of Database." /></div>
+        <div class="lod-runes"><div><h3>Et les runes,<br />dans leur arbre.</h3><p>Les runes et les sorts d’invocateur complètent cette encyclopédie du jeu.</p></div><CaptureLeague nom="runes" tailles={taillesSecondaires} alt="L’arbre Précision et les effets de la rune Attaque soutenue, au patch 16.20.1, dans League Of Database." /></div>
+      </section>
+      <section class="lod-section lod-langues" id="langues" aria-labelledby="langues-titre">
+        <div class="lod-tete"><h2 id="langues-titre">La même fiche.<br />Dans sa langue.</h2><p>Les noms et les descriptions viennent des traductions de Riot. Le patch reste le même.</p></div>
+        <fieldset class="lod-traductions">
+          <legend class="sr">Choisir la langue de la capture d’Ahri au patch 16.20.1</legend>
+          {langues.map((langue, index) => <input class="sr" type="radio" name="langue-ahri" id={`langue-${langue.id}`} aria-label={langue.id === 'ko' ? 'Coréen' : langue.id === 'en' ? 'Anglais' : langue.nom} checked={index === 0} />)}
+          <div class="lod-traductions__choix">{langues.map((langue) => <label lang={langue.id} for={`langue-${langue.id}`}>{langue.nom}</label>)}</div>
+          <div class="lod-traductions__vues">{langues.map((langue) => <figure class={`lod-traduction lod-traduction--${langue.id}`}>
+            <div class="lod-traduction__titre"><p lang={langue.id}><strong>{langue.titre}</strong><span>{langue.sousTitre}</span></p><span>Patch 16.20.1</span></div>
+            <CaptureLeague nom={langue.capture} tailles="(max-width: 799px) 350px, (max-width: 1360px) 92vw, 1248px" alt={`La fiche d’Ahri au patch 16.20.1 dans la version ${langue.id === 'ko' ? 'coréenne' : langue.id === 'en' ? 'anglaise' : 'française'} de League Of Database.`} />
+            <figcaption><a href={langue.href} data-umami-event="lien-sortant" data-umami-event-domaine="www.league-of-data-base.com" data-umami-event-emplacement="preuves">Consulter cette fiche en {langue.id === 'ko' ? 'coréen' : langue.id === 'en' ? 'anglais' : 'français'} <svg class="lod-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12" /></svg></a></figcaption>
+          </figure>)}</div>
+        </fieldset>
+        <p class="lod-note">Les langues disponibles dépendent de la version. Une traduction manquante utilise les données anglaises.</p>
       </section>
     </div>
     <div class="lod-fabrication"><div class="wrap">
-      <header class="lod-tech-intro"><p>Dans les coulisses</p><h2>Conserver les versions.<br />Servir les fiches.</h2><a href="https://github.com/LINDECKER-Charles/LeagueOfDataBaseFinal/tree/dev" data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="preuves">Voir le code source <span aria-hidden="true">↗</span></a></header>
+      <header class="lod-tech-intro" id="fabrication"><h2>Une base conçue<br />pour durer.</h2><p>Conserver les patchs, préparer les suivants et servir les fiches sans tout recalculer.</p><a href="https://github.com/LINDECKER-Charles/LeagueOfDataBaseFinal/tree/dev" data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="preuves">Voir le code source <svg class="lod-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12" /></svg></a></header>
       <FabricationLeague>
       <section class="lod-section lod-audience" id="audience" aria-labelledby="audience-titre">
         <div class="lod-tete"><h2 id="audience-titre">Voir ce qui est consulté.</h2><p>Umami suit les pages et les usages du catalogue.</p></div>
@@ -88,7 +133,8 @@ const fiches = [
       </FabricationLeague>
     </div></div>
     <div class="wrap">
-      <aside class="lod-credits" aria-label="À propos des captures"><p>Captures de la véritable application, le 12 octobre 2026. Les données et illustrations du jeu proviennent de Riot Games. Projet indépendant, sans affiliation à Riot Games.</p></aside>
+      <section class="lod-essayer" aria-labelledby="essayer-titre"><div><h2 id="essayer-titre">Un ancien patch en tête ?</h2><p>Retrouvez ses données dans League Of Database.</p></div><a class="btn btn--plein" href="https://www.league-of-data-base.com" data-umami-event="lien-sortant" data-umami-event-domaine="www.league-of-data-base.com" data-umami-event-emplacement="preuves">Explorer l’application <svg class="lod-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12" /></svg></a></section>
+      <aside class="lod-credits" aria-label="À propos des captures"><p>Captures de la véritable application, les 12 et 13 octobre 2026. Les données et illustrations du jeu proviennent de Riot Games. Projet indépendant, sans affiliation à Riot Games.</p></aside>
       <ContinuerLecture liens={[
         { href: '/projets/bloodborne-legendary-run', titre: 'Bloodborne Legendary Run', detail: 'Un compagnon pour retrouver sa progression.' },
         { href: '/projets', titre: 'Les projets', detail: 'Revenir à la sélection.' },
@@ -97,7 +143,7 @@ const fiches = [
     </div>
     <dialog class="lod-visionneuse" data-lod-dialog aria-labelledby="lod-capture-titre" aria-describedby="lod-capture-aide">
       <h2 class="sr" id="lod-capture-titre" data-lod-caption>Capture de League Of Database</h2>
-      <button class="lod-visionneuse__image" type="button" aria-label="Fermer la capture"><img data-lod-full alt="" /><span class="lod-capture__statut" data-lod-status role="status" hidden></span></button>
+      <button class="lod-visionneuse__image" type="button" aria-label="Fermer la capture"><img data-lod-full src="/images/league-of-database/histoire-ahri.webp" loading="lazy" alt="" /><span class="lod-capture__statut" data-lod-status role="status" hidden></span></button>
       <p id="lod-capture-aide">Cliquez sur l’image ou appuyez sur Échap pour revenir.</p>
     </dialog>
   </article>

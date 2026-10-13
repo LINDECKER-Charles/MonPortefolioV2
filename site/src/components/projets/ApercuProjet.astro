@@ -11,7 +11,7 @@ const { projet } = Astro.props;
 <div class:list={['miniature', `miniature--${projet.id}`]}>
   {projet.id === 'bloodborne' && <VisuelBloodborne compact />}
   {projet.id === 'gup' && <div class="mini-gup"><Picture src={gup} formats={['avif']} fallbackFormat="webp" widths={[812, 1624]} sizes="(min-width: 850px) 42vw, 100vw" alt="Dans l’interface GUP, les logiciels sont regroupés par source avec les versions disponibles et les mises à jour cochées." loading="lazy" /></div>}
-  {projet.id === 'league' && <img class="mini-league" src="/images/league-of-database/histoire-champions.webp" alt="Les champions du patch 3.6.14 dans League Of Database, une application pour retrouver les données des anciennes versions de League of Legends." width="1440" height="1000" loading="lazy" decoding="async" />}
+  {projet.id === 'league' && <img class="mini-league" src="/images/league-of-database/apercus/histoire-ahri-1440.webp" srcset="/images/league-of-database/apercus/histoire-ahri-720.webp 720w, /images/league-of-database/apercus/histoire-ahri-1440.webp 1440w" sizes="(min-width: 850px) 42vw, calc(100vw - 48px)" alt="La fiche d’Ahri au patch 3.6.14 dans League Of Database, une encyclopédie multilingue des données de League of Legends." width="1440" height="1000" loading="lazy" decoding="async" />}
   {projet.id === 'pvz' && <>
     <div class="mini-pvz__decor"><Picture src={pvz} formats={['avif']} fallbackFormat="webp" widths={[480, 768]} sizes="(min-width: 850px) 30vw, 100vw" alt="Une partie de Plants vs. Zombies Fusion, avec les plantes fusionnées pour défendre le jardin." loading="lazy" /></div>
     <p class="mini-pvz__traduction">Le même jeu, en français.</p>
