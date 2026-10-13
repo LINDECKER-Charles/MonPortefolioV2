@@ -8,12 +8,16 @@
  *
  *   <CompteARebours />
  *
+ * Le glossaire ne dit pas si la fin du tour où la carte est jouée compte :
+ * la frise la compte, et la légende marque ce décompte « à confirmer ».
+ *
  * Scène rejouable : les fins de tour s’allument une à une à l’arrivée, puis
  * au clic sur la frise (scripts/figure-animations.ts). Sans JavaScript et en
  * mouvement réduit, la frise est entière ; la légende dit tout en texte.
  */
 import { Picture } from 'astro:assets';
 import gitgud from '../../../assets/projets/omnicard/carte-gitgud.webp';
+import AConfirmer from '../../ui/AConfirmer.astro';
 import { GITGUD } from '../../../config/omnicard';
 
 /** Neuf fins de tour, en commençant par celle où la carte est jouée. */
@@ -58,7 +62,7 @@ const etapes = Array.from({ length: GITGUD.delai * 2 - 1 }, (_, index) => {
       }
     </button>
     <figcaption class="rebours__legende">
-      Le compteur ne baisse qu’à la fin de mes tours. «&nbsp;Dans 5&nbsp;tours&nbsp;», ce sont cinq de mes tours&nbsp;: neuf fins de tour en tout, puis la partie s’arrête sur une égalité. Le moteur tient ce compte pour chaque effet différé, et l’annule si l’unité qui l’a programmé meurt.
+      Le compteur ne baisse qu’à la fin de mes tours. «&nbsp;Dans 5&nbsp;tours&nbsp;», ce sont cinq de mes fins de tour, celle où je joue la carte comprise<AConfirmer titre="Décompte du tour de pose à confirmer : le glossaire ne dit pas si la fin du tour où la carte est jouée compte" />&nbsp;: neuf fins de tour en tout, puis la partie s’arrête sur une égalité. Le moteur tient ce compte pour chaque effet différé, et l’annule si l’unité qui l’a programmé meurt.
     </figcaption>
   </div>
 </figure>

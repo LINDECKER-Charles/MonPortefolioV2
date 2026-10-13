@@ -12,9 +12,10 @@
  * repères. Cibles : `.oc-cible` (styles/omnicard.css).
  */
 
-const PLACES = 5;
+/** Deux lignes de 10 places par joueur (docs/rules.md). */
+const PLACES = 10;
 /** Les unités posées, par ligne (avant, arrière), pour donner une partie en cours. */
-const POSEES = { joueur: [[1, 2, 3], [2]], adverse: [[0, 2], [1, 3]] } as const;
+const POSEES = { joueur: [[2, 4, 5, 7], [4]], adverse: [[1, 4, 6], [3, 7]] } as const;
 const MAIN = 6;
 const MANA = { max: 10, pleine: 6 };
 const CRISTAUX = { max: 5, pleins: 2 };
@@ -136,13 +137,13 @@ const CRISTAUX = { max: 5, pleins: 2 };
 
   .ligne {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 5%;
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+    gap: 3px;
   }
 
   .place,
   .carte {
-    aspect-ratio: 5 / 6;
+    aspect-ratio: 5 / 7;
     border-radius: var(--r1);
   }
 

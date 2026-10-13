@@ -69,7 +69,7 @@ export const PREUVES: readonly PreuveEnTete[] = [
     libelle: 'types de cartes arbitrés par le moteur de règles',
     source: 'Règles publiques du moteur',
     date: 'relevées le 13/10/2026',
-    href: '#moteur',
+    href: '#partie',
   },
 ];
 

@@ -6,6 +6,10 @@
  *
  *   <EventailCartes />
  *
+ * Chaque carte est l’étiquette de son bouton radio : son image a un alt vide,
+ * pour que le nom accessible du bouton reste l’univers seul (le nom de la
+ * carte est dit dans son effet).
+ *
  * Boutons radio natifs, sans JavaScript : clic sur la carte ou sur l’univers,
  * flèches au clavier. L’état se lit par position (`:has` et `nth-child`),
  * jamais par identifiant. Données : CARTES_UNIVERS (config/omnicard.ts).
@@ -35,7 +39,7 @@ const DEPART = 1;
             fallbackFormat="webp"
             widths={[240, 400, 600]}
             sizes="(max-width: 860px) 42vw, 230px"
-            alt={typo(`Carte ${carte.nom}, univers ${carte.univers}`)}
+            alt=""
             loading="lazy"
             decoding="async"
           />
