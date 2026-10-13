@@ -29,7 +29,6 @@ export const LIENS = {
   site: 'https://lindecker-charles.github.io/gup/',
   npm: 'https://www.npmjs.com/package/@charles_lindecker/gup',
   architecture: fige('docs/development/architecture.md'),
-  pipeline: fige('docs/development/architecture.md#6-update-pipeline'),
   decisions: fige('docs/development/architecture.md#notable-decisions'),
   pourquoi: fige('docs/guide/scope.md#why-it-exists'),
   registre: fige('src/core/registry.ts#L216'),
@@ -59,7 +58,7 @@ export const LIENS = {
 export const EN_TETE = {
   titre: 'Une commande pour mettre à jour toute sa machine.',
   chapeau:
-    'Sur un poste de développeur, les logiciels arrivent par des dizaines de canaux, chacun avec sa commande de mise à jour. gup les interroge tous d’un coup, liste ce qui est en retard et lance au même endroit ce que je coche. Je l’ai conçu, écrit et publié en open source.',
+    'Sur un poste de développeur, les logiciels arrivent par des dizaines de canaux, chacun avec sa commande de mise à jour. gup les interroge tous d’un coup, liste ce qui est en retard et lance au même endroit ce que je coche. Je l’ai conçu et je le publie en open source.',
   liens: [{ href: DEPOT, libelle: 'Le code' }] satisfies LienProjet[],
 };
 
@@ -90,16 +89,19 @@ export const PREUVES: readonly PreuveEnTete[] = [
 
 export const FICHE: DonneesFiche = {
   besoin: 'Mettre à jour en une fois tout ce qui est installé sur un poste de développeur, quel que soit l’outil qui l’a installé.',
-  part: 'J’ai conçu et écrit l’outil, de son architecture à ses 153 sources, avec ses tests et sa documentation, et je publie ses versions.',
+  part: 'J’ai conçu l’outil et écrit l’essentiel de son code, de son architecture à ses 153 sources, avec ses tests et sa documentation ; je relis les contributions et je publie les versions.',
   role: 'Auteur et mainteneur',
   periode: 'Depuis mai 2026',
-  equipe: 'Projet personnel, ouvert aux contributions',
+  equipe: 'Projet personnel mené par son mainteneur, ouvert aux contributions ; une contribution extérieure en mai 2026',
   statut: { texte: 'Open source, sur npm', etat: 'ouvert' },
   liens: [
     { href: DEPOT, libelle: 'Le code' },
     { href: LIENS.site, libelle: 'Le site de gup' },
     { href: LIENS.npm, libelle: 'Le paquet npm' },
   ],
+  aConfirmer: {
+    equipe: 'Contribution extérieure du 20/05/2026 (lot administrateur, codes 3010 et 1641 de Chocolatey) : présentation à valider par Charles',
+  },
 };
 
 /** Les sections du corps : sommaire de l’en-tête et navigation de page. */
@@ -293,10 +295,10 @@ export const DECISIONS: readonly Decision[] = [
     lien: { href: LIENS.shell, libelle: 'Le test de sécurité' },
   },
   {
-    contrainte: 'Certains paquets exigent les droits administrateur, et une invite par paquet lasse vite.',
-    choix: 'Les paquets qui en ont besoin passent ensemble, dans un lot unique, à la fin.',
-    effet: 'Une seule fenêtre UAC sous Windows, un seul sudo ailleurs.',
-    lien: { href: LIENS.pipeline, libelle: 'Le pipeline de mise à jour' },
+    contrainte: 'Une installation peut échouer ou dépasser son délai au milieu d’un lot.',
+    choix: 'Un paquet par appel au gestionnaire, même quand l’outil sait tout mettre à jour d’un coup, au prix de quelques lancements de plus.',
+    effet: 'Un échec ne fait tomber qu’une installation, jamais le lot entier.',
+    lien: { href: LIENS.decisions, libelle: 'Les décisions notables' },
   },
   {
     contrainte: 'Programmer des mises à jour sans laisser un programme tourner en permanence.',
