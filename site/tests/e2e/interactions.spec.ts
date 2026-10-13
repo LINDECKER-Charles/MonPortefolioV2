@@ -5,9 +5,9 @@ import { CONTACT_EMAIL } from './support/serveurs.mjs';
 /**
  * Les interactions qui portent du sens : le mode nuit et son allumage, le
  * glossaire, la copie de l'adresse, le menu et le sommaire à portée de pouce,
- * le repère de lecture, le tracé de la figure 1. Chacune répond à un geste et
- * le dit ; chacune envoie l'événement prévu par le plan de marquage, et rien
- * de plus.
+ * le tracé de la figure 1. Chacune répond à un geste et le dit ; chacune
+ * envoie l'événement prévu par le plan de marquage, et rien de plus. La
+ * navigation de page de l’accueil est vérifiée dans accueil.spec.ts.
  */
 
 test.describe('mode nuit', () => {
@@ -168,19 +168,6 @@ test('chaque chapitre atteint est mesuré une fois, dans l’ordre de lecture', 
   }
   const lectures = (await fileDeMesure(page)).filter(([nom]) => nom === 'lecture').map(([, donnees]) => donnees?.chapitre);
   expect(lectures).toEqual(['origine', 'aujourdhui', 'discutons']);
-});
-
-test.describe('bureau', () => {
-  test.skip(({ viewport }) => (viewport?.width ?? 0) < 1100, 'repère de lecture : bureau seulement');
-
-  test('le repère de lecture marque le chapitre en cours', async ({ page }) => {
-    await page.goto('/');
-    const reperes = page.getByRole('navigation', { name: 'Repère de lecture' });
-    await expect(reperes).toBeVisible();
-    await expect(reperes.locator('[aria-current]')).toHaveCount(0);
-    await page.evaluate(() => document.getElementById('discutons')?.scrollIntoView({ behavior: 'instant' }));
-    await expect(reperes.locator('[aria-current]')).toHaveText(/La suite, à plusieurs/);
-  });
 });
 
 test.describe('mobile', () => {
