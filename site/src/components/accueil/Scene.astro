@@ -20,7 +20,8 @@
  * visible quand la scène a déjà son titre à côté (FigureCollectif) ;
  * `recadrage` affiche l’image à un autre ratio, centrée (« 2 / 1 » pour la
  * voie et le bureau, comme la maquette), sur ordinateur seulement : sous
- * 861 px, l’image garde le ratio du registre, plus haut et plus lisible. La
+ * 861 px, l’image garde le ratio du registre, plus haut et plus lisible, sauf
+ * si `recadragePetit` en donne un autre (« 1 / 1 » pour une vignette). La
  * lumière suit le même recadrage.
  *
  * Une scène très large (21:9) est basse sur mobile : la commande d’un
@@ -38,10 +39,12 @@ interface Props {
   sizes?: string;
   muette?: boolean;
   recadrage?: string;
+  recadragePetit?: string;
   class?: string;
 }
 
-const { id, nom, legende, lumiere, sizes = '(max-width: 860px) 100vw, 480px', muette = false, recadrage, class: classe } = Astro.props;
+const { id, nom, legende, lumiere, sizes = '(max-width: 860px) 100vw, 480px', muette = false, recadrage, recadragePetit, class: classe } = Astro.props;
+const style = [recadrage && `--scene-recadrage:${recadrage}`, recadragePetit && `--scene-recadrage-petit:${recadragePetit}`].filter(Boolean).join(';') || undefined;
 const visuel = visuelParId(id);
 if (!visuel) throw new Error(`<Scene id="${id}"> : identifiant absent de src/config/visuels.ts`);
 const [a, b] = (visuel.ratio ?? '4 / 3').split(' / ').map(Number);
@@ -52,7 +55,7 @@ const texte = typo(legende);
 const gid = `scene-${nom}`;
 ---
 
-<figure class:list={['scene', { 'scene--recadree': recadrage }, classe]} data-scene={nom} data-figure-animation style={recadrage ? `--scene-recadrage:${recadrage}` : undefined}>
+<figure class:list={['scene', { 'scene--recadree': recadrage, 'scene--recadree-petit': recadragePetit }, classe]} data-scene={nom} data-figure-animation style={style}>
   <div class="scene__plan">
     <Visuel id={id} alt="" sizes={sizes} />
     <button type="button" class="scene__rejouer" data-rejouer disabled aria-label={`Rejouer l’animation : ${texte}`}>
@@ -114,6 +117,12 @@ const gid = `scene-${nom}`;
   @media (min-width: 861px) {
     .scene--recadree .scene__plan :global(.visuel) {
       aspect-ratio: var(--scene-recadrage);
+    }
+  }
+
+  @media (max-width: 860px) {
+    .scene--recadree-petit .scene__plan :global(.visuel) {
+      aspect-ratio: var(--scene-recadrage-petit);
     }
   }
 

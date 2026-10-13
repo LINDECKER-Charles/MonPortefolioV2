@@ -172,22 +172,42 @@ test('chaque preuve n’est surlignée qu’une fois dans le récit, en plus du 
   await expect(page.locator('main mark', { hasText: /^20$/ })).toHaveCount(2);
 });
 
-test('les quatre gestes du pôle : l’image en tête, en grand, sans « semaine type »', async ({ page }) => {
+test('les quatre gestes du pôle : repliés, en vignettes légendées, sans « semaine type »', async ({ page }) => {
   await page.goto('/');
-  const gestes = page.locator('#collectif .gestes');
-  await expect(gestes).toContainText('Comment j’organise le pôle, en quatre gestes');
+  const gestes = page.locator('#collectif details.gestes');
+  await expect(gestes).toHaveCount(1);
+  // Repliés par défaut : la page PvZ Fusion les raconte déjà, le chapitre « Emmener » ne s’y dilue plus.
+  await expect(gestes).not.toHaveAttribute('open', /.*/);
+  const resume = gestes.locator('summary');
+  await expect(resume).toHaveText('Comment j’organise le pôle, en quatre gestes');
   await expect(gestes).not.toContainText('semaine type');
+  expect((await resume.boundingBox())?.height ?? 0).toBeGreaterThanOrEqual(44);
+  await resume.click();
+  await expect(gestes).toHaveAttribute('open', /.*/);
   const visuels = gestes.locator('.geste [data-visuel]');
   await expect(visuels).toHaveCount(4);
-  const minimum = bureau(page.viewportSize()?.width) ? 200 : 150;
-  for (const visuel of await visuels.all()) {
-    const boite = await visuel.boundingBox();
-    expect(boite?.width ?? 0).toBeGreaterThanOrEqual(minimum);
+  const minimum = bureau(page.viewportSize()?.width) ? 160 : 120;
+  for (const geste of await gestes.locator('.geste').all()) {
+    const [image, texte] = await Promise.all([geste.locator('[data-visuel]').boundingBox(), geste.locator('.geste__texte').boundingBox()]);
+    // Une vignette carrée, sa légende en ligne, à sa droite.
+    expect(image?.width ?? 0).toBeGreaterThanOrEqual(minimum);
+    expect(image?.width ?? 0).toBeLessThanOrEqual(200);
+    expect(Math.abs((image?.width ?? 0) - (image?.height ?? 1))).toBeLessThanOrEqual(1);
+    expect(texte?.x ?? 0).toBeGreaterThan((image?.x ?? 0) + (image?.width ?? 0));
     // L’étiquette de l’emplacement tient entière dans son cadre.
-    const etiquette = visuel.locator('.visuel__id');
+    const etiquette = geste.locator('.visuel__id');
     if (await etiquette.count()) {
       expect(await etiquette.evaluate((e) => e.scrollWidth <= e.clientWidth + 1 && e.getBoundingClientRect().right <= (e.closest('.visuel') as Element).getBoundingClientRect().right + 1)).toBe(true);
     }
+  }
+  await expect(gestes.getByRole('link', { name: /^Chaque geste en détail/ })).toHaveAttribute('href', '/projets/pvz-fusion#semaine');
+});
+
+test('les trois étapes du pôle, recadrées en 2:1', async ({ page }) => {
+  await page.goto('/');
+  for (const visuel of await page.locator('#fig-2 [data-visuel]').all()) {
+    const boite = await visuel.boundingBox();
+    expect((boite?.width ?? 0) / (boite?.height ?? 1)).toBeCloseTo(2, 1);
   }
 });
 
