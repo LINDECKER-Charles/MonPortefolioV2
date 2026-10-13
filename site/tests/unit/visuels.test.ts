@@ -5,19 +5,22 @@ import { afterAll, describe, expect, it } from 'vitest';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import Visuel from '../../src/components/ui/Visuel.astro';
 import {
-  CALQUES,
+  CLES,
   FAMILLES,
   familleDe,
+  fichierMaster,
+  fichierMasterNuit,
+  fichierNuit,
   fichiersAttendus,
-  fichiersCalques,
   ORDRE_SERIES,
+  positionLanterne,
   plafondPoids,
   REGLES_COMMUNES,
   sujetPourGenerateur,
   visuelParId,
   VISUELS,
 } from '../../src/config/visuels';
-import { dimensionsDuNom, etatDesVisuels, resume, verifierLivres } from '../../tools/visuels-manquants.mjs';
+import { dimensionsDuNom, etatDesVisuels, rapport, resume, verifierLivres } from '../../tools/visuels-manquants.mjs';
 
 /**
  * Garde-fous du registre des visuels (config/visuels.ts) : l’inventaire du
@@ -248,15 +251,24 @@ describe('registre des visuels : fichiers attendus', () => {
     expect(fichiersAttendus(visuelParId('GLO-08')!)).toHaveLength(13);
   });
 
-  it('nomme les calques d’une image générée, et seulement d’elle', () => {
-    expect(fichiersCalques(visuelParId('ACC-03')!)).toEqual({
-      aplat: 'src/assets/visuels/accueil/ACC-03_1800x1200.aplat.webp',
-      encre: 'src/assets/visuels/accueil/ACC-03_1800x1200.encre.webp',
-      lumiere: 'src/assets/visuels/accueil/ACC-03_1800x1200.lumiere.webp',
-    });
-    expect(fichiersCalques(visuelParId('LOD-03')!)).toBeNull();
-    expect(fichiersCalques(visuelParId('PRJ-03')!)).toBeNull();
-    expect(CALQUES).toEqual(['aplat', 'encre', 'lumiere']);
+  it('nomme les deux masters et le rendu de nuit d’une image générée, et seulement d’elle', () => {
+    const acc03 = visuelParId('ACC-03')!;
+    expect(fichierMaster(acc03)).toBe('design/assets/visuels/accueil/ACC-03.png');
+    expect(fichierMasterNuit(acc03)).toBe('design/assets/visuels/accueil/ACC-03.nuit.png');
+    expect(fichierNuit(acc03)).toBe('src/assets/visuels/accueil/ACC-03_1800x1200.nuit.webp');
+    expect(dimensionsDuNom(fichierNuit(acc03)!)).toEqual({ largeur: 1800, hauteur: 1200 });
+    for (const id of ['LOD-03', 'PRJ-03', 'PVZ-02', 'ACC-01']) {
+      const v = visuelParId(id)!;
+      expect([fichierMaster(v), fichierMasterNuit(v), fichierNuit(v)], id).toEqual([null, null, null]);
+    }
+    expect(CLES).toEqual(['encre', 'aplat', 'lumiere']);
+  });
+
+  it('lit la position de la lanterne : celle de la scène animée, sinon celle de la composition', () => {
+    expect(positionLanterne(visuelParId('ACC-03')!)).toEqual([28, 58]);
+    expect(positionLanterne(visuelParId('PVZ-05')!)).toEqual([78, 80]);
+    expect(positionLanterne(visuelParId('CMP-02')!)).toEqual([26, 84]);
+    expect(positionLanterne(visuelParId('LOD-03')!)).toBeNull();
   });
 
   it('plafonne le poids selon le plus grand côté', () => {
@@ -308,7 +320,9 @@ describe('registre des visuels : textes', () => {
     expect(REGLES_COMMUNES[0]).toMatch(/propriété intellectuelle/);
     expect(REGLES_COMMUNES[2]).toMatch(/Aucun texte dans l’image/);
     expect(REGLES_COMMUNES[5]).toMatch(/#000000.*#FFFFFF.*#FF0000/);
-    expect(REGLES_COMMUNES[5]).toMatch(/separer-calques/);
+    expect(REGLES_COMMUNES[5]).toMatch(/<ID>\.png.*<ID>\.nuit\.png.*en édition depuis le master de jour/);
+    expect(REGLES_COMMUNES[5]).toMatch(/npm run visuels:rendre <ID>/);
+    expect(REGLES_COMMUNES.join(' ')).not.toMatch(/separer-calques|calques|trait clair sur fond sombre/);
   });
 
   it('ne renvoie plus à une ancienne commande pour une règle', () => {
@@ -345,18 +359,28 @@ describe('registre des visuels : liste des manquants', () => {
     expect(etat.manquantsSocle.map((v: { id: string }) => v.id)).toContain('GLO-08');
   });
 
-  it('signale une image générée livrée sans ses calques, puis la rend conforme', () => {
+  it('signale une image générée livrée sans rendu de nuit, puis une nuit de repli, puis la rend conforme', () => {
     const v = visuelParId('CON-02')!;
+    const depot = path.join(racine, 'depot');
     ecrire(v.fichier!);
-    expect(etatDesVisuels(racine).calquesManquants.map((x: { id: string }) => x.id)).toEqual(['CON-02']);
-    for (const f of Object.values(fichiersCalques(v)!)) ecrire(f);
-    expect(etatDesVisuels(racine).calquesManquants).toHaveLength(0);
+    let etat = etatDesVisuels(racine, VISUELS, depot);
+    expect(etat.nuitsManquantes.map((x: { id: string }) => x.id)).toEqual(['CON-02']);
+    expect(etat.nuitsSocleManquantes.map((x: { id: string }) => x.id)).toEqual(['CON-02']);
+    expect(resume(etat)).toMatch(/1 images sans rendu de nuit/);
+    ecrire(fichierNuit(v)!);
+    etat = etatDesVisuels(racine, VISUELS, depot);
+    expect(etat.nuitsManquantes).toHaveLength(0);
+    expect(etat.nuitsDeRepli.map((x: { id: string }) => x.id)).toEqual(['CON-02']);
+    expect(rapport(etat)).toMatch(/Nuits de repli, master de nuit à livrer \(1\) : CON-02 \(design\/assets\/visuels\/contact\/CON-02\.nuit\.png\)/);
+    ecrire(`depot/${fichierMasterNuit(v)}`);
+    expect(etatDesVisuels(racine, VISUELS, depot).nuitsDeRepli).toHaveLength(0);
   });
 
   it('sur le dépôt réel : les photos, les dessins et captures livrés, les images de partage, les composants des figures', () => {
     const etat = etatDesVisuels(SITE);
     expect(etat.presents).toBe(57);
-    expect(etat.calquesManquants).toHaveLength(0);
+    expect(etat.nuitsManquantes).toHaveLength(0);
+    expect(etat.nuitsDeRepli).toHaveLength(0);
     expect(etat.manquantsSocle).toHaveLength(60);
     const manquants = etat.manquantsSocle.map((v: { id: string }) => v.id);
     for (const id of ['GLO-01', 'GLO-03', 'GLO-04', 'GLO-05', 'GLO-07', 'GLO-08', 'ACC-14', 'ACC-17', 'PRJ-04', 'PRJ-05', 'PAR-PHO', 'CON-PHO', 'ERR-PHO', 'LOD-03', 'LOD-12', 'BLR-06', 'BLR-10', 'GUP-02', 'OMN-04', 'FOR-09', 'CMP-09', 'CMP-10', 'BLR-C4', 'GUP-C1']) expect(manquants).not.toContain(id);
@@ -376,7 +400,8 @@ describe('registre des visuels : liste des manquants', () => {
     ecrire('src/assets/visuels/gup/GUP-02.svg', '<svg xmlns="http://www.w3.org/2000/svg"><title>Bande</title><symbol id="GUP-02-cloison" /></svg>');
     const ecarts = await verifierLivres(racine, [v, visuelParId('GUP-02')!]);
     expect(ecarts.join('\n')).toMatch(/PVZ-05 .* 400 × 480 au lieu de 480 × 480/);
-    expect(ecarts.join('\n')).toMatch(/calque « aplat » absent/);
+    expect(ecarts.join('\n')).toMatch(/PVZ-05 .* rendu de nuit absent \(npm run visuels:rendre PVZ-05\)/);
+    expect(ecarts.join('\n')).toMatch(/PVZ-05 .* master de jour absent \(design\/assets\/visuels\/pvz-fusion\/PVZ-05\.png\)/);
     expect(ecarts.join('\n')).toMatch(/GUP-02 .* pièce « GUP-02-arguments » absente/);
   });
 

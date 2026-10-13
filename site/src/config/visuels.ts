@@ -13,7 +13,7 @@
  *
  * Ce fichier ne contient que de la syntaxe effaçable (pas d’enum) : les outils
  * Node (`tools/visuels-manquants.mjs`, `tools/generer-visuels.mjs`,
- * `tools/separer-calques.mjs`) l’importent tel quel.
+ * `tools/rendre-visuels.mjs`) l’importent tel quel.
  *
  * Champs :
  *   - `methode` : IMG image générée · SVG dessin vectoriel écrit à la main ·
@@ -31,7 +31,8 @@
  *   - `lumiere` : position de la lanterne en % de la largeur et de la hauteur,
  *     contrainte dure des scènes animées (la lumière du site part de ce point).
  *   - `calques` et `fond` : ce que porte chaque couleur de clé d’une image
- *     générée (encre, aplat, lumière), et si le fond reste transparent.
+ *     générée (encre, aplat, lumière ; « Couleurs de clé » dans la commande),
+ *     et si le fond reste transparent.
  *   - `alt` : texte alternatif prévu, qui décrit l’image ; chaîne vide pour un
  *     visuel décoratif.
  *   - `fichier` : chemin attendu, relatif à `site/` ; pour une figure codée, son
@@ -46,15 +47,19 @@
  *
  * Famille de style (règle 5 de la commande) : celle de la direction
  * « Lanterne », retenue le 13 octobre 2026 (design/refonte/c-lanterne/README.md).
- * Gravure en réserve : trait clair sur fond sombre la nuit, inversé le jour ;
- * trois couleurs de clé (encre, aplat, lumière), séparées en calques recolorés
- * par les jetons du site ; la lanterne est la seule source de lumière de la
- * scène. Aucune propriété intellectuelle de tiers, jamais le visage de
+ * Gravure en réserve au trait économe, la lanterne seule source de lumière de
+ * la scène. Chaque image générée a deux masters en trois couleurs de clé
+ * (encre, aplat, lumière), dessinés au même cadrage au pixel près : le jour,
+ * puis la nuit en édition depuis le jour (règle 6, décision du 13 octobre
+ * 2026). `npm run visuels:rendre <ID>` les rend aux couleurs des jetons
+ * (`RENDUS`). Aucune propriété intellectuelle de tiers, jamais le visage de
  * Charles, aucun texte dans l’image.
  *
- * Nommage : `<ID>_<largeur>x<hauteur>.webp` pour une image (et ses calques
- * `.encre.webp`, `.aplat.webp`, `.lumiere.webp`), `<ID>.svg` pour un dessin
- * vectoriel, `public/og/<ID>_1200x630.png` pour une image de partage.
+ * Nommage : `<ID>_<largeur>x<hauteur>.webp` pour une image (le rendu de jour)
+ * et `<ID>_<largeur>x<hauteur>.nuit.webp` pour son rendu de nuit, depuis les
+ * masters `design/assets/visuels/<série>/<ID>.png` et `<ID>.nuit.png` ;
+ * `<ID>.svg` pour un dessin vectoriel, `public/og/<ID>_1200x630.png` pour une
+ * image de partage.
  */
 
 export type MethodeVisuel = 'IMG' | 'SVG' | 'FIG' | 'CAP' | 'PHO' | 'OG';
@@ -438,7 +443,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     page: '/',
     emplacement: '01, le terrain de jeu : scène « Les cartes, plastifiées à la main », rejouable au clic (et Omnicard § 2)',
     sujet: 'Le jeu de cartes papier inventé avec son cousin',
-    composition: 'Table d’après-midi d’été vue de dessus : piles de cartes imprimées, une plastifieuse d’où sort une carte glissée dans sa pochette transparente, ciseaux, cartes déjà plastifiées aux coins cornés, une feuille de règles griffonnée illisible ; deux paires de mains d’adolescents, l’une glisse une carte dans la plastifieuse, l’autre en découpe une ; une lanterne posée en haut à droite de la table (vers 78 % de la largeur et 26 % de la hauteur) éclaire la carte qui sort ; faces de cartes génériques, faites de formes simples, sans personnage, sans chiffre, sans texte',
+    composition: 'Table d’après-midi d’été vue de dessus : piles de cartes imprimées, une plastifieuse d’où sort une carte glissée dans sa pochette transparente, ciseaux, cartes déjà plastifiées aux coins cornés, une feuille de règles pliée, vierge ; deux paires de mains d’adolescents, l’une glisse une carte dans la plastifieuse, l’autre en découpe une ; une lanterne posée en haut à droite de la table (vers 78 % de la largeur et 26 % de la hauteur) éclaire la carte qui sort ; faces de cartes génériques, faites de formes simples, sans personnage, sans chiffre, sans texte',
     cadrage: 'Affichée en 3:2 jusqu’à 400 px de large sur l’accueil et 480 px sur la page Omnicard (OMN-02) : la carte qui sort se lit à cette taille.',
     lumiere: [78, 26],
     calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'table, cartes, plastifieuse et mains', lumiere: 'flamme et carte qui sort' },
@@ -460,9 +465,9 @@ export const VISUELS: readonly EntreeVisuel[] = [
     page: '/',
     emplacement: '01, vers 13 ans',
     sujet: 'Apprendre le C, pour passer ensuite au C++ et coder des jeux',
-    composition: 'Une chambre d’adolescent vue de trois quarts, en léger surplomb : un vieux PC à écran bombé allumé sur un bureau, un livre de programmation ouvert à plat près du clavier, quelques feuilles de listing aux lignes illisibles ; au mur, un croquis de niveau de jeu épinglé (plateformes et échelles en simples traits) ; la lanterne posée sur le bureau, à gauche de l’écran (vers 30 % de la largeur et 55 % de la hauteur), éclaire le livre ; aucun personnage, aucune manette ni console de marque, aucun caractère lisible à l’écran ni sur les feuilles',
+    composition: 'Une chambre d’adolescent vue de trois quarts, en léger surplomb : un vieux PC à écran bombé allumé sur un bureau, un livre de programmation ouvert à plat près du clavier, une liasse de listing pliée en accordéon, vierge ; au mur, un croquis de niveau de jeu épinglé (plateformes et échelles en simples traits) ; la lanterne posée sur le bureau, à gauche de l’écran (vers 30 % de la largeur et 55 % de la hauteur), éclaire le livre ; aucun personnage, aucune manette ni console de marque, aucun caractère lisible à l’écran ni sur les feuilles',
     cadrage: 'Recadrable en 4:5 sur mobile autour du bureau et de la lanterne.',
-    calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'murs, bureau, feuilles et écran', lumiere: 'flamme, livre ouvert et lueur de l’écran' },
+    calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'murs, bureau, feuilles et écran', lumiere: 'flamme, livre ouvert et écran' },
     fond: 'aplat',
     format: '4:3, 1600 × 1200',
     ratio: '4 / 3',
@@ -729,7 +734,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     page: '/',
     emplacement: '01, Gwent, la méthode : carte 2 « Tester mes idées », illustration dans la fenêtre du cadre de carte codé',
     sujet: 'Tester mes idées',
-    composition: 'Illustration de carte en hauteur : sur une table, trois feuilles d’essai qui se chevauchent, la première barrée d’une croix, la deuxième annotée, la troisième en cours et cochée ; une plume qui écrit sur la dernière, un encrier à côté ; une lanterne en haut à droite (vers 70 % de la largeur et 24 % de la hauteur) éclaire la feuille cochée ; aucune écriture lisible, aucun symbole d’un jeu existant',
+    composition: 'Illustration de carte en hauteur : sur une table, trois feuilles d’essai qui se chevauchent, la première barrée d’une croix, la deuxième marquée d’un cercle, la troisième cochée ; une plume posée sur la dernière, un encrier à côté ; une lanterne en haut à droite (vers 70 % de la largeur et 24 % de la hauteur) éclaire la feuille cochée ; aucune écriture lisible, aucun symbole d’un jeu existant',
     cadrage: 'Comme ACC-18 : rien d’important dans les 8 % du bord ; lisible à 165 px de large.',
     lumiere: [70, 24],
     calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'table et feuilles', lumiere: 'flamme et feuille cochée' },
@@ -795,7 +800,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     page: '/',
     emplacement: '02, du solo au collectif : scène 2 « Former et relire », rejouable au clic',
     sujet: 'Former et relire',
-    composition: 'Deux silhouettes côte à côte à une même table, penchées sur une feuille : l’une montre une ligne du doigt, l’autre la corrige au crayon ; une coche dans la marge ; une lanterne posée sur la table, entre elles (vers 50 % de la largeur et 56 % de la hauteur), éclaire la feuille ; silhouettes sans visage, aucune écriture lisible',
+    composition: 'Deux silhouettes côte à côte à une même table, penchées sur une feuille : l’une montre un point de la feuille du doigt, l’autre y trace une coche au crayon ; une lanterne posée sur la table, entre elles (vers 50 % de la largeur et 56 % de la hauteur), éclaire la feuille ; silhouettes sans visage, aucune écriture lisible',
     cadrage: 'Comme ACC-21 : recadrée en 2:1 à toutes les largeurs, de 300 à 360 px de large, sujet et lanterne dans la bande centrale.',
     lumiere: [50, 56],
     calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'table, feuille et silhouettes', lumiere: 'flamme et feuille éclairée' },
@@ -1149,7 +1154,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     page: '/projets/pvz-fusion',
     emplacement: '§ 2, l’équipe, case 2 du triptyque, au-dessus de « Former et relire »',
     sujet: 'Former et relire : la voir travailler',
-    composition: 'La même table et la même lanterne ; la nouvelle venue écrit sur la fiche, la silhouette de la case 1 se tient en retrait derrière son épaule et désigne une ligne du doigt ; la lumière tombe sur la main qui écrit ; silhouettes sans visage',
+    composition: 'La même table et la même lanterne ; la nouvelle venue écrit sur la fiche, la silhouette de la case 1 se tient en retrait derrière son épaule et désigne un point de la fiche du doigt ; la lumière tombe sur la main qui écrit ; silhouettes sans visage',
     cadrage: 'Case centrale du triptyque : se raccorde à PVZ-02a à gauche et à PVZ-02c à droite.',
     calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'table, chaises et silhouettes', lumiere: 'flamme et main qui écrit' },
     fond: 'aplat',
@@ -1207,9 +1212,9 @@ export const VISUELS: readonly EntreeVisuel[] = [
     page: '/projets/pvz-fusion',
     emplacement: '§ 3, bloc de l’outil du pôle (repérer ce qui manque)',
     sujet: 'Repérer',
-    composition: 'Une loupe tenue au-dessus d’une longue feuille de lignes régulières, où quelques lignes manquent, laissées en creux ; la lumière de la lanterne, posée derrière la loupe (vers 70 % de la largeur et 30 % de la hauteur), passe par la lentille et éclaire seulement les creux',
+    composition: 'Une loupe tenue au-dessus d’une longue bande de cases régulières, où quelques cases manquent, laissées en creux ; la lumière de la lanterne, posée derrière la loupe (vers 70 % de la largeur et 30 % de la hauteur), passe par la lentille et éclaire seulement les creux',
     cadrage: 'Affichée jusqu’à 360 px de large, dans l’acte de veille (sombre, jour et nuit) : la gravure doit rester lisible sur fond sombre.',
-    calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'loupe et feuille de lignes', lumiere: 'flamme et creux éclairés' },
+    calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'loupe et bande de cases', lumiere: 'flamme et creux éclairés' },
     fond: 'transparent',
     format: '1:1, 480',
     ratio: '1 / 1',
@@ -1218,7 +1223,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     methode: 'IMG',
     priorite: 'socle',
     pose: ['pages/projets/pvz-fusion.astro'],
-    alt: 'Une loupe au-dessus d’une feuille de lignes, dont la lumière éclaire les lignes manquantes.',
+    alt: 'Une loupe au-dessus d’une bande de cases, dont la lumière éclaire les cases manquantes.',
     fichier: 'src/assets/visuels/pvz-fusion/PVZ-04_480x480.webp',
     note: 'Posé dans l’acte de veille de l’outil. À compléter par la capture réelle du Console Manager (PVZ-C2) quand elle existe.',
   },
@@ -1249,7 +1254,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     page: '/projets/pvz-fusion',
     emplacement: '§ 4, le métier de traducteur, à côté des corrections et de la démonstration',
     sujet: 'Traduire, relire, tester',
-    composition: 'Un seul motif centré : une plume posée en travers d’une fiche dont une ligne est barrée ; la lanterne, hors champ à droite (sa lumière entre vers 90 % de la largeur et 40 % de la hauteur), éclaire la plume',
+    composition: 'Un seul motif centré : une plume posée en travers d’une fiche dont une case est barrée d’une croix ; la lanterne, hors champ à droite (sa lumière entre vers 90 % de la largeur et 40 % de la hauteur), éclaire la plume',
     cadrage: 'Vignette de titre, affichée à 96 px de large à toutes les largeurs : silhouette simple, lisible en petit, sans détail fin.',
     calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'plume et fiche', lumiere: 'lumière sur la plume' },
     fond: 'transparent',
@@ -1260,7 +1265,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     methode: 'IMG',
     priorite: 'socle',
     pose: ['pages/projets/pvz-fusion.astro'],
-    alt: 'Une plume posée en travers d’une fiche dont une ligne est barrée.',
+    alt: 'Une plume posée en travers d’une fiche dont une case est barrée d’une croix.',
     fichier: 'src/assets/visuels/pvz-fusion/PVZ-06_480x480.webp',
     note: 'À gauche du titre « Traduire, c’est suivre des règles qui changent ». Exception à la règle B8 (320 px au moins) : une vignette de carte, pas une illustration de section ; question ouverte, à faire trancher par Charles.',
   },
@@ -1334,9 +1339,9 @@ export const VISUELS: readonly EntreeVisuel[] = [
     emplacement: '§ 3, bloc outil',
     sujet: 'Le Console Manager',
     sujetNeutre: 'Un outil en ligne de commande dans un terminal',
-    composition: 'Une fenêtre de terminal générique vue de face, en légère plongée, sur un bureau : deux colonnes de barres horizontales de longueurs variées, sans aucun caractère ; dans la colonne de droite, quelques barres manquent et laissent des creux ; la lanterne posée devant la fenêtre, à droite (vers 78 % de la largeur et 70 % de la hauteur), éclaire seulement les creux ; aucun caractère, aucune lettre, aucun chiffre, aucune marque',
+    composition: 'Une fenêtre de terminal générique vue de face, en légère plongée, sur un bureau : deux colonnes de cases régulières, sans aucun caractère ; dans la colonne de droite, quelques cases manquent et laissent des creux ; la lanterne posée devant la fenêtre, à droite (vers 78 % de la largeur et 70 % de la hauteur), éclaire seulement les creux ; aucun caractère, aucune lettre, aucun chiffre, aucune marque',
     cadrage: 'Recadrable en 1:1 autour des deux colonnes.',
-    calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'bureau, fenêtre et barres', lumiere: 'flamme et creux éclairés' },
+    calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'bureau, fenêtre et cases', lumiere: 'flamme et creux éclairés' },
     fond: 'aplat',
     format: '4:3',
     ratio: '4 / 3',
@@ -1346,7 +1351,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     priorite: 'elargi',
     pose: null,
     raisonNonPose: 'le bloc de l’outil pose PVZ-04 ; la capture réelle du Console Manager (PVZ-C2) prendra cette place dès qu’elle existe.',
-    alt: 'Un terminal à deux colonnes de lignes, dont les lignes manquantes sont éclairées par une lanterne.',
+    alt: 'Un terminal à deux colonnes de cases, dont les cases manquantes sont éclairées par une lanterne.',
     fichier: 'src/assets/visuels/pvz-fusion/PVZ-10_1600x1200.webp',
   },
   {
@@ -2286,7 +2291,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     page: '/projets/bloodborne-legendary-run',
     emplacement: '§ 4',
     sujet: 'Du wiki à la fiche française',
-    composition: 'Quatre vignettes reliées par des flèches, de gauche à droite, vues de face : une page source dense (blocs de lignes illisibles), un tableau à colonnes, un dictionnaire ouvert à deux colonnes, puis une fiche nette ; au-dessus du tableau, une loupe sur une cellule vide marquée d’un trait court ; la lanterne posée sous la fiche finale (vers 86 % de la largeur et 72 % de la hauteur) l’éclaire ; aucun caractère lisible, aucune référence visuelle à un jeu',
+    composition: 'Quatre vignettes reliées par des flèches, de gauche à droite, vues de face : une épaisse liasse de pages source, un tableau à colonnes vides, un dictionnaire ouvert à deux colonnes, puis une fiche nette ; au-dessus du tableau, une loupe sur une cellule vide marquée d’un trait court ; la lanterne posée sous la fiche finale (vers 86 % de la largeur et 72 % de la hauteur) l’éclaire ; aucun caractère lisible, aucune référence visuelle à un jeu',
     cadrage: 'Sur mobile, les quatre vignettes passent en grille de deux sur deux : chacune se lit seule.',
     calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'vignettes, flèches et loupe', lumiere: 'flamme et fiche finale' },
     fond: 'transparent',
@@ -2585,9 +2590,9 @@ export const VISUELS: readonly EntreeVisuel[] = [
     page: '/projets/gup',
     emplacement: 'Partage, hub de repli',
     sujet: 'Une commande, tout mettre à jour',
-    composition: 'Une fenêtre de terminal vide de tout caractère, au centre, éclairée par une lanterne posée devant elle (vers 50 % de la largeur et 70 % de la hauteur), d’où partent des rayons fins vers une douzaine de paquets génériques disposés en arc, qui s’allument là où le rayon les touche ; aucun caractère, aucune lettre, aucun logo',
+    composition: 'Une fenêtre de terminal vide de tout caractère, au centre, éclairée par une lanterne posée devant elle (vers 50 % de la largeur et 70 % de la hauteur), d’où partent de fins pointillés vers une douzaine de paquets génériques disposés en arc, qui s’allument là où le pointillé les touche ; aucun caractère, aucune lettre, aucun logo',
     cadrage: 'Lisible recadrée en 1200 × 630 (partage) : la fenêtre et la lanterne au centre.',
-    calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'fenêtre et paquets', lumiere: 'flamme, rayons et paquets touchés' },
+    calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'fenêtre et paquets', lumiere: 'flamme, pointillés et paquets touchés' },
     fond: 'aplat',
     format: '1200 × 630 ; 16:10',
     ratio: '16 / 10',
@@ -2597,7 +2602,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     priorite: 'elargi',
     pose: null,
     raisonNonPose: 'la carte de la vitrine et l’image de partage montrent d’abord la vraie capture (src/assets/projets/gup/packages-select.webp) ; celle-ci sert de repli.',
-    alt: 'Une fenêtre de terminal éclairée par une lanterne, d’où partent des rayons vers des paquets.',
+    alt: 'Une fenêtre de terminal éclairée par une lanterne, d’où partent des pointillés vers des paquets.',
     fichier: 'src/assets/visuels/gup/GUP-03_1600x1000.webp',
   },
   {
@@ -2863,7 +2868,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     page: '/parcours/professionnel',
     emplacement: 'Professionnel, fiche Mission Locale : colonne de droite de la fiche (320 px) ; sur mobile, bandeau 16:9 pleine largeur sous le texte, pour que le rôle reste en tête',
     sujet: 'Initier au web',
-    composition: 'Une table d’atelier vue de trois quarts en légère plongée : trois ordinateurs portables ouverts sur un premier programme (lignes de code illisibles), des post-it vierges collés au bord des écrans, des chaises tirées comme à la fin d’un atelier ; la lanterne posée au centre de la table (vers 50 % de la largeur et 58 % de la hauteur) ; aucune silhouette, aucun logo',
+    composition: 'Une table d’atelier vue de trois quarts en légère plongée : trois ordinateurs portables ouverts, écrans vierges, des post-it vierges collés au bord des écrans, des chaises tirées comme à la fin d’un atelier ; la lanterne posée au centre de la table (vers 50 % de la largeur et 58 % de la hauteur) ; aucune silhouette, aucun logo',
     cadrage: 'Affiché à 320 px de large dans la colonne de la fiche ; bandeau 16:9 pleine largeur sur mobile : sujet centré, rien d’important dans le huitième du haut ni dans le huitième du bas.',
     calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'table, chaises, portables et post-it', lumiere: 'flamme et écrans éclairés' },
     fond: 'aplat',
@@ -3030,7 +3035,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     page: '/parcours/competences',
     emplacement: 'Compétences humaines, carte « Écoute et cadrage » (vignette carrée au-dessus de l’intitulé et des verbes)',
     sujet: 'Le cahier annoté',
-    composition: 'Un cahier des charges ouvert, pages couvertes de lignes illisibles, la marge annotée de trois points d’interrogation et d’une accolade qui regroupe deux paragraphes ; un crayon posé en travers, la lanterne (vers 80 % de la largeur et 24 % de la hauteur) qui éclaire la page ; aucune personne, aucun écran, aucun texte lisible',
+    composition: 'Un cahier des charges ouvert, pages vierges, la marge annotée de trois points d’interrogation et d’une grande accolade ; un crayon posé en travers, la lanterne (vers 80 % de la largeur et 24 % de la hauteur) qui éclaire la page ; aucune personne, aucun écran, aucun texte lisible',
     cadrage: 'Vignette carrée affichée de 160 à 270 px : un seul objet principal centré, qui occupe au moins 70 % du cadre et se lit à 160 px.',
     calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'cahier et crayon', lumiere: 'flamme et page éclairée' },
     fond: 'transparent',
@@ -3215,7 +3220,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     page: '/parcours/formation',
     emplacement: 'Formation, station du chemin d’avant le titre : vignette carrée de 56 px à gauche de l’intitulé (au-dessus de lui dans une colonne étroite), 72 px à gauche du texte sur mobile : la station reste compacte, le titre obtenu domine',
     sujet: 'Autodidacte vers 13 ans',
-    composition: 'Un seul objet : un livre ouvert à plat, vu de trois quarts, pages couvertes de lignes illisibles ; la lanterne (vers 80 % de la largeur et 22 % de la hauteur) éclaire la page de droite',
+    composition: 'Un seul objet : un livre ouvert à plat, vu de trois quarts, pages vierges ; la lanterne (vers 80 % de la largeur et 22 % de la hauteur) éclaire la page de droite',
     cadrage: 'Vignette de 56 px (72 px sur mobile) : un seul objet silhouetté, qui occupe 80 % du cadre, sans aucun détail fin ni second objet.',
     calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'livre', lumiere: 'flamme et page de droite' },
     fond: 'transparent',
@@ -3398,9 +3403,9 @@ export const VISUELS: readonly EntreeVisuel[] = [
     page: '/contact',
     emplacement: 'Contact, panneau de réussite qui s’ouvre sous le bouton d’envoi',
     sujet: 'Message reçu : la lanterne allumée sur une lettre cachetée',
-    composition: 'La lanterne du logo, flamme haute et halo net, posée sur une lettre pliée fermée par un cachet de cire rond et lisse (sans motif ni initiale) ; vue de face, légère plongée. Gravure en réserve. Aucun texte',
+    composition: 'La lanterne du logo, flamme haute, posée sur une lettre pliée fermée par un cachet de cire rond et lisse (sans motif ni initiale) ; vue de face, légère plongée. Gravure en réserve. Aucun texte',
     cadrage: 'Sujet centré à 75 % du cadre, lisible à 96 px.',
-    calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'papier de la lettre', lumiere: 'flamme, halo et reflet sur le cachet' },
+    calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'papier de la lettre', lumiere: 'flamme et reflet sur le cachet, en hachures' },
     fond: 'transparent',
     format: '1:1, 360 × 360, fond transparent',
     ratio: '1 / 1',
@@ -3419,7 +3424,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     page: '/contact',
     emplacement: 'Contact, message d’erreur ou de limite d’envoi, sous le bouton',
     sujet: 'Patience : la lanterne à flamme basse et un sablier',
-    composition: 'La lanterne du logo, flamme réduite à une petite goutte, halo à peine visible ; à sa droite un petit sablier dont le sable est à moitié tombé. Même angle et même trait que CON-02, pour qu’on reconnaisse la même scène. Aucun texte',
+    composition: 'La lanterne du logo, flamme réduite à une petite goutte qui n’éclaire presque plus rien ; à sa droite un petit sablier dont le sable est à moitié tombé. Même angle et même trait que CON-02, pour qu’on reconnaisse la même scène. Aucun texte',
     cadrage: 'Lisible à 96 px.',
     calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'verre du sablier et sable', lumiere: 'flamme réduite' },
     fond: 'transparent',
@@ -3442,7 +3447,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     page: '/blog',
     emplacement: 'Blog sans article : la zone éclairée, à droite du titre (sous le titre sur mobile)',
     sujet: 'Les pages à écrire : le livre du logo ouvert, éclairé par la lanterne',
-    composition: 'Le livre du logo ouvert à plat, vu en légère plongée, sur des pages blanches dont seule la première est éclairée ; la lanterne posée en haut à droite du livre (vers 74 % de la largeur et 26 % de la hauteur) est la seule source de lumière, son halo s’arrête au bord de la page ; un crayon posé en travers de la page de gauche, pointe vers la lumière. Le reste du cadre reste dans l’ombre. Aucune écriture sur les pages',
+    composition: 'Le livre du logo ouvert à plat, vu en légère plongée, sur des pages blanches dont seule la première est éclairée ; la lanterne posée en haut à droite du livre (vers 74 % de la largeur et 26 % de la hauteur) est la seule source de lumière, sa lumière s’arrête au bord de la page ; un crayon posé en travers de la page de gauche, pointe vers la lumière. Le reste du cadre reste dans l’ombre. Aucune écriture sur les pages',
     cadrage: 'Le livre occupe 70 % de la largeur ; affiché jusqu’à 640 px à droite du titre (sous le titre sur mobile).',
     calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'papier des pages', lumiere: 'flamme et page éclairée' },
     fond: 'transparent',
@@ -3463,9 +3468,9 @@ export const VISUELS: readonly EntreeVisuel[] = [
     page: '/blog',
     emplacement: 'Article sans image de couverture, et image de partage d’un article',
     sujet: 'Couverture de secours : la lanterne sur une page de livre',
-    composition: 'Cadrage large : le coin d’une page de livre ouvert à gauche, la lanterne du logo à droite du centre (vers 62 % de la largeur et 50 % de la hauteur), son halo éclaire la page ; grand espace calme à gauche. Aucun texte',
+    composition: 'Cadrage large : le coin d’une page de livre ouvert à gauche, la lanterne du logo à droite du centre (vers 62 % de la largeur et 50 % de la hauteur), sa lumière tombe sur la page ; grand espace calme à gauche. Aucun texte',
     cadrage: 'Espace calme à gauche pour qu’un titre posé en HTML reste lisible par-dessus ; déclinaison 1200 × 630 pour le partage.',
-    calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'page du livre', lumiere: 'flamme et halo sur la page' },
+    calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'page du livre', lumiere: 'flamme et page éclairée, en hachures' },
     fond: 'aplat',
     format: '16:9, 1600 × 900 ; déclinaison 1200 × 630 pour le partage',
     ratio: '16 / 9',
@@ -3557,24 +3562,62 @@ export function fichiersAttendus(visuel: EntreeVisuel): string[] {
   });
 }
 
-/** Les trois couches d’une image générée (règle 6), dans l’ordre de superposition. */
-export const CALQUES = ['aplat', 'encre', 'lumiere'] as const;
-export type CalqueVisuel = (typeof CALQUES)[number];
+/** Une image générée qui a son propre fichier (ni reprise, ni déclinaisons). */
+const aSonMaster = (visuel: EntreeVisuel) => visuel.methode === 'IMG' && Boolean(visuel.fichier);
 
-/**
- * Fichiers des calques d’une image générée : `<ID>_<l>x<h>.aplat.webp`,
- * `.encre.webp` et `.lumiere.webp`, à côté de son rendu. Vide pour toute autre
- * méthode et pour une reprise.
- */
-export function fichiersCalques(visuel: EntreeVisuel): Record<CalqueVisuel, string> | null {
-  if (visuel.methode !== 'IMG' || !visuel.fichier) return null;
-  const base = visuel.fichier.replace(/\.webp$/, '');
-  return { aplat: `${base}.aplat.webp`, encre: `${base}.encre.webp`, lumiere: `${base}.lumiere.webp` };
+/** Le master de jour d’une image générée, en couleurs de clé, relatif à la racine du dépôt. */
+export function fichierMaster(visuel: EntreeVisuel): string | null {
+  return aSonMaster(visuel) ? `design/assets/visuels/${visuel.serie}/${visuel.id}.png` : null;
 }
 
-/** Le master d’une image générée, en couleurs de clé, relatif à la racine du dépôt. */
-export function fichierMaster(visuel: EntreeVisuel): string | null {
-  return visuel.methode === 'IMG' && visuel.fichier ? `design/assets/visuels/${visuel.serie}/${visuel.id}.png` : null;
+/**
+ * Le master de nuit d’une image générée, `<ID>.nuit.png` à côté du master de
+ * jour : même cadrage au pixel près, fait en édition depuis le jour (règle 6).
+ */
+export function fichierMasterNuit(visuel: EntreeVisuel): string | null {
+  return aSonMaster(visuel) ? `design/assets/visuels/${visuel.serie}/${visuel.id}.nuit.png` : null;
+}
+
+/**
+ * Le rendu de nuit d’une image générée, `<ID>_<l>x<h>.nuit.webp` à côté de son
+ * rendu de jour (`fichier`), relatif à `site/`. `null` pour toute autre méthode
+ * et pour une reprise.
+ */
+export function fichierNuit(visuel: EntreeVisuel): string | null {
+  return aSonMaster(visuel) ? visuel.fichier!.replace(/\.webp$/, '.nuit.webp') : null;
+}
+
+/** Les trois couleurs de clé d’un master, dans l’ordre du prompt. */
+export const CLES = ['encre', 'aplat', 'lumiere'] as const;
+export type CleVisuel = (typeof CLES)[number];
+
+/** Valeur de chaque couleur de clé dans un master (règle 6). */
+export const COULEURS_CLE: Readonly<Record<CleVisuel, string>> = { encre: '#000000', aplat: '#FFFFFF', lumiere: '#FF0000' };
+
+/** Ce qu’on appelle chaque couleur de clé dans la commande. */
+export const NOMS_CLES: Readonly<Record<CleVisuel, string>> = { encre: 'noir', aplat: 'blanc', lumiere: 'rouge' };
+
+/**
+ * Les rendus d’un master : pour chaque couleur de clé, le jeton de
+ * `src/styles/jetons.css` qui la remplace, lu dans le thème donné
+ * (tools/rendre-visuels.mjs). `repli` est la nuit tirée du master de jour,
+ * sans inversion, tant que le master de nuit manque.
+ */
+export const RENDUS: Readonly<Record<'jour' | 'nuit' | 'repli', { theme: 'jour' | 'nuit'; master: 'jour' | 'nuit'; jetons: Readonly<Record<CleVisuel, string>> }>> = {
+  jour: { theme: 'jour', master: 'jour', jetons: { encre: '--encre', aplat: '--surface', lumiere: '--lanterne' } },
+  nuit: { theme: 'nuit', master: 'nuit', jetons: { encre: '--fond', aplat: '--encre', lumiere: '--lanterne' } },
+  repli: { theme: 'nuit', master: 'jour', jetons: { encre: '--fond', aplat: '--papier-lune', lumiere: '--lanterne' } },
+};
+
+/**
+ * La position de la lanterne d’une image générée, en % de la largeur et de la
+ * hauteur : `lumiere` pour une scène animée, sinon celle que la composition
+ * écrit (« vers X % de la largeur et Y % de la hauteur »). `null` si aucune.
+ */
+export function positionLanterne(visuel: EntreeVisuel): readonly [number, number] | null {
+  if (visuel.lumiere) return visuel.lumiere;
+  const m = /vers (\d+) % de la largeur et (\d+) % de la hauteur/.exec(visuel.composition);
+  return m ? [Number(m[1]), Number(m[2])] : null;
 }
 
 /** Qui produit le fichier : Codex pour une image générée, sinon l’équipe, sauf ce que seul Charles peut faire. */
@@ -3593,19 +3636,13 @@ export function sujetPourGenerateur(visuel: EntreeVisuel): string {
 
 /** Ce que chaque méthode produit, et qui s’en charge. */
 export const METHODES: Readonly<Record<MethodeVisuel, { nom: string; consigne: string }>> = {
-  IMG: { nom: 'Image générée', consigne: 'Générer l’image avec Codex en trois couleurs de clé (règle 6), déposer le master PNG, puis lancer `node tools/separer-calques.mjs <ID>` dans `site/`.' },
+  IMG: { nom: 'Image générée', consigne: 'Générer avec Codex deux masters en trois couleurs de clé, au même cadrage au pixel près : le jour, puis la nuit en édition depuis le jour (règle 6). Les déposer dans `design/assets/visuels/<série>/`, puis lancer `npm run visuels:rendre <ID>` dans `site/`.' },
   SVG: { nom: 'Dessin vectoriel', consigne: 'Dessiner à la main : trait constant, `currentColor`, sans `<text>`, un `<title>` neutre en français. Ne jamais vectoriser une image générée. Un lot est un sprite : un `<symbol id>` par pièce, aux identifiants de la fiche.' },
   FIG: { nom: 'Figure codée', consigne: 'Coder depuis des données sourcées. Jamais générée : pas de fichier image à produire ici.' },
   CAP: { nom: 'Capture réelle', consigne: 'Capturer l’application ou la page réelle. Jamais une image générée présentée comme une capture.' },
   PHO: { nom: 'Photo réelle', consigne: 'Photo réelle de Charles : détourage, bichromie et filtres déterministes seulement. Jamais régénérée.' },
   OG: { nom: 'Image de partage', consigne: 'Composer en HTML avec la vraie typographie, puis rendre en PNG de 1 200 × 630.' },
 };
-
-/** Couleurs de clé d’une image générée, une par calque (règle 6). */
-export const CLES_CALQUES: Readonly<Record<CalqueVisuel, string>> = { encre: '#000000', aplat: '#FFFFFF', lumiere: '#FF0000' };
-
-/** Jeton CSS qui recolore chaque calque. */
-export const JETONS_CALQUES: Readonly<Record<CalqueVisuel, string>> = { encre: '--encre', aplat: '--surface', lumiere: '--lanterne' };
 
 /** Plafonds de poids d’un WebP livré, selon son plus grand côté (en Ko). */
 export const PLAFONDS_POIDS: readonly { cote: number; ko: number }[] = [
@@ -3621,15 +3658,28 @@ export function plafondPoids(largeur: number, hauteur: number): number {
 }
 
 /**
- * Bloc de style à recopier tel quel, en tête de chaque prompt d’image : une
- * seule famille sur toute la série, quel que soit le jour de génération.
+ * Bloc de style à recopier tel quel, en tête de chaque prompt d’image, de jour
+ * comme de nuit : une seule famille sur toute la série, quel que soit le jour
+ * de génération. La phrase « Economical line work… », ajoutée en fin de bloc,
+ * vient du retour de Charles sur la planche d’essai (13 octobre 2026) : moins
+ * « image générée ». Texte exact des 74 paires livrées le 13 octobre 2026
+ * (design/assets/visuels/<série>/README.md).
  */
 export const STYLE_PROMPT =
   'Reserve wood engraving, as in an old printed book: crisp hand-cut lines, parallel and cross hatching for every shadow, no gradient, no airbrush, no glow. ' +
   'Exactly three flat key colours: pure black #000000 for every line and hatch (the ink layer), pure white #FFFFFF for paper and lit surfaces (the flat layer), ' +
   'pure red #FF0000 only for the flame and the light it casts (the light layer); no other colour and no grey wash. ' +
   'A single hand lantern, a square cage with four posts, a ring on top and a drop-shaped flame, is the only light source of the scene: ' +
-  'it lights one thing and everything else falls into hatched shadow. People are faceless silhouettes. Calm, sober, timeless.';
+  'it lights one thing and everything else falls into hatched shadow. People are faceless silhouettes. Calm, sober, timeless. ' +
+  'Economical line work: large untouched white areas and solid black masses, hatching only in the shadows, slightly irregular hand-cut line ends. Few objects, simple silhouettes, nothing cropped at the edge.';
+
+/**
+ * Calage de la lanterne, à ajouter au prompt de jour d’une image dont la fiche
+ * place la lanterne (`positionLanterne`) : `{x}` et `{y}` en % de la largeur et
+ * de la hauteur.
+ */
+export const LANTERNE_PROMPT =
+  'HARD lantern registration: the centre of its RED FLAME must be at x={x}% of total width and y={y}% of total height from the top-left, within 3 percentage points on each axis.';
 
 /** Phrase de fond à ajouter au bloc de style, selon la fiche. */
 export const FOND_PROMPT: Readonly<Record<'transparent' | 'aplat', string>> = {
@@ -3637,11 +3687,75 @@ export const FOND_PROMPT: Readonly<Record<'transparent' | 'aplat', string>> = {
   aplat: 'The scene fills the frame edge to edge; empty areas are white paper.',
 };
 
-/** Ce que le générateur ne doit jamais produire, à joindre à chaque prompt. */
+/** Ce que le générateur ne doit jamais produire, à joindre à chaque prompt, de jour comme de nuit. */
 export const NEGATIVE_PROMPT =
   'text, letters, numbers, digits, signature, watermark, logo, brand mark, recognisable face, portrait, real person, ' +
   'character, card or symbol from an existing game or franchise, ornate gold frame, decorative border, gradient, soft glow, ' +
-  'airbrush, photographic or 3D render, grey shading, any colour other than black, white and red';
+  'airbrush, photographic or 3D render, grey shading, any colour other than black, white and red, ' +
+  'glow, halo, light rays, sparkle lines, lens flare, hyper-detailed, intricate micro-detail, uniform texture, digital painting, smooth airbrush, detailed anatomy, fake text lines';
+
+/**
+ * Moins « image générée » : le retour de Charles sur la planche d’essai
+ * (13 octobre 2026), en règles concrètes à vérifier sur chaque master.
+ */
+export const MOINS_GENERE: readonly string[] = [
+  '**Moitié moins de détails** qu’un générateur n’en met de lui-même : peu d’objets, aucune micro-texture répandue partout.',
+  '**De grandes zones de papier blanc intact et de grands aplats noirs** : le blanc et le noir pleins portent l’image, pas un grisé de traits.',
+  '**Des hachures seulement dans les ombres**, jamais sur une surface éclairée ni en remplissage de fond.',
+  '**Un vrai trait de gravure sur bois** : lignes franches, extrémités légèrement irrégulières, comme taillées à la gouge.',
+  '**Aucune lueur, aucun halo, aucun rayon ni trait d’éclat, aucun dégradé** autour de la flamme ou ailleurs.',
+  '**La lumière rouge se limite à la flamme et à ce qu’elle éclaire**, en hachures rouges, jamais en voile diffus.',
+  '**Mains et silhouettes simplifiées** : un contour net, sans anatomie détaillée.',
+  '**Rien de coupé au bord** : chaque objet tient entier dans le cadre, avec une marge.',
+  '**Aucun motif qui imite du texte** : pas de barres ni de lignes sur les plaques, les fiches ou les papiers ; une surface vierge reste vierge.',
+];
+
+/**
+ * Prompt d’édition de la version de nuit, à donner tel quel avec le master de
+ * jour en entrée (décision de Charles, 13 octobre 2026).
+ */
+export const NUIT_PROMPT =
+  'Same scene and exact same framing, at night: the room is in deep darkness and solid black dominates. ' +
+  'The lantern is the only light: its red light falls in red hatching on a small pool around it and on the main subject. ' +
+  'Outside this pool, shapes are only suggested by sparse thin white outlines. No large white areas.';
+
+/** Phrase de fond de la nuit, à la place de celle du jour, selon la fiche. */
+export const NUIT_FOND_PROMPT: Readonly<Record<'transparent' | 'aplat', string>> = {
+  transparent: 'Transparent background: nothing is drawn outside the subject. Preserve the original transparency.',
+  aplat: 'The scene fills the frame edge to edge with opaque solid black night.',
+};
+
+/**
+ * Consigne d’édition qui suit le prompt de nuit, selon le fond de la fiche :
+ * le master de jour est l’image 1, les références de style les images 2 à 5.
+ */
+export const NUIT_EDITION_PROMPT: Readonly<Record<'transparent' | 'aplat', string>> = {
+  aplat:
+    'EDIT IMAGE 1, the supplied day master; images 2–5 are the lantern style references. Keep the exact native dimensions, canvas ratio, camera, crop, every object position, shape, size, overlap and pose of image 1. Do not produce a new composition. Only change ink coverage and illumination. ' +
+    'Keep the red flame at its CURRENT actual position in image1, do not shift it. Replace broad white areas with SOLID PURE BLACK #000000, at least 80% of the whole image. ' +
+    'Use only sparse thin pure white outlines on existing edges outside the small lit pool. A few red hatch strokes light the main subject and a small pool around the lantern, following surfaces, never floating in the air. ' +
+    'No large white areas. No diffuse glow, no rays, no halo, no texture or grain. Deep solid black room fills the frame.',
+  transparent:
+    'EDIT IMAGE 1, the supplied day master; images 2–5 are the lantern style references. Keep the exact native dimensions, canvas ratio, camera, crop, every object position, shape, size, overlap and pose of image 1. Do not produce a new composition. Only change ink coverage and illumination. ' +
+    'Keep the red flame at its CURRENT actual position in image1, do not shift it. Replace broad white areas with SOLID PURE BLACK #000000, at least 80% of the OPAQUE subject pixels (not counting the transparent background). ' +
+    'Use only sparse thin pure white outlines on existing edges outside the small lit pool. A few red hatch strokes light the main subject and a small pool around the lantern, following surfaces, never floating in the air. ' +
+    'No large white areas. No diffuse glow, no rays, no halo, no texture or grain. Keep the background transparent, and retain opaque solid black inside the object silhouettes; do not turn the dark object interior transparent.',
+};
+
+/** Les règles de la version de nuit, à vérifier sur chaque master de nuit. */
+export const REGLES_NUIT: readonly string[] = [
+  '**Toujours en édition depuis le master de jour** validé, jamais en nouvelle génération : `<ID>.nuit.png` à côté de `<ID>.png`.',
+  '**Même cadrage au pixel près** : mêmes dimensions, mêmes objets aux mêmes places, la lanterne au même point. Le script refuse un master de nuit d’autres dimensions que le jour.',
+  '**Le noir domine, au moins 70 % de l’image** (de la surface dessinée, pour un fond transparent) : la scène est plongée dans la nuit.',
+  '**La lanterne est la seule lumière** : elle éclaire en hachures rouges une flaque autour d’elle et le sujet principal, rien d’autre.',
+  '**Hors de cette flaque, de rares traits blancs fins**, comme des contours au clair de lune ; pas de grand aplat blanc.',
+  '**Les mêmes trois couleurs de clé** que le jour : noir `#000000`, blanc `#FFFFFF`, rouge `#FF0000`, rien d’autre.',
+  '**Un fond transparent reste transparent** : rien n’est ajouté autour du sujet.',
+  '**Les règles « Moins image générée » valent aussi la nuit** : aucune lueur ni halo autour de la flamme, la lumière en hachures rouges.',
+];
+
+/** Tolérance de la position de la lanterne, en points de % de la largeur et de la hauteur. */
+export const TOLERANCE_LANTERNE = 3;
 
 /** Fichiers de référence à joindre au générateur, relatifs à la racine du dépôt. */
 export const REFERENCES_STYLE: readonly { fichier: string; role: string }[] = [
@@ -3767,8 +3881,8 @@ export const REGLES_COMMUNES: readonly string[] = [
   '**Jamais de visage de Charles généré** ; les personnages sont des silhouettes sans visage. Les portraits sont ses quatre vraies photos (détourage, bichromie et filtres déterministes seulement).',
   '**Aucun texte dans l’image**, chiffres compris : les libellés, dates et légendes sont en HTML.',
   '**Jamais une image générée présentée comme une capture ou comme une donnée** : les courbes, frises et schémas chiffrés sont des figures codées (FIG), les écrans sont des captures réelles (CAP).',
-  '**Une seule famille de style**, celle de la direction « Lanterne », retenue le 13 octobre 2026 (`design/refonte/c-lanterne/`) : **gravure en réserve**, trait clair sur fond sombre la nuit et inversé le jour ; la lanterne comme seule source de lumière de la scène, qui éclaire une seule chose et laisse le reste dans l’ombre. Même trait, même lumière, même angle par série (voir « Séries »). Aucun ornement de jeu, aucun cadre doré. La lanterne du logo est le motif récurrent des états (vide, succès, 404).',
-  '**Jour et nuit, tranché le 13 octobre 2026** : chaque image est générée en trois couleurs de clé franches, encre `#000000`, aplat `#FFFFFF` et lumière `#FF0000`, sur fond transparent ou rempli d’aplat selon la fiche. `node tools/separer-calques.mjs <ID>` (dans `site/`) en tire trois calques, `<ID>_<l>x<h>.aplat.webp`, `.encre.webp` et `.lumiere.webp`, que `components/ui/Visuel.astro` doit superposer en masques colorés par `--surface`, `--encre` et `--lanterne` : l’image suit la bascule de thème sans double téléchargement ni script. Le même script écrit `<ID>_<l>x<h>.webp`, le rendu de jour, pour les contextes sans masque. Une image sans ses calques fait échouer `npm run visuels -- --strict` et les tests.',
-  '**Livrables** : le master PNG en couleurs de clé, à la définition du générateur et au ratio exact de la fiche (à 1 % près), dans `design/assets/visuels/<série>/<ID>.png` ; le script le met aux dimensions exactes du nom et écrit les WebP (qualité 82, alpha conservé) dans `site/src/assets/visuels/<série>/`. Poids d’un WebP : 40 Ko au plus jusqu’à 480 px de grand côté, 120 Ko jusqu’à 1 200 px, 250 Ko au-delà. Prompt, date et provenance consignés dans `design/assets/visuels/<série>/README.md` et `site/src/assets/visuels/<série>/README.md`.',
+  '**Une seule famille de style**, celle de la direction « Lanterne », retenue le 13 octobre 2026 (`design/refonte/c-lanterne/`) : **gravure en réserve** au trait économe (voir « Moins image générée ») ; la lanterne comme seule source de lumière de la scène, qui éclaire une seule chose et laisse le reste dans l’ombre, le jour comme la nuit (voir « Version de nuit »). Même trait, même lumière, même angle par série (voir « Séries »). Aucun ornement de jeu, aucun cadre doré. La lanterne du logo est le motif récurrent des états (vide, succès, 404).',
+  '**Deux versions dessinées, jour et nuit** (tranché le 13 octobre 2026) : chaque image a deux masters en trois couleurs de clé franches, noir `#000000`, blanc `#FFFFFF` et rouge `#FF0000`, dessinés au même cadrage au pixel près : le jour `<ID>.png`, puis la nuit `<ID>.nuit.png`, faite en édition depuis le master de jour (voir « Version de nuit »). Dans `site/`, `npm run visuels:rendre <ID>` les rend aux couleurs des jetons de `src/styles/jetons.css` : le jour `<ID>_<l>x<h>.webp` (blanc → `--surface`, noir → `--encre`, rouge → `--lanterne`, thème clair), la nuit `<ID>_<l>x<h>.nuit.webp` (noir → `--fond`, blanc → `--encre`, rouge → `--lanterne`, thème nuit). Sans master de nuit, il écrit une nuit de repli « clair de lune » tirée du jour et la signale : ce n’est pas une livraison. Une image « socle » sans ses deux rendus fait échouer `npm run visuels -- --strict`.',
+  '**Livrables** : les deux masters PNG, à la définition du générateur, au ratio exact de la fiche (à 1 % près) et de mêmes dimensions, dans `design/assets/visuels/<série>/` ; le script les met aux dimensions exactes du nom et écrit les deux WebP (qualité 82, abaissée pour le seul rendu qui dépasse son plafond ; alpha conservé) dans `site/src/assets/visuels/<série>/`. Poids d’un WebP : 40 Ko au plus jusqu’à 480 px de grand côté, 120 Ko jusqu’à 1 200 px, 250 Ko au-delà. Prompts du jour et de la nuit, date et provenance consignés dans `design/assets/visuels/<série>/README.md` et `site/src/assets/visuels/<série>/README.md`.',
   '**Lisibilité mobile** : le sujet principal occupe au moins 60 % du cadre et se comprend à 390 px.',
 ];

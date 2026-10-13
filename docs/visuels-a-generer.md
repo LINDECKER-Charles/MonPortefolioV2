@@ -6,17 +6,31 @@
 
 Tu produis **uniquement les images générées (IMG)** de la refonte du portfolio de Charles Lindecker : la **partie 1** en donne la file, « socle » d’abord, puis les fiches. Les autres fiches (dessins vectoriels, figures codées, captures, photos, images de partage) sont du contexte : l’équipe s’en charge (**partie 2**).
 
+**Ce document est la seule référence de la série.** Il porte les retours de Charles sur la planche d’essai du 13 octobre 2026 (moins « image générée », une vraie version de nuit) et remplace toute consigne antérieure. Lis-le de haut en bas avant la première image.
+
+- **Deux masters par image**, dessinés au même cadrage au pixel près, dans les trois mêmes couleurs de clé : le jour `<ID>.png`, puis la nuit `<ID>.nuit.png`, faite **en édition depuis le master de jour** (section « Version de nuit »). Le site affiche l’un ou l’autre selon le thème.
 - Le registre recense **176 emplacements** (122 « socle », 54 « élargi »), dont **74 images à générer** : 74 restent à livrer, dont 60 « socle ».
 - **Socle** : posé sur une page du site, qui affiche un cadre hachuré tant que le fichier manque. À produire d’abord.
 - **Élargi** : aucune page ne l’attend encore ; chaque fiche dit pourquoi. Peut suivre.
-- Le prompt d’une image se rédige en anglais : le bloc de style, la phrase de fond, puis la traduction des seuls champs **Sujet** et **Composition** de la fiche, enfin le prompt négatif. Le champ **Emplacement** donne le contexte et peut nommer une marque ou un jeu : il ne va jamais dans un prompt.
+- **Le prompt de jour** se rédige en anglais : le bloc de style, la phrase de fond, puis la traduction des seuls champs **Sujet** et **Composition** de la fiche, le calage de la lanterne quand la fiche la place, enfin le prompt négatif. Le champ **Emplacement** donne le contexte et peut nommer une marque ou un jeu : il ne va jamais dans un prompt.
+- **Le prompt de nuit** est une édition du master de jour, joint en image 1 : le bloc de style, la phrase de fond de nuit, le prompt d’édition, la consigne d’édition, enfin le prompt négatif (section « Version de nuit »).
+
+## Le déroulé
+
+1. **Étape 0, la planche d’essai** : `ACC-03`, `PVZ-05`, `CMP-02` (une scène, une vignette de carte, une vignette de compétence), **en jour et en nuit**, six masters rendus par `npm run visuels:rendre ACC-03 PVZ-05 CMP-02`, **validée par Charles le 13 octobre 2026** : ses masters sont la référence du trait, de la nuit et des couleurs de clé. Avant toute nouvelle série ou tout changement de style, refaire une planche de trois images de la même façon, puis **t’arrêter** et la montrer à Charles : la série ne se lance qu’après sa validation.
+2. **La file « socle »** de la partie 1, **série par série**, dans l’ordre donné (la file « élargi » seulement si Charles la demande). Pour chaque image, dans l’ordre :
+   1. générer le **master de jour** (prompt de jour) et le relire contre les règles « Moins image générée » ;
+   2. **vérifier la lanterne** : à la position de la fiche, à 3 % près (voir « Avant de commencer », point 4) ; sinon, régénérer ;
+   3. générer le **master de nuit en édition** depuis ce master de jour (prompt de nuit) et le relire contre les règles « Version de nuit », lanterne comprise ;
+   4. déposer les deux masters dans `design/assets/visuels/<série>/` sous `<ID>.png` et `<ID>.nuit.png`, puis lancer `npm run visuels:rendre <ID>` dans `site/` : il refuse un master au mauvais ratio ou une nuit d’autres dimensions que le jour.
+3. **À la fin de chaque série** : une ligne de provenance par master (section « Livraison »), `npm run visuels -- --verifier` sans écart, `npm run visuels:doc`, puis **un commit pour la série**.
 
 ## Avant de commencer
 
-**1. Le bloc de style**, identique pour tous les prompts, à recopier tel quel en tête :
+**1. Le bloc de style**, identique pour tous les prompts de jour, à recopier tel quel en tête :
 
 ```text
-Reserve wood engraving, as in an old printed book: crisp hand-cut lines, parallel and cross hatching for every shadow, no gradient, no airbrush, no glow. Exactly three flat key colours: pure black #000000 for every line and hatch (the ink layer), pure white #FFFFFF for paper and lit surfaces (the flat layer), pure red #FF0000 only for the flame and the light it casts (the light layer); no other colour and no grey wash. A single hand lantern, a square cage with four posts, a ring on top and a drop-shaped flame, is the only light source of the scene: it lights one thing and everything else falls into hatched shadow. People are faceless silhouettes. Calm, sober, timeless.
+Reserve wood engraving, as in an old printed book: crisp hand-cut lines, parallel and cross hatching for every shadow, no gradient, no airbrush, no glow. Exactly three flat key colours: pure black #000000 for every line and hatch (the ink layer), pure white #FFFFFF for paper and lit surfaces (the flat layer), pure red #FF0000 only for the flame and the light it casts (the light layer); no other colour and no grey wash. A single hand lantern, a square cage with four posts, a ring on top and a drop-shaped flame, is the only light source of the scene: it lights one thing and everything else falls into hatched shadow. People are faceless silhouettes. Calm, sober, timeless. Economical line work: large untouched white areas and solid black masses, hatching only in the shadows, slightly irregular hand-cut line ends. Few objects, simple silhouettes, nothing cropped at the edge.
 ```
 
 Suivi de la phrase de fond que la fiche demande :
@@ -24,10 +38,10 @@ Suivi de la phrase de fond que la fiche demande :
 - fond transparent : `Transparent background: nothing is drawn outside the subject.`
 - fond rempli d’aplat : `The scene fills the frame edge to edge; empty areas are white paper.`
 
-**2. Le prompt négatif**, joint à chaque génération :
+**2. Le prompt négatif**, joint à chaque génération, de jour comme de nuit :
 
 ```text
-text, letters, numbers, digits, signature, watermark, logo, brand mark, recognisable face, portrait, real person, character, card or symbol from an existing game or franchise, ornate gold frame, decorative border, gradient, soft glow, airbrush, photographic or 3D render, grey shading, any colour other than black, white and red
+text, letters, numbers, digits, signature, watermark, logo, brand mark, recognisable face, portrait, real person, character, card or symbol from an existing game or franchise, ornate gold frame, decorative border, gradient, soft glow, airbrush, photographic or 3D render, grey shading, any colour other than black, white and red, glow, halo, light rays, sparkle lines, lens flare, hyper-detailed, intricate micro-detail, uniform texture, digital painting, smooth airbrush, detailed anatomy, fake text lines
 ```
 
 **3. Les références à joindre** au générateur, pour la main du trait et le modèle de la lanterne :
@@ -39,9 +53,65 @@ text, letters, numbers, digits, signature, watermark, logo, brand mark, recognis
 
 Un SVG se joint rendu en PNG : `node -e "require('sharp')(process.argv[1],{density:300}).png().toFile(process.argv[2])" <fichier.svg> <sortie.png>` (dans `site/`).
 
-**4. Étape 0, la planche d’essai** : générer d’abord `ACC-03`, `PVZ-05`, `CMP-02`, une scène, une vignette de carte et une vignette de compétence, puis s’arrêter et les montrer à Charles. La série ne se lance qu’après sa validation du style, du trait et des couleurs de clé.
+**4. La lanterne à la position de la fiche, à 3 % près.** Chaque fiche qui la place donne sa position en % de la largeur et de la hauteur, depuis le coin haut gauche (ligne **Lanterne**). Le prompt de jour la cale par cette phrase, `{x}` et `{y}` remplacés par la position de la fiche :
 
-**5. Une lanterne en gras** dans une fiche est une contrainte dure : la lumière animée du site part de ce point. La vérifier en calquant l’image livrée sur la position donnée (en % de la largeur et de la hauteur, depuis le coin haut gauche).
+```text
+HARD lantern registration: the centre of its RED FLAME must be at x={x}% of total width and y={y}% of total height from the top-left, within 3 percentage points on each axis.
+```
+
+Avant de livrer, la vérifier en calquant, sur le master de jour comme sur celui de nuit : mesurer en pixels le centre de la flamme rouge, isolée des hachures qu’elle éclaire, le diviser par la largeur et par la hauteur de l’image ; l’écart à la fiche ne dépasse pas 3 points dans chaque sens. Une lanterne **contrainte dure** est celle d’une scène animée : la lumière du site part de ce point. Une lanterne mal placée se corrige en édition, sur une copie de contrôle où un repère marque la cible ; le repère ne reste jamais dans le master.
+
+## Moins « image générée »
+
+Retour de Charles sur la planche d’essai : le rendu fait « un peu trop IA par moment ». Chaque master, de jour comme de nuit, se relit contre ces règles avant d’être déposé :
+
+- **Moitié moins de détails** qu’un générateur n’en met de lui-même : peu d’objets, aucune micro-texture répandue partout.
+- **De grandes zones de papier blanc intact et de grands aplats noirs** : le blanc et le noir pleins portent l’image, pas un grisé de traits.
+- **Des hachures seulement dans les ombres**, jamais sur une surface éclairée ni en remplissage de fond.
+- **Un vrai trait de gravure sur bois** : lignes franches, extrémités légèrement irrégulières, comme taillées à la gouge.
+- **Aucune lueur, aucun halo, aucun rayon ni trait d’éclat, aucun dégradé** autour de la flamme ou ailleurs.
+- **La lumière rouge se limite à la flamme et à ce qu’elle éclaire**, en hachures rouges, jamais en voile diffus.
+- **Mains et silhouettes simplifiées** : un contour net, sans anatomie détaillée.
+- **Rien de coupé au bord** : chaque objet tient entier dans le cadre, avec une marge.
+- **Aucun motif qui imite du texte** : pas de barres ni de lignes sur les plaques, les fiches ou les papiers ; une surface vierge reste vierge.
+
+Ces règles priment sur la composition d’une fiche : une feuille, une page ou une plaque reste vierge, ou ne porte que des formes simples (case, croix, coche, flèche, cercle) ; une lumière qui « éclaire » se dessine en hachures rouges ; un trajet est un fin pointillé.
+
+## Version de nuit
+
+Le master de nuit `<ID>.nuit.png` se fait **en édition**, avec le master de jour validé joint en image 1 et les références de style en images 2 à 5, jamais en nouvelle génération. Le prompt de nuit enchaîne le bloc de style (« Avant de commencer », point 1), la phrase de fond de nuit que la fiche demande, à la place de celle du jour :
+
+- fond transparent : `Transparent background: nothing is drawn outside the subject. Preserve the original transparency.`
+- fond rempli d’aplat : `The scene fills the frame edge to edge with opaque solid black night.`
+
+puis le prompt d’édition, à recopier tel quel :
+
+```text
+Same scene and exact same framing, at night: the room is in deep darkness and solid black dominates. The lantern is the only light: its red light falls in red hatching on a small pool around it and on the main subject. Outside this pool, shapes are only suggested by sparse thin white outlines. No large white areas.
+```
+
+puis la consigne d’édition selon le fond, enfin le prompt négatif. Fond rempli d’aplat :
+
+```text
+EDIT IMAGE 1, the supplied day master; images 2–5 are the lantern style references. Keep the exact native dimensions, canvas ratio, camera, crop, every object position, shape, size, overlap and pose of image 1. Do not produce a new composition. Only change ink coverage and illumination. Keep the red flame at its CURRENT actual position in image1, do not shift it. Replace broad white areas with SOLID PURE BLACK #000000, at least 80% of the whole image. Use only sparse thin pure white outlines on existing edges outside the small lit pool. A few red hatch strokes light the main subject and a small pool around the lantern, following surfaces, never floating in the air. No large white areas. No diffuse glow, no rays, no halo, no texture or grain. Deep solid black room fills the frame.
+```
+
+Fond transparent :
+
+```text
+EDIT IMAGE 1, the supplied day master; images 2–5 are the lantern style references. Keep the exact native dimensions, canvas ratio, camera, crop, every object position, shape, size, overlap and pose of image 1. Do not produce a new composition. Only change ink coverage and illumination. Keep the red flame at its CURRENT actual position in image1, do not shift it. Replace broad white areas with SOLID PURE BLACK #000000, at least 80% of the OPAQUE subject pixels (not counting the transparent background). Use only sparse thin pure white outlines on existing edges outside the small lit pool. A few red hatch strokes light the main subject and a small pool around the lantern, following surfaces, never floating in the air. No large white areas. No diffuse glow, no rays, no halo, no texture or grain. Keep the background transparent, and retain opaque solid black inside the object silhouettes; do not turn the dark object interior transparent.
+```
+
+Ces textes sont ceux des 74 paires livrées le 13 octobre 2026 (prompts exacts dans `design/assets/visuels/<série>/README.md`). Le master de nuit se relit contre ces règles :
+
+- **Toujours en édition depuis le master de jour** validé, jamais en nouvelle génération : `<ID>.nuit.png` à côté de `<ID>.png`.
+- **Même cadrage au pixel près** : mêmes dimensions, mêmes objets aux mêmes places, la lanterne au même point. Le script refuse un master de nuit d’autres dimensions que le jour.
+- **Le noir domine, au moins 70 % de l’image** (de la surface dessinée, pour un fond transparent) : la scène est plongée dans la nuit.
+- **La lanterne est la seule lumière** : elle éclaire en hachures rouges une flaque autour d’elle et le sujet principal, rien d’autre.
+- **Hors de cette flaque, de rares traits blancs fins**, comme des contours au clair de lune ; pas de grand aplat blanc.
+- **Les mêmes trois couleurs de clé** que le jour : noir `#000000`, blanc `#FFFFFF`, rouge `#FF0000`, rien d’autre.
+- **Un fond transparent reste transparent** : rien n’est ajouté autour du sujet.
+- **Les règles « Moins image générée » valent aussi la nuit** : aucune lueur ni halo autour de la flamme, la lumière en hachures rouges.
 
 ## Règles communes
 
@@ -49,9 +119,9 @@ Un SVG se joint rendu en PNG : `node -e "require('sharp')(process.argv[1],{densi
 2. **Jamais de visage de Charles généré** ; les personnages sont des silhouettes sans visage. Les portraits sont ses quatre vraies photos (détourage, bichromie et filtres déterministes seulement).
 3. **Aucun texte dans l’image**, chiffres compris : les libellés, dates et légendes sont en HTML.
 4. **Jamais une image générée présentée comme une capture ou comme une donnée** : les courbes, frises et schémas chiffrés sont des figures codées (FIG), les écrans sont des captures réelles (CAP).
-5. **Une seule famille de style**, celle de la direction « Lanterne », retenue le 13 octobre 2026 (`design/refonte/c-lanterne/`) : **gravure en réserve**, trait clair sur fond sombre la nuit et inversé le jour ; la lanterne comme seule source de lumière de la scène, qui éclaire une seule chose et laisse le reste dans l’ombre. Même trait, même lumière, même angle par série (voir « Séries »). Aucun ornement de jeu, aucun cadre doré. La lanterne du logo est le motif récurrent des états (vide, succès, 404).
-6. **Jour et nuit, tranché le 13 octobre 2026** : chaque image est générée en trois couleurs de clé franches, encre `#000000`, aplat `#FFFFFF` et lumière `#FF0000`, sur fond transparent ou rempli d’aplat selon la fiche. `node tools/separer-calques.mjs <ID>` (dans `site/`) en tire trois calques, `<ID>_<l>x<h>.aplat.webp`, `.encre.webp` et `.lumiere.webp`, que `components/ui/Visuel.astro` doit superposer en masques colorés par `--surface`, `--encre` et `--lanterne` : l’image suit la bascule de thème sans double téléchargement ni script. Le même script écrit `<ID>_<l>x<h>.webp`, le rendu de jour, pour les contextes sans masque. Une image sans ses calques fait échouer `npm run visuels -- --strict` et les tests.
-7. **Livrables** : le master PNG en couleurs de clé, à la définition du générateur et au ratio exact de la fiche (à 1 % près), dans `design/assets/visuels/<série>/<ID>.png` ; le script le met aux dimensions exactes du nom et écrit les WebP (qualité 82, alpha conservé) dans `site/src/assets/visuels/<série>/`. Poids d’un WebP : 40 Ko au plus jusqu’à 480 px de grand côté, 120 Ko jusqu’à 1 200 px, 250 Ko au-delà. Prompt, date et provenance consignés dans `design/assets/visuels/<série>/README.md` et `site/src/assets/visuels/<série>/README.md`.
+5. **Une seule famille de style**, celle de la direction « Lanterne », retenue le 13 octobre 2026 (`design/refonte/c-lanterne/`) : **gravure en réserve** au trait économe (voir « Moins image générée ») ; la lanterne comme seule source de lumière de la scène, qui éclaire une seule chose et laisse le reste dans l’ombre, le jour comme la nuit (voir « Version de nuit »). Même trait, même lumière, même angle par série (voir « Séries »). Aucun ornement de jeu, aucun cadre doré. La lanterne du logo est le motif récurrent des états (vide, succès, 404).
+6. **Deux versions dessinées, jour et nuit** (tranché le 13 octobre 2026) : chaque image a deux masters en trois couleurs de clé franches, noir `#000000`, blanc `#FFFFFF` et rouge `#FF0000`, dessinés au même cadrage au pixel près : le jour `<ID>.png`, puis la nuit `<ID>.nuit.png`, faite en édition depuis le master de jour (voir « Version de nuit »). Dans `site/`, `npm run visuels:rendre <ID>` les rend aux couleurs des jetons de `src/styles/jetons.css` : le jour `<ID>_<l>x<h>.webp` (blanc → `--surface`, noir → `--encre`, rouge → `--lanterne`, thème clair), la nuit `<ID>_<l>x<h>.nuit.webp` (noir → `--fond`, blanc → `--encre`, rouge → `--lanterne`, thème nuit). Sans master de nuit, il écrit une nuit de repli « clair de lune » tirée du jour et la signale : ce n’est pas une livraison. Une image « socle » sans ses deux rendus fait échouer `npm run visuels -- --strict`.
+7. **Livrables** : les deux masters PNG, à la définition du générateur, au ratio exact de la fiche (à 1 % près) et de mêmes dimensions, dans `design/assets/visuels/<série>/` ; le script les met aux dimensions exactes du nom et écrit les deux WebP (qualité 82, abaissée pour le seul rendu qui dépasse son plafond ; alpha conservé) dans `site/src/assets/visuels/<série>/`. Poids d’un WebP : 40 Ko au plus jusqu’à 480 px de grand côté, 120 Ko jusqu’à 1 200 px, 250 Ko au-delà. Prompts du jour et de la nuit, date et provenance consignés dans `design/assets/visuels/<série>/README.md` et `site/src/assets/visuels/<série>/README.md`.
 8. **Lisibilité mobile** : le sujet principal occupe au moins 60 % du cadre et se comprend à 390 px.
 
 Exceptions à la règle 3 : le nom dans les déclinaisons du logo, et les images de partage (OG), composées en vraie typographie.
@@ -78,7 +148,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 | Méthode | Nature | Consigne |
 |---|---|---|
-| IMG | Image générée | Générer l’image avec Codex en trois couleurs de clé (règle 6), déposer le master PNG, puis lancer `node tools/separer-calques.mjs <ID>` dans `site/`. |
+| IMG | Image générée | Générer avec Codex deux masters en trois couleurs de clé, au même cadrage au pixel près : le jour, puis la nuit en édition depuis le jour (règle 6). Les déposer dans `design/assets/visuels/<série>/`, puis lancer `npm run visuels:rendre <ID>` dans `site/`. |
 | SVG | Dessin vectoriel | Dessiner à la main : trait constant, `currentColor`, sans `<text>`, un `<title>` neutre en français. Ne jamais vectoriser une image générée. Un lot est un sprite : un `<symbol id>` par pièce, aux identifiants de la fiche. |
 | FIG | Figure codée | Coder depuis des données sourcées. Jamais générée : pas de fichier image à produire ici. |
 | CAP | Capture réelle | Capturer l’application ou la page réelle. Jamais une image générée présentée comme une capture. |
@@ -87,12 +157,16 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 ## Livraison
 
-- **Image générée** : le master PNG en trois couleurs de clé (encre `#000000`, aplat `#FFFFFF`, lumière `#FF0000`), à la définition du générateur et au ratio exact de la fiche (à 1 % près), dans `design/assets/visuels/<série>/<ID>.png`. Puis, dans `site/` : `node tools/separer-calques.mjs <ID>`. Le script met l’image aux dimensions exactes du nom et écrit, en WebP qualité 82 avec alpha, le rendu `<ID>_<largeur>x<hauteur>.webp` et ses trois calques `.aplat.webp`, `.encre.webp`, `.lumiere.webp`, que le site colore : l’aplat par `--surface`, l’encre par `--encre`, la lumière par `--lanterne`.
-- **Poids d’un WebP** (rendu et chaque calque), selon son plus grand côté : 40 Ko jusqu’à 480 px, 120 Ko jusqu’à 1 200 px, 250 Ko au-delà.
+- **Image générée** : deux masters PNG en trois couleurs de clé (encre `#000000`, aplat `#FFFFFF`, lumière `#FF0000`), à la définition du générateur et au ratio exact de la fiche (à 1 % près), de mêmes dimensions au pixel près : le jour `design/assets/visuels/<série>/<ID>.png`, la nuit `design/assets/visuels/<série>/<ID>.nuit.png`. Puis, dans `site/` : `npm run visuels:rendre <ID>`. Le script contrôle le ratio et les dimensions des deux masters, les met aux dimensions exactes du nom et écrit, en WebP qualité 82 avec alpha (débarrassé du bruit du générateur), aux couleurs lues dans `src/styles/jetons.css` :
+  - le rendu de jour `<ID>_<largeur>x<hauteur>.webp`, depuis le master de jour, thème clair : encre (`#000000`) → `--encre`, aplat (`#FFFFFF`) → `--surface`, lumière (`#FF0000`) → `--lanterne` ;
+  - le rendu de nuit `<ID>_<largeur>x<hauteur>.nuit.webp`, depuis le master de nuit, thème nuit : noir `#000000` → `--fond`, blanc `#FFFFFF` → `--encre`, rouge `#FF0000` → `--lanterne`.
+- **Sans master de nuit**, le script écrit une nuit de repli « clair de lune » tirée du jour, sans inversion (encre (`#000000`) → `--fond`, aplat (`#FFFFFF`) → `--papier-lune`, lumière (`#FF0000`) → `--lanterne`), et le signale : ce n’est pas une livraison, `npm run visuels` la liste jusqu’à ce que le master de nuit arrive.
+- **Poids d’un WebP** (chacun des deux rendus), selon son plus grand côté : 40 Ko jusqu’à 480 px, 120 Ko jusqu’à 1 200 px, 250 Ko au-delà. Un rendu plus lourd en qualité 82 est réencodé, pour lui seul, à la qualité qui le fait tenir (pas de 2, jamais sous 50), et le script le signale ; un master trop chargé pour tenir même à 50 est à simplifier.
 - **Dessin vectoriel** : `<ID>.svg`, au chemin attendu. Un lot est un sprite : un `<symbol id>` par pièce, aux identifiants listés par la fiche (« Pièces du fichier »).
 - **Image de partage** : `public/og/<ID>_1200x630.png`, ou les fichiers nommés par la fiche quand elle en attend plusieurs.
 - **Provenance** : pour chaque fichier, une ligne du tableau `Fichier | Prompt | Date | Provenance` de `design/assets/visuels/<série>/README.md` et de `site/src/assets/visuels/<série>/README.md`.
-- **Vérifier** avec `npm run visuels -- --verifier` (dans `site/`) : dimensions annoncées par le nom, ratio, fond transparent, poids, calques, pièces d’un SVG. Puis relancer `npm run visuels:doc` : le visuel livré sort des files.
+- **Vérifier** avec `npm run visuels -- --verifier` (dans `site/`) : dimensions annoncées par le nom, ratio, fond transparent, poids, présence des deux rendus et des deux masters d’une image générée, au même cadrage ; pièces d’un SVG. Une nuit de repli y est un écart : il manque le master de nuit. Puis relancer `npm run visuels:doc` : le visuel livré sort des files.
+- **Commit par série** : les masters, les rendus, les lignes de provenance et cette commande régénérée, en un commit Conventional Commits en français (section « commit » d’`AGENTS.md`), par exemple `feat(site): livrer les images de la série « Compétences humaines »`. Jamais d’image d’essai écartée dans un commit.
 
 ## Vue d’ensemble
 
@@ -151,12 +225,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/pages/index.astro`
 - **Sujet** : Démonter de vieux PC avec son père
 - **Composition (pour le prompt)** : Établi d’atelier vu de trois quarts, en léger surplomb : une vieille tour de PC ouverte au centre ; son panneau latéral, la carte mère, le disque dur et deux vis sortis et disposés en vue éclatée, chacun relié à sa place par un fin pointillé de montage ; deux paires de mains, celles d’un adulte et celles d’un enfant d’une dizaine d’années, tiennent chacune une pièce ; une lanterne posée sur l’établi, à gauche (vers 28 % de la largeur et 58 % de la hauteur), seule source de lumière, éclaire les pièces ; le fond de l’atelier reste en réserve, sans détail ; aucune marque, aucune inscription, aucun visage
-- **Lanterne : 28 % × 58 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche).
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = établi, pièces du PC et mains ; lumière (#FF0000) = flamme et pièces éclairées · **Fond** : rempli d’aplat
+- **Lanterne : 28 % × 58 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche). À 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = établi, pièces du PC et mains ; lumière (#FF0000) = flamme et pièces éclairées · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Affichée en 3:2 jusqu’à 400 px de large, pleine largeur sur mobile : les pièces et les mains se lisent à cette taille.
 - **Format** : 3:2, 1800 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-03_1800x1200.webp`
-- **Master** : `design/assets/visuels/accueil/ACC-03.png` → `node tools/separer-calques.mjs ACC-03` écrit le rendu et `ACC-03_1800x1200.aplat.webp`, `ACC-03_1800x1200.encre.webp`, `ACC-03_1800x1200.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/accueil/ACC-03.png` ; nuit `design/assets/visuels/accueil/ACC-03.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre ACC-03` écrit le jour `ACC-03_1800x1200.webp` et la nuit `ACC-03_1800x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une vieille tour de PC démontée sur un établi, ses pièces en vue éclatée, tenues par un adulte et un enfant. »
 - **Note** : Scène animée : la lumière part de la lanterne, à l’endroit indiqué, à l’arrivée de la scène puis à chaque clic (components/accueil/Scene.astro). Remplace le dessin au trait de l’ancienne direction, dont elle reprend les pièces : référence de composition, design/assets/illustrations/pc-vue-eclatee.svg.
 
@@ -167,13 +242,14 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Emplacement** : `/` · 01, le terrain de jeu : scène « Les cartes, plastifiées à la main », rejouable au clic (et Omnicard § 2) _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/pages/index.astro`
 - **Sujet** : Le jeu de cartes papier inventé avec son cousin
-- **Composition (pour le prompt)** : Table d’après-midi d’été vue de dessus : piles de cartes imprimées, une plastifieuse d’où sort une carte glissée dans sa pochette transparente, ciseaux, cartes déjà plastifiées aux coins cornés, une feuille de règles griffonnée illisible ; deux paires de mains d’adolescents, l’une glisse une carte dans la plastifieuse, l’autre en découpe une ; une lanterne posée en haut à droite de la table (vers 78 % de la largeur et 26 % de la hauteur) éclaire la carte qui sort ; faces de cartes génériques, faites de formes simples, sans personnage, sans chiffre, sans texte
-- **Lanterne : 78 % × 26 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche).
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, cartes, plastifieuse et mains ; lumière (#FF0000) = flamme et carte qui sort · **Fond** : rempli d’aplat
+- **Composition (pour le prompt)** : Table d’après-midi d’été vue de dessus : piles de cartes imprimées, une plastifieuse d’où sort une carte glissée dans sa pochette transparente, ciseaux, cartes déjà plastifiées aux coins cornés, une feuille de règles pliée, vierge ; deux paires de mains d’adolescents, l’une glisse une carte dans la plastifieuse, l’autre en découpe une ; une lanterne posée en haut à droite de la table (vers 78 % de la largeur et 26 % de la hauteur) éclaire la carte qui sort ; faces de cartes génériques, faites de formes simples, sans personnage, sans chiffre, sans texte
+- **Lanterne : 78 % × 26 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche). À 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, cartes, plastifieuse et mains ; lumière (#FF0000) = flamme et carte qui sort · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Affichée en 3:2 jusqu’à 400 px de large sur l’accueil et 480 px sur la page Omnicard (OMN-02) : la carte qui sort se lit à cette taille.
 - **Format** : 3:2, 1800 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-04_1800x1200.webp`
-- **Master** : `design/assets/visuels/accueil/ACC-04.png` → `node tools/separer-calques.mjs ACC-04` écrit le rendu et `ACC-04_1800x1200.aplat.webp`, `ACC-04_1800x1200.encre.webp`, `ACC-04_1800x1200.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/accueil/ACC-04.png` ; nuit `design/assets/visuels/accueil/ACC-04.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre ACC-04` écrit le jour `ACC-04_1800x1200.webp` et la nuit `ACC-04_1800x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Des mains d’adolescents plastifient à la main des cartes imprimées, sur une table d’été. »
 - **Note** : Scène animée de l’accueil, comme ACC-03 ; même image reprise par OMN-02.
 
@@ -185,12 +261,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/pages/index.astro`
 - **Sujet** : Les portes qui ne s’ouvrent pas
 - **Composition (pour le prompt)** : Un mur vu de face, droit, sans perspective : cinq portes alignées de gauche à droite, chacune au centre de son cinquième de la largeur ; les quatre premières, de formes et d’époques différentes, restent fermées ; la cinquième, à droite, est entrouverte et laisse passer la lumière d’une lanterne posée derrière elle (vers 90 % de la largeur et 52 % de la hauteur), qui s’étale sur le sol ; aucune inscription ni plaque
-- **Lanterne : 90 % × 52 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche).
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = mur, portes et sol ; lumière (#FF0000) = flamme, porte entrouverte et lumière au sol · **Fond** : rempli d’aplat
+- **Lanterne : 90 % × 52 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche). À 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = mur, portes et sol ; lumière (#FF0000) = flamme, porte entrouverte et lumière au sol · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Même cadrage 21:9 sur mobile, qui garde les cinq portes alignées sur leurs intitulés en HTML (le recadrage 4:5 du cahier les coupait) : chaque porte au centre de son cinquième.
 - **Format** : 21:9, 2100 × 900
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-08_2100x900.webp`
-- **Master** : `design/assets/visuels/accueil/ACC-08.png` → `node tools/separer-calques.mjs ACC-08` écrit le rendu et `ACC-08_2100x900.aplat.webp`, `ACC-08_2100x900.encre.webp`, `ACC-08_2100x900.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/accueil/ACC-08.png` ; nuit `design/assets/visuels/accueil/ACC-08.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre ACC-08` écrit le jour `ACC-08_2100x900.webp` et la nuit `ACC-08_2100x900.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Cinq portes alignées : quatre restent fermées, la cinquième s’entrouvre sur la lumière. »
 - **Note** : Scène animée de l’accueil, comme ACC-03 ; les intitulés des cinq portes sont en HTML sous chaque porte.
 
@@ -202,12 +279,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/pages/index.astro`
 - **Sujet** : Le programme parcouru au pas de course
 - **Composition (pour le prompt)** : Un grand chronomètre posé au-dessus de trois grands dossiers empilés en perspective, ses aiguilles presque revenues à leur point de départ ; devant, un rouleau de diplôme noué d’un ruban et scellé ; une lanterne à gauche (vers 22 % de la largeur et 40 % de la hauteur) éclaire le rouleau ; cadran sans chiffre, dossiers sans inscription
-- **Lanterne : 22 % × 40 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche).
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = dossiers, chronomètre et rouleau ; lumière (#FF0000) = flamme et rouleau éclairé · **Fond** : rempli d’aplat
+- **Lanterne : 22 % × 40 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche). À 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = dossiers, chronomètre et rouleau ; lumière (#FF0000) = flamme et rouleau éclairé · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Affichée recadrée en 2:1 au centre sur ordinateur (la bande centrale de 1600 × 800) : tout le sujet et la lanterne tiennent dans cette bande, rien d’important dans le sixième du haut ni dans le sixième du bas ; entière, en 4:3, sur mobile.
 - **Format** : 4:3, 1600 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-09_1600x1200.webp`
-- **Master** : `design/assets/visuels/accueil/ACC-09.png` → `node tools/separer-calques.mjs ACC-09` écrit le rendu et `ACC-09_1600x1200.aplat.webp`, `ACC-09_1600x1200.encre.webp`, `ACC-09_1600x1200.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/accueil/ACC-09.png` ; nuit `design/assets/visuels/accueil/ACC-09.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre ACC-09` écrit le jour `ACC-09_1600x1200.webp` et la nuit `ACC-09_1600x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un chronomètre posé sur trois grands dossiers, devant un rouleau de diplôme noué. »
 - **Note** : Composition validée le 8 octobre 2026. Scène animée de l’accueil, comme ACC-03. Recadrée en 2:1 au-delà de 860 px (components/accueil/Scene.astro, propriété recadrage), entière en 4:3 en dessous.
 
@@ -219,12 +297,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/pages/index.astro`
 - **Sujet** : La classe vue depuis le pupitre du formateur
 - **Composition (pour le prompt)** : Une salle de formation vue de trois quarts depuis l’estrade, derrière l’épaule du formateur : au premier plan, le pupitre et la silhouette du formateur, de dos ; devant lui, une dizaine de postes en deux rangées, des apprenants en silhouettes sans visage, penchés sur leurs écrans ; au mur, un tableau couvert d’un schéma de trois blocs reliés (interface, service, base de données) dessiné au trait, sans aucun mot ; une lanterne posée sur le pupitre (vers 30 % de la largeur et 70 % de la hauteur) éclaire la salle depuis l’avant
-- **Lanterne : 30 % × 70 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche).
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = salle, postes, tableau et silhouettes ; lumière (#FF0000) = flamme et salle éclairée depuis le pupitre · **Fond** : rempli d’aplat
+- **Lanterne : 30 % × 70 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche). À 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = salle, postes, tableau et silhouettes ; lumière (#FF0000) = flamme et salle éclairée depuis le pupitre · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Affichée recadrée en 2:1 au centre sur ordinateur (la bande centrale de 1600 × 800) : tout le sujet et la lanterne tiennent dans cette bande, rien d’important dans le sixième du haut ni dans le sixième du bas ; entière, en 4:3, sur mobile.
 - **Format** : 4:3, 1600 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-11_1600x1200.webp`
-- **Master** : `design/assets/visuels/accueil/ACC-11.png` → `node tools/separer-calques.mjs ACC-11` écrit le rendu et `ACC-11_1600x1200.aplat.webp`, `ACC-11_1600x1200.encre.webp`, `ACC-11_1600x1200.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/accueil/ACC-11.png` ; nuit `design/assets/visuels/accueil/ACC-11.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre ACC-11` écrit le jour `ACC-11_1600x1200.webp` et la nuit `ACC-11_1600x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une salle de formation vue depuis le pupitre : une dizaine de postes, un tableau couvert d’un schéma. »
 - **Note** : Scène animée de l’accueil, comme ACC-03. Recadrée en 2:1 au-delà de 860 px (components/accueil/Scene.astro, propriété recadrage), entière en 4:3 en dessous.
 
@@ -236,12 +315,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/components/accueil/FigureGwent.astro`
 - **Sujet** : Lire le jeu
 - **Composition (pour le prompt)** : Illustration de carte en hauteur : au sommet d’une colline, une silhouette de dos, sans visage, observe à la loupe une citadelle et des champs en damier en contrebas ; quelques repères en croix posés sur le paysage ; une lanterne posée à ses pieds (vers 35 % de la largeur et 72 % de la hauteur) éclaire la lentille ; ciel en aplat, sans astre ; aucune carte, aucun personnage, aucun symbole ni décor d’un jeu existant
-- **Lanterne : 35 % × 72 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche).
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = colline, citadelle, champs et ciel ; lumière (#FF0000) = flamme et lentille de la loupe · **Fond** : rempli d’aplat
+- **Lanterne : 35 % × 72 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche). À 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = colline, citadelle, champs et ciel ; lumière (#FF0000) = flamme et lentille de la loupe · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Rien d’important dans les 8 % du bord, que recouvre le cadre de carte codé ; affichée de 165 à 210 px de large (environ 200 px dans la rangée défilante sur mobile) : sujet principal au centre, lisible en petit.
 - **Format** : 2:3, 1200 × 1800
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-18_1200x1800.webp`
-- **Master** : `design/assets/visuels/accueil/ACC-18.png` → `node tools/separer-calques.mjs ACC-18` écrit le rendu et `ACC-18_1200x1800.aplat.webp`, `ACC-18_1200x1800.encre.webp`, `ACC-18_1200x1800.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/accueil/ACC-18.png` ; nuit `design/assets/visuels/accueil/ACC-18.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre ACC-18` écrit le jour `ACC-18_1200x1800.webp` et la nuit `ACC-18_1200x1800.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une silhouette observe une citadelle à la loupe, éclairée par sa lanterne. »
 - **Note** : Série de trois cartes (ACC-18 à ACC-20) : même cadrage, même lumière, même main. Le cadre ouvragé, la valeur et le titre restent codés (components/accueil/FigureGwent.astro) ; la lumière part de la lanterne à l’arrivée de la carte puis à chaque clic.
 
@@ -252,13 +332,14 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Emplacement** : `/` · 01, Gwent, la méthode : carte 2 « Tester mes idées », illustration dans la fenêtre du cadre de carte codé _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/components/accueil/FigureGwent.astro`
 - **Sujet** : Tester mes idées
-- **Composition (pour le prompt)** : Illustration de carte en hauteur : sur une table, trois feuilles d’essai qui se chevauchent, la première barrée d’une croix, la deuxième annotée, la troisième en cours et cochée ; une plume qui écrit sur la dernière, un encrier à côté ; une lanterne en haut à droite (vers 70 % de la largeur et 24 % de la hauteur) éclaire la feuille cochée ; aucune écriture lisible, aucun symbole d’un jeu existant
-- **Lanterne : 70 % × 24 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche).
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table et feuilles ; lumière (#FF0000) = flamme et feuille cochée · **Fond** : rempli d’aplat
+- **Composition (pour le prompt)** : Illustration de carte en hauteur : sur une table, trois feuilles d’essai qui se chevauchent, la première barrée d’une croix, la deuxième marquée d’un cercle, la troisième cochée ; une plume posée sur la dernière, un encrier à côté ; une lanterne en haut à droite (vers 70 % de la largeur et 24 % de la hauteur) éclaire la feuille cochée ; aucune écriture lisible, aucun symbole d’un jeu existant
+- **Lanterne : 70 % × 24 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche). À 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table et feuilles ; lumière (#FF0000) = flamme et feuille cochée · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Comme ACC-18 : rien d’important dans les 8 % du bord ; lisible à 165 px de large.
 - **Format** : 2:3, 1200 × 1800
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-19_1200x1800.webp`
-- **Master** : `design/assets/visuels/accueil/ACC-19.png` → `node tools/separer-calques.mjs ACC-19` écrit le rendu et `ACC-19_1200x1800.aplat.webp`, `ACC-19_1200x1800.encre.webp`, `ACC-19_1200x1800.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/accueil/ACC-19.png` ; nuit `design/assets/visuels/accueil/ACC-19.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre ACC-19` écrit le jour `ACC-19_1200x1800.webp` et la nuit `ACC-19_1200x1800.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Trois feuilles d’essai, la première barrée, la dernière cochée sous la plume. »
 - **Note** : Deuxième carte de la série ACC-18 à ACC-20.
 
@@ -270,12 +351,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/components/accueil/FigureGwent.astro`
 - **Sujet** : Prendre le contre-pied
 - **Composition (pour le prompt)** : Illustration de carte en hauteur : un large chemin battu monte vers la droite, vide ; un sentier neuf part à contre-sens vers la gauche, éclairé par une lanterne tenue à bout de bras par une silhouette de dos, sans visage (vers 40 % de la largeur et 46 % de la hauteur) ; arbres en silhouette de part et d’autre, montagne en réserve au fond ; aucun symbole d’un jeu existant
-- **Lanterne : 40 % × 46 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche).
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = chemins, arbres et montagne ; lumière (#FF0000) = flamme et sentier éclairé · **Fond** : rempli d’aplat
+- **Lanterne : 40 % × 46 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche). À 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = chemins, arbres et montagne ; lumière (#FF0000) = flamme et sentier éclairé · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Comme ACC-18 : rien d’important dans les 8 % du bord ; lisible à 165 px de large.
 - **Format** : 2:3, 1200 × 1800
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-20_1200x1800.webp`
-- **Master** : `design/assets/visuels/accueil/ACC-20.png` → `node tools/separer-calques.mjs ACC-20` écrit le rendu et `ACC-20_1200x1800.aplat.webp`, `ACC-20_1200x1800.encre.webp`, `ACC-20_1200x1800.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/accueil/ACC-20.png` ; nuit `design/assets/visuels/accueil/ACC-20.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre ACC-20` écrit le jour `ACC-20_1200x1800.webp` et la nuit `ACC-20_1200x1800.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une silhouette éclaire à la lanterne un sentier qui part à contre-sens du chemin battu. »
 - **Note** : Troisième carte de la série ACC-18 à ACC-20.
 
@@ -287,12 +369,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/components/accueil/FigureCollectif.astro`
 - **Sujet** : Accueillir les nouveaux
 - **Composition (pour le prompt)** : Une porte ouverte sur une pièce de travail ; sur le seuil, une silhouette accueille d’un geste de la main une nouvelle venue qui arrive avec un sac en bandoulière ; quelques traces de pas mènent à la porte ; une lanterne accrochée au chambranle (vers 46 % de la largeur et 24 % de la hauteur) éclaire l’arrivante ; silhouettes sans visage, aucune inscription
-- **Lanterne : 46 % × 24 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche).
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = porte, pièce et silhouettes ; lumière (#FF0000) = flamme et arrivante éclairée · **Fond** : rempli d’aplat
+- **Lanterne : 46 % × 24 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche). À 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = porte, pièce et silhouettes ; lumière (#FF0000) = flamme et arrivante éclairée · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Affichée recadrée en 2:1 à toutes les largeurs (la bande centrale de l’image, de 12,5 à 87,5 % de sa hauteur), de 300 à 360 px de large, empilée en pleine largeur sur mobile : sujet principal et lanterne dans cette bande, au centre, sans détail fin.
 - **Format** : 3:2, 1800 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-21_1800x1200.webp`
-- **Master** : `design/assets/visuels/accueil/ACC-21.png` → `node tools/separer-calques.mjs ACC-21` écrit le rendu et `ACC-21_1800x1200.aplat.webp`, `ACC-21_1800x1200.encre.webp`, `ACC-21_1800x1200.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/accueil/ACC-21.png` ; nuit `design/assets/visuels/accueil/ACC-21.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre ACC-21` écrit le jour `ACC-21_1800x1200.webp` et la nuit `ACC-21_1800x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une silhouette accueille une nouvelle venue sur le seuil d’une porte éclairée. »
 - **Note** : Série de trois scènes (ACC-21 à ACC-23) : même décor et mêmes silhouettes d’une scène à l’autre. La lumière part de la lanterne à l’arrivée puis à chaque clic (components/accueil/FigureCollectif.astro).
 
@@ -303,13 +386,14 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Emplacement** : `/` · 02, du solo au collectif : scène 2 « Former et relire », rejouable au clic _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/components/accueil/FigureCollectif.astro`
 - **Sujet** : Former et relire
-- **Composition (pour le prompt)** : Deux silhouettes côte à côte à une même table, penchées sur une feuille : l’une montre une ligne du doigt, l’autre la corrige au crayon ; une coche dans la marge ; une lanterne posée sur la table, entre elles (vers 50 % de la largeur et 56 % de la hauteur), éclaire la feuille ; silhouettes sans visage, aucune écriture lisible
-- **Lanterne : 50 % × 56 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche).
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, feuille et silhouettes ; lumière (#FF0000) = flamme et feuille éclairée · **Fond** : rempli d’aplat
+- **Composition (pour le prompt)** : Deux silhouettes côte à côte à une même table, penchées sur une feuille : l’une montre un point de la feuille du doigt, l’autre y trace une coche au crayon ; une lanterne posée sur la table, entre elles (vers 50 % de la largeur et 56 % de la hauteur), éclaire la feuille ; silhouettes sans visage, aucune écriture lisible
+- **Lanterne : 50 % × 56 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche). À 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, feuille et silhouettes ; lumière (#FF0000) = flamme et feuille éclairée · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Comme ACC-21 : recadrée en 2:1 à toutes les largeurs, de 300 à 360 px de large, sujet et lanterne dans la bande centrale.
 - **Format** : 3:2, 1800 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-22_1800x1200.webp`
-- **Master** : `design/assets/visuels/accueil/ACC-22.png` → `node tools/separer-calques.mjs ACC-22` écrit le rendu et `ACC-22_1800x1200.aplat.webp`, `ACC-22_1800x1200.encre.webp`, `ACC-22_1800x1200.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/accueil/ACC-22.png` ; nuit `design/assets/visuels/accueil/ACC-22.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre ACC-22` écrit le jour `ACC-22_1800x1200.webp` et la nuit `ACC-22_1800x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Deux silhouettes relisent ensemble une feuille ; l’une la corrige au crayon. »
 - **Note** : Deuxième scène de la série ACC-21 à ACC-23.
 
@@ -321,12 +405,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/components/accueil/FigureCollectif.astro`
 - **Sujet** : Contribuer en autonomie
 - **Composition (pour le prompt)** : Une silhouette seule à son poste, de trois quarts dos, envoie une feuille terminée qui rejoint une petite pile de feuilles cochées sur une étagère ; sa propre lanterne, posée à côté de l’écran (vers 30 % de la largeur et 48 % de la hauteur), est allumée ; silhouette sans visage, écran sans interface lisible
-- **Lanterne : 30 % × 48 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche).
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = poste, étagère, feuilles et silhouette ; lumière (#FF0000) = flamme et feuille envoyée · **Fond** : rempli d’aplat
+- **Lanterne : 30 % × 48 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche). À 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = poste, étagère, feuilles et silhouette ; lumière (#FF0000) = flamme et feuille envoyée · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Comme ACC-21 : recadrée en 2:1 à toutes les largeurs, de 300 à 360 px de large, sujet et lanterne dans la bande centrale.
 - **Format** : 3:2, 1800 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-23_1800x1200.webp`
-- **Master** : `design/assets/visuels/accueil/ACC-23.png` → `node tools/separer-calques.mjs ACC-23` écrit le rendu et `ACC-23_1800x1200.aplat.webp`, `ACC-23_1800x1200.encre.webp`, `ACC-23_1800x1200.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/accueil/ACC-23.png` ; nuit `design/assets/visuels/accueil/ACC-23.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre ACC-23` écrit le jour `ACC-23_1800x1200.webp` et la nuit `ACC-23_1800x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une silhouette, seule à son poste, envoie une feuille qui rejoint une pile de feuilles cochées. »
 - **Note** : Troisième scène de la série ACC-21 à ACC-23.
 
@@ -340,11 +425,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/pages/projets/index.astro`
 - **Sujet** : La traduction comme travail d’équipe
 - **Composition (pour le prompt)** : Un tableau de travail mural vu de face, légèrement en plongée, en trois colonnes de fiches épinglées (à faire, en relecture, livré), sans aucune inscription ; quatre ou cinq mains anonymes, aux manches différentes, déplacent chacune une fiche d’une colonne à l’autre ; à droite, une main referme un paquet scellé de fiches qui part vers un grand coffre-dépôt commun, plus large que le tableau ; la lanterne, posée en bas au centre (vers 50 % de la largeur et 82 % de la hauteur), éclaire la colonne du milieu et laisse le reste dans la pénombre
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = mur, tableau, fiches et mains ; lumière (#FF0000) = flamme et colonne du milieu · **Fond** : rempli d’aplat
+- **Lanterne : 50 % × 82 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = mur, tableau, fiches et mains ; lumière (#FF0000) = flamme et colonne du milieu · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Tableau et mains au centre du cadre : la composition se lit entière en 16:10 comme recadrée en 4:5. Sur la vitrine, la carte vedette garde le 16:10 sur mobile pour que son chiffre reste au premier écran.
 - **Format** : 16:10, 1600 × 1000 ; 4:5 mobile (recadrage mobile 4:5)
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-01_1600x1000.webp`
-- **Master** : `design/assets/visuels/projets/PRJ-01.png` → `node tools/separer-calques.mjs PRJ-01` écrit le rendu et `PRJ-01_1600x1000.aplat.webp`, `PRJ-01_1600x1000.encre.webp`, `PRJ-01_1600x1000.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/projets/PRJ-01.png` ; nuit `design/assets/visuels/projets/PRJ-01.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PRJ-01` écrit le jour `PRJ-01_1600x1000.webp` et la nuit `PRJ-01_1600x1000.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un tableau de travail en trois colonnes où plusieurs mains déplacent des fiches, et un paquet scellé qui part vers un dépôt commun. »
 
 #### PRJ-02 · Une archive versionnée
@@ -355,11 +442,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/pages/projets/index.astro`
 - **Sujet** : Une archive versionnée
 - **Composition (pour le prompt)** : Un registre relié, ouvert sur un pupitre, vu de trois quarts : ses pages sont des couches minces superposées qui s’éventaillent vers la droite comme un éventail de cartes, chacune avec une tranche marquée de simples traits, sans chiffre ni lettre ; un marque-page de tissu glissé loin dans les pages anciennes ; la lanterne, à gauche (vers 30 % de la largeur et 50 % de la hauteur), éclaire la page marquée, les couches récentes s’estompent dans l’ombre ; aucun personnage
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = pupitre et pages du registre ; lumière (#FF0000) = flamme et page marquée · **Fond** : rempli d’aplat
+- **Lanterne : 30 % × 50 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = pupitre et pages du registre ; lumière (#FF0000) = flamme et page marquée · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Le registre ouvert, la page marquée et la lanterne tiennent dans le tiers central du cadre : l’image reste lisible recadrée en portrait 2:3 (carte de la vitrine sur ordinateur, environ 300 × 450 px) et en 1:1 (LOD-01).
 - **Format** : 16:10 + 1:1 ; portrait 2:3 recadré dans la carte
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-02_1600x1000.webp`
-- **Master** : `design/assets/visuels/projets/PRJ-02.png` → `node tools/separer-calques.mjs PRJ-02` écrit le rendu et `PRJ-02_1600x1000.aplat.webp`, `PRJ-02_1600x1000.encre.webp`, `PRJ-02_1600x1000.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/projets/PRJ-02.png` ; nuit `design/assets/visuels/projets/PRJ-02.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PRJ-02` écrit le jour `PRJ-02_1600x1000.webp` et la nuit `PRJ-02_1600x1000.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un registre ouvert dont les pages datées s’éventaillent, un marque-page glissé dans les plus anciennes. »
 - **Note** : Dans la carte de la vitrine, le visuel remplit tout son panneau : en 16:10 sur mobile, recadré en portrait sur ordinateur ; décoratif (alt vide), le nom de la carte dit le reste. LOD-01 (partage) le reprend, non posé.
 
@@ -371,11 +460,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/vitrine.ts`, `src/components/vitrine/RangeeAussi.astro`
 - **Sujet** : Décider quoi faire d’une branche
 - **Composition (pour le prompt)** : Trois branches d’un même tronc, dessinées comme des rameaux stylisés partant d’une racine commune, chacune terminée par un petit picto de verdict sans texte : un sceau plein (garder), une loupe (revoir), un balai (nettoyer) ; la lanterne, posée au pied du tronc (vers 50 % de la largeur et 84 % de la hauteur), éclaire la branche à revoir ; fond en réserve, aucun personnage
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = tronc, branches et pictos de verdict ; lumière (#FF0000) = flamme et branche à revoir · **Fond** : transparent
+- **Lanterne : 50 % × 84 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = tronc, branches et pictos de verdict ; lumière (#FF0000) = flamme et branche à revoir · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Vignette de la rangée « Aussi », 4:3, environ 300 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.
 - **Format** : 4:3, 1200 × 900
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-06_1200x900.webp`
-- **Master** : `design/assets/visuels/projets/PRJ-06.png` → `node tools/separer-calques.mjs PRJ-06` écrit le rendu et `PRJ-06_1200x900.aplat.webp`, `PRJ-06_1200x900.encre.webp`, `PRJ-06_1200x900.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/projets/PRJ-06.png` ; nuit `design/assets/visuels/projets/PRJ-06.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PRJ-06` écrit le jour `PRJ-06_1200x900.webp` et la nuit `PRJ-06_1200x900.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Trois branches d’un même tronc, chacune avec son verdict : garder, revoir ou nettoyer. »
 - **Note** : Posé dans la rangée « Aussi » de la vitrine (config/vitrine.ts, components/vitrine/RangeeAussi.astro) : décoratif, le texte voisin dit la même chose.
 
@@ -387,11 +478,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/vitrine.ts`, `src/components/vitrine/RangeeAussi.astro`
 - **Sujet** : Une animation pixel art dans une page
 - **Composition (pour le prompt)** : Une grille de pixel art posée à plat sur une table, une petite mascotte ronde et générique (jamais un personnage connu) dessinée en trois images successives, superposées en pelure d’oignon ; un trait de lumière mène vers une fenêtre de navigateur vide de texte où la même mascotte, plus grande, s’anime ; la lanterne posée à gauche de la grille (vers 20 % de la largeur et 66 % de la hauteur) l’éclaire
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, grille et fenêtre ; lumière (#FF0000) = flamme, grille éclairée et trait de lumière · **Fond** : rempli d’aplat
+- **Lanterne : 20 % × 66 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, grille et fenêtre ; lumière (#FF0000) = flamme, grille éclairée et trait de lumière · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Vignette de la rangée « Aussi », 4:3, environ 300 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.
 - **Format** : 4:3
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-07_1600x1200.webp`
-- **Master** : `design/assets/visuels/projets/PRJ-07.png` → `node tools/separer-calques.mjs PRJ-07` écrit le rendu et `PRJ-07_1600x1200.aplat.webp`, `PRJ-07_1600x1200.encre.webp`, `PRJ-07_1600x1200.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/projets/PRJ-07.png` ; nuit `design/assets/visuels/projets/PRJ-07.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PRJ-07` écrit le jour `PRJ-07_1600x1200.webp` et la nuit `PRJ-07_1600x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une mascotte en pixel art dessinée image par image, puis animée dans une page web. »
 - **Note** : Posé dans la rangée « Aussi » de la vitrine (config/vitrine.ts, components/vitrine/RangeeAussi.astro) : décoratif, le texte voisin dit la même chose.
 
@@ -403,11 +496,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/vitrine.ts`, `src/components/vitrine/RangeeAussi.astro`
 - **Sujet** : Une image, des variantes
 - **Composition (pour le prompt)** : Une grande image encadrée (un paysage simple) à gauche, d’où partent quatre copies de la même image, de largeurs décroissantes, alignées en escalier vers la droite comme sur des écrans de tailles différentes (grand écran, portable, tablette, téléphone), sans poids ni chiffre ; la lanterne posée devant l’original (vers 22 % de la largeur et 78 % de la hauteur) l’éclaire
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = cadres et écrans ; lumière (#FF0000) = flamme et image originale · **Fond** : transparent
+- **Lanterne : 22 % × 78 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = cadres et écrans ; lumière (#FF0000) = flamme et image originale · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Vignette de la rangée « Aussi », 4:3, environ 300 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.
 - **Format** : 4:3
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-08_1600x1200.webp`
-- **Master** : `design/assets/visuels/projets/PRJ-08.png` → `node tools/separer-calques.mjs PRJ-08` écrit le rendu et `PRJ-08_1600x1200.aplat.webp`, `PRJ-08_1600x1200.encre.webp`, `PRJ-08_1600x1200.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/projets/PRJ-08.png` ; nuit `design/assets/visuels/projets/PRJ-08.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PRJ-08` écrit le jour `PRJ-08_1600x1200.webp` et la nuit `PRJ-08_1600x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une image et ses quatre déclinaisons, de la plus large à la plus étroite. »
 - **Note** : Posé dans la rangée « Aussi » de la vitrine (config/vitrine.ts, components/vitrine/RangeeAussi.astro) : décoratif, le texte voisin dit la même chose.
 
@@ -419,11 +514,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/vitrine.ts`, `src/components/vitrine/RangeeAussi.astro`
 - **Sujet** : L’absurde assumé
 - **Composition (pour le prompt)** : Une fenêtre de navigateur vide de texte, vue de face ; un saxophone en surgit à moitié, pavillon vers le haut, comme s’il crevait l’interface ; des notes de musique débordent du cadre et s’envolent ; absurde assumé, même gravure que le reste de la série ; aucun personnage ; la lanterne posée au pied de la fenêtre (vers 64 % de la largeur et 82 % de la hauteur) éclaire le pavillon
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = fenêtre, saxophone et notes ; lumière (#FF0000) = flamme et pavillon éclairé · **Fond** : transparent
+- **Lanterne : 64 % × 82 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = fenêtre, saxophone et notes ; lumière (#FF0000) = flamme et pavillon éclairé · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Vignette de la rangée « Aussi », 4:3, environ 300 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.
 - **Format** : 4:3, 1600 × 1200 (comme le reste de la rangée « Aussi »)
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-10_1600x1200.webp`
-- **Master** : `design/assets/visuels/projets/PRJ-10.png` → `node tools/separer-calques.mjs PRJ-10` écrit le rendu et `PRJ-10_1600x1200.aplat.webp`, `PRJ-10_1600x1200.encre.webp`, `PRJ-10_1600x1200.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/projets/PRJ-10.png` ; nuit `design/assets/visuels/projets/PRJ-10.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PRJ-10` écrit le jour `PRJ-10_1600x1200.webp` et la nuit `PRJ-10_1600x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un saxophone qui surgit d’une fenêtre de navigateur, des notes qui débordent du cadre. »
 - **Note** : Posé dans la rangée « Aussi » de la vitrine (config/vitrine.ts, components/vitrine/RangeeAussi.astro) : décoratif, le texte voisin dit la même chose. Passé de 1:1 à 4:3 pour s’aligner sur les trois autres.
 
@@ -435,11 +532,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/components/vitrine/BlocContribuer.astro`
 - **Sujet** : Les portes ouvertes de l’open source
 - **Composition (pour le prompt)** : Un chemin de pierres plates part du bas à gauche et mène à trois boîtes ouvertes de tailles différentes, posées en ligne (des dépôts) ; une petite lanterne est posée sur chaque couvercle : la première (vers 46 % de la largeur et 38 % de la hauteur) est allumée et seule éclaire la scène, les deux autres attendent qu’on les allume ; de la première boîte dépassent des outils simples (une règle, un pinceau) ; fond en réserve, aucun personnage
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = chemin, boîtes et outils ; lumière (#FF0000) = flamme de la première lanterne et sa boîte · **Fond** : rempli d’aplat
+- **Lanterne : 46 % × 38 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = chemin, boîtes et outils ; lumière (#FF0000) = flamme de la première lanterne et sa boîte · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Sur ordinateur, environ 530 × 177 px au pied de la colonne du titre ; sur mobile, cadre 3:2 centré sur la première boîte et sa lanterne : le chemin et les deux autres boîtes peuvent sortir du cadre.
 - **Format** : 3:1, 1800 × 600 (recadrage mobile 3:2)
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-11_1800x600.webp`
-- **Master** : `design/assets/visuels/projets/PRJ-11.png` → `node tools/separer-calques.mjs PRJ-11` écrit le rendu et `PRJ-11_1800x600.aplat.webp`, `PRJ-11_1800x600.encre.webp`, `PRJ-11_1800x600.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/projets/PRJ-11.png` ; nuit `design/assets/visuels/projets/PRJ-11.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PRJ-11` écrit le jour `PRJ-11_1800x600.webp` et la nuit `PRJ-11_1800x600.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un chemin qui mène à trois boîtes ouvertes, une lanterne allumée sur la première, les deux autres prêtes. »
 - **Note** : Posé dans l’acte de veille (sombre, jour et nuit) du bloc « Contribuer », aligné sur la fin de la liste. Décoratif, le texte voisin dit la même chose.
 
@@ -453,11 +552,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/pages/projets/pvz-fusion.astro`
 - **Sujet** : Traduction et équipe
 - **Composition (pour le prompt)** : Une longue table de travail vue de trois quarts, en légère plongée : des fiches passent de main en main, de gauche à droite ; à gauche, une silhouette seule, assise, tend une fiche ; à droite, un groupe de silhouettes la reçoit et la relit ; derrière le groupe, une pile de fiches qui grossit ; la lanterne posée au centre de la table (vers 50 % de la largeur et 60 % de la hauteur) éclaire la fiche transmise, le reste dans l’ombre ; silhouettes sans visage ; aucun texte, aucune plante, aucun zombie, aucun jardin ni grille de pelouse
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, fiches et silhouettes ; lumière (#FF0000) = flamme et fiche transmise · **Fond** : rempli d’aplat
+- **Lanterne : 50 % × 60 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, fiches et silhouettes ; lumière (#FF0000) = flamme et fiche transmise · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : 4:3 à toutes les largeurs : à droite du titre au-delà de 1 100 px, centré sous les repères chiffrés en dessous (640 px au plus). Sur mobile, l’image fait 358 × 268 px : la fiche transmise et la lanterne doivent s’y lire.
 - **Format** : 4:3, 1600 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-01_1600x1200.webp`
-- **Master** : `design/assets/visuels/pvz-fusion/PVZ-01.png` → `node tools/separer-calques.mjs PVZ-01` écrit le rendu et `PVZ-01_1600x1200.aplat.webp`, `PVZ-01_1600x1200.encre.webp`, `PVZ-01_1600x1200.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/pvz-fusion/PVZ-01.png` ; nuit `design/assets/visuels/pvz-fusion/PVZ-01.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PVZ-01` écrit le jour `PVZ-01_1600x1200.webp` et la nuit `PVZ-01_1600x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une longue table où des fiches passent d’une silhouette seule à un groupe, à la lumière d’une lanterne. »
 - **Note** : Posé dans l’en-tête de la page (components/projets/gabarit/EnTeteProjet.astro, slot « visuel »), chargé en priorité. Réécrite le 13/10/2026 sans jardin : un jardin en grille vu en coupe est la signature du jeu tiers (règle 1).
 
@@ -469,11 +570,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/pvz-fusion.ts`, `src/pages/projets/pvz-fusion.astro`
 - **Sujet** : Accueillir : montrer la fiche
 - **Composition (pour le prompt)** : Une table de travail vue de trois quarts ; à gauche, une silhouette debout tend une fiche annotée à une nouvelle venue assise ; la lanterne posée sur la table (vers 56 % de la largeur et 58 % de la hauteur) éclaire la fiche seule, le reste dans l’ombre ; silhouettes sans visage. Décor commun aux trois cases : même table, même lanterne, même cadrage, horizon à mi-hauteur
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, chaises et silhouettes ; lumière (#FF0000) = flamme et fiche tendue · **Fond** : rempli d’aplat
+- **Lanterne : 56 % × 58 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, chaises et silhouettes ; lumière (#FF0000) = flamme et fiche tendue · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Environ 380 px de large dans le triptyque ; le bord droit se raccorde au bord gauche de PVZ-02b (table continue), sans cadre ni marge.
 - **Format** : 4:3, 1200 × 900
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-02a_1200x900.webp`
-- **Master** : `design/assets/visuels/pvz-fusion/PVZ-02a.png` → `node tools/separer-calques.mjs PVZ-02a` écrit le rendu et `PVZ-02a_1200x900.aplat.webp`, `PVZ-02a_1200x900.encre.webp`, `PVZ-02a_1200x900.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/pvz-fusion/PVZ-02a.png` ; nuit `design/assets/visuels/pvz-fusion/PVZ-02a.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PVZ-02a` écrit le jour `PVZ-02a_1200x900.webp` et la nuit `PVZ-02a_1200x900.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une personne montre une fiche annotée à une nouvelle venue, à la lumière d’une lanterne. »
 - **Note** : Première case du triptyque PVZ-02 : même main, même décor, même lumière que PVZ-02b et PVZ-02c.
 
@@ -484,12 +587,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Emplacement** : `/projets/pvz-fusion` · § 2, l’équipe, case 2 du triptyque, au-dessus de « Former et relire » _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/config/pvz-fusion.ts`, `src/pages/projets/pvz-fusion.astro`
 - **Sujet** : Former et relire : la voir travailler
-- **Composition (pour le prompt)** : La même table et la même lanterne ; la nouvelle venue écrit sur la fiche, la silhouette de la case 1 se tient en retrait derrière son épaule et désigne une ligne du doigt ; la lumière tombe sur la main qui écrit ; silhouettes sans visage
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, chaises et silhouettes ; lumière (#FF0000) = flamme et main qui écrit · **Fond** : rempli d’aplat
+- **Composition (pour le prompt)** : La même table et la même lanterne ; la nouvelle venue écrit sur la fiche, la silhouette de la case 1 se tient en retrait derrière son épaule et désigne un point de la fiche du doigt ; la lumière tombe sur la main qui écrit ; silhouettes sans visage
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, chaises et silhouettes ; lumière (#FF0000) = flamme et main qui écrit · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Case centrale du triptyque : se raccorde à PVZ-02a à gauche et à PVZ-02c à droite.
 - **Format** : 4:3, 1200 × 900
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-02b_1200x900.webp`
-- **Master** : `design/assets/visuels/pvz-fusion/PVZ-02b.png` → `node tools/separer-calques.mjs PVZ-02b` écrit le rendu et `PVZ-02b_1200x900.aplat.webp`, `PVZ-02b_1200x900.encre.webp`, `PVZ-02b_1200x900.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/pvz-fusion/PVZ-02b.png` ; nuit `design/assets/visuels/pvz-fusion/PVZ-02b.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PVZ-02b` écrit le jour `PVZ-02b_1200x900.webp` et la nuit `PVZ-02b_1200x900.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « La nouvelle venue écrit sur la fiche, accompagnée par la personne qui l’a accueillie. »
 - **Note** : Case centrale du triptyque PVZ-02.
 
@@ -501,11 +605,12 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/pvz-fusion.ts`, `src/pages/projets/pvz-fusion.astro`
 - **Sujet** : Contribuer en autonomie : relire seule
 - **Composition (pour le prompt)** : La même table et la même lanterne ; la nouvelle venue, seule, relit la fiche d’une troisième personne posée devant elle et la coche ; la chaise de la silhouette de la case 1 est vide ; la lanterne éclaire la fiche relue ; silhouette sans visage
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, chaises et silhouette ; lumière (#FF0000) = flamme et fiche relue · **Fond** : rempli d’aplat
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, chaises et silhouette ; lumière (#FF0000) = flamme et fiche relue · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Dernière case du triptyque : son bord gauche se raccorde à PVZ-02b.
 - **Format** : 4:3, 1200 × 900
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-02c_1200x900.webp`
-- **Master** : `design/assets/visuels/pvz-fusion/PVZ-02c.png` → `node tools/separer-calques.mjs PVZ-02c` écrit le rendu et `PVZ-02c_1200x900.aplat.webp`, `PVZ-02c_1200x900.encre.webp`, `PVZ-02c_1200x900.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/pvz-fusion/PVZ-02c.png` ; nuit `design/assets/visuels/pvz-fusion/PVZ-02c.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PVZ-02c` écrit le jour `PVZ-02c_1200x900.webp` et la nuit `PVZ-02c_1200x900.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « La nouvelle venue relit seule la fiche d’un autre membre, à la lumière de la lanterne. »
 - **Note** : Dernière case du triptyque PVZ-02.
 
@@ -516,13 +621,15 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Emplacement** : `/projets/pvz-fusion` · § 3, bloc de l’outil du pôle (repérer ce qui manque) _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/pages/projets/pvz-fusion.astro`
 - **Sujet** : Repérer
-- **Composition (pour le prompt)** : Une loupe tenue au-dessus d’une longue feuille de lignes régulières, où quelques lignes manquent, laissées en creux ; la lumière de la lanterne, posée derrière la loupe (vers 70 % de la largeur et 30 % de la hauteur), passe par la lentille et éclaire seulement les creux
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = loupe et feuille de lignes ; lumière (#FF0000) = flamme et creux éclairés · **Fond** : transparent
+- **Composition (pour le prompt)** : Une loupe tenue au-dessus d’une longue bande de cases régulières, où quelques cases manquent, laissées en creux ; la lumière de la lanterne, posée derrière la loupe (vers 70 % de la largeur et 30 % de la hauteur), passe par la lentille et éclaire seulement les creux
+- **Lanterne : 70 % × 30 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = loupe et bande de cases ; lumière (#FF0000) = flamme et creux éclairés · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Affichée jusqu’à 360 px de large, dans l’acte de veille (sombre, jour et nuit) : la gravure doit rester lisible sur fond sombre.
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-04_480x480.webp`
-- **Master** : `design/assets/visuels/pvz-fusion/PVZ-04.png` → `node tools/separer-calques.mjs PVZ-04` écrit le rendu et `PVZ-04_480x480.aplat.webp`, `PVZ-04_480x480.encre.webp`, `PVZ-04_480x480.lumiere.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une loupe au-dessus d’une feuille de lignes, dont la lumière éclaire les lignes manquantes. »
+- **Masters** : jour `design/assets/visuels/pvz-fusion/PVZ-04.png` ; nuit `design/assets/visuels/pvz-fusion/PVZ-04.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PVZ-04` écrit le jour `PVZ-04_480x480.webp` et la nuit `PVZ-04_480x480.nuit.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une loupe au-dessus d’une bande de cases, dont la lumière éclaire les cases manquantes. »
 - **Note** : Posé dans l’acte de veille de l’outil. À compléter par la capture réelle du Console Manager (PVZ-C2) quand elle existe.
 
 #### PVZ-05 · Organiser : un tableau commun
@@ -533,11 +640,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/pvz-fusion.ts`, `src/components/projets/pvz/BoucleSemaine.astro`, `src/components/accueil/GestesPole.astro`
 - **Sujet** : Organiser : un tableau commun
 - **Composition (pour le prompt)** : Un seul motif centré : trois cartes vierges épinglées côte à côte ; une main anonyme, en silhouette, en décroche une ; la lanterne, en bas à droite (vers 78 % de la largeur et 80 % de la hauteur), éclaire la carte prise
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = cartes et main ; lumière (#FF0000) = flamme et carte décrochée · **Fond** : transparent
+- **Lanterne : 78 % × 80 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = cartes et main ; lumière (#FF0000) = flamme et carte décrochée · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Vignette de carte, affichée à 136 px de large en bureau, 96 px entre 1 101 et 1 240 px et sous 760 px, 128 à 176 px dans les quatre gestes, repliés, de l’accueil : un seul motif centré, en silhouette, qui occupe au moins 60 % du cadre, sans détail fin.
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-05_480x480.webp`
-- **Master** : `design/assets/visuels/pvz-fusion/PVZ-05.png` → `node tools/separer-calques.mjs PVZ-05` écrit le rendu et `PVZ-05_480x480.aplat.webp`, `PVZ-05_480x480.encre.webp`, `PVZ-05_480x480.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/pvz-fusion/PVZ-05.png` ; nuit `design/assets/visuels/pvz-fusion/PVZ-05.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PVZ-05` écrit le jour `PVZ-05_480x480.webp` et la nuit `PVZ-05_480x480.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une main décroche une carte vierge parmi trois, épinglées côte à côte. »
 - **Note** : Carte « Organiser » de la semaine type, reprise dans les quatre gestes de l’accueil (ACC-15). Exception à la règle B8 (320 px au moins) : une vignette de carte, pas une illustration de section ; question ouverte, à faire trancher par Charles.
 
@@ -548,13 +657,15 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Emplacement** : `/projets/pvz-fusion` · § 4, le métier de traducteur, à côté des corrections et de la démonstration _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/pages/projets/pvz-fusion.astro`
 - **Sujet** : Traduire, relire, tester
-- **Composition (pour le prompt)** : Un seul motif centré : une plume posée en travers d’une fiche dont une ligne est barrée ; la lanterne, hors champ à droite (sa lumière entre vers 90 % de la largeur et 40 % de la hauteur), éclaire la plume
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = plume et fiche ; lumière (#FF0000) = lumière sur la plume · **Fond** : transparent
+- **Composition (pour le prompt)** : Un seul motif centré : une plume posée en travers d’une fiche dont une case est barrée d’une croix ; la lanterne, hors champ à droite (sa lumière entre vers 90 % de la largeur et 40 % de la hauteur), éclaire la plume
+- **Lanterne : 90 % × 40 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = plume et fiche ; lumière (#FF0000) = lumière sur la plume · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Vignette de titre, affichée à 96 px de large à toutes les largeurs : silhouette simple, lisible en petit, sans détail fin.
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-06_480x480.webp`
-- **Master** : `design/assets/visuels/pvz-fusion/PVZ-06.png` → `node tools/separer-calques.mjs PVZ-06` écrit le rendu et `PVZ-06_480x480.aplat.webp`, `PVZ-06_480x480.encre.webp`, `PVZ-06_480x480.lumiere.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une plume posée en travers d’une fiche dont une ligne est barrée. »
+- **Masters** : jour `design/assets/visuels/pvz-fusion/PVZ-06.png` ; nuit `design/assets/visuels/pvz-fusion/PVZ-06.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PVZ-06` écrit le jour `PVZ-06_480x480.webp` et la nuit `PVZ-06_480x480.nuit.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une plume posée en travers d’une fiche dont une case est barrée d’une croix. »
 - **Note** : À gauche du titre « Traduire, c’est suivre des règles qui changent ». Exception à la règle B8 (320 px au moins) : une vignette de carte, pas une illustration de section ; question ouverte, à faire trancher par Charles.
 
 #### PVZ-07 · Livrer : une proposition par semaine
@@ -565,11 +676,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/pvz-fusion.ts`, `src/components/projets/pvz/BoucleSemaine.astro`, `src/components/accueil/GestesPole.astro`
 - **Sujet** : Livrer : une proposition par semaine
 - **Composition (pour le prompt)** : Un seul motif centré : un colis scellé, noué d’une ficelle où pendent quelques étiquettes vierges, sans nom ni chiffre ; la lanterne posée à côté (vers 76 % de la largeur et 70 % de la hauteur) éclaire les étiquettes
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = colis, ficelle et étiquettes ; lumière (#FF0000) = flamme et étiquettes éclairées · **Fond** : transparent
+- **Lanterne : 76 % × 70 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = colis, ficelle et étiquettes ; lumière (#FF0000) = flamme et étiquettes éclairées · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Vignette de carte, affichée à 136 px de large en bureau, 96 px entre 1 101 et 1 240 px et sous 760 px, 128 à 176 px dans les quatre gestes, repliés, de l’accueil : un seul motif centré, en silhouette, qui occupe au moins 60 % du cadre, sans détail fin.
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-07_480x480.webp`
-- **Master** : `design/assets/visuels/pvz-fusion/PVZ-07.png` → `node tools/separer-calques.mjs PVZ-07` écrit le rendu et `PVZ-07_480x480.aplat.webp`, `PVZ-07_480x480.encre.webp`, `PVZ-07_480x480.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/pvz-fusion/PVZ-07.png` ; nuit `design/assets/visuels/pvz-fusion/PVZ-07.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PVZ-07` écrit le jour `PVZ-07_480x480.webp` et la nuit `PVZ-07_480x480.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un colis scellé, noué d’une ficelle où pendent des étiquettes vierges. »
 - **Note** : Carte « Livrer » de la semaine type, reprise dans les quatre gestes de l’accueil (ACC-15). Exception à la règle B8 (320 px au moins) : une vignette de carte, pas une illustration de section ; question ouverte, à faire trancher par Charles.
 
@@ -581,11 +694,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/pvz-fusion.ts`, `src/components/projets/pvz/BoucleSemaine.astro`, `src/components/accueil/GestesPole.astro`
 - **Sujet** : Motiver : le classement de la semaine
 - **Composition (pour le prompt)** : Un seul motif centré : un podium vide de trois marches, sans chiffre ni lettre, sous une étoile ; la lanterne posée sur la plus haute marche (vers 50 % de la largeur et 46 % de la hauteur) éclaire l’étoile
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = podium ; lumière (#FF0000) = flamme et étoile · **Fond** : transparent
+- **Lanterne : 50 % × 46 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = podium ; lumière (#FF0000) = flamme et étoile · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Vignette de carte, affichée à 136 px de large en bureau, 96 px entre 1 101 et 1 240 px et sous 760 px, 128 à 176 px dans les quatre gestes, repliés, de l’accueil : un seul motif centré, en silhouette, qui occupe au moins 60 % du cadre, sans détail fin.
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-08_480x480.webp`
-- **Master** : `design/assets/visuels/pvz-fusion/PVZ-08.png` → `node tools/separer-calques.mjs PVZ-08` écrit le rendu et `PVZ-08_480x480.aplat.webp`, `PVZ-08_480x480.encre.webp`, `PVZ-08_480x480.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/pvz-fusion/PVZ-08.png` ; nuit `design/assets/visuels/pvz-fusion/PVZ-08.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PVZ-08` écrit le jour `PVZ-08_480x480.webp` et la nuit `PVZ-08_480x480.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un podium vide de trois marches, sous une étoile. »
 - **Note** : Ancienne station « Reconnaître » scindée le 13/10/2026 : le podium ici, la lettre en PVZ-11. Carte « Motiver » de la semaine type, reprise dans les quatre gestes de l’accueil (ACC-15). Exception à la règle B8 (320 px au moins) : une vignette de carte, pas une illustration de section ; question ouverte, à faire trancher par Charles.
 
@@ -597,11 +712,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/pvz-fusion.ts`, `src/components/projets/pvz/BoucleSemaine.astro`, `src/components/accueil/GestesPole.astro`
 - **Sujet** : Remercier : le récapitulatif individuel
 - **Composition (pour le prompt)** : Un seul motif centré : une lettre pliée, nouée d’un ruban, sans écriture lisible ; la lanterne, juste derrière (vers 62 % de la largeur et 36 % de la hauteur), éclaire la lettre seule
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = lettre et ruban ; lumière (#FF0000) = flamme et lettre éclairée · **Fond** : transparent
+- **Lanterne : 62 % × 36 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = lettre et ruban ; lumière (#FF0000) = flamme et lettre éclairée · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Vignette de carte, affichée à 136 px de large en bureau, 96 px entre 1 101 et 1 240 px et sous 760 px, 128 à 176 px dans les quatre gestes, repliés, de l’accueil : un seul motif centré, en silhouette, qui occupe au moins 60 % du cadre, sans détail fin.
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-11_480x480.webp`
-- **Master** : `design/assets/visuels/pvz-fusion/PVZ-11.png` → `node tools/separer-calques.mjs PVZ-11` écrit le rendu et `PVZ-11_480x480.aplat.webp`, `PVZ-11_480x480.encre.webp`, `PVZ-11_480x480.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/pvz-fusion/PVZ-11.png` ; nuit `design/assets/visuels/pvz-fusion/PVZ-11.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PVZ-11` écrit le jour `PVZ-11_480x480.webp` et la nuit `PVZ-11_480x480.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une lettre pliée, nouée d’un ruban. »
 - **Note** : Ajouté le 13/10/2026 : la moitié « lettre » de l’ancienne station PVZ-08. Carte « Remercier » de la semaine type, reprise dans les quatre gestes de l’accueil (ACC-15). Même série, même main que PVZ-05, PVZ-07 et PVZ-08. Exception à la règle B8 (320 px au moins) : une vignette de carte, pas une illustration de section ; question ouverte, à faire trancher par Charles.
 
@@ -615,11 +732,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/pages/projets/league-of-database.astro`
 - **Sujet** : Changer de moteur sans perdre personne
 - **Composition (pour le prompt)** : Coupe horizontale d’un train en gravure en réserve : à gauche, un moteur ancien à trois engrenages de tailles inégales, détaché, posé sur le quai et éteint ; à droite, un moteur neuf à deux engrenages déjà attelé. Au centre, un wagon dont les voyageurs, des silhouettes sans visage, restent assis. Une seule lanterne accrochée entre le wagon et le moteur neuf (vers 64 % de la largeur et 40 % de la hauteur) éclaire l’attelage ; le reste reste dans l’ombre. Aucun logo, aucun texte
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = quai, moteurs, wagon et silhouettes ; lumière (#FF0000) = flamme et attelage éclairé · **Fond** : rempli d’aplat
+- **Lanterne : 64 % × 40 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = quai, moteurs, wagon et silhouettes ; lumière (#FF0000) = flamme et attelage éclairé · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : 16:9 aussi sur mobile, le sujet (l’attelage éclairé) au centre du cadre ; affichée jusqu’à 540 px de large.
 - **Format** : 16:9, 1600 × 900
 - **Fichier attendu** : `site/src/assets/visuels/league-of-database/LOD-04_1600x900.webp`
-- **Master** : `design/assets/visuels/league-of-database/LOD-04.png` → `node tools/separer-calques.mjs LOD-04` écrit le rendu et `LOD-04_1600x900.aplat.webp`, `LOD-04_1600x900.encre.webp`, `LOD-04_1600x900.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/league-of-database/LOD-04.png` ; nuit `design/assets/visuels/league-of-database/LOD-04.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre LOD-04` écrit le jour `LOD-04_1600x900.webp` et la nuit `LOD-04_1600x900.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un train dont on remplace le moteur pendant que les voyageurs restent assis. »
 - **Note** : À côté du texte de la réécriture, au-dessus de la frise LOD-F6.
 
@@ -633,11 +752,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/pages/index.astro`, `src/pages/projets/omnicard.astro`
 - **Sujet** : Du papier au jeu en ligne
 - **Composition (pour le prompt)** : Une carte à jouer plastifiée à la main, pochette visible et coin corné, posée à cheval sur le bord d’une fenêtre de navigateur générique : la moitié hors de la fenêtre reste papier (bords de découpe aux ciseaux, reflet du plastique), la moitié dans la fenêtre devient une carte numérique nette. Face générique : cadre, losange central, pastille de coût et deux pastilles de statistiques vides, sans chiffre ni lettre. Sur la table, deux ou trois cartes papier éparses. La lanterne, posée hors champ à gauche (sa lumière entre vers 0 % de la largeur et 45 % de la hauteur), éclaire la carte seule ; la fenêtre et la table restent dans l’ombre. Aucun personnage, aucune illustration de carte reconnaissable, aucun texte
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, fenêtre et cartes ; lumière (#FF0000) = lumière sur la carte · **Fond** : rempli d’aplat
+- **Lanterne : 0 % × 45 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, fenêtre et cartes ; lumière (#FF0000) = lumière sur la carte · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Le recadrage 1:1 mobile garde la carte entière, au centre. Recadré en 16:10 et en portrait 2:3 pour la vitrine (PRJ-03) : la carte reste entière.
 - **Format** : 4:3, 1600 × 1200 ; 1:1 mobile (recadrage mobile 1:1)
 - **Fichier attendu** : `site/src/assets/visuels/omnicard/OMN-01_1600x1200.webp`
-- **Master** : `design/assets/visuels/omnicard/OMN-01.png` → `node tools/separer-calques.mjs OMN-01` écrit le rendu et `OMN-01_1600x1200.aplat.webp`, `OMN-01_1600x1200.encre.webp`, `OMN-01_1600x1200.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/omnicard/OMN-01.png` ; nuit `design/assets/visuels/omnicard/OMN-01.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre OMN-01` écrit le jour `OMN-01_1600x1200.webp` et la nuit `OMN-01_1600x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une carte plastifiée à la main qui devient numérique en passant dans une fenêtre de navigateur. »
 - **Note** : En tête de la page Omnicard, sur la carte Omnicard de l’accueil, et recadré par PRJ-03.
 
@@ -651,11 +772,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/pages/projets/bloodborne-legendary-run.astro`
 - **Sujet** : Quarante trophées, plus de mille objectifs
 - **Composition (pour le prompt)** : À gauche, un carnet de cases à cocher qui déborde de la page, la plupart encore vides ; à droite, une petite rangée nette de quarante médailles ; la lanterne posée sur le carnet (vers 34 % de la largeur et 56 % de la hauteur) éclaire la case suivante et laisse le reste dans l’ombre ; aucune référence visuelle au jeu ni à une console
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = carnet, cases et médailles ; lumière (#FF0000) = flamme et case suivante · **Fond** : rempli d’aplat
+- **Lanterne : 34 % × 56 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = carnet, cases et médailles ; lumière (#FF0000) = flamme et case suivante · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Affiché jusqu’à 540 px de large sur ordinateur, pleine largeur sur mobile.
 - **Format** : 3:2, 1500 × 1000
 - **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-01_1500x1000.webp`
-- **Master** : `design/assets/visuels/bloodborne/BLR-01.png` → `node tools/separer-calques.mjs BLR-01` écrit le rendu et `BLR-01_1500x1000.aplat.webp`, `BLR-01_1500x1000.encre.webp`, `BLR-01_1500x1000.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/bloodborne/BLR-01.png` ; nuit `design/assets/visuels/bloodborne/BLR-01.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre BLR-01` écrit le jour `BLR-01_1500x1000.webp` et la nuit `BLR-01_1500x1000.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un carnet de cases à cocher qui déborde de la page, à côté d’une rangée de quarante médailles. »
 - **Note** : Posé avec un alt vide : le texte voisin dit la même chose (84 étoiles au premier ciel, dont les 40 trophées PlayStation, journal public du 06/09/2026) ; la légende est en HTML.
 
@@ -669,11 +792,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/pages/projets/gup.astro`
 - **Sujet** : Dispersé, puis un seul geste
 - **Composition (pour le prompt)** : Une douzaine de petites machines toutes différentes, chacune avec son propre levier ou sa propre manivelle, reliées par des fils emmêlés qui convergent vers une seule boîte nette marquée d’une flèche circulaire ; la lanterne posée sur la boîte (vers 76 % de la largeur et 40 % de la hauteur) l’éclaire, les machines restent dans la pénombre ; aucun caractère, aucune lettre, aucun chiffre, aucun logo
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = machines, fils et boîte ; lumière (#FF0000) = flamme et boîte éclairée · **Fond** : transparent
+- **Lanterne : 76 % × 40 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = machines, fils et boîte ; lumière (#FF0000) = flamme et boîte éclairée · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Affichée à 320 px de large sur ordinateur, masquée sous 860 px : la boîte éclairée et les fils se lisent à cette taille.
 - **Format** : 4:3, 1200 × 900
 - **Fichier attendu** : `site/src/assets/visuels/gup/GUP-01_1200x900.webp`
-- **Master** : `design/assets/visuels/gup/GUP-01.png` → `node tools/separer-calques.mjs GUP-01` écrit le rendu et `GUP-01_1200x900.aplat.webp`, `GUP-01_1200x900.encre.webp`, `GUP-01_1200x900.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/gup/GUP-01.png` ; nuit `design/assets/visuels/gup/GUP-01.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre GUP-01` écrit le jour `GUP-01_1200x900.webp` et la nuit `GUP-01_1200x900.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une douzaine de petites machines dont les fils emmêlés convergent vers une seule boîte éclairée par une lanterne. »
 - **Note** : Posé dans la section « probleme », à gauche de la figure des commandes (GUP-F1), qui porte le fait ; l’image ne fait que le faire sentir.
 
@@ -687,11 +812,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/parcours.ts`, `src/pages/parcours.astro`
 - **Sujet** : Concevoir
 - **Composition (pour le prompt)** : Une table à dessin vue de trois quarts, en légère plongée : un plan d’architecture logicielle déplié (blocs rectangulaires reliés par des flèches, trois couches empilées, sans aucune lettre), tenu à plat par une règle et un compas ; la lanterne posée à l’angle supérieur droit (vers 76 % de la largeur et 30 % de la hauteur) éclaire le plan en cône et laisse les bords dans l’ombre ; aucun personnage, aucun écran
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, plan, règle et compas ; lumière (#FF0000) = flamme et cône de lumière sur le plan · **Fond** : rempli d’aplat
+- **Lanterne : 76 % × 30 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, plan, règle et compas ; lumière (#FF0000) = flamme et cône de lumière sur le plan · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Bandeau 2:1 pleine largeur de la carte (environ 420 px) ; recadré en 16:9 sur mobile : sujet et lanterne dans la moitié centrale.
 - **Format** : 2:1, 1600 × 800 ; 16:9 sur mobile (recadrage mobile 16:9)
 - **Fichier attendu** : `site/src/assets/visuels/parcours/PAR-01_1600x800.webp`
-- **Master** : `design/assets/visuels/parcours/PAR-01.png` → `node tools/separer-calques.mjs PAR-01` écrit le rendu et `PAR-01_1600x800.aplat.webp`, `PAR-01_1600x800.encre.webp`, `PAR-01_1600x800.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/parcours/PAR-01.png` ; nuit `design/assets/visuels/parcours/PAR-01.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PAR-01` écrit le jour `PAR-01_1600x800.webp` et la nuit `PAR-01_1600x800.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une table à dessin où un plan d’architecture logicielle déplié est éclairé par une lanterne. »
 - **Note** : Posé dans la carte de la porte (pages/parcours.astro) ; décoratif à l’usage (alt vide), le titre de la carte porte le lien. Série « Parcours » : trois quarts en légère plongée, horizon aux deux tiers, trait gravé, deux ou trois aplats, la lanterne seule source de lumière ; aucun texte, aucun chiffre, aucune marque dans l’image.
 
@@ -703,11 +830,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/parcours.ts`, `src/pages/parcours.astro`
 - **Sujet** : La boîte à outils
 - **Composition (pour le prompt)** : Une boîte à outils en bois ouverte, vue de trois quarts en légère plongée, à quatre compartiments reconnaissables à leur forme et non à un mot : une équerre et des gabarits (l’interface), des engrenages imbriqués (l’API), des tiroirs de fiches empilées (les données), une caisse scellée prête à partir (la livraison) ; la lanterne accrochée à la poignée (vers 50 % de la largeur et 26 % de la hauteur) éclaire l’intérieur ; aucun logo
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = boîte et outils ; lumière (#FF0000) = flamme et intérieur de la boîte · **Fond** : rempli d’aplat
+- **Lanterne : 50 % × 26 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = boîte et outils ; lumière (#FF0000) = flamme et intérieur de la boîte · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Bandeau 2:1 pleine largeur de la carte (environ 420 px) ; recadré en 16:9 sur mobile : sujet et lanterne dans la moitié centrale.
 - **Format** : 2:1, 1600 × 800 ; 16:9 sur mobile (recadrage mobile 16:9)
 - **Fichier attendu** : `site/src/assets/visuels/parcours/PAR-02_1600x800.webp`
-- **Master** : `design/assets/visuels/parcours/PAR-02.png` → `node tools/separer-calques.mjs PAR-02` écrit le rendu et `PAR-02_1600x800.aplat.webp`, `PAR-02_1600x800.encre.webp`, `PAR-02_1600x800.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/parcours/PAR-02.png` ; nuit `design/assets/visuels/parcours/PAR-02.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PAR-02` écrit le jour `PAR-02_1600x800.webp` et la nuit `PAR-02_1600x800.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une boîte à outils ouverte, à quatre compartiments, éclairée par une lanterne accrochée à sa poignée. »
 - **Note** : Posé dans la carte de la porte (pages/parcours.astro) ; décoratif à l’usage (alt vide), le titre de la carte porte le lien. Série « Parcours » : trois quarts en légère plongée, horizon aux deux tiers, trait gravé, deux ou trois aplats, la lanterne seule source de lumière ; aucun texte, aucun chiffre, aucune marque dans l’image.
 
@@ -719,11 +848,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/parcours.ts`, `src/pages/parcours.astro`
 - **Sujet** : Ce que j’ai dans mon sac
 - **Composition (pour le prompt)** : Une pile de livres reliés couchés, vue de trois quarts en légère plongée, dos sans titre, de tailles décroissantes ; au sommet, un diplôme roulé noué d’un ruban ; quelques fiches volantes (des certificats, sans texte ni sceau lisible) glissées entre deux livres ; la lanterne sert de serre-livre à droite (vers 74 % de la largeur et 56 % de la hauteur) et éclaire la tranche des livres ; aucune marque d’école
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = livres, diplôme et fiches ; lumière (#FF0000) = flamme et tranche des livres · **Fond** : rempli d’aplat
+- **Lanterne : 74 % × 56 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = livres, diplôme et fiches ; lumière (#FF0000) = flamme et tranche des livres · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Bandeau 2:1 pleine largeur de la carte (environ 420 px) ; recadré en 16:9 sur mobile : sujet et lanterne dans la moitié centrale.
 - **Format** : 2:1, 1600 × 800 ; 16:9 sur mobile (recadrage mobile 16:9)
 - **Fichier attendu** : `site/src/assets/visuels/parcours/PAR-03_1600x800.webp`
-- **Master** : `design/assets/visuels/parcours/PAR-03.png` → `node tools/separer-calques.mjs PAR-03` écrit le rendu et `PAR-03_1600x800.aplat.webp`, `PAR-03_1600x800.encre.webp`, `PAR-03_1600x800.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/parcours/PAR-03.png` ; nuit `design/assets/visuels/parcours/PAR-03.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PAR-03` écrit le jour `PAR-03_1600x800.webp` et la nuit `PAR-03_1600x800.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une pile de livres et un diplôme roulé, la lanterne en serre-livre. »
 - **Note** : Posé dans la carte de la porte (pages/parcours.astro) ; décoratif à l’usage (alt vide), le titre de la carte porte le lien. Série « Parcours » : trois quarts en légère plongée, horizon aux deux tiers, trait gravé, deux ou trois aplats, la lanterne seule source de lumière ; aucun texte, aucun chiffre, aucune marque dans l’image.
 
@@ -735,11 +866,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/parcours.ts`, `src/components/parcours/FicheExperience.astro`
 - **Sujet** : Architecture logicielle
 - **Composition (pour le prompt)** : Une maquette d’architecte d’un petit bâtiment à trois étages, présentée en coupe et vue de trois quarts en légère plongée : chaque étage est une couche (en bas, des casiers de rangement pour les données ; au milieu, des salles reliées par des escaliers et des passerelles pour les services ; en haut, une galerie vitrée pour l’interface) ; des conduits verticaux relient les étages ; la lanterne posée au rez-de-chaussée, au centre (vers 50 % de la largeur et 72 % de la hauteur), éclaire la coupe de bas en haut ; aucun personnage, aucune lettre, aucun élément qui identifie un employeur
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = socle, étages, casiers et conduits ; lumière (#FF0000) = flamme et coupe éclairée · **Fond** : rempli d’aplat
+- **Lanterne : 50 % × 72 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = socle, étages, casiers et conduits ; lumière (#FF0000) = flamme et coupe éclairée · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Affiché à 320 px de large dans la colonne de la fiche ; bandeau 16:9 pleine largeur sur mobile : sujet centré, rien d’important dans le huitième du haut ni dans le huitième du bas.
 - **Format** : 3:2, 1800 × 1200 ; 16:9 sur mobile (recadrage mobile 16:9)
 - **Fichier attendu** : `site/src/assets/visuels/parcours/PRO-01_1800x1200.webp`
-- **Master** : `design/assets/visuels/parcours/PRO-01.png` → `node tools/separer-calques.mjs PRO-01` écrit le rendu et `PRO-01_1800x1200.aplat.webp`, `PRO-01_1800x1200.encre.webp`, `PRO-01_1800x1200.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/parcours/PRO-01.png` ; nuit `design/assets/visuels/parcours/PRO-01.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PRO-01` écrit le jour `PRO-01_1800x1200.webp` et la nuit `PRO-01_1800x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une maquette de bâtiment en coupe, ses trois étages reliés par des conduits, éclairée depuis le rez-de-chaussée. »
 - **Note** : Posé dans la fiche (components/parcours/FicheExperience.astro) ; décoratif à l’usage (alt vide), la fiche dit tout. Série « Parcours » : trois quarts en légère plongée, horizon aux deux tiers, trait gravé, deux ou trois aplats, la lanterne seule source de lumière ; aucun texte, aucun chiffre, aucune marque dans l’image. Passé de 900 × 600 à 1800 × 1200 comme le reste de la série, et d’un plan au mur à une coupe de bâtiment pour ne pas répéter PAR-01.
 
@@ -751,11 +884,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/parcours.ts`, `src/components/parcours/FicheExperience.astro`
 - **Sujet** : Former jusqu’au titre
 - **Composition (pour le prompt)** : Un couloir de centre de formation vu de trois quarts en légère plongée : le long du mur, une rangée d’une dizaine de diplômes roulés et noués, posés chacun sur une petite console ; au fond, une porte entrouverte sur une salle vide où l’on devine un tableau couvert d’un schéma à trois blocs ; la lanterne posée sur la première console (vers 24 % de la largeur et 62 % de la hauteur) éclaire la rangée de diplômes ; aucune silhouette, aucun logo d’organisme, aucune écriture
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = couloir, consoles, diplômes et porte ; lumière (#FF0000) = flamme et rangée de diplômes · **Fond** : rempli d’aplat
+- **Lanterne : 24 % × 62 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = couloir, consoles, diplômes et porte ; lumière (#FF0000) = flamme et rangée de diplômes · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Affiché à 320 px de large dans la colonne de la fiche ; bandeau 16:9 pleine largeur sur mobile : sujet centré, rien d’important dans le huitième du haut ni dans le huitième du bas.
 - **Format** : 3:2, 1800 × 1200 ; 16:9 sur mobile (recadrage mobile 16:9)
 - **Fichier attendu** : `site/src/assets/visuels/parcours/PRO-02_1800x1200.webp`
-- **Master** : `design/assets/visuels/parcours/PRO-02.png` → `node tools/separer-calques.mjs PRO-02` écrit le rendu et `PRO-02_1800x1200.aplat.webp`, `PRO-02_1800x1200.encre.webp`, `PRO-02_1800x1200.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/parcours/PRO-02.png` ; nuit `design/assets/visuels/parcours/PRO-02.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PRO-02` écrit le jour `PRO-02_1800x1200.webp` et la nuit `PRO-02_1800x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un couloir où une dizaine de diplômes roulés attendent sur des consoles, éclairés par une lanterne. »
 - **Note** : Posé dans la fiche (components/parcours/FicheExperience.astro) ; décoratif à l’usage (alt vide), la fiche dit tout. Série « Parcours » : trois quarts en légère plongée, horizon aux deux tiers, trait gravé, deux ou trois aplats, la lanterne seule source de lumière ; aucun texte, aucun chiffre, aucune marque dans l’image. Passé de la salle vue du pupitre à un couloir de remise des titres pour ne pas répéter ACC-11.
 
@@ -767,11 +902,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/parcours.ts`, `src/components/parcours/FicheExperience.astro`
 - **Sujet** : Le pôle
 - **Composition (pour le prompt)** : Une table vue de trois quarts en légère plongée : de petits fanions de couleur unie, plantés chacun sur une fiche, avancent en plusieurs files depuis les bords de la table et convergent vers un seul coffre-dépôt ouvert, au centre ; deux rubans de couleurs différentes se nouent au-dessus du coffre (la fusion) ; la lanterne posée sur le couvercle du coffre (vers 52 % de la largeur et 44 % de la hauteur) éclaire les fiches qui y entrent ; aucun drapeau national, aucun texte, aucun personnage ni décor tiré d’un jeu existant
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, fiches, fanions et coffre ; lumière (#FF0000) = flamme et fiches qui entrent dans le coffre · **Fond** : rempli d’aplat
+- **Lanterne : 52 % × 44 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, fiches, fanions et coffre ; lumière (#FF0000) = flamme et fiches qui entrent dans le coffre · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Affiché à 320 px de large dans la colonne de la fiche ; bandeau 16:9 pleine largeur sur mobile : sujet centré, rien d’important dans le huitième du haut ni dans le huitième du bas.
 - **Format** : 3:2, 1800 × 1200 ; 16:9 sur mobile (recadrage mobile 16:9)
 - **Fichier attendu** : `site/src/assets/visuels/parcours/PRO-03_1800x1200.webp`
-- **Master** : `design/assets/visuels/parcours/PRO-03.png` → `node tools/separer-calques.mjs PRO-03` écrit le rendu et `PRO-03_1800x1200.aplat.webp`, `PRO-03_1800x1200.encre.webp`, `PRO-03_1800x1200.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/parcours/PRO-03.png` ; nuit `design/assets/visuels/parcours/PRO-03.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PRO-03` écrit le jour `PRO-03_1800x1200.webp` et la nuit `PRO-03_1800x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Des fiches à fanions convergent de toute la table vers un seul coffre, sous deux rubans noués. »
 - **Note** : Posé dans la fiche (components/parcours/FicheExperience.astro) ; décoratif à l’usage (alt vide), la fiche dit tout. Série « Parcours » : trois quarts en légère plongée, horizon aux deux tiers, trait gravé, deux ou trois aplats, la lanterne seule source de lumière ; aucun texte, aucun chiffre, aucune marque dans l’image. Passé d’un tableau à trois colonnes, déjà vu en PRJ-01, CMP-03 et PVZ-05, à des files qui convergent ; rubans noués au lieu de pousses, qui renvoyaient au jeu tiers (règle 1).
 
@@ -782,12 +919,14 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Emplacement** : `/parcours/professionnel` · Professionnel, fiche Mission Locale : colonne de droite de la fiche (320 px) ; sur mobile, bandeau 16:9 pleine largeur sous le texte, pour que le rôle reste en tête _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/config/parcours.ts`, `src/components/parcours/FicheExperience.astro`
 - **Sujet** : Initier au web
-- **Composition (pour le prompt)** : Une table d’atelier vue de trois quarts en légère plongée : trois ordinateurs portables ouverts sur un premier programme (lignes de code illisibles), des post-it vierges collés au bord des écrans, des chaises tirées comme à la fin d’un atelier ; la lanterne posée au centre de la table (vers 50 % de la largeur et 58 % de la hauteur) ; aucune silhouette, aucun logo
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, chaises, portables et post-it ; lumière (#FF0000) = flamme et écrans éclairés · **Fond** : rempli d’aplat
+- **Composition (pour le prompt)** : Une table d’atelier vue de trois quarts en légère plongée : trois ordinateurs portables ouverts, écrans vierges, des post-it vierges collés au bord des écrans, des chaises tirées comme à la fin d’un atelier ; la lanterne posée au centre de la table (vers 50 % de la largeur et 58 % de la hauteur) ; aucune silhouette, aucun logo
+- **Lanterne : 50 % × 58 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, chaises, portables et post-it ; lumière (#FF0000) = flamme et écrans éclairés · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Affiché à 320 px de large dans la colonne de la fiche ; bandeau 16:9 pleine largeur sur mobile : sujet centré, rien d’important dans le huitième du haut ni dans le huitième du bas.
 - **Format** : 3:2, 1800 × 1200 ; 16:9 sur mobile (recadrage mobile 16:9)
 - **Fichier attendu** : `site/src/assets/visuels/parcours/PRO-04_1800x1200.webp`
-- **Master** : `design/assets/visuels/parcours/PRO-04.png` → `node tools/separer-calques.mjs PRO-04` écrit le rendu et `PRO-04_1800x1200.aplat.webp`, `PRO-04_1800x1200.encre.webp`, `PRO-04_1800x1200.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/parcours/PRO-04.png` ; nuit `design/assets/visuels/parcours/PRO-04.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PRO-04` écrit le jour `PRO-04_1800x1200.webp` et la nuit `PRO-04_1800x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une table d’atelier avec des ordinateurs portables ouverts et des post-it, éclairée par une lanterne. »
 - **Note** : Posé dans la fiche (components/parcours/FicheExperience.astro) ; décoratif à l’usage (alt vide), la fiche dit tout. Série « Parcours » : trois quarts en légère plongée, horizon aux deux tiers, trait gravé, deux ou trois aplats, la lanterne seule source de lumière ; aucun texte, aucun chiffre, aucune marque dans l’image.
 
@@ -799,11 +938,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/parcours.ts`, `src/components/parcours/FicheExperience.astro`
 - **Sujet** : 30 % de temps de traitement administratif en moins
 - **Composition (pour le prompt)** : Un formulaire de suivi des temps et des contrats posé sur un bureau, vu de trois quarts en légère plongée (cases et colonnes sans aucun chiffre ni mot), un sablier à côté dont le sable du haut a nettement baissé, un tampon et un stylo ; la lanterne (vers 66 % de la largeur et 40 % de la hauteur) éclaire le sablier ; aucun logo de logiciel ni d’entreprise
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = bureau, formulaire, tampon et stylo ; lumière (#FF0000) = flamme et sablier éclairé · **Fond** : rempli d’aplat
+- **Lanterne : 66 % × 40 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = bureau, formulaire, tampon et stylo ; lumière (#FF0000) = flamme et sablier éclairé · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Affiché à 320 px de large dans la colonne de la fiche ; bandeau 16:9 pleine largeur sur mobile : sujet centré, rien d’important dans le huitième du haut ni dans le huitième du bas.
 - **Format** : 3:2, 1800 × 1200 ; 16:9 sur mobile (recadrage mobile 16:9)
 - **Fichier attendu** : `site/src/assets/visuels/parcours/PRO-05_1800x1200.webp`
-- **Master** : `design/assets/visuels/parcours/PRO-05.png` → `node tools/separer-calques.mjs PRO-05` écrit le rendu et `PRO-05_1800x1200.aplat.webp`, `PRO-05_1800x1200.encre.webp`, `PRO-05_1800x1200.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/parcours/PRO-05.png` ; nuit `design/assets/visuels/parcours/PRO-05.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PRO-05` écrit le jour `PRO-05_1800x1200.webp` et la nuit `PRO-05_1800x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un formulaire de suivi des temps posé sur un bureau, à côté d’un sablier dont le sable a baissé. »
 - **Note** : Posé dans la fiche (components/parcours/FicheExperience.astro) ; décoratif à l’usage (alt vide), la fiche dit tout. Série « Parcours » : trois quarts en légère plongée, horizon aux deux tiers, trait gravé, deux ou trois aplats, la lanterne seule source de lumière ; aucun texte, aucun chiffre, aucune marque dans l’image. Fait sourcé : −30 % de temps de traitement administratif (docs/matiere-premiere.md) ; l’image ne chiffre rien.
 
@@ -815,11 +956,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/parcours.ts`, `src/components/parcours/FicheExperience.astro`
 - **Sujet** : Sur mesure
 - **Composition (pour le prompt)** : Un cahier des charges relié, ouvert et annoté dans la marge (traits sans texte), posé à côté d’une maquette d’application dessinée sur papier (un écran de téléphone et un écran de navigateur en traits), vus de trois quarts en légère plongée ; une règle et un crayon ; la lanterne (vers 50 % de la largeur et 46 % de la hauteur) éclaire le point où les deux documents se touchent ; aucun logo
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = cahier, maquette, règle et crayon ; lumière (#FF0000) = flamme et point de contact des documents · **Fond** : rempli d’aplat
+- **Lanterne : 50 % × 46 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = cahier, maquette, règle et crayon ; lumière (#FF0000) = flamme et point de contact des documents · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Affiché à 320 px de large dans la colonne de la fiche ; bandeau 16:9 pleine largeur sur mobile : sujet centré, rien d’important dans le huitième du haut ni dans le huitième du bas.
 - **Format** : 3:2, 1800 × 1200 ; 16:9 sur mobile (recadrage mobile 16:9)
 - **Fichier attendu** : `site/src/assets/visuels/parcours/PRO-06_1800x1200.webp`
-- **Master** : `design/assets/visuels/parcours/PRO-06.png` → `node tools/separer-calques.mjs PRO-06` écrit le rendu et `PRO-06_1800x1200.aplat.webp`, `PRO-06_1800x1200.encre.webp`, `PRO-06_1800x1200.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/parcours/PRO-06.png` ; nuit `design/assets/visuels/parcours/PRO-06.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PRO-06` écrit le jour `PRO-06_1800x1200.webp` et la nuit `PRO-06_1800x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un cahier des charges annoté à côté d’une maquette d’application dessinée sur papier. »
 - **Note** : Posé : l’expérience Dev-Mates est gardée (Q9 : seule la mention « sans client actuellement » est retirée). Posé dans la fiche (components/parcours/FicheExperience.astro) ; décoratif à l’usage (alt vide), la fiche dit tout. Série « Parcours » : trois quarts en légère plongée, horizon aux deux tiers, trait gravé, deux ou trois aplats, la lanterne seule source de lumière ; aucun texte, aucun chiffre, aucune marque dans l’image.
 
@@ -831,11 +974,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/competences.ts`, `src/pages/parcours/competences.astro`
 - **Sujet** : Le tableau et la craie
 - **Composition (pour le prompt)** : Un tableau noir sur pied : un schéma en trois cases reliées par deux flèches, la dernière case plus grande et pleine (l’élève qui va seul) ; un bâton de craie posé sur le rebord, la lanterne au pied du tableau (vers 26 % de la largeur et 84 % de la hauteur) qui l’éclaire de biais ; aucune personne, aucun écran, aucun texte ni chiffre
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = tableau et pied ; lumière (#FF0000) = flamme et schéma éclairé · **Fond** : transparent
+- **Lanterne : 26 % × 84 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = tableau et pied ; lumière (#FF0000) = flamme et schéma éclairé · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Vignette carrée affichée de 160 à 270 px : un seul objet principal centré, qui occupe au moins 70 % du cadre et se lit à 160 px.
 - **Format** : 1:1, 480 × 480
 - **Fichier attendu** : `site/src/assets/visuels/parcours/CMP-02_480x480.webp`
-- **Master** : `design/assets/visuels/parcours/CMP-02.png` → `node tools/separer-calques.mjs CMP-02` écrit le rendu et `CMP-02_480x480.aplat.webp`, `CMP-02_480x480.encre.webp`, `CMP-02_480x480.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/parcours/CMP-02.png` ; nuit `design/assets/visuels/parcours/CMP-02.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre CMP-02` écrit le jour `CMP-02_480x480.webp` et la nuit `CMP-02_480x480.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un tableau noir et un schéma en trois cases reliées par des flèches, la craie posée au rebord. »
 - **Note** : Série de sept vignettes (CMP-02 à CMP-08) vues côte à côte : même cadrage, même hauteur d’horizon, même épaisseur de trait. L’intitulé et les verbes restent en HTML sous l’image : la page la pose en décor (alt vide), l’alt ci-dessous décrit l’image.
 
@@ -847,11 +992,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/competences.ts`, `src/pages/parcours/competences.astro`
 - **Sujet** : Le tableau à colonnes
 - **Composition (pour le prompt)** : Un tableau de tâches à trois colonnes vu de face : des cartes vierges, dont deux déplacées d’une colonne à l’autre par des flèches courbes tracées à la main ; une épingle par carte, la lanterne accrochée en haut à droite (vers 82 % de la largeur et 16 % de la hauteur) ; aucune personne, aucun écran, aucun texte ni chiffre
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = tableau et cartes ; lumière (#FF0000) = flamme et cartes déplacées · **Fond** : transparent
+- **Lanterne : 82 % × 16 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = tableau et cartes ; lumière (#FF0000) = flamme et cartes déplacées · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Vignette carrée affichée de 160 à 270 px : un seul objet principal centré, qui occupe au moins 70 % du cadre et se lit à 160 px.
 - **Format** : 1:1, 480 × 480
 - **Fichier attendu** : `site/src/assets/visuels/parcours/CMP-03_480x480.webp`
-- **Master** : `design/assets/visuels/parcours/CMP-03.png` → `node tools/separer-calques.mjs CMP-03` écrit le rendu et `CMP-03_480x480.aplat.webp`, `CMP-03_480x480.encre.webp`, `CMP-03_480x480.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/parcours/CMP-03.png` ; nuit `design/assets/visuels/parcours/CMP-03.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre CMP-03` écrit le jour `CMP-03_480x480.webp` et la nuit `CMP-03_480x480.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un tableau de tâches à trois colonnes, deux cartes déplacées d’une colonne à l’autre. »
 - **Note** : Série de sept vignettes (CMP-02 à CMP-08) vues côte à côte : même cadrage, même hauteur d’horizon, même épaisseur de trait. L’intitulé et les verbes restent en HTML sous l’image : la page la pose en décor (alt vide), l’alt ci-dessous décrit l’image.
 
@@ -862,12 +1009,14 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Emplacement** : `/parcours/competences` · Compétences humaines, carte « Écoute et cadrage » (vignette carrée au-dessus de l’intitulé et des verbes) _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/config/competences.ts`, `src/pages/parcours/competences.astro`
 - **Sujet** : Le cahier annoté
-- **Composition (pour le prompt)** : Un cahier des charges ouvert, pages couvertes de lignes illisibles, la marge annotée de trois points d’interrogation et d’une accolade qui regroupe deux paragraphes ; un crayon posé en travers, la lanterne (vers 80 % de la largeur et 24 % de la hauteur) qui éclaire la page ; aucune personne, aucun écran, aucun texte lisible
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = cahier et crayon ; lumière (#FF0000) = flamme et page éclairée · **Fond** : transparent
+- **Composition (pour le prompt)** : Un cahier des charges ouvert, pages vierges, la marge annotée de trois points d’interrogation et d’une grande accolade ; un crayon posé en travers, la lanterne (vers 80 % de la largeur et 24 % de la hauteur) qui éclaire la page ; aucune personne, aucun écran, aucun texte lisible
+- **Lanterne : 80 % × 24 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = cahier et crayon ; lumière (#FF0000) = flamme et page éclairée · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Vignette carrée affichée de 160 à 270 px : un seul objet principal centré, qui occupe au moins 70 % du cadre et se lit à 160 px.
 - **Format** : 1:1, 480 × 480
 - **Fichier attendu** : `site/src/assets/visuels/parcours/CMP-04_480x480.webp`
-- **Master** : `design/assets/visuels/parcours/CMP-04.png` → `node tools/separer-calques.mjs CMP-04` écrit le rendu et `CMP-04_480x480.aplat.webp`, `CMP-04_480x480.encre.webp`, `CMP-04_480x480.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/parcours/CMP-04.png` ; nuit `design/assets/visuels/parcours/CMP-04.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre CMP-04` écrit le jour `CMP-04_480x480.webp` et la nuit `CMP-04_480x480.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un cahier des charges ouvert, la marge annotée de points d’interrogation. »
 - **Note** : Série de sept vignettes (CMP-02 à CMP-08) vues côte à côte : même cadrage, même hauteur d’horizon, même épaisseur de trait. L’intitulé et les verbes restent en HTML sous l’image : la page la pose en décor (alt vide), l’alt ci-dessous décrit l’image.
 
@@ -879,11 +1028,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/competences.ts`, `src/pages/parcours/competences.astro`
 - **Sujet** : Deux bulles qui se répondent
 - **Composition (pour le prompt)** : Deux bulles de dialogue vides qui se répondent, de part et d’autre, à la même hauteur et de même taille (aucune ne domine) ; la lanterne posée entre elles (vers 50 % de la largeur et 70 % de la hauteur), sa lumière touche les deux ; aucune personne, aucun texte
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = bulles ; lumière (#FF0000) = flamme et bords éclairés des deux bulles · **Fond** : transparent
+- **Lanterne : 50 % × 70 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = bulles ; lumière (#FF0000) = flamme et bords éclairés des deux bulles · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Vignette carrée affichée de 160 à 270 px : un seul objet principal centré, qui occupe au moins 70 % du cadre et se lit à 160 px.
 - **Format** : 1:1, 480 × 480
 - **Fichier attendu** : `site/src/assets/visuels/parcours/CMP-05_480x480.webp`
-- **Master** : `design/assets/visuels/parcours/CMP-05.png` → `node tools/separer-calques.mjs CMP-05` écrit le rendu et `CMP-05_480x480.aplat.webp`, `CMP-05_480x480.encre.webp`, `CMP-05_480x480.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/parcours/CMP-05.png` ; nuit `design/assets/visuels/parcours/CMP-05.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre CMP-05` écrit le jour `CMP-05_480x480.webp` et la nuit `CMP-05_480x480.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Deux bulles de dialogue qui se répondent, une lanterne entre elles. »
 - **Note** : Série de sept vignettes (CMP-02 à CMP-08) vues côte à côte : même cadrage, même hauteur d’horizon, même épaisseur de trait. L’intitulé et les verbes restent en HTML sous l’image : la page la pose en décor (alt vide), l’alt ci-dessous décrit l’image.
 
@@ -895,11 +1046,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/competences.ts`, `src/pages/parcours/competences.astro`
 - **Sujet** : La carte retournée
 - **Composition (pour le prompt)** : Un éventail de cartes à jouer toutes identiques, dos visibles, au motif géométrique simple et inventé ; au centre, une seule carte retournée face visible et inclinée à contre-sens, éclairée par la lanterne posée devant l’éventail (vers 50 % de la largeur et 82 % de la hauteur) ; aucune carte d’un jeu existant, aucune illustration de personnage
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = cartes de l’éventail ; lumière (#FF0000) = flamme et carte retournée · **Fond** : transparent
+- **Lanterne : 50 % × 82 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = cartes de l’éventail ; lumière (#FF0000) = flamme et carte retournée · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Vignette carrée affichée de 160 à 270 px : un seul objet principal centré, qui occupe au moins 70 % du cadre et se lit à 160 px.
 - **Format** : 1:1, 480 × 480
 - **Fichier attendu** : `site/src/assets/visuels/parcours/CMP-06_480x480.webp`
-- **Master** : `design/assets/visuels/parcours/CMP-06.png` → `node tools/separer-calques.mjs CMP-06` écrit le rendu et `CMP-06_480x480.aplat.webp`, `CMP-06_480x480.encre.webp`, `CMP-06_480x480.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/parcours/CMP-06.png` ; nuit `design/assets/visuels/parcours/CMP-06.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre CMP-06` écrit le jour `CMP-06_480x480.webp` et la nuit `CMP-06_480x480.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un éventail de cartes identiques et, au milieu, une seule carte retournée à contre-sens. »
 - **Note** : Série de sept vignettes (CMP-02 à CMP-08) vues côte à côte : même cadrage, même hauteur d’horizon, même épaisseur de trait. L’intitulé et les verbes restent en HTML sous l’image : la page la pose en décor (alt vide), l’alt ci-dessous décrit l’image.
 
@@ -911,11 +1064,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/competences.ts`, `src/pages/parcours/competences.astro`
 - **Sujet** : Le ruban de Möbius
 - **Composition (pour le prompt)** : Un ruban de Möbius posé debout, dessiné comme une boucle : sur une face trois encoches (comprendre, tester, ajuster) figurées par des formes simples (une loupe, une fiole, une clé), sans mots ; la lanterne derrière, au centre (vers 50 % de la largeur et 50 % de la hauteur), le ruban la laisse passer
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = ruban et formes ; lumière (#FF0000) = flamme vue à travers la boucle · **Fond** : transparent
+- **Lanterne : 50 % × 50 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = ruban et formes ; lumière (#FF0000) = flamme vue à travers la boucle · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Vignette carrée affichée de 160 à 270 px : un seul objet principal centré, qui occupe au moins 70 % du cadre et se lit à 160 px.
 - **Format** : 1:1, 480 × 480
 - **Fichier attendu** : `site/src/assets/visuels/parcours/CMP-07_480x480.webp`
-- **Master** : `design/assets/visuels/parcours/CMP-07.png` → `node tools/separer-calques.mjs CMP-07` écrit le rendu et `CMP-07_480x480.aplat.webp`, `CMP-07_480x480.encre.webp`, `CMP-07_480x480.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/parcours/CMP-07.png` ; nuit `design/assets/visuels/parcours/CMP-07.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre CMP-07` écrit le jour `CMP-07_480x480.webp` et la nuit `CMP-07_480x480.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un ruban de Möbius qui porte une loupe, une fiole et une clé : comprendre, tester, ajuster. »
 - **Note** : Série de sept vignettes (CMP-02 à CMP-08) vues côte à côte : même cadrage, même hauteur d’horizon, même épaisseur de trait. L’intitulé et les verbes restent en HTML sous l’image : la page la pose en décor (alt vide), l’alt ci-dessous décrit l’image.
 
@@ -927,11 +1082,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/competences.ts`, `src/pages/parcours/competences.astro`
 - **Sujet** : Le tableau et le carnet relié
 - **Composition (pour le prompt)** : Un petit tableau à colonnes (cartes vierges) relié par un fil à un document épais à onglets, posé à côté ; un trombone sur le document, la lanterne (vers 50 % de la largeur et 78 % de la hauteur) qui éclaire le fil ; aucun logo, aucun texte
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = tableau, document et trombone ; lumière (#FF0000) = flamme et fil éclairé · **Fond** : transparent
+- **Lanterne : 50 % × 78 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = tableau, document et trombone ; lumière (#FF0000) = flamme et fil éclairé · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Vignette carrée affichée de 160 à 270 px : un seul objet principal centré, qui occupe au moins 70 % du cadre et se lit à 160 px.
 - **Format** : 1:1, 480 × 480
 - **Fichier attendu** : `site/src/assets/visuels/parcours/CMP-08_480x480.webp`
-- **Master** : `design/assets/visuels/parcours/CMP-08.png` → `node tools/separer-calques.mjs CMP-08` écrit le rendu et `CMP-08_480x480.aplat.webp`, `CMP-08_480x480.encre.webp`, `CMP-08_480x480.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/parcours/CMP-08.png` ; nuit `design/assets/visuels/parcours/CMP-08.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre CMP-08` écrit le jour `CMP-08_480x480.webp` et la nuit `CMP-08_480x480.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un petit tableau à colonnes relié par un fil à un document à onglets. »
 - **Note** : Série de sept vignettes (CMP-02 à CMP-08) vues côte à côte : même cadrage, même hauteur d’horizon, même épaisseur de trait. L’intitulé et les verbes restent en HTML sous l’image : la page la pose en décor (alt vide), l’alt ci-dessous décrit l’image. La carte porte le lien officiel de Trello en HTML : aucun logo de Trello dans l’image.
 
@@ -943,11 +1100,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/formation.ts`, `src/pages/parcours/formation.astro`
 - **Sujet** : Une application web
 - **Composition (pour le prompt)** : Une application web en maquette éclatée, vue de trois quarts en légère plongée, en trois plans superposés : à l’avant un écran responsive (un navigateur et un téléphone côte à côte, blocs de contenu sans texte), au milieu un composant d’API (connecteurs, flèches de requête et de réponse), au fond une base de données (cylindres empilés) ; la lanterne posée au pied de la pile (vers 30 % de la largeur et 80 % de la hauteur) éclaire les trois plans ; aucun logo de framework
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = écrans, API et base de données ; lumière (#FF0000) = flamme et faces éclairées des trois plans · **Fond** : rempli d’aplat
+- **Lanterne : 30 % × 80 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = écrans, API et base de données ; lumière (#FF0000) = flamme et faces éclairées des trois plans · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Affichée jusqu’à 520 px de large à droite du titre obtenu (sous le texte sur mobile).
 - **Format** : 16:9, 1400 × 788
 - **Fichier attendu** : `site/src/assets/visuels/parcours/FOR-01_1400x788.webp`
-- **Master** : `design/assets/visuels/parcours/FOR-01.png` → `node tools/separer-calques.mjs FOR-01` écrit le rendu et `FOR-01_1400x788.aplat.webp`, `FOR-01_1400x788.encre.webp`, `FOR-01_1400x788.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/parcours/FOR-01.png` ; nuit `design/assets/visuels/parcours/FOR-01.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre FOR-01` écrit le jour `FOR-01_1400x788.webp` et la nuit `FOR-01_1400x788.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une application web en trois plans : l’écran, l’API et la base de données. »
 - **Note** : Posé dans la carte du titre obtenu ; décoratif à l’usage (alt vide). Série « Parcours » : trois quarts en légère plongée, horizon aux deux tiers, trait gravé, deux ou trois aplats, la lanterne seule source de lumière ; aucun texte, aucun chiffre, aucune marque dans l’image.
 
@@ -959,11 +1118,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/formation.ts`, `src/pages/parcours/formation.astro`
 - **Sujet** : Les quatre cinquièmes
 - **Composition (pour le prompt)** : Le plan d’une application dessiné sur une grande feuille, vue de trois quarts en légère plongée, découpé en cinq zones : quatre zones tracées et remplies (écrans, services, données, tests, en formes sans mots), la cinquième seulement en pointillés et vide ; un crayon posé sur la zone vide ; la lanterne (vers 22 % de la largeur et 30 % de la hauteur) éclaire les quatre zones achevées
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = feuille, zones et crayon ; lumière (#FF0000) = flamme et quatre zones achevées · **Fond** : rempli d’aplat
+- **Lanterne : 22 % × 30 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = feuille, zones et crayon ; lumière (#FF0000) = flamme et quatre zones achevées · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Vignette d’environ 180 px de large à gauche du bandeau CDA : les cinq zones se distinguent à cette taille.
 - **Format** : 3:2, 600 × 400
 - **Fichier attendu** : `site/src/assets/visuels/parcours/FOR-02_600x400.webp`
-- **Master** : `design/assets/visuels/parcours/FOR-02.png` → `node tools/separer-calques.mjs FOR-02` écrit le rendu et `FOR-02_600x400.aplat.webp`, `FOR-02_600x400.encre.webp`, `FOR-02_600x400.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/parcours/FOR-02.png` ; nuit `design/assets/visuels/parcours/FOR-02.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre FOR-02` écrit le jour `FOR-02_600x400.webp` et la nuit `FOR-02_600x400.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un plan d’application rempli aux quatre cinquièmes, la dernière zone en pointillés. »
 - **Note** : Posé dans le bandeau du programme CDA ; décoratif à l’usage (alt vide). Série « Parcours » : trois quarts en légère plongée, horizon aux deux tiers, trait gravé, deux ou trois aplats, la lanterne seule source de lumière ; aucun texte, aucun chiffre, aucune marque dans l’image.
 
@@ -974,12 +1135,14 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Emplacement** : `/parcours/formation` · Formation, station du chemin d’avant le titre : vignette carrée de 56 px à gauche de l’intitulé (au-dessus de lui dans une colonne étroite), 72 px à gauche du texte sur mobile : la station reste compacte, le titre obtenu domine _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/config/formation.ts`, `src/pages/parcours/formation.astro`
 - **Sujet** : Autodidacte vers 13 ans
-- **Composition (pour le prompt)** : Un seul objet : un livre ouvert à plat, vu de trois quarts, pages couvertes de lignes illisibles ; la lanterne (vers 80 % de la largeur et 22 % de la hauteur) éclaire la page de droite
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = livre ; lumière (#FF0000) = flamme et page de droite · **Fond** : transparent
+- **Composition (pour le prompt)** : Un seul objet : un livre ouvert à plat, vu de trois quarts, pages vierges ; la lanterne (vers 80 % de la largeur et 22 % de la hauteur) éclaire la page de droite
+- **Lanterne : 80 % × 22 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = livre ; lumière (#FF0000) = flamme et page de droite · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Vignette de 56 px (72 px sur mobile) : un seul objet silhouetté, qui occupe 80 % du cadre, sans aucun détail fin ni second objet.
 - **Format** : 1:1, 384
 - **Fichier attendu** : `site/src/assets/visuels/parcours/FOR-03_384x384.webp`
-- **Master** : `design/assets/visuels/parcours/FOR-03.png` → `node tools/separer-calques.mjs FOR-03` écrit le rendu et `FOR-03_384x384.aplat.webp`, `FOR-03_384x384.encre.webp`, `FOR-03_384x384.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/parcours/FOR-03.png` ; nuit `design/assets/visuels/parcours/FOR-03.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre FOR-03` écrit le jour `FOR-03_384x384.webp` et la nuit `FOR-03_384x384.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un livre ouvert à la lumière d’une lanterne. »
 - **Note** : Série de cinq vignettes (FOR-03 à FOR-07) : même cadrage, même lumière, un seul objet chacune ; posées dans la frise de formation, décoratives à l’usage (alt vide).
 
@@ -991,11 +1154,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/formation.ts`, `src/pages/parcours/formation.astro`
 - **Sujet** : BUT Informatique
 - **Composition (pour le prompt)** : Un seul objet : un grand losange de décision d’organigramme, en relief, d’où partent deux flèches courtes ; la lanterne (vers 78 % de la largeur et 22 % de la hauteur) éclaire sa face
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = losange et flèches ; lumière (#FF0000) = flamme et face du losange · **Fond** : transparent
+- **Lanterne : 78 % × 22 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = losange et flèches ; lumière (#FF0000) = flamme et face du losange · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Vignette de 56 px (72 px sur mobile) : un seul objet silhouetté, qui occupe 80 % du cadre, sans aucun détail fin ni second objet.
 - **Format** : 1:1, 384
 - **Fichier attendu** : `site/src/assets/visuels/parcours/FOR-04_384x384.webp`
-- **Master** : `design/assets/visuels/parcours/FOR-04.png` → `node tools/separer-calques.mjs FOR-04` écrit le rendu et `FOR-04_384x384.aplat.webp`, `FOR-04_384x384.encre.webp`, `FOR-04_384x384.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/parcours/FOR-04.png` ; nuit `design/assets/visuels/parcours/FOR-04.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre FOR-04` écrit le jour `FOR-04_384x384.webp` et la nuit `FOR-04_384x384.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un losange de décision d’organigramme, d’où partent deux flèches. »
 - **Note** : Série de cinq vignettes (FOR-03 à FOR-07) : même cadrage, même lumière, un seul objet chacune ; posées dans la frise de formation, décoratives à l’usage (alt vide).
 
@@ -1007,11 +1172,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/formation.ts`, `src/pages/parcours/formation.astro`
 - **Sujet** : Physique-chimie
 - **Composition (pour le prompt)** : Un seul objet : un erlenmeyer à moitié rempli ; la lanterne (vers 76 % de la largeur et 28 % de la hauteur) éclaire le liquide
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = verre du flacon ; lumière (#FF0000) = flamme et liquide éclairé · **Fond** : transparent
+- **Lanterne : 76 % × 28 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = verre du flacon ; lumière (#FF0000) = flamme et liquide éclairé · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Vignette de 56 px (72 px sur mobile) : un seul objet silhouetté, qui occupe 80 % du cadre, sans aucun détail fin ni second objet.
 - **Format** : 1:1, 384
 - **Fichier attendu** : `site/src/assets/visuels/parcours/FOR-05_384x384.webp`
-- **Master** : `design/assets/visuels/parcours/FOR-05.png` → `node tools/separer-calques.mjs FOR-05` écrit le rendu et `FOR-05_384x384.aplat.webp`, `FOR-05_384x384.encre.webp`, `FOR-05_384x384.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/parcours/FOR-05.png` ; nuit `design/assets/visuels/parcours/FOR-05.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre FOR-05` écrit le jour `FOR-05_384x384.webp` et la nuit `FOR-05_384x384.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un erlenmeyer à moitié rempli, dont la lanterne éclaire le liquide. »
 - **Note** : Série de cinq vignettes (FOR-03 à FOR-07) : même cadrage, même lumière, un seul objet chacune ; posées dans la frise de formation, décoratives à l’usage (alt vide).
 
@@ -1023,11 +1190,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/formation.ts`, `src/pages/parcours/formation.astro`
 - **Sujet** : BUT Réseaux & Télécoms
 - **Composition (pour le prompt)** : Un seul objet : un commutateur réseau vu de trois quarts, trois câbles branchés sur sa face avant ; la lanterne (vers 76 % de la largeur et 26 % de la hauteur) éclaire les prises ; aucune marque d’équipement
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = boîtier et câbles ; lumière (#FF0000) = flamme et prises éclairées · **Fond** : transparent
+- **Lanterne : 76 % × 26 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = boîtier et câbles ; lumière (#FF0000) = flamme et prises éclairées · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Vignette de 56 px (72 px sur mobile) : un seul objet silhouetté, qui occupe 80 % du cadre, sans aucun détail fin ni second objet.
 - **Format** : 1:1, 384
 - **Fichier attendu** : `site/src/assets/visuels/parcours/FOR-06_384x384.webp`
-- **Master** : `design/assets/visuels/parcours/FOR-06.png` → `node tools/separer-calques.mjs FOR-06` écrit le rendu et `FOR-06_384x384.aplat.webp`, `FOR-06_384x384.encre.webp`, `FOR-06_384x384.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/parcours/FOR-06.png` ; nuit `design/assets/visuels/parcours/FOR-06.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre FOR-06` écrit le jour `FOR-06_384x384.webp` et la nuit `FOR-06_384x384.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un commutateur réseau où sont branchés trois câbles. »
 - **Note** : Série de cinq vignettes (FOR-03 à FOR-07) : même cadrage, même lumière, un seul objet chacune ; posées dans la frise de formation, décoratives à l’usage (alt vide).
 
@@ -1039,11 +1208,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/config/formation.ts`, `src/pages/parcours/formation.astro`
 - **Sujet pour le prompt** : Une échelle de bassin de piscine
 - **Composition (pour le prompt)** : Un seul objet : une échelle de bassin de piscine, deux montants courbes et trois marches qui plongent dans une eau en aplat ; la lanterne posée sur le bord du bassin (vers 78 % de la largeur et 24 % de la hauteur) éclaire la marche du haut ; sans logo ni nom d’école
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = échelle et bord du bassin ; lumière (#FF0000) = flamme et marche du haut · **Fond** : transparent
+- **Lanterne : 78 % × 24 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = échelle et bord du bassin ; lumière (#FF0000) = flamme et marche du haut · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Vignette de 56 px (72 px sur mobile) : un seul objet silhouetté, qui occupe 80 % du cadre, sans aucun détail fin ni second objet.
 - **Format** : 1:1, 384
 - **Fichier attendu** : `site/src/assets/visuels/parcours/FOR-07_384x384.webp`
-- **Master** : `design/assets/visuels/parcours/FOR-07.png` → `node tools/separer-calques.mjs FOR-07` écrit le rendu et `FOR-07_384x384.aplat.webp`, `FOR-07_384x384.encre.webp`, `FOR-07_384x384.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/parcours/FOR-07.png` ; nuit `design/assets/visuels/parcours/FOR-07.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre FOR-07` écrit le jour `FOR-07_384x384.webp` et la nuit `FOR-07_384x384.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une échelle de bassin de piscine, sa marche du haut éclairée. »
 - **Note** : Série de cinq vignettes (FOR-03 à FOR-07) : même cadrage, même lumière, un seul objet chacune ; posées dans la frise de formation, décoratives à l’usage (alt vide).
 
@@ -1057,11 +1228,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/pages/contact.astro`
 - **Sujet** : L’invitation : une enveloppe ouverte éclairée par la lanterne
 - **Composition (pour le prompt)** : Une enveloppe de papier épais posée de trois quarts, rabat ouvert vers le haut ; la lanterne du logo (cage à quatre montants, anneau, flamme en goutte) est posée juste derrière (vers 56 % de la largeur et 36 % de la hauteur), et sa lumière sort de l’enveloppe comme si la lettre l’emportait. Gravure en réserve, trait régulier, aucun personnage. Aucun texte, aucun timbre, aucune adresse
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = papier de l’enveloppe ; lumière (#FF0000) = flamme et halo qui sort de l’enveloppe · **Fond** : transparent
+- **Lanterne : 56 % × 36 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = papier de l’enveloppe ; lumière (#FF0000) = flamme et halo qui sort de l’enveloppe · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Le sujet occupe 70 % du cadre et reste lisible à 88 px (signe de la page, à droite du titre « M’écrire »).
 - **Format** : 1:1, 480 × 480, fond transparent
 - **Fichier attendu** : `site/src/assets/visuels/contact/CON-01_480x480.webp`
-- **Master** : `design/assets/visuels/contact/CON-01.png` → `node tools/separer-calques.mjs CON-01` écrit le rendu et `CON-01_480x480.aplat.webp`, `CON-01_480x480.encre.webp`, `CON-01_480x480.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/contact/CON-01.png` ; nuit `design/assets/visuels/contact/CON-01.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre CON-01` écrit le jour `CON-01_480x480.webp` et la nuit `CON-01_480x480.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une enveloppe ouverte d’où sort la lumière d’une lanterne. »
 - **Note** : Décoratif dans la page (alt vide passé par la page) : il remplace la plume de l’ancienne carte du formulaire.
 
@@ -1072,12 +1245,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Emplacement** : `/contact` · Contact, panneau de réussite qui s’ouvre sous le bouton d’envoi _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/pages/contact.astro`
 - **Sujet** : Message reçu : la lanterne allumée sur une lettre cachetée
-- **Composition (pour le prompt)** : La lanterne du logo, flamme haute et halo net, posée sur une lettre pliée fermée par un cachet de cire rond et lisse (sans motif ni initiale) ; vue de face, légère plongée. Gravure en réserve. Aucun texte
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = papier de la lettre ; lumière (#FF0000) = flamme, halo et reflet sur le cachet · **Fond** : transparent
+- **Composition (pour le prompt)** : La lanterne du logo, flamme haute, posée sur une lettre pliée fermée par un cachet de cire rond et lisse (sans motif ni initiale) ; vue de face, légère plongée. Gravure en réserve. Aucun texte
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = papier de la lettre ; lumière (#FF0000) = flamme et reflet sur le cachet, en hachures · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Sujet centré à 75 % du cadre, lisible à 96 px.
 - **Format** : 1:1, 360 × 360, fond transparent
 - **Fichier attendu** : `site/src/assets/visuels/contact/CON-02_360x360.webp`
-- **Master** : `design/assets/visuels/contact/CON-02.png` → `node tools/separer-calques.mjs CON-02` écrit le rendu et `CON-02_360x360.aplat.webp`, `CON-02_360x360.encre.webp`, `CON-02_360x360.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/contact/CON-02.png` ; nuit `design/assets/visuels/contact/CON-02.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre CON-02` écrit le jour `CON-02_360x360.webp` et la nuit `CON-02_360x360.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une lanterne allumée posée sur une lettre cachetée. »
 - **Note** : Décoratif dans la page (le message d’état dit la réussite) : affiché par CSS seulement quand l’état du formulaire vaut « success ».
 
@@ -1088,12 +1262,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Emplacement** : `/contact` · Contact, message d’erreur ou de limite d’envoi, sous le bouton _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/pages/contact.astro`
 - **Sujet** : Patience : la lanterne à flamme basse et un sablier
-- **Composition (pour le prompt)** : La lanterne du logo, flamme réduite à une petite goutte, halo à peine visible ; à sa droite un petit sablier dont le sable est à moitié tombé. Même angle et même trait que CON-02, pour qu’on reconnaisse la même scène. Aucun texte
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = verre du sablier et sable ; lumière (#FF0000) = flamme réduite · **Fond** : transparent
+- **Composition (pour le prompt)** : La lanterne du logo, flamme réduite à une petite goutte qui n’éclaire presque plus rien ; à sa droite un petit sablier dont le sable est à moitié tombé. Même angle et même trait que CON-02, pour qu’on reconnaisse la même scène. Aucun texte
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = verre du sablier et sable ; lumière (#FF0000) = flamme réduite · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Lisible à 96 px.
 - **Format** : 1:1, 360 × 360, fond transparent
 - **Fichier attendu** : `site/src/assets/visuels/contact/CON-03_360x360.webp`
-- **Master** : `design/assets/visuels/contact/CON-03.png` → `node tools/separer-calques.mjs CON-03` écrit le rendu et `CON-03_360x360.aplat.webp`, `CON-03_360x360.encre.webp`, `CON-03_360x360.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/contact/CON-03.png` ; nuit `design/assets/visuels/contact/CON-03.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre CON-03` écrit le jour `CON-03_360x360.webp` et la nuit `CON-03_360x360.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une lanterne à la flamme basse à côté d’un sablier. »
 - **Note** : Décoratif dans la page (le message d’état dit l’erreur) : affiché par CSS seulement quand l’état du formulaire vaut « error ».
 
@@ -1106,12 +1281,14 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Emplacement** : `/blog` · Blog sans article : la zone éclairée, à droite du titre (sous le titre sur mobile) _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/pages/blog.astro`
 - **Sujet** : Les pages à écrire : le livre du logo ouvert, éclairé par la lanterne
-- **Composition (pour le prompt)** : Le livre du logo ouvert à plat, vu en légère plongée, sur des pages blanches dont seule la première est éclairée ; la lanterne posée en haut à droite du livre (vers 74 % de la largeur et 26 % de la hauteur) est la seule source de lumière, son halo s’arrête au bord de la page ; un crayon posé en travers de la page de gauche, pointe vers la lumière. Le reste du cadre reste dans l’ombre. Aucune écriture sur les pages
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = papier des pages ; lumière (#FF0000) = flamme et page éclairée · **Fond** : transparent
+- **Composition (pour le prompt)** : Le livre du logo ouvert à plat, vu en légère plongée, sur des pages blanches dont seule la première est éclairée ; la lanterne posée en haut à droite du livre (vers 74 % de la largeur et 26 % de la hauteur) est la seule source de lumière, sa lumière s’arrête au bord de la page ; un crayon posé en travers de la page de gauche, pointe vers la lumière. Le reste du cadre reste dans l’ombre. Aucune écriture sur les pages
+- **Lanterne : 74 % × 26 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = papier des pages ; lumière (#FF0000) = flamme et page éclairée · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Le livre occupe 70 % de la largeur ; affiché jusqu’à 640 px à droite du titre (sous le titre sur mobile).
 - **Format** : 4:3, 960 × 720, fond transparent
 - **Fichier attendu** : `site/src/assets/visuels/blog/BLG-01_960x720.webp`
-- **Master** : `design/assets/visuels/blog/BLG-01.png` → `node tools/separer-calques.mjs BLG-01` écrit le rendu et `BLG-01_960x720.aplat.webp`, `BLG-01_960x720.encre.webp`, `BLG-01_960x720.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/blog/BLG-01.png` ; nuit `design/assets/visuels/blog/BLG-01.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre BLG-01` écrit le jour `BLG-01_960x720.webp` et la nuit `BLG-01_960x720.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un livre ouvert sur des pages blanches, éclairé par une lanterne, un crayon posé dessus. »
 - **Note** : Décoratif dans la page (la phrase dit que le blog est vide). Disparaît avec l’état vide quand le serveur injecte la liste des articles.
 
@@ -1125,11 +1302,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Posé dans** : `src/pages/404.astro`
 - **Sujet** : La page qui manque : un manuel ouvert, une page arrachée
 - **Composition (pour le prompt)** : Un manuel relié ouvert à plat, vu en légère plongée ; au milieu, le talon d’une page arrachée (bord déchiré net, quelques fibres) ; la lanterne du logo, posée sur la page de droite (vers 62 % de la largeur et 40 % de la hauteur), éclaire précisément le vide laissé par la page, le reste du livre est dans l’ombre. Aucune écriture, aucun numéro de page
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = papier du manuel ; lumière (#FF0000) = flamme, halo et vide de la page · **Fond** : transparent
+- **Lanterne : 62 % × 40 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = papier du manuel ; lumière (#FF0000) = flamme, halo et vide de la page · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Le livre occupe 75 % de la largeur ; le coin bas droit reste calme : un médaillon photo (ERR-PHO) s’y pose.
 - **Format** : 4:3, 1280 × 960, fond transparent
 - **Fichier attendu** : `site/src/assets/visuels/etats/ERR-01_1280x960.webp`
-- **Master** : `design/assets/visuels/etats/ERR-01.png` → `node tools/separer-calques.mjs ERR-01` écrit le rendu et `ERR-01_1280x960.aplat.webp`, `ERR-01_1280x960.encre.webp`, `ERR-01_1280x960.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/etats/ERR-01.png` ; nuit `design/assets/visuels/etats/ERR-01.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre ERR-01` écrit le jour `ERR-01_1280x960.webp` et la nuit `ERR-01_1280x960.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un manuel ouvert dont une page a été arrachée, éclairé par une lanterne. »
 - **Note** : Reprend ETA-01 de docs/assets-complementaires.md (direction précédente). Décoratif dans la page (le titre dit déjà que la page manque).
 
@@ -1142,12 +1321,14 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Emplacement** : `/` · 01, vers 13 ans _(contexte : ne pas le recopier dans un prompt)_
 - **Élargi, non posé** : aucune scène de l’accueil ne l’appelle ; la frise de la formation garde l’autodidacte en vignette (FOR-03).
 - **Sujet** : Apprendre le C, pour passer ensuite au C++ et coder des jeux
-- **Composition (pour le prompt)** : Une chambre d’adolescent vue de trois quarts, en léger surplomb : un vieux PC à écran bombé allumé sur un bureau, un livre de programmation ouvert à plat près du clavier, quelques feuilles de listing aux lignes illisibles ; au mur, un croquis de niveau de jeu épinglé (plateformes et échelles en simples traits) ; la lanterne posée sur le bureau, à gauche de l’écran (vers 30 % de la largeur et 55 % de la hauteur), éclaire le livre ; aucun personnage, aucune manette ni console de marque, aucun caractère lisible à l’écran ni sur les feuilles
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = murs, bureau, feuilles et écran ; lumière (#FF0000) = flamme, livre ouvert et lueur de l’écran · **Fond** : rempli d’aplat
+- **Composition (pour le prompt)** : Une chambre d’adolescent vue de trois quarts, en léger surplomb : un vieux PC à écran bombé allumé sur un bureau, un livre de programmation ouvert à plat près du clavier, une liasse de listing pliée en accordéon, vierge ; au mur, un croquis de niveau de jeu épinglé (plateformes et échelles en simples traits) ; la lanterne posée sur le bureau, à gauche de l’écran (vers 30 % de la largeur et 55 % de la hauteur), éclaire le livre ; aucun personnage, aucune manette ni console de marque, aucun caractère lisible à l’écran ni sur les feuilles
+- **Lanterne : 30 % × 55 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = murs, bureau, feuilles et écran ; lumière (#FF0000) = flamme, livre ouvert et écran · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Recadrable en 4:5 sur mobile autour du bureau et de la lanterne.
 - **Format** : 4:3, 1600 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-05_1600x1200.webp`
-- **Master** : `design/assets/visuels/accueil/ACC-05.png` → `node tools/separer-calques.mjs ACC-05` écrit le rendu et `ACC-05_1600x1200.aplat.webp`, `ACC-05_1600x1200.encre.webp`, `ACC-05_1600x1200.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/accueil/ACC-05.png` ; nuit `design/assets/visuels/accueil/ACC-05.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre ACC-05` écrit le jour `ACC-05_1600x1200.webp` et la nuit `ACC-05_1600x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un vieux PC allumé dans une chambre d’adolescent, un livre de programmation ouvert et un croquis de niveau au mur. »
 
 #### ACC-07 · Le plateau puis la percée
@@ -1158,11 +1339,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Élargi, non posé** : la figure du plafond (ACC-06) et les cartes de la méthode (ACC-18 à ACC-20) portent déjà cette partie du récit.
 - **Sujet** : Le plateau puis la percée
 - **Composition (pour le prompt)** : Un joueur en silhouette, de dos et sans visage, assis devant une table vue de trois quarts : devant lui, une colonne de cartes identiques, dos visibles, bute sous une barre de lumière tendue au-dessus de la table comme un plafond ; une seule carte, retournée face visible (une forme géométrique simple), traverse la barre et monte au-dessus ; la lanterne posée sur la table, à droite (vers 70 % de la largeur et 60 % de la hauteur), éclaire la carte qui perce ; aucune carte, aucun symbole ni logo d’un jeu existant, aucun chiffre
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, cartes et silhouette ; lumière (#FF0000) = flamme, barre de lumière et carte qui perce · **Fond** : rempli d’aplat
+- **Lanterne : 70 % × 60 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, cartes et silhouette ; lumière (#FF0000) = flamme, barre de lumière et carte qui perce · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Recadrable en 4:5 sur mobile autour de la colonne de cartes et de la carte qui perce.
 - **Format** : 16:9, 1920 × 1080
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-07_1920x1080.webp`
-- **Master** : `design/assets/visuels/accueil/ACC-07.png` → `node tools/separer-calques.mjs ACC-07` écrit le rendu et `ACC-07_1920x1080.aplat.webp`, `ACC-07_1920x1080.encre.webp`, `ACC-07_1920x1080.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/accueil/ACC-07.png` ; nuit `design/assets/visuels/accueil/ACC-07.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre ACC-07` écrit le jour `ACC-07_1920x1080.webp` et la nuit `ACC-07_1920x1080.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un joueur de dos devant une colonne de cartes bloquée sous une barre de lumière, qu’une seule carte retournée traverse. »
 
 #### ACC-16 · La lanterne posée sur un livre ouvert, un chemin éclairé devant
@@ -1173,11 +1356,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Élargi, non posé** : la conclusion de l’accueil, « La suite », est un acte bleu nuit sans image, avec l’aplat bleu roi derrière « Discutons » (décision du 13/10/2026).
 - **Sujet** : La lanterne posée sur un livre ouvert, un chemin éclairé devant
 - **Composition (pour le prompt)** : Un livre ouvert posé à plat sur une table, vu de trois quarts en légère plongée, dans la moitié gauche du cadre ; la lanterne posée sur la page de droite (vers 34 % de la largeur et 46 % de la hauteur) projette devant le livre un chemin de lumière qui file vers le bord droit ; la moitié droite reste un aplat calme, sans détail ; aucun personnage, aucune écriture sur les pages
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table et pages du livre ; lumière (#FF0000) = flamme et chemin de lumière · **Fond** : rempli d’aplat
+- **Lanterne : 34 % × 46 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table et pages du livre ; lumière (#FF0000) = flamme et chemin de lumière · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Moitié droite libre pour un bouton posé en HTML ; recadrage 4:5 sur mobile centré sur le livre et la lanterne.
 - **Format** : 16:9, 1920 × 1080
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-16_1920x1080.webp`
-- **Master** : `design/assets/visuels/accueil/ACC-16.png` → `node tools/separer-calques.mjs ACC-16` écrit le rendu et `ACC-16_1920x1080.aplat.webp`, `ACC-16_1920x1080.encre.webp`, `ACC-16_1920x1080.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/accueil/ACC-16.png` ; nuit `design/assets/visuels/accueil/ACC-16.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre ACC-16` écrit le jour `ACC-16_1920x1080.webp` et la nuit `ACC-16_1920x1080.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une lanterne posée sur un livre ouvert éclaire un chemin qui file vers la droite. »
 - **Note** : Reprend ILL-08 de docs/assets-complementaires.md (direction précédente).
 
@@ -1191,11 +1376,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Élargi, non posé** : MaVeille n’est pas dans la rangée « Aussi » tant que son site n’est pas de retour en ligne.
 - **Sujet** : La veille qui devient lecture
 - **Composition (pour le prompt)** : Sur une table vue de trois quarts en légère plongée, une pile de rapports imprimés à gauche, aux tranches marquées de simples traits ; à droite, une seule page reliée, ouverte, dont la marge porte un sommaire en traits courts ; un ruban de lumière relie le haut de la pile à la page ; la lanterne posée derrière la page (vers 66 % de la largeur et 40 % de la hauteur) l’éclaire ; aucun chiffre, aucune date ni lettre lisible
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, rapports et page ; lumière (#FF0000) = flamme, ruban de lumière et page ouverte · **Fond** : rempli d’aplat
+- **Lanterne : 66 % × 40 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, rapports et page ; lumière (#FF0000) = flamme, ruban de lumière et page ouverte · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Vignette de la rangée « Aussi », 4:3, environ 300 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.
 - **Format** : 4:3
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-09_1600x1200.webp`
-- **Master** : `design/assets/visuels/projets/PRJ-09.png` → `node tools/separer-calques.mjs PRJ-09` écrit le rendu et `PRJ-09_1600x1200.aplat.webp`, `PRJ-09_1600x1200.encre.webp`, `PRJ-09_1600x1200.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/projets/PRJ-09.png` ; nuit `design/assets/visuels/projets/PRJ-09.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PRJ-09` écrit le jour `PRJ-09_1600x1200.webp` et la nuit `PRJ-09_1600x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une pile de rapports imprimés, reliée par un ruban de lumière à une page ouverte et son sommaire. »
 
 #### PRJ-12 · La version précédente
@@ -1206,11 +1393,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Élargi, non posé** : le volet des projets archivés est vide ; il reste une simple ligne tant qu’il ne contient aucun projet.
 - **Sujet** : La version précédente
 - **Composition (pour le prompt)** : Une étagère vue de face, en légère plongée : à gauche, un livre plus ancien, fermé, debout, au dos usé et sans titre ; à droite, posé à plat sur la tablette, un manuel neuf ouvert ; la lanterne posée entre les deux (vers 50 % de la largeur et 58 % de la hauteur) éclaire le dos de l’ancien livre ; aucun titre, aucune lettre
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = étagère et livres ; lumière (#FF0000) = flamme et dos de l’ancien livre · **Fond** : rempli d’aplat
+- **Lanterne : 50 % × 58 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = étagère et livres ; lumière (#FF0000) = flamme et dos de l’ancien livre · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Vignette 4:3 d’environ 300 px de large : les deux livres se lisent à cette taille.
 - **Format** : 4:3
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-12_1600x1200.webp`
-- **Master** : `design/assets/visuels/projets/PRJ-12.png` → `node tools/separer-calques.mjs PRJ-12` écrit le rendu et `PRJ-12_1600x1200.aplat.webp`, `PRJ-12_1600x1200.encre.webp`, `PRJ-12_1600x1200.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/projets/PRJ-12.png` ; nuit `design/assets/visuels/projets/PRJ-12.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PRJ-12` écrit le jour `PRJ-12_1600x1200.webp` et la nuit `PRJ-12_1600x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un livre ancien debout sur une étagère, à côté d’un manuel neuf ouvert, éclairé par une lanterne. »
 - **Note** : Reprend ILL-10 de docs/assets-complementaires.md (direction précédente).
 
@@ -1224,11 +1413,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Élargi, non posé** : la courbe du rattrapage (PVZ-F1) porte le fait ; l’image ne ferait que le répéter.
 - **Sujet** : Rattraper le retard
 - **Composition (pour le prompt)** : Diptyque en une seule image, deux moitiés séparées par un filet vertical, vues de profil, horizon à mi-hauteur : à gauche, une petite équipe de silhouettes sans visage marche derrière un long train de wagons chargés de fiches, qui s’allonge et la distance ; à droite, la même équipe marche à hauteur de la locomotive ; la lanterne, tenue par la silhouette de tête dans la moitié droite (vers 72 % de la largeur et 46 % de la hauteur), éclaire la locomotive ; aucun texte ni chiffre
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = train, wagons, fiches et silhouettes ; lumière (#FF0000) = flamme et locomotive éclairée · **Fond** : rempli d’aplat
+- **Lanterne : 72 % × 46 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = train, wagons, fiches et silhouettes ; lumière (#FF0000) = flamme et locomotive éclairée · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Sur mobile, les deux moitiés passent l’une au-dessus de l’autre : chacune doit se lire seule en 8:9.
 - **Format** : 16:9
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-09_1600x900.webp`
-- **Master** : `design/assets/visuels/pvz-fusion/PVZ-09.png` → `node tools/separer-calques.mjs PVZ-09` écrit le rendu et `PVZ-09_1600x900.aplat.webp`, `PVZ-09_1600x900.encre.webp`, `PVZ-09_1600x900.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/pvz-fusion/PVZ-09.png` ; nuit `design/assets/visuels/pvz-fusion/PVZ-09.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PVZ-09` écrit le jour `PVZ-09_1600x900.webp` et la nuit `PVZ-09_1600x900.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Deux moments : une petite équipe derrière un long train de fiches, puis à sa hauteur. »
 
 #### PVZ-10 · Un outil en ligne de commande dans un terminal
@@ -1238,13 +1429,15 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Emplacement** : `/projets/pvz-fusion` · § 3, bloc outil _(contexte : ne pas le recopier dans un prompt)_
 - **Élargi, non posé** : le bloc de l’outil pose PVZ-04 ; la capture réelle du Console Manager (PVZ-C2) prendra cette place dès qu’elle existe.
 - **Sujet pour le prompt** : Un outil en ligne de commande dans un terminal
-- **Composition (pour le prompt)** : Une fenêtre de terminal générique vue de face, en légère plongée, sur un bureau : deux colonnes de barres horizontales de longueurs variées, sans aucun caractère ; dans la colonne de droite, quelques barres manquent et laissent des creux ; la lanterne posée devant la fenêtre, à droite (vers 78 % de la largeur et 70 % de la hauteur), éclaire seulement les creux ; aucun caractère, aucune lettre, aucun chiffre, aucune marque
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = bureau, fenêtre et barres ; lumière (#FF0000) = flamme et creux éclairés · **Fond** : rempli d’aplat
+- **Composition (pour le prompt)** : Une fenêtre de terminal générique vue de face, en légère plongée, sur un bureau : deux colonnes de cases régulières, sans aucun caractère ; dans la colonne de droite, quelques cases manquent et laissent des creux ; la lanterne posée devant la fenêtre, à droite (vers 78 % de la largeur et 70 % de la hauteur), éclaire seulement les creux ; aucun caractère, aucune lettre, aucun chiffre, aucune marque
+- **Lanterne : 78 % × 70 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = bureau, fenêtre et cases ; lumière (#FF0000) = flamme et creux éclairés · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Recadrable en 1:1 autour des deux colonnes.
 - **Format** : 4:3
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-10_1600x1200.webp`
-- **Master** : `design/assets/visuels/pvz-fusion/PVZ-10.png` → `node tools/separer-calques.mjs PVZ-10` écrit le rendu et `PVZ-10_1600x1200.aplat.webp`, `PVZ-10_1600x1200.encre.webp`, `PVZ-10_1600x1200.lumiere.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un terminal à deux colonnes de lignes, dont les lignes manquantes sont éclairées par une lanterne. »
+- **Masters** : jour `design/assets/visuels/pvz-fusion/PVZ-10.png` ; nuit `design/assets/visuels/pvz-fusion/PVZ-10.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre PVZ-10` écrit le jour `PVZ-10_1600x1200.webp` et la nuit `PVZ-10_1600x1200.nuit.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un terminal à deux colonnes de cases, dont les cases manquantes sont éclairées par une lanterne. »
 
 ### Élargi · League Of Data Base
 
@@ -1256,11 +1449,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Élargi, non posé** : le tableau d’Ahri se lit mieux sur un fond uni (refonte du 13 octobre 2026) ; à poser seulement si une version très claire ne gêne pas la lecture.
 - **Sujet** : Le voyage dans le temps
 - **Composition (pour le prompt)** : Un sablier stylisé vu de face, dans le tiers gauche du cadre (vers 18 % de la largeur), dont le sable est fait de minuscules signes géométriques (points, traits, losanges) ; un aplat très clair, à faible contraste ; les deux tiers droits restent vides, en réserve ; la lanterne posée au pied du sablier (vers 18 % de la largeur et 80 % de la hauteur) éclaire le bulbe du bas ; aucun chiffre ni lettre
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = sablier et signes ; lumière (#FF0000) = flamme et bulbe du bas · **Fond** : transparent
+- **Lanterne : 18 % × 80 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = sablier et signes ; lumière (#FF0000) = flamme et bulbe du bas · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Fond de section 21:9 derrière un tableau posé en HTML à droite : rien dans les deux tiers droits ; aplat à moins de 6 % d’opacité une fois posé.
 - **Format** : 21:9, faible contraste
 - **Fichier attendu** : `site/src/assets/visuels/league-of-database/LOD-02_2100x900.webp`
-- **Master** : `design/assets/visuels/league-of-database/LOD-02.png` → `node tools/separer-calques.mjs LOD-02` écrit le rendu et `LOD-02_2100x900.aplat.webp`, `LOD-02_2100x900.encre.webp`, `LOD-02_2100x900.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/league-of-database/LOD-02.png` ; nuit `design/assets/visuels/league-of-database/LOD-02.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre LOD-02` écrit le jour `LOD-02_2100x900.webp` et la nuit `LOD-02_2100x900.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un sablier dont le sable est fait de petits signes, à gauche d’un grand espace vide. »
 
 ### Élargi · Bloodborne Legendary Run
@@ -1272,12 +1467,14 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Emplacement** : `/projets/bloodborne-legendary-run` · § 4 _(contexte : ne pas le recopier dans un prompt)_
 - **Élargi, non posé** : la section du guide montre la vraie fiche du Père Gascoigne (refonte du 13/10/2026) ; place prévue sous ses trois repères.
 - **Sujet** : Du wiki à la fiche française
-- **Composition (pour le prompt)** : Quatre vignettes reliées par des flèches, de gauche à droite, vues de face : une page source dense (blocs de lignes illisibles), un tableau à colonnes, un dictionnaire ouvert à deux colonnes, puis une fiche nette ; au-dessus du tableau, une loupe sur une cellule vide marquée d’un trait court ; la lanterne posée sous la fiche finale (vers 86 % de la largeur et 72 % de la hauteur) l’éclaire ; aucun caractère lisible, aucune référence visuelle à un jeu
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = vignettes, flèches et loupe ; lumière (#FF0000) = flamme et fiche finale · **Fond** : transparent
+- **Composition (pour le prompt)** : Quatre vignettes reliées par des flèches, de gauche à droite, vues de face : une épaisse liasse de pages source, un tableau à colonnes vides, un dictionnaire ouvert à deux colonnes, puis une fiche nette ; au-dessus du tableau, une loupe sur une cellule vide marquée d’un trait court ; la lanterne posée sous la fiche finale (vers 86 % de la largeur et 72 % de la hauteur) l’éclaire ; aucun caractère lisible, aucune référence visuelle à un jeu
+- **Lanterne : 86 % × 72 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = vignettes, flèches et loupe ; lumière (#FF0000) = flamme et fiche finale · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Sur mobile, les quatre vignettes passent en grille de deux sur deux : chacune se lit seule.
 - **Format** : 16:9
 - **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-03_1600x900.webp`
-- **Master** : `design/assets/visuels/bloodborne/BLR-03.png` → `node tools/separer-calques.mjs BLR-03` écrit le rendu et `BLR-03_1600x900.aplat.webp`, `BLR-03_1600x900.encre.webp`, `BLR-03_1600x900.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/bloodborne/BLR-03.png` ; nuit `design/assets/visuels/bloodborne/BLR-03.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre BLR-03` écrit le jour `BLR-03_1600x900.webp` et la nuit `BLR-03_1600x900.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Quatre vignettes reliées, de la page source à la fiche, une loupe sur une cellule vide. »
 
 #### BLR-04 · Une réussite, une étoile
@@ -1288,11 +1485,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Élargi, non posé** : les quatre vidéos ont déjà un poster réel pris au milieu de la cérémonie (BLR-C4), qui reste affiché en mouvement réduit.
 - **Sujet** : Une réussite, une étoile
 - **Composition (pour le prompt)** : Une main en silhouette, vue de face, l’index levé ; au bout du doigt, une étoile allumée ; autour de l’étoile, un anneau de progression rempli aux trois quarts ; la lanterne posée en bas à droite (vers 74 % de la largeur et 80 % de la hauteur) éclaire l’étoile ; aucune référence au jeu, aucun chiffre
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = main et anneau ; lumière (#FF0000) = flamme et étoile allumée · **Fond** : transparent
+- **Lanterne : 74 % × 80 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = main et anneau ; lumière (#FF0000) = flamme et étoile allumée · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Poster carré, affiché à la taille de la vidéo (390 px de large au plus) : l’étoile au centre.
 - **Format** : 1:1, 800
 - **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-04_800x800.webp`
-- **Master** : `design/assets/visuels/bloodborne/BLR-04.png` → `node tools/separer-calques.mjs BLR-04` écrit le rendu et `BLR-04_800x800.aplat.webp`, `BLR-04_800x800.encre.webp`, `BLR-04_800x800.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/bloodborne/BLR-04.png` ; nuit `design/assets/visuels/bloodborne/BLR-04.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre BLR-04` écrit le jour `BLR-04_800x800.webp` et la nuit `BLR-04_800x800.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une étoile allumée au bout d’un doigt, entourée d’un anneau rempli aux trois quarts. »
 
 #### BLR-05 · Un ciel dans la main
@@ -1303,11 +1502,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Élargi, non posé** : les captures réelles de l’en-tête et de l’atlas suffisent.
 - **Sujet** : Un ciel dans la main
 - **Composition (pour le prompt)** : Un téléphone générique tenu dans une main en silhouette, vu de trois quarts : à l’écran, une constellation de six étoiles reliées par des traits ; le pouce se pose sur une étoile, qui s’allume ; la lanterne posée hors champ à droite (sa lumière entre vers 90 % de la largeur et 40 % de la hauteur) éclaire l’écran ; aucune interface lisible, aucune marque
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = main et téléphone ; lumière (#FF0000) = étoile allumée et lumière sur l’écran · **Fond** : transparent
+- **Lanterne : 90 % × 40 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = main et téléphone ; lumière (#FF0000) = étoile allumée et lumière sur l’écran · **Fond** : transparent, de jour comme de nuit
 - **Cadrage (pour vérifier)** : Portrait 4:5 : le téléphone et le pouce au centre.
 - **Format** : 4:5, 960 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-05_960x1200.webp`
-- **Master** : `design/assets/visuels/bloodborne/BLR-05.png` → `node tools/separer-calques.mjs BLR-05` écrit le rendu et `BLR-05_960x1200.aplat.webp`, `BLR-05_960x1200.encre.webp`, `BLR-05_960x1200.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/bloodborne/BLR-05.png` ; nuit `design/assets/visuels/bloodborne/BLR-05.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre BLR-05` écrit le jour `BLR-05_960x1200.webp` et la nuit `BLR-05_960x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un téléphone tenu en main affiche une constellation ; le pouce allume une étoile. »
 
 ### Élargi · gup
@@ -1319,13 +1520,15 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Emplacement** : `/projets/gup` · Partage, hub de repli _(contexte : ne pas le recopier dans un prompt)_
 - **Élargi, non posé** : la carte de la vitrine et l’image de partage montrent d’abord la vraie capture (src/assets/projets/gup/packages-select.webp) ; celle-ci sert de repli.
 - **Sujet** : Une commande, tout mettre à jour
-- **Composition (pour le prompt)** : Une fenêtre de terminal vide de tout caractère, au centre, éclairée par une lanterne posée devant elle (vers 50 % de la largeur et 70 % de la hauteur), d’où partent des rayons fins vers une douzaine de paquets génériques disposés en arc, qui s’allument là où le rayon les touche ; aucun caractère, aucune lettre, aucun logo
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = fenêtre et paquets ; lumière (#FF0000) = flamme, rayons et paquets touchés · **Fond** : rempli d’aplat
+- **Composition (pour le prompt)** : Une fenêtre de terminal vide de tout caractère, au centre, éclairée par une lanterne posée devant elle (vers 50 % de la largeur et 70 % de la hauteur), d’où partent de fins pointillés vers une douzaine de paquets génériques disposés en arc, qui s’allument là où le pointillé les touche ; aucun caractère, aucune lettre, aucun logo
+- **Lanterne : 50 % × 70 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = fenêtre et paquets ; lumière (#FF0000) = flamme, pointillés et paquets touchés · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Lisible recadrée en 1200 × 630 (partage) : la fenêtre et la lanterne au centre.
 - **Format** : 1200 × 630 ; 16:10
 - **Fichier attendu** : `site/src/assets/visuels/gup/GUP-03_1600x1000.webp`
-- **Master** : `design/assets/visuels/gup/GUP-03.png` → `node tools/separer-calques.mjs GUP-03` écrit le rendu et `GUP-03_1600x1000.aplat.webp`, `GUP-03_1600x1000.encre.webp`, `GUP-03_1600x1000.lumiere.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une fenêtre de terminal éclairée par une lanterne, d’où partent des rayons vers des paquets. »
+- **Masters** : jour `design/assets/visuels/gup/GUP-03.png` ; nuit `design/assets/visuels/gup/GUP-03.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre GUP-03` écrit le jour `GUP-03_1600x1000.webp` et la nuit `GUP-03_1600x1000.nuit.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une fenêtre de terminal éclairée par une lanterne, d’où partent des pointillés vers des paquets. »
 
 ### Élargi · Parcours : hub, professionnel, compétences, formation
 
@@ -1337,11 +1540,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Élargi, non posé** : la page des compétences tient en quatre écrans sans lui ; à poser seulement si Charles veut une image d’en-tête.
 - **Sujet** : L’établi
 - **Composition (pour le prompt)** : Un panneau perforé d’atelier vu de face : chaque outil est accroché devant sa silhouette peinte, en quatre groupes (gabarits et équerres, connecteurs et câbles, tiroirs de fiches, caisse scellée) ; une silhouette reste vide, l’outil sorti ; la lanterne accrochée en haut à gauche (vers 14 % de la largeur et 22 % de la hauteur) éclaire la silhouette vide ; pas d’écran, pas de personnage, aucun mot
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = panneau, outils et silhouettes peintes ; lumière (#FF0000) = flamme et silhouette vide · **Fond** : rempli d’aplat
+- **Lanterne : 14 % × 22 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = panneau, outils et silhouettes peintes ; lumière (#FF0000) = flamme et silhouette vide · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : En-tête 21:9 au-dessus du niveau « Au quotidien » : recadrable en 16:9 sur mobile.
 - **Format** : 21:9, 1600 × 685
 - **Fichier attendu** : `site/src/assets/visuels/parcours/CMP-01_1600x685.webp`
-- **Master** : `design/assets/visuels/parcours/CMP-01.png` → `node tools/separer-calques.mjs CMP-01` écrit le rendu et `CMP-01_1600x685.aplat.webp`, `CMP-01_1600x685.encre.webp`, `CMP-01_1600x685.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/parcours/CMP-01.png` ; nuit `design/assets/visuels/parcours/CMP-01.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre CMP-01` écrit le jour `CMP-01_1600x685.webp` et la nuit `CMP-01_1600x685.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un panneau d’atelier où chaque outil pend devant sa silhouette, l’une vide, éclairée par une lanterne. »
 - **Note** : Passé d’un établi à quatre compartiments, déjà vu en PAR-02, à un panneau d’outils.
 
@@ -1354,12 +1559,14 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Emplacement** : `/blog` · Article sans image de couverture, et image de partage d’un article _(contexte : ne pas le recopier dans un prompt)_
 - **Élargi, non posé** : le rendu des articles (server/blog.mjs) ne sait pas encore poser une couverture de secours : à brancher avec le serveur, hors refonte des pages.
 - **Sujet** : Couverture de secours : la lanterne sur une page de livre
-- **Composition (pour le prompt)** : Cadrage large : le coin d’une page de livre ouvert à gauche, la lanterne du logo à droite du centre (vers 62 % de la largeur et 50 % de la hauteur), son halo éclaire la page ; grand espace calme à gauche. Aucun texte
-- **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = page du livre ; lumière (#FF0000) = flamme et halo sur la page · **Fond** : rempli d’aplat
+- **Composition (pour le prompt)** : Cadrage large : le coin d’une page de livre ouvert à gauche, la lanterne du logo à droite du centre (vers 62 % de la largeur et 50 % de la hauteur), sa lumière tombe sur la page ; grand espace calme à gauche. Aucun texte
+- **Lanterne : 62 % × 50 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
+- **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = page du livre ; lumière (#FF0000) = flamme et page éclairée, en hachures · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Espace calme à gauche pour qu’un titre posé en HTML reste lisible par-dessus ; déclinaison 1200 × 630 pour le partage.
 - **Format** : 16:9, 1600 × 900 ; déclinaison 1200 × 630 pour le partage
 - **Fichier attendu** : `site/src/assets/visuels/blog/BLG-02_1600x900.webp`
-- **Master** : `design/assets/visuels/blog/BLG-02.png` → `node tools/separer-calques.mjs BLG-02` écrit le rendu et `BLG-02_1600x900.aplat.webp`, `BLG-02_1600x900.encre.webp`, `BLG-02_1600x900.lumiere.webp`
+- **Masters** : jour `design/assets/visuels/blog/BLG-02.png` ; nuit `design/assets/visuels/blog/BLG-02.nuit.png`, en édition depuis le jour, même cadrage au pixel près
+- **Rendus** : `npm run visuels:rendre BLG-02` écrit le jour `BLG-02_1600x900.webp` et la nuit `BLG-02_1600x900.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une lanterne éclaire la page d’un livre ouvert. »
 
 ### Reprises : rien à générer, mais leur cadrage contraint l’image d’origine

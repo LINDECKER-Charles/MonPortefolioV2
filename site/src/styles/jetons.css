@@ -61,6 +61,7 @@
   --lanterne-eclat: rgb(240 178 74 / 0.55);
   --suie: #0b0d12;
   --lune: #e4e7ee;
+  --papier-lune: #6f7ca3;     /* nuit de repli d’une image générée (tools/rendre-visuels.mjs) : 4,7:1 sous l’encre de suie, 2,2:1 contre la lanterne */
   --veille-nuit: #141a2b;     /* acte sombre, la nuit : bleu nuit franc, 1,12:1 sur la suie */
   --veille-lueur: rgb(240 178 74 / 0.1);      /* la lanterne dans l’acte, la nuit */
   --bleu-nuit: #101b3e;       /* acte « La suite » */
