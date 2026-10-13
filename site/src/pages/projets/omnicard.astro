@@ -23,6 +23,7 @@ import EventailCartes from '../../components/projets/omnicard/EventailCartes.ast
 import GalerieEcrans from '../../components/projets/omnicard/GalerieEcrans.astro';
 import PlateauPartie from '../../components/projets/omnicard/PlateauPartie.astro';
 import ReperesPartie from '../../components/projets/omnicard/ReperesPartie.astro';
+import ServeurArbitre from '../../components/projets/omnicard/ServeurArbitre.astro';
 import TrajetAction from '../../components/projets/omnicard/TrajetAction.astro';
 import Visionneuse from '../../components/ui/Visionneuse.astro';
 import Visuel from '../../components/ui/Visuel.astro';
@@ -87,7 +88,7 @@ const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(h
       <div class="oc-arbitre">
         <h3 class="oc-arbitre__titre">Le serveur arbitre, chaque joueur voit sa partie</h3>
         <div class="oc-arbitre__grille">
-          <Visuel id="OMN-04" class="oc-arbitre__visuel" sizes="(max-width: 1100px) 100vw, 640px" />
+          <ServeurArbitre class="oc-arbitre__visuel" />
           <TrajetAction />
         </div>
       </div>

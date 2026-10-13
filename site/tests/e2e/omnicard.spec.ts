@@ -195,6 +195,14 @@ test('le compte à rebours de GitGud : neuf fins de tour, cinq comptent, puis l�
   await expect(page.locator('[data-figure="OMN-05"] figcaption')).toContainText('jamais à la fin du tour adverse');
 });
 
+test('le serveur arbitre : le dessin OMN-04 posé, suivi des trois étapes en texte', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const dessin = page.locator('#moteur [data-visuel="OMN-04"]');
+  await expect(dessin).not.toHaveAttribute('data-manquant');
+  await expect(dessin.getByRole('img', { name: /Deux navigateurs envoient leurs actions à un serveur/ })).toBeVisible();
+  await expect(page.getByRole('list', { name: 'Le trajet d’une action de jeu' }).locator('li')).toHaveCount(3);
+});
+
 test('« Rééquilibrer » remonte sous la citation : pas de vide au-dessus du titre', async ({ page }) => {
   test.skip((page.viewportSize()?.width ?? 0) <= 1100, 'Colonnes côte à côte seulement au-delà de 1 100 px.');
   await page.goto(CHEMIN);
