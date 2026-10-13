@@ -45,7 +45,7 @@ const bilans = SYSTEMES.map((systeme) => {
 
 <figure class:list={['sources', classe]} data-visuel="GUP-F2" aria-labelledby="gup-figure-sources">
   <div class="sources__tete">
-    <figcaption id="gup-figure-sources" class="sources__titre">Les {total}&nbsp;sources de gup, par famille</figcaption>
+    <p id="gup-figure-sources" class="sources__titre">Les {total}&nbsp;sources de gup, par famille</p>
     <fieldset class="sources__choix">
       <legend class="sr">Système d’exploitation</legend>
       {
@@ -58,7 +58,7 @@ const bilans = SYSTEMES.map((systeme) => {
       }
     </fieldset>
   </div>
-  <p class="sources__bilan" aria-live="polite">
+  <p class="sources__bilan">
     {
       bilans.map((bilan) => (
         <span data-pour={bilan.id}>

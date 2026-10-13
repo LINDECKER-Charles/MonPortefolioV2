@@ -4,7 +4,7 @@
  * (19/05/2026) à la 0.5.3 (06/10/2026), placées sur une frise à l’échelle du
  * temps. Figure codée depuis VERSIONS (config/gup.ts, registre npm relevé le
  * 13/10/2026). Les versions publiées à quelques jours d’écart partagent un
- * repère. Sur mobile, la frise devient une liste.
+ * repère, qui les nomme toutes. Sur mobile, la frise devient une liste.
  */
 import { VERSIONS } from '../../../config/gup';
 
@@ -46,7 +46,7 @@ const MOIS = ['juin', 'juil.', 'août', 'sept.', 'oct.'].map((nom, index) => ({ 
           <li style={`--x:${position(repere.premiere).toFixed(2)}%`} class:list={{ 'versions__repere--haut': index % 2 === 0, 'versions__repere--fin': index === reperes.length - 1 }}>
             <span class="versions__point" aria-hidden="true" />
             <span class="versions__texte">
-              <b class="chiffres">{repere.versions.length > 2 ? `${repere.versions[0]} → ${repere.versions.at(-1)}` : repere.versions.join(' · ')}</b>
+              <b class="chiffres">{repere.versions.join(' · ')}</b>
               <time datetime={repere.premiere} class="chiffres">
                 {repere.premiere === repere.derniere ? court(repere.premiere) : `${court(repere.premiere)}–${court(repere.derniere)}`}
               </time>
