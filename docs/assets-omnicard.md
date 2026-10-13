@@ -43,6 +43,26 @@ Les illustrations, cadres, logos et symboles sont ceux du jeu.
 Le rendu original a été réduit à 720 px de largeur et converti en WebP, qualité 90.
 Aucune nouvelle illustration n’a été créée.
 
+## Cartes de la saison 1
+
+Source : l’archive du [dépôt de présentation public](https://github.com/LINDECKER-Charles/public-Omnicard),
+dossier `Archive/Carte/saison_01/`, révision `8be9cbb` du 19 mai 2026, relue le 13 octobre 2026.
+Ces cartes servent au comparateur « Rééquilibrer mes propres cartes » : la même carte dans
+la saison 1 et dans la version actuelle du projet (exports ci-dessus).
+
+| Fichier livré | Fichier source | Valeurs lues sur la carte |
+| --- | --- | --- |
+| `archive-gehrman.webp` | `bloodborne/Unite/gehrman_premier_chasseur_card.png` | coût 12, 4/8 (export actuel : 12, 4/15) |
+| `archive-gitgud.webp` | `wtf/Sort/gitgud.png` | coût 13 (export actuel : 10) |
+| `archive-floppa.webp` | `wtf/Unite/floppa_mage.png` | coût 5, 0/4 (export actuel : 6, 2/8) |
+
+Cartes copiées telles quelles, réduites à 720 px de largeur et converties en WebP, qualité 90.
+Le catalogue public (`docs/cards/*.md`) affiche encore 4/8 pour Gehrman et 0/4 pour
+Floppa : Mage, et une capture historique de la collection montre Gehrman à 4/8 dans une
+version en ligne antérieure. La page dit « Version actuelle du projet » pour les exports,
+avec la marque « à confirmer », et le rappelle dans sa note de sources ; la version en ligne
+de ces valeurs reste à confirmer par Charles.
+
 ## Limites et contenu
 
 - Omnicard est hors ligne, en attente de refonte, selon Charles le 13 octobre 2026.
