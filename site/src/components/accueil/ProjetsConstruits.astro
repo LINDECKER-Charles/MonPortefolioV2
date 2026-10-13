@@ -3,8 +3,8 @@
  * « Ce que je construis » : trois projets montrés par leur écran réel, dans
  * l’ordre de la vitrine (config/projets.ts) — League Of Data Base, Bloodborne
  * Legendary Run, gup. Chaque carte : la capture annotée (une cible, une loupe
- * éclairée, une légende), l’étiquette de preuve et son rang dans la vitrine,
- * le nom canonique, le besoin en une ligne, un chiffre sourcé et « Voir le
+ * éclairée, une légende), l’étiquette de preuve (sans le rang de la vitrine,
+ * qui n’a de sens que dans l’index de /projets), le nom canonique, le besoin en une ligne, un chiffre sourcé et « Voir le
  * projet → ». Toute la carte mène à la page du projet.
  *
  * Chiffres : docs/matiere-premiere.md (League Of Data Base, vérification du
@@ -94,7 +94,7 @@ const cartes = CONSTRUITS.map((c) => ({ ...c, ...projetDeLaVitrine(c.id) }));
 
 <ul class="construits" aria-label="Trois projets que je construis">
   {
-    cartes.map(({ capture, besoin, chiffre, aConfirmer, projet, rang }) => (
+    cartes.map(({ capture, besoin, chiffre, aConfirmer, projet }) => (
       <li class="construit">
         <CaptureAnnotee
           class="construit__capture"
@@ -109,10 +109,7 @@ const cartes = CONSTRUITS.map((c) => ({ ...c, ...projetDeLaVitrine(c.id) }));
           loupe={capture.loupe}
           sizes="(max-width: 860px) calc(100vw - 64px), 380px"
         />
-        <p class="construit__preuve">
-          <span class="construit__rang" aria-hidden="true">{rang}</span>
-          {typo(projet.preuve)}
-        </p>
+        <p class="construit__preuve">{typo(projet.preuve)}</p>
         <h4 class="construit__nom">
           <a href={projet.href}>{projet.nom}</a>
           {aConfirmer && <AConfirmer titre={aConfirmer}>nom à confirmer</AConfirmer>}
@@ -156,30 +153,11 @@ const cartes = CONSTRUITS.map((c) => ({ ...c, ...projetDeLaVitrine(c.id) }));
   }
 
   .construit__preuve {
-    display: flex;
-    align-items: center;
-    gap: var(--s2);
     font-family: var(--police-titre);
     font-style: italic;
     font-size: var(--t-m);
     line-height: 1.2;
     color: var(--eteint);
-  }
-
-  .construit__rang {
-    display: inline-grid;
-    place-items: center;
-    flex: none;
-    width: 22px;
-    height: 22px;
-    border: 1px solid var(--trait);
-    border-radius: 50%;
-    font-family: var(--police-texte);
-    font-style: normal;
-    font-size: var(--t-xs);
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-    color: var(--encre);
   }
 
   .construit__nom {

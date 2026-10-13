@@ -58,6 +58,9 @@ const ENTREES = [
   { id: 'discutons', titre: '03\u00a0La suite' },
 ];
 const omnicard = projetDeLaVitrine('omnicard');
+/* Sur l’accueil, la carte d’Omnicard ne porte ni le rang de la vitrine, qui
+   n’a de sens que dans l’index de /projets, ni l’étiquette « Inventer » : elle
+   reprend le verbe du bandeau des preuves, qui l’envoie sous « Réinventer ». */
 ---
 
 <Base titre={titre} description={description} chemin="/" accueil sommaire={SOMMAIRE}>
@@ -92,10 +95,9 @@ const omnicard = projetDeLaVitrine('omnicard');
           as="article"
           niveau={3}
           id="omnicard"
-          rang={projetDeLaVitrine('omnicard').rang}
           href={omnicard.projet.href}
           nom={omnicard.projet.nom}
-          preuve={omnicard.projet.preuve}
+          preuve="Réinventer"
           besoin="Ce jeu de cartes, je l’ai repris seul et transformé en jeu en ligne, avec un moteur de règles en C# qui arbitre chaque partie côté serveur."
           chiffre={{ valeur: '3 mois', libelle: 'de travail cumulé, environ' }}
           role="Seul : règles, équilibrage des cartes, moteur de jeu"
