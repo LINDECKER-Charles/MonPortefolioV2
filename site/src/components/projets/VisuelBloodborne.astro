@@ -1,4 +1,11 @@
 ---
+/**
+ * L’aperçu de Bloodborne Legendary Run pour la vitrine (ProjetALaUne,
+ * ApercuProjet) : la carte des constellations sur ordinateur et la fiche du
+ * guide sur téléphone, posées l’une sur l’autre. Couleurs, rayons et ombres
+ * des jetons de la direction « Lanterne » ; les cadres d’appareil gardent le
+ * sombre des captures.
+ */
 import { Picture } from 'astro:assets';
 import parcours from '../../assets/projets/bloodborne/parcours-desktop.webp';
 import guide from '../../assets/projets/bloodborne/guide.webp';
@@ -16,18 +23,18 @@ const { compact = false, prioritaire = false } = Astro.props;
 </div>
 
 <style>
-  .presentation-bloodborne { position: relative; height: 100%; min-height: 380px; overflow: hidden; isolation: isolate; background: #dfe6ef; }
-  .presentation-bloodborne__bureau { position: absolute; width: 87%; left: 5%; top: 8%; transform: rotate(-4deg); border: 2px solid #384346; border-radius: 7px; overflow: hidden; box-shadow: 0 18px 28px #24304635; }
+  .presentation-bloodborne { position: relative; height: 100%; min-height: 380px; overflow: hidden; isolation: isolate; border-radius: var(--r2); background: var(--veille); }
+  .presentation-bloodborne__bureau { position: absolute; width: 87%; left: 5%; top: 8%; border: 1px solid var(--cadre-point); border-radius: var(--r2); overflow: hidden; background: var(--cadre); box-shadow: var(--ombre-2); }
   .presentation-bloodborne__bureau :global(img) { display: block; width: 100%; height: auto; }
-  .presentation-bloodborne__guide { position: absolute; width: 154px; right: 5%; bottom: 5%; border: 4px solid #283133; border-radius: 14px; overflow: hidden; box-shadow: 0 12px 25px #24304650; transform: rotate(4deg); }
-  .presentation-bloodborne__guide :global(img) { display: block; width: 100%; height: auto; }
+  .presentation-bloodborne__guide { position: absolute; width: 154px; right: 5%; bottom: 5%; padding: 4px; border: 1px solid var(--cadre-point); border-radius: 20px; overflow: hidden; background: var(--cadre); box-shadow: 0 0 48px -8px var(--lanterne-halo); }
+  .presentation-bloodborne__guide :global(img) { display: block; width: 100%; height: auto; border-radius: 16px; }
   .presentation-bloodborne--compact { min-height: 0; }
   .presentation-bloodborne--compact .presentation-bloodborne__bureau { width: 90%; left: -5%; top: 11%; }
-  .presentation-bloodborne--compact .presentation-bloodborne__guide { width: 100px; right: 5%; bottom: -26%; border-width: 3px; border-radius: 10px; }
+  .presentation-bloodborne--compact .presentation-bloodborne__guide { width: 100px; right: 5%; bottom: -26%; border-radius: 14px; }
   @media (max-width: 849px) {
     .presentation-bloodborne { min-height: 260px; }
     .presentation-bloodborne__bureau { width: 80%; left: 4%; top: 9%; }
-    .presentation-bloodborne__guide { width: 110px; right: 5%; bottom: -9%; border-width: 3px; border-radius: 10px; }
+    .presentation-bloodborne__guide { width: 110px; right: 5%; bottom: -9%; border-radius: 14px; }
     .presentation-bloodborne--compact { min-height: 0; }
     .presentation-bloodborne--compact .presentation-bloodborne__bureau { top: 10%; }
     .presentation-bloodborne--compact .presentation-bloodborne__guide { width: 100px; bottom: -20%; }
