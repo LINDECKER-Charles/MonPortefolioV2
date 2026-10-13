@@ -53,16 +53,18 @@ test.describe('hub', () => {
     await page.goto('/parcours');
     const portes = page.getByRole('navigation', { name: 'Explorer le parcours', exact: true });
     await expect(portes.getByRole('link', { name: 'Parcours professionnel', exact: true })).toHaveAccessibleDescription(/6 expériences.*20 contributeurs formés/);
-    await expect(portes.getByRole('link', { name: 'Compétences', exact: true })).toHaveAccessibleDescription(/C#, \.NET, Angular, TypeScript, PostgreSQL, MySQL.*à valider/);
+    // Une seule source pour le cœur de la stack : « Au quotidien » (config/competences.ts).
+    await expect(portes.getByRole('link', { name: 'Compétences', exact: true })).toHaveAccessibleDescription(/Au quotidien\s:\sC#, \.NET, Angular, TypeScript, PostgreSQL, Docker, Git, GitHub Actions\sniveaux à confirmer/);
+    await expect(portes).not.toContainText(/à valider|MySQL/);
     await expect(portes.getByRole('link', { name: 'Formation et certifications', exact: true })).toHaveAccessibleDescription(/Titre DWWM, RNCP niveau 5.*12 certifications/);
     for (const id of ['PAR-01', 'PAR-02', 'PAR-03']) await expect(portes.locator(`[data-visuel="${id}"]`)).toHaveCount(1);
     // Aucune flèche de sortie pour un lien interne.
     await expect(portes).not.toContainText('↗');
   });
 
-  test('la frise montre le parcours de septembre 2023 à aujourd’hui, chaque ligne vers sa fiche', async ({ page }) => {
+  test('la frise montre le parcours de 2023 à aujourd’hui, chaque ligne vers sa fiche', async ({ page }) => {
     await page.goto('/parcours');
-    const frise = page.getByRole('figure', { name: 'De septembre 2023 à aujourd’hui' });
+    const frise = page.getByRole('figure', { name: 'De 2023 à aujourd’hui' });
     await expect(frise).toBeVisible();
     const liens = frise.getByRole('link');
     await expect(liens).toHaveCount(8);
@@ -124,7 +126,7 @@ test.describe('mise en page', () => {
     await page.goto('/parcours');
     const fin = await page.locator('main').evaluate((main) => main.getBoundingClientRect().bottom + window.scrollY);
     expect(fin).toBeLessThan(2 * 900);
-    const frise = await page.getByRole('figure', { name: 'De septembre 2023 à aujourd’hui' }).boundingBox();
+    const frise = await page.getByRole('figure', { name: 'De 2023 à aujourd’hui' }).boundingBox();
     expect(frise!.y).toBeLessThan(900);
   });
 
@@ -177,14 +179,16 @@ test.describe('mise en page', () => {
 });
 
 test.describe('onglets du parcours', () => {
-  test('l’onglet courant reste visible et entier sur mobile', async ({ page, isMobile }) => {
-    test.skip(!isMobile, 'la barre ne défile que sur mobile');
+  test('sur téléphone, les quatre onglets restent visibles et entiers, vue d’ensemble comprise', async ({ page, isMobile }) => {
+    test.skip(!isMobile, 'deux rangées sur téléphone seulement');
     for (const [, chemin, court] of rubriques) {
       await page.goto(chemin);
-      const onglet = ongletsDuParcours(page).getByRole('link', { name: court, exact: true });
-      await expect(onglet).toHaveAttribute('aria-current', 'page');
-      // Entier, à l’arrondi du sous-pixel près.
-      await expect(onglet).toBeInViewport({ ratio: 0.99 });
+      const onglets = ongletsDuParcours(page);
+      await expect(onglets.getByRole('link', { name: court, exact: true })).toHaveAttribute('aria-current', 'page');
+      // Entiers, à l’arrondi du sous-pixel près : aucun ne sort par la gauche.
+      for (const nom of ['Vue d’ensemble', 'Professionnel', 'Compétences', 'Formation']) {
+        await expect(onglets.getByRole('link', { name: nom, exact: true })).toBeInViewport({ ratio: 0.99 });
+      }
     }
   });
 });
@@ -260,8 +264,9 @@ test.describe('page Professionnel', () => {
       await expect(page.locator('#architecture')).toContainText('Je travaille sur le développement web et le DevOps.');
       // Fins inconnues : jamais extrapolées.
       for (const id of ['elan', 'mission-locale']) await expect(page.locator(`#${id} .a-confirmer`)).toHaveText('fin à confirmer');
-      // Q9 : la mention « sans client actuellement » est retirée.
-      await expect(page.locator('main')).not.toContainText(/sans client/i);
+      // Dev-Mates : la société ouverte, mais sans client ; rien de non sourcé (« conseil »).
+      await expect(page.locator('#devmates .fiche__situation')).toHaveText('Ma société reste ouverte, sans client actuellement.');
+      await expect(page.locator('#devmates')).not.toContainText(/conseil/i);
     });
 
     test('PvZ Fusion : traducteur, puis lead en décembre 2025, et la preuve chiffrée sourcée', async ({ page }) => {

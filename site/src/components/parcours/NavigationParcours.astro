@@ -6,9 +6,10 @@
  *
  *   <NavigationParcours chemin="/parcours/formation" />
  *
- * Sur mobile, la barre défile : l’onglet courant est ramené au début, sans
+ * Sur tablette, la barre défile : l’onglet courant est ramené au début, sans
  * être coupé, et un fondu signale ce qui dépasse (petit module ci-dessous).
- * Sans JavaScript, la barre défile au doigt, le fondu reste à droite.
+ * Sans JavaScript, la barre défile au doigt, le fondu reste à droite. Sur
+ * téléphone (520 px et moins), les quatre onglets tiennent en deux rangées.
  */
 import { PAGES_PARCOURS } from '../../config/parcours';
 
@@ -135,6 +136,32 @@ const liens = [{ href: '/parcours', court: 'Vue d’ensemble' }, ...PAGES_PARCOU
 
     a {
       padding-inline: var(--s3);
+    }
+  }
+
+  /* Téléphone : les quatre onglets en deux rangées, tous visibles, sans
+     défilement ni fondu ; « Vue d’ensemble » reste toujours à portée. */
+  @media (max-width: 520px) {
+    ul,
+    .onglets-parcours--defile ul,
+    .onglets-parcours--defile.onglets-parcours--fin ul {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0 var(--s2);
+      overflow: visible;
+      box-shadow: none;
+      mask-image: none;
+    }
+
+    a {
+      display: flex;
+      min-height: 44px;
+      padding-inline: var(--s2);
+      border-bottom: 1px solid var(--filet);
+    }
+
+    a[aria-current='page'] {
+      border-bottom: 2px solid var(--encre);
     }
   }
 </style>

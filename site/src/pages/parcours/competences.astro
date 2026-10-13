@@ -46,7 +46,7 @@ const PILE = [
     <section class="niveau" id="quotidien" aria-labelledby="t-quotidien">
       <header class="niveau__tete">
         <h2 id="t-quotidien">Au quotidien</h2>
-        <p>Le cœur de mon CV<AConfirmer titre="Hiérarchie des technologies en trois niveaux, à valider (Q9)">niveaux à confirmer</AConfirmer></p>
+        <p>Le cœur de mon CV<AConfirmer titre="Hiérarchie des technologies en trois niveaux à confirmer (Q9)">niveaux à confirmer</AConfirmer></p>
       </header>
       <ul class="quotidien foyer" role="list" data-pli="preuve">
         {QUOTIDIEN.map(({ nom, role }) => <li><LienTechno nom={nom} variante="tuile" role={role} /></li>)}
@@ -150,10 +150,10 @@ const PILE = [
             <p class="humaine__verbes">
               {competence.verbes.map((verbe, index) => (
                 <>
-                  <span class="humaine__verbe">{verbe}{index < competence.verbes.length - 1 && <><span class="sr">,</span>&nbsp;<span class="humaine__lien" aria-hidden="true">{competence.demarche ? '→' : '·'}</span></>}</span>{' '}
+                  <span class="humaine__verbe">{verbe}{index < competence.verbes.length - 1 && <><span class="sr">,</span>&nbsp;<span class="humaine__lien" aria-hidden="true">{competence.demarche ? '›' : '·'}</span></>}</span>{' '}
                 </>
               ))}
-              {competence.aConfirmer && <AConfirmer titre="Verbes reformulés depuis la première version, à valider">à confirmer</AConfirmer>}
+              {competence.aConfirmer && <AConfirmer titre="Verbes reformulés depuis la première version, à confirmer">à confirmer</AConfirmer>}
             </p>
           </li>
         ))}
@@ -498,8 +498,10 @@ const PILE = [
     line-height: 1.5;
   }
 
+  /* Séparateurs décoratifs, jamais une flèche (→ et ↗ sont réservés aux liens,
+     règle E2) : un chevron pour une démarche, un point médian pour une liste. */
   .humaine__lien {
-    color: var(--laiton);
+    color: var(--eteint);
   }
 
   .humaine__verbe {
