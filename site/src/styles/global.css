@@ -381,7 +381,7 @@ html:not(.js) [data-js-seulement] {
   html,
   body {
     background: var(--fond);
-    font-size: 11pt;
+    font-size: var(--t-impression);
   }
 
   .ne-pas-imprimer,
@@ -395,7 +395,7 @@ html:not(.js) [data-js-seulement] {
 
   a[href^='http']::after {
     content: ' (' attr(href) ')';
-    font-size: 0.85em;
+    font-size: var(--t-xs);
     color: var(--eteint);
     word-break: break-all;
   }

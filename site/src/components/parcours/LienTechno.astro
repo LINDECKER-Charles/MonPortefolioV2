@@ -71,7 +71,7 @@ const taille = variante === 'tuile' ? 'grand' : variante === 'etiquette' ? 'peti
 
   .fleche--discrete {
     color: var(--eteint);
-    font-size: 0.85em;
+    font-size: var(--t-xs);
   }
 
   .techno:hover .fleche--discrete,
@@ -108,7 +108,7 @@ const taille = variante === 'tuile' ? 'grand' : variante === 'etiquette' ? 'peti
   .techno--tuile .techno__nom {
     display: block;
     font-family: var(--police-titre);
-    font-size: clamp(1.5rem, 1.1rem + 0.8vw, 1.875rem);
+    font-size: var(--t-xl);
     line-height: 1;
     letter-spacing: var(--ls-titre);
     white-space: nowrap;

@@ -364,7 +364,7 @@
 
 .blog-prose code {
   font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-  font-size: 0.9em;
+  font-size: var(--t-s);
 }
 
 .blog-prose :not(pre) > code {

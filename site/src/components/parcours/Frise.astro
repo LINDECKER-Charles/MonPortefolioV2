@@ -218,7 +218,7 @@ const avecCouloirs = couloirs.some((c) => c.nom);
 
   .frise__echantillon--incertaine {
     background: var(--encre);
-    mask-image: linear-gradient(90deg, #000 30%, transparent);
+    mask-image: linear-gradient(90deg, currentColor 30%, transparent);
   }
 
   .frise__corps {
@@ -386,12 +386,12 @@ const avecCouloirs = couloirs.some((c) => c.nom);
 
   /* Fin à confirmer : la barre se dissout. */
   .frise__barre--incertaine {
-    mask-image: linear-gradient(90deg, #000 25%, transparent);
+    mask-image: linear-gradient(90deg, currentColor 25%, transparent);
   }
 
   /* Seulement l’année : les deux bords s’estompent. */
   .frise__barre--floue {
-    mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent);
+    mask-image: linear-gradient(90deg, transparent, currentColor 22%, currentColor 78%, transparent);
   }
 
   .frise__ligne a:hover .frise__barre,
