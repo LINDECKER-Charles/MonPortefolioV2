@@ -86,6 +86,11 @@ export interface Experience {
   contexte?: { resume: string; paragraphes: readonly string[] };
   /** Évolution du rôle, datée (PvZ Fusion). */
   etapes?: readonly { titre: string; date: string }[];
+  /**
+   * Le rôle affiché n’est tenu que depuis ce mois : la période le dit
+   * (« lead depuis décembre 2025 ») et la barre de frise se coupe en deux.
+   */
+  bascule?: { mois: Mois; role: string };
   liens?: readonly { href: string; libelle: string }[];
   /** Emplacement du visuel (config/visuels.ts). */
   visuel: string;
@@ -185,10 +190,12 @@ export const EXPERIENCES: readonly Experience[] = [
       { titre: 'Lead du pôle francophone', date: 'décembre 2025' },
       { titre: 'Mainteneur du projet multilingue', date: 'septembre 2026 au plus tard' },
     ],
-    preuve: { valeur: '20', libelle: 'contributeurs formés', source: 'Témoignage', date: 'confirmé le 13/10/2026', surligne: true },
+    // Octobre 2025 : l’arrivée comme traducteur ; lead depuis décembre 2025 (décision du 13/10/2026).
+    bascule: { mois: '2025-12', role: 'lead' },
+    preuve: { valeur: '20', libelle: 'contributeurs formés', source: 'Témoignage', date: 'confirmé le 13 octobre 2026', surligne: true },
     liens: [{ href: '/projets/pvz-fusion', libelle: 'Voir le travail avec la communauté' }],
     visuel: 'PRO-03',
-    frise: 'Lead et mainteneur, PvZ Fusion',
+    frise: 'Traducteur puis lead, PvZ Fusion',
   },
   {
     id: 'atis',
@@ -207,7 +214,7 @@ export const EXPERIENCES: readonly Experience[] = [
       paragraphes: ['J’ai rédigé le cahier des charges avec l’équipe, puis développé des modules qui simplifient le suivi administratif.'],
     },
     visuel: 'PRO-05',
-    frise: 'Stage, ATIS Solutions',
+    frise: 'Développeur full stack, ATIS Solutions',
   },
 ];
 
@@ -243,11 +250,12 @@ export function majuscule(texte: string): string {
 }
 
 /** Nature et période pour une ligne de frise : « CDI, depuis août 2026 ». */
-export function periodeDeFrise(experience: Pick<Experience, 'debut' | 'fin' | 'finAConfirmer' | 'nature'>): string {
+export function periodeDeFrise(experience: Pick<Experience, 'debut' | 'fin' | 'finAConfirmer' | 'nature' | 'bascule'>): string {
   const periode = experience.finAConfirmer && !experience.fin
     ? `${moisEnClair(experience.debut)} → fin à confirmer`
     : periodeEnClair(experience);
-  return `${NATURES[experience.nature]}, ${periode.charAt(0).toLowerCase()}${periode.slice(1)}`;
+  const role = experience.bascule ? `, ${experience.bascule.role} depuis ${moisEnClair(experience.bascule.mois)}` : '';
+  return `${NATURES[experience.nature]}, ${periode.charAt(0).toLowerCase()}${periode.slice(1)}${role}`;
 }
 
 /** Une expérience en ligne de frise, vers sa fiche sur la page Professionnel. */
@@ -261,6 +269,7 @@ export function ligneDeFrise(experience: Experience, page = '/parcours/professio
     debut: experience.debut,
     fin: experience.fin,
     finAConfirmer: experience.finAConfirmer,
+    bascule: experience.bascule?.mois,
   };
 }
 
