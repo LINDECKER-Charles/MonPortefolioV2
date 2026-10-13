@@ -66,20 +66,20 @@ const etiquette = (id: string) => SECTIONS.find((section) => section.id === id)?
         <FigureEquipe />
         <p class="petit">Neuf arrivées sont consignées dans les journaux publics du pôle, sur les vingt personnes que j’ai formées. Silhouettes anonymes, sans pseudonyme.</p>
       </figure>
-      <div class="pvz-temps">
-        <Visuel id="PVZ-02" sizes="(max-width: 1100px) 100vw, 1100px" />
-        <ol class="pvz-temps__liste" aria-label="Les trois temps de la formation">
-          {
-            PARCOURS_EQUIPE.map((temps, index) => (
-              <li>
+      <ol class="pvz-temps" aria-label="Les trois temps de la formation">
+        {
+          PARCOURS_EQUIPE.map((temps, index) => (
+            <li class="pvz-temps__temps">
+              <Visuel id={temps.visuel} class="pvz-temps__visuel" sizes="(max-width: 860px) 100vw, 380px" />
+              <div class="pvz-temps__texte">
                 <span class="pvz-temps__rang" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
                 <h3>{temps.titre}</h3>
                 <p>{typo(temps.texte)}</p>
-              </li>
-            ))
-          }
-        </ol>
-      </div>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
     </SectionProjet>
 
     <SectionProjet id="semaine" etiquette={etiquette('semaine')} titre="Une semaine que tout le monde peut suivre" chapeau="Chaque version relançait le travail. J’ai donné au pôle une semaine type, la même pour tous, et un outil pour la faire tourner.">
@@ -201,22 +201,38 @@ const etiquette = (id: string) => SECTIONS.find((section) => section.id === id)?
     margin-top: var(--s3);
   }
 
-  /* Les trois temps de la formation, sous le triptyque PVZ-02. */
+  /* Les trois temps de la formation, chacun sous sa case du triptyque
+     PVZ-02 : en bureau, les trois cases se touchent et se lisent d’un seul
+     regard ; sous 860 px, chaque case passe au-dessus de son temps. */
   .pvz-temps {
-    margin-top: var(--s7);
-  }
-
-  .pvz-temps__liste {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--s5);
-    margin: var(--s4) 0 0;
+    margin: var(--s7) 0 0;
     padding: 0;
     list-style: none;
   }
 
-  .pvz-temps__liste li {
-    padding-top: var(--s3);
+  .pvz-temps__temps {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-width: 0;
+  }
+
+  .pvz-temps__temps :global(.pvz-temps__visuel) {
+    border-radius: 0;
+  }
+
+  .pvz-temps__temps:first-child :global(.pvz-temps__visuel) {
+    border-radius: var(--r2) 0 0 var(--r2);
+  }
+
+  .pvz-temps__temps:last-child :global(.pvz-temps__visuel) {
+    border-radius: 0 var(--r2) var(--r2) 0;
+  }
+
+  .pvz-temps__texte {
+    margin-top: var(--s4);
+    padding: var(--s3) var(--s5) 0 0;
     border-top: 1px solid var(--trait);
   }
 
@@ -227,12 +243,12 @@ const etiquette = (id: string) => SECTIONS.find((section) => section.id === id)?
     color: var(--eteint);
   }
 
-  .pvz-temps__liste h3 {
+  .pvz-temps h3 {
     margin-top: var(--s1);
     font-size: var(--t-l);
   }
 
-  .pvz-temps__liste p {
+  .pvz-temps p {
     margin-top: var(--s2);
     font-size: var(--t-s);
     color: var(--eteint);
@@ -362,9 +378,20 @@ const etiquette = (id: string) => SECTIONS.find((section) => section.id === id)?
   }
 
   @media (max-width: 860px) {
-    .pvz-temps__liste {
+    .pvz-temps {
       grid-template-columns: minmax(0, 1fr);
-      gap: var(--s3);
+      gap: var(--s6);
+    }
+
+    .pvz-temps__temps :global(.pvz-temps__visuel),
+    .pvz-temps__temps:first-child :global(.pvz-temps__visuel),
+    .pvz-temps__temps:last-child :global(.pvz-temps__visuel) {
+      border-radius: var(--r2);
+    }
+
+    .pvz-temps__texte {
+      margin-top: var(--s3);
+      padding-right: 0;
     }
 
     .pvz-jeu {

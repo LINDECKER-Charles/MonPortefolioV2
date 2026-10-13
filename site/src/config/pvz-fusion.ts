@@ -150,11 +150,14 @@ export const QUATRE_ZERO = [
 /* L’équipe                                                            */
 /* ------------------------------------------------------------------ */
 
-/** Les trois temps de la formation (page précédente, conservés). */
+/**
+ * Les trois temps de la formation (page précédente, conservés), chacun sous
+ * sa case du triptyque PVZ-02 (PVZ-02a, PVZ-02b, PVZ-02c du registre).
+ */
 export const PARCOURS_EQUIPE = [
-  { titre: 'Accueillir', texte: 'Faire une place aux nouveaux et les accompagner dans leurs premières contributions.' },
-  { titre: 'Former et relire', texte: 'Apprendre en faisant, expliquer les corrections et construire des repères communs.' },
-  { titre: 'Faire confiance', texte: 'Laisser chacun contribuer en autonomie et prendre sa place dans le pôle.' },
+  { visuel: 'PVZ-02a', titre: 'Accueillir', texte: 'Faire une place aux nouveaux et les accompagner dans leurs premières contributions.' },
+  { visuel: 'PVZ-02b', titre: 'Former et relire', texte: 'Apprendre en faisant, expliquer les corrections et construire des repères communs.' },
+  { visuel: 'PVZ-02c', titre: 'Faire confiance', texte: 'Laisser chacun contribuer en autonomie et prendre sa place dans le pôle.' },
 ] as const;
 
 /* ------------------------------------------------------------------ */
