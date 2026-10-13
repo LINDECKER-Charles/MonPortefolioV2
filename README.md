@@ -164,8 +164,10 @@ tant qu’il est visible ; les trois règles apparaissent dans l’ordre. Avec m
 sans JavaScript ou à l’impression, les illustrations restent complètes.
 
 Les illustrations à générer sont posées par `<Visuel id="…">` depuis le registre
-`site/src/config/visuels.ts`. Tant que le fichier manque, un cadre hachuré au bon ratio affiche
-la consigne (identifiant, sujet, composition, format). `npm run visuels` liste ce qu’il reste à
+`site/src/config/visuels.ts`. Tant que le fichier manque, le site en ligne montre un cadre neutre
+au bon ratio, avec l’alt du registre ; en développement (`astro dev`, ou `VISUELS_BROUILLON=1` au
+build), un cadre hachuré affiche la consigne (identifiant, sujet, composition, format). Un dessin
+SVG livré est inséré en ligne et suit les jetons. `npm run visuels` liste ce qu’il reste à
 produire et `npm run visuels:doc` régénère [`docs/visuels-a-generer.md`](docs/visuels-a-generer.md),
 la commande de production des images.
 

@@ -333,7 +333,9 @@ Chaque composant est documenté en tête de son fichier.
   lanterne et légende au même numéro ; visionneuse plein écran partagée.
 - **Statut** (`ui/Statut.astro`) : une forme et un mot, jamais la couleur seule.
 - **À confirmer** (`ui/AConfirmer.astro`) : la marque d’un fait que Charles n’a pas validé.
-- **Visuel** (`ui/Visuel.astro`) : l’image du registre, ou un cadre hachuré qui porte sa commande.
+- **Visuel** (`ui/Visuel.astro`) : l’image du registre, le dessin SVG inséré en ligne, ou, tant
+  que le fichier manque, un cadre neutre en ligne et un cadre hachuré qui porte sa commande en
+  développement.
 - **Vitrine** (`pages/IndexPreuves.astro`, `pages/CarteProjet.astro`, `pages/Vitrine.astro`) :
   l’index des étiquettes de preuve, puis les cartes (vedette, ligne), chacune avec « Voir le
   projet → ».
