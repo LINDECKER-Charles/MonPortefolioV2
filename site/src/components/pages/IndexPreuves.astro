@@ -1,0 +1,103 @@
+---
+/**
+ * L’index des étiquettes de preuve, en tête de la vitrine : ce que chaque
+ * projet prouve, dans l’ordre des cartes, chaque entrée menant à sa carte.
+ *
+ *   <IndexPreuves entrees={[
+ *     { id: 'pvz', preuve: 'Mener une équipe' },
+ *     { id: 'lodb', preuve: 'Un système en production' },
+ *   ]} />
+ *
+ * Les numéros reprennent le `rang` des CarteProjet. Liens d’ancre (↓).
+ */
+import { typo } from '../../lib/typo';
+
+interface Props {
+  entrees: readonly { id: string; preuve: string }[];
+  label?: string;
+}
+
+const { entrees, label = 'Ce que prouve chaque projet' } = Astro.props;
+---
+
+<nav class="index-preuves" aria-label={label}>
+  <ol>
+    {entrees.map(({ id, preuve }, i) => (
+      <li>
+        <a href={`#${id}`}>
+          <span class="index-preuves__rang" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+          <span>{typo(preuve)}</span><span class="fleche" aria-hidden="true">&nbsp;↓</span>
+        </a>
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<style>
+  ol {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--trait);
+  }
+
+  li + li {
+    border-left: 1px solid var(--filet);
+  }
+
+  a {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0 var(--s2);
+    min-height: 44px;
+    padding: var(--s3) var(--s3) var(--s3) var(--s3);
+    color: var(--encre);
+    font-family: var(--police-titre);
+    font-style: italic;
+    font-size: var(--t-l);
+    line-height: 1.2;
+    text-decoration: none;
+  }
+
+  li:first-child a {
+    padding-left: 0;
+  }
+
+  a:hover {
+    color: var(--accent);
+  }
+
+  .index-preuves__rang {
+    font-family: var(--police-texte);
+    font-style: normal;
+    font-size: var(--t-xs);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--eteint);
+  }
+
+  .fleche {
+    font-size: var(--t-xs);
+    color: var(--accent);
+  }
+
+  @media (max-width: 860px) {
+    ol {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    li + li {
+      border-left: 0;
+      border-top: 1px solid var(--filet);
+    }
+
+    a,
+    li:first-child a {
+      padding: var(--s2) 0;
+      font-size: var(--t-m);
+    }
+  }
+</style>

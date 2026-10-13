@@ -3,13 +3,18 @@
  * Un emplacement de visuel de l’inventaire de la refonte (config/visuels.ts).
  *
  * Le fichier attendu existe : l’image s’affiche, au ratio du registre, avec
- * l’alt prévu. Il manque : un cadre pointillé neutre, au même ratio, porte
- * l’identifiant et la consigne. La page garde ainsi sa mise en page avant que
- * l’image arrive, et `npm run visuels` liste ce qu’il reste à produire.
+ * l’alt prévu. Il manque : un cadre hachuré au bon ratio, dans la lumière de
+ * la direction « Lanterne », porte la commande — identifiant, méthode et
+ * priorité, sujet, composition, format. La page garde ainsi sa mise en page
+ * avant que l’image arrive, et `npm run visuels` liste ce qu’il reste à
+ * produire.
+ *
+ *   <Visuel id="PRJ-01" sizes="(max-width: 860px) 100vw, 50vw" />
+ *   <Visuel id="ACC-03" foyer />          la zone éclairée de l’écran
  *
  * Un identifiant absent du registre fait échouer le build : pas de faute de
- * frappe silencieuse. Le style final viendra avec la direction visuelle ; seuls
- * les jetons de global.css sont employés ici.
+ * frappe silencieuse. Le cadre s’adapte à sa largeur (requêtes de conteneur) :
+ * la composition disparaît sous 260 px, le sujet sous 110 px.
  */
 import type { ImageMetadata } from 'astro';
 import { Picture } from 'astro:assets';
@@ -23,10 +28,12 @@ interface Props {
   /** Attribut `sizes` de l’image : largeur d’affichage selon la fenêtre. */
   sizes?: string;
   loading?: 'lazy' | 'eager';
+  /** La zone éclairée de l’écran (une seule par écran). */
+  foyer?: boolean;
   class?: string;
 }
 
-const { id, alt: altPropre, sizes = '100vw', loading = 'lazy', class: classe } = Astro.props;
+const { id, alt: altPropre, sizes = '100vw', loading = 'lazy', foyer = false, class: classe } = Astro.props;
 
 const visuel = visuelParId(id);
 if (!visuel) throw new Error(`<Visuel id="${id}"> : identifiant absent de src/config/visuels.ts`);
@@ -46,11 +53,16 @@ const alt = altPropre ?? visuel.alt;
 const ratio = visuel.ratio ?? '16 / 10';
 const style = [`--visuel-ratio:${ratio}`, visuel.ratioMobile ? `--visuel-ratio-mobile:${visuel.ratioMobile}` : ''].filter(Boolean).join(';');
 const largeurs = image && image.format !== 'svg' ? [...new Set([Math.round(image.width / 2), image.width])].filter((l) => l >= 320 || l === image.width) : [];
+
+const NATURE = { IMG: 'Image à générer', SVG: 'Dessin à faire', FIG: 'Figure à coder', CAP: 'Capture à faire', PHO: 'Photo réelle', OG: 'Image de partage' } as const;
+const reprise = visuel.reprend?.length ? `reprend ${visuel.reprend.join(', ')}` : '';
+const mobile = visuel.ratioMobile && !/mobile/.test(visuel.format) ? `${visuel.ratioMobile.replace(' / ', ':')} sur mobile` : '';
+const format = [visuel.format, mobile, reprise].filter(Boolean).join(' · ');
 ---
 
 {
   image ? (
-    <figure class:list={['visuel', classe]} style={style} data-visuel={id}>
+    <figure class:list={['visuel', { foyer }, classe]} style={style} data-visuel={id}>
       {image.format === 'svg' ? (
         <img src={image.src} width={image.width} height={image.height} alt={alt} loading={loading} decoding="async" />
       ) : (
@@ -58,13 +70,16 @@ const largeurs = image && image.format !== 'svg' ? [...new Set([Math.round(image
       )}
     </figure>
   ) : (
-    <figure class:list={['visuel', 'visuel--manquant', classe]} style={style} data-visuel={id} data-manquant>
-      <p class="visuel__id">
-        <strong>{id}</strong>
-        <span>{visuel.methode} · {visuel.priorite === 'socle' ? 'socle' : 'élargi'}</span>
-      </p>
-      <p class="visuel__sujet">{typo(visuel.sujet)}</p>
-      <p class="visuel__consigne">{typo(visuel.composition)}</p>
+    <figure class:list={['visuel', 'visuel--manquant', { 'visuel--foyer': foyer, 'visuel--capture': visuel.methode === 'CAP' }, classe]} style={style} data-visuel={id} data-manquant>
+      <div class="visuel__contenu">
+        <p class="visuel__id">
+          <strong>{id}</strong>
+          <span>{NATURE[visuel.methode]} · {visuel.priorite === 'socle' ? 'socle' : 'élargi'}</span>
+        </p>
+        <p class="visuel__sujet">{typo(visuel.sujet)}</p>
+        <p class="visuel__consigne">{typo(visuel.composition)}</p>
+        <p class="visuel__format">{typo(format)}</p>
+      </div>
     </figure>
   )
 }
@@ -74,6 +89,8 @@ const largeurs = image && image.format !== 'svg' ? [...new Set([Math.round(image
     margin: 0;
     aspect-ratio: var(--visuel-ratio);
     max-width: 100%;
+    border-radius: var(--r2);
+    overflow: hidden;
   }
 
   .visuel :global(img),
@@ -84,45 +101,123 @@ const largeurs = image && image.format !== 'svg' ? [...new Set([Math.round(image
     object-fit: cover;
   }
 
-  /* L’image manquante : un cadre pointillé qui ne se prend pas pour une image. */
+  /* L’image manquante : un cadre hachuré qui ne se prend pas pour une image. */
   .visuel--manquant {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: var(--s2);
-    padding: var(--s4);
-    overflow: hidden;
+    position: relative;
+    isolation: isolate;
+    container-type: inline-size;
     border: 1px dashed var(--trait);
-    border-radius: var(--rayon);
-    background: var(--papier);
-    color: var(--graphite);
-    font-size: var(--t-etiquette);
-    line-height: 1.35;
+    background:
+      repeating-linear-gradient(-45deg, var(--hachure) 0 1px, transparent 1px 7px),
+      var(--emplacement);
+    color: var(--encre);
   }
 
-  .visuel--manquant p {
+  /* La lueur neutre de la direction ; la lumière de la scène s’il est le foyer. */
+  .visuel--manquant::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(60% 70% at 62% 42%, var(--lueur), transparent 70%);
+  }
+
+  .visuel--foyer::before {
+    background: radial-gradient(55% 65% at 60% 45%, var(--lumiere), transparent 72%);
+  }
+
+  .visuel__contenu {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+    padding: clamp(10px, 5cqi, 24px);
+  }
+
+  .visuel__contenu p {
     margin: 0;
   }
 
   .visuel__id {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--s1) var(--s3);
-    align-items: baseline;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s2);
+    align-self: flex-start;
+    padding: 2px var(--s2);
+    border-radius: var(--r1);
+    background: var(--encre);
+    color: var(--fond);
+    font-size: var(--t-xs);
+    line-height: 1.5;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: var(--ls-petit);
+    white-space: nowrap;
   }
 
   .visuel__id strong {
-    color: var(--encre);
-    font-size: var(--t-petit);
-    letter-spacing: 0.02em;
-  }
-
-  .visuel__sujet {
-    color: var(--encre);
     font-weight: 600;
   }
 
-  @media (max-width: 760px) {
+  .visuel__id span {
+    opacity: 0.82;
+  }
+
+  .visuel--capture .visuel__id {
+    background: var(--accent);
+    color: var(--accent-texte);
+  }
+
+  .visuel__sujet {
+    margin-top: auto !important;
+    font-family: var(--police-titre);
+    font-style: italic;
+    font-size: var(--t-l);
+    line-height: 1.1;
+  }
+
+  .visuel__consigne,
+  .visuel__format {
+    max-width: 44ch;
+    font-size: var(--t-xs);
+    line-height: 1.4;
+    color: var(--eteint);
+  }
+
+  .visuel__format {
+    font-variant-numeric: tabular-nums;
+  }
+
+  @container (min-width: 520px) {
+    .visuel__sujet {
+      font-size: var(--t-xl);
+    }
+  }
+
+  @container (max-width: 260px) {
+    .visuel__consigne,
+    .visuel__id span {
+      display: none;
+    }
+  }
+
+  @container (max-width: 150px) {
+    .visuel__format {
+      display: none;
+    }
+
+    .visuel__sujet {
+      font-size: var(--t-xs);
+    }
+  }
+
+  @container (max-width: 110px) {
+    .visuel__sujet {
+      display: none;
+    }
+  }
+
+  @media (max-width: 860px) {
     .visuel {
       aspect-ratio: var(--visuel-ratio-mobile, var(--visuel-ratio));
     }

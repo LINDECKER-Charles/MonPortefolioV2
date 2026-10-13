@@ -1,0 +1,92 @@
+---
+/**
+ * Une preuve chiffrée : un chiffre, ce qu’il compte, d’où il vient et quand.
+ * Le chiffre en Instrument Sans 600, chiffres tabulaires, jamais sous
+ * --t-2xl ; la sérif reste aux titres et à la voix. Un seul chiffre surligné
+ * par preuve (règle C1) : `surligne` pose le colza et data-source.
+ *
+ *   <PreuvesChiffrees label="Le pôle francophone en chiffres">
+ *     <PreuveChiffree valeur="20" libelle="contributeurs formés" source="Entretien, questions C7" date="2026" surligne />
+ *     <PreuveChiffree valeur="35" libelle="pull requests fusionnées" source="Dépôt Teyliu/PVZF-Translation" date="13/10/2026" />
+ *   </PreuvesChiffrees>
+ *
+ * Hors d’une liste, `as="div"`. `href` fait du libellé un lien vers la
+ * section ou la page qui raconte la preuve (une histoire racontée une fois).
+ * Les textes passent par typo() : espaces insécables posées.
+ */
+import { typo } from '../../lib/typo';
+import { FLECHES, sorteDeLien } from '../../lib/liens';
+
+interface Props {
+  /** Le chiffre tel qu’affiché : « 20 », « 1 289 », « 3 mois ». */
+  valeur: string;
+  libelle: string;
+  /** D’où vient le fait (document, dépôt, entretien). */
+  source: string;
+  /** Date du relevé ou de la période. */
+  date?: string;
+  /** Pose le surligneur colza sur le chiffre (un seul par preuve). */
+  surligne?: boolean;
+  /** Section ou page qui raconte la preuve (interne seulement). */
+  href?: string;
+  as?: 'li' | 'div';
+  class?: string;
+}
+
+const { valeur, libelle, source, date, surligne = false, href, as: Element = 'li', class: classe } = Astro.props;
+if (href && /^https?:|^mailto:/.test(href)) throw new Error(`<PreuveChiffree href="${href}"> : un lien interne ou une ancre seulement.`);
+const provenance = typo([source, date].filter(Boolean).join(', '));
+const fleche = href ? FLECHES[sorteDeLien(href)] : '';
+---
+
+<Element class:list={['preuve-chiffree', classe]}>
+  <span class="preuve-chiffree__valeur">
+    {surligne ? <mark class="surligneur" data-source={provenance}>{valeur}</mark> : valeur}
+  </span>
+  {
+    href ? (
+      <a class="preuve-chiffree__libelle" href={href}>{typo(libelle)}<span class="fleche" aria-hidden="true">{` ${fleche}`}</span></a>
+    ) : (
+      <span class="preuve-chiffree__libelle">{typo(libelle)}</span>
+    )
+  }
+  <span class="preuve-chiffree__source">{provenance}</span>
+</Element>
+
+<style>
+  .preuve-chiffree {
+    display: grid;
+    align-content: start;
+    gap: var(--s2);
+  }
+
+  .preuve-chiffree__valeur {
+    font-family: var(--police-texte);
+    font-weight: 600;
+    font-size: var(--t-2xl);
+    line-height: 1;
+    letter-spacing: var(--ls-titre);
+    font-variant-numeric: tabular-nums lining-nums;
+    color: var(--encre);
+  }
+
+  .preuve-chiffree__valeur mark {
+    padding-inline: 0.12em;
+  }
+
+  .preuve-chiffree__libelle {
+    font-size: var(--t-s);
+    line-height: 1.45;
+    color: var(--encre);
+  }
+
+  a.preuve-chiffree__libelle {
+    color: var(--accent);
+  }
+
+  .preuve-chiffree__source {
+    font-size: var(--t-xs);
+    line-height: 1.4;
+    color: var(--eteint);
+  }
+</style>

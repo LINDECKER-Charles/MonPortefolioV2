@@ -1,0 +1,129 @@
+---
+/**
+ * La visionneuse plein écran partagée par tout le site : clic pour agrandir
+ * une capture, Échap pour revenir, focus rendu au lien d’origine
+ * (scripts/visionneuse.ts). À poser une fois dans une page qui a des liens
+ * `a[data-agrandir]` (CadreCapture et CaptureAnnotee avec `agrandir`).
+ *
+ *   <Visionneuse />
+ *
+ * Elle remplacera les visionneuses propres à Bloodborne, Omnicard et League
+ * Of Data Base quand ces pages seront refaites. Sans JavaScript, chaque lien
+ * ouvre l’image elle-même.
+ */
+---
+
+<dialog class="visionneuse" data-visionneuse aria-labelledby="visionneuse-legende">
+  <div class="visionneuse__barre">
+    <p class="visionneuse__legende" id="visionneuse-legende" data-visionneuse-legende></p>
+    <button class="visionneuse__fermer" type="button" data-visionneuse-fermer>Fermer<span class="visionneuse__touche" aria-hidden="true">Échap</span></button>
+  </div>
+  <p class="visionneuse__etat" role="status" data-visionneuse-etat></p>
+  <img class="visionneuse__image" data-visionneuse-image alt="" hidden />
+</dialog>
+
+<script>
+  import { brancherVisionneuse } from '../../scripts/visionneuse';
+  brancherVisionneuse();
+</script>
+
+<style>
+  .visionneuse {
+    width: 100vw;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: var(--s4) var(--gouttiere) var(--s5);
+    border: 0;
+    background: transparent;
+    color: var(--lune);
+    overflow: hidden;
+  }
+
+  .visionneuse[open] {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: var(--s3);
+  }
+
+  .visionneuse::backdrop {
+    background: var(--voile-visionneuse);
+  }
+
+  .visionneuse__barre {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s4);
+  }
+
+  .visionneuse__legende {
+    font-size: var(--t-s);
+    line-height: 1.45;
+    max-width: 60rem;
+  }
+
+  .visionneuse__fermer {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s2);
+    flex: none;
+    min-height: 44px;
+    padding: 0 var(--s4);
+    border: 1px solid var(--cadre-point);
+    border-radius: var(--r3);
+    background: var(--cadre-barre);
+    color: var(--lune);
+    font-size: var(--t-s);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .visionneuse__fermer:hover {
+    border-color: var(--lanterne);
+  }
+
+  .visionneuse__fermer:focus-visible {
+    outline: 2px solid var(--lanterne);
+  }
+
+  .visionneuse__touche {
+    padding: 0 var(--s1);
+    border: 1px solid var(--cadre-point);
+    border-radius: var(--r1);
+    font-size: var(--t-xs);
+    font-weight: 400;
+    color: var(--cadre-texte);
+  }
+
+  .visionneuse__etat:empty {
+    display: none;
+  }
+
+  .visionneuse__etat {
+    grid-row: 2;
+    align-self: center;
+    justify-self: center;
+    font-size: var(--t-s);
+  }
+
+  .visionneuse__image {
+    grid-row: 2;
+    justify-self: center;
+    align-self: center;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: var(--r2);
+    cursor: zoom-out;
+  }
+
+  @media (max-width: 860px) {
+    .visionneuse__touche {
+      display: none;
+    }
+  }
+</style>
