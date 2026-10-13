@@ -174,5 +174,7 @@ test.describe('mentions légales', () => {
     await expect(page.locator('#mesure-audience [data-opposition]')).toHaveCount(1);
     await expect(page.locator('#credits')).toContainText('Instrument Serif');
     await expect(page.locator('#credits')).toContainText('SIL Open Font License');
+    // La vue de Yharnam n’est pas de Charles : son auteur est crédité ici comme sur la page du projet.
+    await expect(page.locator('#credits')).toContainText('capture de MoonlightGhost (Bloodborne Wiki)');
   });
 });
