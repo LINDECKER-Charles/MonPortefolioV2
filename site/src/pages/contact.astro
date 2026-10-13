@@ -301,6 +301,14 @@ const profils = [
     box-shadow: var(--ombre-1);
   }
 
+  /* Le halo du foyer déborde de marges fixes, et non d’un pourcentage de la
+     carte : pendant l’analyse progressive de la page, la carte grandit, et un
+     haut à -18 % de sa hauteur remontait à chaque fois (décalage de mise en
+     page relevé à 0,15 à 390 px sur un réseau lent). */
+  .contact__lettre.foyer::before {
+    inset: -96px -64px;
+  }
+
   .contact__lettre-tete {
     display: flex;
     align-items: center;

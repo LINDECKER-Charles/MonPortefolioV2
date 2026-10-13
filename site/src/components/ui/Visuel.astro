@@ -63,7 +63,9 @@
  *
  * Une seule lumière par écran : seul l’emplacement marqué `foyer` reçoit la
  * flaque de jour ou le halo de la lanterne. Un emplacement ordinaire n’a
- * aucune lueur, de jour comme de nuit.
+ * aucune lueur, de jour comme de nuit. Une image générée porte sa lanterne
+ * dessinée, qui est la lumière de l’écran : elle ne reçoit pas le halo du
+ * foyer, qui doublerait la source et que le cadre rognerait en rectangle.
  *
  * Un identifiant absent du registre fait échouer le build : pas de faute de
  * frappe silencieuse. En brouillon, le cadre s’adapte à sa taille (requêtes de
@@ -235,6 +237,11 @@ const format = [visuel.format, mobile, reprise].filter(Boolean).join(' · ');
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  /* Une image générée porte sa lanterne dessinée : pas de halo de foyer en plus. */
+  .visuel--jour-nuit.foyer::before {
+    content: none;
   }
 
   /* Deux rendus d’une image générée : un seul s’affiche, l’autre n’existe ni

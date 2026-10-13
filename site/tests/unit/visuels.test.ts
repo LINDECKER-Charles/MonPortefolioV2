@@ -546,6 +546,11 @@ describe('composant Visuel', () => {
     expect(style).not.toMatch(/^\s*:where\(/m);
   });
 
+  it('ne pose pas le halo du foyer sur une image générée, qui porte sa lanterne dessinée', () => {
+    const source = readFileSync(path.join(SRC, 'components/ui/Visuel.astro'), 'utf8');
+    expect(source.slice(source.indexOf('<style>'))).toMatch(/\.visuel--jour-nuit\.foyer::before \{\s*content: none;/);
+  });
+
   it('montre le jour par défaut, la nuit sous les trois portes de jetons.css, et le jour à l’impression', () => {
     const source = readFileSync(path.join(SRC, 'components/ui/Visuel.astro'), 'utf8');
     const style = source.slice(source.indexOf('<style>'));

@@ -114,6 +114,19 @@ const lignes = typeof titre === 'string' ? [titre] : titre;
     min-width: 0;
   }
 
+  /* La nuit, une image générée du visuel porte sa lanterne allumée : c’est
+     la lumière de l’écran. Le halo du foyer derrière le titre la doublerait
+     (une seule lumière par écran) ; une capture, elle, le garde. */
+  :global(:root[data-theme='nuit']) .projet-tete__grille:has(:global(.visuel--jour-nuit)) .projet-tete__texte::before {
+    content: none;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme])) .projet-tete__grille:has(:global(.visuel--jour-nuit)) .projet-tete__texte::before {
+      content: none;
+    }
+  }
+
   .projet-tete :global(.projet-tete__fiche) {
     grid-area: fiche;
   }
