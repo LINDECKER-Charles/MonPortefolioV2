@@ -2,7 +2,7 @@
   <title>Les choix d’ingénierie de gup, en six pictogrammes</title>
 
   <!-- 1. Une cloison étanche : le compartiment fissuré n’inonde pas l’autre. -->
-  <g>
+  <g class="GUP-02-cloison">
     <rect x="12" y="26" width="72" height="46" rx="4"/>
     <path d="M48 20v58" stroke-width="4"/>
     <path d="M20 26l7 9-5 8 8 9-5 8 4 12" stroke-width="1.6"/>
@@ -11,7 +11,7 @@
   </g>
 
   <!-- 2. Des arguments en blocs séparés, sans coquille autour. -->
-  <g transform="translate(96 0)">
+  <g class="GUP-02-arguments" transform="translate(96 0)">
     <rect class="accent" x="10" y="28" width="24" height="15" rx="3" fill="#f0b24a"/>
     <rect x="39" y="28" width="28" height="15" rx="3"/>
     <rect x="72" y="28" width="14" height="15" rx="3"/>
@@ -21,7 +21,7 @@
   </g>
 
   <!-- 3. Quatre colis sur leur tapis : un seul tombe, les autres continuent. -->
-  <g transform="translate(192 0)">
+  <g class="GUP-02-colis" transform="translate(192 0)">
     <path d="M6 62h36M56 62h34"/>
     <circle cx="12" cy="67" r="2.5" stroke-width="1.4"/>
     <circle cx="36" cy="67" r="2.5" stroke-width="1.4"/>
@@ -37,7 +37,7 @@
   </g>
 
   <!-- 4. Un réveil qui sonne puis se tait, sans fil vers rien. -->
-  <g transform="translate(288 0)">
+  <g class="GUP-02-reveil" transform="translate(288 0)">
     <circle cx="48" cy="52" r="22"/>
     <path d="M30 31a9 9 0 0 1 12-6M66 31a9 9 0 0 0-12-6"/>
     <path d="M36 72l-5 7M60 72l5 7"/>
@@ -48,7 +48,7 @@
   </g>
 
   <!-- 5. Trois ordinateurs : un seul voit ses outils, les deux autres grisés. -->
-  <g transform="translate(384 0)">
+  <g class="GUP-02-systemes" transform="translate(384 0)">
     <rect class="accent" x="6" y="34" width="24" height="17" rx="2" fill="#f0b24a"/>
     <path d="M18 51v8M12 60h12"/>
     <rect x="36" y="34" width="24" height="17" rx="2"/>
@@ -60,7 +60,7 @@
   </g>
 
   <!-- 6. Un œil devant deux pastilles contrastées. -->
-  <g transform="translate(480 0)">
+  <g class="GUP-02-lisible" transform="translate(480 0)">
     <circle cx="70" cy="24" r="9" fill="currentColor"/>
     <circle cx="82" cy="36" r="9" fill="none"/>
     <path d="M12 54q30-30 60 0q-30 30-60 0z"/>

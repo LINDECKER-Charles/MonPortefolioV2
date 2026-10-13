@@ -174,7 +174,8 @@ aplat, lumière), la lanterne comme seule source de lumière dans la scène.
   lune et lueur de lanterne en CSS la nuit), ACC-13 (captures de League Of Data Base, Bloodborne
   Legendary Run et gup, annotées d’une cible, d’une loupe et d’une légende), logo.
   Dessinés : ACC-06 (figure du plafond, seule figure animée), ACC-02 / GLO-04 (pictos des verbes),
-  GLO-03 (bascule lanterne). Non posés (élargi) : ACC-05, ACC-07, ACC-10, ACC-12, ACC-14, ACC-16.
+  GLO-03 (bascule lanterne), ACC-14 (lanternes qui se transmettent la flamme, posé et livré).
+  Non posés (élargi) : ACC-05, ACC-07, ACC-10, ACC-12, ACC-16.
 - **Projets** — images : PRJ-01, PRJ-02, PRJ-03 ; captures réelles : PRJ-04 (atlas Bloodborne
   dans le cadre téléphone), PRJ-05 (gup en français). Non posés (élargi) : PRJ-06 à PRJ-12.
 - **PvZ Fusion** — images : PVZ-01, PVZ-02 ; PVZ-04 à PVZ-08 dans les cercles de la boucle ;

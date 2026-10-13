@@ -48,9 +48,9 @@ const piece = (id: string) => {
   const trouve = dessinCadres && new RegExp(`<symbol id="${id}" viewBox="([^"]+)">([\\s\\S]*?)</symbol>`).exec(dessinCadres);
   return trouve ? { viewBox: trouve[1], corps: trouve[2].trim() } : undefined;
 };
-const POINTS = piece('points');
+const POINTS = piece('GLO-05-points');
 /** Le haut-parleur : le seul trait plein du téléphone de GLO-05. */
-const HAUT_PARLEUR = piece('telephone')?.corps.match(/<rect\b[^>]*fill="currentColor"[^>]*\/>/)?.[0];
+const HAUT_PARLEUR = piece('GLO-05-telephone')?.corps.match(/<rect\b[^>]*fill="currentColor"[^>]*\/>/)?.[0];
 
 /** Une région de l’image, en pourcentages de sa largeur et de sa hauteur. */
 export interface Region {
