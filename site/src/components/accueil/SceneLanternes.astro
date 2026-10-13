@@ -95,23 +95,23 @@ const svg = dessin
 
   @media (prefers-reduced-motion: no-preference) {
     .lanternes__plan:global(.animation-en-cours) :global(.lt-lumiere--source) {
-      animation: lanternes-source 2.7s ease both;
+      animation: lanternes-source calc(var(--d-scene) * 6.75) ease both;
     }
 
     .lanternes__plan:global(.animation-en-cours) :global(.lt-lumiere--relais) {
-      animation: lanternes-allumer 1s 0.8s ease both;
+      animation: lanternes-allumer calc(var(--d-scene) * 2.5) calc(var(--d-scene) * 2) ease both;
     }
 
     .lanternes__plan:global(.animation-en-cours) :global(.lt-lumiere--suite) {
-      animation: lanternes-allumer 1s 1.7s ease both;
+      animation: lanternes-allumer calc(var(--d-scene) * 2.5) calc(var(--d-scene) * 4.25) ease both;
     }
 
     .lanternes__plan:global(.animation-en-cours) :global(.lt-particule--premiere) {
-      animation: lanternes-transmettre-premiere 1s 0.15s ease-in-out both;
+      animation: lanternes-transmettre-premiere calc(var(--d-scene) * 2.5) calc(var(--d-scene) * 0.375) ease-in-out both;
     }
 
     .lanternes__plan:global(.animation-en-cours) :global(.lt-particule--seconde) {
-      animation: lanternes-transmettre-seconde 1s 1.05s ease-in-out both;
+      animation: lanternes-transmettre-seconde calc(var(--d-scene) * 2.5) calc(var(--d-scene) * 2.625) ease-in-out both;
     }
 
     @keyframes lanternes-source {

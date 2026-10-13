@@ -89,7 +89,7 @@ const svg = dessin
 
   @media (prefers-reduced-motion: no-preference) {
     .systeme__plan:global(.est-visible) :global(.sys-paquet) {
-      animation: systeme-requete 5.6s linear infinite;
+      animation: systeme-requete calc(var(--d-scene) * 14) linear infinite;
     }
 
     .systeme__plan:global(.est-visible) :global(.sys-paquet--donnees) {
@@ -105,12 +105,12 @@ const svg = dessin
     }
 
     .systeme__plan:global(.est-visible) :global(.sys-signal) {
-      animation: systeme-signal 5.6s ease infinite;
+      animation: systeme-signal calc(var(--d-scene) * 14) ease infinite;
     }
 
     /* La flamme se ravive à chaque message qu’elle émet. */
     .systeme__plan:global(.est-visible) :global(.sys-flamme) {
-      animation: systeme-flamme 5.6s ease infinite;
+      animation: systeme-flamme calc(var(--d-scene) * 14) ease infinite;
     }
 
     @keyframes systeme-flamme {

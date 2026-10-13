@@ -320,19 +320,19 @@ const classes = (l: Libelle) => [
 
   .plafond__plan:global(.est-trace) .annot {
     opacity: 1;
-    transition: opacity 0.45s ease;
+    transition: opacity calc(var(--d-scene) * 1.125) ease;
   }
 
   .plafond__plan:global(.est-trace) .annot--1 {
-    transition-delay: 1.45s;
+    transition-delay: calc(var(--d-scene) * 3.625);
   }
 
   .plafond__plan:global(.est-trace) .annot--3 {
-    transition-delay: 1.7s;
+    transition-delay: calc(var(--d-scene) * 4.25);
   }
 
   .plafond__plan:global(.est-trace) .annot--2 {
-    transition-delay: 1.95s;
+    transition-delay: calc(var(--d-scene) * 4.875);
   }
 
   @media print {

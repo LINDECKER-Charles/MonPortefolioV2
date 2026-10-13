@@ -164,11 +164,11 @@ const ETAPES: Etape[] = [
   }
 
   .animation-en-cours .chaine__sceau {
-    animation: chaine-glisse 1.6s cubic-bezier(.4, 0, .2, 1) both;
+    animation: chaine-glisse calc(var(--d-scene) * 4) cubic-bezier(.4, 0, .2, 1) both;
   }
 
   .animation-en-cours .chaine__trace {
-    animation: chaine-trace 1.6s cubic-bezier(.4, 0, .2, 1) both;
+    animation: chaine-trace calc(var(--d-scene) * 4) cubic-bezier(.4, 0, .2, 1) both;
   }
 
   @keyframes chaine-glisse {

@@ -200,7 +200,7 @@ const etapes = Array.from({ length: GITGUD.delai * 2 - 1 }, (_, index) => {
   /* Les fins de tour s’allument une à une. */
   .animation-en-cours .etape {
     animation: rebours-etape var(--d-scene) var(--courbe) both;
-    animation-delay: calc(var(--rang) * 170ms);
+    animation-delay: calc(var(--rang) * var(--d-scene) * 0.425);
   }
 
   .animation-en-cours .etape--fin {

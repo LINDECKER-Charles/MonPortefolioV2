@@ -167,12 +167,12 @@ const milliers = (n: number) => n.toLocaleString('fr-FR').replace(/\s/g, ' ');
 
   .animation-en-cours .blr-planche__liste svg {
     animation: blr-poindre var(--d-scene) var(--courbe) both;
-    animation-delay: calc(var(--rang) * 70ms);
+    animation-delay: calc(var(--rang) * var(--d-scene) * 0.175);
   }
 
   .animation-en-cours .blr-planche__entree {
     animation: blr-luire calc(var(--d-scene) * 2) var(--courbe) both;
-    animation-delay: calc(var(--rang) * 70ms + var(--d-scene));
+    animation-delay: calc(var(--rang) * var(--d-scene) * 0.175 + var(--d-scene));
   }
 
   @keyframes blr-poindre {

@@ -203,7 +203,7 @@ const versions = (['large', 'compacte'] as const).map((nom) => {
 
   .animation-en-cours .eq-arrivee {
     animation: eq-arriver var(--d-scene) var(--courbe) both;
-    animation-delay: calc(var(--d-scene) + var(--rang) * 110ms);
+    animation-delay: calc(var(--d-scene) + var(--rang) * var(--d-scene) * 0.275);
   }
 
   .animation-en-cours .eq-jalon {

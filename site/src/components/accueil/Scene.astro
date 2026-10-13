@@ -202,15 +202,15 @@ const gid = `scene-${nom}`;
 
   @media (prefers-reduced-motion: no-preference) {
     .scene:global(.animation-en-cours) .scene__voile {
-      animation: scene-voile 1.9s var(--courbe) both;
+      animation: scene-voile var(--d-recit) var(--courbe) both;
     }
 
     .scene:global(.animation-en-cours) .scene__halo {
-      animation: scene-halo 1.9s ease both;
+      animation: scene-halo var(--d-recit) ease both;
     }
 
     .scene:global(.animation-en-cours) .scene__plan :global(.visuel) {
-      animation: scene-image 1.9s var(--courbe) both;
+      animation: scene-image var(--d-recit) var(--courbe) both;
     }
 
     /* La lanterne s’allume, vacille, puis sa lumière gagne toute l’image. */
