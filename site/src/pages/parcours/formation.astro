@@ -85,7 +85,7 @@ const preuve = (href: string) => attributsMesure(href, { emplacement: 'preuves' 
           ETUDES_AVANT.map((etude) => (
             <li class="etape etape--station" id={etude.id}>
               <article class="station" aria-labelledby={`${etude.id}-titre`}>
-                <Visuel id={etude.visuel} alt="" class="station__visuel" sizes="(max-width: 760px) 96px, 200px" />
+                <Visuel id={etude.visuel} alt="" class="station__visuel" sizes="(max-width: 760px) 72px, 64px" />
                 <div class="station__texte">
                   <p class="station__quand">
                     {etude.quand?.debut ? (
@@ -312,10 +312,13 @@ const preuve = (href: string) => attributsMesure(href, { emplacement: 'preuves' 
     background: var(--encre);
   }
 
-  /* Le chemin d’avant : cinq stations sur une ligne */
+  /* Le chemin d’avant : cinq stations compactes sur une ligne, reliées par un
+     trait qui finit sur la dernière pastille. La vignette se tient à gauche du
+     texte ; dans une colonne étroite, elle passe au-dessus. */
   .etape--station {
     position: relative;
     padding-top: var(--s5);
+    container-type: inline-size;
   }
 
   .etape--station::before {
@@ -328,7 +331,7 @@ const preuve = (href: string) => attributsMesure(href, { emplacement: 'preuves' 
   }
 
   .etape--station:last-child::before {
-    right: 50%;
+    right: calc(100% - 12px);
   }
 
   .etape--station::after {
@@ -344,9 +347,21 @@ const preuve = (href: string) => attributsMesure(href, { emplacement: 'preuves' 
   }
 
   .station {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr);
     gap: var(--s3);
+    align-items: start;
+  }
+
+  .station :global(.station__visuel) {
+    width: 56px;
+  }
+
+  @container (max-width: 180px) {
+    .station {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s2);
+    }
   }
 
   .station__texte {
@@ -365,8 +380,8 @@ const preuve = (href: string) => attributsMesure(href, { emplacement: 'preuves' 
   }
 
   .station h3 {
-    font-size: var(--t-l);
-    line-height: 1.1;
+    font-size: var(--t-m);
+    line-height: 1.2;
   }
 
   .station__organisme,
@@ -486,8 +501,8 @@ const preuve = (href: string) => attributsMesure(href, { emplacement: 'preuves' 
 
   .certification-ligne {
     display: grid;
-    gap: var(--s1);
-    padding-block: var(--s3);
+    gap: 0;
+    padding-block: var(--s2) var(--s1);
     font-size: var(--t-s);
     line-height: 1.4;
   }
@@ -510,7 +525,9 @@ const preuve = (href: string) => attributsMesure(href, { emplacement: 'preuves' 
     display: inline-flex;
     align-items: center;
     gap: var(--s2);
-    min-height: 32px;
+    min-height: 44px;
+    padding-inline: 4px;
+    margin-inline: -4px;
     font-size: var(--t-xs);
     font-variant-numeric: tabular-nums lining-nums;
   }
@@ -554,16 +571,6 @@ const preuve = (href: string) => attributsMesure(href, { emplacement: 'preuves' 
     color: var(--eteint);
   }
 
-  @media (max-width: 1100px) {
-    .formation-timeline {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .etape--station:nth-child(4)::before {
-      right: calc(-1 * var(--s4));
-    }
-  }
-
   @media (max-width: 760px) {
     .formation-timeline {
       grid-template-columns: minmax(0, 1fr);
@@ -572,10 +579,6 @@ const preuve = (href: string) => attributsMesure(href, { emplacement: 'preuves' 
 
     .dwwm {
       grid-template-columns: minmax(0, 1fr);
-    }
-
-    .dwwm :global(.dwwm__visuel) {
-      grid-row: 1;
     }
 
     .dwwm h3 {
@@ -613,11 +616,18 @@ const preuve = (href: string) => attributsMesure(href, { emplacement: 'preuves' 
       top: 0;
     }
 
+    .station,
+    .etape--station {
+      container-type: normal;
+    }
+
     .station {
-      display: grid;
-      grid-template-columns: 96px minmax(0, 1fr);
+      grid-template-columns: 72px minmax(0, 1fr);
       gap: var(--s4);
-      align-items: start;
+    }
+
+    .station :global(.station__visuel) {
+      width: 72px;
     }
 
     .certifications {

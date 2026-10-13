@@ -173,8 +173,9 @@ export const ETUDES_AVANT: readonly Etude[] = [
   {
     id: 'autodidacte',
     titre: 'Programmation en autodidacte',
-    organisme: 'Le C avec OpenClassrooms',
+    organisme: 'OpenClassrooms',
     quand: { texte: 'Vers 13 ans' },
+    suivi: 'Le C, pour passer ensuite au C++ et coder mes jeux sur Unreal Engine',
     visuel: 'FOR-03',
   },
 ];
@@ -184,6 +185,6 @@ export const FRONTEND_MENTOR = {
   profil: 'https://www.frontendmentor.io/profile/LINDECKER-Charles',
   projets: '20',
   points: '385',
-  releve: 'Repères relevés en octobre 2026.',
+  releve: 'Repères relevés le 9 octobre 2026.',
   visuel: 'FOR-09',
 } as const;
