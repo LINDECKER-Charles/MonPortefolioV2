@@ -30,6 +30,8 @@ export const LIENS = {
   npm: 'https://www.npmjs.com/package/@charles_lindecker/gup',
   architecture: fige('docs/development/architecture.md'),
   decisions: fige('docs/development/architecture.md#notable-decisions'),
+  /** L’exception Scoop à la règle « aucun shell », ligne 484 de l’architecture. */
+  exceptionScoop: fige('docs/development/architecture.md?plain=1#L484'),
   pourquoi: fige('docs/guide/scope.md#why-it-exists'),
   registre: fige('src/core/registry.ts#L216'),
   catalogue: fige('docs/guide/providers-catalog.md#platform-support'),
@@ -213,7 +215,7 @@ export const CAS_PARTICULIERS: readonly { texte: string; trace: LienProjet }[] =
     trace: { href: LIENS.winget, libelle: 'Le commit du 19/05/2026' },
   },
   {
-    texte: 'winget peut s’arrêter sur une question que personne ne voit et bloquer tout le lot : gup lui interdit d’en poser, et donne la commande à lancer à la main.',
+    texte: 'winget peut s’arrêter sur une question (le dossier d’installation) et retenir tout le lot : gup lui interdit d’en poser, et donne la commande à lancer à la main.',
     trace: { href: LIENS.wingetQuestion, libelle: 'Le commit du 06/10/2026' },
   },
   {
@@ -290,7 +292,7 @@ export const DECISIONS: readonly Decision[] = [
   },
   {
     contrainte: 'gup lance des programmes avec des noms de paquets venus de l’extérieur.',
-    choix: 'Tous les programmes partent d’un seul point du code, arguments en liste, sans shell ; un test refuse tout nouvel appel à un shell.',
+    choix: 'Tous les programmes partent d’un seul point du code, arguments en liste, sans shell. Seul Scoop, qui l’exige, passe par une liste blanche contrôlée ; un test refuse tout nouvel appel à un shell.',
     effet: 'Un nom de paquet reste un argument, jamais une commande.',
     lien: { href: LIENS.shell, libelle: 'Le test de sécurité' },
   },
