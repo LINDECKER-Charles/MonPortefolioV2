@@ -275,20 +275,6 @@ const capture = (nom: string) => {
     border-radius: var(--r2);
   }
 
-  /* La nuit, l’acte de veille se confond presque avec le fond : un filet et
-     une surface le redessinent. */
-  :global(:root[data-theme='nuit']) .gup-essai {
-    border: 1px solid var(--trait);
-    background: var(--surface);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :global(:root:not([data-theme])) .gup-essai {
-      border: 1px solid var(--trait);
-      background: var(--surface);
-    }
-  }
-
   .gup-essai__texte {
     display: grid;
     gap: var(--s3);
