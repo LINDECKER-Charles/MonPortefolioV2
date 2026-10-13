@@ -13,10 +13,12 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node tools/verifier-site.mjs dist",
+    "build": "astro build && node tools/verifier-site.mjs dist && node --disable-warning=ExperimentalWarning tools/visuels-manquants.mjs --resume",
     "check": "astro check",
     "test": "vitest run && node --test \"server/*.test.mjs\"",
     "test:e2e": "playwright test",
+    "visuels": "node --disable-warning=ExperimentalWarning tools/visuels-manquants.mjs",
+    "visuels:doc": "node --disable-warning=ExperimentalWarning tools/generer-visuels.mjs",
     "serve": "node --env-file-if-exists=../.env server/server.mjs",
     "preview": "npm run build && npm run serve"
   },
