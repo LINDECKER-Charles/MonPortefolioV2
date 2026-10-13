@@ -1,5 +1,7 @@
 # Assets à générer — liste 2, les compléments (direction D « Mode d'emploi »)
 
+> **Remplacé le 13/10/2026 par [`docs/visuels-a-generer.md`](visuels-a-generer.md) ; ne pas utiliser pour produire.** Ce brief de la direction précédente (D « Mode d’emploi ») reste pour mémoire : ses règles (masque alpha monochrome, prompts propres) sont contraires à la commande actuelle.
+
 > Deuxième liste, volontairement large : mieux vaut un asset de trop qu'un manque au moment
 > d'écrire les pages. Elle complète la [liste 1](assets-a-generer.md) (le socle) et le
 > [brief du logo](logo.md). Les **règles de production** sont celles de la liste 1, à relire avant
