@@ -266,7 +266,7 @@ export const DECISIONS: readonly Decision[] = [
   {
     contrainte: 'Des parties en temps réel, sur une stack qui n’était pas pensée pour un jeu.',
     choix: 'SignalR pour le temps réel, puis le cache, le prérendu serveur et un déploiement optimisé.',
-    effet: 'Des outils que je pensais connaître, approfondis un par un.',
+    effet: 'SignalR, le cache, l’optimisation du déploiement et le prérendu serveur : ce que ce projet m’a appris.',
   },
 ];
 
