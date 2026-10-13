@@ -169,6 +169,11 @@ button {
   color: var(--encre);
 }
 
+.citation:where(blockquote) {
+  margin: var(--s6) 0 0;
+  max-width: 24ch;
+}
+
 .citation cite {
   display: block;
   margin-top: var(--s3);
@@ -425,110 +430,13 @@ html:not(.js) [data-js-seulement] {
   }
 
   mark,
-  .surligneur,
-  .surligne {
+  .surligneur {
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
   }
 }
 
-/* =====================================================================
- * Héritage de la direction « Mode d’emploi ». À RETIRER AU LOT 6 : ces
- * classes ne servent qu’aux pages pas encore refaites. Elles lisent les
- * nouveaux jetons, pour rester lisibles et contrastées jour et nuit.
- * ===================================================================== */
-.wrap {
-  max-width: var(--largeur);
-  margin-inline: auto;
-  padding-inline: var(--gouttiere);
-}
-
-.nuit-seul {
-  display: none !important;
-}
-
-:root[data-theme='nuit'] .nuit-seul {
-  display: revert !important;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .nuit-seul {
-    display: revert !important;
-  }
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5em;
-  min-height: 48px;
-  padding: 11px 22px;
-  border: 1px solid var(--accent);
-  border-radius: var(--r3);
-  font: 600 1rem/1.2 var(--police-texte);
-  text-decoration: none;
-  cursor: pointer;
-  transition: background-color var(--d-ui) var(--courbe), border-color var(--d-ui) var(--courbe), color var(--d-ui) var(--courbe);
-}
-
-.btn--plein {
-  background: var(--bouton);
-  border-color: var(--bouton);
-  color: var(--bouton-texte);
-}
-
-.btn--plein:hover {
-  background: var(--bouton-survol);
-  border-color: var(--bouton-survol);
-  color: var(--bouton-texte);
-}
-
-.btn--contour {
-  background: transparent;
-  border-color: var(--trait);
-  color: var(--accent);
-}
-
-.btn--contour:hover {
-  border-color: var(--accent);
-}
-
-.btn--petit {
-  min-height: 44px;
-  padding: 8px 16px;
-  font-size: var(--t-s);
-}
-
-.btn svg {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-}
-
-.bouton-icone {
-  display: inline-grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  border: 1px solid var(--filet);
-  border-radius: var(--r2);
-  background: transparent;
-  color: var(--encre);
-  cursor: pointer;
-}
-
-.bouton-icone:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-.bouton-icone svg {
-  width: 22px;
-  height: 22px;
-}
-
+/* ===== Scènes et figures ===== */
 /* Les scènes sont leurs propres commandes ; le contour n’apparaît qu’au clavier. */
 .js [data-rejouer] {
   cursor: pointer;
@@ -540,117 +448,14 @@ html:not(.js) [data-js-seulement] {
   border-radius: var(--r2);
 }
 
+.picto {
+  display: block;
+  flex-shrink: 0;
+}
+
 @media print {
   [data-figure-animation] * {
     animation: none !important;
     transition: none !important;
   }
-}
-
-.note {
-  font-family: var(--police-titre);
-  font-style: italic;
-  font-weight: 400;
-  font-size: var(--t-m);
-  line-height: 1.4;
-  color: var(--eteint);
-}
-
-.citation:where(blockquote) {
-  margin: var(--s6) 0 0;
-  max-width: 24ch;
-}
-
-.surligne {
-  background: var(--surligneur);
-  color: var(--sur-surligneur);
-  padding: 0 0.18em;
-  border-radius: var(--r1);
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-}
-
-.legende {
-  margin-top: var(--s3);
-  font-size: var(--t-xs);
-  line-height: 1.45;
-  color: var(--eteint);
-}
-
-.legende b {
-  color: var(--encre);
-  font-weight: 600;
-  margin-right: 0.3em;
-}
-
-.figure {
-  position: relative;
-}
-
-.figure__plan {
-  background: var(--surface);
-  border: 1px solid var(--filet);
-  border-radius: var(--r2);
-  padding: clamp(10px, 2.4vw, 28px);
-}
-
-.figure__plan svg {
-  width: 100%;
-  height: auto;
-}
-
-.figure--compacte {
-  display: none;
-}
-
-@media (max-width: 640px) {
-  .figure--large {
-    display: none;
-  }
-
-  .figure--compacte {
-    display: block;
-  }
-}
-
-.f-t {
-  font: 500 14px var(--police-texte);
-  fill: var(--eteint);
-}
-
-.figure--compacte .f-t {
-  font-size: 15px;
-}
-
-.f-t--fort {
-  font-weight: 700;
-  fill: var(--encre);
-}
-
-.f-note {
-  font: italic 400 18px var(--police-titre);
-  fill: var(--encre);
-}
-
-.f-axes {
-  fill: none;
-  stroke: var(--trait);
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.f-seuil {
-  stroke: var(--trait);
-  stroke-width: 1;
-  stroke-dasharray: 4 5;
-}
-
-.f-plein {
-  fill: var(--laiton);
-}
-
-.picto {
-  display: block;
-  flex-shrink: 0;
 }

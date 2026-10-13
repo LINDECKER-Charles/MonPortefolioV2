@@ -104,23 +104,23 @@ const { geste } = Astro.props;
     width: 100%;
     height: auto;
     fill: none;
-    stroke: var(--bleu);
+    stroke: var(--accent);
     stroke-width: 1.6;
     stroke-linecap: round;
     stroke-linejoin: round;
   }
-  .papier { fill: var(--blanc); }
-  .surface { fill: var(--papier); stroke: var(--trait-doux); }
-  .accent { fill: color-mix(in srgb, var(--bleu) 9%, var(--blanc)); }
-  .trait { stroke: var(--bleu); }
-  .doux { stroke: var(--trait-doux); stroke-width: 1.3; }
+  .papier { fill: var(--surface); }
+  .surface { fill: var(--fond); stroke: var(--trait); }
+  .accent { fill: color-mix(in srgb, var(--accent) 9%, var(--surface)); }
+  .trait { stroke: var(--accent); }
+  .doux { stroke: var(--trait); stroke-width: 1.3; }
   .repere { stroke: var(--filet); stroke-width: 1; }
-  .plein { fill: var(--bleu); stroke: none; }
+  .plein { fill: var(--accent); stroke: none; }
   .rang {
-    fill: var(--bleu);
+    fill: var(--accent);
     stroke: none;
     text-anchor: middle;
-    font: 700 18px var(--font-texte);
+    font: 700 18px var(--police-texte);
   }
   .rang--secondaire { fill: var(--encre); font-size: 16px; }
 </style>

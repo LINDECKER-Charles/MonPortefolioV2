@@ -324,7 +324,7 @@ const format = type === 'diplome'
     display: block;
     width: 100%;
     height: auto;
-    color: var(--formation-visuel-encre, var(--bleu));
+    color: var(--formation-visuel-encre, var(--accent));
   }
 
   .visuel-formation path,
@@ -335,7 +335,7 @@ const format = type === 'diplome'
   }
 
   .vf-papier {
-    fill: var(--formation-visuel-papier, var(--blanc));
+    fill: var(--formation-visuel-papier, var(--surface));
   }
 
   .vf-teinte {
@@ -360,7 +360,7 @@ const format = type === 'diplome'
   .vf-glyphe {
     fill: currentColor;
     stroke: none;
-    font: 800 34px var(--font-texte);
+    font: 800 34px var(--police-texte);
   }
 
   .vf-secondaire {
@@ -384,13 +384,13 @@ const format = type === 'diplome'
 
   @media print {
     .visuel-formation {
-      color: var(--bleu);
+      color: var(--accent);
       print-color-adjust: exact;
       -webkit-print-color-adjust: exact;
     }
 
     .vf-papier {
-      fill: var(--blanc);
+      fill: var(--surface);
     }
   }
 </style>
