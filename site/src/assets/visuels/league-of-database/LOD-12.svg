@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="96" height="96" class="v-lod">
+  <title>Une porte entrouverte d’où la lumière de la lanterne trace un trapèze au sol</title>
+  <!--
+    LOD-12, dessiné à la main : grille de 48, trait de 1,75 en currentColor.
+    Jalon 4 : la bascule en production. Seul picto de la série à porter la lumière.
+    Couleurs par jetons quand le dessin est inséré dans la page ; seul, il
+    suit le color-scheme de son conteneur (svg:root et prefers-color-scheme).
+  -->
+  <style>
+    svg:root { color: #141312; --surface: #fbfaf7; --trait: #7b7368; --laiton: #7a4f10; --lanterne: #f0b24a; }
+    @media (prefers-color-scheme: dark) { svg:root { color: #e4e7ee; --surface: #1a1e29; --trait: #687083; --laiton: #f0b24a; } }
+    .v-lod .t { fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+    .v-lod .f { fill: none; stroke: var(--trait); stroke-width: 1.1; stroke-linecap: round; stroke-linejoin: round; }
+    .v-lod .p { stroke-dasharray: 2 2.4; }
+    .v-lod .a { fill: var(--surface); }
+    .v-lod .l { fill: var(--laiton); }
+    .v-lod .h { fill: var(--lanterne); opacity: 0.32; }
+  </style>
+  <path class="h" d="M20 40.5h12l13 5.5H14.5Z" style="opacity:.55" />
+  <path class="h" d="M20 6.5h12v34H20Z" style="opacity:.9" />
+  <path class="t" d="M12 40.5V6.5h24v34M4 40.5h40" />
+  <path class="t a" d="M20 6.5 12 9.5v34l8-3Z" />
+  <circle class="t" cx="15.5" cy="25.5" r=".6" />
+  <path class="f" d="M24 46h18M10 46h4" />
+</svg>

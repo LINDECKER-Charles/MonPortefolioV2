@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="96" height="96" class="v-lod">
+  <title>Une bulle de parole vide et pointillée, renvoyée par une flèche vers une bulle pleine</title>
+  <!--
+    LOD-06, dessiné à la main : grille de 48, trait de 1,75 en currentColor.
+    Piège 2 : une langue qui manque renvoie à la langue commune.
+    Couleurs par jetons quand le dessin est inséré dans la page ; seul, il
+    suit le color-scheme de son conteneur (svg:root et prefers-color-scheme).
+  -->
+  <style>
+    svg:root { color: #141312; --surface: #fbfaf7; --trait: #7b7368; --laiton: #7a4f10; --lanterne: #f0b24a; }
+    @media (prefers-color-scheme: dark) { svg:root { color: #e4e7ee; --surface: #1a1e29; --trait: #687083; --laiton: #f0b24a; } }
+    .v-lod .t { fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+    .v-lod .f { fill: none; stroke: var(--trait); stroke-width: 1.1; stroke-linecap: round; stroke-linejoin: round; }
+    .v-lod .p { stroke-dasharray: 2 2.4; }
+    .v-lod .a { fill: var(--surface); }
+    .v-lod .l { fill: var(--laiton); }
+    .v-lod .h { fill: var(--lanterne); opacity: 0.32; }
+  </style>
+  <path class="t p" d="M7 9.5h17a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H14l-4 4v-4H7a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2Z" />
+  <path class="t a" d="M21 24h20a2.5 2.5 0 0 1 2.5 2.5v10.5a2.5 2.5 0 0 1-2.5 2.5h-4v5l-5-5H21a2.5 2.5 0 0 1-2.5-2.5V26.5A2.5 2.5 0 0 1 21 24Z" />
+  <path class="f" d="M23.5 29.5h15M23.5 34h10" />
+  <path class="t" d="M29 15.5c5.5-1 9 2 9.5 6.5" />
+  <path class="l" d="M35.6 20.6 38.6 25l2.6-4.6Z" />
+</svg>

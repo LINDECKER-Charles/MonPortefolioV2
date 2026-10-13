@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="96" height="96" class="v-lod">
+  <title>Un éclair frappe un registre fermé, qui reste intact, son signet en place</title>
+  <!--
+    LOD-09, dessiné à la main : grille de 48, trait de 1,75 en currentColor.
+    Piège 5 : une erreur passagère ne laisse pas de trace (jamais enregistrée comme une absence).
+    Couleurs par jetons quand le dessin est inséré dans la page ; seul, il
+    suit le color-scheme de son conteneur (svg:root et prefers-color-scheme).
+  -->
+  <style>
+    svg:root { color: #141312; --surface: #fbfaf7; --trait: #7b7368; --laiton: #7a4f10; --lanterne: #f0b24a; }
+    @media (prefers-color-scheme: dark) { svg:root { color: #e4e7ee; --surface: #1a1e29; --trait: #687083; --laiton: #f0b24a; } }
+    .v-lod .t { fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+    .v-lod .f { fill: none; stroke: var(--trait); stroke-width: 1.1; stroke-linecap: round; stroke-linejoin: round; }
+    .v-lod .p { stroke-dasharray: 2 2.4; }
+    .v-lod .a { fill: var(--surface); }
+    .v-lod .l { fill: var(--laiton); }
+    .v-lod .h { fill: var(--lanterne); opacity: 0.32; }
+  </style>
+  <path class="t a" d="M12 18h22.5a2 2 0 0 1 2 2v20.5a2 2 0 0 1-2 2H12Z" />
+  <path class="t" d="M12 18v24.5M15.5 18v24.5" />
+  <path class="f" d="M21 25.5h10M21 29h7" />
+  <path class="l" d="M28.5 42.5v4l1.7-1.4 1.7 1.4v-4Z" />
+  <path class="t" d="M26.5 2.5l-5 8h5l-4 6.5" />
+  <path class="f" d="M17.5 14.5l-1.5-1.5M30 14l1.6-1.4M23.5 12.2v-1" />
+</svg>

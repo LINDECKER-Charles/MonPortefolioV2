@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="96" height="96" class="v-lod">
+  <title>Une balance à deux plateaux de niveau, une même pile de feuilles sur chacun</title>
+  <!--
+    LOD-11, dessiné à la main : grille de 48, trait de 1,75 en currentColor.
+    Jalon 3 : la parité vérifiée. Sans lumière : seul le jalon atteint (LOD-12) la porte.
+    Couleurs par jetons quand le dessin est inséré dans la page ; seul, il
+    suit le color-scheme de son conteneur (svg:root et prefers-color-scheme).
+  -->
+  <style>
+    svg:root { color: #141312; --surface: #fbfaf7; --trait: #7b7368; --laiton: #7a4f10; --lanterne: #f0b24a; }
+    @media (prefers-color-scheme: dark) { svg:root { color: #e4e7ee; --surface: #1a1e29; --trait: #687083; --laiton: #f0b24a; } }
+    .v-lod .t { fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+    .v-lod .f { fill: none; stroke: var(--trait); stroke-width: 1.1; stroke-linecap: round; stroke-linejoin: round; }
+    .v-lod .p { stroke-dasharray: 2 2.4; }
+    .v-lod .a { fill: var(--surface); }
+    .v-lod .l { fill: var(--laiton); }
+    .v-lod .h { fill: var(--lanterne); opacity: 0.32; }
+  </style>
+  <path class="t" d="M24 8v32M15 42.5h18M18 42.5l6-3 6 3M8 14h32" />
+  <circle class="t a" cx="24" cy="10" r="2.2" />
+  <path class="t" d="M10 14 4.5 27.5M10 14l5.5 13.5M38 14l-5.5 13.5M38 14l5.5 13.5" />
+  <path class="t a" d="M3.5 27.5h13a6.5 4 0 0 1-13 0Z" />
+  <path class="t a" d="M31.5 27.5h13a6.5 4 0 0 1-13 0Z" />
+  <path class="t a" d="M6 27.5v-3.2h8v3.2M6.8 24.3v-2.8h6.4v2.8" />
+  <path class="t a" d="M34 27.5v-3.2h8v3.2M34.8 24.3v-2.8h6.4v2.8" />
+</svg>

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="96" height="96" class="v-lod">
+  <title>Une bande de pellicule de trois images vides ; l’étiquette de bord, vide, est barrée</title>
+  <!--
+    LOD-08, dessiné à la main : grille de 48, trait de 1,75 en currentColor.
+    Piège 4 : une image sans date (les illustrations et vidéos ne sont pas versionnées).
+    Couleurs par jetons quand le dessin est inséré dans la page ; seul, il
+    suit le color-scheme de son conteneur (svg:root et prefers-color-scheme).
+  -->
+  <style>
+    svg:root { color: #141312; --surface: #fbfaf7; --trait: #7b7368; --laiton: #7a4f10; --lanterne: #f0b24a; }
+    @media (prefers-color-scheme: dark) { svg:root { color: #e4e7ee; --surface: #1a1e29; --trait: #687083; --laiton: #f0b24a; } }
+    .v-lod .t { fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+    .v-lod .f { fill: none; stroke: var(--trait); stroke-width: 1.1; stroke-linecap: round; stroke-linejoin: round; }
+    .v-lod .p { stroke-dasharray: 2 2.4; }
+    .v-lod .a { fill: var(--surface); }
+    .v-lod .l { fill: var(--laiton); }
+    .v-lod .h { fill: var(--lanterne); opacity: 0.32; }
+  </style>
+  <rect class="t a" x="4" y="11" width="40" height="22" rx="1.5" />
+  <path class="f" d="M7.5 14.2h2M13.5 14.2h2M19.5 14.2h2M25.5 14.2h2M31.5 14.2h2M37.5 14.2h2M7.5 29.8h2M13.5 29.8h2M19.5 29.8h2M25.5 29.8h2M31.5 29.8h2M37.5 29.8h2" />
+  <rect class="t" x="7" y="17" width="9.5" height="10" rx=".8" />
+  <rect class="t" x="19.2" y="17" width="9.5" height="10" rx=".8" />
+  <rect class="t" x="31.5" y="17" width="9.5" height="10" rx=".8" />
+  <path class="t a" d="M24 33v4.5h13V33" />
+  <path class="l" d="M27.2 36.6l6.4-2.6.5 1.2-6.4 2.6Z" />
+</svg>

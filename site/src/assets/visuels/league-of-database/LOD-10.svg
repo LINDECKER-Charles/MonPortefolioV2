@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="96" height="96" class="v-lod">
+  <title>Un carnet ouvert vu de trois quarts, dix onglets qui dépassent de la tranche, un ruban marque-page</title>
+  <!--
+    LOD-10, dessiné à la main : grille de 48, trait de 1,75 en currentColor.
+    Jalon 2 : les dix décisions écrites. Sans lumière : seul le jalon atteint (LOD-12) la porte.
+    Couleurs par jetons quand le dessin est inséré dans la page ; seul, il
+    suit le color-scheme de son conteneur (svg:root et prefers-color-scheme).
+  -->
+  <style>
+    svg:root { color: #141312; --surface: #fbfaf7; --trait: #7b7368; --laiton: #7a4f10; --lanterne: #f0b24a; }
+    @media (prefers-color-scheme: dark) { svg:root { color: #e4e7ee; --surface: #1a1e29; --trait: #687083; --laiton: #f0b24a; } }
+    .v-lod .t { fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+    .v-lod .f { fill: none; stroke: var(--trait); stroke-width: 1.1; stroke-linecap: round; stroke-linejoin: round; }
+    .v-lod .p { stroke-dasharray: 2 2.4; }
+    .v-lod .a { fill: var(--surface); }
+    .v-lod .l { fill: var(--laiton); }
+    .v-lod .h { fill: var(--lanterne); opacity: 0.32; }
+  </style>
+  <path class="f" d="M38.3 10.5h3.2M38.6 13.6h3.2M38.9 16.7h3.2M39.2 19.8h3.2M39.5 22.9h3.2M39.8 26h3.2M40.1 29.1h3.2M40.4 32.2h3.2M40.7 35.3h3.2M41 38.4h3.2" style="stroke-width:2.2" />
+  <path class="t a" d="M24 12.5c-5-3.5-11.5-4-18-3v29c6.5-1 13-.5 18 3 5-3.5 11.5-4 18-3v-29c-6.5-1-13-.5-18 3Z" />
+  <path class="t" d="M24 12.5v29" />
+  <path class="f" d="M10 16c3.8-.6 7.6-.3 10.5 1.2M10 21c3.8-.6 7.6-.3 10.5 1.2M10 26c3.8-.6 7.6-.3 10.5 1.2M10 31c3.8-.6 7.6-.3 10.5 1.2M27.5 17.2c2.9-1.5 6.7-1.8 10.5-1.2M27.5 22.2c2.9-1.5 6.7-1.8 10.5-1.2M27.5 27.2c2.9-1.5 6.7-1.8 10.5-1.2" />
+  <path class="t" d="M30 9.8v10.5l1.8-1.6 1.8 1.6v-11" />
+</svg>
