@@ -154,21 +154,32 @@ const { projet } = projetDeLaVitrine(id);
     margin-top: var(--s3);
   }
 
-  /* Les repères en bandeau : trois cases à filets, chiffres en Sans 600. */
+  /* Les repères en bandeau : trois cases à filets, chiffres en Sans 600. Le
+     filet d’encre de la fiche ferme le bandeau : pas de second trait. */
+  .projet-tete__preuves :global(.preuves-chiffrees--bandeau) {
+    border-bottom: 0;
+  }
+
   .projet-tete__preuves :global(.preuves-chiffrees--bandeau > *) {
     padding-block: var(--s3);
   }
 
-  .projet-tete__preuves :global(.preuve-chiffree) {
-    grid-template-columns: max-content minmax(0, 1fr);
-    column-gap: var(--s4);
-    row-gap: 2px;
-  }
+  /* Le chiffre (interligne 1) centré sur la première ligne du libellé
+     (interligne 1,45) : les trois chiffres sur la même ligne. Sous 860 px,
+     PreuvesChiffrees les pose en colonne commune. */
+  @media (min-width: 861px) {
+    .projet-tete__preuves :global(.preuve-chiffree) {
+      grid-template-columns: max-content minmax(0, 1fr);
+      column-gap: var(--s4);
+      row-gap: 2px;
+    }
 
-  .projet-tete__preuves :global(.preuve-chiffree__valeur) {
-    grid-row: span 2;
-    align-self: center;
-    min-width: 1.4em;
+    .projet-tete__preuves :global(.preuve-chiffree__valeur) {
+      grid-row: span 2;
+      align-self: start;
+      min-width: 1.4em;
+      margin-top: calc((var(--t-s) * 1.45 - var(--t-2xl)) / 2);
+    }
   }
 
   @media (max-width: 1100px) {
@@ -194,10 +205,6 @@ const { projet } = projetDeLaVitrine(id);
 
     .projet-tete__actions {
       gap: 0 var(--s5);
-    }
-
-    .projet-tete__preuves :global(.preuve-chiffree) {
-      column-gap: var(--s3);
     }
   }
 </style>
