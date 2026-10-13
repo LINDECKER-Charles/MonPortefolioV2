@@ -62,6 +62,31 @@ test('le nom canonique, l’étiquette de preuve et trois décisions sourcées',
   const decisions = page.locator('#construit .decision');
   await expect(decisions).toHaveCount(3);
   await expect(decisions.first()).toContainText('Un seul croisement de traits sur 1 008, contre 68 sur 319.');
+  // Chacune des trois renvoie à son étape du journal public.
+  for (const decision of await decisions.all()) {
+    await expect(decision.locator('a[href="https://bloodborne-legendary-run.com/fr/changelog"]')).toHaveCount(1);
+  }
+});
+
+test('la légende de l’en-tête ne nomme que ce qui est visible', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const legende = page.locator('.blr-tete__legende');
+  const bureau = page.locator('.blr-tete__bureau');
+  if ((page.viewportSize()?.width ?? 0) > 860) {
+    await expect(bureau).toBeVisible();
+    await expect(legende).toHaveText('Un boss vaincu : l’étoile s’allume. Derrière, la carte des constellations sur ordinateur.');
+  } else {
+    await expect(bureau).toBeHidden();
+    expect(await legende.evaluate((el) => (el as HTMLElement).innerText.trim())).toMatch(/^Un boss vaincu\s: l’étoile s’allume\.$/);
+  }
+});
+
+test('le guide : fiches reliées aux objectifs, cycle de la partie et noms corrigés', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const guide = page.locator('#guide');
+  await expect(guide).toContainText('Chaque objectif renvoie aux fiches qui en parlent.');
+  await expect(guide).toContainText('Le cycle choisi, de la première partie aux suivantes, adapte les données du combat.');
+  await expect(guide).toContainText('143 appellations corrigées');
 });
 
 test('la fiche technique : sept cases, statut à forme et mot, liens publics mesurés', async ({ page }) => {
@@ -237,8 +262,10 @@ test('les rayons de la boutique défilent sans déplacer la page', async ({ page
   await page.keyboard.press('ArrowRight');
   await expect(boutique.getByRole('button', { name: 'Portraits', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await expect(boutique.getByRole('button', { name: 'Voir le rayon suivant', exact: true })).toHaveAttribute('aria-disabled', 'true');
+  await expect(boutique.locator('[data-blr-boutique-position]')).toHaveText('3 / 3');
   await page.keyboard.press('Home');
   await expect(boutique.getByRole('button', { name: 'Fonds', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(boutique.locator('[data-blr-boutique-position]')).toHaveText('1 / 3');
   await expect(boutique.getByRole('button', { name: 'Voir le rayon précédent', exact: true })).toHaveAttribute('aria-disabled', 'true');
   expect(Math.abs((await page.evaluate(() => window.scrollY)) - position)).toBeLessThanOrEqual(2);
   expect(erreurs).toEqual([]);
