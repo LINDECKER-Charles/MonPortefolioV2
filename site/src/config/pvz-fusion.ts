@@ -19,6 +19,8 @@ import type { DonneesFiche, PreuveEnTete } from '../components/projets/gabarit/t
 const AMONT = 'https://github.com/Teyliu/PVZF-Translation';
 /** Révision figée du bilan, dans le fork français (26/09/2026). */
 const REVISION_BILAN = 'eda0b63fbacda194465144c9ec20cb975c7a9c6a';
+/** Première révision relevée (16/10/2025) : le README amont y donne le jeu en 3.0.1, le français en 2.3.1. */
+const REVISION_DEPART = 'c62379089f1a54883766e0310f77dfb783d23368';
 const FORK = 'https://github.com/LINDECKER-Charles/PVZF-Translation-fr';
 
 export const LIENS = {
@@ -29,6 +31,11 @@ export const LIENS = {
   journalFige: `${FORK}/blob/${REVISION_BILAN}/Docs/french-contributor/lindecker-charles.md`,
   prs: `${AMONT}/pulls?q=is%3Apr+is%3Amerged+author%3ALINDECKER-Charles+created%3A2025-10-16..2026-09-26`,
   pr110: `${AMONT}/pull/110`,
+  /** Les versions publiées par le projet multilingue (25 du 12/08/2025 au 01/10/2026). */
+  versions: `${AMONT}/releases`,
+  readmeDepart: `${AMONT}/blob/${REVISION_DEPART}/README.md`,
+  /** L’intégration du Console Manager au dépôt officiel, fusionnée le 31/10/2025. */
+  pr23: `${AMONT}/pull/23`,
   outilCode: 'https://github.com/LINDECKER-Charles/PVZ-Fuzion-ConsolManager',
   outilSite: 'https://lindecker-charles.github.io/PVZ-Fuzion-ConsolManager/',
   outilNpm: 'https://www.npmjs.com/package/@charles_lindecker/pvzf-console',
