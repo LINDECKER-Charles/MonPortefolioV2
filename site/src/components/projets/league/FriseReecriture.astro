@@ -9,6 +9,7 @@
  * PictoLeague) ; les logos disent les deux piles.
  */
 import PictoLeague from './PictoLeague.astro';
+import AConfirmer from '../../ui/AConfirmer.astro';
 import { JALONS } from '../../../config/league-of-database';
 import { typo } from '../../../lib/typo';
 
@@ -28,7 +29,7 @@ const dernier = JALONS.length - 1;
       <li class:list={['jalon', { 'jalon--atteint': index === dernier }]}>
         <span class="jalon__point" aria-hidden="true" />
         <PictoLeague id={jalon.visuel} class="jalon__picto" />
-        <time class="jalon__date" datetime={jalon.date}>{jalon.libelle}</time>
+        <p class="jalon__date"><time datetime={jalon.date}>{jalon.libelle}</time>{'aConfirmer' in jalon && <AConfirmer titre={jalon.aConfirmer} />}</p>
         <h3 class="jalon__titre">{typo(jalon.titre)}</h3>
         <p class="jalon__texte">{typo(jalon.texte)}</p>
         {jalon.logos.length > 0 && (

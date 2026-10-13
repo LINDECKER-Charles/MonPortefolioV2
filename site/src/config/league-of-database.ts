@@ -84,7 +84,7 @@ export const FICHE: DonneesFiche = {
   besoin: 'Retrouver les valeurs exactes d’un ancien patch de League of Legends, dans sa langue.',
   part: 'Tout, seul : la conception, le développement et l’exploitation, puis la réécriture complète et sa bascule en production.',
   role: 'Concepteur, développeur et exploitant',
-  periode: 'Depuis août 2025, réécrit en 2026',
+  periode: 'Dépôt actuel depuis août 2025, réécrit en 2026',
   equipe: 'Seul',
   statut: { texte: 'En ligne', etat: 'actif' },
   liens: [
@@ -92,6 +92,9 @@ export const FICHE: DonneesFiche = {
     { href: LIENS.code, libelle: 'Code' },
     { href: LIENS.patchs, libelle: 'Les patchs' },
   ],
+  aConfirmer: {
+    periode: 'Origine et première mise en ligne à confirmer par Charles : un premier collecteur public date de mai 2025',
+  },
 };
 
 /** Les sections du corps : sommaire de l’en-tête et navigation de page. */
@@ -246,7 +249,16 @@ export const PIEGES = [
 /* ------------------------------------------------------------------ */
 
 export const JALONS = [
-  { date: '2025-08-03', libelle: 'Août 2025', titre: 'Première version', texte: 'Symfony, Go et Vue : trois langages.', visuel: 'LOD-05', logos: ['symfony', 'go', 'vuejs'] },
+  {
+    date: '2025-08-03',
+    libelle: 'Août 2025',
+    titre: 'Première version',
+    texte: 'Symfony, Go et Vue : trois langages.',
+    visuel: 'LOD-05',
+    logos: ['symfony', 'go', 'vuejs'],
+    /** Premier commit du dépôt actuel ; un premier collecteur public date de mai 2025. */
+    aConfirmer: 'Date de la première version à confirmer par Charles : août 2025 est la création du dépôt actuel',
+  },
   { date: '2026-09-24', libelle: '24/09/2026', titre: 'Dix décisions écrites', texte: '.NET 10 et Angular 22 : deux langages au lieu de trois, une seule API.', visuel: 'LOD-10', logos: [] },
   { date: '2026-09-26', libelle: '26/09/2026', titre: 'Parité vérifiée', texte: '75 couples (version, langue) comparés : 12\u00a0260 écarts, tous classés.', visuel: 'LOD-11', logos: [] },
   { date: '2026-10-04', libelle: '04/10/2026', titre: 'Bascule en production', texte: 'Version 3.0.0 : comptes, builds, favoris et clés d’API intacts.', visuel: 'LOD-12', logos: ['dotnet', 'angular'] },
