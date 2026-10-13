@@ -1465,113 +1465,123 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 ### CMP-01 · L’établi
 
 - **Priorité** : élargi · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/parcours/competences` · Compétences, en-tête _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours/competences` · Compétences, en-tête (non posé : la page tient en quatre écrans sans lui) _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : L’établi
-- **Composition** : Établi vu de dessus, outils rangés dans des compartiments, pas d’écran ni de personnage
+- **Composition** : Établi en bois vu de dessus, outils rangés dans quatre compartiments distincts dont les formes évoquent interface (gabarit, équerre), API (connecteurs, câbles), données (tiroir de fiches) et livraison (caisse scellée) ; la lanterne posée dans un coin éclaire l’ensemble ; pas d’écran, pas de personnage, aucun mot
 - **Format** : 21:9, 1600 × 685
 - **Fichier attendu** : `site/src/assets/visuels/parcours/CMP-01_1600x685.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « L’établi »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un établi vu de dessus, ses outils rangés en quatre compartiments, éclairé par une lanterne. »
+- **Note** : Élargi : à poser au-dessus du niveau « Au quotidien » seulement si Charles veut une image d’en-tête ; décoratif.
 
-### CMP-F1 · Build-once
+### CMP-F1 · Build-once : la chaîne de livraison de ce site
 
 - **Priorité** : socle · **Méthode** : FIG, à coder (figure de données), rien à générer
-- **Emplacement** : `/parcours/competences` · Compétences, livraison _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Build-once
-- **Composition** : Build unique → image scellée → test → promotion des mêmes empreintes
-- **Format** : 16:6
+- **Emplacement** : `/parcours/competences` · Compétences, Tests et livraison _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Build-once : la chaîne de livraison de ce site
+- **Composition** : Rail à cinq étapes relevées dans la CI du site (.github/workflows) : vérifier (types, tests unitaires et de bout en bout, build de contrôle non publié) → construire les images une seule fois (site et API, :sha, :staging) → déployer en test → porte humaine (fusion vers la branche principale) → promouvoir sans reconstruire (:staging → :prod, les deux images à la même révision) ; un sceau d’empreinte en laiton glisse de la construction à la production
+- **Format** : 16:6 ; vertical sous 860 px
 - **Fichier attendu** : aucune image, figure codée
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Build-once »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Vérifier, construire les images une fois, les déployer en test, ouvrir la porte à la main, puis les promouvoir sans les reconstruire. »
+- **Note** : Codée en HTML et CSS dans components/parcours/ChaineLivraison.astro, depuis ci.yml, _build.yml et _promote.yml ; animée une fois à l’arrivée (environ 1,6 s, 400 ms par étape), rejouable au clic sur le rail, immobile en mouvement réduit.
 
-### CMP-02 · Pédagogie
+### CMP-02 · Le tableau et la craie
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/parcours/competences` · Compétences humaines _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Pédagogie
-- **Composition** : Tableau, schéma en trois étapes, craie posée
-- **Format** : 1:1, 480
+- **Emplacement** : `/parcours/competences` · Compétences humaines, carte « Pédagogie » (vignette carrée au-dessus de l’intitulé et des verbes) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Le tableau et la craie
+- **Composition** : Un tableau noir sur pied : un schéma en trois cases reliées par deux flèches, la dernière case plus grande et pleine (l’élève qui va seul) ; un bâton de craie posé sur le rebord, la lanterne au pied du tableau qui l’éclaire de biais
+- **Format** : 1:1, 480 × 480
 - **Fichier attendu** : `site/src/assets/visuels/parcours/CMP-02_480x480.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Pédagogie »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un tableau noir et un schéma en trois cases reliées par des flèches, la craie posée au rebord. »
+- **Note** : Série de sept vignettes (CMP-02 à CMP-08) vues côte à côte : même cadrage, même hauteur d’horizon, même épaisseur de trait, un seul objet principal centré, lisible à 160 px. Aucune personne, aucun écran, aucun texte ni chiffre lisible. L’intitulé et les verbes restent en HTML sous l’image : la page la pose en décor (alt vide), l’alt ci-dessous décrit l’image.
 
-### CMP-03 · Coordination
+### CMP-03 · Le tableau à colonnes
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/parcours/competences` · Idem _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Coordination
-- **Composition** : Tableau de tâches à colonnes, cartes déplacées par des flèches
-- **Format** : 1:1, 480
+- **Emplacement** : `/parcours/competences` · Compétences humaines, carte « Coordination » (vignette carrée au-dessus de l’intitulé et des verbes) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Le tableau à colonnes
+- **Composition** : Un tableau de tâches à trois colonnes vu de face : des cartes vierges, dont deux déplacées d’une colonne à l’autre par des flèches courbes tracées à la main ; une épingle par carte, la lanterne accrochée en haut à droite
+- **Format** : 1:1, 480 × 480
 - **Fichier attendu** : `site/src/assets/visuels/parcours/CMP-03_480x480.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Coordination »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un tableau de tâches à trois colonnes, deux cartes déplacées d’une colonne à l’autre. »
+- **Note** : Série de sept vignettes (CMP-02 à CMP-08) vues côte à côte : même cadrage, même hauteur d’horizon, même épaisseur de trait, un seul objet principal centré, lisible à 160 px. Aucune personne, aucun écran, aucun texte ni chiffre lisible. L’intitulé et les verbes restent en HTML sous l’image : la page la pose en décor (alt vide), l’alt ci-dessous décrit l’image.
 
-### CMP-04 · Écoute
+### CMP-04 · Le cahier annoté
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/parcours/competences` · Idem _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Écoute
-- **Composition** : Cahier des charges annoté de points d’interrogation dans la marge
-- **Format** : 1:1, 480
+- **Emplacement** : `/parcours/competences` · Compétences humaines, carte « Écoute et cadrage » (vignette carrée au-dessus de l’intitulé et des verbes) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Le cahier annoté
+- **Composition** : Un cahier des charges ouvert, pages couvertes de lignes illisibles, la marge annotée de trois points d’interrogation et d’une accolade qui regroupe deux paragraphes ; un crayon posé en travers, la lanterne qui éclaire la page
+- **Format** : 1:1, 480 × 480
 - **Fichier attendu** : `site/src/assets/visuels/parcours/CMP-04_480x480.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Écoute »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un cahier des charges ouvert, la marge annotée de points d’interrogation. »
+- **Note** : Série de sept vignettes (CMP-02 à CMP-08) vues côte à côte : même cadrage, même hauteur d’horizon, même épaisseur de trait, un seul objet principal centré, lisible à 160 px. Aucune personne, aucun écran, aucun texte ni chiffre lisible. L’intitulé et les verbes restent en HTML sous l’image : la page la pose en décor (alt vide), l’alt ci-dessous décrit l’image.
 
-### CMP-05 · Communication
+### CMP-05 · Deux bulles qui se répondent
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/parcours/competences` · Idem _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Communication
-- **Composition** : Deux bulles de dialogue qui se répondent, la lanterne entre elles
-- **Format** : 1:1, 480
+- **Emplacement** : `/parcours/competences` · Compétences humaines, carte « Communication directe » (vignette carrée au-dessus de l’intitulé et des verbes) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Deux bulles qui se répondent
+- **Composition** : Deux bulles de dialogue vides qui se répondent, de part et d’autre, à la même hauteur et de même taille (aucune ne domine) ; la lanterne posée entre elles, sa lumière touche les deux
+- **Format** : 1:1, 480 × 480
 - **Fichier attendu** : `site/src/assets/visuels/parcours/CMP-05_480x480.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Communication »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Deux bulles de dialogue qui se répondent, une lanterne entre elles. »
+- **Note** : Série de sept vignettes (CMP-02 à CMP-08) vues côte à côte : même cadrage, même hauteur d’horizon, même épaisseur de trait, un seul objet principal centré, lisible à 160 px. Aucune personne, aucun écran, aucun texte ni chiffre lisible. L’intitulé et les verbes restent en HTML sous l’image : la page la pose en décor (alt vide), l’alt ci-dessous décrit l’image.
 
-### CMP-06 · Créativité
+### CMP-06 · La carte retournée
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/parcours/competences` · Idem _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Créativité
-- **Composition** : Une carte retournée à contre-courant au milieu d’un éventail de cartes identiques
-- **Format** : 1:1, 480
+- **Emplacement** : `/parcours/competences` · Compétences humaines, carte « Créativité » (vignette carrée au-dessus de l’intitulé et des verbes) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : La carte retournée
+- **Composition** : Un éventail de cartes à jouer toutes identiques, dos visibles, au motif géométrique simple et inventé ; au centre, une seule carte retournée face visible et inclinée à contre-sens, éclairée par la lanterne ; aucune carte d’un jeu existant, aucune illustration de personnage
+- **Format** : 1:1, 480 × 480
 - **Fichier attendu** : `site/src/assets/visuels/parcours/CMP-06_480x480.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Créativité »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un éventail de cartes identiques et, au milieu, une seule carte retournée à contre-sens. »
+- **Note** : Série de sept vignettes (CMP-02 à CMP-08) vues côte à côte : même cadrage, même hauteur d’horizon, même épaisseur de trait, un seul objet principal centré, lisible à 160 px. Aucune personne, aucun écran, aucun texte ni chiffre lisible. L’intitulé et les verbes restent en HTML sous l’image : la page la pose en décor (alt vide), l’alt ci-dessous décrit l’image.
 
-### CMP-07 · Adaptation
+### CMP-07 · Le ruban de Möbius
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/parcours/competences` · Idem _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Adaptation
-- **Composition** : Boucle tester → ajuster dessinée en ruban de Möbius
-- **Format** : 1:1, 480
+- **Emplacement** : `/parcours/competences` · Compétences humaines, carte « Apprentissage et adaptation » (vignette carrée au-dessus de l’intitulé et des verbes) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Le ruban de Möbius
+- **Composition** : Un ruban de Möbius posé debout, dessiné comme une boucle : sur une face trois encoches (comprendre, tester, ajuster) figurées par des formes simples (une loupe, une fiole, une clé), sans mots ; la lanterne derrière, le ruban la laisse passer
+- **Format** : 1:1, 480 × 480
 - **Fichier attendu** : `site/src/assets/visuels/parcours/CMP-07_480x480.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Adaptation »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un ruban de Möbius qui porte une loupe, une fiole et une clé : comprendre, tester, ajuster. »
+- **Note** : Série de sept vignettes (CMP-02 à CMP-08) vues côte à côte : même cadrage, même hauteur d’horizon, même épaisseur de trait, un seul objet principal centré, lisible à 160 px. Aucune personne, aucun écran, aucun texte ni chiffre lisible. L’intitulé et les verbes restent en HTML sous l’image : la page la pose en décor (alt vide), l’alt ci-dessous décrit l’image.
 
-### CMP-08 · Méthodes de travail
+### CMP-08 · Le tableau et le carnet relié
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/parcours/competences` · Idem _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Méthodes de travail
-- **Composition** : Tableau Kanban et document relié
-- **Format** : 1:1, 480
+- **Emplacement** : `/parcours/competences` · Compétences humaines, carte « Méthodes de travail » (vignette carrée au-dessus de l’intitulé et des verbes) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Le tableau et le carnet relié
+- **Composition** : Un petit tableau à colonnes (cartes vierges) relié par un fil à un document épais à onglets, posé à côté ; un trombone sur le document, la lanterne qui éclaire le fil
+- **Format** : 1:1, 480 × 480
 - **Fichier attendu** : `site/src/assets/visuels/parcours/CMP-08_480x480.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Méthodes de travail »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un petit tableau à colonnes relié par un fil à un document à onglets. »
+- **Note** : Série de sept vignettes (CMP-02 à CMP-08) vues côte à côte : même cadrage, même hauteur d’horizon, même épaisseur de trait, un seul objet principal centré, lisible à 160 px. Aucune personne, aucun écran, aucun texte ni chiffre lisible. L’intitulé et les verbes restent en HTML sous l’image : la page la pose en décor (alt vide), l’alt ci-dessous décrit l’image. La carte porte le lien officiel de Trello en HTML : aucun logo de Trello dans l’image.
 
-### CMP-09 · Trois capacités
+### CMP-09 · Trois capacités : assistants et agents, intégration aux applications (MCP), synthèse vocale
 
 - **Priorité** : élargi · **Méthode** : SVG, à dessiner (vectoriel)
-- **Emplacement** : `/parcours/competences` · Compétences, IA _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Trois capacités
-- **Composition** : Assistants et agents, connecteur MCP (prise), synthèse vocale (onde)
+- **Emplacement** : `/parcours/competences` · Compétences, Intégration IA : un picto en tête de chacun des trois domaines _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Trois capacités : assistants et agents, intégration aux applications (MCP), synthèse vocale
+- **Composition** : Trois pictos au trait sur une grille de 48 : une bulle de dialogue contenant des chevrons de code, et une seconde bulle derrière (agents) ; une prise à deux broches reliée à un socle (connecteur) ; un micro de studio entouré d’ondes (voix). Trait de 1,6, une teinte de remplissage très légère, couleur du texte
 - **Format** : 3 × 1:1, 48
 - **Fichier attendu** : `site/src/assets/visuels/parcours/CMP-09.svg` (lot de 3)
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Posés en attendant dans components/parcours/RepereCompetence.astro (catégories agents, mcp, voix), à la couleur de la lanterne dans le bandeau de veille. Un SVG livré pourra les remplacer à l’identique.
 
-### CMP-10 · Claude, Codex, Kokoro, Piper, Photino.NET, SQLx, OpenTUI, Dompdf
+### CMP-10 · Claude, Codex, Kokoro, Piper, SQLx, OpenTUI, Dompdf, Axum, Make, axe-core, SQL, stockage S3 compatible, Nginx, PHPUnit, API Platform, Leaflet
 
 - **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
-- **Emplacement** : `/parcours/competences` · Compétences, logos manquants _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Claude, Codex, Kokoro, Piper, Photino.NET, SQLx, OpenTUI, Dompdf
-- **Composition** : Chercher d’abord les logos officiels ; à défaut, picto dans le style des logos (aplat)
-- **Format** : 1:1
-- **Fichier attendu** : `site/src/assets/visuels/parcours/CMP-10.svg` (lot de 8)
+- **Emplacement** : `/parcours/competences` · Compétences, pictos de repli des technologies sans logo officiel utilisable _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Claude, Codex, Kokoro, Piper, SQLx, OpenTUI, Dompdf, Axum, Make, axe-core, SQL, stockage S3 compatible, Nginx, PHPUnit, API Platform, Leaflet
+- **Composition** : Chercher d’abord les logos officiels et leurs conditions d’usage ; à défaut, un picto par fonction, au trait sur une grille de 24 (trait 1,5, extrémités arrondies), monochrome à l’encre du thème, lisible à 18 px : bulle de dialogue (Claude), chevrons et barre oblique (Codex), haut-parleur et ondes (Kokoro), barres d’égaliseur (Piper), base avec coche (SQLx), fenêtre de terminal avec invite (OpenTUI), feuille cornée (Dompdf), deux blocs reliés (Axum), trois nœuds en arbre (Make), silhouette d’accessibilité (axe-core), cylindre de base (SQL), seau (stockage S3), boîte traversée par une flèche (Nginx, serveur et proxy), presse-papiers coché (PHPUnit), cube (API Platform), repère de carte (Leaflet). Nginx, PHPUnit, API Platform et Leaflet ont un logo réduit à un mot-symbole, illisible à 18-28 px : leur picto le remplace. Aucun picto ne reprend la forme, la couleur ni la lettre d’un logo existant
+- **Format** : 1:1, viewBox 24 ; affiché à 18 et 28 px
+- **Fichier attendu** : `site/src/assets/visuels/parcours/CMP-10.svg` (lot de 16)
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
-- **Note** : Chercher d’abord les logos officiels ; à défaut, un picto dans le style des logos.
+- **Note** : Posés en attendant dans components/parcours/IllustrationStack.astro, dessinés de la même main que les pictos du site ; ils ne prétendent pas être des logos (src/assets/stacks/LISEZMOI.md). Un logo officiel retrouvé remplace son picto dans src/assets/stacks/ et LogoStack.astro.
 
 ### FOR-01 · Une application web
 

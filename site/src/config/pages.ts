@@ -19,7 +19,7 @@ export const PAGES_SITEMAP = [
   { chemin: '/projets/league-of-database', maj: '2026-10-12' },
   { chemin: '/parcours', maj: '2026-10-08' },
   { chemin: '/parcours/professionnel', maj: '2026-10-08' },
-  { chemin: '/parcours/competences', maj: '2026-10-08' },
+  { chemin: '/parcours/competences', maj: '2026-10-13' },
   { chemin: '/parcours/formation', maj: '2026-10-08' },
   { chemin: '/contact', maj: '2026-10-08' },
   { chemin: '/blog', maj: '2026-10-08' },

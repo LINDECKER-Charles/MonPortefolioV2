@@ -1,0 +1,181 @@
+---
+/**
+ * Une technologie de la page Compétences : son logo (ou picto de repli), son
+ * nom et le lien de son site officiel (config/competences.ts), mesuré en
+ * `lien-sortant`, emplacement `competences`. Toujours un logo et un lien :
+ * c’est le contrat de la page (tests/e2e/competences.spec.ts).
+ *
+ *   tuile      Au quotidien : grande tuile, logo en couleur, nom en sérif, rôle
+ *   ligne      Pratiqué, tests, livraison, IA : logo gris, nom
+ *   etiquette  Exploré ou ponctuel : étiquette compacte
+ *
+ *   <LienTechno nom="Angular" variante="tuile" role="Interfaces" />
+ */
+import LogoStack from './LogoStack.astro';
+import { SITES_OFFICIELS } from '../../config/competences';
+import { attributsMesure } from '../../lib/liens';
+
+interface Props {
+  nom: keyof typeof SITES_OFFICIELS;
+  variante?: 'tuile' | 'ligne' | 'etiquette';
+  /** Tuile : ce que la technologie fait dans ma stack. */
+  role?: string;
+}
+
+const { nom, variante = 'ligne', role } = Astro.props;
+const href = SITES_OFFICIELS[nom];
+const taille = variante === 'tuile' ? 'grand' : variante === 'etiquette' ? 'petit' : 'moyen';
+---
+
+<a class:list={['techno', `techno--${variante}`]} href={href} rel="external" {...attributsMesure(href, { emplacement: 'competences' })}>
+  <LogoStack nom={nom} taille={taille} />
+  {variante === 'tuile' ? (
+    <span class="techno__texte">
+      <span class="techno__nom">{nom}</span>
+      {role && <span class="techno__role">{role}&nbsp;<span class="fleche" aria-hidden="true">↗</span></span>}
+    </span>
+  ) : (
+    <span class="techno__nom">{nom}&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span>
+  )}
+</a>
+
+<style>
+  .techno {
+    display: flex;
+    align-items: center;
+    gap: var(--s3);
+    min-height: 44px;
+    color: var(--encre);
+    font-size: var(--t-s);
+    line-height: 1.3;
+    text-decoration: none;
+    border-radius: var(--r1);
+  }
+
+  .techno:hover,
+  .techno:focus-visible {
+    color: var(--accent);
+  }
+
+  .techno:hover .techno__nom,
+  .techno:focus-visible .techno__nom {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+  }
+
+  .techno__nom {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .fleche--discrete {
+    color: var(--eteint);
+    font-size: 0.85em;
+  }
+
+  .techno:hover .fleche--discrete,
+  .techno:focus-visible .fleche--discrete {
+    color: var(--accent);
+  }
+
+  /* Au quotidien : la tuile. */
+  .techno--tuile {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: var(--s4);
+    height: 100%;
+    min-height: 96px;
+    padding: var(--s4);
+    border: 1px solid var(--trait);
+    border-radius: var(--r2);
+    background: var(--surface);
+    transition: border-color var(--d-ui) var(--courbe), box-shadow var(--d-ui) var(--courbe);
+  }
+
+  .techno--tuile:hover,
+  .techno--tuile:focus-visible {
+    border-color: var(--accent);
+    box-shadow: var(--ombre-1);
+    color: var(--encre);
+  }
+
+  .techno--tuile .techno__texte {
+    display: block;
+    min-width: 0;
+  }
+
+  .techno--tuile .techno__nom {
+    display: block;
+    font-family: var(--police-titre);
+    font-size: clamp(1.5rem, 1.1rem + 0.8vw, 1.875rem);
+    line-height: 1;
+    letter-spacing: var(--ls-titre);
+    white-space: nowrap;
+    overflow-wrap: normal;
+  }
+
+  .techno--tuile:hover .techno__nom,
+  .techno--tuile:focus-visible .techno__nom {
+    text-decoration: none;
+  }
+
+  .techno__role {
+    display: block;
+    margin-top: var(--s2);
+    color: var(--eteint);
+    font-size: var(--t-xs);
+    line-height: 1.3;
+  }
+
+  .techno__role .fleche {
+    color: var(--accent);
+  }
+
+  /* Exploré : l’étiquette. */
+  .techno--etiquette {
+    gap: var(--s2);
+    padding: 0 var(--s3);
+    border: 1px solid var(--filet);
+    background: var(--surface);
+    font-size: var(--t-xs);
+  }
+
+  .techno--etiquette:hover,
+  .techno--etiquette:focus-visible {
+    border-color: var(--accent);
+  }
+
+  @media (max-width: 560px) {
+    .techno--tuile {
+      grid-template-columns: 36px minmax(0, 1fr);
+      gap: var(--s3);
+      min-height: 0;
+      padding: var(--s3);
+    }
+
+    .techno--tuile :global(.logo-stack) {
+      width: 36px;
+      height: 36px;
+    }
+
+    .techno--tuile .techno__nom {
+      font-size: var(--t-l);
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .techno__role {
+      margin-top: var(--s1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .techno--tuile { transition: none; }
+  }
+
+  @media (forced-colors: active) {
+    .techno--tuile,
+    .techno--etiquette { border-color: CanvasText; }
+  }
+</style>

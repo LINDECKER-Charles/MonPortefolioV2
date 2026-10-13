@@ -1,4 +1,11 @@
 ---
+/**
+ * Pictos de repère de la page Compétences, au trait sur une grille de 48 :
+ * le schéma « Interface ↔ API ↔ Données » (interface, backend, donnees), les
+ * trois capacités de l’intégration IA (agents, mcp, voix ; CMP-09), et les
+ * repères historiques des compétences humaines, remplacés dans la page par
+ * les illustrations CMP-02 à CMP-08. Décoratifs, à la couleur du texte.
+ */
 interface Props {
   categorie:
     | 'interface'
@@ -10,7 +17,10 @@ interface Props {
     | 'ecoute'
     | 'communication'
     | 'creativite'
-    | 'adaptation';
+    | 'adaptation'
+    | 'agents'
+    | 'mcp'
+    | 'voix';
 }
 
 const { categorie } = Astro.props;
@@ -121,6 +131,30 @@ const { categorie } = Astro.props;
       <path d="M5 20A19 19 0 0 1 38 11m0-6v6h-6M43 28A19 19 0 0 1 10 37m0 6v-6h6" />
       <path class="teinte" d="M24 19c-3-2-6-3-10-2v14c4-1 7 0 10 2V19Z" />
       <path d="M24 19c-3-2-6-3-10-2v14c4-1 7 0 10 2 3-2 6-3 10-2V17c-4-1-7 0-10 2Zm0 0v14" />
+    </>
+  )}
+  {categorie === 'agents' && (
+    <>
+      <path class="teinte" d="M6 8h28v20H20l-8 7v-7H6V8Z" />
+      <path d="M6 8h28v20H20l-8 7v-7H6V8Z" />
+      <path d="m14 15-3 3 3 3m12-6 3 3-3 3m-4-8-4 10" />
+      <path d="M38 18h4v16h-4v5l-6-5H24v-2" />
+    </>
+  )}
+
+  {categorie === 'mcp' && (
+    <>
+      <path class="teinte" d="M14 20h20v8a10 10 0 0 1-20 0v-8Z" />
+      <path d="M14 20h20v8a10 10 0 0 1-20 0v-8ZM19 20v-9m10 9v-9M24 38v6M10 44h28" />
+      <circle cx="24" cy="28" r="2.5" />
+    </>
+  )}
+
+  {categorie === 'voix' && (
+    <>
+      <rect class="teinte" x="17" y="5" width="14" height="24" rx="7" />
+      <rect x="17" y="5" width="14" height="24" rx="7" />
+      <path d="M11 22a13 13 0 0 0 26 0M24 35v7m-7 0h14M5 17v8m36-8v8M44 19v4M2 19v4" />
     </>
   )}
 </svg>
