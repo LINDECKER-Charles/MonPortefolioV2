@@ -310,11 +310,11 @@ const ADRESSE = 'league-of-data-base.com';
     list-style: none;
   }
 
+  /* La carte standard du système : surface, rayon de 6 px, ombre douce. */
   .plateforme li {
     padding: var(--s4) var(--s5) var(--s5);
-    border-top: 2px solid var(--encre);
     background: var(--surface);
-    border-radius: 0 0 var(--r2) var(--r2);
+    border-radius: var(--r2);
     box-shadow: var(--ombre-1);
   }
 
@@ -366,18 +366,13 @@ const ADRESSE = 'league-of-data-base.com';
       border-radius: 0;
     }
 
-    /* Sur téléphone, les fonctions se lisent en liste : un filet, sans carte. */
     .plateforme {
       gap: var(--s3);
       margin-top: var(--s5);
     }
 
     .plateforme li {
-      padding: var(--s3) 0 0;
-      border-top-width: 1px;
-      background: none;
-      border-radius: 0;
-      box-shadow: none;
+      padding: var(--s3) var(--s4) var(--s4);
     }
   }
 </style>
