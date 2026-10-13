@@ -65,11 +65,9 @@ if (decisions.length < 2 || decisions.length > 4) throw new Error(`<DecisionsPro
     flex-direction: column;
     gap: var(--s3);
     padding: var(--s5);
-    border: 1px solid var(--filet);
-    border-top: 2px solid var(--encre);
+    border: 1px solid var(--trait);
     border-radius: var(--r2);
     background: var(--surface);
-    box-shadow: var(--ombre-1);
   }
 
   .decision__rang {
@@ -113,11 +111,13 @@ if (decisions.length < 2 || decisions.length > 4) throw new Error(`<DecisionsPro
     background: var(--filet);
   }
 
+  /* L’effet en sérif, au corps du chapeau : la citation et « Ce que j’en
+     retiens » gardent seuls le grand corps (hiérarchie de la page). */
   .decision__effet {
     margin-bottom: 0;
     font-family: var(--police-titre);
-    font-size: var(--t-xl);
-    line-height: 1.12;
+    font-size: var(--t-l);
+    line-height: 1.2;
     color: var(--encre);
   }
 
