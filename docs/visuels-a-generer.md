@@ -289,7 +289,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Composition (pour le prompt)** : Une porte ouverte sur une pièce de travail ; sur le seuil, une silhouette accueille d’un geste de la main une nouvelle venue qui arrive avec un sac en bandoulière ; quelques traces de pas mènent à la porte ; une lanterne accrochée au chambranle (vers 46 % de la largeur et 24 % de la hauteur) éclaire l’arrivante ; silhouettes sans visage, aucune inscription
 - **Lanterne : 46 % × 24 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche).
 - **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = porte, pièce et silhouettes ; lumière (#FF0000) = flamme et arrivante éclairée · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Affichée de 300 à 360 px de large, empilée en pleine largeur sur mobile : sujet principal au centre, sans détail fin.
+- **Cadrage (pour vérifier)** : Affichée recadrée en 2:1 à toutes les largeurs (la bande centrale de l’image, de 12,5 à 87,5 % de sa hauteur), de 300 à 360 px de large, empilée en pleine largeur sur mobile : sujet principal et lanterne dans cette bande, au centre, sans détail fin.
 - **Format** : 3:2, 1800 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-21_1800x1200.webp`
 - **Master** : `design/assets/visuels/accueil/ACC-21.png` → `node tools/separer-calques.mjs ACC-21` écrit le rendu et `ACC-21_1800x1200.aplat.webp`, `ACC-21_1800x1200.encre.webp`, `ACC-21_1800x1200.lumiere.webp`
@@ -306,7 +306,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Composition (pour le prompt)** : Deux silhouettes côte à côte à une même table, penchées sur une feuille : l’une montre une ligne du doigt, l’autre la corrige au crayon ; une coche dans la marge ; une lanterne posée sur la table, entre elles (vers 50 % de la largeur et 56 % de la hauteur), éclaire la feuille ; silhouettes sans visage, aucune écriture lisible
 - **Lanterne : 50 % × 56 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche).
 - **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, feuille et silhouettes ; lumière (#FF0000) = flamme et feuille éclairée · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Comme ACC-21 : de 300 à 360 px de large, sujet au centre.
+- **Cadrage (pour vérifier)** : Comme ACC-21 : recadrée en 2:1 à toutes les largeurs, de 300 à 360 px de large, sujet et lanterne dans la bande centrale.
 - **Format** : 3:2, 1800 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-22_1800x1200.webp`
 - **Master** : `design/assets/visuels/accueil/ACC-22.png` → `node tools/separer-calques.mjs ACC-22` écrit le rendu et `ACC-22_1800x1200.aplat.webp`, `ACC-22_1800x1200.encre.webp`, `ACC-22_1800x1200.lumiere.webp`
@@ -323,7 +323,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Composition (pour le prompt)** : Une silhouette seule à son poste, de trois quarts dos, envoie une feuille terminée qui rejoint une petite pile de feuilles cochées sur une étagère ; sa propre lanterne, posée à côté de l’écran (vers 30 % de la largeur et 48 % de la hauteur), est allumée ; silhouette sans visage, écran sans interface lisible
 - **Lanterne : 30 % × 48 %, contrainte dure** : la lumière animée du site part de ce point (largeur × hauteur, depuis le coin haut gauche).
 - **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = poste, étagère, feuilles et silhouette ; lumière (#FF0000) = flamme et feuille envoyée · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Comme ACC-21 : de 300 à 360 px de large, sujet au centre.
+- **Cadrage (pour vérifier)** : Comme ACC-21 : recadrée en 2:1 à toutes les largeurs, de 300 à 360 px de large, sujet et lanterne dans la bande centrale.
 - **Format** : 3:2, 1800 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-23_1800x1200.webp`
 - **Master** : `design/assets/visuels/accueil/ACC-23.png` → `node tools/separer-calques.mjs ACC-23` écrit le rendu et `ACC-23_1800x1200.aplat.webp`, `ACC-23_1800x1200.encre.webp`, `ACC-23_1800x1200.lumiere.webp`
@@ -493,13 +493,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « La nouvelle venue écrit sur la fiche, accompagnée par la personne qui l’a accueillie. »
 - **Note** : Case centrale du triptyque PVZ-02.
 
-#### PVZ-02c · Faire confiance : relire seule
+#### PVZ-02c · Contribuer en autonomie : relire seule
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image) · **Série** : PvZ Fusion, scènes
 - **Produit par** : Codex
-- **Emplacement** : `/projets/pvz-fusion` · § 2, l’équipe, case 3 du triptyque, au-dessus de « Faire confiance » _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/projets/pvz-fusion` · § 2, l’équipe, case 3 du triptyque, au-dessus de « Contribuer en autonomie » _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/config/pvz-fusion.ts`, `src/pages/projets/pvz-fusion.astro`
-- **Sujet** : Faire confiance : relire seule
+- **Sujet** : Contribuer en autonomie : relire seule
 - **Composition (pour le prompt)** : La même table et la même lanterne ; la nouvelle venue, seule, relit la fiche d’une troisième personne posée devant elle et la coche ; la chaise de la silhouette de la case 1 est vide ; la lanterne éclaire la fiche relue ; silhouette sans visage
 - **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, chaises et silhouette ; lumière (#FF0000) = flamme et fiche relue · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Dernière case du triptyque : son bord gauche se raccorde à PVZ-02b.
@@ -534,7 +534,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Sujet** : Organiser : un tableau commun
 - **Composition (pour le prompt)** : Un seul motif centré : trois cartes vierges épinglées côte à côte ; une main anonyme, en silhouette, en décroche une ; la lanterne, en bas à droite (vers 78 % de la largeur et 80 % de la hauteur), éclaire la carte prise
 - **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = cartes et main ; lumière (#FF0000) = flamme et carte décrochée · **Fond** : transparent
-- **Cadrage (pour vérifier)** : Vignette de carte, affichée à 136 px de large en bureau, 96 px entre 1 101 et 1 240 px et sous 760 px, 160 à 300 px dans les quatre gestes de l’accueil : un seul motif centré, en silhouette, qui occupe au moins 60 % du cadre, sans détail fin.
+- **Cadrage (pour vérifier)** : Vignette de carte, affichée à 136 px de large en bureau, 96 px entre 1 101 et 1 240 px et sous 760 px, 128 à 176 px dans les quatre gestes, repliés, de l’accueil : un seul motif centré, en silhouette, qui occupe au moins 60 % du cadre, sans détail fin.
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-05_480x480.webp`
 - **Master** : `design/assets/visuels/pvz-fusion/PVZ-05.png` → `node tools/separer-calques.mjs PVZ-05` écrit le rendu et `PVZ-05_480x480.aplat.webp`, `PVZ-05_480x480.encre.webp`, `PVZ-05_480x480.lumiere.webp`
@@ -566,7 +566,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Sujet** : Livrer : une proposition par semaine
 - **Composition (pour le prompt)** : Un seul motif centré : un colis scellé, noué d’une ficelle où pendent quelques étiquettes vierges, sans nom ni chiffre ; la lanterne posée à côté (vers 76 % de la largeur et 70 % de la hauteur) éclaire les étiquettes
 - **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = colis, ficelle et étiquettes ; lumière (#FF0000) = flamme et étiquettes éclairées · **Fond** : transparent
-- **Cadrage (pour vérifier)** : Vignette de carte, affichée à 136 px de large en bureau, 96 px entre 1 101 et 1 240 px et sous 760 px, 160 à 300 px dans les quatre gestes de l’accueil : un seul motif centré, en silhouette, qui occupe au moins 60 % du cadre, sans détail fin.
+- **Cadrage (pour vérifier)** : Vignette de carte, affichée à 136 px de large en bureau, 96 px entre 1 101 et 1 240 px et sous 760 px, 128 à 176 px dans les quatre gestes, repliés, de l’accueil : un seul motif centré, en silhouette, qui occupe au moins 60 % du cadre, sans détail fin.
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-07_480x480.webp`
 - **Master** : `design/assets/visuels/pvz-fusion/PVZ-07.png` → `node tools/separer-calques.mjs PVZ-07` écrit le rendu et `PVZ-07_480x480.aplat.webp`, `PVZ-07_480x480.encre.webp`, `PVZ-07_480x480.lumiere.webp`
@@ -582,7 +582,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Sujet** : Motiver : le classement de la semaine
 - **Composition (pour le prompt)** : Un seul motif centré : un podium vide de trois marches, sans chiffre ni lettre, sous une étoile ; la lanterne posée sur la plus haute marche (vers 50 % de la largeur et 46 % de la hauteur) éclaire l’étoile
 - **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = podium ; lumière (#FF0000) = flamme et étoile · **Fond** : transparent
-- **Cadrage (pour vérifier)** : Vignette de carte, affichée à 136 px de large en bureau, 96 px entre 1 101 et 1 240 px et sous 760 px, 160 à 300 px dans les quatre gestes de l’accueil : un seul motif centré, en silhouette, qui occupe au moins 60 % du cadre, sans détail fin.
+- **Cadrage (pour vérifier)** : Vignette de carte, affichée à 136 px de large en bureau, 96 px entre 1 101 et 1 240 px et sous 760 px, 128 à 176 px dans les quatre gestes, repliés, de l’accueil : un seul motif centré, en silhouette, qui occupe au moins 60 % du cadre, sans détail fin.
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-08_480x480.webp`
 - **Master** : `design/assets/visuels/pvz-fusion/PVZ-08.png` → `node tools/separer-calques.mjs PVZ-08` écrit le rendu et `PVZ-08_480x480.aplat.webp`, `PVZ-08_480x480.encre.webp`, `PVZ-08_480x480.lumiere.webp`
@@ -598,7 +598,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Sujet** : Remercier : le récapitulatif individuel
 - **Composition (pour le prompt)** : Un seul motif centré : une lettre pliée, nouée d’un ruban, sans écriture lisible ; la lanterne, juste derrière (vers 62 % de la largeur et 36 % de la hauteur), éclaire la lettre seule
 - **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = lettre et ruban ; lumière (#FF0000) = flamme et lettre éclairée · **Fond** : transparent
-- **Cadrage (pour vérifier)** : Vignette de carte, affichée à 136 px de large en bureau, 96 px entre 1 101 et 1 240 px et sous 760 px, 160 à 300 px dans les quatre gestes de l’accueil : un seul motif centré, en silhouette, qui occupe au moins 60 % du cadre, sans détail fin.
+- **Cadrage (pour vérifier)** : Vignette de carte, affichée à 136 px de large en bureau, 96 px entre 1 101 et 1 240 px et sous 760 px, 128 à 176 px dans les quatre gestes, repliés, de l’accueil : un seul motif centré, en silhouette, qui occupe au moins 60 % du cadre, sans détail fin.
 - **Format** : 1:1, 480
 - **Fichier attendu** : `site/src/assets/visuels/pvz-fusion/PVZ-11_480x480.webp`
 - **Master** : `design/assets/visuels/pvz-fusion/PVZ-11.png` → `node tools/separer-calques.mjs PVZ-11` écrit le rendu et `PVZ-11_480x480.aplat.webp`, `PVZ-11_480x480.encre.webp`, `PVZ-11_480x480.lumiere.webp`
@@ -1216,13 +1216,13 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 ### Élargi · PvZ Fusion
 
-#### PVZ-09 · Rattraper, puis ne plus décrocher
+#### PVZ-09 · Rattraper le retard
 
 - **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : PvZ Fusion, scènes
 - **Produit par** : Codex
 - **Emplacement** : `/projets/pvz-fusion` · § 4, à côté de la courbe _(contexte : ne pas le recopier dans un prompt)_
 - **Élargi, non posé** : la courbe du rattrapage (PVZ-F1) porte le fait ; l’image ne ferait que le répéter.
-- **Sujet** : Rattraper, puis ne plus décrocher
+- **Sujet** : Rattraper le retard
 - **Composition (pour le prompt)** : Diptyque en une seule image, deux moitiés séparées par un filet vertical, vues de profil, horizon à mi-hauteur : à gauche, une petite équipe de silhouettes sans visage marche derrière un long train de wagons chargés de fiches, qui s’allonge et la distance ; à droite, la même équipe marche à hauteur de la locomotive ; la lanterne, tenue par la silhouette de tête dans la moitié droite (vers 72 % de la largeur et 46 % de la hauteur), éclaire la locomotive ; aucun texte ni chiffre
 - **Calques** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = train, wagons, fiches et silhouettes ; lumière (#FF0000) = flamme et locomotive éclairée · **Fond** : rempli d’aplat
 - **Cadrage (pour vérifier)** : Sur mobile, les deux moitiés passent l’une au-dessus de l’autre : chacune doit se lire seule en 8:9.
@@ -1449,7 +1449,7 @@ Rien ici n’est à générer : les dessins vectoriels s’écrivent à la main,
 - **Priorité** : élargi · **Méthode** : SVG, à dessiner (vectoriel)
 - **Produit par** : équipe Identité et éléments globaux
 - **Emplacement** : toutes les pages · En-tête ordinateur, pied de page _(contexte : ne pas le recopier dans un prompt)_
-- **Élargi, non posé** : components/ui/Logo.astro compose l’emblème et le nom à partir des images du logo validé (src/assets/marque/), qui en tiennent lieu ; le SVG les remplacera à l’identique.
+- **Élargi, non posé** : components/ui/Logo.astro compose l’emblème et le nom à partir des images du logo validé (src/assets/marque/), qui en tiennent lieu ; Logo.astro lira le SVG dès qu’il existera. Le nom gothique vient d’une image : la règle SVG interdit de le vectoriser, il attend un dessin à la main.
 - **Sujet** : Logo horizontal : emblème + nom
 - **Composition** : Emblème à gauche, nom à droite, hauteur 40 px ; nom gothique conservé (direction « Lanterne »)
 - **Format** : ≈ 5:1
@@ -2222,7 +2222,7 @@ Fiches pour mémoire : rien à produire.
 - **Emplacement** : `/projets/league-of-database` · § « Ce que les données ne disent pas », carte 1 (les runes absentes des anciens patchs) _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/config/league-of-database.ts`, `src/components/projets/league/PiegesDonnees.astro`
 - **Sujet** : Une donnée qui manque, rangée proprement
-- **Composition** : Une page de registre vue de face, lignes tracées en réserve ; au milieu, une case découpée laisse voir le vide, et un petit signet posé dans le trou dit que l’absence est notée, pas oubliée. Trait constant, deux aplats (encre, papier), la flamme de la lanterne en point de lumière sur le signet. Aucun texte ni chiffre
+- **Composition** : Une page de registre vue de face, lignes tracées en réserve ; au milieu, une case découpée laisse voir le vide, et un petit signet posé dans le trou dit que l’absence est notée, pas oubliée. Trait constant, deux aplats (encre, papier), le signet plein, à l’encre ; aucune lumière : la lanterne est réservée au jalon atteint (LOD-12). Aucun texte ni chiffre
 - **Format** : 1:1, grille 48, affiché à 96 px
 - **Fichier attendu** : `site/src/assets/visuels/league-of-database/LOD-03.svg`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
@@ -2634,11 +2634,11 @@ Fiches pour mémoire : rien à produire.
 - **Emplacement** : `/parcours` · Hub, sous le bandeau d’identité, pleine largeur _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/pages/parcours.astro`
 - **Sujet** : Mini-frise septembre 2023 → aujourd’hui
-- **Composition** : Trois couloirs (formation, travail, communauté), une ligne par activité, un mois vaut un mois de septembre 2023 (première activité) au mois de construction, filet plein à l’origine ; chaque ligne mène à sa fiche ; nature en forme et en mot, pointe pour ce qui continue, fondu pour une fin à confirmer, bords estompés pour une date connue à l’année ; la barre de PvZ Fusion se coupe en décembre 2025 (traducteur en contour, puis lead)
+- **Composition** : Trois couloirs (formation, travail, communauté), une ligne par activité, un mois vaut un mois de septembre 2023 (première activité) au mois de construction, filet plein à l’origine ; chaque ligne mène à sa fiche ; nature en forme et en mot, pointe pour ce qui continue, fondu pour une fin à confirmer seulement, un trait plein au 1er janvier de chaque année ; la barre de PvZ Fusion se coupe en décembre 2025 (traducteur en contour, puis lead)
 - **Format** : 16:5 sur ordinateur ; libellé au-dessus de chaque barre sur mobile
 - **Composant** : `site/src/components/parcours/Frise.astro`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Le parcours de septembre 2023 à aujourd’hui, en trois couloirs : formation, travail et communauté. »
-- **Note** : Codée le 13 octobre 2026 en HTML, depuis config/parcours.ts ; même composant que PRO-F1. La position du BUT Réseaux & Télécoms (connu à l’année, 2023–2024) est estompée aux deux bords. L’échelle commence en septembre 2023 : les huit premiers mois de 2023 étaient vides.
+- **Note** : Codée le 13 octobre 2026 en HTML, depuis config/parcours.ts ; même composant que PRO-F1. Le BUT Réseaux & Télécoms (connu à l’année, 2023–2024) est une barre pleine, sans bords estompés. L’échelle commence en septembre 2023 : les huit premiers mois de 2023 étaient vides.
 
 #### PRO-F1 · Chronologie
 
@@ -2678,21 +2678,21 @@ Fiches pour mémoire : rien à produire.
 - **Fichier attendu** : `site/src/assets/visuels/parcours/CMP-09.svg` (lot de 3)
 - **Pièces du fichier** (3) : `CMP-09-agents`, `CMP-09-mcp`, `CMP-09-voix`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
-- **Note** : À la couleur de la lanterne dans le bandeau de veille.
+- **Note** : À la couleur de la lanterne dans le bandeau de veille. Livré le 13 octobre 2026 : un <symbol data-categorie> par capacité, lu à la construction par RepereCompetence.astro.
 
-#### CMP-10 · Claude, Codex, Kokoro, Piper, SQLx, OpenTUI, Dompdf, Axum, Make, axe-core, SQL, stockage S3 compatible, Nginx, PHPUnit, API Platform, Leaflet
+#### CMP-10 · Seize pictos de fonction pour les outils sans logo officiel utilisable : assistants de code, synthèse vocale, bases de données, serveur web, tests, cartes…
 
 - **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
 - **Produit par** : équipe Parcours : hub, professionnel, compétences, formation
 - **Emplacement** : `/parcours/competences` · Compétences, pictos de repli des technologies sans logo officiel utilisable _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/components/parcours/IllustrationStack.astro`
-- **Sujet** : Claude, Codex, Kokoro, Piper, SQLx, OpenTUI, Dompdf, Axum, Make, axe-core, SQL, stockage S3 compatible, Nginx, PHPUnit, API Platform, Leaflet
+- **Sujet** : Seize pictos de fonction pour les outils sans logo officiel utilisable : assistants de code, synthèse vocale, bases de données, serveur web, tests, cartes…
 - **Composition** : Chercher d’abord les logos officiels et leurs conditions d’usage ; à défaut, un picto par fonction, au trait sur une grille de 24 (trait 1,5, extrémités arrondies), monochrome à l’encre du thème, lisible à 18 px : bulle de dialogue (Claude), chevrons et barre oblique (Codex), haut-parleur et ondes (Kokoro), barres d’égaliseur (Piper), base avec coche (SQLx), fenêtre de terminal avec invite (OpenTUI), feuille cornée (Dompdf), deux blocs reliés (Axum), trois nœuds en arbre (Make), silhouette d’accessibilité (axe-core), cylindre de base (SQL), seau (stockage S3), boîte traversée par une flèche (Nginx, serveur et proxy), presse-papiers coché (PHPUnit), cube (API Platform), repère de carte (Leaflet). Nginx, PHPUnit, API Platform et Leaflet ont un logo réduit à un mot-symbole, illisible à 18-28 px : leur picto le remplace. Aucun picto ne reprend la forme, la couleur ni la lettre d’un logo existant
 - **Format** : 1:1, viewBox 24 ; affiché à 18 et 28 px
 - **Fichier attendu** : `site/src/assets/visuels/parcours/CMP-10.svg` (lot de 16)
 - **Pièces du fichier** (16) : `CMP-10-sql`, `CMP-10-axum`, `CMP-10-sqlx`, `CMP-10-stockage-s3`, `CMP-10-dompdf`, `CMP-10-opentui`, `CMP-10-make`, `CMP-10-axe-core`, `CMP-10-claude`, `CMP-10-codex`, `CMP-10-kokoro`, `CMP-10-piper`, `CMP-10-nginx`, `CMP-10-phpunit`, `CMP-10-api-platform`, `CMP-10-leaflet`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
-- **Note** : Dessinés de la même main que les pictos du site ; ils ne prétendent pas être des logos (src/assets/stacks/LISEZMOI.md). Un logo officiel retrouvé remplace son picto dans src/assets/stacks/ et LogoStack.astro.
+- **Note** : Dessinés de la même main que les pictos du site ; ils ne prétendent pas être des logos (src/assets/stacks/LISEZMOI.md). Un logo officiel retrouvé remplace son picto dans src/assets/stacks/ et LogoStack.astro. Livré le 13 octobre 2026 : un <symbol data-outil> par outil, lu à la construction par IllustrationStack.astro ; un outil absent du fichier fait échouer le build.
 
 #### FOR-09 · Solutions Frontend Mentor, en vraies captures
 
