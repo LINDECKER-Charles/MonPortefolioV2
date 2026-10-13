@@ -121,10 +121,15 @@
   --r2: 6px;                  /* cartes, cadres, captures, emplacements */
   --r3: 999px;                /* boutons, bascule */
 
-  /* Mouvement : une courbe, deux durées (règle M2) */
+  /* Mouvement : une courbe, deux durées (règle M2). Une durée plus longue
+     s’écrit en multiple de --d-scene (`calc(var(--d-scene) * 4)`), jamais en
+     dur (tests/unit/styles.test.ts) ; --d-recit nomme le multiple des scènes
+     racontées de l’accueil (une lanterne qui s’allume, une carte qui se
+     lève). */
   --courbe: cubic-bezier(0.2, 0.7, 0.2, 1);
   --d-ui: 200ms;
   --d-scene: 400ms;
+  --d-recit: calc(var(--d-scene) * 4.75);   /* 1,9 s */
 
   --entete: 64px;
 
