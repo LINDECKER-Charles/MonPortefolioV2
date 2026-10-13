@@ -214,9 +214,10 @@ test('la conclusion mène à Discutons, aux projets open source, puis plus loin'
   await expect(contact).toHaveAttribute('href', '/contact');
   await expect(contact).toHaveAttribute('data-umami-event-emplacement', 'discutons');
   await expect(conclusion.locator('.aplat-roi').getByRole('link', { name: /^Discutons/ })).toHaveCount(1);
+  // L’invitation mène au bloc « Contribuer » de la vitrine, dont les liens portent l’objectif O3.
   const contribuer = conclusion.getByRole('link', { name: /^Contribuer à mes projets open source/ });
-  await expect(contribuer).toHaveAttribute('href', 'https://github.com/LINDECKER-Charles');
-  await expect(contribuer).toHaveAttribute('data-umami-event', 'lien-sortant');
+  await expect(contribuer).toHaveAttribute('href', '/projets#contribuer');
+  await expect(contribuer).not.toHaveAttribute('data-umami-event', /.+/);
   const suite = page.getByRole('navigation', { name: 'Pour aller plus loin', exact: true });
   await expect(suite.getByRole('link')).toHaveCount(3);
   for (const destination of ['projets', 'parcours', 'blog']) {
