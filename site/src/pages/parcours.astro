@@ -20,7 +20,7 @@ import typescript from '../assets/stacks/typescript.svg?url';
 import postgresql from '../assets/stacks/postgresql.svg?url';
 import docker from '../assets/stacks/docker.svg?url';
 import { EXPERIENCES, ligneDeFrise, NOMBRE_EXPERIENCES, PAGES_PARCOURS } from '../config/parcours';
-import { NOMBRE_CERTIFICATIONS } from '../config/formation';
+import { DIPLOME, NOMBRE_CERTIFICATIONS } from '../config/formation';
 import { SITE } from '../config/site';
 
 const titre = `Parcours de ${SITE.nom}`;
@@ -31,7 +31,8 @@ const couloirs = [
   {
     nom: 'Formation',
     lignes: [
-      { cle: 'dwwm', href: '/parcours/formation#dwwm', libelle: 'Titre DWWM, Elan Formation', periode: 'Formation, avril → octobre 2025', nature: 'formation', debut: '2025-04', fin: '2025-10' },
+      { cle: 'dwwm', href: '/parcours/formation#dwwm', libelle: `Titre ${DIPLOME.sigle}, Elan Formation`, periode: 'Formation, avril → octobre 2025', nature: 'formation', debut: DIPLOME.debut, fin: DIPLOME.fin },
+      // Connu à l’année seulement (2023–2024) : bords estompés, sans mois inventé à l’affichage.
       { cle: 'reseaux', href: '/parcours/formation#reseaux', libelle: 'BUT Réseaux & Télécoms', periode: 'Formation, 2023–2024', nature: 'formation', debut: '2023-09', fin: '2024-06', bornesFloues: true },
     ],
   },
