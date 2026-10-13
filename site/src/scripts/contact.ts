@@ -75,6 +75,21 @@ export function brancherContact(): void {
     statut!.dataset.state = etat;
     statut!.hidden = false;
   }
+  /**
+   * Le retour arrive sous le formulaire : sur mobile, il faut l’amener dans
+   * l’écran. Une seconde fois quand la police du message est chargée, qui
+   * peut le faire grandir.
+   */
+  function montrerStatut(): void {
+    statut!.focus({ preventScroll: true });
+    const panneau = statut!.closest<HTMLElement>('.contact-retour') ?? statut!;
+    const amener = () => panneau.scrollIntoView({
+      block: 'center',
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+    });
+    amener();
+    void document.fonts?.ready.then(amener);
+  }
   function actualiserCompteur(): void {
     if (!compteur) return;
     const longueur = [...champs.message.value].length;
@@ -188,7 +203,7 @@ export function brancherContact(): void {
       formulaire.removeAttribute('aria-busy');
       actualiserBouton();
       if (premierInvalide) champs[premierInvalide].focus();
-      else statut.focus();
+      else montrerStatut();
     }
   });
 }

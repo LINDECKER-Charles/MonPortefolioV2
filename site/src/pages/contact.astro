@@ -38,8 +38,8 @@ const profils = [
     <FilAriane courant="Contact" />
     <div class="contact__grille">
       <header class="contact__tete">
-        <h1>Discutons.</h1>
-        <p class="chapeau">Un projet, une équipe, une question technique&nbsp;: quelques mots suffisent.</p>
+        <h1 data-pli="titre">Discutons.</h1>
+        <p class="chapeau" data-pli="identite">Un projet, une équipe, une question technique&nbsp;: quelques mots suffisent.</p>
       </header>
 
       <section class="contact__lettre foyer" aria-labelledby="formulaire-titre">
@@ -49,6 +49,7 @@ const profils = [
         </div>
         <form method="post" action="/api/contact" data-contact-form aria-labelledby="formulaire-titre">
           <p class="contact-obligatoire"><span class="contact-requis" aria-hidden="true">*</span> Tous les champs sont obligatoires.</p>
+          <noscript><p class="contact-sans-js">Activez JavaScript pour utiliser le formulaire, ou <a href={MAILTO} data-umami-event="contact-email" data-umami-event-emplacement="contact">écrivez-moi directement par e-mail</a>.</p></noscript>
           <fieldset class="contact-champs">
             <legend class="sr">Votre message</legend>
             <div class="contact-identite">
@@ -74,7 +75,7 @@ const profils = [
             </div>
             <div class="contact-champ">
               <label for="contact-message">Votre message <span class="contact-requis" aria-hidden="true">*</span><span class="sr"> (obligatoire)</span></label>
-              <textarea id="contact-message" name="message" rows="5" required aria-describedby="contact-message-aide contact-message-longueur contact-message-count contact-message-error"></textarea>
+              <textarea id="contact-message" name="message" rows="4" required aria-describedby="contact-message-aide contact-message-longueur contact-message-count contact-message-error"></textarea>
               <p class="contact-aide" id="contact-message-aide">Ce que vous avez en tête, et ce que vous aimeriez qu’on en fasse.</p>
               <div class="contact-longueur"><span id="contact-message-longueur">10 caractères minimum</span><span id="contact-message-count" data-contact-count>0 / 5&#8239;000 caractères</span></div>
               <p class="contact-erreur" id="contact-message-error" hidden></p>
@@ -85,7 +86,7 @@ const profils = [
             </div>
           </fieldset>
           <div class="contact-envoi">
-            <button class="bouton" type="submit" disabled><span class="contact-attente" data-contact-spinner aria-hidden="true" hidden></span><span data-contact-submit-label>Envoyer le message</span><Picto nom="interface/email" /></button>
+            <button class="bouton" type="submit" disabled data-pli="action"><span class="contact-attente" data-contact-spinner aria-hidden="true" hidden></span><span data-contact-submit-label>Envoyer le message</span><Picto nom="interface/email" /></button>
             <p class="contact-confidentialite">Vos coordonnées et votre message servent seulement à vous répondre. <a href="/mentions-legales#donnees">À propos de vos données</a>.</p>
           </div>
           <div class="contact-retour">
@@ -96,7 +97,6 @@ const profils = [
               <p class="contact-retour__suite">En attendant&nbsp;: <a href="/projets">les projets</a> ou <a href="/parcours">le parcours</a>.</p>
             </div>
           </div>
-          <noscript><p class="contact-sans-js">Activez JavaScript pour utiliser le formulaire, ou <a href={MAILTO} data-umami-event="contact-email" data-umami-event-emplacement="contact">écrivez-moi directement par e-mail</a>.</p></noscript>
         </form>
       </section>
 
@@ -156,7 +156,7 @@ const profils = [
       'moi lettre';
     gap: var(--s7) clamp(40px, 6vw, 96px);
     align-items: start;
-    padding-block: var(--s5) var(--s8);
+    padding-block: var(--s4) var(--s8);
   }
 
   .contact__tete { grid-area: tete; }
@@ -354,7 +354,7 @@ const profils = [
   }
 
   .contact-champ textarea {
-    min-height: 132px;
+    min-height: 112px;
     resize: vertical;
   }
 
@@ -369,9 +369,15 @@ const profils = [
     border-color: var(--accent);
   }
 
+  /* L’erreur se distingue du focus par sa forme : la nuit, le laiton et
+     l’anneau de focus ont la même teinte. */
   .contact-champ [aria-invalid='true'] {
-    border-color: var(--laiton);
-    box-shadow: inset 0 0 0 1px var(--laiton);
+    padding: 10px 13px;
+    border: 2px dashed var(--laiton);
+  }
+
+  .contact-champ [aria-invalid='true']:focus {
+    outline-offset: 4px;
   }
 
   .contact-erreur {
@@ -411,7 +417,7 @@ const profils = [
   }
 
   .contact-sujet {
-    min-height: 40px;
+    min-height: 44px;
     padding: 0 var(--s3);
     border: 0;
     border-radius: var(--r3);
@@ -546,7 +552,7 @@ const profils = [
 
   .contact-retour :global(.contact-retour__image) {
     flex: none;
-    width: 72px;
+    width: 96px;
   }
 
   .contact-retour:has([data-state='success']:not([hidden])) {
@@ -564,7 +570,11 @@ const profils = [
     min-width: 0;
   }
 
+  /* Pas de transition sur le message : en mouvement réduit, global.css en pose
+     une de 0,01 ms sur toutes les propriétés, et le panneau grandirait après
+     que le script l’a amené dans l’écran. */
   .contact-statut {
+    transition-property: none;
     font-size: var(--t-s);
     font-weight: 600;
     overflow-wrap: anywhere;
@@ -592,7 +602,7 @@ const profils = [
   }
 
   .contact-sans-js {
-    margin-top: var(--s5);
+    margin-block: 0 var(--s4);
     font-size: var(--t-s);
   }
 
@@ -662,10 +672,6 @@ const profils = [
 
     .contact-envoi .bouton {
       width: 100%;
-    }
-
-    .contact-sujet {
-      min-height: 44px;
     }
   }
 
