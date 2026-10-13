@@ -59,7 +59,7 @@ export const FICHE: DonneesFiche = {
   statut: { texte: 'En ligne', etat: 'actif' },
   liens: [
     { href: LIENS.application, libelle: 'L’application' },
-    { href: LIENS.journal, libelle: 'Le journal du projet' },
+    { href: LIENS.journal, libelle: 'Le journal' },
   ],
 };
 
@@ -80,7 +80,12 @@ export const SECTIONS: readonly EntreeSommaire[] = [
 /* Comment je l’ai construit (gabarit E5 · 4)                          */
 /* ------------------------------------------------------------------ */
 
-/** Trois décisions tirées du journal public, chacune avec son étape. */
+/**
+ * Trois décisions datées par le journal public, chacune avec son étape. La
+ * livraison construite une fois est relue dans la chaîne d’intégration du
+ * dépôt (docs/matiere-premiere.md) ; le dépôt est privé, le lien mène au
+ * journal.
+ */
 export const DECISIONS: readonly Decision[] = [
   {
     contrainte: 'Près de mille succès dans un seul ciel formaient un buisson où personne ne retrouvait rien.',
@@ -96,8 +101,9 @@ export const DECISIONS: readonly Decision[] = [
   },
   {
     contrainte: 'Une même application sur le web et sur Android, mise à jour au fil des étapes.',
-    choix: 'Une seule interface Angular, Ionic et Capacitor ; des images construites une fois, validées en test, puis promues telles quelles.',
-    effet: 'La version testée est celle qui part en ligne, et l’APK de test suit chaque mise à jour.',
+    choix: 'Une seule interface Angular, Ionic et Capacitor ; chaque version vérifiée par des tests, construite une fois, puis promue telle quelle en production.',
+    effet: 'La version testée est celle qui part en ligne, et l’application Android suit chaque mise à jour.',
+    lien: { href: LIENS.journal, libelle: 'Le journal, 05 et 06/09/2026' },
   },
 ];
 
