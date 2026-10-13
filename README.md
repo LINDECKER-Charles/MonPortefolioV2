@@ -31,7 +31,9 @@ npm run preview      # build + serveur de production, http://127.0.0.1:4000
 |---|---|
 | `npm run build` | build statique dans `dist/`, puis contrôles du site (`tools/verifier-site.mjs`) |
 | `npm run check` | vérification des types (`astro check`) |
-| `npm test` | tests unitaires (Vitest) et tests du serveur (`node --test`) |
+| `npm test` | tests unitaires (Vitest) et tests du serveur (`node --test`) ; les garde-fous qui lisent le HTML construit (blog, liens publics, citations, formulations interdites, sitemap) reconstruisent `dist/` s'il est périmé |
+| `npm run visuels` | liste les visuels « socle » manquants du registre `src/config/visuels.ts` (`-- --tout` pour tous, `-- --strict` pour échouer s'il en manque) ; le build en affiche le décompte sans échouer |
+| `npm run visuels:doc` | régénère `docs/visuels-a-generer.md`, la commande de production des images, depuis le registre |
 | `npm run test:e2e` | build + tests navigateur (Playwright, Chromium à 390 et 1440 px, axe) |
 
 Première exécution des tests navigateur : `npx playwright install chromium`.
