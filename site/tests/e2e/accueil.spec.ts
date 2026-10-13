@@ -206,10 +206,17 @@ test('les cartes de projets suivent l’ordre de la vitrine', async ({ page }) =
   for (const carte of await construits.all()) {
     await expect(carte).toContainText('Voir le projet');
     await expect(carte.locator('img').first()).toHaveAttribute('alt', /.{40,}/);
+    // Le chiffre et sa légende partagent la ligne de base du chiffre.
+    const [chiffre, legende] = await carte.locator('.construit__chiffre > *').evaluateAll((elements) => elements.map((e) => e.getBoundingClientRect().top));
+    expect(Math.abs(chiffre - legende)).toBeLessThan(24);
   }
+  // Le chiffre de chaque carte est celui de la vitrine (règle E6).
+  await expect(construits.locator('.construit__chiffre b')).toHaveText(['403', '1 289', '153']);
+  await expect(construits.first().locator('.construit__chiffre')).toContainText('patchs, dans 21 langues');
   const omnicard = page.locator('#omnicard');
   await expect(omnicard.getByRole('link', { name: 'Omnicard', exact: true })).toHaveAttribute('href', '/projets/omnicard');
   await expect(omnicard).toContainText('Hors ligne, en attente de refonte');
+  await expect(omnicard.getByRole('link', { name: /^Règles et cartes \(GitHub\)/ })).toHaveAttribute('href', 'https://github.com/LINDECKER-Charles/public-Omnicard');
   // Omnicard porte le verbe du bandeau, sans rang.
   await expect(omnicard.locator('.carte-projet__rang')).toHaveCount(0);
   await expect(omnicard.locator('.carte-projet__preuve')).toHaveText('Réinventer');
