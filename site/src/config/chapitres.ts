@@ -16,7 +16,7 @@ export interface Chapitre {
 
 export const CHAPITRES: readonly Chapitre[] = [
   { id: 'origine', num: 1, titre: 'L’origine', resume: 'du premier PC aux premières équipes' },
-  { id: 'aujourdhui', num: 2, titre: 'Aujourd’hui', resume: 'comprendre, construire, transmettre' },
+  { id: 'aujourdhui', num: 2, titre: 'Aujourd’hui', resume: 'construire, à plusieurs' },
   { id: 'discutons', num: 3, titre: 'La suite, à plusieurs', resume: 'construire la suite ensemble' },
 ];
 

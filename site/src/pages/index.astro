@@ -55,7 +55,7 @@ const ENTREES = [
   { id: 'voie', titre: 'La voie qui marche' },
   { id: 'aujourdhui', titre: '02\u00a0Aujourd’hui' },
   { id: 'collectif', titre: 'Du solo au collectif' },
-  { id: 'discutons', titre: '03\u00a0La suite' },
+  { id: 'discutons', titre: '03\u00a0La suite, à plusieurs' },
 ];
 const omnicard = projetDeLaVitrine('omnicard');
 /* Sur l’accueil, la carte d’Omnicard ne porte ni le rang de la vitrine, qui
@@ -136,7 +136,7 @@ const omnicard = projetDeLaVitrine('omnicard');
               Depuis, à chaque mise à jour du jeu, je passe deux jours à jouer la méta, puis je la réinvente. J’aborde tout
               ce qui est nouveau de la même façon&nbsp;: d’abord maîtriser ce qui se fait, ensuite le réinventer.
             </p>
-            <p class="renvoi">C’est la règle de la couverture. <a href="#regles">Voir les trois règles<span class="fleche" aria-hidden="true">&nbsp;↓</span></a></p>
+            <p class="renvoi">C’est la phrase qui ouvre cette page. <a href="#regles">Voir les trois règles<span class="fleche" aria-hidden="true">&nbsp;↓</span></a></p>
           </div>
           <FigurePlafond />
         </div>
@@ -266,6 +266,19 @@ const omnicard = projetDeLaVitrine('omnicard');
     margin-top: var(--s8);
   }
 
+  /* La nuit, les actes se confondraient presque avec le fond (1,06:1) : un
+     filet porteur les dessine (3,9:1). Correctif local, en attendant des
+     teintes de nuit plus claires dans les jetons partagés. */
+  :global(:root[data-theme='nuit'] .panneau) {
+    border: 1px solid var(--trait);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme]) .panneau) {
+      border: 1px solid var(--trait);
+    }
+  }
+
   .quand {
     font-family: var(--police-titre);
     font-style: italic;
@@ -306,6 +319,7 @@ const omnicard = projetDeLaVitrine('omnicard');
     font-size: var(--t-s);
     font-weight: 600;
     margin-left: var(--s1);
+    white-space: nowrap;
   }
 
   /* Un moment : le texte, et sa ou ses scènes à côté. */
@@ -423,15 +437,22 @@ const omnicard = projetDeLaVitrine('omnicard');
     margin-top: var(--s2);
   }
 
+  .moment-court :global(mark) {
+    white-space: nowrap;
+  }
+
   /* Aujourd’hui : l’acte de veille. */
+  /* Le texte part sous le titre, le dessin se cale en haut à droite : le
+     chapitre ne commence pas par un vide. */
   .metier {
     display: grid;
     grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
     gap: var(--s6) var(--s8);
-    align-items: center;
+    align-items: start;
   }
 
   .metier__texte {
+    padding-top: var(--s3);
     max-width: 40rem;
     font-size: var(--t-l);
     line-height: 1.5;
@@ -462,8 +483,10 @@ const omnicard = projetDeLaVitrine('omnicard');
     margin-top: var(--s3);
   }
 
+  /* Les trois étapes et les quatre gestes : une seule section, « comment le
+     pôle avance », sans grand blanc entre les deux. */
   .collectif-recit :global(.gestes) {
-    margin-top: var(--s8);
+    margin-top: var(--s7);
   }
 
   .conclusion {
@@ -542,6 +565,19 @@ const omnicard = projetDeLaVitrine('omnicard');
 
     .collectif-recit__haut {
       margin-bottom: var(--s7);
+    }
+
+    .collectif-recit :global(.gestes),
+    .conclusion {
+      margin-top: var(--s7);
+    }
+
+    /* Les titres-liens des cartes : une cible d’au moins 44 px (E7). */
+    .omnicard :global(.carte-projet__nom a),
+    .construire :global(.construit__nom a) {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
     }
 
     .metier :global(.systeme),
