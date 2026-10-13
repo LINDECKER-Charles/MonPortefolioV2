@@ -304,16 +304,16 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Cinq portes alignées : quatre restent fermées, la cinquième s’entrouvre sur la lumière. »
 - **Note** : Même cadrage 21:9 sur mobile, qui garde les cinq portes alignées sur leurs intitulés (le recadrage 4:5 du cahier les coupait). Scène animée de l’accueil, comme ACC-03.
 
-### ACC-09 · Le programme bouclé en un mois
+### ACC-09 · Le programme parcouru au pas de course
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
 - **Emplacement** : `/` · 01, la voie qui marche : scène « Un mois pour parcourir le programme DWWM », rejouable au clic _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Le programme bouclé en un mois
-- **Composition** : Composition validée le 2026-10-08 : un grand chronomètre posé au-dessus de trois grands dossiers empilés en perspective, ses aiguilles presque revenues à leur point de départ ; devant, un rouleau de diplôme noué d’un ruban et scellé ; une lanterne à gauche (vers 22 % de la largeur et 40 % de la hauteur) éclaire le rouleau ; cadran sans chiffre, dossiers sans inscription
+- **Sujet** : Le programme parcouru au pas de course
+- **Composition** : Composition validée le 2026-10-08 : un grand chronomètre posé au-dessus de trois grands dossiers empilés en perspective, ses aiguilles presque revenues à leur point de départ ; devant, un rouleau de diplôme noué d’un ruban et scellé ; une lanterne à gauche (vers 22 % de la largeur et 40 % de la hauteur) éclaire le rouleau ; cadran sans chiffre, dossiers sans inscription ; affichée recadrée en 2:1 au centre sur ordinateur (la bande centrale de 1600 × 800) : tout le sujet et la lanterne tiennent dans cette bande, rien d’important dans le sixième du haut ni dans le sixième du bas ; entière, en 4:3, sur mobile
 - **Format** : 4:3, 1600 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-09_1600x1200.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un chronomètre posé sur trois grands dossiers, devant un rouleau de diplôme noué. »
-- **Note** : Scène animée de l’accueil, comme ACC-03.
+- **Note** : Scène animée de l’accueil, comme ACC-03. Recadrée en 2:1 au-delà de 860 px (components/accueil/Scene.astro, propriété recadrage), entière en 4:3 en dessous.
 
 ### ACC-10 · −30 % de temps de traitement
 
@@ -330,11 +330,11 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
 - **Emplacement** : `/` · 01, de l’autre côté du bureau : scène « Passer de l’apprenant au formateur », rejouable au clic _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : La classe vue depuis le pupitre du formateur
-- **Composition** : Une salle de formation vue de trois quarts depuis l’estrade, derrière l’épaule du formateur : au premier plan, le pupitre et la silhouette du formateur, de dos ; devant lui, une dizaine de postes en deux rangées, des apprenants en silhouettes sans visage, penchés sur leurs écrans ; au mur, un tableau couvert d’un schéma de trois blocs reliés (interface, service, base de données) dessiné au trait, sans aucun mot ; une lanterne posée sur le pupitre (vers 30 % de la largeur et 70 % de la hauteur) éclaire la salle depuis l’avant
+- **Composition** : Une salle de formation vue de trois quarts depuis l’estrade, derrière l’épaule du formateur : au premier plan, le pupitre et la silhouette du formateur, de dos ; devant lui, une dizaine de postes en deux rangées, des apprenants en silhouettes sans visage, penchés sur leurs écrans ; au mur, un tableau couvert d’un schéma de trois blocs reliés (interface, service, base de données) dessiné au trait, sans aucun mot ; une lanterne posée sur le pupitre (vers 30 % de la largeur et 70 % de la hauteur) éclaire la salle depuis l’avant ; affichée recadrée en 2:1 au centre sur ordinateur (la bande centrale de 1600 × 800) : tout le sujet et la lanterne tiennent dans cette bande, rien d’important dans le sixième du haut ni dans le sixième du bas ; entière, en 4:3, sur mobile
 - **Format** : 4:3, 1600 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-11_1600x1200.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une salle de formation vue depuis le pupitre : une dizaine de postes, un tableau couvert d’un schéma. »
-- **Note** : Scène animée de l’accueil, comme ACC-03.
+- **Note** : Scène animée de l’accueil, comme ACC-03. Recadrée en 2:1 au-delà de 860 px (components/accueil/Scene.astro, propriété recadrage), entière en 4:3 en dessous.
 
 ### ACC-12 · « Une dizaine, tous titrés »
 
@@ -371,13 +371,13 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 ### ACC-15 · Les quatre gestes
 
 - **Priorité** : socle · **Méthode** : IMG, rien à produire, le fichier est celui d’un autre emplacement
-- **Emplacement** : `/` · 02, du solo au collectif : les quatre gestes de la semaine _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/` · 02, du solo au collectif : « Comment j’organise le pôle, en quatre gestes » _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Les quatre gestes
 - **Composition** : Réutilise les quatre cartes de gestion de projet de la page PvZ Fusion : organiser (PVZ-05), livrer (PVZ-07), motiver (PVZ-08), remercier (PVZ-11)
 - **Format** : 1:1
 - **Fichier attendu** : aucun, reprend `PVZ-05`, `PVZ-07`, `PVZ-08`, `PVZ-11`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Les quatre gestes »
-- **Note** : Posé en quatre vignettes de 64 à 88 px (components/accueil/GestesPole.astro), avec les textes de config/pvz-fusion.ts.
+- **Note** : Posé en quatre images carrées, en tête de chaque geste, sur toute la largeur de sa colonne : environ 230 px sur ordinateur (quatre colonnes), 160 à 300 px sur tablette et mobile (deux colonnes) (components/accueil/GestesPole.astro), avec les textes de config/pvz-fusion.ts. Les images PVZ-05, 07, 08 et 11 doivent rester lisibles à 160 px.
 
 ### ACC-16 · La lanterne posée sur un livre ouvert, un chemin éclairé devant
 
@@ -395,11 +395,11 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
 - **Emplacement** : `/` · 02, aujourd’hui, à côté du métier : scène « Un petit système, en plan », qui communique en boucle tant qu’elle est visible _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Le système qui communique
-- **Composition** : Plan au trait d’un petit système : un poste client à gauche, un service au centre, une base de données à droite et une fenêtre livrée en haut à droite, reliés par des liaisons à angle droit et un chemin de retour en pointillé ; des messages, points de lumière, circulent dans l’ordre requête, données, réponse, livraison ; calques séparés (trait, aplats, lumière) que le site anime
+- **Composition** : Plan d’architecte vu de dessus, de la même main que les lanternes (ACC-14) et le logo : à gauche, une petite lanterne du même modèle, seule source de lumière, qui émet les messages ; au centre, à droite et en haut à droite, trois blocs en plan (murs doubles, cloisons, ouvertures, une porte en arc pointillé), sans aucun pictogramme ni glyphe, une partie de chaque bloc hachurée en réserve ; liaisons à angle droit et chemin de retour en pointillé ; des messages, points de lumière, circulent dans l’ordre requête, données, réponse, livraison ; deux aplats (surface et lanterne) sur le trait d’encre ; calques séparés (trait, aplats, hachures, lumière) que le site anime
 - **Format** : 4:3, viewBox 320 × 240
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-17.svg`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un petit système en plan : un poste, un service, une base de données et une livraison, reliés par des messages qui circulent. »
-- **Note** : Livré le 13 octobre 2026 : le dessin de l’ancienne vignette « architecte », redessiné dans le système « Lanterne » et animé en boucle en CSS (components/accueil/SceneSysteme.astro). La boucle s’arrête hors de l’écran, dans un onglet masqué et en mouvement réduit.
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un petit système en plan : une lanterne émet des messages de lumière qui traversent trois blocs reliés. »
+- **Note** : Livré le 13 octobre 2026, redessiné le même jour : plus de poste « </> », de tour serveur, de cylindre ni de fenêtre cochée, mais des blocs en plan et la lanterne comme source. Animé en boucle en CSS (components/accueil/SceneSysteme.astro) ; la boucle s’arrête hors de l’écran, dans un onglet masqué et en mouvement réduit.
 
 ### ACC-18 · Lire le jeu
 
@@ -410,7 +410,7 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Format** : 2:3, 1200 × 1800
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-18_1200x1800.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une silhouette observe une citadelle à la loupe, éclairée par sa lanterne. »
-- **Note** : Série de trois cartes (ACC-18 à ACC-20) : même cadrage, même lumière, même main. Le cadre ouvragé, la valeur et le titre restent codés (components/accueil/FigureGwent.astro) ; la lumière part de la lanterne à l’arrivée de la carte puis à chaque clic. Affichée de 108 à 200 px de large : sujet principal au centre, lisible en petit.
+- **Note** : Série de trois cartes (ACC-18 à ACC-20) : même cadrage, même lumière, même main. Le cadre ouvragé, la valeur et le titre restent codés (components/accueil/FigureGwent.astro) ; la lumière part de la lanterne à l’arrivée de la carte puis à chaque clic. Affichée de 165 à 210 px de large (en rangée défilante sur mobile, environ 200 px) : sujet principal au centre, lisible en petit.
 
 ### ACC-19 · Tester mes idées
 
@@ -443,7 +443,7 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Format** : 3:2, 1800 × 1200
 - **Fichier attendu** : `site/src/assets/visuels/accueil/ACC-21_1800x1200.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une silhouette accueille une nouvelle venue sur le seuil d’une porte éclairée. »
-- **Note** : Série de trois scènes (ACC-21 à ACC-23) : même décor et mêmes silhouettes d’une scène à l’autre. Affichées de 140 à 340 px de large : sujet principal au centre, sans détail fin. La lumière part de la lanterne à l’arrivée puis à chaque clic (components/accueil/FigureCollectif.astro).
+- **Note** : Série de trois scènes (ACC-21 à ACC-23) : même décor et mêmes silhouettes d’une scène à l’autre. Affichées de 300 à 360 px de large (empilées, pleine largeur, sur mobile) : sujet principal au centre, sans détail fin. La lumière part de la lanterne à l’arrivée puis à chaque clic (components/accueil/FigureCollectif.astro).
 
 ### ACC-22 · Former et relire
 
