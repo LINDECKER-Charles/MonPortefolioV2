@@ -20,7 +20,9 @@
  *   <ID>_<l>x<h>.webp        le rendu de jour : aplat → --surface, encre → --encre,
  *                            lumière → --lanterne, du thème clair
  *   <ID>_<l>x<h>.nuit.webp   le rendu de nuit, depuis le master de nuit : noir →
- *                            --fond, blanc → --encre, rouge → --lanterne, du thème nuit
+ *                            --surface pour un fond rempli ou une image posée
+ *                            sur une carte (`renduNuit`), --fond sinon ;
+ *                            blanc → --encre, rouge → --lanterne, du thème nuit
  *
  * Sans master de nuit, il écrit une nuit de repli « clair de lune » depuis le
  * master de jour, sans inversion (aplat → --papier-lune, encre → --fond de
@@ -40,7 +42,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
-import { CLES, fichierMaster, fichierMasterNuit, fichierNuit, plafondPoids, RENDUS, visuelParId, VISUELS } from '../src/config/visuels.ts';
+import { CLES, fichierMaster, fichierMasterNuit, fichierNuit, plafondPoids, RENDUS, renduNuit, visuelParId, VISUELS } from '../src/config/visuels.ts';
 
 const SITE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DEPOT = path.resolve(SITE, '..');
@@ -81,7 +83,7 @@ export function lireJetons(css) {
 /**
  * Les couleurs RVB d’un rendu (`RENDUS`), une par clé, lues dans les jetons.
  * @param {{ jour: Record<string, string>, nuit: Record<string, string> }} jetons
- * @param {'jour' | 'nuit' | 'repli'} rendu
+ * @param {'jour' | 'nuit' | 'nuitSurface' | 'repli'} rendu
  * @returns {Record<'encre' | 'aplat' | 'lumiere', number[]>}
  */
 export function couleursDuRendu(jetons, rendu) {
@@ -188,7 +190,7 @@ export async function rendre(id, { depot = DEPOT, site = SITE, jetons = JETONS }
   };
   const jour = await pixels(source);
   await ecrire(visuel.fichier, recolorer(jour, couleursDuRendu(lus, 'jour')));
-  await ecrire(nuit, repli ? recolorer(jour, couleursDuRendu(lus, 'repli')) : recolorer(await pixels(sourceNuit), couleursDuRendu(lus, 'nuit')));
+  await ecrire(nuit, repli ? recolorer(jour, couleursDuRendu(lus, 'repli')) : recolorer(await pixels(sourceNuit), couleursDuRendu(lus, renduNuit(visuel))));
   return { ecrits, repli, masterNuit };
 }
 

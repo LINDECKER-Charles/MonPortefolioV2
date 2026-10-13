@@ -2,6 +2,8 @@
 
 Chaque fichier livré prend une ligne : le prompt exact d’une image générée (sinon « — » et la méthode), la date de livraison et la provenance (master, script, source). Les images générées arrivent par `npm run visuels:rendre <ID>` (dans `site/`), depuis leurs deux masters `design/assets/visuels/<série>/<ID>.png` (jour) et `<ID>.nuit.png` (nuit) : consigner le rendu de jour `<ID>_<l>x<h>.webp` et le rendu de nuit `.nuit.webp` sur la même ligne, avec les prompts du jour et de la nuit. Consignes : `docs/visuels-a-generer.md`.
 
+**Rendus de nuit refaits le 14 octobre 2026.** Pour une image à fond rempli, le noir du master de nuit devient la surface du thème nuit (`--surface`) et non plus le fond de la page, comme le blanc du jour devient `--surface` : la plaque de nuit répond à celle du jour (`renduNuit` dans `src/config/visuels.ts`). Masters et qualités inchangés, sauf retouche signalée sur la ligne.
+
 | Fichier | Visuel | Prompt | Date | Provenance |
 |---|---|---|---|---|
 | `LOD-03.svg` | Piège 1, les runes absentes : une page de registre dont une case découpée, laissée vide, porte un signet. | — (dessin vectoriel à la main) | 13 octobre 2026 | Dessin vectoriel écrit à la main pour la direction « Lanterne », grille de 48, trait de 1,75 en `currentColor`, sans texte. 13 octobre 2026. |

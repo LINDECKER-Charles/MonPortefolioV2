@@ -114,6 +114,12 @@ export interface EntreeVisuel {
   calques?: CalquesVisuel;
   /** Fond transparent, ou rempli de l’aplat (images générées). */
   fond?: 'transparent' | 'aplat';
+  /**
+   * Surface sur laquelle une image à fond transparent est toujours posée, quand
+   * ce n’est pas le fond de la page : `surface` pour une carte. Sa nuit rend
+   * alors le noir du master en `--surface`, comme un fond rempli (`renduNuit`).
+   */
+  support?: 'surface';
   /** Format et ratio, tels que l’inventaire les écrit. */
   format: string;
   /** Ratio de l’image au format CSS `aspect-ratio` ; `null` s’il est libre. */
@@ -3386,6 +3392,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     cadrage: 'Le sujet occupe 70 % du cadre et reste lisible à 88 px (signe de la page, à droite du titre « M’écrire »).',
     calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'papier de l’enveloppe', lumiere: 'flamme et halo qui sort de l’enveloppe' },
     fond: 'transparent',
+    support: 'surface',
     format: '1:1, 480 × 480, fond transparent',
     ratio: '1 / 1',
     largeur: 480,
@@ -3616,11 +3623,25 @@ export const NOMS_CLES: Readonly<Record<CleVisuel, string>> = { encre: 'noir', a
  * (tools/rendre-visuels.mjs). `repli` est la nuit tirée du master de jour,
  * sans inversion, tant que le master de nuit manque.
  */
-export const RENDUS: Readonly<Record<'jour' | 'nuit' | 'repli', { theme: 'jour' | 'nuit'; master: 'jour' | 'nuit'; jetons: Readonly<Record<CleVisuel, string>> }>> = {
+export const RENDUS: Readonly<Record<'jour' | 'nuit' | 'nuitSurface' | 'repli', { theme: 'jour' | 'nuit'; master: 'jour' | 'nuit'; jetons: Readonly<Record<CleVisuel, string>> }>> = {
   jour: { theme: 'jour', master: 'jour', jetons: { encre: '--encre', aplat: '--surface', lumiere: '--lanterne' } },
   nuit: { theme: 'nuit', master: 'nuit', jetons: { encre: '--fond', aplat: '--encre', lumiere: '--lanterne' } },
+  nuitSurface: { theme: 'nuit', master: 'nuit', jetons: { encre: '--surface', aplat: '--encre', lumiere: '--lanterne' } },
   repli: { theme: 'nuit', master: 'jour', jetons: { encre: '--fond', aplat: '--papier-lune', lumiere: '--lanterne' } },
 };
+
+/**
+ * Le rendu de nuit d’une image générée. Le jour, l’aplat d’un fond rempli
+ * devient `--surface` : une plaque claire sur la pierre, fondue dans une carte.
+ * La nuit, symétrique, le noir d’un fond rempli devient la surface du thème
+ * nuit (`nuitSurface`), et non le fond de la page : la même image reste une
+ * plaque, sans pavé plus noir que la carte qui la porte (relecture du
+ * 14 octobre 2026). Une image à fond transparent garde le fond de nuit pour
+ * son encre, sauf si elle est toujours posée sur une carte (`support`).
+ */
+export function renduNuit(visuel: EntreeVisuel): 'nuit' | 'nuitSurface' {
+  return visuel.fond === 'aplat' || visuel.support === 'surface' ? 'nuitSurface' : 'nuit';
+}
 
 /**
  * La position de la lanterne d’une image générée, en % de la largeur et de la
@@ -3895,7 +3916,7 @@ export const REGLES_COMMUNES: readonly string[] = [
   '**Aucun texte dans l’image**, chiffres compris : les libellés, dates et légendes sont en HTML.',
   '**Jamais une image générée présentée comme une capture ou comme une donnée** : les courbes, frises et schémas chiffrés sont des figures codées (FIG), les écrans sont des captures réelles (CAP).',
   '**Une seule famille de style**, celle de la direction « Lanterne », retenue le 13 octobre 2026 (`design/refonte/c-lanterne/`) : **gravure en réserve** au trait économe (voir « Moins image générée ») ; la lanterne comme seule source de lumière de la scène, qui éclaire une seule chose et laisse le reste dans l’ombre, le jour comme la nuit (voir « Version de nuit »). Même trait, même lumière, même angle par série (voir « Séries »). Aucun ornement de jeu, aucun cadre doré. La lanterne du logo est le motif récurrent des états (vide, succès, 404).',
-  '**Deux versions dessinées, jour et nuit** (tranché le 13 octobre 2026) : chaque image a deux masters en trois couleurs de clé franches, noir `#000000`, blanc `#FFFFFF` et rouge `#FF0000`, dessinés au même cadrage au pixel près : le jour `<ID>.png`, puis la nuit `<ID>.nuit.png`, faite en édition depuis le master de jour (voir « Version de nuit »). Dans `site/`, `npm run visuels:rendre <ID>` les rend aux couleurs des jetons de `src/styles/jetons.css` : le jour `<ID>_<l>x<h>.webp` (blanc → `--surface`, noir → `--encre`, rouge → `--lanterne`, thème clair), la nuit `<ID>_<l>x<h>.nuit.webp` (noir → `--fond`, blanc → `--encre`, rouge → `--lanterne`, thème nuit). Sans master de nuit, il écrit une nuit de repli « clair de lune » tirée du jour et la signale : ce n’est pas une livraison. Une image « socle » sans ses deux rendus fait échouer `npm run visuels -- --strict`.',
+  '**Deux versions dessinées, jour et nuit** (tranché le 13 octobre 2026) : chaque image a deux masters en trois couleurs de clé franches, noir `#000000`, blanc `#FFFFFF` et rouge `#FF0000`, dessinés au même cadrage au pixel près : le jour `<ID>.png`, puis la nuit `<ID>.nuit.png`, faite en édition depuis le master de jour (voir « Version de nuit »). Dans `site/`, `npm run visuels:rendre <ID>` les rend aux couleurs des jetons de `src/styles/jetons.css` : le jour `<ID>_<l>x<h>.webp` (blanc → `--surface`, noir → `--encre`, rouge → `--lanterne`, thème clair), la nuit `<ID>_<l>x<h>.nuit.webp` (noir → `--surface` pour un fond rempli ou une image posée sur une carte, `--fond` sinon ; blanc → `--encre`, rouge → `--lanterne`, thème nuit), une plaque dans les deux thèmes pour un fond rempli. Sans master de nuit, il écrit une nuit de repli « clair de lune » tirée du jour et la signale : ce n’est pas une livraison. Une image « socle » sans ses deux rendus fait échouer `npm run visuels -- --strict`.',
   '**Livrables** : les deux masters PNG, à la définition du générateur, au ratio exact de la fiche (à 1 % près) et de mêmes dimensions, dans `design/assets/visuels/<série>/` ; le script les met aux dimensions exactes du nom et écrit les deux WebP (qualité 82, abaissée pour le seul rendu qui dépasse son plafond ; alpha conservé) dans `site/src/assets/visuels/<série>/`. Poids d’un WebP : 40 Ko au plus jusqu’à 480 px de grand côté, 120 Ko jusqu’à 1 200 px, 250 Ko au-delà. Prompts du jour et de la nuit, date et provenance consignés dans `design/assets/visuels/<série>/README.md` et `site/src/assets/visuels/<série>/README.md`.',
   '**Lisibilité mobile** : le sujet principal occupe au moins 60 % du cadre et se comprend à 390 px.',
 ];

@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import sharp from 'sharp';
 import { afterAll, describe, expect, it } from 'vitest';
-import { fichierMaster, fichierMasterNuit, fichierNuit, RENDUS, visuelParId } from '../../src/config/visuels';
+import { fichierMaster, fichierMasterNuit, fichierNuit, RENDUS, renduNuit, visuelParId, VISUELS } from '../../src/config/visuels';
 import { couleursDuRendu, decomposer, encoder, JETONS, lireJetons, mastersPresents, nettoyerAlpha, QUALITE, QUALITE_PLANCHER, recolorer, rendre } from '../../tools/rendre-visuels.mjs';
 import { etatDesVisuels, verifierLivres } from '../../tools/visuels-manquants.mjs';
 
@@ -31,13 +31,27 @@ describe('lecture des jetons', () => {
   });
 
   it('donne à chaque rendu les couleurs de ses jetons', () => {
-    for (const rendu of ['jour', 'nuit', 'repli'] as const) {
+    for (const rendu of ['jour', 'nuit', 'nuitSurface', 'repli'] as const) {
       const { theme, jetons: noms } = RENDUS[rendu];
       expect(couleursDuRendu(jetons, rendu)).toEqual({ encre: rvb(jetons[theme][noms.encre]), aplat: rvb(jetons[theme][noms.aplat]), lumiere: rvb(jetons[theme][noms.lumiere]) });
     }
     expect(RENDUS.jour.jetons).toEqual({ encre: '--encre', aplat: '--surface', lumiere: '--lanterne' });
     expect(RENDUS.nuit.jetons).toEqual({ encre: '--fond', aplat: '--encre', lumiere: '--lanterne' });
     expect(RENDUS.repli.jetons).toEqual({ encre: '--fond', aplat: '--papier-lune', lumiere: '--lanterne' });
+    expect(RENDUS.nuitSurface.jetons).toEqual({ encre: '--surface', aplat: '--encre', lumiere: '--lanterne' });
+  });
+
+  it('rend le noir d’un fond rempli en surface de nuit, symétrique du jour ; celui d’une image transparente en fond, sauf posée sur une carte', () => {
+    // Le jour, l’aplat d’un fond rempli devient --surface : la nuit, son noir aussi, pour que la plaque réponde à celle du jour.
+    expect(renduNuit(visuelParId('PRO-01')!)).toBe('nuitSurface');
+    expect(renduNuit(visuelParId('CON-02')!)).toBe('nuit');
+    expect(renduNuit(visuelParId('CON-01')!)).toBe('nuitSurface');
+    for (const v of VISUELS.filter((x) => x.methode === 'IMG' && x.fichier)) {
+      expect(renduNuit(v), v.id).toBe(v.fond === 'aplat' || v.support === 'surface' ? 'nuitSurface' : 'nuit');
+      // Un support ne se donne qu’à une image transparente : un fond rempli a déjà sa surface.
+      if (v.support) expect(v.fond, v.id).toBe('transparent');
+    }
+    expect(jetons.nuit['--surface']).toBe('#1a1e29');
   });
 
   it('refuse un jeton absent ou qui n’est pas en hexadécimal', () => {
@@ -62,7 +76,7 @@ describe('décomposition et rendu', () => {
   });
 
   const melange = (a: number[], b: number[], pa: number, pb: number) => a.map((c, i) => Math.round((c * pa + b[i] * pb) / 255));
-  for (const rendu of ['jour', 'nuit', 'repli'] as const) {
+  for (const rendu of ['jour', 'nuit', 'nuitSurface', 'repli'] as const) {
     it(`rend les clés pures, les bords antialiasés et la transparence (${rendu})`, () => {
       const c = couleursDuRendu(jetons, rendu);
       const sortie = [...recolorer(ECHANTILLON, c)];
