@@ -14,6 +14,10 @@
  * mobile : deux colonnes, les longues cases sur toute la largeur.
  * Les liens publics sont des sorties du site, mesurées en `lien-sortant`
  * (emplacement `preuves` par défaut). Le statut a une forme et un mot (C9).
+ * Sous les liens, « Discutons de ce projet → » mène à /contact dès la fiche,
+ * sans attendre la sortie de page (`contact-page`, emplacement
+ * `fiche-projet`). Sur ordinateur, les liens n’ont pas de marge : la case
+ * garde la hauteur de sa rangée et la fiche tient dans le premier écran.
  */
 import AConfirmer from '../../ui/AConfirmer.astro';
 import Statut from '../../ui/Statut.astro';
@@ -70,6 +74,11 @@ const cases: { champ: ChampFiche; titre: string; large?: boolean }[] = [
               );
             })
           }
+          <li class="fiche-projet__discuter">
+            <a href="/contact" {...attributsMesure('/contact', { evenement: 'contact-page', emplacement: 'fiche-projet' })}>
+              Discutons de ce projet<span class="fleche" aria-hidden="true">&nbsp;→</span>
+            </a>
+          </li>
         </ul>
       </dd>
     </div>
@@ -142,10 +151,21 @@ const cases: { champ: ChampFiche; titre: string; large?: boolean }[] = [
     overflow-wrap: anywhere;
   }
 
+  .fiche-projet__discuter a {
+    font-weight: 600;
+  }
+
   @media (min-width: 1101px) {
     .fiche-projet__case--liens ul {
       flex-direction: column;
       align-items: flex-start;
+    }
+
+    /* Liens serrés : quatre lignes dans la hauteur de trois. */
+    .fiche-projet__case--liens ul a {
+      display: block;
+      padding-block: 0;
+      line-height: 1.3;
     }
   }
 

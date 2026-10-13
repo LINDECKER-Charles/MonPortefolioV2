@@ -14,6 +14,7 @@ export const EMPLACEMENTS = [
   'sommaire',
   'hero',
   'preuves',
+  'fiche-projet',
   'competences',
   'discutons',
   'contact',
