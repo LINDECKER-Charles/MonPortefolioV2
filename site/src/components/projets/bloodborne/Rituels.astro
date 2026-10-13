@@ -162,13 +162,6 @@ import { RITUELS } from '../../../config/bloodborne';
     background: var(--cadre);
   }
 
-  /* Le cadre du téléphone rogne tout ce qui dépasse (overflow: hidden) :
-     l’anneau de focus de la vidéo se porte sur le cadre (critère 2.4.7). */
-  .blr-rituels__lecteur :global(.capture__cadre:has(video:focus-visible)) {
-    outline: 2px solid var(--focus);
-    outline-offset: 3px;
-  }
-
   .blr-rituels__lecteur :global(.capture__legende b) {
     font-weight: 600;
     color: var(--encre);
