@@ -11,6 +11,10 @@
  * la lanterne posée sur la joue éclairée (composant Portrait). Sur mobile,
  * elle passe après le bandeau des preuves.
  *
+ * Sous le bandeau (sur mobile, après la photo), hors pli : la ligne de
+ * l’ancienne couverture et l’entrée vers tous les projets, gardées le
+ * 13/10/2026.
+ *
  * `minutes` : la durée de lecture du récit, comptée sur son texte réel
  * (Recit.astro).
  */
@@ -66,6 +70,11 @@ const { minutes } = Astro.props;
   <div class="couverture__preuves">
     <BandeauPreuves />
   </div>
+
+  <div class="couverture__suite">
+    <p>Un parcours, une méthode, des réalisations.</p>
+    <LienAction href="/projets">Voir tous mes projets</LienAction>
+  </div>
 </section>
 
 <style>
@@ -74,7 +83,8 @@ const { minutes } = Astro.props;
     grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
     grid-template-areas:
       'texte photo'
-      'preuves preuves';
+      'preuves preuves'
+      'suite suite';
     column-gap: clamp(32px, 6vw, 96px);
     row-gap: clamp(20px, 2.6vh, 32px);
     padding-top: clamp(28px, 5vh, 52px);
@@ -93,6 +103,22 @@ const { minutes } = Astro.props;
 
   .couverture__preuves {
     grid-area: preuves;
+  }
+
+  .couverture__suite {
+    grid-area: suite;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0 var(--s5);
+    padding-top: var(--s3);
+    border-top: 1px solid var(--filet);
+    font-size: var(--t-s);
+  }
+
+  .couverture__suite p {
+    color: var(--eteint);
   }
 
   h1 {
@@ -171,7 +197,8 @@ const { minutes } = Astro.props;
       grid-template-areas:
         'texte'
         'preuves'
-        'photo';
+        'photo'
+        'suite';
       row-gap: var(--s4);
       padding-top: var(--s4);
       padding-bottom: var(--s7);
