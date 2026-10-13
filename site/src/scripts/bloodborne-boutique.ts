@@ -1,3 +1,10 @@
+/**
+ * La boutique de Bloodborne Legendary Run en carrousel
+ * (components/projets/bloodborne/Boutique.astro) : les rayons se choisissent
+ * par leur nom, par Précédent et Suivant, ou aux flèches, Début et Fin dans
+ * la galerie, sans déplacer la page. Seule la capture du rayon visible reste
+ * dans l’ordre de tabulation ; le changement de rayon est annoncé.
+ */
 const boutique = document.querySelector<HTMLElement>('[data-blr-boutique]');
 const ecrans = boutique?.querySelector<HTMLElement>('[data-blr-boutique-ecrans]');
 
@@ -17,13 +24,13 @@ if (boutique && ecrans) {
     courant = index;
     choix.forEach((bouton, rayon) => bouton.setAttribute('aria-pressed', String(rayon === index)));
     rayons.forEach((rayon, numero) => {
-      const lien = rayon.querySelector<HTMLAnchorElement>('[data-blr-capture]');
+      const lien = rayon.querySelector<HTMLAnchorElement>('a[data-agrandir]');
       if (lien) lien.tabIndex = numero === index ? 0 : -1;
     });
     precedent?.setAttribute('aria-disabled', String(index === 0));
     suivant?.setAttribute('aria-disabled', String(index === rayons.length - 1));
     if (position) position.textContent = `${index + 1} / ${rayons.length}`;
-    if (annonce && (change || annoncer)) annonce.textContent = `${choix[index]?.textContent?.trim()}, ${index + 1} sur ${rayons.length}`;
+    if (annonce && (change || annoncer)) annonce.textContent = rayons[index]?.getAttribute('aria-label') ?? '';
   };
 
   const aller = (index: number) => {
