@@ -23,22 +23,19 @@ produit les WebP aux largeurs d'affichage au build.
 
 ## Figures interactives (2026-10-08)
 
-`FigureGwent.astro` utilise des dessins SVG originaux : silhouettes verticales, doubles cadres et
-repères d’angle inspirés des cartes de Gwent, avec le tracé bleu du site. Références officielles
-consultées : [Price of Power](https://www.playgwent.com/en/updates/price-of-power) et
-[Gwent cards: how they come to life](https://www.playgwent.com/en/news/6591/gwent-cards-how-they-come-to-life).
-Les cartes racontent le raisonnement de Charles, sans lui attribuer de carte ni de deck précis.
-
-`FigureCollectif.astro` remplace le graphe de personnes par trois actions explicites du pôle
-francophone. Le SVG de chaque carte ou étape est directement enveloppé dans une commande native
-accessible au clic, à Entrée et à Espace ; aucun bouton de rejeu séparé ni texte à ouvrir.
-
-Les scènes du récit sont désormais des SVG en plusieurs pièces dans `ScenesOrigine.astro` et
-`ScenesSuite.astro` et `SceneLanternes.astro`, affichés par `Illustration.astro`. Leurs animations montrent le démontage du
-PC, la plastification d’une carte, l’ouverture du portail, le diplôme, le pupitre et la transmission
-d’une flamme. Les scènes se jouent à leur première arrivée dans l’écran puis se rejouent sur le
-dessin. Le diplôme reprend la composition d’origine : chronomètre, dossiers et rouleau noué.
-Le système d’architecture fait circuler des messages tant qu’il est visible et que
-l’onglet est actif. Les anciens masques restent disponibles ; `Planche.astro` sert aux couvertures
-statiques des projets. Sans JavaScript, avec mouvement réduit ou à l’impression, tous les dessins
-et tous les textes sont complets.
+**Depuis la refonte « Lanterne » (13 octobre 2026)**, les scènes de l’accueil ne sont plus
+dessinées au trait bleu de l’ancienne direction : leurs images sont des emplacements du registre
+`src/config/visuels.ts`, à générer dans le style « Lanterne » (gravure en réserve, la lanterne
+seule source de lumière). Le PC, les cartes plastifiées, les portes, le diplôme et le pupitre sont
+ACC-03, ACC-04, ACC-08, ACC-09 et ACC-11 ; les illustrations des trois cartes de Gwent, ACC-18 à
+ACC-20 ; les trois temps du pôle, ACC-21 à ACC-23. Chaque scène reste rejouable au clic et au
+clavier (`components/accueil/Scene.astro`) : la lumière part de la place de la lanterne que la
+consigne impose à l’image. Le cadre des cartes de Gwent, inspiré de leur silhouette (références :
+[Price of Power](https://www.playgwent.com/en/updates/price-of-power) et
+[Gwent cards: how they come to life](https://www.playgwent.com/en/news/6591/gwent-cards-how-they-come-to-life)),
+reste codé dans `FigureGwent.astro`, aux couleurs des jetons. Le système qui communique en boucle
+et les lanternes qui se transmettent la flamme sont des fichiers SVG à calques,
+`src/assets/visuels/accueil/ACC-17.svg` et `ACC-14.svg`, insérés et animés par
+`SceneSysteme.astro` et `SceneLanternes.astro`. Les fichiers de ce dossier restent en place ; sans
+JavaScript, avec mouvement réduit ou à l’impression, tous les dessins et tous les textes sont
+complets.

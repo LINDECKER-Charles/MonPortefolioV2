@@ -1,90 +1,149 @@
 ---
-const lanternes = [
-  { x: 22, y: 28, echelle: .94, nom: 'source' },
-  { x: 122, y: 48, echelle: .9, nom: 'relais' },
-  { x: 222, y: 48, echelle: .9, nom: 'suite' },
-];
+/**
+ * Une lanterne allumée en allume d’autres (ACC-14,
+ * src/assets/visuels/accueil/ACC-14.svg) : la première lanterne vacille,
+ * une étincelle allume la deuxième, puis la troisième. Gardée le 13/10/2026 ;
+ * la lanterne du logo devient le motif du collectif. La scène se joue à son
+ * arrivée dans l’écran, puis se rejoue au clic ou au clavier
+ * (scripts/figure-animations.ts). Au repos, et sans mouvement : les trois
+ * lanternes allumées.
+ *
+ * Le dessin est le fichier du registre, inséré dans la page : ses calques
+ * (`lt-lumiere`, `lt-particule`, `lt-metal`…) suivent les jetons.
+ */
+import dessin from '../../assets/visuels/accueil/ACC-14.svg?raw';
+
+const legende = 'Une lanterne allumée en allume d’autres.';
+const svg = dessin
+  .replace(/<title>[\s\S]*?<\/title>/, '')
+  .replace(/<svg\b[^>]*>/, '<svg class="lanternes__dessin" viewBox="0 0 320 240" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">');
 ---
 
-<svg class="lanternes" viewBox="0 0 320 240" aria-hidden="true" focusable="false">
-  <defs>
-    <g id="scene-lanternes-modele">
-      <path class="lanternes__anse" d="M23 53V31a17 17 0 0 1 34 0v22M28 51V31a12 12 0 0 1 24 0v20" />
-      <path class="lanternes__metal" d="M11 73q8-14 21-16v-6h16v6q14 2 21 16l-4 5H15z" />
-      <path class="lanternes__gravure" d="M20 69q20-7 40 0M27 62q13-4 26 0M32 52h16" />
-      <path class="lanternes__verre" d="M18 82h44l-4 53q-18 12-36 0z" />
-      <path class="lanternes__montant" d="M18 79q-7 32 5 64m39-64q7 32-5 64M24 84l4 52m28-52-4 52" />
-      <path class="lanternes__reflet" d="m29 89 2 23m-1 7 .5 6m20-35-1 17" />
-      <path class="lanternes__metal" d="M15 77h50v6H15zM23 143l-6 6v7q23 7 46 0v-7l-6-6zM17 162h46l4 5H13z" />
-      <path class="lanternes__gravure" d="M23 152q17 5 34 0M20 162v-4m40 4v-4M34 140h12" />
-      <circle class="lanternes__rivet" cx="19" cy="80" r="1" />
-      <circle class="lanternes__rivet" cx="61" cy="80" r="1" />
-      <path class="lanternes__bruleur" d="M33 134h14l3 5H30zM39 129v5" />
-    </g>
-  </defs>
-
-  <path class="lanternes__sol" d="M16 217h290M26 212v10m276-10v10" />
-  <path class="lanternes__trajet" d="M70 127c37-47 71-34 88 22M160 149c30-49 67-48 98 0" />
-
-  {lanternes.map((lanterne) => (
-    <g class={`lanternes__objet lanternes__objet--${lanterne.nom}`} transform={`translate(${lanterne.x} ${lanterne.y}) scale(${lanterne.echelle})`}>
-      <ellipse class="lanternes__ombre" cx="40" cy="183" rx="33" ry="4" />
-      <g class={`lanternes__lumiere lanternes__lumiere--${lanterne.nom}`}>
-        <ellipse class="lanternes__halo" cx="40" cy="108" rx="31" ry="40" />
-        <path class="lanternes__rayons" d="M5 102H0m75 0h5M8 119l-5 3m69-3 5 3" />
-      </g>
-      <use href="#scene-lanternes-modele" />
-      <g class={`lanternes__lumiere lanternes__lumiere--${lanterne.nom}`}>
-        <path class="lanternes__flamme" d="M40 129c-13 0-20-12-13-24 4-7 10-11 11-23 4 6 3 14 10 19 14 13 7 28-8 28z" />
-        <path class="lanternes__coeur" d="M40 126c-6 0-10-6-6-12 2-3 5-6 6-11 2 4 3 6 6 9 5 7 1 14-6 14z" />
-      </g>
-    </g>
-  ))}
-
-  <g class="lanternes__particule lanternes__particule--premiere">
-    <circle class="lanternes__aureole" r="7" /><circle r="2.4" />
-  </g>
-  <g class="lanternes__particule lanternes__particule--seconde">
-    <circle class="lanternes__aureole" r="7" /><circle r="2.4" />
-  </g>
-</svg>
+<figure class="lanternes" data-scene="lanternes">
+  <button type="button" class="lanternes__plan" data-rejouer data-figure-animation aria-label={`Rejouer l’animation : ${legende}`}>
+    <Fragment set:html={svg} />
+  </button>
+  <figcaption class="lanternes__legende">{legende}</figcaption>
+</figure>
 
 <style>
-  .lanternes { display: block; width: 100%; color: var(--bleu); fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-  .lanternes__anse { stroke-width: 1.8; }
-  .lanternes__metal { fill: color-mix(in srgb, var(--bleu) 8%, var(--papier)); }
-  .lanternes__gravure { stroke-width: 1; }
-  .lanternes__verre { fill: var(--papier); stroke: var(--trait-doux); stroke-width: 1; }
-  .lanternes__reflet { stroke: var(--trait-doux); stroke-width: 1.1; }
-  .lanternes__montant { stroke-width: 2; }
-  .lanternes__rivet { fill: currentColor; stroke: none; }
-  .lanternes__bruleur { fill: var(--papier); stroke-width: 1.2; }
-  .lanternes__sol { stroke: var(--trait-doux); stroke-width: 1; }
-  .lanternes__ombre { fill: currentColor; stroke: none; opacity: .08; }
-  .lanternes__trajet { stroke: var(--trait-doux); stroke-width: 1.1; stroke-dasharray: 2 6; }
-  .lanternes__halo { fill: var(--colza); opacity: .1; stroke: none; }
-  .lanternes__rayons { stroke: color-mix(in srgb, var(--colza) 60%, var(--bleu)); stroke-width: 1.1; }
-  .lanternes__flamme { fill: color-mix(in srgb, var(--colza) 72%, var(--papier)); stroke: color-mix(in srgb, var(--bleu) 38%, var(--colza)); stroke-width: 1; }
-  .lanternes__coeur { fill: color-mix(in srgb, var(--blanc) 75%, var(--colza)); stroke: none; }
-  .lanternes__particule { opacity: 0; fill: var(--colza); stroke: none; }
-  .lanternes__aureole { opacity: .18; }
+  .lanternes {
+    margin: 0;
+  }
+
+  .lanternes__plan {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: var(--r2);
+    background: transparent;
+    color: var(--encre);
+  }
+
+  .lanternes__plan :global(.lanternes__dessin) {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .lanternes__plan :global(.lt-metal) {
+    fill: color-mix(in srgb, var(--trait) 24%, var(--surface));
+  }
+
+  .lanternes__plan :global(.lt-verre),
+  .lanternes__plan :global(.lt-bruleur) {
+    fill: var(--surface);
+  }
+
+  .lanternes__plan :global(.lt-verre),
+  .lanternes__plan :global(.lt-reflet),
+  .lanternes__plan :global(.lt-sol),
+  .lanternes__plan :global(.lt-trajet),
+  .lanternes__plan :global(.lt-hachure) {
+    stroke: var(--trait);
+  }
+
+  .lanternes__plan :global(.lt-gravure) {
+    stroke: var(--eteint);
+  }
+
+  .lanternes__plan :global(.lt-halo) {
+    fill: var(--lanterne);
+    opacity: 0.2;
+    filter: blur(5px);
+  }
+
+  :global(:root[data-theme='nuit']) .lanternes__plan :global(.lt-halo) {
+    opacity: 0.34;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme])) .lanternes__plan :global(.lt-halo) {
+      opacity: 0.34;
+    }
+  }
+
+  .lanternes__plan :global(.lt-rayons) {
+    stroke: var(--laiton);
+  }
+
+  .lanternes__plan :global(.lt-flamme) {
+    fill: var(--lanterne);
+    stroke: var(--laiton);
+  }
+
+  .lanternes__plan :global(.lt-coeur) {
+    fill: var(--lanterne-survol);
+  }
+
+  .lanternes__plan :global(.lt-particule) {
+    fill: var(--lanterne);
+    opacity: 0;
+  }
+
+  .lanternes__legende {
+    margin-top: var(--s2);
+    font-family: var(--police-titre);
+    font-style: italic;
+    font-size: var(--t-m);
+    color: var(--eteint);
+  }
 
   @media (prefers-reduced-motion: no-preference) {
-    :global(.animation-en-cours) .lanternes__lumiere--source { animation: lanternes-source 2.7s ease both; }
-    :global(.animation-en-cours) .lanternes__lumiere--relais { animation: lanternes-allumer 1s .8s ease both; }
-    :global(.animation-en-cours) .lanternes__lumiere--suite { animation: lanternes-allumer 1s 1.7s ease both; }
-    :global(.animation-en-cours) .lanternes__particule--premiere { animation: lanternes-transmettre-premiere 1s .15s ease-in-out both; }
-    :global(.animation-en-cours) .lanternes__particule--seconde { animation: lanternes-transmettre-seconde 1s 1.05s ease-in-out both; }
+    .lanternes__plan:global(.animation-en-cours) :global(.lt-lumiere--source) {
+      animation: lanternes-source 2.7s ease both;
+    }
+
+    .lanternes__plan:global(.animation-en-cours) :global(.lt-lumiere--relais) {
+      animation: lanternes-allumer 1s 0.8s ease both;
+    }
+
+    .lanternes__plan:global(.animation-en-cours) :global(.lt-lumiere--suite) {
+      animation: lanternes-allumer 1s 1.7s ease both;
+    }
+
+    .lanternes__plan:global(.animation-en-cours) :global(.lt-particule--premiere) {
+      animation: lanternes-transmettre-premiere 1s 0.15s ease-in-out both;
+    }
+
+    .lanternes__plan:global(.animation-en-cours) :global(.lt-particule--seconde) {
+      animation: lanternes-transmettre-seconde 1s 1.05s ease-in-out both;
+    }
+
     @keyframes lanternes-source {
-      0% { opacity: .55; }
+      0% { opacity: 0.55; }
       18%, 100% { opacity: 1; }
     }
+
     @keyframes lanternes-allumer {
       0%, 10% { opacity: 0; }
-      50% { opacity: .8; }
-      70% { opacity: .6; }
+      50% { opacity: 0.8; }
+      70% { opacity: 0.6; }
       100% { opacity: 1; }
     }
+
     @keyframes lanternes-transmettre-premiere {
       0% { opacity: 0; transform: translate(70px, 127px); }
       15% { opacity: 1; }
@@ -93,6 +152,7 @@ const lanternes = [
       85% { opacity: 1; }
       100% { opacity: 0; transform: translate(158px, 149px); }
     }
+
     @keyframes lanternes-transmettre-seconde {
       0% { opacity: 0; transform: translate(160px, 149px); }
       15% { opacity: 1; }
@@ -102,5 +162,10 @@ const lanternes = [
       100% { opacity: 0; transform: translate(258px, 149px); }
     }
   }
-  @media print { .lanternes * { animation: none !important; } .lanternes__particule { display: none; } }
+
+  @media print {
+    .lanternes__plan :global(.lt-particule) {
+      display: none;
+    }
+  }
 </style>

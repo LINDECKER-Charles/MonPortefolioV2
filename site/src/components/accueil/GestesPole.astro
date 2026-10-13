@@ -1,0 +1,106 @@
+---
+/**
+ * Comment j’organise le pôle, en quatre gestes (ACC-15 : les images de la
+ * page PvZ Fusion, PVZ-05, PVZ-07, PVZ-08 et PVZ-11). Les textes viennent de
+ * la même source que la page du projet (config/pvz-fusion.ts, témoignage
+ * C7) : un outil, une phrase. Le détail se lit sur la page du projet.
+ *
+ * Pas de « semaine type » : le relevé public n’établit pas une régularité
+ * chaque semaine sur toute l’année (docs/matiere-premiere.md). La cadence
+ * « une pull request par semaine » reste celle que Charles rapporte.
+ *
+ * Chaque geste porte son image en tête, carrée, sur toute la largeur de sa
+ * colonne : quatre colonnes sur ordinateur (environ 230 px), deux sur
+ * tablette et sur mobile.
+ */
+import Visuel from '../ui/Visuel.astro';
+import { GESTES } from '../../config/pvz-fusion';
+import { typo } from '../../lib/typo';
+---
+
+<div class="gestes">
+  <p class="gestes__titre">Comment j’organise le pôle, en quatre gestes</p>
+  <ol class="gestes__liste">
+    {
+      GESTES.map((geste, i) => (
+        <li class="geste">
+          <div class="geste__visuel acte-veille">
+            <Visuel id={geste.visuel} alt="" sizes="(max-width: 1180px) calc(50vw - 40px), 260px" />
+          </div>
+          <p class="geste__outil"><span class="geste__rang" aria-hidden="true">{i + 1}</span>{typo(geste.outil)}</p>
+          <p class="geste__titre">{typo(geste.titre)}</p>
+        </li>
+      ))
+    }
+  </ol>
+</div>
+
+<style>
+  .gestes__titre {
+    font-size: var(--t-s);
+    font-weight: 600;
+    color: var(--encre);
+  }
+
+  .gestes__liste {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--s6) var(--s5);
+    margin: var(--s4) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .geste {
+    min-width: 0;
+  }
+
+  .geste__visuel {
+    overflow: hidden;
+    border-radius: var(--r2);
+  }
+
+  .geste__visuel :global(.visuel) {
+    border-radius: 0;
+  }
+
+  .geste__outil {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s2);
+    margin-top: var(--s3);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: var(--ls-petit);
+    color: var(--eteint);
+  }
+
+  .geste__rang {
+    font-variant-numeric: tabular-nums;
+    color: var(--laiton);
+  }
+
+  .geste__titre {
+    margin-top: var(--s1);
+    font-family: var(--police-titre);
+    font-size: var(--t-l);
+    line-height: 1.15;
+    color: var(--encre);
+  }
+
+  @media (max-width: 1180px) {
+    .gestes__liste {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 560px) {
+    .gestes__liste {
+      gap: var(--s5) var(--s3);
+    }
+
+    .geste__titre {
+      font-size: var(--t-m);
+    }
+  }
+</style>

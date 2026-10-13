@@ -1,55 +1,43 @@
 ---
-/** La conclusion du récit ouvre deux façons de construire la suite ensemble. */
-import Picto from '../ui/Picto.astro';
+/**
+ * La suite, à plusieurs : le chapitre 03 de l’accueil, dans l’acte bleu
+ * nuit. Les trois règles en synthèse, qui apparaissent de 1 à 3 et renvoient
+ * chacune là où le récit les prouve ; puis l’aplat bleu roi derrière
+ * « Discutons → » (/contact, mesuré `contact-page` · `discutons`) ; enfin
+ * l’invitation à contribuer aux projets open source (`lien-sortant` ·
+ * `discutons`, objectif O3 du plan de marquage). Le CV apparaît le jour où
+ * `CV` cesse de valoir null.
+ */
+import Regles from './Regles.astro';
+import AppelDiscutons from '../pages/AppelDiscutons.astro';
+import LienAction from '../ui/LienAction.astro';
 import { CONTACT, CV } from '../../config/site';
 ---
 
-<p class="suite__intro">
-  J’ai commencé par fabriquer mes propres jeux. Depuis, j’ai appris à construire des outils, à transmettre et à faire
-  avancer des projets avec d’autres. C’est aussi comme ça que j’ai envie de continuer.
-</p>
+<div class="suite__regles" id="regles">
+  <h3>Les trois règles</h3>
+  <p class="suite__sens">Trois verbes résument ma façon de travailler. On les retrouve dans le jeu, en formation et dans mes projets.</p>
+  <Regles />
+</div>
 
-<div class="invitation">
-  <h3>Vous avez un projet auquel je pourrais contribuer&nbsp;?</h3>
-  <div class="invitation__suite">
-    <p>
-      Si ma façon de travailler rejoint ce que vous cherchez, parlons de ce que nous pourrions construire ensemble.
-    </p>
-    <div class="actions invitation__actions">
-      <a
-        class="btn invitation__contact"
-        href="/contact"
-        data-umami-event="contact-page"
-        data-umami-event-emplacement="discutons"
-      >
-        <Picto nom="interface/email" taille={22} />
-        Parlons de votre projet
-      </a>
-      {
-        CV && (
-          <a class="invitation__cv" href={CV} download data-cv-telechargement="discutons">
-            Télécharger mon CV
-          </a>
-        )
-      }
-    </div>
-  </div>
+<div class="suite__appel">
+  <AppelDiscutons variante="aplat" emplacement="discutons">
+    Une idée à confronter, une équipe à faire grandir, un sujet technique à creuser&nbsp;: la discussion commence ici.
+    {
+      CV && (
+        <a slot="suite" class="lien-action" href={CV} download data-cv-telechargement="discutons">
+          Télécharger mon CV<span class="fleche" aria-hidden="true">&nbsp;↓</span>
+        </a>
+      )
+    }
+  </AppelDiscutons>
 </div>
 
 <div class="contribution">
   <h3>Ou faisons avancer un projet open source.</h3>
-  <div class="contribution__suite">
-    <p>
-      Code, traduction, documentation&nbsp;: il y a plusieurs façons de contribuer. Mes projets sont aussi des endroits
-      où l’on peut apprendre et construire à plusieurs.
-    </p>
-    <a
-      class="contribution__lien"
-      href={CONTACT.github}
-      data-umami-event="lien-sortant"
-      data-umami-event-domaine="github.com"
-      data-umami-event-emplacement="discutons"
-    >Contribuer à mes projets open source</a>
+  <div>
+    <p>Code, traduction, documentation&nbsp;: il y a plusieurs façons de contribuer. Mes projets sont aussi des endroits où l’on peut apprendre et construire à plusieurs.</p>
+    <LienAction href={CONTACT.github} emplacement="discutons">Contribuer à mes projets open source</LienAction>
   </div>
 </div>
 
@@ -59,150 +47,52 @@ import { CONTACT, CV } from '../../config/site';
 </script>
 
 <style>
-  .suite__intro {
-    margin-top: var(--s6);
-    max-width: 53ch;
-    font-size: var(--t-chapeau);
-    line-height: 1.6;
+  .suite__regles h3 {
+    font-size: var(--t-2xl);
   }
 
-  .invitation {
-    display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-    gap: var(--s7);
-    align-items: end;
+  .suite__sens {
+    max-width: 40rem;
+    margin-top: var(--s3);
+    color: var(--eteint);
+  }
+
+  .suite__appel {
     margin-top: var(--s8);
-    padding: clamp(28px, 4vw, 56px);
-    background: var(--bleu);
-    color: var(--sur-bleu);
   }
 
-  .invitation h3 {
-    font-size: clamp(1.875rem, 2.9vw, 2.75rem);
-    line-height: 1.12;
-    letter-spacing: -0.025em;
-    max-width: 20ch;
-  }
-
-  .invitation__suite p {
-    max-width: 34ch;
-    line-height: 1.6;
-  }
-
-  .invitation__actions {
-    margin-top: var(--s6);
-    gap: var(--s4) var(--s5);
-  }
-
-  .invitation__contact {
-    background: var(--sur-bleu);
-    color: var(--bleu);
-    border-color: var(--sur-bleu);
-    min-height: 52px;
-    padding: 14px 20px;
-    text-align: left;
-    justify-content: flex-start;
-  }
-
-  .invitation__contact :global(svg) {
-    flex-shrink: 0;
-  }
-
-  .invitation__contact:hover {
-    background: color-mix(in srgb, var(--sur-bleu) 90%, var(--bleu));
-  }
-
-  .invitation__cv {
-    color: var(--sur-bleu);
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-  }
-
-  .invitation :focus-visible {
-    outline-color: var(--sur-bleu);
+  .suite__appel :global(.appel) {
+    box-shadow: 0 0 80px -24px var(--lanterne-eclat);
   }
 
   .contribution {
     display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-    gap: var(--s7);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: var(--s3) var(--s7);
+    align-items: start;
     margin-top: var(--s7);
-    padding-inline: clamp(28px, 4vw, 56px);
+    padding-top: var(--s5);
+    border-top: 1px solid var(--filet);
   }
 
   .contribution h3 {
-    max-width: 22ch;
-    font-size: clamp(1.5rem, 2vw, 1.875rem);
-    line-height: 1.25;
-    font-weight: 700;
-    letter-spacing: -0.015em;
+    font-size: var(--t-xl);
+    line-height: 1.1;
   }
 
-  .contribution__suite p {
-    max-width: 37ch;
-    color: var(--graphite);
-    font-size: var(--t-petit);
+  .contribution p {
+    max-width: 38rem;
+    font-size: var(--t-s);
+    color: var(--eteint);
   }
 
-  .contribution__lien {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    margin-top: var(--s4);
-    font-weight: 700;
-    font-size: var(--t-petit);
-  }
-
-  @media (max-width: 900px) {
-    .invitation,
-    .contribution {
-      grid-template-columns: minmax(0, 1fr);
-      gap: var(--s5);
-    }
-
-    .invitation h3 {
-      max-width: 28ch;
-    }
-
-    .invitation__suite p,
-    .contribution h3,
-    .contribution__suite p {
-      max-width: 48ch;
-    }
-  }
-
-  @media (max-width: 640px) {
-    .suite__intro {
-      font-size: 1.1875rem;
-      margin-top: var(--s5);
-    }
-
-    .invitation {
+  @media (max-width: 860px) {
+    .suite__appel {
       margin-top: var(--s7);
     }
 
-    .invitation__actions {
-      margin-top: var(--s5);
-    }
-
     .contribution {
-      padding-inline: 0;
-      gap: var(--s4);
-      margin-top: var(--s6);
-    }
-  }
-
-  @media print {
-    .invitation {
-      background: transparent;
-      color: var(--encre);
-      border: 1px solid var(--filet);
-      break-inside: avoid;
-    }
-
-    .contribution {
-      break-inside: avoid;
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 </style>

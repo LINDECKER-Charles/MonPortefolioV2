@@ -1,197 +1,127 @@
 ---
 /**
- * Figure 2 : les gestes concrets du pôle, d’après les réponses C6 et C7.
- * Chaque scène rejoue sa propre séquence au clic ou au clavier.
+ * Comment le pôle francophone avance : accueillir, former et relire, puis
+ * laisser contribuer en autonomie (réponses C6 et C7). Trois scènes du
+ * registre (ACC-21 à ACC-23) : chacune s’allume depuis sa lanterne à son
+ * arrivée, puis se rejoue au clic ou au clavier (components/accueil/Scene).
+ * Sur mobile, les étapes s’empilent : la scène pleine largeur, en 3:2, au-dessus
+ * de son titre.
  */
+import Scene from './Scene.astro';
+
 const etapes = [
-  { titre: 'Accueillir', resume: 'Donner une place aux nouveaux.' },
-  { titre: 'Former et relire', resume: 'Apprendre en contribuant.' },
-  { titre: 'Contribuer en autonomie', resume: 'Devenir un pilier du pôle.' },
-];
+  { titre: 'Accueillir', resume: 'Donner une place aux nouveaux.', visuel: 'ACC-21', nom: 'pole-accueillir', lumiere: [46, 24] },
+  { titre: 'Former et relire', resume: 'Apprendre en contribuant.', visuel: 'ACC-22', nom: 'pole-former', lumiere: [50, 56] },
+  { titre: 'Contribuer en autonomie', resume: 'Devenir un pilier du pôle.', visuel: 'ACC-23', nom: 'pole-autonomie', lumiere: [30, 48] },
+] as const;
 ---
 
-<figure class="figure collectif" id="fig-2">
-  <div class="figure__plan">
-    <div class="collectif__entete">
-      <p class="collectif__titre">Comment le pôle francophone avance</p>
-    </div>
-    <ol class="collectif__etapes">
-      {etapes.map((etape, i) => (
-        <li>
-          <div class="collectif__etape">
-            <div class="collectif__contenu">
-              <span class="collectif__rang">{i + 1}</span>
-              <button type="button" class="collectif__visuel" data-rejouer data-figure-animation aria-label={`Rejouer l’animation : ${etape.titre}`}>
-                <svg class="collectif__dessin" viewBox="0 0 240 164" aria-hidden="true" focusable="false">
-                  <ellipse class="collectif__sol" cx="121" cy="144" rx="105" ry="10" />
-                  {i === 0 && (
-                    <>
-                      <path class="collectif__doux" d="M21 144h198M74 143V28h72v115M82 142V36h56" />
-                      <path class="collectif__papier" d="M83 141V40l38-11v113z" />
-                      <path class="collectif__doux" d="M88 47l26-8v92l-26 7zM93 91h3M155 142h33m-3-2v-27m-7-1q-7-14 5-18 12 6 5 19" />
-                      <g class="collectif__hote">
-                        <circle class="collectif__papier" cx="163" cy="63" r="10" />
-                        <path class="collectif__papier" d="M148 105V86q0-10 15-10t15 10v21M154 108v33m17-33v33" />
-                        <path class="collectif__bras" d="M150 86 133 96l-9-7" />
-                        <path class="collectif__trait" d="M178 86l8 15" />
-                        <path class="collectif__doux" d="M157 61h2m10 0h2m-10 7q3 2 6-1" />
-                      </g>
-                      <g class="collectif__arrivant">
-                        <circle class="collectif__papier" cx="52" cy="77" r="10" />
-                        <path class="collectif__papier" d="M38 116V100q0-10 14-10t14 10v19M44 121v21m15-21v21" />
-                        <path class="collectif__trait" d="m66 103 12 9M39 104l-7 16" />
-                        <path class="collectif__doux" d="M49 75h2m8 0h1m-10 8h6" />
-                      </g>
-                      <g class="collectif__bienvenue">
-                        <path class="collectif__papier" d="M145 23h50v25h-26l-9 9v-9h-15z" />
-                        <path class="collectif__trait" d="M154 35h16m6 0h9" />
-                        <path class="collectif__accent" d="m48 42 3 5 6-10" />
-                      </g>
-                      <path class="collectif__pas collectif__doux" d="M26 139h7m34 0h6M22 133h8" />
-                    </>
-                  )}
-                  {i === 1 && (
-                    <>
-                      <path class="collectif__doux" d="M20 144h200M41 115v29m153-29v29M41 121h153" />
-                      <path class="collectif__papier" d="M32 109h173v8H32z" />
-                      <g class="collectif__lecteur collectif__lecteur--gauche">
-                        <circle class="collectif__papier" cx="49" cy="57" r="10" />
-                        <path class="collectif__papier" d="M34 103V81q0-10 15-10t15 10v15M40 119v23m16-23v23" />
-                        <path class="collectif__trait" d="m63 86 20 10 15-3" />
-                        <path class="collectif__doux" d="M44 55h2m10 0h2" />
-                      </g>
-                      <g class="collectif__lecteur collectif__lecteur--droite">
-                        <circle class="collectif__papier" cx="184" cy="57" r="10" />
-                        <path class="collectif__papier" d="M169 102V81q0-10 15-10t15 10v21M177 119v23m16-23v23" />
-                        <path class="collectif__trait" d="m170 88-22 10-8-7" />
-                        <path class="collectif__doux" d="M178 55h2m10 0h2" />
-                      </g>
-                      <g class="collectif__document">
-                        <path class="collectif__papier" d="m99 57 36 4-4 47-36-4z" />
-                        <path class="collectif__doux" d="m105 69 23 2m-24 7 17 2m-18 6 24 2" />
-                        <path class="collectif__correction collectif__trait" d="m105 94 5 4 13-11" />
-                      </g>
-                      <g class="collectif__crayon">
-                        <path class="collectif__papier" d="m123 92 22-30 5 4-23 30-7 3z" />
-                        <path class="collectif__trait" d="m143 66 4 3" />
-                      </g>
-                      <g class="collectif__parole collectif__parole--question">
-                        <path class="collectif__papier" d="M60 18h43v25H83l-8 7v-7H60z" />
-                        <path class="collectif__trait" d="M68 28h22m-22 7h14" />
-                      </g>
-                      <g class="collectif__parole collectif__parole--reponse">
-                        <path class="collectif__papier" d="M133 14h39v27h-9v7l-8-7h-22z" />
-                        <path class="collectif__accent" d="m143 28 6 5 12-13" />
-                      </g>
-                      <path class="collectif__doux" d="M32 103h25M180 106h20m-136 34h109" />
-                    </>
-                  )}
-                  {i === 2 && (
-                    <>
-                      <path class="collectif__doux" d="M19 144h204M45 115v28m112-28v28M45 120h112" />
-                      <path class="collectif__papier" d="M36 109h132v8H36z" />
-                      <g class="collectif__autonome">
-                        <circle class="collectif__papier" cx="74" cy="56" r="10" />
-                        <path class="collectif__papier" d="M59 103V80q0-10 15-10t15 10v23M66 121v22m16-22v22" />
-                        <path class="collectif__trait" d="m87 87 14 15 13-1M61 91l8 12 12-1" />
-                        <path class="collectif__doux" d="M70 54h2m9 0h2" />
-                      </g>
-                      <path class="collectif__papier" d="m95 75 39 3-5 28H91z" />
-                      <path class="collectif__trait" d="M86 108h49" />
-                      <circle class="collectif__accent" cx="112" cy="91" r="3" />
-                      <path class="collectif__doux" d="M158 102h55v38h-55M163 108h48M163 127h48m-39 5h10" />
-                      <g class="collectif__publication collectif__publication--une">
-                        <path class="collectif__papier" d="M161 56h30v37h-30z" />
-                        <path class="collectif__doux" d="M167 65h18m-18 7h14" />
-                        <path class="collectif__trait" d="m168 83 4 3 9-9" />
-                      </g>
-                      <g class="collectif__publication collectif__publication--deux">
-                        <path class="collectif__papier" d="M173 49h30v38h-30z" />
-                        <path class="collectif__doux" d="M179 58h18m-18 7h14" />
-                        <path class="collectif__trait" d="m180 76 4 3 9-9" />
-                      </g>
-                      <g class="collectif__publication collectif__publication--trois">
-                        <path class="collectif__papier" d="M185 42h30v38h-30z" />
-                        <path class="collectif__doux" d="M191 52h18m-18 7h14" />
-                        <path class="collectif__trait" d="m192 70 4 3 9-9" />
-                      </g>
-                      <path class="collectif__envoi collectif__trait" d="M120 60V41q0-12 13-12h27m-8-7 8 7-8 7" />
-                      <path class="collectif__validation collectif__accent" d="m183 18 5 5 11-12" />
-                    </>
-                  )}
-                </svg>
-              </button>
-              <span class="collectif__nom">{etape.titre}</span>
-              <span class="collectif__resume">{etape.resume}</span>
-            </div>
-          </div>
-        </li>
-      ))}
-    </ol>
-    <p class="collectif__bilan"><strong>20 contributeurs formés.</strong> Jusqu’à dix en même temps.</p>
-  </div>
-  <figcaption class="legende"><b>Fig. 2</b> Accueillir, transmettre, puis laisser contribuer en autonomie. Schéma de fonctionnement du pôle.</figcaption>
+<figure class="collectif" id="fig-2">
+  <p class="collectif__titre">Comment le pôle francophone avance</p>
+  <ol class="collectif__etapes">
+    {etapes.map((etape, i) => (
+      <li class="collectif__etape">
+        <Scene id={etape.visuel} nom={etape.nom} legende={etape.titre} lumiere={etape.lumiere} muette sizes="(max-width: 640px) calc(100vw - 64px), 340px" class="collectif__scene" />
+        <p class="collectif__nom"><span class="collectif__rang" aria-hidden="true">{i + 1}</span>{etape.titre}</p>
+        <p class="collectif__resume">{etape.resume}</p>
+      </li>
+    ))}
+  </ol>
+  <figcaption class="collectif__legende">Accueillir, transmettre, puis laisser contribuer en autonomie&nbsp;: le fonctionnement du pôle.</figcaption>
 </figure>
 
 <style>
-  .collectif__entete { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
-  .collectif__titre { font-size: 1.125rem; font-weight: 700; margin: 0; }
-  .collectif__etapes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; padding: 0; margin: 24px 0; list-style: none; }
-  .collectif__etapes li { position: relative; min-width: 0; }
-  .collectif__etapes li + li { border-left: 1px solid var(--filet); }
-  .collectif__etapes li + li::before { content: '→'; position: absolute; top: 70px; left: -12px; background: var(--blanc); color: var(--bleu); font-size: 1.25rem; line-height: 24px; width: 24px; text-align: center; }
-  .collectif__etape { padding: 0 18px; }
-  .collectif__contenu { display: flex; flex-direction: column; align-items: flex-start; }
-  .collectif__rang { font: italic 1.25rem var(--font-note); color: var(--bleu); }
-  .collectif__visuel { display: block; width: 100%; margin: 6px 0 12px; padding: 0; border: 0; background: transparent; cursor: pointer; border-radius: 3px; -webkit-tap-highlight-color: transparent; }
-  .collectif__visuel:focus-visible { outline: 2px solid var(--bleu); outline-offset: 5px; }
-  .collectif__dessin { display: block; width: 100%; color: var(--bleu); overflow: visible; }
-  .collectif__trait, .collectif__papier, .collectif__doux, .collectif__accent, .collectif__bras { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-  .collectif__doux { stroke: var(--trait-doux); stroke-width: 1.25; }
-  .collectif__papier { fill: var(--blanc); }
-  .collectif__accent { stroke: var(--bleu); stroke-width: 2.2; }
-  .collectif__sol { fill: var(--bleu); opacity: .06; }
-  .collectif__nom { font-size: 1rem; font-weight: 700; }
-  .collectif__resume { margin-top: 4px; font-size: .875rem; color: var(--graphite); }
-  .collectif__bilan { margin: 0; padding-top: 20px; border-top: 1px solid var(--filet); font-size: 1rem; color: var(--graphite); }
-  .collectif__bilan strong { color: var(--encre); }
-  @media (prefers-reduced-motion: no-preference) {
-    .collectif__visuel:global(.animation-en-cours) .collectif__arrivant { animation: collectif-arriver 1.9s cubic-bezier(.2,.8,.2,1) both; }
-    .collectif__visuel:global(.animation-en-cours) .collectif__bras { transform-origin: 150px 86px; animation: collectif-accueillir 1.9s ease both; }
-    .collectif__visuel:global(.animation-en-cours) .collectif__bienvenue { animation: collectif-bienvenue 1.9s ease both; }
-    .collectif__visuel:global(.animation-en-cours) .collectif__pas { animation: collectif-pas 1.9s ease both; }
-    .collectif__visuel:global(.animation-en-cours) .collectif__document { animation: collectif-relire 2.1s ease both; }
-    .collectif__visuel:global(.animation-en-cours) .collectif__crayon { transform-origin: 121px 99px; animation: collectif-annoter 2.1s ease both; }
-    .collectif__visuel:global(.animation-en-cours) .collectif__correction { stroke-dasharray: 30; animation: collectif-corriger 2.1s ease both; }
-    .collectif__visuel:global(.animation-en-cours) .collectif__parole--question { animation: collectif-question 2.1s ease both; }
-    .collectif__visuel:global(.animation-en-cours) .collectif__parole--reponse { animation: collectif-reponse 2.1s ease both; }
-    .collectif__visuel:global(.animation-en-cours) .collectif__publication { animation: collectif-publier 1.9s cubic-bezier(.2,.8,.2,1) both; }
-    .collectif__visuel:global(.animation-en-cours) .collectif__publication--deux { animation-delay: .12s; }
-    .collectif__visuel:global(.animation-en-cours) .collectif__publication--trois { animation-delay: .24s; }
-    .collectif__visuel:global(.animation-en-cours) .collectif__envoi { stroke-dasharray: 100; animation: collectif-envoyer 2.2s ease both; }
-    .collectif__visuel:global(.animation-en-cours) .collectif__validation { animation: collectif-valider 2.2s ease both; }
-    @keyframes collectif-arriver { 0% { transform: translateX(-19px); opacity: .2; } 65% { transform: translateX(9px); opacity: 1; } 100% { transform: translateX(0); opacity: 1; } }
-    @keyframes collectif-accueillir { 0%, 100% { transform: rotate(0); } 30% { transform: rotate(16deg); } 55% { transform: rotate(-8deg); } 75% { transform: rotate(7deg); } }
-    @keyframes collectif-bienvenue { 0%, 20% { opacity: 0; transform: translateY(6px); } 55%, 100% { opacity: 1; transform: translateY(0); } }
-    @keyframes collectif-pas { 0% { opacity: 0; } 30% { opacity: 1; } 60% { opacity: 0; } 100% { opacity: 1; } }
-    @keyframes collectif-relire { 0% { transform: translateX(-11px) rotate(-5deg); } 35% { transform: translateX(8px) rotate(3deg); } 75%, 100% { transform: translateX(0) rotate(0); } }
-    @keyframes collectif-annoter { 0%, 100% { transform: rotate(0); } 35% { transform: translate(-4px, 2px) rotate(-10deg); } 55% { transform: translate(5px, -3px) rotate(7deg); } 75% { transform: translate(10px, -9px) rotate(-5deg); } }
-    @keyframes collectif-corriger { 0%, 35% { stroke-dashoffset: 30; } 75%, 100% { stroke-dashoffset: 0; } }
-    @keyframes collectif-question { 0% { opacity: 0; transform: translateY(4px); } 25%, 100% { opacity: 1; transform: translateY(0); } }
-    @keyframes collectif-reponse { 0%, 45% { opacity: 0; transform: translateY(4px); } 75%, 100% { opacity: 1; transform: translateY(0); } }
-    @keyframes collectif-publier { 0%, 25% { opacity: 0; transform: translate(-48px, 32px) scale(.8); } 65%, 100% { opacity: 1; transform: translate(0, 0) scale(1); } }
-    @keyframes collectif-envoyer { 0%, 20% { stroke-dashoffset: 100; } 60%, 100% { stroke-dashoffset: 0; } }
-    @keyframes collectif-valider { 0%, 70% { opacity: 0; } 85%, 100% { opacity: 1; } }
+  .collectif {
+    margin: 0;
   }
+
+  .collectif__titre {
+    font-size: var(--t-s);
+    font-weight: 600;
+    color: var(--encre);
+  }
+
+  .collectif__etapes {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s6);
+    margin: var(--s4) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .collectif__etape {
+    position: relative;
+    min-width: 0;
+  }
+
+  /* La flèche du passage d’une étape à la suivante, entre deux scènes. */
+  .collectif__etape + .collectif__etape::before {
+    content: '→';
+    position: absolute;
+    top: calc((100% - 4.5rem) / 2);
+    left: calc(-1 * var(--s6) / 2 - 0.6rem);
+    width: 1.2rem;
+    font-size: var(--t-l);
+    line-height: 1;
+    text-align: center;
+    color: var(--laiton);
+  }
+
+  .collectif__nom {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s2);
+    margin-top: var(--s3);
+    font-family: var(--police-titre);
+    font-size: var(--t-xl);
+    line-height: 1.1;
+    color: var(--encre);
+  }
+
+  .collectif__rang {
+    font-family: var(--police-texte);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    color: var(--eteint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .collectif__resume {
+    margin-top: var(--s1);
+    font-size: var(--t-s);
+    color: var(--eteint);
+  }
+
+  .collectif__legende {
+    margin-top: var(--s4);
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
   @media (max-width: 640px) {
-    .collectif__etapes { grid-template-columns: minmax(0, 1fr); margin-block: 20px; }
-    .collectif__etape { padding: 20px 0; }
-    .collectif__etapes li + li { border-left: 0; border-top: 1px solid var(--filet); }
-    .collectif__etapes li + li::before { content: '↓'; top: -12px; left: 67px; }
-    .collectif__contenu { display: grid; grid-template-columns: 138px minmax(0, 1fr); column-gap: 20px; align-items: center; }
-    .collectif__rang { grid-column: 2; grid-row: 1; align-self: end; }
-    .collectif__visuel { grid-column: 1; grid-row: 1 / 4; margin: 0; }
-    .collectif__nom, .collectif__resume { grid-column: 2; }
+    .collectif__etapes {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s6);
+    }
+
+    .collectif__etape + .collectif__etape {
+      padding-top: var(--s5);
+      border-top: 1px solid var(--filet);
+    }
+
+    .collectif__etape + .collectif__etape::before {
+      content: '↓';
+      top: -0.7rem;
+      left: 50%;
+      width: auto;
+      padding-inline: var(--s2);
+      transform: translateX(-50%);
+      background: var(--fond);
+    }
+
+    .collectif__nom {
+      font-size: var(--t-l);
+    }
   }
-  @media print { .collectif__visuel { cursor: default; } .collectif__visuel * { animation: none !important; } }
 </style>

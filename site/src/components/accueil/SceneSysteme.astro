@@ -1,0 +1,172 @@
+---
+/**
+ * Un petit système, en plan (ACC-17, src/assets/visuels/accueil/ACC-17.svg) :
+ * une lanterne, seule source de lumière, émet les messages — des points de
+ * lumière qui traversent trois blocs vus de dessus, sans pictogramme (un
+ * service, un stockage, une livraison), dans l’ordre requête, données,
+ * réponse, livraison. Même main que les lanternes (ACC-14) et le logo : trait
+ * d’encre, réserve hachurée, aplats de surface et de lanterne. Gardé le 13/10/2026 : il communique en boucle
+ * tant qu’il est dans l’écran, s’arrête hors de l’écran, dans un onglet
+ * masqué, à l’impression et en mouvement réduit ; un clic ou le clavier
+ * relance la boucle (scripts/figure-animations.ts, `data-animation-continue`).
+ *
+ * Le dessin est le fichier du registre, inséré dans la page : ses calques
+ * (`sys-aplat`, `sys-hachure`, `sys-paquet`…) suivent les jetons, jour, nuit
+ * et acte de veille.
+ */
+import dessin from '../../assets/visuels/accueil/ACC-17.svg?raw';
+
+const legende = 'Un petit système, en plan.';
+const svg = dessin
+  .replace(/<title>[\s\S]*?<\/title>/, '')
+  .replace(/<svg\b[^>]*>/, '<svg class="systeme__dessin" viewBox="0 0 320 240" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">');
+---
+
+<figure class="systeme" data-scene="architecte">
+  <button type="button" class="systeme__plan" data-rejouer data-figure-animation data-animation-continue aria-label={`Rejouer l’animation : ${legende}`}>
+    <Fragment set:html={svg} />
+  </button>
+  <figcaption class="systeme__legende">{legende}</figcaption>
+</figure>
+
+<style>
+  .systeme {
+    margin: 0;
+  }
+
+  .systeme__plan {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: var(--r2);
+    background: transparent;
+    color: var(--encre);
+  }
+
+  .systeme__plan :global(.systeme__dessin) {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .systeme__plan :global(.sys-aplat) {
+    fill: var(--surface);
+  }
+
+  .systeme__plan :global(.sys-doux),
+  .systeme__plan :global(.sys-retour) {
+    stroke: var(--trait);
+  }
+
+  .systeme__plan :global(.sys-hachure) {
+    stroke: var(--trait);
+    opacity: 0.7;
+  }
+
+  .systeme__plan :global(.sys-lumiere) {
+    fill: var(--lanterne);
+    filter: drop-shadow(0 0 3px var(--lanterne-eclat));
+  }
+
+  .systeme__plan :global(.sys-paquet) {
+    opacity: 0;
+  }
+
+  .systeme__plan :global(.sys-flamme) {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+  }
+
+  .systeme__legende {
+    margin-top: var(--s2);
+    font-family: var(--police-titre);
+    font-style: italic;
+    font-size: var(--t-m);
+    color: var(--eteint);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .systeme__plan:global(.est-visible) :global(.sys-paquet) {
+      animation: systeme-requete 5.6s linear infinite;
+    }
+
+    .systeme__plan:global(.est-visible) :global(.sys-paquet--donnees) {
+      animation-name: systeme-donnees;
+    }
+
+    .systeme__plan:global(.est-visible) :global(.sys-paquet--reponse) {
+      animation-name: systeme-reponse;
+    }
+
+    .systeme__plan:global(.est-visible) :global(.sys-paquet--livraison) {
+      animation-name: systeme-livraison;
+    }
+
+    .systeme__plan:global(.est-visible) :global(.sys-signal) {
+      animation: systeme-signal 5.6s ease infinite;
+    }
+
+    /* La flamme se ravive à chaque message qu’elle émet. */
+    .systeme__plan:global(.est-visible) :global(.sys-flamme) {
+      animation: systeme-flamme 5.6s ease infinite;
+    }
+
+    @keyframes systeme-flamme {
+      0%, 12%, 100% { transform: scale(1); }
+      3% { transform: scale(1.18, 1.25); }
+      7% { transform: scale(0.94, 0.96); }
+    }
+
+    @keyframes systeme-requete {
+      0%, 5% { transform: translate(66px, 142px); opacity: 0; }
+      6% { opacity: 1; }
+      12% { transform: translate(106px, 142px); }
+      19% { transform: translate(106px, 110px); }
+      27% { transform: translate(143px, 110px); opacity: 1; }
+      30%, 100% { transform: translate(143px, 110px); opacity: 0; }
+    }
+
+    @keyframes systeme-donnees {
+      0%, 29% { transform: translate(176px, 110px); opacity: 0; }
+      30% { opacity: 1; }
+      38% { transform: translate(209px, 110px); }
+      45% { transform: translate(209px, 142px); }
+      51% { transform: translate(239px, 142px); opacity: 1; }
+      54%, 100% { transform: translate(239px, 142px); opacity: 0; }
+    }
+
+    @keyframes systeme-reponse {
+      0%, 53% { transform: translate(239px, 156px); opacity: 0; }
+      54% { opacity: 1; }
+      61% { transform: translate(198px, 156px); }
+      66% { transform: translate(198px, 125px); }
+      70% { transform: translate(143px, 125px); }
+      75% { transform: translate(118px, 125px); }
+      81% { transform: translate(118px, 157px); }
+      88% { transform: translate(66px, 157px); opacity: 1; }
+      91%, 100% { transform: translate(66px, 157px); opacity: 0; }
+    }
+
+    @keyframes systeme-livraison {
+      0%, 69% { transform: translate(169px, 80px); opacity: 0; }
+      70% { opacity: 1; }
+      77% { transform: translate(169px, 50px); }
+      89% { transform: translate(231px, 50px); opacity: 1; }
+      92%, 100% { transform: translate(231px, 50px); opacity: 0; }
+    }
+
+    @keyframes systeme-signal {
+      0%, 25%, 100% { opacity: 1; }
+      28%, 52%, 69% { opacity: 0.25; }
+      31%, 55%, 73% { opacity: 1; }
+    }
+  }
+
+  @media print {
+    .systeme__plan :global(.sys-paquet) {
+      display: none;
+    }
+  }
+</style>
