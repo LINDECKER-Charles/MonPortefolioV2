@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Compétences — Charles Lindecker</title>
+  <meta name="description" content="Les compétences de Charles Lindecker : la stack du quotidien, les technologies pratiquées, l’intégration IA, la livraison et les compétences humaines.">
+  <link rel="icon" href="../../assets/marque/favicon.png">
+  <link rel="stylesheet" href="style.css">
+  <script src="theme.js"></script>
+</head>
+<body>
+<a class="evitement" href="#contenu">Aller au contenu</a>
+
+<header class="entete">
+  <div class="conteneur entete__barre">
+    <a class="marque" href="accueil.html" aria-label="Charles Lindecker, accueil">
+      <span class="marque__embleme" aria-hidden="true">
+        <img class="jour-seulement" src="../../../site/src/assets/marque/logo-symbole.webp" alt="" width="352" height="245">
+        <img class="nuit-seulement" src="../../assets/marque/logo-symbole-nuit.png" alt="" width="352" height="245">
+      </span>
+      <img class="marque__nom" src="../../../site/src/assets/marque/logo-nom.webp" alt="" width="756" height="118">
+    </a>
+    <nav class="nav-principale" aria-label="Navigation principale">
+      <ul>
+        <li><a href="projets.html">Projets</a></li>
+        <li><a href="competences.html" aria-current="page">Parcours</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <details class="deroulant entete__sommaire">
+      <summary>Sommaire</summary>
+      <div class="deroulant__panneau">
+        <nav aria-label="Sommaire de la page">
+          <ul>
+            <li><a href="#quotidien">Au quotidien&nbsp;<span class="fleche" aria-hidden="true">↓</span></a></li>
+            <li><a href="#pratique">Pratiqué&nbsp;<span class="fleche" aria-hidden="true">↓</span></a></li>
+            <li><a href="#explore">Exploré&nbsp;<span class="fleche" aria-hidden="true">↓</span></a></li>
+            <li><a href="#ia">Intégration IA&nbsp;<span class="fleche" aria-hidden="true">↓</span></a></li>
+            <li><a href="#livraison">Tests et livraison&nbsp;<span class="fleche" aria-hidden="true">↓</span></a></li>
+            <li><a href="#humaines">Compétences humaines&nbsp;<span class="fleche" aria-hidden="true">↓</span></a></li>
+          </ul>
+        </nav>
+      </div>
+    </details>
+    <div class="entete__mobile">
+      <a class="lien-entete" href="contact.html">Contact</a>
+      <details class="deroulant">
+        <summary>Menu</summary>
+        <div class="deroulant__panneau">
+          <nav aria-label="Menu">
+            <ul>
+              <li><a href="accueil.html">Accueil</a></li>
+              <li><a href="projets.html">Projets&nbsp;<span class="fleche" aria-hidden="true">→</span></a></li>
+              <li><a href="competences.html" aria-current="page">Parcours&nbsp;<span class="fleche" aria-hidden="true">→</span></a></li>
+              <li><a href="contact.html">Contact&nbsp;<span class="fleche" aria-hidden="true">→</span></a></li>
+            </ul>
+          </nav>
+        </div>
+      </details>
+    </div>
+    <button class="bascule" type="button" data-theme-bascule aria-pressed="false" aria-label="Mode nuit">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <circle class="lt-halo" cx="12" cy="14.5" r="11.5"/>
+        <path class="lt-trait" d="M10.3 4.4a1.7 1.7 0 0 1 3.4 0M12 4.4v1.4M7.9 9.3 12 5.8l4.1 3.5ZM8.8 9.3v8.4M15.2 9.3v8.4M7.4 17.7h9.2M9.2 20.3h5.6"/>
+        <path class="lt-flamme" d="M12 11c1.6 1.7 2.2 3 2.2 4.1a2.2 2.2 0 0 1-4.4 0c0-1.1.6-2.4 2.2-4.1Z"/>
+      </svg>
+    </button>
+  </div>
+  <div class="progression" aria-hidden="true"></div>
+</header>
+
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <!-- Pictos de repli (CMP-10), dessinés de la même main : grille 24, trait 1,5, aucune marque. -->
+  <symbol id="p-base" viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="7" ry="2.5"/><path d="M5 5.5v13c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-13M5 12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5"/></symbol>
+  <symbol id="p-api" viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="6" rx="1.5"/><rect x="3.5" y="14" width="17" height="6" rx="1.5"/><path d="M7 7h.01M7 17h.01M12 10v4"/></symbol>
+  <symbol id="p-seau" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="2.5"/><path d="M4 6l2 12.5c.2 1.4 2.8 2.5 6 2.5s5.8-1.1 6-2.5L20 6"/></symbol>
+  <symbol id="p-document" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6zM14 3v4h4M9 12h6M9 15.5h6M9 9h2.5"/></symbol>
+  <symbol id="p-terminal" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="2"/><path d="m7 10 3 2.5L7 15M12.5 15.5h4.5"/></symbol>
+  <symbol id="p-cibles" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M7.5 8l3.3 7.8M16.5 8l-3.3 7.8"/></symbol>
+  <symbol id="p-dialogue" viewBox="0 0 24 24"><path d="M4 5.5h16v10H11l-4.5 3.5v-3.5H4z"/><path d="M8.5 10.5h.01M12 10.5h.01M15.5 10.5h.01"/></symbol>
+  <symbol id="p-code" viewBox="0 0 24 24"><path d="m8 7-5 5 5 5M16 7l5 5-5 5M13.5 5l-3 14"/></symbol>
+  <symbol id="p-voix" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
+  <symbol id="p-onde" viewBox="0 0 24 24"><path d="M3 12h1.5M6.5 9v6M9.5 5.5v13M12.5 8v8M15.5 10v4M18.5 7v10M21 12h.01"/></symbol>
+  <symbol id="p-acces" viewBox="0 0 24 24"><circle cx="12" cy="4.5" r="1.8"/><path d="M5 8.5l7 1.5 7-1.5M12 10v4.5M12 14.5l-3.5 6M12 14.5l3.5 6"/></symbol>
+</svg>
+<main id="contenu" tabindex="-1">
+  <div class="conteneur">
+    <nav class="ariane" aria-label="Fil d’Ariane">
+      <ol>
+        <li><a href="parcours.html">Parcours</a></li>
+        <li><span aria-current="page">Compétences</span></li>
+      </ol>
+    </nav>
+    <nav class="onglets" aria-label="Pages du parcours">
+      <a href="parcours.html">Vue d’ensemble</a>
+      <a href="professionnel.html">Professionnel</a>
+      <a href="competences.html" aria-current="page">Compétences</a>
+      <a href="formation.html">Formation</a>
+    </nav>
+    <header class="page-tete page-tete--consultation">
+      <h1 data-pli="titre">Compétences</h1>
+      <p class="chapeau" data-pli="identite">Ce que je pratique au quotidien, ce que j’ai déjà mis en œuvre, et ma façon de travailler avec les autres.</p>
+    </header>
+  </div>
+
+  <div class="conteneur avec-sommaire corps-competences">
+    <nav class="sommaire-page" aria-label="Dans cette page" data-sommaire>
+      <p class="sommaire-page__titre">Dans cette page</p>
+      <ol>
+        <li><a href="#quotidien">Au quotidien</a></li>
+        <li><a href="#pratique">Pratiqué</a></li>
+        <li><a href="#explore">Exploré</a></li>
+        <li><a href="#ia">Intégration IA</a></li>
+        <li><a href="#livraison">Tests et livraison</a></li>
+        <li><a href="#humaines">Compétences humaines</a></li>
+      </ol>
+    </nav>
+    <div class="competences">
+      <section class="niveau" id="quotidien" data-scene aria-labelledby="t-quotidien">
+        <div class="niveau-tete">
+          <h2 id="t-quotidien">Au quotidien</h2>
+          <p>La stack de mon CV<span class="a-confirmer" title="Hiérarchie en trois niveaux à valider (Q9)">niveaux à confirmer</span></p>
+        </div>
+        <ul class="quotidien foyer" data-pli="preuve">
+          <li><a class="tuile" href="https://learn.microsoft.com/dotnet/csharp/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/csharp.svg" alt="" width="56" height="56" loading="lazy"><span><b>C#</b><span>Langage&nbsp;<span class="fleche" aria-hidden="true">↗</span></span></span></a></li>
+          <li><a class="tuile" href="https://dotnet.microsoft.com/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/dotnet.svg" alt="" width="56" height="56" loading="lazy"><span><b>.NET</b><span>Plateforme et API&nbsp;<span class="fleche" aria-hidden="true">↗</span></span></span></a></li>
+          <li><a class="tuile" href="https://angular.dev/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/angular.svg" alt="" width="56" height="56" loading="lazy"><span><b>Angular</b><span>Interfaces&nbsp;<span class="fleche" aria-hidden="true">↗</span></span></span></a></li>
+          <li><a class="tuile" href="https://www.typescriptlang.org/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/typescript.svg" alt="" width="56" height="56" loading="lazy"><span><b>TypeScript</b><span>Langage&nbsp;<span class="fleche" aria-hidden="true">↗</span></span></span></a></li>
+          <li><a class="tuile" href="https://www.postgresql.org/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/postgresql.svg" alt="" width="56" height="56" loading="lazy"><span><b>PostgreSQL</b><span>Données&nbsp;<span class="fleche" aria-hidden="true">↗</span></span></span></a></li>
+          <li><a class="tuile" href="https://www.docker.com/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/docker.svg" alt="" width="56" height="56" loading="lazy"><span><b>Docker</b><span>Conteneurs&nbsp;<span class="fleche" aria-hidden="true">↗</span></span></span></a></li>
+          <li><a class="tuile" href="https://git-scm.com/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/git.svg" alt="" width="56" height="56" loading="lazy"><span><b>Git</b><span>Versions&nbsp;<span class="fleche" aria-hidden="true">↗</span></span></span></a></li>
+          <li><a class="tuile" href="https://github.com/features/actions" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/github-actions.svg" alt="" width="56" height="56" loading="lazy"><span><b>GitHub Actions</b><span>Intégration continue&nbsp;<span class="fleche" aria-hidden="true">↗</span></span></span></a></li>
+        </ul>
+      </section>
+      <section class="niveau" id="pratique" data-scene aria-labelledby="t-pratique">
+        <div class="niveau-tete">
+          <h2 id="t-pratique">Pratiqué</h2>
+          <p>Mis en œuvre dans mes projets ou en formation</p>
+        </div>
+        <div class="familles">
+          <section class="famille" aria-label="Langages">
+            <h3>Langages</h3>
+            <ul>
+              <li><a class="techno" href="https://tc39.es/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/javascript.svg" alt="" width="28" height="28" loading="lazy"><span>JavaScript&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://www.php.net/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/php.svg" alt="" width="28" height="28" loading="lazy"><span>PHP&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://www.python.org/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/python.svg" alt="" width="28" height="28" loading="lazy"><span>Python&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://dev.java/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/java.svg" alt="" width="28" height="28" loading="lazy"><span>Java&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://www.iso.org/standard/76583.html" rel="external"><svg class="picto-tech" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#p-base"/></svg><span>SQL&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            </ul>
+          </section>
+          <section class="famille" aria-label="Web et interfaces">
+            <h3>Web et interfaces</h3>
+            <ul>
+              <li><a class="techno" href="https://html.spec.whatwg.org/multipage/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/html5.svg" alt="" width="28" height="28" loading="lazy"><span>HTML&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://www.w3.org/Style/CSS/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/css3.svg" alt="" width="28" height="28" loading="lazy"><span>CSS&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://sass-lang.com/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/sass.svg" alt="" width="28" height="28" loading="lazy"><span>Sass&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://tailwindcss.com/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/tailwindcss.svg" alt="" width="28" height="28" loading="lazy"><span>Tailwind CSS&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://rxjs.dev/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/rxjs.svg" alt="" width="28" height="28" loading="lazy"><span>RxJS&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://gsap.com/" rel="external"><img class="logo-tech logo-tech--clair" src="../../../site/src/assets/stacks/gsap.svg" alt="" width="28" height="28" loading="lazy"><span>GSAP&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            </ul>
+          </section>
+          <section class="famille" aria-label="Backend et API">
+            <h3>Backend et API</h3>
+            <ul>
+              <li><a class="techno" href="https://learn.microsoft.com/aspnet/core/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/dotnet.svg" alt="" width="28" height="28" loading="lazy"><span>ASP.NET Core&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://learn.microsoft.com/aspnet/core/signalr/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/dotnet.svg" alt="" width="28" height="28" loading="lazy"><span>SignalR&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://nodejs.org/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/nodejs.svg" alt="" width="28" height="28" loading="lazy"><span>Node.js&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://symfony.com/" rel="external"><img class="logo-tech logo-tech--mono" src="../../../site/src/assets/stacks/symfony.svg" alt="" width="28" height="28" loading="lazy"><span>Symfony&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://spring.io/projects/spring-boot/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/spring.svg" alt="" width="28" height="28" loading="lazy"><span>Spring Boot&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://twig.symfony.com/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/twig.png" alt="" width="28" height="28" loading="lazy"><span>Twig&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            </ul>
+          </section>
+          <section class="famille" aria-label="Données">
+            <h3>Données</h3>
+            <ul>
+              <li><a class="techno" href="https://learn.microsoft.com/ef/core/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/entityframeworkcore.svg" alt="" width="28" height="28" loading="lazy"><span>EF Core&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://www.mysql.com/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/mysql.svg" alt="" width="28" height="28" loading="lazy"><span>MySQL&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://sqlite.org/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/sqlite.svg" alt="" width="28" height="28" loading="lazy"><span>SQLite&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://www.doctrine-project.org/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/doctrine.svg" alt="" width="28" height="28" loading="lazy"><span>Doctrine&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            </ul>
+          </section>
+          <section class="famille" aria-label="Mobile">
+            <h3>Mobile</h3>
+            <ul>
+              <li><a class="techno" href="https://ionicframework.com/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/ionic.svg" alt="" width="28" height="28" loading="lazy"><span>Ionic&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://capacitorjs.com/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/capacitor.svg" alt="" width="28" height="28" loading="lazy"><span>Capacitor&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            </ul>
+          </section>
+        </div>
+      </section>
+      <section class="niveau" id="explore" aria-labelledby="t-explore">
+        <details class="explore" open>
+          <summary><h2 id="t-explore">Exploré ou ponctuel</h2><span class="bascule-texte">24 technologies</span></summary>
+          <ul class="etiquettes">
+            <li><a href="https://react.dev/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/react.svg" alt="" width="18" height="18" loading="lazy"><span>React&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            <li><a href="https://vuejs.org/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/vuejs.svg" alt="" width="18" height="18" loading="lazy"><span>Vue.js&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            <li><a href="https://rust-lang.org/" rel="external"><img class="logo-tech logo-tech--mono" src="../../../site/src/assets/stacks/rust.svg" alt="" width="18" height="18" loading="lazy"><span>Rust&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            <li><a href="https://go.dev/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/go.svg" alt="" width="18" height="18" loading="lazy"><span>Go&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            <li><a href="https://www.open-std.org/jtc1/sc22/wg14/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/c.svg" alt="" width="18" height="18" loading="lazy"><span>C&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            <li><a href="https://webassembly.org/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/wasm.svg" alt="" width="18" height="18" loading="lazy"><span>WebAssembly&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            <li><a href="https://expressjs.com/" rel="external"><img class="logo-tech logo-tech--mono" src="../../../site/src/assets/stacks/express.svg" alt="" width="18" height="18" loading="lazy"><span>Express&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            <li><a href="https://fastapi.tiangolo.com/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/fastapi.svg" alt="" width="18" height="18" loading="lazy"><span>FastAPI&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            <li><a href="https://github.com/tokio-rs/axum" rel="external"><svg class="picto-tech" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#p-api"/></svg><span>Axum&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            <li><a href="https://tokio.rs/" rel="external"><img class="logo-tech logo-tech--mono" src="../../../site/src/assets/stacks/tokio.svg" alt="" width="18" height="18" loading="lazy"><span>Tokio&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            <li><a href="https://api-platform.com/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/api-platform.svg" alt="" width="18" height="18" loading="lazy"><span>API Platform&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            <li><a href="https://github.com/transact-rs/sqlx" rel="external"><svg class="picto-tech" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#p-base"/></svg><span>SQLx&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            <li><a href="https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html" rel="external"><svg class="picto-tech" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#p-seau"/></svg><span>Stockage S3 compatible&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            <li><a href="https://tauri.app/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/tauri.svg" alt="" width="18" height="18" loading="lazy"><span>Tauri&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            <li><a href="https://www.tryphotino.io/" rel="external"><img class="logo-tech logo-tech--papier" src="../../../site/src/assets/stacks/photino.svg" alt="" width="18" height="18" loading="lazy"><span>Photino.NET&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            <li><a href="https://leafletjs.com/" rel="external"><img class="logo-tech logo-tech--papier" src="../../../site/src/assets/stacks/leaflet.svg" alt="" width="18" height="18" loading="lazy"><span>Leaflet&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            <li><a href="https://www.chartjs.org/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/chartjs.svg" alt="" width="18" height="18" loading="lazy"><span>Chart.js&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            <li><a href="https://www.gnu.org/software/bash/" rel="external"><img class="logo-tech logo-tech--papier" src="../../../site/src/assets/stacks/bash.svg" alt="" width="18" height="18" loading="lazy"><span>Bash&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            <li><a href="https://sharp.pixelplumbing.com/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/sharp.svg" alt="" width="18" height="18" loading="lazy"><span>sharp&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            <li><a href="https://pillow.readthedocs.io/en/stable/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/pillow.png" alt="" width="18" height="18" loading="lazy"><span>Pillow&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            <li><a href="https://dompdf.github.io/" rel="external"><svg class="picto-tech" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#p-document"/></svg><span>Dompdf&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            <li><a href="https://opentui.com/" rel="external"><svg class="picto-tech" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#p-terminal"/></svg><span>OpenTUI&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            <li><a href="https://www.gnu.org/software/make/" rel="external"><svg class="picto-tech" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#p-cibles"/></svg><span>Make&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            <li><a href="https://gcc.gnu.org/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/gcc.svg" alt="" width="18" height="18" loading="lazy"><span>GCC&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+          </ul>
+        </details>
+      </section>
+      <section class="niveau acte-veille bandeau-ia" id="ia" data-scene aria-labelledby="t-ia">
+        <div class="niveau-tete">
+          <h2 id="t-ia">Intégration IA</h2>
+          <p>Dans mes projets publics, sans entraînement de modèle</p>
+        </div>
+        <ul class="ia">
+          <li class="">
+            <h3>Assistants et agents</h3>
+            <div class="outils">
+              <a class="techno" href="https://claude.com/" rel="external"><svg class="picto-tech" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#p-dialogue"/></svg><span>Claude&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a>
+              <a class="techno" href="https://openai.com/codex/" rel="external"><svg class="picto-tech" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#p-code"/></svg><span>Codex&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a>
+            </div>
+            <ul class="points"><li>Développement assisté</li><li>Intégration CLI</li><li>Prompts et contexte</li><li>Veille automatisée</li></ul>
+          </li>
+          <li class="foyer">
+            <h3>Intégration aux applications</h3>
+            <div class="outils">
+              <a class="techno" href="https://modelcontextprotocol.io/" rel="external"><img class="logo-tech logo-tech--mono" src="../../../site/src/assets/stacks/mcp.svg" alt="" width="28" height="28" loading="lazy"><span>MCP&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a>
+            </div>
+            <ul class="points"><li>Serveurs et outils MCP</li><li>Schémas JSON</li><li>Permissions et quotas</li></ul>
+          </li>
+          <li class="">
+            <h3>Synthèse vocale</h3>
+            <div class="outils">
+              <a class="techno" href="https://github.com/hexgrad/kokoro" rel="external"><svg class="picto-tech" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#p-voix"/></svg><span>Kokoro&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a>
+              <a class="techno" href="https://github.com/OHF-Voice/piper1-gpl" rel="external"><svg class="picto-tech" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#p-onde"/></svg><span>Piper&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a>
+            </div>
+            <ul class="points"><li>Modèles auto-hébergés</li><li>Streaming audio</li><li>Cache des générations</li></ul>
+          </li>
+        </ul>
+      </section>
+      <section class="niveau" id="livraison" data-scene aria-labelledby="t-livraison">
+        <div class="niveau-tete">
+          <h2 id="t-livraison">Tests et livraison</h2>
+          <p>Construire une fois, livrer exactement ce qui a été testé</p>
+        </div>
+        <figure class="figure foyer">
+          <ol class="pipeline" aria-label="Chaîne de livraison build-once">
+            <li><b>Construire une fois</b><p>Une seule construction par révision du code.</p></li>
+            <li><b>Sceller l’image</b><p>L’image produite est identifiée par son empreinte.</p><span class="empreinte">même empreinte</span></li>
+            <li><b>Tester cette image</b><p>Les tests portent sur l’image qui partira en production.</p><span class="empreinte">même empreinte</span></li>
+            <li><b>Promouvoir sans reconstruire</b><p>La production reçoit exactement ce qui a été testé.</p><span class="empreinte">même empreinte</span></li>
+          </ol>
+          <figcaption>CMP-F1, figure codée. Le principe des chaînes de ce portfolio et de mes projets en production.</figcaption>
+        </figure>
+        <div class="familles familles--deux">
+          <section class="famille" aria-label="Tests et qualité">
+            <h3>Tests et qualité</h3>
+            <ul>
+              <li><a class="techno" href="https://xunit.net/" rel="external"><img class="logo-tech logo-tech--mono" src="../../../site/src/assets/stacks/xunit.svg" alt="" width="28" height="28" loading="lazy"><span>xUnit&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://vitest.dev/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/vitest.svg" alt="" width="28" height="28" loading="lazy"><span>Vitest&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://phpunit.de/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/phpunit.png" alt="" width="28" height="28" loading="lazy"><span>PHPUnit&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://docs.pytest.org/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/pytest.svg" alt="" width="28" height="28" loading="lazy"><span>pytest&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://playwright.dev/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/playwright.svg" alt="" width="28" height="28" loading="lazy"><span>Playwright&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://karma-runner.github.io/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/karma.svg" alt="" width="28" height="28" loading="lazy"><span>Karma&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://jasmine.github.io/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/jasmine.svg" alt="" width="28" height="28" loading="lazy"><span>Jasmine&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://github.com/dequelabs/axe-core" rel="external"><svg class="picto-tech" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#p-acces"/></svg><span>axe-core&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://eslint.org/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/eslint.svg" alt="" width="28" height="28" loading="lazy"><span>ESLint&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://prettier.io/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/prettier.png" alt="" width="28" height="28" loading="lazy"><span>Prettier&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            </ul>
+          </section>
+          <section class="famille" aria-label="Livraison et observabilité">
+            <h3>Livraison et observabilité</h3>
+            <ul>
+              <li><a class="techno" href="https://kernel.org/" rel="external"><img class="logo-tech logo-tech--mono" src="../../../site/src/assets/stacks/linux.svg" alt="" width="28" height="28" loading="lazy"><span>Linux&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://httpd.apache.org/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/apache.svg" alt="" width="28" height="28" loading="lazy"><span>Apache&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://nginx.org/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/nginx.svg" alt="" width="28" height="28" loading="lazy"><span>Nginx&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://caddyserver.com/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/caddy.png" alt="" width="28" height="28" loading="lazy"><span>Caddy&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://vite.dev/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/vite.svg" alt="" width="28" height="28" loading="lazy"><span>Vite&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://opentelemetry.io/" rel="external"><img class="logo-tech logo-tech--papier" src="../../../site/src/assets/stacks/opentelemetry.svg" alt="" width="28" height="28" loading="lazy"><span>OpenTelemetry&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+              <li><a class="techno" href="https://prometheus.io/" rel="external"><img class="logo-tech" src="../../../site/src/assets/stacks/prometheus.svg" alt="" width="28" height="28" loading="lazy"><span>Prometheus&nbsp;<span class="fleche fleche--discrete" aria-hidden="true">↗</span></span></a></li>
+            </ul>
+          </section>
+        </div>
+      </section>
+      <section class="niveau" id="humaines" data-scene aria-labelledby="t-humaines">
+        <div class="niveau-tete">
+          <h2 id="t-humaines">Compétences humaines</h2>
+          <p>Ce que je fais avec les autres</p>
+        </div>
+        <ul class="humaines">
+          <li class="humaine">
+            <figure class="emplacement">
+              <div class="emplacement__contenu">
+                <span class="emplacement__id">CMP-02</span>
+                <p class="emplacement__sujet">Pédagogie</p>
+                <p class="emplacement__compo">Tableau, schéma en trois étapes, craie posée.</p>
+                <p class="emplacement__format">1:1&nbsp;· 480</p>
+              </div>
+            </figure>
+            <div class="humaine__texte">
+              <h3>Pédagogie</h3>
+              <p>Expliquer&nbsp;· Accompagner&nbsp;· Rendre autonome<span class="a-confirmer" title="Verbes reformulés à valider">à confirmer</span></p>
+            </div>
+          </li>
+          <li class="humaine">
+            <figure class="emplacement">
+              <div class="emplacement__contenu">
+                <span class="emplacement__id">CMP-03</span>
+                <p class="emplacement__sujet">Coordination</p>
+                <p class="emplacement__compo">Tableau de tâches à colonnes, cartes déplacées par des flèches.</p>
+                <p class="emplacement__format">1:1&nbsp;· 480</p>
+              </div>
+            </figure>
+            <div class="humaine__texte">
+              <h3>Coordination</h3>
+              <p>Accueillir&nbsp;· Organiser&nbsp;· Relire</p>
+            </div>
+          </li>
+          <li class="humaine">
+            <figure class="emplacement">
+              <div class="emplacement__contenu">
+                <span class="emplacement__id">CMP-04</span>
+                <p class="emplacement__sujet">Écoute et cadrage</p>
+                <p class="emplacement__compo">Cahier des charges annoté de points d’interrogation dans la marge.</p>
+                <p class="emplacement__format">1:1&nbsp;· 480</p>
+              </div>
+            </figure>
+            <div class="humaine__texte">
+              <h3>Écoute et cadrage</h3>
+              <p>Écouter le besoin&nbsp;· Échanger&nbsp;· Cadrer<span class="a-confirmer" title="Verbes reformulés à valider">à confirmer</span></p>
+            </div>
+          </li>
+          <li class="humaine">
+            <figure class="emplacement">
+              <div class="emplacement__contenu">
+                <span class="emplacement__id">CMP-05</span>
+                <p class="emplacement__sujet">Communication directe</p>
+                <p class="emplacement__compo">Deux bulles de dialogue qui se répondent, la lanterne entre elles.</p>
+                <p class="emplacement__format">1:1&nbsp;· 480</p>
+              </div>
+            </figure>
+            <div class="humaine__texte">
+              <h3>Communication directe</h3>
+              <p>Dire franchement&nbsp;· Échanger sincèrement&nbsp;· Avancer ensemble<span class="a-confirmer" title="Verbes reformulés à valider">à confirmer</span></p>
+            </div>
+          </li>
+          <li class="humaine">
+            <figure class="emplacement">
+              <div class="emplacement__contenu">
+                <span class="emplacement__id">CMP-06</span>
+                <p class="emplacement__sujet">Créativité</p>
+                <p class="emplacement__compo">Une carte retournée à contre-courant au milieu d’un éventail de cartes identiques.</p>
+                <p class="emplacement__format">1:1&nbsp;· 480</p>
+              </div>
+            </figure>
+            <div class="humaine__texte">
+              <h3>Créativité</h3>
+              <p>Expérimenter&nbsp;· Réinventer&nbsp;· Prendre à contre-courant</p>
+            </div>
+          </li>
+          <li class="humaine">
+            <figure class="emplacement">
+              <div class="emplacement__contenu">
+                <span class="emplacement__id">CMP-07</span>
+                <p class="emplacement__sujet">Apprentissage et adaptation</p>
+                <p class="emplacement__compo">Boucle tester, ajuster, dessinée en ruban de Möbius.</p>
+                <p class="emplacement__format">1:1&nbsp;· 480</p>
+              </div>
+            </figure>
+            <div class="humaine__texte">
+              <h3>Apprentissage et adaptation</h3>
+              <p>Comprendre&nbsp;· Tester&nbsp;· Ajuster</p>
+            </div>
+          </li>
+          <li class="humaine">
+            <figure class="emplacement">
+              <div class="emplacement__contenu">
+                <span class="emplacement__id">CMP-08</span>
+                <p class="emplacement__sujet">Méthodes de travail</p>
+                <p class="emplacement__compo">Tableau Kanban et document relié.</p>
+                <p class="emplacement__format">1:1&nbsp;· 480</p>
+              </div>
+            </figure>
+            <div class="humaine__texte">
+              <h3>Méthodes de travail</h3>
+              <p>Agile et Scrum&nbsp;· Trello&nbsp;· Cahiers des charges&nbsp;· Documentation</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+      <aside class="appel" aria-label="Discutons">
+        <p class="appel__phrase">Un sujet technique à creuser, une équipe à faire grandir&nbsp;?</p>
+        <a class="bouton" href="contact.html">Discutons&nbsp;<span class="fleche" aria-hidden="true">→</span></a>
+      </aside>
+    </div>
+  </div>
+</main>
+<footer class="pied">
+  <div class="conteneur">
+    <div class="pied__grille">
+      <div class="pied__marque">
+        <a class="marque" href="accueil.html" aria-label="Charles Lindecker, accueil">
+          <span class="marque__embleme" aria-hidden="true">
+            <img class="jour-seulement" src="../../../site/src/assets/marque/logo-symbole.webp" alt="" width="352" height="245">
+            <img class="nuit-seulement" src="../../assets/marque/logo-symbole-nuit.png" alt="" width="352" height="245">
+          </span>
+          <img class="marque__nom" src="../../../site/src/assets/marque/logo-nom.webp" alt="" width="756" height="118">
+        </a>
+        <p class="pied__devise">Je maîtrise d’abord les règles du jeu. Ensuite, je les réinvente.</p>
+      </div>
+      <div class="pied__pages">
+        <h2>Pages</h2>
+        <ul>
+          <li><a href="accueil.html">Accueil</a></li>
+          <li><a href="projets.html">Projets</a></li>
+          <li><a href="competences.html">Parcours</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Me trouver</h2>
+        <ul>
+          <li class="pied__courriel"><a href="mailto:charles.lindecker@outlook.fr" data-umami-event="contact-email" data-umami-event-emplacement="pied">charles.lindecker@outlook.fr</a><button class="copier" type="button" data-copier="charles.lindecker@outlook.fr" hidden><span data-etiquette>Copier</span></button></li>
+          <li><a href="https://www.linkedin.com/in/charles-lindecker/" rel="external">LinkedIn&nbsp;<span class="fleche" aria-hidden="true">↗</span></a></li>
+          <li><a href="https://github.com/LINDECKER-Charles" rel="external">GitHub&nbsp;<span class="fleche" aria-hidden="true">↗</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Le site</h2>
+        <ul>
+          <li><a href="mentions-legales.html">Mentions légales</a></li>
+        </ul>
+        <p class="petit" style="margin-top:var(--s2)">Composé en Instrument Serif et Instrument Sans.</p>
+      </div>
+    </div>
+    <div class="pied__bas">
+      <span>© 2026 Charles Lindecker, à Mulhouse</span>
+      <span>Maquette de la direction « Lanterne »</span>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projets — Charles Lindecker</title>
+<meta name="description" content="Cinq projets menés au bout, rangés par ce qu’ils prouvent : une équipe, des systèmes en production, un jeu inventé, un produit complet, un outil open source.">
+<meta name="theme-color" content="#FAFAF8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=JetBrains+Mono:wght@400..600&amp;family=Newsreader:ital,opsz,wght@1,6..72,400&amp;display=swap">
+<link rel="stylesheet" href="style.css">
+<script src="theme.js"></script>
+<script src="maquette.js" defer></script>
+</head>
+<body>
+<a class="evitement" href="#contenu">Aller au contenu</a>
+
+<header class="entete">
+  <div class="conteneur entete__barre">
+    <a class="marque" href="accueil.html" aria-label="Charles Lindecker, accueil">
+      <img class="marque__embleme marque__embleme--jour" src="../../../site/src/assets/marque/logo-symbole.webp" width="352" height="245" alt="">
+      <img class="marque__embleme marque__embleme--nuit" src="../../assets/marque/logo-symbole-nuit.png" width="352" height="245" alt="">
+      <img class="marque__nom" src="../../../site/src/assets/marque/logo-nom.webp" width="756" height="118" alt="">
+    </a>
+    <nav class="nav-principale" aria-label="Principale">
+      <a href="projets.html" aria-current="page">Projets</a>
+      <a href="competences.html">Parcours</a>
+      <a href="hors-maquette.html?page=contact">Contact</a>
+    </nav>
+    <div class="entete__mobile">
+      
+      <a class="entete__contact" href="hors-maquette.html?page=contact">Contact</a>
+      <details class="deroulant">
+        <summary>Menu</summary>
+        <nav class="deroulant__panneau" aria-label="Principale, mobile">
+          <a href="accueil.html">Accueil</a>
+          <a href="projets.html" aria-current="page">Projets</a>
+          <a href="competences.html">Parcours</a>
+          <a href="hors-maquette.html?page=contact">Contact</a>
+        </nav>
+      </details>
+    </div>
+    <button class="bascule" type="button" data-theme-bascule aria-label="Mode nuit" aria-pressed="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle class="lanterne__halo" cx="12" cy="14.5" r="11"/>
+        <path class="lanterne__corps" d="M12 1.6a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 4.6v1.6M6.8 9.4 12 6.2l5.2 3.2ZM8 9.4v10M16 9.4v10M6.6 19.4h10.8M8 21.6h8M7.4 19.4l.6 2.2M16.6 19.4l-.6 2.2"/>
+        <path class="lanterne__flamme" d="M12 11.2c1.6 1.7 2.1 2.9 2.1 4a2.1 2.1 0 0 1-4.2 0c0-1.1.5-2.3 2.1-4Z"/>
+      </svg>
+    </button>
+  </div>
+  <div class="progression" aria-hidden="true"><span></span></div>
+</header>
+
+<main id="contenu" tabindex="-1">
+  <section class="page-tete reperes" aria-labelledby="titre-page" data-pli data-zone>
+    <div class="reperes__colonnes" aria-hidden="true"><div class="conteneur"><div class="grille"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div></div>
+    <div class="conteneur grille">
+      <div class="page-tete__texte">
+        <h1 class="titre-1" id="titre-page">Projets</h1>
+        <p class="chapo">Des projets menés au bout&nbsp;: une équipe, des systèmes en production, des outils publiés.</p>
+      </div>
+      <dl class="page-tete__index mono" aria-label="Ordre de la vitrine">
+        <div><dt>01</dt><dd><a href="#pvz">Mener une équipe</a></dd></div>
+        <div><dt>02</dt><dd><a href="#lodb">Un système en production</a></dd></div>
+        <div><dt>03</dt><dd><a href="#omnicard">Inventer</a></dd></div>
+        <div><dt>04</dt><dd><a href="#blr">Un produit de bout en bout</a></dd></div>
+        <div><dt>05</dt><dd><a href="#gup">Un outil open source</a></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <div class="conteneur">
+    <ol class="vitrine" aria-label="Cinq projets, ordonnés par ce qu’ils prouvent">
+
+      <!-- 1 · PvZ Fusion : la carte à la une -->
+      <li class="projet projet--une" id="pvz" data-zone>
+        <div class="projet__visuel">
+          <figure class="emplacement" style="--ratio: 16 / 10">
+            <svg class="iso" data-iso="PRJ-01" viewBox="-22.4 -128.2 445.1 272.9" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false"><path class="i-explose" d="M170.9 28.9L202.3 60.7"/><path class="i-explose" d="M235.1 66.5L277.2 73.9"/><g><path class="i-p1" d="M23.3 18.2L23.3 38A7.8 4.5 0 0 0 38.9 38L38.9 18.2Z"/><ellipse class="i-p0" cx="31.1" cy="18.2" rx="7.8" ry="4.5"/></g><g><path class="i-p0" d="M0 -108L187.4 -74.9L185.2 -70.9L-2.1 -103.9Z"/><path class="i-p1" d="M187.4 33.1L185.2 37.1L185.2 -70.9L187.4 -74.9Z"/><path class="i-p2" d="M-2.1 4.1L-2.1 -103.9L185.2 -70.9L185.2 37.1Z"/></g><circle class="i-p0" cx="31.1" cy="12.2" r="5.4"/><g><path class="i-p1" d="M106.2 35.8L106.2 55.6A7.8 4.5 0 0 0 121.8 55.6L121.8 35.8Z"/><ellipse class="i-p0" cx="114" cy="35.8" rx="7.8" ry="4.5"/></g><path class="i-p0" d="M14.1 -16.8L51.6 -10.2L51.6 -28.2L14.1 -34.8Z"/><path class="i-p1" d="M7.1 -2.2L58.7 6.9L58.7 -85.1L7.1 -94.2Z"/><circle class="i-p0" cx="114" cy="29.8" r="5.4"/><path class="i-p1" d="M68.1 8.6L119.6 17.7L119.6 -74.3L68.1 -83.4Z"/><path class="i-p0" d="M14.1 -42.8L51.6 -36.2L51.6 -54.2L14.1 -60.8Z"/><path class="i-p1" d="M129 19.3L180.5 28.4L180.5 -63.6L129 -72.7Z"/><path class="i-p0" d="M75 -32L112.5 -25.4L112.5 -43.4L75 -50Z"/><path class="i-p0" d="M14.1 -68.8L51.6 -62.2L51.6 -80.2L14.1 -86.8Z"/><g><path class="i-p0" d="M299.4 -24L402.5 -5.8L369.6 56.4L266.5 38.2Z"/><path class="i-p1" d="M402.5 62.2L369.6 124.4L369.6 56.4L402.5 -5.8Z"/><path class="i-p2" d="M266.5 106.2L266.5 38.2L369.6 56.4L369.6 124.4Z"/></g><g><path class="i-a0" d="M207.3 39.2L240.1 45L230.1 63.9L197.3 58.1Z"/><path class="i-a1" d="M240.1 69L230.1 87.9L230.1 63.9L240.1 45Z"/><path class="i-a2" d="M197.3 82.1L197.3 58.1L230.1 63.9L230.1 87.9Z"/></g><path class="i-p0" d="M75 -58L112.5 -51.4L112.5 -69.4L75 -76Z"/><path class="i-p0" d="M135.9 -47.3L173.4 -40.7L173.4 -58.7L135.9 -65.3Z"/><g><path class="i-l0" d="M220.2 40.5L227.2 41.7L217.2 60.7L210.2 59.4Z"/><path class="i-l1" d="M227.2 42.7L217.2 61.7L217.2 60.7L227.2 41.7Z"/><path class="i-l2" d="M210.2 60.4L210.2 59.4L217.2 60.7L217.2 61.7Z"/></g></svg>
+            <figcaption class="emplacement__corps"><span class="emplacement__sujet">La traduction comme travail d’équipe</span><span class="emplacement__compo note-maquette">Tableau de travail à trois colonnes (à faire, en relecture, livré) sans marque, plusieurs mains anonymes, un paquet scellé qui part vers un grand dépôt commun.</span></figcaption>
+            <p class="emplacement__haut note-maquette"><span class="emplacement__id">PRJ-01</span><span class="emplacement__format">16:10 · 1600 × 1000 · 4:5 sur mobile · IMG · socle</span></p>
+          </figure>
+        </div>
+        <div class="projet__texte">
+          <p class="projet__entete"><span class="mono projet__rang note-maquette">01 / 05</span><span class="projet__preuve">Mener une équipe</span></p>
+          <h2 class="projet__nom"><a class="projet__lien" href="pvz-fusion.html">PvZ Fusion, pôle francophone</a></h2>
+          <p class="projet__besoin">Rattraper, à plusieurs, la traduction française d’un jeu qui change toutes les deux ou trois semaines.</p>
+          <dl class="projet__donnees">
+            <div><dt>Rôle</dt><dd>Lead du pôle, mainteneur du projet multilingue</dd></div>
+            <div><dt>Statut</dt><dd><span class="statut">En cours, bénévole</span></dd></div>
+            <div class="projet__donnee-mesure"><dt>Mesure</dt><dd><span class="projet__mesure">20 contributeurs formés</span></dd></div>
+            <div class="projet__outils"><dt>Outils</dt><dd class="stack"><img class="logo" src="../../../site/src/assets/stacks/trello.svg" alt="Trello" width="24" height="24"><img class="logo" src="../../../site/src/assets/stacks/git.svg" alt="Git" width="24" height="24"><img class="logo" src="../../../site/src/assets/stacks/typescript.svg" alt="TypeScript" width="24" height="24"></dd></div>
+          </dl>
+          <p class="projet__liens"><a href="pvz-fusion.html">Voir le projet<span class="fl fl--int" aria-hidden="true">→</span></a><a href="https://github.com/Teyliu/PVZF-Translation">Projet multilingue (GitHub)<span class="fl fl--ext" aria-hidden="true">↗</span></a></p>
+        </div>
+      </li>
+
+      <li class="matrice__tete etiquette" aria-hidden="true"><span>Aperçu</span><span>Projet et besoin</span><span>Rôle</span><span>Statut et mesure</span></li>
+
+      <!-- 2 · League Of Data Base -->
+      <li class="projet projet--ligne" id="lodb" data-zone>
+        <div class="projet__visuel">
+          <figure class="emplacement" style="--ratio: 16 / 10">
+            <svg class="iso" data-iso="PRJ-02" viewBox="-135.6 -40.4 316.3 174.8" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false"><path class="i-explose" d="M0 -22L22.5 -23"/><path class="i-explose" d="M22.5 -23L45 -24"/><path class="i-explose" d="M45 -24L67.5 -25"/><path class="i-explose" d="M67.5 -25L90.1 -26"/><g><path class="i-p0" d="M0 -18L86.6 32L-34.6 102L-121.2 52Z"/><path class="i-p1" d="M86.6 50L-34.6 120L-34.6 102L86.6 32Z"/><path class="i-p2" d="M-121.2 70L-121.2 52L-34.6 102L-34.6 120Z"/></g><path class="i-p0" d="M0 -22L76.2 22L-34.6 86L-110.9 42Z"/><path class="i-a0" d="M22.5 -23L98.7 21L-12.1 85L-88.3 41Z"/><path class="i-p0" d="M45 -24L121.2 20L10.4 84L-65.8 40Z"/><path class="i-p0" d="M67.5 -25L143.8 19L32.9 83L-43.3 39Z"/><path class="i-p0" d="M90.1 -26L166.3 18L55.4 82L-20.8 38Z"/><g><path class="i-l0" d="M-50.2 59L-41.6 64L-43.3 65L-52 60Z"/><path class="i-l1" d="M-41.6 64L-43.3 65L-43.3 97L-41.6 96Z"/><path class="i-l2" d="M-52 60L-52 92L-43.3 97L-43.3 65Z"/></g></svg>
+            <figcaption class="emplacement__corps"><span class="emplacement__sujet">Une archive versionnée</span><span class="emplacement__compo note-maquette">Registre relié ouvert, pages en couches datées qui s’éventaillent, marque-page sur une page ancienne.</span></figcaption>
+            <p class="emplacement__haut note-maquette"><span class="emplacement__id">PRJ-02</span><span class="emplacement__format">16:10 + 1:1 · IMG · socle</span></p>
+          </figure>
+        </div>
+        <div class="projet__texte">
+          <p class="projet__entete"><span class="mono projet__rang note-maquette">02 / 05</span><span class="projet__preuve">Un système en production</span></p>
+          <h2 class="projet__nom"><a class="projet__lien" href="hors-maquette.html?page=projets/league-of-database">League Of Data Base</a><span class="a-confirmer" title="Nom officiel à confirmer (Q8)">nom</span></h2>
+          <p class="projet__besoin">Retrouver les valeurs exactes d’un ancien patch de League of Legends, dans sa langue.</p>
+        </div>
+        <p class="projet__liens"><a href="https://league-of-data-base.com/fr/">Application<span class="fl fl--ext" aria-hidden="true">↗</span></a><a href="https://github.com/LINDECKER-Charles/LeagueOfDataBaseFinal">Code<span class="fl fl--ext" aria-hidden="true">↗</span></a></p>
+        <div class="projet__role"><span>Conçu et maintenu seul</span><span class="stack"><img class="logo" src="../../../site/src/assets/stacks/dotnet.svg" alt=".NET" width="24" height="24"><img class="logo" src="../../../site/src/assets/stacks/angular.svg" alt="Angular" width="24" height="24"><img class="logo" src="../../../site/src/assets/stacks/postgresql.svg" alt="PostgreSQL" width="24" height="24"></span></div>
+        <div class="projet__chiffre"><span class="statut">En ligne</span><span class="projet__mesure">403 patchs</span><span class="mono gris">depuis 2012, 21 langues</span></div>
+        <dl class="projet__donnees projet__donnees--mobile">
+          <div><dt>Rôle</dt><dd>Conçu et maintenu seul</dd></div>
+          <div><dt>Statut</dt><dd><span class="statut">En ligne</span></dd></div>
+          <div class="projet__donnee-mesure"><dt>Mesure</dt><dd><span class="projet__mesure">403 patchs</span></dd></div>
+        </dl>
+      </li>
+
+      <!-- 3 · Omnicard -->
+      <li class="projet projet--ligne" id="omnicard" data-zone>
+        <div class="projet__visuel">
+          <figure class="emplacement" style="--ratio: 16 / 10">
+            <svg class="iso" data-iso="PRJ-03" viewBox="-17.3 -132.1 230.2 265.3" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false"><path class="i-explose" d="M138.6 46L152.4 54"/><g><path class="i-p0" d="M0 -120L155.9 -30L150.7 -27L-5.2 -117Z"/><path class="i-p1" d="M155.9 90L150.7 93L150.7 -27L155.9 -30Z"/><path class="i-p2" d="M-5.2 3L-5.2 -117L150.7 -27L150.7 93Z"/></g><path class="i-p1" d="M1.6 -0.9L143.6 81.1L143.6 -6.9L1.6 -88.9Z"/><path class="i-p2" d="M1.6 -92.9L143.6 -10.9L143.6 -22.9L1.6 -104.9Z"/><g><path class="i-a0" d="M90.1 -20L138.6 8L136.5 9.2L88 -18.8Z"/><path class="i-a1" d="M138.6 84L136.5 85.2L136.5 9.2L138.6 8Z"/><path class="i-a2" d="M88 57.2L88 -18.8L136.5 9.2L136.5 85.2Z"/></g><g><path class="i-p0" d="M152.4 16L200.9 44L198.8 45.2L150.3 17.2Z"/><path class="i-p1" d="M200.9 120L198.8 121.2L198.8 45.2L200.9 44Z"/><path class="i-p2" d="M150.3 93.2L150.3 17.2L198.8 45.2L198.8 121.2Z"/></g></svg>
+            <figcaption class="emplacement__corps"><span class="emplacement__sujet">Du papier au jeu en ligne</span><span class="emplacement__compo note-maquette">Une carte plastifiée à la main, à cheval sur le bord d’une fenêtre de navigateur où elle devient numérique. Face générique.</span></figcaption>
+            <p class="emplacement__haut note-maquette"><span class="emplacement__id">PRJ-03</span><span class="emplacement__format">16:10 · recadrage d’OMN-01 · IMG · socle</span></p>
+          </figure>
+        </div>
+        <div class="projet__texte">
+          <p class="projet__entete"><span class="mono projet__rang note-maquette">03 / 05</span><span class="projet__preuve">Inventer</span></p>
+          <h2 class="projet__nom"><a class="projet__lien" href="hors-maquette.html?page=projets/omnicard">Omnicard</a></h2>
+          <p class="projet__besoin">Le jeu de cartes inventé sur papier avec mon cousin, devenu un jeu en ligne avec son moteur de règles.</p>
+        </div>
+        <p class="projet__liens"><a href="https://github.com/LINDECKER-Charles/public-Omnicard">Règles et cartes (GitHub)<span class="fl fl--ext" aria-hidden="true">↗</span></a></p>
+        <div class="projet__role"><span>Conception et développement</span><span class="stack"><img class="logo" src="../../../site/src/assets/stacks/csharp.svg" alt="C#" width="24" height="24"><img class="logo" src="../../../site/src/assets/stacks/angular.svg" alt="Angular" width="24" height="24"><img class="logo" src="../../../site/src/assets/stacks/postgresql.svg" alt="PostgreSQL" width="24" height="24"></span></div>
+        <div class="projet__chiffre"><span class="statut statut--hors">Hors ligne, en refonte</span><span class="projet__mesure">≈ 3 mois</span><span class="mono gris">de travail cumulé</span></div>
+        <dl class="projet__donnees projet__donnees--mobile">
+          <div><dt>Rôle</dt><dd>Conception et développement</dd></div>
+          <div><dt>Statut</dt><dd><span class="statut statut--hors">Hors ligne, en refonte</span></dd></div>
+          <div class="projet__donnee-mesure"><dt>Mesure</dt><dd><span class="projet__mesure">≈ 3 mois de travail</span></dd></div>
+        </dl>
+      </li>
+
+      <!-- 4 · Bloodborne Legendary Run -->
+      <li class="projet projet--ligne" id="blr" data-zone>
+        <div class="projet__visuel">
+          <figure class="recadrage">
+            <div class="recadrage__fenetre" style="--z: 3.8; --z-m: 4.2; --cx: .549; --cy: .35; --ratio: .6364">
+              <img src="../../../site/src/assets/projets/bloodborne/parcours-desktop.webp" width="2200" height="1400" loading="lazy" alt="Détail de la constellation : la galaxie « L’Arsenal de Yharnam », 77 objectifs allumés sur 116.">
+            </div>
+            <figcaption><span class="mono note-maquette">PRJ-04 · capture recadrée</span>Une galaxie et ses objectifs allumés sur le total.</figcaption>
+          </figure>
+        </div>
+        <div class="projet__texte">
+          <p class="projet__entete"><span class="mono projet__rang note-maquette">04 / 05</span><span class="projet__preuve">Un produit de bout en bout</span></p>
+          <h2 class="projet__nom"><a class="projet__lien" href="hors-maquette.html?page=projets/bloodborne-legendary-run">Bloodborne Legendary Run</a></h2>
+          <p class="projet__besoin">Ranger les 1&nbsp;289 objectifs d’une partie complète de Bloodborne en 22&nbsp;constellations.</p>
+        </div>
+        <p class="projet__liens"><a href="https://bloodborne-legendary-run.com/fr/sky">Application<span class="fl fl--ext" aria-hidden="true">↗</span></a></p>
+        <div class="projet__role"><span>Seul<span class="a-confirmer" title="Projet seul ? (Q8)">à confirmer</span></span><span class="stack"><img class="logo" src="../../../site/src/assets/stacks/dotnet.svg" alt=".NET" width="24" height="24"><img class="logo" src="../../../site/src/assets/stacks/angular.svg" alt="Angular" width="24" height="24"><img class="logo" src="../../../site/src/assets/stacks/capacitor.svg" alt="Capacitor" width="24" height="24"></span></div>
+        <div class="projet__chiffre"><span class="statut statut--test">En ligne, web ; Android en test</span><span class="projet__mesure">1&nbsp;289 objectifs</span><span class="mono gris">22 constellations</span></div>
+        <dl class="projet__donnees projet__donnees--mobile">
+          <div><dt>Rôle</dt><dd>Seul<span class="a-confirmer" title="Projet seul ? (Q8)">à confirmer</span></dd></div>
+          <div><dt>Statut</dt><dd><span class="statut statut--test">Web en ligne ; Android en test</span></dd></div>
+          <div class="projet__donnee-mesure"><dt>Mesure</dt><dd><span class="projet__mesure">1&nbsp;289 objectifs</span></dd></div>
+        </dl>
+      </li>
+
+      <!-- 5 · gup -->
+      <li class="projet projet--ligne" id="gup" data-zone>
+        <div class="projet__visuel">
+          <figure class="recadrage">
+            <div class="recadrage__fenetre" style="--z: 2.25; --z-m: 2.6; --cx: .505; --cy: .53; --ratio: .6478">
+              <img src="../../../site/src/assets/projets/gup-selection.webp" width="1624" height="1052" loading="lazy" alt="Détail de l’écran de sélection de gup : les mises à jour disponibles, source par source, avec leur version actuelle et la dernière.">
+            </div>
+            <figcaption><span class="mono note-maquette">PRJ-05 · capture recadrée</span>Les mises à jour, source par source.<span class="a-confirmer note-maquette" title="À regénérer depuis l’écran packages-select en français (CAP-GUP-1)">CAP-GUP-1</span></figcaption>
+          </figure>
+        </div>
+        <div class="projet__texte">
+          <p class="projet__entete"><span class="mono projet__rang note-maquette">05 / 05</span><span class="projet__preuve">Un outil open source</span></p>
+          <h2 class="projet__nom"><a class="projet__lien" href="hors-maquette.html?page=projets/gup">gup</a></h2>
+          <p class="projet__besoin">Mettre à jour en une commande tout ce qui est installé sur un poste de développeur.</p>
+        </div>
+        <p class="projet__liens"><a href="https://github.com/LINDECKER-Charles/gup">Code<span class="fl fl--ext" aria-hidden="true">↗</span></a><a href="https://www.npmjs.com/package/@charles_lindecker/gup">npm<span class="fl fl--ext" aria-hidden="true">↗</span></a></p>
+        <div class="projet__role"><span>Auteur et mainteneur</span><span class="stack"><img class="logo" src="../../../site/src/assets/stacks/typescript.svg" alt="TypeScript" width="24" height="24"><img class="logo" src="../../../site/src/assets/stacks/nodejs.svg" alt="Node.js" width="24" height="24"><img class="logo" src="../../../site/src/assets/stacks/vitest.svg" alt="Vitest" width="24" height="24"></span></div>
+        <div class="projet__chiffre"><span class="statut">Open source, npm</span><span class="projet__mesure">153 sources</span><span class="mono gris">Windows, macOS, Linux, WSL</span></div>
+        <dl class="projet__donnees projet__donnees--mobile">
+          <div><dt>Rôle</dt><dd>Auteur et mainteneur</dd></div>
+          <div><dt>Statut</dt><dd><span class="statut">Open source, npm</span></dd></div>
+          <div class="projet__donnee-mesure"><dt>Mesure</dt><dd><span class="projet__mesure">153 sources</span></dd></div>
+        </dl>
+      </li>
+    </ol>
+
+    <section class="section-vitrine" aria-labelledby="t-aussi" data-zone>
+      <div class="section-vitrine__tete">
+        <h2 class="titre-4" id="t-aussi">Aussi</h2>
+        <p class="gris petit">Sans page dédiée.<span class="note-maquette"> Illustrations PRJ-06 à PRJ-10 à venir (élargi).</span><span class="a-confirmer" title="Sélection de la rangée « Aussi » (Q4)">sélection</span></p>
+      </div>
+      <ul class="aussi">
+        <li><b>GitHealth</b><p>Analyser la santé de dépôts Git, dans une application de bureau.</p><a href="https://github.com/LINDECKER-Charles/App.GitHealth">Code<span class="fl fl--ext" aria-hidden="true">↗</span></a></li>
+        <li><b>Life Pixel</b><p>Un éditeur d’animations pixel art qui exporte des lecteurs WebAssembly sans dépendance, avec un serveur MCP.</p><a href="https://github.com/LINDECKER-Charles/app-life-pixel">Code<span class="fl fl--ext" aria-hidden="true">↗</span></a></li>
+        <li><b>img-convertor</b><p>Convertir une image et en tirer ses déclinaisons responsives (WebP, AVIF…).</p><a href="https://github.com/LINDECKER-Charles/Web-Image-Formateur">Code<span class="fl fl--ext" aria-hidden="true">↗</span></a></li>
+        <li><b>Shreksophone</b><p>Un clic, et l’interface laisse place à Shrek au saxophone. Volontairement absurde.</p><a href="https://github.com/LINDECKER-Charles/ShrekSophone">Code<span class="fl fl--ext" aria-hidden="true">↗</span></a></li>
+      </ul>
+    </section>
+
+    <section class="section-vitrine" id="contribuer" aria-labelledby="t-contribuer" data-zone>
+      <div class="section-vitrine__tete">
+        <h2 class="titre-4" id="t-contribuer">Contribuer</h2>
+        <p class="gris petit">Deux projets ouverts aux contributions, avec leur guide.</p>
+      </div>
+      <div class="contribuer">
+        <div>
+          <h3>gup</h3>
+          <p>Ajouter une source, c’est ajouter un fichier&nbsp;: le guide de contribution explique comment.</p>
+          <p class="outil__liens"><a href="https://github.com/LINDECKER-Charles/gup/blob/main/.github/CONTRIBUTING.md">Guide de contribution<span class="fl fl--ext" aria-hidden="true">↗</span></a></p>
+        </div>
+        <div>
+          <h3>PVZF Console Manager</h3>
+          <p>L’outil qui compare chaque langue de PvZ Fusion à l’anglais et liste ce qu’il reste à traduire.</p>
+          <p class="outil__liens"><a href="https://github.com/LINDECKER-Charles/PVZ-Fuzion-ConsolManager">Code et guide (GitHub)<span class="fl fl--ext" aria-hidden="true">↗</span></a></p>
+        </div>
+      </div>
+      <p class="petit"><a class="lien-fort" href="https://github.com/LINDECKER-Charles?tab=repositories">Tous mes dépôts publics<span class="fl fl--ext" aria-hidden="true">↗</span></a></p>
+    </section>
+  </div>
+</main>
+
+<footer class="pied reperes">
+  <div class="reperes__colonnes" aria-hidden="true"><div class="conteneur"><div class="grille"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div></div>
+  <div class="conteneur">
+    <div class="cartouche">
+      <div class="cartouche__marque">
+        <img class="pied__embleme pied__embleme--jour" src="../../../site/src/assets/marque/logo-symbole.webp" width="352" height="245" alt="">
+        <img class="pied__embleme pied__embleme--nuit" src="../../assets/marque/logo-symbole-nuit.png" width="352" height="245" alt="">
+        <img class="pied__nom" src="../../../site/src/assets/marque/logo-nom.webp" width="756" height="118" alt="Charles Lindecker">
+        <p class="petit gris">Architecte logiciel, à Mulhouse.</p>
+      </div>
+      <nav aria-label="Pages">
+        <h2>Pages</h2>
+        <ul>
+          <li><a href="accueil.html">Accueil</a></li>
+          <li><a href="projets.html">Projets</a></li>
+          <li><a href="competences.html">Parcours</a></li>
+          <li><a href="hors-maquette.html?page=contact">Contact</a></li>
+        </ul>
+      </nav>
+      <div>
+        <h2>Ailleurs</h2>
+        <ul>
+          <li><a href="https://github.com/LINDECKER-Charles">GitHub<span class="fl fl--ext" aria-hidden="true">↗</span></a></li>
+          <li><a href="https://www.linkedin.com/in/charles-lindecker/">LinkedIn<span class="fl fl--ext" aria-hidden="true">↗</span></a></li>
+        </ul>
+      </div>
+      <div class="cartouche__ecrire">
+        <h2>Écrire</h2>
+        <p><a class="pied__courriel" href="mailto:charles.lindecker@outlook.fr" data-evenement="contact-email">charles.lindecker@outlook.fr</a></p>
+        <button class="copier" type="button" data-copier="charles.lindecker@outlook.fr"><span data-copier-libelle>Copier l’adresse</span></button>
+      </div>
+      <div class="cartouche__colophon colophon">
+        <span>Composé en Archivo, JetBrains Mono et Newsreader · <a href="hors-maquette.html?page=mentions-legales">Mentions légales</a></span>
+        <span class="mono note-maquette">Maquette B « Banc d’essai » · planche&nbsp;2/4 · projets</span>
+        <button class="notes-bascule" type="button" data-notes aria-pressed="false">Notes de maquette</button>
+      </div>
+    </div>
+  </div>
+</footer>
+<div class="balayage" aria-hidden="true"></div>
+</body>
+</html>

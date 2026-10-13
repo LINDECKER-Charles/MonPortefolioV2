@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Compétences — Charles Lindecker</title>
+  <meta name="description" content="Les technologies que je pratique au quotidien, celles que j’ai pratiquées et explorées, l’intégration de l’IA, la livraison et les compétences humaines.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&amp;family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,400..500&amp;display=swap">
+  <link rel="stylesheet" href="style.css">
+  <script src="theme.js"></script>
+</head>
+<body>
+  <a class="evitement" href="#contenu">Aller au contenu</a>
+
+  <!-- Bichromies des photos secondaires : encre et bleu roi le jour ; encre et ivoire la nuit (toutes les photos) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <filter id="bichromie-jour" color-interpolation-filters="sRGB">
+      <feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0 0 0 1 0"/>
+      <feComponentTransfer>
+        <feFuncR type="table" tableValues="0.102 0.120 0.330 0.700 0.961"/>
+        <feFuncG type="table" tableValues="0.090 0.160 0.380 0.720 0.945"/>
+        <feFuncB type="table" tableValues="0.071 0.330 0.620 0.830 0.910"/>
+      </feComponentTransfer>
+    </filter>
+    <filter id="bichromie-nuit" color-interpolation-filters="sRGB">
+      <feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0 0 0 1 0"/>
+      <feComponentTransfer>
+        <feFuncR type="table" tableValues="0.050 0.170 0.470 0.925"/>
+        <feFuncG type="table" tableValues="0.044 0.155 0.445 0.894"/>
+        <feFuncB type="table" tableValues="0.035 0.135 0.400 0.831"/>
+      </feComponentTransfer>
+    </filter>
+    <pattern id="hachures-fig" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-38)">
+      <line x1="0" y1="0" x2="0" y2="6" class="fig-hachure-trait"/>
+    </pattern>
+  </svg>
+
+  <header class="site-entete">
+    <div class="site-entete__in">
+      <a class="marque" href="accueil.html" aria-label="Charles Lindecker, accueil">
+        <span class="marque__embleme" aria-hidden="true"><span class="marque__encre"></span><span class="marque__lumiere"></span></span>
+        <span class="marque__nom" aria-hidden="true"></span>
+      </a>
+      <nav class="nav-principale" aria-label="Navigation principale">
+        <ul>
+          <li><a href="projets.html">Projets</a></li>
+          <li><a href="competences.html" aria-current="page">Parcours</a></li>
+          <li><a href="contact.html" data-hors-maquette="Contact">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="entete-actions">
+        <button class="bouton-sommaire" type="button" aria-expanded="false" aria-controls="signet">Sommaire</button>
+        <a class="entete-lien entete-contact" href="contact.html" data-hors-maquette="Contact">Contact</a>
+        <details class="menu-mobile">
+          <summary aria-label="Menu"><span class="menu-mobile__libelle">Menu</span></summary>
+          <div class="menu-mobile__panneau">
+            <nav aria-label="Navigation principale (mobile)">
+              <a href="accueil.html">Accueil</a>
+              <a href="projets.html">Projets</a>
+              <a href="competences.html" aria-current="page">Parcours</a>
+              <a href="contact.html" data-hors-maquette="Contact">Contact</a>
+            </nav>
+            <div class="menu-mobile__theme">
+              <span>Mode nuit</span>
+              <button class="bascule" type="button" data-theme-bascule aria-pressed="false" aria-label="Mode nuit">
+                <svg class="lanterne" viewBox="0 0 24 24" aria-hidden="true"><circle class="lanterne__halo" cx="12" cy="14.5" r="10"/><path class="lanterne__trait" d="M12 2.3a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8M12 5.1v1.4M7 9.6 12 6.5l5 3.1M7.6 9.6h8.8M8.3 9.6v9.2M15.7 9.6v9.2M6.6 18.8h10.8M8.2 21.3h7.6"/><path class="lanterne__flamme" d="M12 11.2c1.5 1.7 2.1 2.8 2.1 3.9a2.1 2.1 0 0 1-4.2 0c0-1.1.6-2.2 2.1-3.9z"/></svg>
+              </button>
+            </div>
+          </div>
+        </details>
+        <button class="bascule entete-bascule" type="button" data-theme-bascule aria-pressed="false" aria-label="Mode nuit">
+          <svg class="lanterne" viewBox="0 0 24 24" aria-hidden="true"><circle class="lanterne__halo" cx="12" cy="14.5" r="10"/><path class="lanterne__trait" d="M12 2.3a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8M12 5.1v1.4M7 9.6 12 6.5l5 3.1M7.6 9.6h8.8M8.3 9.6v9.2M15.7 9.6v9.2M6.6 18.8h10.8M8.2 21.3h7.6"/><path class="lanterne__flamme" d="M12 11.2c1.5 1.7 2.1 2.8 2.1 3.9a2.1 2.1 0 0 1-4.2 0c0-1.1.6-2.2 2.1-3.9z"/></svg>
+        </button>
+      </div>
+      <span class="fil-signet" aria-hidden="true"></span>
+    </div>
+  </header>
+
+  <main id="contenu" tabindex="-1">
+    <div class="conteneur">
+      <nav class="fil-ariane" aria-label="Fil d’Ariane">
+        <ol>
+          <li><a href="accueil.html">Accueil</a></li>
+          <li><a href="parcours.html" data-hors-maquette="Parcours">Parcours</a></li>
+          <li><span aria-current="page">Compétences</span></li>
+        </ol>
+      </nav>
+      <nav class="onglets-parcours" aria-label="Dans le parcours">
+        <ul>
+          <li><a href="parcours.html" data-hors-maquette="Parcours, vue d’ensemble">Vue d’ensemble</a></li>
+          <li><a href="professionnel.html" data-hors-maquette="Parcours professionnel">Professionnel</a></li>
+          <li><a href="competences.html" aria-current="page">Compétences</a></li>
+          <li><a href="formation.html" data-hors-maquette="Formation et certifications">Formation</a></li>
+        </ul>
+      </nav>
+      <header class="page-tete page-tete--index">
+        <h1 data-pli="titre">Compétences</h1>
+        <p class="page-tete__phrase" data-pli="identite">Ce que je pratique au quotidien, ce que j’ai pratiqué, ce que j’ai exploré, et ce que je fais avec les autres. <span class="a-confirmer" title="Hiérarchie en trois niveaux proposée depuis la stack du CV (Q9)">hiérarchie à confirmer</span></p>
+      </header>
+    </div>
+
+    <div class="livre conteneur">
+      <nav class="signet" id="signet" aria-label="Dans cette page">
+        <div class="signet__ruban" aria-hidden="true"></div>
+        <span class="signet__lanterne" aria-hidden="true"><svg class="lanterne lanterne--allumee" viewBox="0 0 24 24"><circle class="lanterne__halo" cx="12" cy="14.5" r="10"/><path class="lanterne__trait" d="M12 2.3a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8M12 5.1v1.4M7 9.6 12 6.5l5 3.1M7.6 9.6h8.8M8.3 9.6v9.2M15.7 9.6v9.2M6.6 18.8h10.8M8.2 21.3h7.6"/><path class="lanterne__flamme" d="M12 11.2c1.5 1.7 2.1 2.8 2.1 3.9a2.1 2.1 0 0 1-4.2 0c0-1.1.6-2.2 2.1-3.9z"/></svg></span>
+        <ol class="signet__liste">
+          <li><a href="#quotidien"><span class="signet__num">1</span>Au quotidien</a></li>
+          <li><a href="#pratique"><span class="signet__num">2</span>Pratiqué</a></li>
+          <li><a href="#explore"><span class="signet__num">3</span>Exploré</a></li>
+          <li><a href="#ia"><span class="signet__num">4</span>Intégration de l’IA</a></li>
+          <li><a href="#livraison"><span class="signet__num">5</span>Tests et livraison</a></li>
+          <li><a href="#humaines"><span class="signet__num">6</span>Avec les autres</a></li>
+        </ol>
+        <p class="signet__action"><a class="lien-suite fl fl--int" href="contact.html" data-hors-maquette="Contact">Discutons</a></p>
+      </nav>
+
+      <div class="contenu">
+        <section class="section-index section-index--premiere" id="quotidien" aria-labelledby="t-quotidien">
+          <div class="section-index__tete">
+            <h2 id="t-quotidien">Au quotidien</h2>
+            <p>Le cœur de ma pratique.</p>
+          </div>
+          <ul class="tuiles" data-pli="preuve">
+            <li><a class="tuile" href="https://learn.microsoft.com/dotnet/csharp/"><img class="logo-tech logo-tech--plein" src="../../../site/src/assets/stacks/csharp.svg" alt="" width="64" height="64" loading="lazy"><span class="tuile__nom">C#<span class="fl fl--ext" aria-hidden="true"></span></span><span class="sr-only"> (site officiel)</span></a></li>
+            <li><a class="tuile" href="https://dotnet.microsoft.com/"><img class="logo-tech logo-tech--plein" src="../../../site/src/assets/stacks/dotnet.svg" alt="" width="64" height="64" loading="lazy"><span class="tuile__nom">.NET<span class="fl fl--ext" aria-hidden="true"></span></span><span class="sr-only"> (site officiel)</span></a></li>
+            <li><a class="tuile" href="https://angular.dev/"><img class="logo-tech" src="../../../site/src/assets/stacks/angular.svg" alt="" width="64" height="64" loading="lazy"><span class="tuile__nom">Angular<span class="fl fl--ext" aria-hidden="true"></span></span><span class="sr-only"> (site officiel)</span></a></li>
+            <li><a class="tuile" href="https://www.typescriptlang.org/"><img class="logo-tech logo-tech--plein" src="../../../site/src/assets/stacks/typescript.svg" alt="" width="64" height="64" loading="lazy"><span class="tuile__nom">TypeScript<span class="fl fl--ext" aria-hidden="true"></span></span><span class="sr-only"> (site officiel)</span></a></li>
+            <li><a class="tuile" href="https://www.postgresql.org/"><img class="logo-tech logo-tech--trait" src="../../../site/src/assets/stacks/postgresql.svg" alt="" width="64" height="64" loading="lazy"><span class="tuile__nom">PostgreSQL<span class="fl fl--ext" aria-hidden="true"></span></span><span class="sr-only"> (site officiel)</span></a></li>
+            <li><a class="tuile" href="https://www.docker.com/"><img class="logo-tech" src="../../../site/src/assets/stacks/docker.svg" alt="" width="64" height="64" loading="lazy"><span class="tuile__nom">Docker<span class="fl fl--ext" aria-hidden="true"></span></span><span class="sr-only"> (site officiel)</span></a></li>
+            <li><a class="tuile" href="https://git-scm.com/"><img class="logo-tech" src="../../../site/src/assets/stacks/git.svg" alt="" width="64" height="64" loading="lazy"><span class="tuile__nom">Git<span class="fl fl--ext" aria-hidden="true"></span></span><span class="sr-only"> (site officiel)</span></a></li>
+            <li><a class="tuile" href="https://github.com/features/actions"><img class="logo-tech logo-tech--trait" src="../../../site/src/assets/stacks/github-actions.svg" alt="" width="64" height="64" loading="lazy"><span class="tuile__nom">GitHub Actions<span class="fl fl--ext" aria-hidden="true"></span></span><span class="sr-only"> (site officiel)</span></a></li>
+          </ul>
+        </section>
+
+        <section class="section-index" id="pratique" aria-labelledby="t-pratique">
+          <div class="section-index__tete">
+            <h2 id="t-pratique">Pratiqué</h2>
+            <p>Dans mes projets, en formation ou en production, par famille.</p>
+          </div>
+          <div class="familles">
+            <div class="famille">
+              <h3>Langages</h3>
+              <ul>
+                <li><a class="outil" href="https://tc39.es/"><img class="logo-tech logo-tech--plein" src="../../../site/src/assets/stacks/javascript.svg" alt="" width="28" height="28" loading="lazy"><span>JavaScript</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://www.php.net/"><img class="logo-tech" src="../../../site/src/assets/stacks/php.svg" alt="" width="28" height="28" loading="lazy"><span>PHP</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://www.python.org/"><img class="logo-tech" src="../../../site/src/assets/stacks/python.svg" alt="" width="28" height="28" loading="lazy"><span>Python</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://www.iso.org/standard/76583.html"><svg class="logo-tech" viewBox="0 0 64 64" width="28" height="28" aria-hidden="true" focusable="false"><ellipse cx="32" cy="13" rx="21" ry="8"/><path d="M11 13v34c0 4.4 9.4 8 21 8s21-3.6 21-8V13M11 30c0 4.4 9.4 8 21 8s21-3.6 21-8"/><path d="m23 43-5 4 5 4m18-8 5 4-5 4m-7-9-4 14"/></svg><span>SQL</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://rust-lang.org/"><img class="logo-tech" src="../../../site/src/assets/stacks/rust.svg" alt="" width="28" height="28" loading="lazy"><span>Rust</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+              </ul>
+            </div>
+            <div class="famille">
+              <h3>Web et interfaces</h3>
+              <ul>
+                <li><a class="outil" href="https://html.spec.whatwg.org/multipage/"><img class="logo-tech" src="../../../site/src/assets/stacks/html5.svg" alt="" width="28" height="28" loading="lazy"><span>HTML</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://www.w3.org/Style/CSS/"><img class="logo-tech" src="../../../site/src/assets/stacks/css3.svg" alt="" width="28" height="28" loading="lazy"><span>CSS</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://tailwindcss.com/"><img class="logo-tech logo-tech--clair" src="../../../site/src/assets/stacks/tailwindcss.svg" alt="" width="28" height="28" loading="lazy"><span>Tailwind CSS</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://sass-lang.com/"><img class="logo-tech" src="../../../site/src/assets/stacks/sass.svg" alt="" width="28" height="28" loading="lazy"><span>Sass</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://rxjs.dev/"><img class="logo-tech" src="../../../site/src/assets/stacks/rxjs.svg" alt="" width="28" height="28" loading="lazy"><span>RxJS</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://gsap.com/"><img class="logo-tech logo-tech--clair" src="../../../site/src/assets/stacks/gsap.svg" alt="" width="28" height="28" loading="lazy"><span>GSAP</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+              </ul>
+            </div>
+            <div class="famille">
+              <h3>Backend et API</h3>
+              <ul>
+                <li><a class="outil" href="https://learn.microsoft.com/aspnet/core/"><img class="logo-tech logo-tech--plein" src="../../../site/src/assets/stacks/dotnet.svg" alt="" width="28" height="28" loading="lazy"><span>ASP.NET Core</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://learn.microsoft.com/aspnet/core/signalr/"><img class="logo-tech logo-tech--plein" src="../../../site/src/assets/stacks/dotnet.svg" alt="" width="28" height="28" loading="lazy"><span>SignalR</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://nodejs.org/"><img class="logo-tech" src="../../../site/src/assets/stacks/nodejs.svg" alt="" width="28" height="28" loading="lazy"><span>Node.js</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://expressjs.com/"><img class="logo-tech" src="../../../site/src/assets/stacks/express.svg" alt="" width="28" height="28" loading="lazy"><span>Express</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://symfony.com/"><img class="logo-tech" src="../../../site/src/assets/stacks/symfony.svg" alt="" width="28" height="28" loading="lazy"><span>Symfony</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://github.com/tokio-rs/axum"><svg class="logo-tech" viewBox="0 0 64 64" width="28" height="28" aria-hidden="true" focusable="false"><rect x="7" y="23" width="15" height="18" rx="3"/><rect x="42" y="6" width="15" height="15" rx="3"/><rect x="42" y="25" width="15" height="15" rx="3"/><rect x="42" y="44" width="15" height="15" rx="3"/><path d="M22 32h11V14h9m-9 18h9m-9 0v19h9M12 29l5 4-5 4"/></svg><span>Axum</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+              </ul>
+            </div>
+            <div class="famille">
+              <h3>Données et persistance</h3>
+              <ul>
+                <li><a class="outil" href="https://www.mysql.com/"><img class="logo-tech logo-tech--trait" src="../../../site/src/assets/stacks/mysql.svg" alt="" width="28" height="28" loading="lazy"><span>MySQL</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://sqlite.org/"><img class="logo-tech" src="../../../site/src/assets/stacks/sqlite.svg" alt="" width="28" height="28" loading="lazy"><span>SQLite</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://learn.microsoft.com/ef/core/"><img class="logo-tech logo-tech--plein" src="../../../site/src/assets/stacks/entityframeworkcore.svg" alt="" width="28" height="28" loading="lazy"><span>EF Core</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://www.doctrine-project.org/"><img class="logo-tech" src="../../../site/src/assets/stacks/doctrine.svg" alt="" width="28" height="28" loading="lazy"><span>Doctrine</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+              </ul>
+            </div>
+            <div class="famille">
+              <h3>Mobile et bureau</h3>
+              <ul>
+                <li><a class="outil" href="https://ionicframework.com/"><img class="logo-tech logo-tech--clair" src="../../../site/src/assets/stacks/ionic.svg" alt="" width="28" height="28" loading="lazy"><span>Ionic</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://capacitorjs.com/"><img class="logo-tech" src="../../../site/src/assets/stacks/capacitor.svg" alt="" width="28" height="28" loading="lazy"><span>Capacitor</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://tauri.app/"><img class="logo-tech logo-tech--clair" src="../../../site/src/assets/stacks/tauri.svg" alt="" width="28" height="28" loading="lazy"><span>Tauri</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://www.tryphotino.io/"><img class="logo-tech logo-tech--trait" src="../../../site/src/assets/stacks/photino.svg" alt="" width="28" height="28" loading="lazy"><span>Photino.NET</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+              </ul>
+            </div>
+            <div class="famille">
+              <h3>Tests et qualité</h3>
+              <ul>
+                <li><a class="outil" href="https://xunit.net/"><img class="logo-tech" src="../../../site/src/assets/stacks/xunit.svg" alt="" width="28" height="28" loading="lazy"><span>xUnit</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://vitest.dev/"><img class="logo-tech logo-tech--clair" src="../../../site/src/assets/stacks/vitest.svg" alt="" width="28" height="28" loading="lazy"><span>Vitest</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://playwright.dev/"><img class="logo-tech" src="../../../site/src/assets/stacks/playwright.svg" alt="" width="28" height="28" loading="lazy"><span>Playwright</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://phpunit.de/"><svg class="logo-tech" viewBox="0 0 64 64" width="28" height="28" aria-hidden="true" focusable="false"><path d="M20 10h-8v44h8M44 10h8v44h-8"/><path d="m22 33 7 7 14-16"/></svg><span>PHPUnit</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://eslint.org/"><img class="logo-tech" src="../../../site/src/assets/stacks/eslint.svg" alt="" width="28" height="28" loading="lazy"><span>ESLint</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+              </ul>
+            </div>
+            <div class="famille">
+              <h3>Livraison</h3>
+              <ul>
+                <li><a class="outil" href="https://kernel.org/"><img class="logo-tech" src="../../../site/src/assets/stacks/linux.svg" alt="" width="28" height="28" loading="lazy"><span>Linux</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://nginx.org/"><img class="logo-tech logo-tech--mot logo-tech--nginx" src="../../../site/src/assets/stacks/nginx.svg" alt="" width="28" height="28" loading="lazy"><span>Nginx</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://caddyserver.com/"><img class="logo-tech logo-tech--clair" src="../../../site/src/assets/stacks/caddy.png" alt="" width="28" height="28" loading="lazy"><span>Caddy</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+                <li><a class="outil" href="https://vite.dev/"><img class="logo-tech" src="../../../site/src/assets/stacks/vite.svg" alt="" width="28" height="28" loading="lazy"><span>Vite</span><span class="fl fl--ext" aria-hidden="true"></span></a></li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-index" id="explore" aria-labelledby="t-explore">
+          <details class="replie">
+            <summary><h2 class="replie__titre" id="t-explore">Exploré ou ponctuel</h2><small>30 technologies</small></summary>
+            <ul class="etiquettes">
+              <li><a class="etiquette" href="https://dev.java/"><img class="logo-tech" src="../../../site/src/assets/stacks/java.svg" alt="" width="20" height="20" loading="lazy">Java</a></li>
+              <li><a class="etiquette" href="https://spring.io/projects/spring-boot/"><img class="logo-tech" src="../../../site/src/assets/stacks/spring.svg" alt="" width="20" height="20" loading="lazy">Spring Boot</a></li>
+              <li><a class="etiquette" href="https://go.dev/"><img class="logo-tech" src="../../../site/src/assets/stacks/go.svg" alt="" width="20" height="20" loading="lazy">Go</a></li>
+              <li><a class="etiquette" href="https://www.open-std.org/jtc1/sc22/wg14/"><img class="logo-tech" src="../../../site/src/assets/stacks/c.svg" alt="" width="20" height="20" loading="lazy">C</a></li>
+              <li><a class="etiquette" href="https://gcc.gnu.org/"><img class="logo-tech" src="../../../site/src/assets/stacks/gcc.svg" alt="" width="20" height="20" loading="lazy">GCC</a></li>
+              <li><a class="etiquette" href="https://www.gnu.org/software/make/"><svg class="logo-tech" viewBox="0 0 64 64" width="20" height="20" aria-hidden="true" focusable="false"><path d="M13 10h13v17H13V10Zm25 0h13v17H38V10ZM20 27v10h25V27m-13 10v7"/><path d="m32 43 14 8-14 8-14-8 14-8Zm-14 8V39l14-8 14 8v12m-14-8V31"/></svg>Make</a></li>
+              <li><a class="etiquette" href="https://www.gnu.org/software/bash/"><img class="logo-tech" src="../../../site/src/assets/stacks/bash.svg" alt="" width="20" height="20" loading="lazy">Bash</a></li>
+              <li><a class="etiquette" href="https://react.dev/"><img class="logo-tech logo-tech--trait" src="../../../site/src/assets/stacks/react.svg" alt="" width="20" height="20" loading="lazy">React</a></li>
+              <li><a class="etiquette" href="https://vuejs.org/"><img class="logo-tech logo-tech--trait" src="../../../site/src/assets/stacks/vuejs.svg" alt="" width="20" height="20" loading="lazy">Vue.js</a></li>
+              <li><a class="etiquette" href="https://twig.symfony.com/"><img class="logo-tech" src="../../../site/src/assets/stacks/twig.png" alt="" width="20" height="20" loading="lazy">Twig</a></li>
+              <li><a class="etiquette" href="https://leafletjs.com/"><img class="logo-tech logo-tech--mot logo-tech--leaflet" src="../../../site/src/assets/stacks/leaflet.svg" alt="" width="20" height="20" loading="lazy">Leaflet</a></li>
+              <li><a class="etiquette" href="https://www.chartjs.org/"><img class="logo-tech logo-tech--trait" src="../../../site/src/assets/stacks/chartjs.svg" alt="" width="20" height="20" loading="lazy">Chart.js</a></li>
+              <li><a class="etiquette" href="https://webassembly.org/"><img class="logo-tech logo-tech--plein" src="../../../site/src/assets/stacks/wasm.svg" alt="" width="20" height="20" loading="lazy">WebAssembly</a></li>
+              <li><a class="etiquette" href="https://fastapi.tiangolo.com/"><img class="logo-tech" src="../../../site/src/assets/stacks/fastapi.svg" alt="" width="20" height="20" loading="lazy">FastAPI</a></li>
+              <li><a class="etiquette" href="https://tokio.rs/"><img class="logo-tech" src="../../../site/src/assets/stacks/tokio.svg" alt="" width="20" height="20" loading="lazy">Tokio</a></li>
+              <li><a class="etiquette" href="https://api-platform.com/"><img class="logo-tech logo-tech--mot logo-tech--api-platform" src="../../../site/src/assets/stacks/api-platform.svg" alt="" width="20" height="20" loading="lazy">API Platform</a></li>
+              <li><a class="etiquette" href="https://github.com/transact-rs/sqlx"><svg class="logo-tech" viewBox="0 0 64 64" width="20" height="20" aria-hidden="true" focusable="false"><ellipse cx="23" cy="13" rx="16" ry="7"/><path d="M7 13v31c0 4 7 7 16 7m16-38v18M7 29c0 4 7 7 16 7m-1-7 6 6 12-14"/><rect x="31" y="39" width="26" height="19" rx="3"/><path d="m37 44 5 4-5 4m11 0h4"/></svg>SQLx</a></li>
+              <li><a class="etiquette" href="https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html"><svg class="logo-tech" viewBox="0 0 64 64" width="20" height="20" aria-hidden="true" focusable="false"><path d="M17 29H13a9 9 0 0 1-1-18 14 14 0 0 1 26-1 10 10 0 1 1 9 19h-5"/><path d="M17 29h30l-4 28H21l-4-28Z"/><path d="M24 29v-4a8 8 0 0 1 16 0v4m-10 13h8m-4-4v8"/></svg>Stockage S3 compatible</a></li>
+              <li><a class="etiquette" href="https://sharp.pixelplumbing.com/"><img class="logo-tech" src="../../../site/src/assets/stacks/sharp.svg" alt="" width="20" height="20" loading="lazy">sharp</a></li>
+              <li><a class="etiquette" href="https://pillow.readthedocs.io/en/stable/"><img class="logo-tech" src="../../../site/src/assets/stacks/pillow.png" alt="" width="20" height="20" loading="lazy">Pillow</a></li>
+              <li><a class="etiquette" href="https://dompdf.github.io/"><svg class="logo-tech" viewBox="0 0 64 64" width="20" height="20" aria-hidden="true" focusable="false"><path d="M15 6h22l12 12v39H15V6Zm22 0v12h12"/><path d="M23 27h18m-18 7h12m-3 7v12m-5-5 5 5 5-5"/><path d="M10 23H6v23h4m43-23h5v23h-5"/></svg>Dompdf</a></li>
+              <li><a class="etiquette" href="https://opentui.com/"><svg class="logo-tech" viewBox="0 0 64 64" width="20" height="20" aria-hidden="true" focusable="false"><rect x="5" y="9" width="54" height="46" rx="4"/><path d="M5 19h54m-46-5h1m5 0h1m5 0h1M13 28l5 4-5 4m11 0h8"/><rect x="12" y="43" width="18" height="5" rx="1"/><path d="M37 28h14m-14 7h14m-14 8h14"/></svg>OpenTUI</a></li>
+              <li><a class="etiquette" href="https://docs.pytest.org/"><img class="logo-tech" src="../../../site/src/assets/stacks/pytest.svg" alt="" width="20" height="20" loading="lazy">pytest</a></li>
+              <li><a class="etiquette" href="https://karma-runner.github.io/"><img class="logo-tech" src="../../../site/src/assets/stacks/karma.svg" alt="" width="20" height="20" loading="lazy">Karma</a></li>
+              <li><a class="etiquette" href="https://jasmine.github.io/"><img class="logo-tech" src="../../../site/src/assets/stacks/jasmine.svg" alt="" width="20" height="20" loading="lazy">Jasmine</a></li>
+              <li><a class="etiquette" href="https://github.com/dequelabs/axe-core"><svg class="logo-tech" viewBox="0 0 64 64" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="25" cy="12" r="5"/><path d="m8 23 17 4 17-4m-17 4v13m0 0L15 56m10-16 10 16"/><circle cx="48" cy="43" r="11"/><path d="m43 43 4 4 7-8"/></svg>axe-core</a></li>
+              <li><a class="etiquette" href="https://prettier.io/"><img class="logo-tech" src="../../../site/src/assets/stacks/prettier.png" alt="" width="20" height="20" loading="lazy">Prettier</a></li>
+              <li><a class="etiquette" href="https://httpd.apache.org/"><img class="logo-tech" src="../../../site/src/assets/stacks/apache.svg" alt="" width="20" height="20" loading="lazy">Apache</a></li>
+              <li><a class="etiquette" href="https://opentelemetry.io/"><img class="logo-tech" src="../../../site/src/assets/stacks/opentelemetry.svg" alt="" width="20" height="20" loading="lazy">OpenTelemetry</a></li>
+              <li><a class="etiquette" href="https://prometheus.io/"><img class="logo-tech" src="../../../site/src/assets/stacks/prometheus.svg" alt="" width="20" height="20" loading="lazy">Prometheus</a></li>
+            </ul>
+          </details>
+        </section>
+
+        <section class="section-index ia" id="ia" aria-labelledby="t-ia">
+          <div class="acte acte--teinte">
+            <div class="section-index__tete">
+              <h2 id="t-ia">Intégration de l’IA</h2>
+              <p>Des intégrations réalisées dans mes projets publics.</p>
+            </div>
+            <div class="capacites">
+              <div class="capacite">
+                <h3>Assistants et agents</h3>
+                <ul class="capacite__outils">
+                  <li><a class="etiquette" href="https://claude.com/"><svg class="logo-tech" viewBox="0 0 64 64" width="20" height="20" aria-hidden="true" focusable="false"><path d="M43 9H17a10 10 0 0 0-10 10v18a10 10 0 0 0 10 10h6v10l13-10h11a10 10 0 0 0 10-10V24"/><path d="M17 23h18M17 31h24M17 39h16m16-34 2 7 7 2-7 2-2 7-2-7-7-2 7-2 2-7Z"/></svg>Claude</a></li>
+                  <li><a class="etiquette" href="https://openai.com/codex/"><svg class="logo-tech" viewBox="0 0 64 64" width="20" height="20" aria-hidden="true" focusable="false"><rect x="5" y="11" width="54" height="44" rx="4"/><path d="M5 21h54m-46-5h1m5 0h1m5 0h1m-8 12-7 7 7 7m28-14 7 7-7 7m-10-18-6 22"/></svg>Codex</a></li>
+                </ul>
+                <ul class="capacite__points">
+                  <li>Développement assisté</li>
+                  <li>Intégration en ligne de commande</li>
+                  <li>Prompts et contexte</li>
+                  <li>Veille automatisée</li>
+                </ul>
+              </div>
+              <div class="capacite">
+                <h3>Intégration aux applications</h3>
+                <ul class="capacite__outils">
+                  <li><a class="etiquette" href="https://modelcontextprotocol.io/"><img class="logo-tech" src="../../../site/src/assets/stacks/mcp.svg" alt="" width="20" height="20" loading="lazy">MCP</a></li>
+                </ul>
+                <ul class="capacite__points">
+                  <li>Serveurs et outils MCP</li>
+                  <li>Schémas JSON</li>
+                  <li>Permissions et quotas</li>
+                </ul>
+              </div>
+              <div class="capacite">
+                <h3>Synthèse vocale</h3>
+                <ul class="capacite__outils">
+                  <li><a class="etiquette" href="https://github.com/hexgrad/kokoro"><svg class="logo-tech" viewBox="0 0 64 64" width="20" height="20" aria-hidden="true" focusable="false"><path d="M7 25h10L29 13v38L17 39H7V25Zm32-5a17 17 0 0 1 0 24m9-31a27 27 0 0 1 0 38"/><path d="M17 25v14"/></svg>Kokoro</a></li>
+                  <li><a class="etiquette" href="https://github.com/OHF-Voice/piper1-gpl"><svg class="logo-tech" viewBox="0 0 64 64" width="20" height="20" aria-hidden="true" focusable="false"><path d="M8 7h24l8 8v18H8V7Zm24 0v8h8M15 19h17m-17 7h10m-10 17h16m-6-6 6 6-6 6"/><path d="M38 37h6l9-8v28l-9-8h-6V37Zm21-1a10 10 0 0 1 0 14"/></svg>Piper</a></li>
+                </ul>
+                <ul class="capacite__points">
+                  <li>Modèles auto-hébergés</li>
+                  <li>Streaming audio</li>
+                  <li>Cache des générations</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-index" id="livraison" aria-labelledby="t-livraison">
+          <div class="section-index__tete">
+            <h2 id="t-livraison">Tests et livraison</h2>
+            <p>Construire une fois, livrer la même version.</p>
+          </div>
+          <figure class="planche">
+            <ol class="chaine" aria-label="La chaîne de livraison, étape par étape">
+              <li class="chaine__etape"><div><h3>Fusionner</h3><p>Une pull request fusionnée déclenche la chaîne.</p><span class="chaine__outils">GitHub Actions</span></div></li>
+              <li class="chaine__etape"><div><h3>Construire une fois</h3><p>Chaque image est construite une seule fois et reçoit son empreinte.</p><span class="chaine__empreinte">empreinte</span></div></li>
+              <li class="chaine__etape"><div><h3>Tester cette image</h3><p>Les tests tournent sur l’image construite, pas sur une copie.</p><span class="chaine__outils">xUnit, Vitest, Playwright</span></div></li>
+              <li class="chaine__etape"><div><h3>Préproduction</h3><p>Les mêmes empreintes, déployées derrière le proxy.</p><span class="chaine__empreinte">même empreinte</span></div></li>
+              <li class="chaine__etape"><div><h3>Promouvoir</h3><p>Promotion manuelle en production, sans reconstruire.</p><span class="chaine__empreinte">même empreinte</span></div></li>
+            </ol>
+            <figcaption class="scelle">Ce qui a été testé est exactement ce qui part en production. <span class="legende">Chaîne en place sur League Of Data Base et sur ce portfolio.</span></figcaption>
+          </figure>
+        </section>
+
+        <section class="section-index" id="humaines" aria-labelledby="t-humaines">
+          <div class="section-index__tete">
+            <h2 id="t-humaines">Avec les autres</h2>
+            <p>Les compétences humaines, en trois verbes chacune.</p>
+          </div>
+          <ul class="humaines">
+            <li class="humaine">
+              <div class="emplacement emplacement--compact emplacement--carre" style="--ratio: 1 / 1" role="img" aria-label="Emplacement CMP-02, gravure à générer : Tableau, schéma en trois étapes, craie posée.">
+                <div class="emplacement__fiche"><p class="emplacement__id">CMP-02 <small>gravure, 1:1</small></p><p class="emplacement__sujet">Tableau, schéma en trois étapes, craie posée</p></div>
+              </div>
+              <h3>Pédagogie</h3>
+              <p>Expliquer, accompagner, rendre autonome.</p>
+            </li>
+            <li class="humaine">
+              <div class="emplacement emplacement--compact emplacement--carre" style="--ratio: 1 / 1" role="img" aria-label="Emplacement CMP-03, gravure à générer : Tableau de tâches à colonnes, cartes déplacées.">
+                <div class="emplacement__fiche"><p class="emplacement__id">CMP-03 <small>gravure, 1:1</small></p><p class="emplacement__sujet">Tableau de tâches à colonnes, cartes déplacées</p></div>
+              </div>
+              <h3>Coordination</h3>
+              <p>Accueillir, organiser, relire.</p>
+            </li>
+            <li class="humaine">
+              <div class="emplacement emplacement--compact emplacement--carre" style="--ratio: 1 / 1" role="img" aria-label="Emplacement CMP-04, gravure à générer : Cahier des charges annoté de questions.">
+                <div class="emplacement__fiche"><p class="emplacement__id">CMP-04 <small>gravure, 1:1</small></p><p class="emplacement__sujet">Cahier des charges annoté de questions</p></div>
+              </div>
+              <h3>Écoute et cadrage</h3>
+              <p>Écouter le besoin, échanger, cadrer.</p>
+            </li>
+            <li class="humaine">
+              <div class="emplacement emplacement--compact emplacement--carre" style="--ratio: 1 / 1" role="img" aria-label="Emplacement CMP-05, gravure à générer : Deux bulles qui se répondent, la lanterne entre elles.">
+                <div class="emplacement__fiche"><p class="emplacement__id">CMP-05 <small>gravure, 1:1</small></p><p class="emplacement__sujet">Deux bulles qui se répondent, la lanterne entre elles</p></div>
+              </div>
+              <h3>Communication directe</h3>
+              <p>Parler franchement, échanger sincèrement, avancer ensemble.</p>
+            </li>
+            <li class="humaine">
+              <div class="emplacement emplacement--compact emplacement--carre" style="--ratio: 1 / 1" role="img" aria-label="Emplacement CMP-06, gravure à générer : Une carte retournée au milieu d’un éventail.">
+                <div class="emplacement__fiche"><p class="emplacement__id">CMP-06 <small>gravure, 1:1</small></p><p class="emplacement__sujet">Une carte retournée au milieu d’un éventail</p></div>
+              </div>
+              <h3>Créativité</h3>
+              <p>Expérimenter, réinventer, aller à contre-courant.</p>
+            </li>
+            <li class="humaine">
+              <div class="emplacement emplacement--compact emplacement--carre" style="--ratio: 1 / 1" role="img" aria-label="Emplacement CMP-07, gravure à générer : La boucle tester, ajuster, en ruban de Möbius.">
+                <div class="emplacement__fiche"><p class="emplacement__id">CMP-07 <small>gravure, 1:1</small></p><p class="emplacement__sujet">La boucle tester, ajuster, en ruban de Möbius</p></div>
+              </div>
+              <h3>Apprentissage et adaptation</h3>
+              <p>Comprendre, tester, ajuster.</p>
+            </li>
+            <li class="humaine">
+              <div class="emplacement emplacement--compact emplacement--carre" style="--ratio: 1 / 1" role="img" aria-label="Emplacement CMP-08, gravure à générer : Tableau de tâches et document relié.">
+                <div class="emplacement__fiche"><p class="emplacement__id">CMP-08 <small>gravure, 1:1</small></p><p class="emplacement__sujet">Tableau de tâches et document relié</p></div>
+              </div>
+              <h3>Méthodes de travail</h3>
+              <p>Planifier, centraliser les tâches, documenter.</p>
+            </li>
+          </ul>
+        </section>
+
+        <section class="section-index fin-index" aria-label="Suite">
+          <div class="fin-index__in">
+            <p>Un projet, une équipe, une question technique&nbsp;: la discussion commence ici. <span class="a-confirmer">à confirmer</span></p>
+            <a class="btn fl fl--int" href="contact.html" data-hors-maquette="Contact">Discutons</a>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="colophon">
+    <div class="conteneur">
+      <div class="colophon__grille">
+        <div>
+          <span class="colophon__marque" role="img" aria-label="Logo : un livre ouvert et une lanterne, Charles Lindecker"><span class="colophon__encre"></span><span class="colophon__lumiere"></span></span>
+        </div>
+        <nav aria-label="Pages">
+          <h2>Pages</h2>
+          <ul>
+            <li><a href="accueil.html">Accueil</a></li>
+            <li><a href="projets.html">Projets</a></li>
+            <li><a href="pvz-fusion.html">PvZ Fusion</a></li>
+            <li><a href="competences.html" aria-current="page">Compétences</a></li>
+            <li><a href="contact.html" data-hors-maquette="Contact">Contact</a></li>
+          </ul>
+        </nav>
+        <div>
+          <h2>Me joindre</h2>
+          <ul>
+            <li><a href="mailto:charles.lindecker@outlook.fr">charles.lindecker@outlook.fr</a><button class="copier" type="button" data-copier="charles.lindecker@outlook.fr" hidden>Copier</button></li>
+            <li><a class="fl fl--ext" href="https://www.linkedin.com/in/charles-lindecker/">LinkedIn</a></li>
+            <li><a class="fl fl--ext" href="https://github.com/LINDECKER-Charles">GitHub</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Colophon</h2>
+          <p>Composé en Newsreader et Instrument Sans. Le logo réunit un livre ouvert et une lanterne.</p>
+          <ul><li><a href="mentions-legales.html" data-hors-maquette="Mentions légales">Mentions légales</a></li></ul>
+        </div>
+      </div>
+      <p class="colophon__acheve">Maquette de la direction A, «&nbsp;Édition reliée&nbsp;», octobre 2026.</p>
+    </div>
+  </footer>
+</body>
+</html>

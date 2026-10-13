@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Trois directions — refonte du portfolio</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --fond: #f6f5f1;
+    --surface: #ffffff;
+    --encre: #17171b;
+    --gris: #5b5d65;
+    --filet: #d9d7d0;
+    --filet-fort: #8b8d93;
+    --accent: #1f4fd1;
+    --accent-fond: #e9eefc;
+    --colza: #f2cf3a;
+    --sur-colza: #17171b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fond: #0f1115;
+      --surface: #171a20;
+      --encre: #e8e9ec;
+      --gris: #a3a7b0;
+      --filet: #2b3038;
+      --filet-fort: #5f6572;
+      --accent: #8fa8ff;
+      --accent-fond: #182038;
+      --colza: #e8c75a;
+      --sur-colza: #0f1115;
+    }
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--fond);
+    color: var(--encre);
+    font: 400 1rem/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-variant-numeric: lining-nums;
+  }
+  a { color: var(--accent); text-underline-offset: .18em; text-decoration-thickness: 1px; }
+  a:hover { text-decoration-thickness: 2px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+  img { display: block; max-width: 100%; height: auto; }
+  .page { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+  @media (max-width: 600px) { .page { padding: 0 16px; } }
+
+  /* En-tête */
+  .tete { padding: 56px 0 32px; border-bottom: 1px solid var(--filet); }
+  .surtitre { margin: 0 0 8px; font-size: .875rem; color: var(--gris); letter-spacing: .02em; }
+  h1 { margin: 0; font-size: clamp(2rem, 4.6vw, 3.25rem); line-height: 1.08; letter-spacing: -.02em; font-weight: 650; max-width: 18ch; }
+  .chapo { margin: 20px 0 0; font-size: 1.125rem; max-width: 62ch; }
+  .sommaire { margin: 28px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: .9375rem; }
+  .sommaire a { font-weight: 550; }
+
+  /* Sections */
+  section { padding: 48px 0; border-bottom: 1px solid var(--filet); }
+  h2 { margin: 0; font-size: clamp(1.625rem, 3vw, 2.25rem); line-height: 1.15; letter-spacing: -.015em; font-weight: 650; }
+  h3 { margin: 40px 0 12px; font-size: 1.125rem; line-height: 1.3; font-weight: 650; }
+  h4 { margin: 0 0 8px; font-size: 1rem; font-weight: 650; }
+  p, li { max-width: 72ch; }
+  .gris { color: var(--gris); }
+  .petit { font-size: .875rem; }
+
+  .questions { margin: 16px 0 0; padding-left: 1.4em; }
+  .questions li { margin: 6px 0; }
+
+  /* Tête de direction */
+  .direction__tete { display: grid; grid-template-columns: auto 1fr; gap: 4px 20px; align-items: center; }
+  .lettre {
+    grid-row: span 2; margin: 0; width: 64px; height: 64px; display: grid; place-items: center;
+    border: 1.5px solid var(--encre); font-size: 2rem; font-weight: 650; line-height: 1;
+  }
+  .direction__moyenne { margin: 0; color: var(--gris); font-size: .9375rem; }
+  .direction__moyenne strong { color: var(--encre); font-variant-numeric: tabular-nums; }
+  .pitch {
+    margin: 24px 0 0; padding: 4px 0 4px 20px; border-left: 3px solid var(--accent);
+    font-size: 1.125rem; line-height: 1.6; max-width: 70ch;
+  }
+  .corrige { margin: 16px 0 0; font-size: .9375rem; color: var(--gris); max-width: 80ch; }
+  .corrige strong { color: var(--encre); font-weight: 600; }
+
+  .pages { margin: 24px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .pages li { display: flex; align-items: stretch; border: 1px solid var(--filet-fort); background: var(--surface); }
+  .pages a { display: block; padding: 8px 14px; font-weight: 550; text-decoration: none; min-height: 44px; line-height: 28px; }
+  .pages a:hover { text-decoration: underline; }
+  .pages a.nuit { border-left: 1px solid var(--filet); font-weight: 400; color: var(--gris); }
+  .pages a.nuit:hover { color: var(--accent); }
+
+  /* Vues */
+  .grille { display: grid; gap: 20px; }
+  .grille--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grille--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .grille--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 20px; }
+  @media (max-width: 860px) {
+    .grille--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 700px) {
+    .grille--2, .grille--3 { grid-template-columns: minmax(0, 1fr); }
+    .grille--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  }
+  figure { margin: 0; }
+  .vue > a { display: block; border: 1px solid var(--filet); background: var(--surface); }
+  .vue > a:hover { border-color: var(--filet-fort); }
+  .cadre { overflow: hidden; }
+  .cadre img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
+  .cadre--bureau { aspect-ratio: 1440 / 900; }
+  .cadre--mobile { aspect-ratio: 390 / 844; }
+  figcaption { margin-top: 8px; font-size: .875rem; line-height: 1.45; color: var(--gris); }
+  figcaption strong { color: var(--encre); font-weight: 600; }
+
+  /* Bilan */
+  .bilan { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 40px; margin-top: 40px; }
+  @media (max-width: 700px) { .bilan { grid-template-columns: minmax(0, 1fr); } }
+  .bilan h3 { margin-top: 0; padding-bottom: 8px; border-bottom: 1.5px solid var(--encre); }
+  .bilan ul { margin: 0; padding-left: 1.2em; }
+  .bilan li { margin: 8px 0; }
+
+  /* Tableaux */
+  .tableau { overflow-x: auto; margin-top: 24px; }
+  table { border-collapse: collapse; width: 100%; min-width: 560px; font-variant-numeric: tabular-nums; }
+  caption { text-align: left; font-size: .875rem; color: var(--gris); padding-bottom: 8px; }
+  th, td { padding: 10px 12px; border-bottom: 1px solid var(--filet); text-align: left; vertical-align: top; }
+  thead th { font-size: .875rem; font-weight: 600; color: var(--gris); border-bottom: 1.5px solid var(--encre); }
+  td.n, th.n { text-align: right; }
+  tbody th { font-weight: 600; }
+  .meilleur { font-weight: 700; }
+  .total { background: var(--accent-fond); font-weight: 700; }
+  details { margin-top: 16px; border-top: 1px solid var(--filet); }
+  details:last-of-type { border-bottom: 1px solid var(--filet); }
+  summary { cursor: pointer; padding: 12px 0; font-weight: 600; min-height: 44px; }
+  details table { margin-bottom: 16px; }
+  @media (max-width: 600px) {
+    table { min-width: 0; font-size: .875rem; }
+    th, td { padding: 8px 6px; }
+    thead th { font-size: .75rem; }
+    .nom-t { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  }
+
+  /* Recommandation */
+  .verdict {
+    margin: 24px 0 0; padding: 20px 24px; background: var(--surface);
+    border: 1px solid var(--filet); border-left: 4px solid var(--accent);
+    font-size: 1.25rem; line-height: 1.45; font-weight: 600; max-width: none;
+  }
+  .verdict span { display: block; margin-top: 6px; font-size: 1rem; font-weight: 400; color: var(--gris); }
+  .liste-greffes { margin: 0; padding: 0; list-style: none; counter-reset: greffe; }
+  .liste-greffes li { position: relative; margin: 0; padding: 14px 0 14px 44px; border-bottom: 1px solid var(--filet); max-width: 80ch; counter-increment: greffe; }
+  .liste-greffes li::before {
+    content: counter(greffe); position: absolute; left: 0; top: 14px; width: 28px; height: 28px;
+    display: grid; place-items: center; border: 1.5px solid var(--encre); font-weight: 650; font-size: .875rem;
+  }
+  .source {
+    display: inline-block; margin-right: 6px; padding: 0 6px; background: var(--colza); color: var(--sur-colza);
+    font-size: .8125rem; font-weight: 650; line-height: 1.6;
+  }
+  .pied { padding: 32px 0 56px; font-size: .875rem; color: var(--gris); }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="tete">
+  <p class="surtitre">Refonte du portfolio · maquettes corrigées du 13 octobre 2026</p>
+  <h1>Trois directions visuelles, une à choisir</h1>
+  <p class="chapo">Chaque direction est maquettée sur le contenu réel : accueil, vitrine des projets, page PvZ Fusion et page Compétences, de jour et de nuit, sur ordinateur (1 440 × 900) et sur téléphone (390 × 844). La page montre d’abord les trois directions, puis les notes des juges, puis la recommandation : regarder avant de lire l’avis.</p>
+  <ul class="sommaire" aria-label="Sommaire">
+    <li><a href="#regarder">Comment regarder</a></li>
+    <li><a href="#a">A · Édition reliée</a></li>
+    <li><a href="#b">B · Banc d’essai</a></li>
+    <li><a href="#c">C · Lanterne</a></li>
+    <li><a href="#notes">Les notes</a></li>
+    <li><a href="#recommandation">Recommandation</a></li>
+  </ul>
+</header>
+
+<section id="regarder" aria-labelledby="regarder-titre">
+  <h2 id="regarder-titre">Comment regarder</h2>
+  <p>Les trois accueils racontent la même histoire avec la même structure : accroche à gauche, photo à droite, bandeau des trois preuves (Maîtriser, Réinventer, Emmener). Après corrections, les trois montrent aussi la photo en couleur et chiffrent la preuve « Emmener ». Le choix ne porte donc pas sur le contenu : il porte sur la voix typographique, la façon de montrer les preuves, la nuit et la signature.</p>
+  <p>Le cahier des charges (§ 8.5) propose cinq questions pour trancher :</p>
+  <ol class="questions">
+    <li>Un recruteur comprend-il le profil en dix secondes sur le premier écran ?</li>
+    <li>La page PvZ Fusion se lit-elle en diagonale ?</li>
+    <li>La nuit ressemble-t-elle à Charles, sans évoquer Nocturne ?</li>
+    <li>Les captures sont-elles lisibles à 390 px ?</li>
+    <li>Charles s’y reconnaît-il : « quelque chose d’un peu différent, à condition que ça me ressemble » ?</li>
+  </ol>
+  <p class="gris petit">Chaque image s’ouvre en grand au clic, sur la page entière. Chaque page de maquette s’ouvre de jour ou de nuit.</p>
+</section>
+
+<!-- ============================ A ============================ -->
+<section id="a" aria-labelledby="a-titre">
+  <div class="direction__tete">
+    <p class="lettre" aria-hidden="true">A</p>
+    <h2 id="a-titre">Édition reliée</h2>
+    <p class="direction__moyenne">Moyenne des trois juges : <strong>6,6 / 10</strong> · 3<sup>e</sup>, 3<sup>e</sup> et 2<sup>e</sup> places</p>
+  </div>
+  <p class="pitch">Le portfolio se lit comme un manuel relié. Une colonne de lecture en Newsreader et une marge active portent les figures, les chiffres et les vignettes, et un signet bleu roi suit la lecture dans la reliure. La couverture est désormais en couleur : Charles en chemise bleu roi dans le colza, au bord franc, avec une ligne d’identité grande et en encre, et les trois verbes du récit composés comme des titres. La nuit est une veillée : liens en bleu clair, bouton à la lumière ambre de la lanterne, chiffres soulignés d’un trait, halo visible sur la lecture. Les hors-texte sont des planches bordées d’un filet, posées dans la colonne du contenu.</p>
+  <p class="corrige"><strong>Corrigé après les notes :</strong> photo en couleur sans sépia ni passe-partout, ligne d’identité agrandie, repères 20 / 10 / 35 sur l’accueil, vitrine mobile en liste, pastilles de gabarit retirées de PvZ, liens de nuit en bleu clair.</p>
+  <ul class="pages" aria-label="Pages de la direction A">
+    <li><a href="a-edition-reliee/accueil.html">Accueil</a><a class="nuit" href="a-edition-reliee/accueil.html?theme=nuit" aria-label="Accueil, de nuit">nuit</a></li>
+    <li><a href="a-edition-reliee/projets.html">Projets</a><a class="nuit" href="a-edition-reliee/projets.html?theme=nuit" aria-label="Projets, de nuit">nuit</a></li>
+    <li><a href="a-edition-reliee/pvz-fusion.html">PvZ Fusion</a><a class="nuit" href="a-edition-reliee/pvz-fusion.html?theme=nuit" aria-label="PvZ Fusion, de nuit">nuit</a></li>
+    <li><a href="a-edition-reliee/competences.html">Compétences</a><a class="nuit" href="a-edition-reliee/competences.html?theme=nuit" aria-label="Compétences, de nuit">nuit</a></li>
+    <li><a href="a-edition-reliee/README.md">Notes de conception</a></li>
+  </ul>
+
+  <h3>Premiers écrans</h3>
+  <div class="grille grille--2">
+    <figure class="vue">
+      <a href="a-edition-reliee/captures/accueil-bureau-jour.webp"><img src="a-edition-reliee/captures/accueil-bureau-jour-pli.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Direction A, accueil sur ordinateur de jour : accroche en Newsreader, photo en couleur à droite, bandeau des trois preuves."></a>
+      <figcaption><strong>Accueil</strong> · ordinateur · jour</figcaption>
+    </figure>
+    <figure class="vue">
+      <a class="cadre cadre--bureau" href="a-edition-reliee/captures/accueil-bureau-nuit.webp"><img src="a-edition-reliee/captures/accueil-bureau-nuit.webp" width="1440" height="5844" loading="lazy" decoding="async" alt="Direction A, accueil sur ordinateur de nuit : fond brun-noir, bouton ambre, photo en bichromie encre et ivoire."></a>
+      <figcaption><strong>Accueil</strong> · ordinateur · nuit « veillée »</figcaption>
+    </figure>
+  </div>
+  <div class="grille grille--4">
+    <figure class="vue">
+      <a href="a-edition-reliee/captures/accueil-mobile-jour.webp"><img src="a-edition-reliee/captures/accueil-mobile-jour-pli.webp" width="390" height="844" loading="lazy" decoding="async" alt="Direction A, accueil sur téléphone de jour."></a>
+      <figcaption><strong>Accueil</strong> · téléphone · jour</figcaption>
+    </figure>
+    <figure class="vue">
+      <a class="cadre cadre--mobile" href="a-edition-reliee/captures/accueil-mobile-nuit.webp"><img src="a-edition-reliee/captures/accueil-mobile-nuit.webp" width="390" height="9208" loading="lazy" decoding="async" alt="Direction A, accueil sur téléphone de nuit."></a>
+      <figcaption><strong>Accueil</strong> · téléphone · nuit</figcaption>
+    </figure>
+    <figure class="vue">
+      <a href="a-edition-reliee/captures/pvz-fusion-mobile-jour.webp"><img src="a-edition-reliee/captures/pvz-fusion-mobile-jour-pli.webp" width="390" height="844" loading="lazy" decoding="async" alt="Direction A, page PvZ Fusion sur téléphone : titre, chapô, repères 20 et 0."></a>
+      <figcaption><strong>PvZ Fusion</strong> · téléphone · jour</figcaption>
+    </figure>
+    <figure class="vue">
+      <a href="a-edition-reliee/captures/competences-mobile-jour.webp"><img src="a-edition-reliee/captures/competences-mobile-jour-pli.webp" width="390" height="844" loading="lazy" decoding="async" alt="Direction A, page Compétences sur téléphone : index typographique, tuiles « Au quotidien »."></a>
+      <figcaption><strong>Compétences</strong> · téléphone · jour</figcaption>
+    </figure>
+  </div>
+
+  <h3>Dans les pages</h3>
+  <div class="grille grille--2">
+    <figure class="vue">
+      <a href="a-edition-reliee/captures/pvz-fusion-bureau-jour.webp"><img src="a-edition-reliee/captures/pvz-fusion-bureau-jour-pli.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Direction A, en-tête de la page PvZ Fusion : titre, chapô, trois repères chiffrés, fiche en tableau à filets."></a>
+      <figcaption><strong>PvZ Fusion</strong> · premier écran : chapô unique, repères 20 / 0 / 35, fiche à filets.</figcaption>
+    </figure>
+    <figure class="vue">
+      <a href="a-edition-reliee/captures/projets-bureau-jour.webp"><img src="a-edition-reliee/captures/projets-bureau-jour-pli.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Direction A, vitrine des projets : carte vedette PvZ Fusion avec son emplacement de gravure."></a>
+      <figcaption><strong>Projets</strong> · premier écran : carte vedette, « Lire l’étude de cas → » en action principale.</figcaption>
+    </figure>
+    <figure class="vue">
+      <a class="cadre cadre--bureau" href="a-edition-reliee/captures/accueil-bureau-jour.webp"><img src="a-edition-reliee/captures/accueil-bureau-jour.webp" width="1440" height="5844" loading="lazy" decoding="async" style="object-position: 50% 66.75%" alt="Direction A, chapitre « Aujourd’hui » : hors-texte sombre, trois captures avec médaillon de détail."></a>
+      <figcaption><strong>Accueil, « Aujourd’hui »</strong> · hors-texte sombre, captures au même ratio et médaillons de détail.</figcaption>
+    </figure>
+    <figure class="vue">
+      <a class="cadre cadre--bureau" href="a-edition-reliee/captures/accueil-bureau-jour.webp"><img src="a-edition-reliee/captures/accueil-bureau-jour.webp" width="1440" height="5844" loading="lazy" decoding="async" style="object-position: 50% 81.72%" alt="Direction A, section « À plusieurs » : repères 20, 10 et 35 soulignés au colza dans la marge, quatre vignettes de gestes."></a>
+      <figcaption><strong>Accueil, « À plusieurs »</strong> · la preuve « Emmener » : 20, 10 et 35 dans la marge active.</figcaption>
+    </figure>
+  </div>
+
+  <h3>Signature</h3>
+  <div class="grille grille--2">
+    <figure class="vue">
+      <a href="a-edition-reliee/captures/accueil-signet-lecture.webp"><img src="a-edition-reliee/captures/accueil-signet-lecture.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Direction A, le signet : un ruban bleu roi descend dans la reliure jusqu’au chapitre lu, une lanterne au bout."></a>
+      <figcaption><strong>Le signet</strong> · un ruban bleu roi suit la lecture dans la reliure, la lanterne s’allume au chapitre lu.</figcaption>
+    </figure>
+    <figure class="vue">
+      <a href="a-edition-reliee/captures/accueil-bascule-transition.webp"><img src="a-edition-reliee/captures/accueil-bascule-transition.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Direction A, la page tournée : la nuit arrive depuis la reliure par un fondu."></a>
+      <figcaption><strong>La page tournée</strong> · la nuit arrive depuis la reliure, en 400 ms.</figcaption>
+    </figure>
+  </div>
+
+  <div class="bilan">
+    <div>
+      <h3>Forces</h3>
+      <ul>
+        <li>La meilleure lecture longue : récit en Newsreader 19 px, colonne de 62 caractères. C’est la direction qui sert le mieux la voix de Charles (récit et voix : 9/10).</li>
+        <li>Le plus beau titre d’accueil des trois, en Newsreader « display ».</li>
+        <li>Le signet de reliure est à la fois la navigation de page et la signature, sans gadget.</li>
+        <li>Page PvZ complète : courbe du rattrapage, errata « Au lieu de / Lire » avec la valeur barrée, trois décisions contrainte → choix → effet.</li>
+        <li>Les quatre pages forment un seul objet, et la continuité avec D « Mode d’emploi », déjà validée, est la plus forte.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Risques</h3>
+      <ul>
+        <li>Être lue comme « D en mieux » : une revue littéraire plus que le portrait d’un lead technique (crédibilité technique : 5/10 chez le recruteur).</li>
+        <li>La moins mémorable des trois (5/10) : le signet est fin, mais discret.</li>
+        <li>Les numéros de chapitre 01, 02, 03 restent : un reste de l’appareil de notice que l’audit voulait retirer.</li>
+        <li>La nuit, la photo passe en bichromie encre et ivoire : la chemise bleu roi, couleur d’identité, disparaît.</li>
+        <li>Les emplacements d’images restent des cadres hachurés qui affichent leur fiche de commande (identifiant, format) : on juge une maquette plus qu’un rendu.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ B ============================ -->
+<section id="b" aria-labelledby="b-titre">
+  <div class="direction__tete">
+    <p class="lettre" aria-hidden="true">B</p>
+    <h2 id="b-titre">Banc d’essai</h2>
+    <p class="direction__moyenne">Moyenne des trois juges : <strong>7,2 / 10</strong> · 2<sup>e</sup>, 1<sup>re</sup> et 3<sup>e</sup> places</p>
+  </div>
+  <p class="pitch">« Banc d’essai » reste le dossier d’un ingénieur qui mesure : une fiche technique, des relevés datés, des captures annotées au réticule et lisibles à la loupe. Les notes de maquette sont masquées pour qu’on voie une direction, pas un fil de fer : chaque emplacement est désormais une planche teintée avec une esquisse isométrique « vue éclatée », et un chiffre sourcé figure au premier écran de chaque page. La nuit devient un instrument dans le noir bleuté : la lanterne n’éclaire que la section lue, avec un halo, un curseur et des relevés à l’ambre, et le reste s’éteint.</p>
+  <p class="corrige"><strong>Corrigé après les notes :</strong> couleur sélective abandonnée (photo en couleur désaturée), nuit refaite en noir bleuté avec zone éclairée, sens des couleurs des figures inversé (le bleu marque le résultat, plus le manque), repères chiffrés au premier écran de PvZ, planches avec esquisses à la place des croix filaires, notes de maquette masquées.</p>
+  <ul class="pages" aria-label="Pages de la direction B">
+    <li><a href="b-banc-essai/accueil.html">Accueil</a><a class="nuit" href="b-banc-essai/accueil.html?theme=nuit" aria-label="Accueil, de nuit">nuit</a></li>
+    <li><a href="b-banc-essai/projets.html">Projets</a><a class="nuit" href="b-banc-essai/projets.html?theme=nuit" aria-label="Projets, de nuit">nuit</a></li>
+    <li><a href="b-banc-essai/pvz-fusion.html">PvZ Fusion</a><a class="nuit" href="b-banc-essai/pvz-fusion.html?theme=nuit" aria-label="PvZ Fusion, de nuit">nuit</a></li>
+    <li><a href="b-banc-essai/competences.html">Compétences</a><a class="nuit" href="b-banc-essai/competences.html?theme=nuit" aria-label="Compétences, de nuit">nuit</a></li>
+    <li><a href="b-banc-essai/README.md">Notes de conception</a></li>
+  </ul>
+
+  <h3>Premiers écrans</h3>
+  <div class="grille grille--2">
+    <figure class="vue">
+      <a href="b-banc-essai/captures/accueil-bureau-jour.webp"><img src="b-banc-essai/captures/accueil-bureau-jour-pli.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Direction B, accueil sur ordinateur de jour : accroche en Archivo étendu, photo désaturée sous repères de coupe, trois verbes en cases."></a>
+      <figcaption><strong>Accueil</strong> · ordinateur · jour</figcaption>
+    </figure>
+    <figure class="vue">
+      <a class="cadre cadre--bureau" href="b-banc-essai/captures/accueil-bureau-nuit.webp"><img src="b-banc-essai/captures/accueil-bureau-nuit.webp" width="1440" height="5839" loading="lazy" decoding="async" alt="Direction B, accueil sur ordinateur de nuit : noir bleuté, bouton ambre, photo en couleur."></a>
+      <figcaption><strong>Accueil</strong> · ordinateur · nuit « instrument »</figcaption>
+    </figure>
+  </div>
+  <div class="grille grille--4">
+    <figure class="vue">
+      <a href="b-banc-essai/captures/accueil-mobile-jour.webp"><img src="b-banc-essai/captures/accueil-mobile-jour-pli.webp" width="390" height="844" loading="lazy" decoding="async" alt="Direction B, accueil sur téléphone de jour : les trois verbes et le bouton Discutons au pli."></a>
+      <figcaption><strong>Accueil</strong> · téléphone · jour</figcaption>
+    </figure>
+    <figure class="vue">
+      <a class="cadre cadre--mobile" href="b-banc-essai/captures/accueil-mobile-nuit.webp"><img src="b-banc-essai/captures/accueil-mobile-nuit.webp" width="390" height="9016" loading="lazy" decoding="async" alt="Direction B, accueil sur téléphone de nuit."></a>
+      <figcaption><strong>Accueil</strong> · téléphone · nuit</figcaption>
+    </figure>
+    <figure class="vue">
+      <a href="b-banc-essai/captures/pvz-fusion-mobile-jour.webp"><img src="b-banc-essai/captures/pvz-fusion-mobile-jour-pli.webp" width="390" height="844" loading="lazy" decoding="async" alt="Direction B, page PvZ Fusion sur téléphone : titre, chapô, repères 20, 0 et 35 avec leur source datée."></a>
+      <figcaption><strong>PvZ Fusion</strong> · téléphone · jour</figcaption>
+    </figure>
+    <figure class="vue">
+      <a href="b-banc-essai/captures/competences-mobile-jour.webp"><img src="b-banc-essai/captures/competences-mobile-jour-pli.webp" width="390" height="844" loading="lazy" decoding="async" alt="Direction B, page Compétences sur téléphone : tuiles « Au quotidien » en grille."></a>
+      <figcaption><strong>Compétences</strong> · téléphone · jour</figcaption>
+    </figure>
+  </div>
+
+  <h3>Dans les pages</h3>
+  <div class="grille grille--2">
+    <figure class="vue">
+      <a href="b-banc-essai/captures/pvz-fusion-bureau-jour.webp"><img src="b-banc-essai/captures/pvz-fusion-bureau-jour-pli.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Direction B, en-tête de la page PvZ Fusion : repères chiffrés, puis fiche technique en tableau (besoin, ma part, rôle, période, équipe, statut, liens)."></a>
+      <figcaption><strong>PvZ Fusion</strong> · premier écran : repères 20 / 0 / 35, puis la fiche technique en tableau.</figcaption>
+    </figure>
+    <figure class="vue">
+      <a href="b-banc-essai/captures/projets-bureau-jour.webp"><img src="b-banc-essai/captures/projets-bureau-jour-pli.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Direction B, vitrine des projets : index des cinq étiquettes de preuve, carte vedette avec esquisse isométrique."></a>
+      <figcaption><strong>Projets</strong> · premier écran : index des cinq preuves, vedette, puis la matrice.</figcaption>
+    </figure>
+    <figure class="vue">
+      <a class="cadre cadre--bureau" href="b-banc-essai/captures/accueil-bureau-jour.webp"><img src="b-banc-essai/captures/accueil-bureau-jour.webp" width="1440" height="5839" loading="lazy" decoding="async" style="object-position: 50% 70.26%" alt="Direction B, acte « Aujourd’hui » : trois captures avec cible numérotée, loupe et légende au même numéro."></a>
+      <figcaption><strong>Accueil, « Aujourd’hui »</strong> · captures avec cible numérotée, loupe et légende au même numéro.</figcaption>
+    </figure>
+    <figure class="vue">
+      <a class="cadre cadre--bureau" href="b-banc-essai/captures/accueil-bureau-jour.webp"><img src="b-banc-essai/captures/accueil-bureau-jour.webp" width="1440" height="5839" loading="lazy" decoding="async" style="object-position: 50% 85.85%" alt="Direction B, section « À plusieurs » : repères 20, 10 et 35 sourcés, quatre planches de gestes en esquisse isométrique."></a>
+      <figcaption><strong>Accueil, « À plusieurs »</strong> · 20, 10 et 35 sourcés, gestes du pôle en planches isométriques.</figcaption>
+    </figure>
+  </div>
+
+  <h3>Signature</h3>
+  <div class="grille grille--3">
+    <figure class="vue">
+      <a href="b-banc-essai/captures/etat-accueil-reticule-jour.webp"><img src="b-banc-essai/captures/etat-accueil-reticule-jour.webp" width="1044" height="587" loading="lazy" decoding="async" alt="Direction B, le réticule allumé au survol d’une capture : croix de visée, cote mono qui nomme la zone."></a>
+      <figcaption><strong>Le réticule</strong> · au survol ou au focus, le viseur relie la légende à la zone pointée.</figcaption>
+    </figure>
+    <figure class="vue">
+      <a href="b-banc-essai/captures/etat-accueil-bascule-milieu.webp"><img src="b-banc-essai/captures/etat-accueil-bascule-milieu.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Direction B, la bascule : une ligne de mesure colza balaie la page et révèle la nuit."></a>
+      <figcaption><strong>La bascule</strong> · une ligne de mesure colza balaie la page et révèle la nuit.</figcaption>
+    </figure>
+    <figure class="vue">
+      <a href="b-banc-essai/captures/etat-accueil-nuit-zone.webp"><img src="b-banc-essai/captures/etat-accueil-nuit-zone.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Direction B, la nuit-instrument : seule la section lue est éclairée, curseur ambré dans la règle graduée."></a>
+      <figcaption><strong>La nuit-instrument</strong> · seule la section lue s’éclaire ; le reste s’éteint.</figcaption>
+    </figure>
+  </div>
+
+  <div class="bilan">
+    <div>
+      <h3>Forces</h3>
+      <ul>
+        <li>Le meilleur appareil de preuve : captures entières, cible numérotée, loupe lisible et légende au même numéro. Un lead technique comprend ce que prouve chaque capture, même à 390 px.</li>
+        <li>La fiche technique PvZ en tableau (besoin, ma part, rôle, période, équipe, statut, liens publics) se lit en cinq secondes.</li>
+        <li>Vitrine Projets : index des cinq étiquettes de preuve en tête, matrice, « Voir le projet → » sur chaque carte.</li>
+        <li>La plus crédible pour un poste de lead technique (crédibilité technique : 9/10) ; l’exigence « FromSoftware » se voit : cotes, relevés datés, sources.</li>
+        <li>L’acte bleu nuit « La suite » donne la fin d’accueil la plus nette, avec un seul bouton fort.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Risques</h3>
+      <ul>
+        <li>La froideur : l’Archivo étendu évoque les agences et produits SaaS de 2023-2024, loin du logo gothique ; la voix de Charles, en italique rare, sonne comme une citation rapportée.</li>
+        <li>Mémorabilité moyenne (6/10) : l’ensemble appartient à la famille « suisse, SaaS soigné ».</li>
+        <li>Le cadre d’ingénierie refroidit l’histoire de l’accueil (« ça lui ressemble » : 6/10).</li>
+        <li>La nuit a été refaite après les notes (5 et 6/10 avant correction) : sa nouvelle version n’a pas encore été jugée.</li>
+        <li>La plus exigeante à construire : tout doit être aligné sur quinze pages. Compétences n’a pas d’acte, faute de marge de longueur sur téléphone, et la bascule de thème reste visible et inerte sans JavaScript.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ C ============================ -->
+<section id="c" aria-labelledby="c-titre">
+  <div class="direction__tete">
+    <p class="lettre" aria-hidden="true">C</p>
+    <h2 id="c-titre">Lanterne</h2>
+    <p class="direction__moyenne">Moyenne des trois juges : <strong>7,5 / 10</strong> · 1<sup>re</sup>, 2<sup>e</sup> et 1<sup>re</sup> places</p>
+  </div>
+  <p class="pitch">Lanterne tient toujours sur une seule source de lumière, mais la lumière tombe maintenant sur les preuves et plus sur des formules. Les chiffres (20, 10, 35, 403, 1 289, 153) passent dans une sans grasse. Les trois captures portent une cible et une loupe éclairée par la lanterne, et « Seul on va vite… » redevient la conclusion du bloc. La nuit garde la photo en couleur, chemise bleu roi comprise, sous un voile de lune avec une lueur de lanterne sur le visage : rien de sépia, donc plus rien qui rappelle Nocturne.</p>
+  <p class="corrige"><strong>Corrigé après les notes :</strong> chiffres-preuves en Instrument Sans 600, repères 20 / 10 / 35 devenus la zone éclairée de « À plusieurs », captures ciblées avec loupe, photo de nuit en couleur, décisions PvZ empilées sur téléphone, stack du CV dans « Au quotidien », annotations de gabarit masquées.</p>
+  <ul class="pages" aria-label="Pages de la direction C">
+    <li><a href="c-lanterne/accueil.html">Accueil</a><a class="nuit" href="c-lanterne/accueil.html?theme=nuit" aria-label="Accueil, de nuit">nuit</a></li>
+    <li><a href="c-lanterne/projets.html">Projets</a><a class="nuit" href="c-lanterne/projets.html?theme=nuit" aria-label="Projets, de nuit">nuit</a></li>
+    <li><a href="c-lanterne/pvz-fusion.html">PvZ Fusion</a><a class="nuit" href="c-lanterne/pvz-fusion.html?theme=nuit" aria-label="PvZ Fusion, de nuit">nuit</a></li>
+    <li><a href="c-lanterne/competences.html">Compétences</a><a class="nuit" href="c-lanterne/competences.html?theme=nuit" aria-label="Compétences, de nuit">nuit</a></li>
+    <li><a href="c-lanterne/README.md">Notes de conception</a></li>
+  </ul>
+
+  <h3>Premiers écrans</h3>
+  <div class="grille grille--2">
+    <figure class="vue">
+      <a href="c-lanterne/captures/accueil-bureau-jour.webp"><img src="c-lanterne/captures/accueil-bureau-jour-pli.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Direction C, accueil sur ordinateur de jour : accroche en Instrument Serif sur fond pierre, grande photo en couleur, trois verbes en italique."></a>
+      <figcaption><strong>Accueil</strong> · ordinateur · jour « aube »</figcaption>
+    </figure>
+    <figure class="vue">
+      <a class="cadre cadre--bureau" href="c-lanterne/captures/accueil-bureau-nuit.webp"><img src="c-lanterne/captures/accueil-bureau-nuit.webp" width="1440" height="5834" loading="lazy" decoding="async" alt="Direction C, accueil sur ordinateur de nuit : clair de lune bleuté, photo en couleur assombrie, lueur de lanterne sur le visage, bouton ambre."></a>
+      <figcaption><strong>Accueil</strong> · ordinateur · nuit « clair de lune »</figcaption>
+    </figure>
+  </div>
+  <div class="grille grille--4">
+    <figure class="vue">
+      <a href="c-lanterne/captures/accueil-mobile-jour.webp"><img src="c-lanterne/captures/accueil-mobile-jour-pli.webp" width="390" height="844" loading="lazy" decoding="async" alt="Direction C, accueil sur téléphone de jour : les trois preuves et le bouton Discutons au pli."></a>
+      <figcaption><strong>Accueil</strong> · téléphone · jour</figcaption>
+    </figure>
+    <figure class="vue">
+      <a class="cadre cadre--mobile" href="c-lanterne/captures/accueil-mobile-nuit.webp"><img src="c-lanterne/captures/accueil-mobile-nuit.webp" width="390" height="8898" loading="lazy" decoding="async" alt="Direction C, accueil sur téléphone de nuit."></a>
+      <figcaption><strong>Accueil</strong> · téléphone · nuit</figcaption>
+    </figure>
+    <figure class="vue">
+      <a href="c-lanterne/captures/pvz-fusion-mobile-jour.webp"><img src="c-lanterne/captures/pvz-fusion-mobile-jour-pli.webp" width="390" height="844" loading="lazy" decoding="async" alt="Direction C, page PvZ Fusion sur téléphone : titre, chapô, « Ce que j’ai fait », premier repère."></a>
+      <figcaption><strong>PvZ Fusion</strong> · téléphone · jour</figcaption>
+    </figure>
+    <figure class="vue">
+      <a href="c-lanterne/captures/competences-mobile-jour.webp"><img src="c-lanterne/captures/competences-mobile-jour-pli.webp" width="390" height="844" loading="lazy" decoding="async" alt="Direction C, page Compétences sur téléphone : logos du quotidien « allumés » en couleur."></a>
+      <figcaption><strong>Compétences</strong> · téléphone · jour</figcaption>
+    </figure>
+  </div>
+
+  <h3>Dans les pages</h3>
+  <div class="grille grille--2">
+    <figure class="vue">
+      <a href="c-lanterne/captures/pvz-fusion-bureau-jour.webp"><img src="c-lanterne/captures/pvz-fusion-bureau-jour-pli.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Direction C, en-tête de la page PvZ Fusion : titre, chapô, « Ce que j’ai fait », trois repères, fiche dans une carte arrondie."></a>
+      <figcaption><strong>PvZ Fusion</strong> · tout l’en-tête du gabarit commun tient dans le premier écran, chiffres compris.</figcaption>
+    </figure>
+    <figure class="vue">
+      <a href="c-lanterne/captures/projets-bureau-jour.webp"><img src="c-lanterne/captures/projets-bureau-jour-pli.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Direction C, vitrine des projets : carte vedette avec sa moitié sombre, chiffre 20 et « Voir le projet »."></a>
+      <figcaption><strong>Projets</strong> · premier écran : carte vedette sombre, chiffre, « Voir le projet → ».</figcaption>
+    </figure>
+    <figure class="vue">
+      <a class="cadre cadre--bureau" href="c-lanterne/captures/accueil-bureau-jour.webp"><img src="c-lanterne/captures/accueil-bureau-jour.webp" width="1440" height="5834" loading="lazy" decoding="async" style="object-position: 50% 67.90%" alt="Direction C, acte de veille « Aujourd’hui » : trois captures ciblées avec loupe, chiffres 403, 1 289 et 153 en sans grasse."></a>
+      <figcaption><strong>Accueil, « Aujourd’hui »</strong> · acte de veille sombre, captures ciblées et loupées, chiffres en sans grasse.</figcaption>
+    </figure>
+    <figure class="vue">
+      <a class="cadre cadre--bureau" href="c-lanterne/captures/accueil-bureau-jour.webp"><img src="c-lanterne/captures/accueil-bureau-jour.webp" width="1440" height="5834" loading="lazy" decoding="async" style="object-position: 50% 83.30%" alt="Direction C, section « À plusieurs » : repères 20, 10 et 35 éclairés, gestes du pôle, citation en conclusion."></a>
+      <figcaption><strong>Accueil, « À plusieurs »</strong> · 20, 10 et 35 forment la zone éclairée ; la citation conclut.</figcaption>
+    </figure>
+  </div>
+
+  <h3>Signature</h3>
+  <div class="grille grille--3">
+    <figure class="vue">
+      <a href="c-lanterne/captures/signature-allumage-1.webp"><img src="c-lanterne/captures/signature-allumage-1.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Direction C, l’allumage, début : l’obscurité entre depuis les bords de l’écran."></a>
+      <figcaption><strong>L’allumage, 1</strong> · l’obscurité entre depuis les bords.</figcaption>
+    </figure>
+    <figure class="vue">
+      <a href="c-lanterne/captures/signature-allumage-2.webp"><img src="c-lanterne/captures/signature-allumage-2.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Direction C, l’allumage, milieu : la lumière se referme sur la lanterne de l’en-tête."></a>
+      <figcaption><strong>2</strong> · elle se referme sur la lanterne qu’on vient d’allumer.</figcaption>
+    </figure>
+    <figure class="vue">
+      <a href="c-lanterne/captures/signature-allumage-3.webp"><img src="c-lanterne/captures/signature-allumage-3.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Direction C, l’allumage, fin : la nuit est tombée, la flamme du logo a son halo."></a>
+      <figcaption><strong>3</strong> · la nuit est tombée ; la flamme du logo garde son halo.</figcaption>
+    </figure>
+  </div>
+
+  <div class="bilan">
+    <div>
+      <h3>Forces</h3>
+      <ul>
+        <li>La plus mémorable (8/10) : photo en couleur, actes de veille sombres, allumage depuis la lanterne du logo. C’est celle qu’on se rappelle le lendemain.</li>
+        <li>La meilleure hiérarchie au premier écran sur ordinateur, selon le recruteur : accroche, ligne d’identité, chapô, action et trois preuves tiennent au pli.</li>
+        <li>La seule nuit qui ait une atmosphère : clair de lune bleuté, liens en lune, action en lanterne, une seule zone éclairée. La photo y garde désormais la chemise bleu roi.</li>
+        <li>Les captures sombres se fondent dans les actes de veille au lieu de trouer une page claire ; elles portent maintenant cible et loupe.</li>
+        <li>La plus robuste : longueurs dans les cibles et identiques sans JavaScript, vitrine en vraie liste.</li>
+        <li>Les emplacements d’illustrations les plus parlants : grands, éclairés, titrés ; on imagine le rendu final.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Risques</h3>
+      <ul>
+        <li>Une pile à la mode (Instrument Serif et Instrument Sans, boutons en pilule, rayons de 12 px, ombres) : le risque d’un « joli gabarit 2025 » plutôt que d’une identité.</li>
+        <li>Nocturne reste le voisin le plus proche ; la photo en couleur la nuit l’en éloigne, mais c’est à Charles de le confirmer (question Q2 du cahier).</li>
+        <li>Une signature coûteuse : View Transitions, masque radial et lumière qui suit la scène demandent du soin sur téléphone et sur Safari, avec un repli.</li>
+        <li>Logos de marque en couleur sur Projets et dans « Au quotidien » : un arc-en-ciel qui concurrence la lumière unique et le bleu roi (avis partagé entre les juges).</li>
+        <li>Les longueurs tiennent à quelques pixels de leur cible, et certaines vignettes de série restent sous 320 px.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ Notes ============================ -->
+<section id="notes" aria-labelledby="notes-titre">
+  <h2 id="notes-titre">Les notes des juges</h2>
+  <p>Trois juges ont noté chaque direction, chacun sous un angle : un responsable technique qui recrute un lead (dix critères), la qualité d’exécution en direction artistique et en design d’interface (dix critères), l’ergonomie et la fidélité au récit (neuf critères). Chaque chiffre est la moyenne simple des critères du juge, sur 10.</p>
+  <div class="tableau">
+    <table>
+      <caption>Notes moyennes par juge, et place donnée par chaque juge</caption>
+      <thead>
+        <tr>
+          <th scope="col"><span class="nom-t">Direction</span></th>
+          <th scope="col" class="n">Recruteur lead</th>
+          <th scope="col" class="n">Exécution</th>
+          <th scope="col" class="n">Ergonomie et récit</th>
+          <th scope="col" class="n">Moyenne</th>
+          <th scope="col">Places</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">A<span class="nom-t"> · Édition reliée</span></th>
+          <td class="n">6,1</td>
+          <td class="n">6,7</td>
+          <td class="n">7,0</td>
+          <td class="n total">6,6</td>
+          <td>3<sup>e</sup> · 3<sup>e</sup> · 2<sup>e</sup></td>
+        </tr>
+        <tr>
+          <th scope="row">B<span class="nom-t"> · Banc d’essai</span></th>
+          <td class="n meilleur">7,0</td>
+          <td class="n">7,4</td>
+          <td class="n">7,2</td>
+          <td class="n total">7,2</td>
+          <td>2<sup>e</sup> · 1<sup>re</sup> · 3<sup>e</sup></td>
+        </tr>
+        <tr>
+          <th scope="row">C<span class="nom-t"> · Lanterne</span></th>
+          <td class="n meilleur">7,0</td>
+          <td class="n meilleur">7,5</td>
+          <td class="n meilleur">8,0</td>
+          <td class="n total">7,5</td>
+          <td>1<sup>re</sup> · 2<sup>e</sup> · 1<sup>re</sup></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>La place donnée par un juge ne suit pas toujours sa moyenne : il pèse les critères selon ce qui compte pour son lecteur. Le recruteur départage B et C, à égalité (7,0), par la mémorabilité et la hiérarchie du premier écran. Le juge de l’exécution place B devant C malgré une moyenne un peu plus basse (7,4 contre 7,5), pour son système de composants. Le juge de l’ergonomie place A devant B (7,0 contre 7,2), pour la voix et le récit.</p>
+  <p class="gris">Les notes portent sur la première version des maquettes. Les corrections qu’elles ont appelées sont appliquées dans les maquettes montrées ici (rubrique « Corrections après jugement » de chaque README). Les écarts les plus nets visaient des points désormais corrigés : la photo et la nuit de A et de B, les chiffres et les captures de C.</p>
+
+  <details>
+    <summary>Détail du recruteur lead (dix critères)</summary>
+    <div class="tableau">
+      <table>
+        <thead><tr><th scope="col">Critère</th><th scope="col" class="n">A</th><th scope="col" class="n">B</th><th scope="col" class="n">C</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Test des dix secondes, ordinateur</th><td class="n">7</td><td class="n meilleur">8</td><td class="n meilleur">8</td></tr>
+          <tr><th scope="row">Test des dix secondes, téléphone</th><td class="n meilleur">7</td><td class="n">6</td><td class="n meilleur">7</td></tr>
+          <tr><th scope="row">Crédibilité de lead : management</th><td class="n">6</td><td class="n meilleur">7</td><td class="n">6</td></tr>
+          <tr><th scope="row">Crédibilité de lead : technique</th><td class="n">5</td><td class="n meilleur">9</td><td class="n">6</td></tr>
+          <tr><th scope="row">Mémorabilité</th><td class="n">5</td><td class="n">6</td><td class="n meilleur">8</td></tr>
+          <tr><th scope="row">Envie de cliquer sur un projet</th><td class="n">6</td><td class="n meilleur">8</td><td class="n">7</td></tr>
+          <tr><th scope="row">Envie de contacter</th><td class="n">6</td><td class="n meilleur">7</td><td class="n meilleur">7</td></tr>
+          <tr><th scope="row">Beauté perçue</th><td class="n">7</td><td class="n">6</td><td class="n meilleur">8</td></tr>
+          <tr><th scope="row">Exigence « FromSoftware »</th><td class="n">6</td><td class="n meilleur">8</td><td class="n">7</td></tr>
+          <tr><th scope="row">Nuit</th><td class="n meilleur">6</td><td class="n">5</td><td class="n meilleur">6</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+  <details>
+    <summary>Détail de l’exécution, direction artistique et interface (dix critères)</summary>
+    <div class="tableau">
+      <table>
+        <thead><tr><th scope="col">Critère</th><th scope="col" class="n">A</th><th scope="col" class="n">B</th><th scope="col" class="n">C</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Typographie</th><td class="n meilleur">8</td><td class="n">7,5</td><td class="n">7</td></tr>
+          <tr><th scope="row">Couleur et contrastes</th><td class="n">6,5</td><td class="n">7</td><td class="n meilleur">8</td></tr>
+          <tr><th scope="row">Grille et alignements</th><td class="n">6</td><td class="n meilleur">8</td><td class="n">7</td></tr>
+          <tr><th scope="row">Rythme vertical</th><td class="n">7</td><td class="n">7,5</td><td class="n meilleur">8</td></tr>
+          <tr><th scope="row">Composants</th><td class="n">7,5</td><td class="n meilleur">8,5</td><td class="n">7,5</td></tr>
+          <tr><th scope="row">Photos et captures</th><td class="n">6</td><td class="n meilleur">8,5</td><td class="n">7,5</td></tr>
+          <tr><th scope="row">Emplacements d’illustrations</th><td class="n">5,5</td><td class="n">6</td><td class="n meilleur">8</td></tr>
+          <tr><th scope="row">Mode nuit</th><td class="n">5,5</td><td class="n">6</td><td class="n meilleur">8,5</td></tr>
+          <tr><th scope="row">Cohérence entre les pages</th><td class="n">8</td><td class="n meilleur">8,5</td><td class="n">7,5</td></tr>
+          <tr><th scope="row">Finitions</th><td class="n meilleur">6,5</td><td class="n meilleur">6,5</td><td class="n">6</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+  <details>
+    <summary>Détail de l’ergonomie et du récit (neuf critères)</summary>
+    <div class="tableau">
+      <table>
+        <thead><tr><th scope="col">Critère</th><th scope="col" class="n">A</th><th scope="col" class="n">B</th><th scope="col" class="n">C</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Lisibilité</th><td class="n meilleur">8</td><td class="n meilleur">8</td><td class="n meilleur">8</td></tr>
+          <tr><th scope="row">Navigation</th><td class="n">6</td><td class="n meilleur">8</td><td class="n meilleur">8</td></tr>
+          <tr><th scope="row">Longueur des pages (E3)</th><td class="n">7</td><td class="n">8</td><td class="n meilleur">9</td></tr>
+          <tr><th scope="row">Téléphone, 390 px</th><td class="n">6</td><td class="n">7</td><td class="n meilleur">8</td></tr>
+          <tr><th scope="row">Accessibilité</th><td class="n">7</td><td class="n meilleur">8</td><td class="n meilleur">8</td></tr>
+          <tr><th scope="row">Règles E1-E8 et C1-C9</th><td class="n">6</td><td class="n">7</td><td class="n meilleur">8</td></tr>
+          <tr><th scope="row">Récit et voix</th><td class="n meilleur">9</td><td class="n">6</td><td class="n">8</td></tr>
+          <tr><th scope="row">« Ça lui ressemble »</th><td class="n">6</td><td class="n">6</td><td class="n meilleur">8</td></tr>
+          <tr><th scope="row">Faisabilité</th><td class="n meilleur">8</td><td class="n">7</td><td class="n">7</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+</section>
+
+<!-- ============================ Recommandation ============================ -->
+<section id="recommandation" aria-labelledby="recommandation-titre">
+  <h2 id="recommandation-titre">Recommandation</h2>
+  <p class="verdict">Retenir C « Lanterne », et lui greffer la rigueur de B.<span>Ce choix suppose un oui à la question Q2 du cahier : une nuit « lanterne », sans ornement de jeu, ressemble-t-elle à Charles ?</span></p>
+
+  <h3>Pourquoi C</h3>
+  <ul>
+    <li><strong>Elle ne descend jamais sous la deuxième place.</strong> Première pour le recruteur et pour l’ergonomie, deuxième pour l’exécution, où sa moyenne dépasse pourtant celle de B. Sa moyenne générale est la plus haute : 7,5, contre 7,2 pour B et 6,6 pour A.</li>
+    <li><strong>C’est celle qu’on retient.</strong> Photo en couleur, actes de veille sombres, allumage depuis la lanterne du logo : un responsable technique se la rappelle le lendemain. Les deux autres paraissent, l’une froide, l’autre littéraire.</li>
+    <li><strong>Sa nuit ressemble à ce que Charles a aimé.</strong> Elle reprend l’esprit de « Clair de lune » et y ajoute la lanterne du logo comme seule source chaude. Depuis que la photo garde sa couleur la nuit, le rapprochement avec Nocturne est nettement atténué.</li>
+    <li><strong>Ses faiblesses de preuve sont corrigées.</strong> Les juges lui reprochaient des chiffres maigres, une preuve « Emmener » noyée dans le texte et des captures sans annotation : les chiffres sont en sans grasse, 20 / 10 / 35 forment la zone éclairée et les captures portent cible et loupe.</li>
+    <li><strong>Elle tient les contraintes.</strong> Longueurs dans les cibles, identiques avec et sans JavaScript ; vitrine en vraie liste ; captures sombres à leur place.</li>
+  </ul>
+  <p><strong>Pourquoi pas B en premier.</strong> C’est la plus crédible pour un lead technique et la mieux construite, mais la plus froide : l’Archivo étendu et le cadre d’ingénierie l’éloignent du logo et refroidissent le récit de l’accueil. Si Charles préfère la rigueur à l’atmosphère, B devient le premier choix ; sa nuit refaite reste alors à juger.</p>
+  <p><strong>Pourquoi pas A.</strong> C’est la plus belle à lire et la plus fidèle à la voix de Charles, mais elle se lit comme un très bon livre plus que comme le portrait d’un lead : le « D en mieux » que le cahier redoutait. On garde son signet.</p>
+
+  <h3>Greffes conseillées sur C</h3>
+  <ol class="liste-greffes">
+    <li><span class="source">de B</span> <strong>La fiche technique en tableau à filets</strong> en tête de chaque page de projet (Besoin · Ma part · Rôle · Période · Équipe · Statut · Liens publics), à la place de la carte arrondie. C’est le gabarit commun le plus lisible en diagonale ; les trois juges la demandent.</li>
+    <li><span class="source">de B</span> <strong>La vitrine Projets de B :</strong> l’index des cinq étiquettes de preuve en tête (« Mener une équipe », « Un système en production »…) et « Voir le projet → » sur chaque carte, pas seulement sur la vedette.</li>
+    <li><span class="source">de B</span> <strong>L’acte bleu nuit pour « La suite » :</strong> un aplat bleu roi derrière « Discutons ». La fin d’accueil gagne en netteté, et la couleur d’identité se trouve à l’endroit de l’action.</li>
+    <li><span class="source">de A</span> <strong>Le signet-ruban</strong>, lanterne au bout, comme marqueur de la section lue dans « Dans cette page », à la place des points. Il prolonge l’allumage et donne une signature à la navigation.</li>
+    <li><span class="source">de A</span> <strong>À essayer : Newsreader pour les titres</strong>, avec son axe optique « display », à la place d’Instrument Serif. Le grand corps et le contraste restent, et C sort de la pile typographique la plus vue en 2025-2026. Une option à comparer, pas une obligation.</li>
+  </ol>
+
+  <h3>Finitions encore ouvertes sur C</h3>
+  <ul>
+    <li>Rayons de 12 px ramenés à 4-6 px, actes de veille bord à bord sur l’accueil : sortir de l’esthétique « SaaS ».</li>
+    <li>Un seul halo de jour par écran, sur la seule zone éclairée.</li>
+    <li>Logos de marque : monochromes en encre, « allumés » en ivoire ou en ambre la nuit, ou en couleur pour le seul quotidien. Les juges sont partagés ; à trancher.</li>
+    <li>Vignettes de série (ACC-15, CMP-02 à CMP-08) encore sous le seuil de 320 px.</li>
+  </ul>
+
+  <h3>Points de contenu à soumettre à Charles</h3>
+  <p class="gris">Communs aux trois directions. Ils relèvent du récit : on ne les tranche pas à sa place.</p>
+  <ol class="questions">
+    <li>Le bandeau ouvre sur « le programme de développeur web bouclé en un mois », qu’un recruteur de grande entreprise peut lire comme un signal junior. Le récit validé impose l’ordre ; « Emmener » pourrait au moins être la case la plus forte.</li>
+    <li>« Lead du pôle francophone de PvZ Fusion » ne dit rien à un non-joueur. « Projet open source, 19 langues », fait déjà utilisé dans les maquettes, donnerait l’échelle.</li>
+    <li>Sur PvZ, la part personnelle (4 862 entrées sur 5 179, à confirmer) sous « Faire grandir une équipe » laisse penser que le lead a surtout traduit seul. La cadrer, ou la renvoyer en note de sources (Q7).</li>
+    <li>Aucun premier écran ne montre une réalisation réelle. Une trace concrète liée depuis « Emmener », l’en-tête de la PR #110 et ses huit crédits, ferait passer de « convaincant » à « prouvé ».</li>
+  </ol>
+
+  <h3>Corrections communes, sans débat</h3>
+  <ul>
+    <li>« Vers 13 ans, j’apprends le C… » : écrire « j’apprends le C, pour passer ensuite au C++ et coder mes jeux sur Unreal Engine », comme dans la matière première.</li>
+    <li>« Seul on va vite… » figure sur l’accueil et sur PvZ dans les trois maquettes : une seule occurrence, l’accueil ; sur PvZ, une phrase de Charles propre au projet.</li>
+  </ul>
+</section>
+
+<footer class="pied">
+  Sources : maquettes et README de <a href="a-edition-reliee/README.md">A</a>, <a href="b-banc-essai/README.md">B</a> et <a href="c-lanterne/README.md">C</a> ; cahier des charges de la refonte, § 8 et § 9 ; notes des trois juges.
+</footer>
+
+</div>
+</body>
+</html>
