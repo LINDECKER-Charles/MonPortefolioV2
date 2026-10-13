@@ -257,18 +257,44 @@ const debutTexte = moisEnClair(e.debut);
     margin-top: var(--s1);
   }
 
+  /* Un dépliant, pas un lien : texte à l’encre et chevron qui pivote à
+     l’ouverture, comme les relevés de PvZ Fusion (règle E2 : → et ↗ restent
+     aux liens). */
   .fiche__contexte summary {
     display: inline-flex;
     align-items: center;
+    gap: var(--s3);
     min-height: 44px;
-    color: var(--accent);
+    color: var(--encre);
     font-size: var(--t-s);
     font-weight: 600;
+    list-style: none;
     cursor: pointer;
+  }
+
+  .fiche__contexte summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .fiche__contexte summary::after {
+    content: '';
+    width: 7px;
+    height: 7px;
+    margin-top: -4px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    rotate: 45deg;
+    transition: rotate var(--d-ui) var(--courbe), margin var(--d-ui) var(--courbe);
+  }
+
+  .fiche__contexte[open] summary::after {
+    rotate: 225deg;
+    margin-top: 4px;
   }
 
   .fiche__contexte summary:hover {
     text-decoration: underline;
+    text-decoration-thickness: 1px;
     text-underline-offset: 0.22em;
   }
 
