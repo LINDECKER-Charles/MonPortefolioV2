@@ -360,6 +360,33 @@ const preuve = (href: string) => attributsMesure(href, { emplacement: 'preuves' 
     width: 72px;
   }
 
+  /* La nuit, la mosaïque de captures Frontend Mentor, claire et saturée,
+     accrocherait l’œil plus que les lanternes : un peu baissée, cernée d’un
+     filet. L’impression la garde telle quelle. */
+  @media screen {
+    :global(:root[data-theme='nuit']) :global(.frontend-mentor__visuel) {
+      outline: 1px solid var(--filet);
+      outline-offset: -1px;
+    }
+
+    :global(:root[data-theme='nuit']) :global(.frontend-mentor__visuel img) {
+      filter: brightness(0.88);
+    }
+  }
+
+  @media screen and (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme])) :global(.frontend-mentor__visuel) {
+      outline: 1px solid var(--filet);
+      outline-offset: -1px;
+    }
+
+    :global(:root:not([data-theme])) :global(.frontend-mentor__visuel img) {
+      filter: brightness(0.88);
+    }
+  }
+
+  /* Dans une colonne étroite (tablette), la vignette passe au-dessus de
+     l’intitulé, en 56 px : la station reste compacte face au titre obtenu. */
   @container (max-width: 180px) {
     .station {
       grid-template-columns: minmax(0, 1fr);
