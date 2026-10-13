@@ -13,10 +13,15 @@
  * droite ; une fin inconnue se dissout et le texte dit « fin à confirmer ».
  * L’échelle s’arrête au mois de la construction du site.
  *
+ * Un rôle tenu seulement depuis un mois donné (`bascule`, PvZ Fusion :
+ * traducteur, puis lead) coupe la barre en deux : la part d’avant en contour,
+ * celle du rôle affiché pleine.
+ *
  * Le texte de chaque ligne porte tout (rôle, nature, période) et forme le nom
- * du lien, dans l’ordre affiché : les barres sont décoratives pour les
- * lecteurs d’écran. Sur mobile, le libellé passe
- * au-dessus de sa barre.
+ * du lien, dans l’ordre affiché, avec une période lue en mots (« août à
+ * septembre 2025 », jamais « flèche ») : les barres sont décoratives pour les
+ * lecteurs d’écran. Un filet plein marque l’origine de l’échelle. Sur mobile,
+ * le libellé passe au-dessus de sa barre.
  */
 import { NATURES, rangDuMois, type Mois, type Nature } from '../../config/parcours';
 import { typo } from '../../lib/typo';
@@ -34,6 +39,8 @@ export interface LigneFrise {
   finAConfirmer?: boolean;
   /** Début et fin seulement connus à l’année (« 2023–2024 ») : bords estompés. */
   bornesFloues?: boolean;
+  /** Mois où commence le rôle du libellé : la barre se coupe à cet endroit. */
+  bascule?: Mois;
 }
 
 export interface CouloirFrise {
@@ -74,8 +81,17 @@ function barre(ligne: LigneFrise) {
   const d = position(depart);
   const f = position(arrivee);
   const etat = ligne.fin ? 'close' : ligne.finAConfirmer ? 'incertaine' : 'en-cours';
-  return { d: arrondi(d), f: arrondi(f), etat };
+  const b = ligne.bascule ? arrondi(position(rangDuMois(ligne.bascule))) : null;
+  return { d: arrondi(d), f: arrondi(f), b, etat };
 }
+
+/** La période en mots pour le nom du lien : « août à septembre 2025 », « de 2023 à 2024 ». */
+const periodeLue = (periode: string) =>
+  periode
+    .replace(' → fin à confirmer', ', fin à confirmer')
+    .replace(' → terminé', ', terminé')
+    .replace(' → ', ' à ')
+    .replace(/(\d{4})–(\d{4})/, 'de $1 à $2');
 
 // Repères : chaque 1er janvier (trait plein), chaque trimestre si demandé.
 const reperes: { x: number; annee: boolean }[] = [];
@@ -98,9 +114,10 @@ const presentes = [...new Set(couloirs.flatMap((c) => c.lignes.map((l) => l.natu
 const avecEnCours = couloirs.some((c) => c.lignes.some((l) => !l.fin && !l.finAConfirmer));
 const avecIncertaine = couloirs.some((c) => c.lignes.some((l) => l.finAConfirmer));
 const titreId = `${id ?? 'frise'}-titre`;
+const avecCouloirs = couloirs.some((c) => c.nom);
 ---
 
-<figure class:list={['frise', classe]} id={id} aria-labelledby={titreId}>
+<figure class:list={['frise', { 'frise--couloirs': avecCouloirs }, classe]} id={id} aria-labelledby={titreId}>
   <div class="frise__tete">
     <figcaption class="frise__titre" id={titreId}>{typo(titre)}</figcaption>
     <ul class="frise__legende" aria-label="Légende">
@@ -111,6 +128,7 @@ const titreId = `${id ?? 'frise'}-titre`;
   </div>
   <div class="frise__corps">
     <div class="frise__fond" aria-hidden="true">
+      <span class="frise__repere frise__repere--origine" style="--x:0"></span>
       {reperes.map((r) => <span class:list={['frise__repere', { 'frise__repere--annee': r.annee }]} style={`--x:${r.x}`}></span>)}
     </div>
     <p class="frise__echelle" aria-hidden="true">
@@ -122,16 +140,17 @@ const titreId = `${id ?? 'frise'}-titre`;
           {couloir.nom && <p class="frise__couloir-nom">{couloir.nom}</p>}
           <ol class="frise__lignes" role="list" aria-label={couloir.nom}>
             {couloir.lignes.map((ligne) => {
-              const { d, f, etat } = barre(ligne);
+              const { d, f, b, etat } = barre(ligne);
               return (
-                <li class="frise__ligne" style={`--d:${d};--f:${f}`}>
-                  <a href={ligne.href} aria-label={typo(`${ligne.libelle}, ${ligne.periode}`)}>
+                <li class="frise__ligne" style={`--d:${d};--f:${f}${b === null ? '' : `;--b:${b}`}`}>
+                  <a href={ligne.href} aria-label={typo(`${ligne.libelle}, ${periodeLue(ligne.periode)}`)}>
                     <span class="frise__texte">
                       <span class="frise__libelle">{typo(ligne.libelle)}</span>
                       <span class="frise__periode">{typo(ligne.periode)}</span>
                     </span>
                     <span class="frise__piste" aria-hidden="true">
-                      <span class:list={['frise__barre', `frise__barre--${ligne.nature}`, `frise__barre--${etat}`, { 'frise__barre--floue': ligne.bornesFloues }]} />
+                      {b !== null && <span class:list={['frise__barre', 'frise__barre--avant', `frise__barre--${ligne.nature}`]} />}
+                      <span class:list={['frise__barre', `frise__barre--${ligne.nature}`, `frise__barre--${etat}`, { 'frise__barre--floue': ligne.bornesFloues, 'frise__barre--apres': b !== null }]} />
                     </span>
                   </a>
                 </li>
@@ -146,6 +165,7 @@ const titreId = `${id ?? 'frise'}-titre`;
 
 <style>
   .frise {
+    --nom: 0px;
     --libelles: 19rem;
     --ecart: var(--s5);
     margin: 0;
@@ -212,7 +232,7 @@ const titreId = `${id ?? 'frise'}-titre`;
     position: absolute;
     top: 0;
     bottom: 0;
-    left: calc(var(--libelles) + var(--ecart));
+    left: calc(var(--nom) + var(--libelles) + var(--ecart));
     right: 0;
     pointer-events: none;
   }
@@ -229,10 +249,15 @@ const titreId = `${id ?? 'frise'}-titre`;
     border-left: 1px solid var(--filet);
   }
 
+  /* L’origine de l’échelle : la grille commence ici. */
+  .frise__repere--origine {
+    border-left: 1px solid var(--trait);
+  }
+
   .frise__echelle {
     position: relative;
     height: 24px;
-    margin-left: calc(var(--libelles) + var(--ecart));
+    margin-left: calc(var(--nom) + var(--libelles) + var(--ecart));
     font-size: var(--t-xs);
     font-variant-numeric: tabular-nums lining-nums;
     color: var(--eteint);
@@ -252,7 +277,7 @@ const titreId = `${id ?? 'frise'}-titre`;
   .frise__couloir-nom {
     position: relative;
     width: var(--libelles);
-    padding-block: var(--s2) var(--s1);
+    padding-block: var(--s1) 0;
     font-size: var(--t-xs);
     font-weight: 600;
     letter-spacing: var(--ls-petit);
@@ -271,8 +296,8 @@ const titreId = `${id ?? 'frise'}-titre`;
     grid-template-columns: var(--libelles) minmax(0, 1fr);
     column-gap: var(--ecart);
     align-items: center;
-    min-height: 44px;
-    padding-block: var(--s1);
+    min-height: 36px;
+    padding-block: 2px;
     border-radius: var(--r1);
     color: var(--encre);
     text-decoration: none;
@@ -341,6 +366,18 @@ const titreId = `${id ?? 'frise'}-titre`;
     background: color-mix(in srgb, var(--encre) 34%, transparent);
   }
 
+  /* Un rôle pris en cours de route : la part d’avant en contour, coupée net. */
+  .frise__barre--avant {
+    width: max(4px, calc((var(--b) - var(--d)) * 1% - 3px));
+    background: none;
+    box-shadow: inset 0 0 0 1.5px var(--encre);
+  }
+
+  .frise__barre--apres {
+    left: calc(var(--b) * 1%);
+    width: max(6px, calc((var(--f) - var(--b)) * 1%));
+  }
+
   /* En cours : une pointe vers aujourd’hui. */
   .frise__barre--en-cours {
     border-radius: var(--r1) 0 0 var(--r1);
@@ -363,6 +400,36 @@ const titreId = `${id ?? 'frise'}-titre`;
     outline-offset: 2px;
   }
 
+  /* Écran large : libellé et période sur une ligne, la frise reste basse. */
+  @media (min-width: 1200px) {
+    .frise {
+      --libelles: 29rem;
+    }
+
+    .frise__texte {
+      flex-direction: row;
+      flex-wrap: wrap;
+      column-gap: 0.6em;
+    }
+
+    /* Le nom du couloir dans sa propre colonne, à gauche de ses lignes. */
+    .frise--couloirs {
+      --nom: 7rem;
+      --libelles: 30rem;
+    }
+
+    .frise--couloirs .frise__couloir {
+      display: grid;
+      grid-template-columns: var(--nom) minmax(0, 1fr);
+      align-items: start;
+    }
+
+    .frise--couloirs .frise__couloir-nom {
+      width: auto;
+      padding-block: 10px 0;
+    }
+  }
+
   @media (max-width: 760px) {
     .frise {
       --libelles: 0px;
@@ -376,6 +443,7 @@ const titreId = `${id ?? 'frise'}-titre`;
     .frise__ligne a {
       grid-template-columns: minmax(0, 1fr);
       row-gap: var(--s1);
+      min-height: 44px;
       padding-block: var(--s2);
     }
 
