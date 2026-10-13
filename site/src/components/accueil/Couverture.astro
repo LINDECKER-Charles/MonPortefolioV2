@@ -1,91 +1,226 @@
 ---
+/**
+ * Le premier écran de l’accueil (cahier, § 5.1 ; règle E1) : l’accroche, seul
+ * grand titre, avec le nom en sur-titre ; l’identité en clair ; le chapeau
+ * dans la voix de Charles ; « Discutons » vers /contact et « Lire mon
+ * histoire » ; la photo en couleur ; le bandeau des trois preuves. Titre,
+ * identité, preuve et action portent `data-pli` : ils tiennent dans
+ * 1 440 × 900 et 390 × 844.
+ *
+ * La photo : charles-4 (ACC-01), en couleur, sous le voile de lune la nuit,
+ * la lanterne posée sur la joue éclairée (composant Portrait). Sur mobile,
+ * elle passe après le bandeau des preuves.
+ *
+ * `minutes` : la durée de lecture du récit, comptée sur son texte réel
+ * (Recit.astro).
+ */
+import BandeauPreuves from './BandeauPreuves.astro';
+import Bouton from '../ui/Bouton.astro';
+import LienAction from '../ui/LienAction.astro';
 import Portrait from '../ui/Portrait.astro';
 import photo from '../../assets/photos/charles-4.webp';
 import { SITE } from '../../config/site';
+
+interface Props {
+  minutes: number;
+}
+
+const { minutes } = Astro.props;
 ---
 
-<section class="couverture" aria-labelledby="titre">
-  <div class="wrap">
-    <div class="couverture__ligne">
-      <p>Architecte logiciel, développeur, mainteneur open source</p>
-      <p class="couverture__lieu">Près de Mulhouse, France</p>
+<section class="couverture conteneur" aria-labelledby="accroche">
+  <div class="couverture__texte">
+    <h1 id="accroche" data-pli="titre">
+      <span class="couverture__nom">{SITE.nom}</span>
+      <span class="couverture__accroche"><span>Je maîtrise d’abord les&nbsp;règles du&nbsp;jeu.</span> <span>Ensuite, je&nbsp;les&nbsp;réinvente.</span></span>
+    </h1>
+    <p class="couverture__identite" data-pli="identite">
+      Architecte logiciel chez <span class="insecable">B-Hive</span>, à Mulhouse. Lead du pôle francophone de PvZ&nbsp;Fusion et mainteneur de sa traduction multilingue.
+    </p>
+    <p class="couverture__chapeau">
+      Je code depuis mes 13&nbsp;ans. Sur Gwent, j’ai appris qu’il n’y a pas d’excuse en cas de défaite&nbsp;: juste moi et mes propres décisions. Depuis, j’ai formé des développeurs jusqu’à leur titre et je mène une équipe de bénévoles sur un projet open source.
+    </p>
+    <div class="actions couverture__actions" data-pli="action">
+      <Bouton href="/contact" evenement="contact-page" emplacement="hero">Discutons</Bouton>
+      <span class="couverture__lire">
+        <LienAction href="#origine">Lire mon histoire</LienAction>
+        <span class="couverture__duree">{minutes}&nbsp;min de lecture</span>
+      </span>
     </div>
-    <p class="couverture__signature">Charles Lindecker<span aria-hidden="true">.</span></p>
-    <div class="couverture__in">
-      <div class="couverture__texte">
-        <h1 id="titre">
-          <span>Je maîtrise d’abord les règles du jeu.</span>
-          <span>Ensuite, je les réinvente.</span>
-        </h1>
-        <p class="couverture__chapeau">
-          Je code depuis mes 13&nbsp;ans. Un jeu de cartes m’a appris à remettre mes décisions en question.
-          Depuis, je construis des logiciels, j’ai accompagné des développeurs jusqu’à leur titre et je fais avancer des projets à plusieurs.
-        </p>
-        <div class="actions couverture__actions">
-          <a class="btn btn--plein" href="#discutons">Discutons <span aria-hidden="true">↗</span></a>
-          <a class="couverture__lire" href="#origine">Lire mon histoire <span aria-hidden="true">↓</span></a>
-        </div>
-      </div>
+  </div>
 
-      <figure class="fig0" id="fig-0">
-        <Portrait
-          class="fig0__cadre"
-          src={photo}
-          widths={[360, 480, 720, 960]}
-          sizes="(max-width: 760px) calc(100vw - 48px), (max-width: 1100px) 42vw, 480px"
-          alt="Charles Lindecker dans un champ de colza, en chemise bleu roi et bretelles."
-          loading="eager"
-          fetchpriority="high"
-          cadrage="50% 65%"
-          lueur="52% 36%"
-        />
-        <figcaption>
-          <span>{SITE.nom}</span>
-          <a class="fig0__note" href="#collectif">Du solo au collectif</a>
-        </figcaption>
-      </figure>
-    </div>
-    <div class="couverture__suite">
-      <p>Un parcours, une méthode, des réalisations.</p>
-      <a href="/projets">Entrer par les projets <span aria-hidden="true">↘</span></a>
-    </div>
+  <figure class="couverture__photo" id="portrait">
+    <Portrait
+      class="couverture__portrait"
+      src={photo}
+      widths={[360, 540, 720, 1040]}
+      sizes="(max-width: 860px) calc(100vw - 32px), (max-width: 1344px) 38vw, 520px"
+      alt="Charles Lindecker, chemise bleu roi, dans un champ de colza en fleur."
+      loading="eager"
+      fetchpriority="high"
+      cadrage="50% 62%"
+      lueur="54% 39%"
+    />
+  </figure>
+
+  <div class="couverture__preuves">
+    <BandeauPreuves />
   </div>
 </section>
 
 <style>
-  .couverture { padding-block: 36px 0; }
-  .couverture__ligne { display: flex; justify-content: space-between; gap: 20px; font-size: .9375rem; color: var(--graphite); }
-  .couverture__signature { font-size: clamp(3.5rem, 10vw, 9rem); font-weight: 800; line-height: 1.1; letter-spacing: -.055em; margin: 16px 0 38px -0.055em; white-space: nowrap; }
-  .couverture__signature span { color: var(--bleu); }
-  .couverture__in { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: clamp(36px, 6vw, 88px); align-items: center; padding-bottom: 54px; }
-  h1 { font-size: clamp(2.4rem, 4.15vw, 3.75rem); line-height: 1.045; letter-spacing: -.035em; max-width: 18ch; text-wrap: initial; }
-  h1 span { display: block; }
-  h1 span + span { margin-top: .18em; }
-  .couverture__chapeau { font-size: 1.125rem; line-height: 1.6; max-width: 46ch; margin-top: 28px; color: var(--graphite); }
-  .couverture__actions { margin-top: 30px; align-items: center; gap: 26px; }
-  .couverture__actions .btn { min-width: 160px; justify-content: space-between; }
-  .couverture__actions .btn span { font-size: 1.3em; font-weight: 400; }
-  .couverture__lire { display: inline-flex; align-items: center; justify-content: space-between; gap: 18px; min-height: 48px; color: var(--encre); font-weight: 500; }
-  .fig0 { position: relative; width: 100%; max-width: 480px; justify-self: end; padding: 12px 12px 0; }
-  .fig0::before { content: ''; position: absolute; inset: 0 0 50px; border: 1px solid var(--filet); pointer-events: none; }
-  .fig0 :global(.fig0__cadre) { aspect-ratio: .96; }
-  .fig0 figcaption { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 16px; padding-top: 16px; font-size: .875rem; }
-  .fig0__note { font-family: var(--font-note); font-style: italic; color: var(--bleu); font-size: 1.0625rem; }
-  .couverture__suite { display: flex; align-items: center; justify-content: space-between; gap: 16px; border-top: 1px solid var(--filet); padding: 18px 0; font-size: .9375rem; }
-  .couverture__suite p { color: var(--graphite); }
-  .couverture__suite a { display: inline-flex; align-items: center; gap: 28px; min-height: 44px; font-weight: 500; color: var(--encre); }
-  @media (max-width: 1100px) { .couverture__lieu { display: none; } }
-  @media (max-width: 760px) {
-    .couverture { padding-top: 24px; }
-    .couverture__ligne { font-size: .8125rem; max-width: 32ch; }
-    .couverture__signature { white-space: normal; max-width: 9ch; line-height: .95; font-size: clamp(3.75rem, 15vw, 7rem); margin-block: 24px 32px; letter-spacing: -.06em; }
-    .couverture__in { grid-template-columns: minmax(0, 1fr); gap: 40px; padding-bottom: 24px; }
-    h1 { font-size: clamp(2.25rem, 7vw, 3.25rem); max-width: 22ch; }
-    .couverture__chapeau { margin-top: 22px; font-size: 1.0625rem; }
-    .couverture__actions { gap: 22px; margin-top: 24px; }
-    .fig0 { justify-self: start; max-width: none; padding: 8px 8px 0; }
-    .fig0 :global(.fig0__cadre) { aspect-ratio: 1.12; }
-    .couverture__suite { flex-wrap: wrap; gap: 2px; padding-block: 14px; }
+  .couverture {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-areas:
+      'texte photo'
+      'preuves preuves';
+    column-gap: clamp(32px, 6vw, 96px);
+    row-gap: clamp(20px, 2.6vh, 32px);
+    padding-top: clamp(28px, 5vh, 52px);
+    padding-bottom: var(--s8);
   }
-  @media print { .couverture__signature { font-size: 54pt; } .couverture__in { gap: 24px; } h1 { font-size: 24pt; } }
+
+  .couverture__texte {
+    grid-area: texte;
+    align-self: center;
+  }
+
+  .couverture__photo {
+    grid-area: photo;
+    margin: 0;
+  }
+
+  .couverture__preuves {
+    grid-area: preuves;
+  }
+
+  h1 {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+  }
+
+  .couverture__nom {
+    font-family: var(--police-texte);
+    font-size: var(--t-s);
+    font-weight: 600;
+    letter-spacing: var(--ls-petit);
+    line-height: 1.3;
+    color: var(--encre);
+  }
+
+  .couverture__accroche {
+    font-size: var(--t-4xl);
+    line-height: 0.96;
+    letter-spacing: var(--ls-affiche);
+    text-wrap: initial;
+    /* Retrait optique : le crochet du J ne décale pas la colonne. */
+    margin-left: -0.04em;
+  }
+
+  .couverture__accroche > span {
+    display: block;
+  }
+
+  .couverture__identite {
+    max-width: 44rem;
+    margin-top: var(--s5);
+    font-size: var(--t-m);
+    line-height: 1.5;
+    color: var(--encre);
+  }
+
+  .couverture__chapeau {
+    max-width: 36rem;
+    margin-top: var(--s3);
+    font-size: var(--t-l);
+    line-height: 1.45;
+    color: var(--encre);
+  }
+
+  .couverture__actions {
+    margin-top: var(--s5);
+    column-gap: var(--s6);
+  }
+
+  .couverture__lire {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: var(--s3);
+  }
+
+  .couverture__duree {
+    font-size: var(--t-xs);
+    color: var(--eteint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .couverture__photo :global(.couverture__portrait) {
+    width: 100%;
+    max-height: calc(100vh - var(--entete) - 230px);
+    min-height: 420px;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--r2);
+  }
+
+  @media (max-width: 860px) {
+    .couverture {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        'texte'
+        'preuves'
+        'photo';
+      row-gap: var(--s4);
+      padding-top: var(--s4);
+      padding-bottom: var(--s7);
+    }
+
+    h1 {
+      gap: var(--s1);
+    }
+
+    .couverture__accroche {
+      font-size: clamp(2.5rem, 11vw, 3.25rem);
+      line-height: 0.98;
+    }
+
+    .couverture__identite {
+      margin-top: var(--s3);
+      font-size: var(--t-s);
+    }
+
+    .couverture__chapeau {
+      margin-top: var(--s2);
+      font-size: var(--t-m);
+      line-height: 1.45;
+    }
+
+    .couverture__actions {
+      margin-top: var(--s4);
+      column-gap: var(--s4);
+      row-gap: 0;
+    }
+
+    .couverture__photo {
+      margin-top: var(--s3);
+    }
+
+    .couverture__photo :global(.couverture__portrait) {
+      max-height: none;
+      min-height: 0;
+    }
+  }
+
+  @media print {
+    .couverture {
+      display: block;
+    }
+
+    .couverture__photo {
+      max-width: 8cm;
+      margin-block: 1em;
+    }
+  }
 </style>

@@ -1,0 +1,239 @@
+---
+/**
+ * Une scène illustrée du récit : l’image du registre (<Visuel>, une gravure à
+ * générer) et sa lumière. La lanterne de l’image est la seule source de
+ * lumière de la scène : à son arrivée dans l’écran, puis à chaque clic sur le
+ * dessin ou au clavier, la scène s’allume depuis elle — la lanterne s’allume,
+ * puis sa lumière gagne l’image (scripts/figure-animations.ts). Mouvement
+ * réduit, impression et sans JavaScript : l’état final, l’image entière.
+ *
+ *   <Scene id="ACC-03" nom="pc" lumiere={[28, 58]} legende="Un vieux PC, en vue éclatée." />
+ *
+ * `lumiere` : la place de la lanterne dans l’image, en % du cadre ; la même
+ * que celle que la consigne du registre impose au générateur. La lumière se
+ * dessine dans un SVG au ratio du registre, posé sur l’image : le bouton de
+ * rejeu couvre tout le dessin, c’est le dessin qu’on touche.
+ *
+ * `legende` nomme la scène (bouton et légende) ; `muette` retire la légende
+ * visible quand la scène a déjà son titre à côté (FigureCollectif) ;
+ * `recadrage` affiche l’image à un autre ratio, centrée (« 2 / 1 » pour la
+ * voie et le bureau, comme la maquette) : la lumière suit le même recadrage.
+ */
+import Visuel from '../ui/Visuel.astro';
+import { visuelParId } from '../../config/visuels';
+import { typo } from '../../lib/typo';
+
+interface Props {
+  id: string;
+  nom: string;
+  legende: string;
+  lumiere: readonly [number, number];
+  sizes?: string;
+  muette?: boolean;
+  recadrage?: string;
+  class?: string;
+}
+
+const { id, nom, legende, lumiere, sizes = '(max-width: 860px) 100vw, 480px', muette = false, recadrage, class: classe } = Astro.props;
+const visuel = visuelParId(id);
+if (!visuel) throw new Error(`<Scene id="${id}"> : identifiant absent de src/config/visuels.ts`);
+const [a, b] = (visuel.ratio ?? '4 / 3').split(' / ').map(Number);
+const largeur = Math.round((100 * a) / b);
+const cx = Math.round(lumiere[0] * largeur) / 100;
+const cy = lumiere[1];
+const texte = typo(legende);
+const gid = `scene-${nom}`;
+---
+
+<figure class:list={['scene', { 'scene--recadree': recadrage }, classe]} data-scene={nom} data-figure-animation style={recadrage ? `--scene-recadrage:${recadrage}` : undefined}>
+  <div class="scene__plan">
+    <Visuel id={id} alt="" sizes={sizes} />
+    <button type="button" class="scene__rejouer" data-rejouer aria-label={`Rejouer l’animation : ${texte}`}>
+      <svg class="scene__lumiere" viewBox={`0 0 ${largeur} 100`} preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+        <defs>
+          <radialGradient id={`${gid}-nuit`} gradientUnits="userSpaceOnUse" cx={cx} cy={cy} r="64">
+            <stop offset="0" class="scene__trou" />
+            <stop offset="0.2" class="scene__trou" />
+            <stop offset="1" class="scene__ombre" />
+          </radialGradient>
+          <radialGradient id={`${gid}-halo`} gradientUnits="userSpaceOnUse" cx={cx} cy={cy} r="24">
+            <stop offset="0" class="scene__eclat" />
+            <stop offset="1" class="scene__eteint" />
+          </radialGradient>
+        </defs>
+        <g class="scene__voile" style={`transform-origin:${cx}px ${cy}px`}>
+          <rect x={-4 * largeur} y="-400" width={9 * largeur} height="900" fill={`url(#${gid}-nuit)`} />
+        </g>
+        <circle class="scene__halo" cx={cx} cy={cy} r="24" fill={`url(#${gid}-halo)`} style={`transform-origin:${cx}px ${cy}px`} />
+      </svg>
+    </button>
+  </div>
+  {!muette && <figcaption class="scene__legende">{texte}</figcaption>}
+</figure>
+
+<style>
+  .scene {
+    margin: 0;
+    /* Lumière au repos : aucune le jour, la lanterne reste allumée la nuit. */
+    --scene-halo: 0;
+    --scene-ombre: 0.62;
+  }
+
+  :global(:root[data-theme='nuit']) .scene,
+  :global(.acte-veille) .scene,
+  :global(.acte-bleu) .scene {
+    --scene-halo: 0.55;
+    --scene-ombre: 0.82;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme])) .scene {
+      --scene-halo: 0.55;
+      --scene-ombre: 0.82;
+    }
+  }
+
+  .scene__plan {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: var(--r2);
+  }
+
+  .scene__plan :global(.visuel) {
+    border-radius: 0;
+  }
+
+  .scene--recadree .scene__plan :global(.visuel) {
+    aspect-ratio: var(--scene-recadrage);
+  }
+
+  /* La commande de l’emplacement vide tient dans son cadre : quatre lignes. */
+  .scene__plan :global(.visuel__consigne) {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    overflow: hidden;
+  }
+
+  .scene__rejouer {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: var(--r2);
+    background: transparent;
+    color: inherit;
+  }
+
+  .scene__lumiere {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .scene__voile {
+    opacity: 0;
+    transform-box: view-box;
+  }
+
+  .scene__trou {
+    stop-color: var(--suie);
+    stop-opacity: 0;
+  }
+
+  .scene__ombre {
+    stop-color: var(--suie);
+    stop-opacity: var(--scene-ombre);
+  }
+
+  .scene__halo {
+    opacity: var(--scene-halo);
+    transform-box: view-box;
+  }
+
+  .scene__eclat {
+    stop-color: var(--lanterne);
+    stop-opacity: 0.7;
+  }
+
+  .scene__eteint {
+    stop-color: var(--lanterne);
+    stop-opacity: 0;
+  }
+
+  .scene__legende {
+    margin-top: var(--s2);
+    font-family: var(--police-titre);
+    font-style: italic;
+    font-size: var(--t-m);
+    line-height: 1.3;
+    color: var(--eteint);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .scene:global(.animation-en-cours) .scene__voile {
+      animation: scene-voile 1.9s var(--courbe) both;
+    }
+
+    .scene:global(.animation-en-cours) .scene__halo {
+      animation: scene-halo 1.9s ease both;
+    }
+
+    .scene:global(.animation-en-cours) .scene__plan :global(.visuel) {
+      animation: scene-image 1.9s var(--courbe) both;
+    }
+
+    /* La lanterne s’allume, vacille, puis sa lumière gagne toute l’image. */
+    @keyframes scene-voile {
+      0%,
+      16% {
+        opacity: 1;
+        transform: scale(0.3);
+      }
+      74% {
+        opacity: 0.5;
+        transform: scale(2.6);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(2.6);
+      }
+    }
+
+    @keyframes scene-halo {
+      0% {
+        opacity: 0;
+        transform: scale(0.3);
+      }
+      10% {
+        opacity: 1;
+        transform: scale(1.15);
+      }
+      18% {
+        opacity: 0.55;
+      }
+      26% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      100% {
+        opacity: var(--scene-halo);
+        transform: scale(1);
+      }
+    }
+
+    @keyframes scene-image {
+      from {
+        transform: scale(1.04);
+      }
+      to {
+        transform: scale(1);
+      }
+    }
+  }
+</style>

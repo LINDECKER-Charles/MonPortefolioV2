@@ -1,294 +1,556 @@
 ---
 /**
- * L'accueil raconte, de haut en bas (brief § 5) : l'accroche, l'origine,
- * aujourd'hui, puis une invitation à construire la suite à plusieurs.
- * Les textes reprennent les phrases de Charles (brief § 4, « Écrire
- * avec sa voix ») ; chaque chiffre surligné est sourcé dans
- * docs/matiere-premiere.md.
+ * L’accueil, direction « Lanterne » (cahier, § 5.1 ; maquette
+ * design/refonte/c-lanterne/accueil.html). Au premier écran : l’accroche,
+ * l’identité, la photo, « Discutons » et les trois preuves. Puis le récit
+ * validé (brief § 4), du solo au collectif, en trois chapitres dont les
+ * identifiants nourrissent la mesure de lecture : l’origine (pierre, puis
+ * l’acte teinté de Gwent), aujourd’hui (l’acte de veille, où les captures
+ * attendent), la suite (l’acte bleu nuit et l’aplat bleu roi de
+ * « Discutons »).
+ *
+ * Les textes reprennent les phrases de Charles (brief § 4, questions C1 à
+ * C9) ; chaque chiffre affiché est sourcé dans docs/matiere-premiere.md.
+ * Gardés à la demande de Charles (13/10/2026) : les cartes de Gwent, la
+ * figure du plafond, les trois règles de 1 à 3, le système qui communique
+ * en boucle, les lanternes qui se transmettent la flamme, les scènes
+ * rejouables au clic, le glossaire et « Pour aller plus loin ».
  */
 import Base from '../layouts/Base.astro';
-import Bloc from '../components/accueil/Bloc.astro';
 import Chapitre from '../components/accueil/Chapitre.astro';
-import Couverture from '../components/accueil/Couverture.astro';
 import Discutons from '../components/accueil/Discutons.astro';
-import Etape from '../components/accueil/Etape.astro';
 import FigureCollectif from '../components/accueil/FigureCollectif.astro';
 import FigureGwent from '../components/accueil/FigureGwent.astro';
 import FigurePlafond from '../components/accueil/FigurePlafond.astro';
-import Manuel from '../components/accueil/Manuel.astro';
-import PourAllerPlusLoin from '../components/accueil/PourAllerPlusLoin.astro';
-import Regles from '../components/accueil/Regles.astro';
-import TeteEtape from '../components/accueil/TeteEtape.astro';
-import Illustration from '../components/accueil/Illustration.astro';
+import GestesPole from '../components/accueil/GestesPole.astro';
+import ProjetsConstruits from '../components/accueil/ProjetsConstruits.astro';
+import Recit from '../components/accueil/Recit.astro';
+import Scene from '../components/accueil/Scene.astro';
+import SceneLanternes from '../components/accueil/SceneLanternes.astro';
+import SceneSysteme from '../components/accueil/SceneSysteme.astro';
+import TeteChapitre from '../components/accueil/TeteChapitre.astro';
+import CarteProjet from '../components/pages/CarteProjet.astro';
+import Acte from '../components/ui/Acte.astro';
+import LienAction from '../components/ui/LienAction.astro';
+import PreuveChiffree from '../components/ui/PreuveChiffree.astro';
+import PreuvesChiffrees from '../components/ui/PreuvesChiffrees.astro';
+import Surligneur from '../components/ui/Surligneur.astro';
 import Terme from '../components/ui/Terme.astro';
-import { GLOSSAIRE } from '../config/glossaire';
+import Visuel from '../components/ui/Visuel.astro';
 import { CHAPITRES } from '../config/chapitres';
+import { GLOSSAIRE } from '../config/glossaire';
+import { projetDeLaVitrine } from '../config/projets';
 
-const titre = 'Charles Lindecker, mode d’emploi';
+const titre = 'Charles Lindecker — architecte logiciel';
 const description =
-  'Architecte logiciel, je code depuis mes 13 ans. Mon parcours, ma méthode et mes réalisations, du jeu de cartes aux projets open source.';
+  'Architecte logiciel chez B-Hive et lead du pôle francophone de PvZ Fusion. Je maîtrise d’abord les règles du jeu, ensuite je les réinvente.';
+
+/** Sommaire de l’en-tête (mobile et tablette) : les trois chapitres. */
+const SOMMAIRE = CHAPITRES.map(({ id, titre }) => ({ id, titre }));
+/** « Dans cette page » (bureau) : les chapitres et leurs moments clés. */
+const ENTREES = [
+  { id: 'origine', titre: '01\u00a0L’origine' },
+  { id: 'gwent', titre: 'Gwent, la méthode' },
+  { id: 'portes', titre: 'Les portes' },
+  { id: 'voie', titre: 'La voie qui marche' },
+  { id: 'aujourdhui', titre: '02\u00a0Aujourd’hui' },
+  { id: 'collectif', titre: 'Du solo au collectif' },
+  { id: 'discutons', titre: '03\u00a0La suite' },
+];
+const omnicard = projetDeLaVitrine('omnicard');
 ---
 
-<Base titre={titre} description={description} chemin="/" accueil sommaire={CHAPITRES.map(({ id, titre }) => ({ id, titre }))}>
-  <Couverture />
-
-  <Manuel>
-    <!-- 1 · L'origine -->
+<Base titre={titre} description={description} chemin="/" accueil sommaire={SOMMAIRE}>
+  <Recit entrees={ENTREES}>
+    <!-- 01 · L’origine -->
     <Chapitre id="origine">
-      <p class="chapitre__intro">Avant d’en faire mon métier, j’ai appris à coder pour fabriquer mes propres jeux. La suite a demandé quelques détours.</p>
+      <TeteChapitre id="origine" chapeau="Avant d’en faire mon métier, j’ai appris à coder pour fabriquer mes propres jeux. La suite a demandé quelques détours." />
 
-      <ol class="etapes">
-        <Etape num="1.1">
-          <Bloc>
-            <TeteEtape quand="Vers 10 ans" titre="Le terrain de jeu" />
-            <p>
-              Avec mon père, informaticien, je démonte de vieux PC hors service. Vers 13&nbsp;ans, j’apprends le C sur
-              OpenClassrooms avec une idée fixe&nbsp;: coder mes propres jeux sur Unreal Engine.
-            </p>
-            <p>
-              Avec mon cousin, on invente un jeu de cartes sur papier, dont on sort des éditions sans fin. On passe des
-              après-midi entiers à imprimer les cartes et à les plastifier à la main.
-            </p>
-            <div class="plateau">
-              <Illustration scene="pc" largeur={280} legende="Un vieux PC, en vue éclatée." />
-              <Illustration scene="cartes" largeur={280} legende="Les cartes, plastifiées à la main." />
-            </div>
-            <Fragment slot="marge">
-              <p class="note">
-                <span class="sr">Note de l’auteur&nbsp;: </span>Ce jeu de cartes deviendra Omnicard.
-                <a href="/projets/omnicard">Découvrir le projet.</a>
-              </p>
-            </Fragment>
-          </Bloc>
-        </Etape>
+      <article class="moment" id="terrain" aria-labelledby="terrain-titre">
+        <div class="moment__texte">
+          <p class="quand">Vers 10&nbsp;ans</p>
+          <h3 id="terrain-titre">Le terrain de jeu</h3>
+          <p>
+            Avec mon père, informaticien, je démonte de vieux PC hors service. Vers 13&nbsp;ans, j’apprends le C sur
+            OpenClassrooms, pour passer ensuite au C++ et coder mes jeux sur Unreal Engine.
+          </p>
+          <p>
+            Avec mon cousin, on invente un jeu de cartes sur papier, dont on sort des éditions sans fin. On passe des
+            après-midi entiers à imprimer les cartes et à les plastifier à la main.
+          </p>
+        </div>
+        <div class="moment__scenes">
+          <Scene id="ACC-03" nom="pc" lumiere={[28, 58]} legende="Un vieux PC, en vue éclatée." sizes="(max-width: 860px) 100vw, 400px" />
+          <Scene id="ACC-04" nom="cartes" lumiere={[78, 26]} legende="Les cartes, plastifiées à la main." sizes="(max-width: 860px) 100vw, 400px" />
+        </div>
+      </article>
 
-        <Etape num="1.2">
-          <Bloc>
-            <TeteEtape quand="Vers 17 ans" titre="Gwent, la méthode" />
+      <div class="omnicard">
+        <p class="renvoi">Ce jeu de cartes deviendra Omnicard.</p>
+        <CarteProjet
+          variante="vedette"
+          as="article"
+          niveau={3}
+          id="omnicard"
+          rang={projetDeLaVitrine('omnicard').rang}
+          href={omnicard.projet.href}
+          nom={omnicard.projet.nom}
+          preuve={omnicard.projet.preuve}
+          besoin="Ce jeu de cartes, je l’ai repris seul et transformé en jeu en ligne, avec un moteur de règles en C# qui arbitre chaque partie côté serveur."
+          chiffre={{ valeur: '3 mois', libelle: 'de travail cumulé, environ' }}
+          role="Seul : règles, équilibrage des cartes, moteur de jeu"
+          statut={{ texte: 'Hors ligne, en attente de refonte', etat: 'eteint' }}
+          liens={[{ href: 'https://github.com/LINDECKER-Charles/public-Omnicard', libelle: 'Présentation publique (GitHub)' }]}
+        >
+          <Visuel slot="visuel" id="OMN-01" sizes="(max-width: 860px) 100vw, 560px" />
+        </CarteProjet>
+      </div>
+
+      <Acte as="section" ton="teinte" espace={false} id="gwent" titre="gwent-titre" class="panneau gwent-recit">
+        <div class="gwent-recit__haut">
+          <div class="moment__texte">
+            <p class="quand">Vers 17&nbsp;ans</p>
+            <h3 id="gwent-titre">Gwent, la méthode</h3>
             <p>
               Je découvre Gwent, un jeu de cartes en ligne. Pas d’excuse en cas de défaite pour jeter la faute sur un
               autre&nbsp;: juste moi et mes propres décisions. Je teste un <Terme t={GLOSSAIRE.deck}>deck</Terme>, puis un
-              deuxième, puis un troisième. Parfois, c’est un flop. Mais j’apprends de ce flop et je comprends où mon
-              instinct m’a trompé, ce qui l’aiguise.
+              deuxième, puis un troisième. Parfois je roule sur la <Terme t={GLOSSAIRE.meta}>méta</Terme> en la prenant à
+              contre-courant, parfois c’est un flop, mais j’apprends de ce flop et je comprends où mon instinct m’a trompé,
+              ce qui l’aiguise.
             </p>
-            <div class="bande">
-              <FigureGwent />
-            </div>
-            <Fragment slot="marge">
-              <p class="note">
-                <span class="sr">Note de l’auteur&nbsp;: </span>Juste moi et mes propres décisions.
-              </p>
-            </Fragment>
-          </Bloc>
-          <Bloc>
+          </div>
+          <FigureGwent />
+        </div>
+        <div class="gwent-recit__bas">
+          <div class="moment__texte">
             <p>
               En un an, j’approche du <Terme t={GLOSSAIRE.classementMondial}>classement mondial</Terme>, puis je plafonne
               pendant quatre mois. Copier ce que jouent les meilleurs ne suffit plus. Alors je fais l’inverse&nbsp;: je
-              construis un deck à contre-courant, et c’est lui qui me fait entrer dans le classement mondial.
+              construis un deck à contre-courant, et c’est lui qui me fait entrer dans le classement mondial. Au sommet, je
+              trouve des joueurs qui jouent ce qu’ils veulent, font preuve de créativité et viennent essayer de nouvelles
+              choses plutôt que seulement gagner.
             </p>
-            <Fragment slot="marge">
-              <p class="note">
-                <span class="sr">Note de l’auteur&nbsp;: </span>Le plafond, puis le saut&nbsp;: <a href="#fig-1"
-                  >voir la figure&nbsp;1</a
-                >.
-              </p>
-            </Fragment>
-          </Bloc>
-          <div class="etape__figure">
-            <FigurePlafond />
+            <p>
+              Depuis, à chaque mise à jour du jeu, je passe deux jours à jouer la méta, puis je la réinvente. J’aborde tout
+              ce qui est nouveau de la même façon&nbsp;: d’abord maîtriser ce qui se fait, ensuite le réinventer.
+            </p>
+            <p class="renvoi">C’est la règle de la couverture. <a href="#regles">Voir les trois règles<span class="fleche" aria-hidden="true">&nbsp;↓</span></a></p>
           </div>
-          <Bloc>
-            <p>
-              Depuis, à chaque mise à jour du jeu, je passe deux jours à jouer la <Terme t={GLOSSAIRE.meta}>méta</Terme>,
-              puis je la réinvente. J’aborde tout ce qui est nouveau de la même façon&nbsp;: d’abord maîtriser ce qui se
-              fait, ensuite le réinventer.
-            </p>
-            <Fragment slot="marge">
-              <p class="note">
-                <span class="sr">Note de l’auteur&nbsp;: </span>C’est la règle de la couverture.
-                <a href="#regles">Voir les trois règles.</a>
-              </p>
-            </Fragment>
-          </Bloc>
-        </Etape>
+          <FigurePlafond />
+        </div>
+      </Acte>
 
-        <Etape num="1.3">
-          <Bloc>
-            <TeteEtape quand="Avant 2025" titre="Les portes qui ne s’ouvrent pas" />
-            <p>
-              BUT Informatique, fac de physique-chimie, BUT Réseaux &amp; Télécoms&nbsp;: trois années de filières
-              classiques, une chacune. Puis la piscine de 42, sans admission. Ça n’a pas vraiment marché. Mais je n’ai
-              pas abandonné, et je me suis réorienté autant que nécessaire.
-            </p>
-            <blockquote class="citation">
-              <p>«&nbsp;J’ai recommencé jusqu’à réussir.&nbsp;»</p>
-            </blockquote>
-            <Fragment slot="marge">
-              <p class="note"><span class="sr">Note de l’auteur&nbsp;: </span>Quatre tentatives avant la bonne voie.</p>
-              <Illustration scene="portes" hauteur={150} legende="Des voies essayées, puis une réorientation." />
-            </Fragment>
-          </Bloc>
-        </Etape>
+      <article class="moment moment--portes" id="portes" aria-labelledby="portes-titre">
+        <div class="moment__texte">
+          <p class="quand">Avant 2025</p>
+          <h3 id="portes-titre">Les portes qui ne s’ouvrent pas</h3>
+          <p>
+            BUT Informatique, fac de physique-chimie, BUT Réseaux &amp; Télécoms&nbsp;: trois années de filières classiques,
+            une chacune. Puis la piscine de 42, sans admission. Ça n’a pas vraiment marché. Mais je n’ai pas abandonné.
+          </p>
+          <blockquote class="citation moment__citation">
+            <p>«&nbsp;J’ai recommencé jusqu’à réussir et je me suis réorienté autant que nécessaire.&nbsp;»</p>
+          </blockquote>
+        </div>
+        <div class="moment__visuel">
+          <Scene id="ACC-08" nom="portes" lumiere={[90, 52]} legende="Des voies essayées, puis une réorientation." sizes="(max-width: 860px) 100vw, 640px" />
+          <ol class="portes" aria-label="Quatre tentatives avant la bonne voie">
+            <li>BUT Informatique</li>
+            <li>Physique-chimie</li>
+            <li>BUT Réseaux &amp; Télécoms, 2023-2024</li>
+            <li>Piscine de 42</li>
+            <li class="portes__ouverte">Elan Formation, 2025</li>
+          </ol>
+        </div>
+      </article>
 
-        <Etape num="1.4">
-          <Bloc>
-            <TeteEtape quand="2025" titre="La voie qui marche" />
-            <p>
-              Je passe le titre de <Terme t={GLOSSAIRE.dwwm}>développeur web et web mobile</Terme> chez Elan Formation.
-              Je boucle le programme en <mark class="surligne">un mois</mark>, je mène des projets en parallèle et je
-              couvre en bonus l’essentiel du niveau supérieur, concepteur développeur d’applications. En stage chez ATIS
-              Solutions, mes modules réduisent de <mark class="surligne">30&nbsp;%</mark> le temps de traitement
-              administratif.
-            </p>
-            <Fragment slot="marge">
-              <p class="note">
-                <span class="sr">Note de l’auteur&nbsp;: </span>Un programme de niveau bac&nbsp;+&nbsp;2, bouclé en un
-                mois.
-              </p>
-              <Illustration scene="diplome" hauteur={170} legende="Un mois pour parcourir le programme DWWM." />
-            </Fragment>
-          </Bloc>
-        </Etape>
-
-        <Etape num="1.5">
-          <Bloc>
-            <TeteEtape quand="Fin 2025" titre="De l’autre côté du bureau" />
-            <p>
-              Deux mois après mon titre, l’école perd son formateur en fin de promotion. Des étudiants croisés pendant
-              mon cursus donnent mon nom. Je reprends une dizaine d’apprenants, dont la moitié prépare le <Terme
-                t={GLOSSAIRE.cda}>CDA</Terme
-              >, un niveau au-dessus de mon propre titre. Tous obtiennent leur titre.
-            </p>
-            <Fragment slot="marge">
-              <p class="note">
-                <span class="sr">Note de l’auteur&nbsp;: </span>Un début intimidant. Une expérience très formatrice.
-              </p>
-              <Illustration scene="pupitre" hauteur={170} legende="Passer de l’apprenant au formateur." />
-            </Fragment>
-          </Bloc>
-        </Etape>
-      </ol>
-      <p class="lien-profondeur"><a href="/parcours">Retrouver les expériences et les formations dans mon parcours.</a></p>
-    </Chapitre>
-
-    <!-- 2 · Aujourd'hui -->
-    <Chapitre id="aujourdhui">
-      <Bloc>
-        <p class="chapitre__intro">
-          Je suis architecte logiciel&nbsp;: développement web et DevOps. À côté, je mène le pôle francophone de <Terme
-            t={GLOSSAIRE.pvzFusion}>PvZ Fusion</Terme
-          >, un projet open source, et je construis mes propres outils.
-        </p>
-        <Fragment slot="marge">
-          <Illustration scene="architecte" hauteur={170} legende="Un petit système, en plan." />
-        </Fragment>
-      </Bloc>
-
-      <div class="parties">
-        <Etape as="div" num="2.1" id="collectif">
-          <Bloc>
-            <TeteEtape titre="Du solo au collectif" />
-            <p>
-              À l’automne 2025, je rejoins comme traducteur le pôle francophone de PvZ Fusion. J’accueille les nouveaux, je les
-              forme, j’organise le travail. Quand le titre de lead arrive, je tenais déjà le rôle&nbsp;: la seule chose
-              qui a changé, c’est le titre. Je suis ensuite nommé mainteneur du projet multilingue.
-            </p>
-            <p>
-              20 contributeurs formés, jusqu’à dix en même temps. Certains, arrivés sans compétences, sont
-              devenus des piliers de la communauté.
-            </p>
-            <Fragment slot="marge">
-              <p class="note">
-                <span class="sr">Note de l’auteur&nbsp;: </span>La seule chose qui a changé, c’est le titre.
-              </p>
-              <Illustration scene="lanternes" hauteur={150} legende="Une lanterne allumée en allume d’autres." />
-            </Fragment>
-          </Bloc>
-          <div class="etape__figure">
-            <FigureCollectif />
-          </div>
-        </Etape>
-
-        <Etape as="div" num="2.2" id="regles">
-          <Bloc>
-            <TeteEtape titre="Les trois règles" />
-            <p>Trois verbes résument ma façon de travailler. On les retrouve dans le jeu, en formation et dans mes projets.</p>
-          </Bloc>
-          <Regles />
-        </Etape>
+      <div class="diptyque">
+        <article class="moment-court" id="voie" aria-labelledby="voie-titre">
+          <Scene id="ACC-09" nom="diplome" lumiere={[22, 40]} recadrage="2 / 1" legende="Un mois pour parcourir le programme DWWM." sizes="(max-width: 860px) 100vw, 540px" />
+          <p class="quand">2025</p>
+          <h3 id="voie-titre">La voie qui marche</h3>
+          <p>
+            Je passe le titre de <Terme t={GLOSSAIRE.dwwm}>développeur web et web mobile</Terme> chez Elan Formation. Je
+            boucle le programme en <Surligneur source="docs/questions.md, C5">un mois</Surligneur>, je mène des projets en
+            parallèle et je couvre en bonus l’essentiel du niveau supérieur, concepteur développeur d’applications. En stage
+            chez ATIS Solutions, mes modules réduisent de 30&nbsp;% le temps de traitement administratif.
+          </p>
+          <LienAction href="/parcours/formation">Ma formation</LienAction>
+        </article>
+        <article class="moment-court" id="bureau" aria-labelledby="bureau-titre">
+          <Scene id="ACC-11" nom="pupitre" lumiere={[30, 70]} recadrage="2 / 1" legende="Passer de l’apprenant au formateur." sizes="(max-width: 860px) 100vw, 540px" />
+          <p class="quand">Fin 2025</p>
+          <h3 id="bureau-titre">De l’autre côté du bureau</h3>
+          <p>
+            Deux mois après mon titre, l’école perd son formateur en fin de promotion. Des étudiants croisés pendant mon
+            cursus donnent mon nom. Je reprends une dizaine d’apprenants, dont la moitié prépare le <Terme t={GLOSSAIRE.cda}
+              >CDA</Terme
+            >, un niveau au-dessus de mon propre titre. Tous obtiennent leur titre. Un début intimidant, puis une expérience
+            très formatrice.
+          </p>
+          <LienAction href="/parcours/professionnel">Mon parcours professionnel</LienAction>
+        </article>
       </div>
     </Chapitre>
 
-    <!-- 3 · La suite, à plusieurs -->
-    <Chapitre id="discutons">
+    <!-- 02 · Aujourd’hui -->
+    <Chapitre id="aujourdhui">
+      <Acte as="div" ton="veille" espace={false} class="panneau">
+        <TeteChapitre id="aujourdhui" />
+        <div class="metier">
+          <p class="metier__texte">
+            Je suis architecte logiciel chez <span class="insecable">B-Hive</span>, à Mulhouse, depuis août 2026&nbsp;:
+            développement web et DevOps. À côté, je mène le pôle francophone de <Terme t={GLOSSAIRE.pvzFusion}>PvZ Fusion</Terme>,
+            un projet open source, et je construis mes propres outils.
+          </p>
+          <SceneSysteme />
+        </div>
+        <section class="construire" id="construire" aria-labelledby="construire-titre">
+          <h3 id="construire-titre">Ce que je construis</h3>
+          <ProjetsConstruits />
+        </section>
+      </Acte>
+
+      <article class="collectif-recit" id="collectif" aria-labelledby="collectif-titre">
+        <div class="collectif-recit__haut">
+          <div class="moment__texte">
+            <p class="quand">Depuis l’automne 2025</p>
+            <h3 id="collectif-titre">Du solo au collectif</h3>
+            <p>
+              Je rejoins comme traducteur le pôle francophone de PvZ Fusion. J’accueille les nouveaux, je les forme,
+              j’organise le travail. Quand le titre de lead arrive, en décembre 2025, je tenais déjà le rôle&nbsp;: la seule
+              chose qui a changé, c’est le titre. Je suis ensuite nommé mainteneur du projet multilingue.
+            </p>
+            <p>Certains, arrivés sans compétences, sont devenus des piliers de la communauté.</p>
+            <LienAction href="/projets/pvz-fusion">Le pôle francophone de PvZ Fusion</LienAction>
+          </div>
+          <PreuvesChiffrees label="Le pôle francophone en trois chiffres" disposition="pile" class="foyer collectif-recit__chiffres">
+            <PreuveChiffree valeur="20" libelle="contributeurs formés" source="Témoignage" date="confirmé le 13/10/2026" surligne />
+            <PreuveChiffree valeur="10" libelle="en même temps, au plus fort" source="Témoignage" date="confirmé le 13/10/2026" />
+            <PreuveChiffree valeur="35" libelle="pull requests fusionnées dans le projet officiel" source="GitHub" date="du 16/10/2025 au 26/09/2026" />
+          </PreuvesChiffrees>
+        </div>
+        <FigureCollectif />
+        <GestesPole />
+        <div class="conclusion">
+          <SceneLanternes />
+          <blockquote class="citation conclusion__citation">
+            <p>«&nbsp;Seul on va vite, à plusieurs on va loin&nbsp;: la qualité et la sincérité des échanges démultiplient les résultats.&nbsp;»</p>
+          </blockquote>
+        </div>
+      </article>
+    </Chapitre>
+
+    <!-- 03 · La suite, à plusieurs -->
+    <Chapitre id="discutons" ton="bleu">
+      <TeteChapitre
+        id="discutons"
+        chapeau="J’ai commencé par fabriquer mes propres jeux. Depuis, j’ai appris à construire des outils, à transmettre et à faire avancer des projets avec d’autres. C’est aussi comme ça que j’ai envie de continuer."
+      />
       <Discutons />
     </Chapitre>
-    <PourAllerPlusLoin />
-  </Manuel>
+  </Recit>
 </Base>
 
 <style>
-  .lien-profondeur { margin-block: var(--s6); }
-  .lien-profondeur a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 500; }
-  .chapitre__intro {
-    font-size: var(--t-chapeau);
-    line-height: 1.5;
-    max-width: 36rem;
-    margin-top: var(--s5);
+  /* Un acte en panneau dans la colonne du récit : la nuit dans le jour, la
+     pierre teintée, le bleu nuit de la suite. */
+  :global(.panneau) {
+    padding: clamp(24px, 4vw, 56px);
+    border-radius: var(--r2);
   }
 
-  .etapes {
-    list-style: none;
-    margin: var(--s8) 0 0;
-    padding: 0;
+  :global(.chapitre.panneau) {
+    margin-top: var(--s8);
   }
 
-  .etape__figure {
-    position: relative;
-    margin-block: var(--s7);
+  .quand {
+    font-family: var(--police-titre);
+    font-style: italic;
+    font-size: var(--t-l);
+    line-height: 1.2;
+    color: var(--eteint);
   }
 
-  /* Planches côte à côte sous le texte : deux dessins qui vont ensemble. */
-  .plateau {
+  h3 {
+    margin-top: var(--s1);
+    font-size: var(--t-2xl);
+    line-height: 1.05;
+  }
+
+  .moment__texte {
+    max-width: var(--mesure);
+  }
+
+  .moment__texte > p:not(.quand) {
+    margin-top: var(--s4);
+  }
+
+  .moment__texte > h3 + p {
+    margin-top: var(--s4);
+  }
+
+  .renvoi {
+    font-family: var(--police-titre);
+    font-style: italic;
+    font-size: var(--t-l);
+    line-height: 1.3;
+    color: var(--eteint);
+  }
+
+  .renvoi a {
+    font-family: var(--police-texte);
+    font-style: normal;
+    font-size: var(--t-s);
+    font-weight: 600;
+    margin-left: var(--s1);
+  }
+
+  /* Un moment : le texte, et sa ou ses scènes à côté. */
+  .moment {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--s5) var(--s7);
+    align-items: start;
+  }
+
+  .moment__scenes {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--s5);
-    align-items: end;
-    margin-top: var(--s6);
+    gap: var(--s4);
+    padding-top: var(--s7);
   }
 
-  /* Une planche en bande, sur toute la largeur du texte. */
-  .bande {
+  .moment__citation {
+    margin-top: var(--s6);
+    max-width: 22ch;
+  }
+
+  .moment--portes {
+    margin-top: var(--s8);
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+  }
+
+  .moment__visuel {
+    padding-top: var(--s7);
+  }
+
+  .portes {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--s2);
+    margin: var(--s3) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .portes li {
+    padding-top: var(--s2);
+    border-top: 1px solid var(--trait);
+    font-size: var(--t-xs);
+    line-height: 1.35;
+    color: var(--eteint);
+  }
+
+  .portes .portes__ouverte {
+    border-top: 2px solid var(--laiton);
+    font-weight: 600;
+    color: var(--encre);
+  }
+
+  /* Omnicard : le jeu de cartes, devenu projet. */
+  .omnicard {
+    margin-top: var(--s7);
+  }
+
+  .omnicard .renvoi {
+    margin-bottom: var(--s3);
+  }
+
+  /* Le visuel d’Omnicard en retrait : l’image attend, le projet se lit. */
+  @media (min-width: 861px) {
+    .omnicard :global(.carte-projet--vedette) {
+      grid-template-columns: minmax(0, 0.82fr) minmax(0, 1fr);
+    }
+  }
+
+  /* Gwent, la méthode : l’acte teinté. */
+  :global(.gwent-recit) {
+    margin-top: var(--s8);
+  }
+
+  .gwent-recit__haut,
+  .gwent-recit__bas {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--s6) var(--s7);
+    align-items: start;
+  }
+
+  .gwent-recit__haut {
+    align-items: center;
+  }
+
+  .gwent-recit__bas {
+    margin-top: var(--s7);
+    align-items: center;
+  }
+
+  .gwent-recit__bas .renvoi {
     margin-top: var(--s5);
   }
 
-  .parties {
-    margin-top: var(--s8);
+  /* La voie et le bureau, côte à côte. */
+  .diptyque {
     display: grid;
-    gap: var(--s8);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s8) var(--s7);
+    margin-top: var(--s8);
   }
 
-  .parties > :global(.etape) {
-    padding-bottom: 0;
+  .moment-court .quand {
+    margin-top: var(--s5);
   }
 
-  @media (max-width: 640px) {
-    /* Les figures prennent toute la largeur, sous le numéro de l'étape ; leur
-       légende masque le fil des étapes qui passe derrière. */
-    .etape__figure {
-      margin-left: calc(-2.6rem - var(--s3));
-    }
+  .moment-court > p:not(.quand) {
+    margin-top: var(--s4);
+    max-width: var(--mesure);
+  }
 
-    .etape__figure :global(.legende) {
-      position: relative;
-      margin-top: 0;
-      padding-top: var(--s3);
-      padding-bottom: var(--s2);
-      background: var(--papier);
-    }
+  .moment-court :global(.lien-action) {
+    margin-top: var(--s2);
+  }
 
-    .plateau {
+  /* Aujourd’hui : l’acte de veille. */
+  .metier {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+    gap: var(--s6) var(--s8);
+    align-items: center;
+  }
+
+  .metier__texte {
+    max-width: 40rem;
+    font-size: var(--t-l);
+    line-height: 1.5;
+  }
+
+  .construire {
+    margin-top: var(--s8);
+  }
+
+  .construire > h3 {
+    margin-bottom: var(--s6);
+  }
+
+  /* Du solo au collectif. */
+  .collectif-recit {
+    margin-top: var(--s8);
+  }
+
+  .collectif-recit__haut {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    gap: var(--s6) var(--s8);
+    align-items: center;
+    margin-bottom: var(--s8);
+  }
+
+  .collectif-recit__haut :global(.lien-action) {
+    margin-top: var(--s3);
+  }
+
+  .collectif-recit :global(.gestes) {
+    margin-top: var(--s8);
+  }
+
+  .conclusion {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: var(--s5) var(--s8);
+    align-items: center;
+    margin-top: var(--s8);
+    padding-top: var(--s6);
+    border-top: 1px solid var(--trait);
+  }
+
+  .conclusion__citation {
+    margin: 0;
+    max-width: 30ch;
+  }
+
+  @media (max-width: 1180px) {
+    .moment,
+    .moment--portes,
+    .gwent-recit__haut,
+    .gwent-recit__bas,
+    .metier,
+    .collectif-recit__haut,
+    .conclusion {
       grid-template-columns: minmax(0, 1fr);
+    }
+
+    .moment__scenes,
+    .moment__visuel {
+      padding-top: 0;
+    }
+
+    .gwent-recit__bas {
+      align-items: start;
+    }
+
+    .metier :global(.systeme) {
+      max-width: 420px;
+    }
+
+    .conclusion :global(.lanternes) {
+      max-width: 360px;
+    }
+  }
+
+  @media (max-width: 860px) {
+    :global(.panneau) {
+      padding: var(--s5) var(--s4);
+    }
+
+    :global(.chapitre.panneau),
+    .moment--portes,
+    .diptyque,
+    .collectif-recit {
+      margin-top: var(--s8);
+    }
+
+    .diptyque {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s8);
+    }
+
+    .moment__scenes {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .portes {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      row-gap: var(--s3);
+    }
+
+    .portes .portes__ouverte {
+      grid-column: 1 / -1;
+    }
+
+    .collectif-recit__haut {
+      margin-bottom: var(--s7);
+    }
+
+    .metier :global(.systeme),
+    .conclusion :global(.lanternes) {
+      max-width: 300px;
+    }
+  }
+
+  @media print {
+    :global(.panneau) {
+      padding: 0;
     }
   }
 </style>

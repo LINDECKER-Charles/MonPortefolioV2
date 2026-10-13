@@ -1,56 +1,51 @@
 ---
 /**
- * Un chapitre du mode d'emploi : numéro et titre, chapeau facultatif, puis son
- * contenu. `data-chapitre` alimente le repère de lecture et la mesure de
- * lecture (src/scripts/lecture.ts).
+ * Un chapitre du récit de l’accueil : `section[data-chapitre]`, que lisent la
+ * navigation de page, le sommaire de l’en-tête et la mesure de lecture
+ * (scripts/lecture.ts : l’événement `lecture` part quand son titre h2 entre
+ * dans l’écran). Les identifiants `origine`, `aujourdhui` et `discutons` sont
+ * ceux de la série statistique : ne pas les changer.
+ *
+ *   <Chapitre id="origine">              pierre, le fond du jour
+ *   <Chapitre id="discutons" ton="bleu"> un acte entier (panneau bleu nuit)
+ *
+ * Le titre se pose avec <TeteChapitre id="…" /> : en tête du chapitre, ou en
+ * tête du premier acte qu’il contient (« Aujourd’hui » ouvre dans l’acte de
+ * veille).
  */
 import { chapitre, type Chapitre } from '../../config/chapitres';
 
 interface Props {
   id: Chapitre['id'];
+  ton?: 'pierre' | 'teinte' | 'veille' | 'bleu';
+  class?: string;
 }
 
-const c = chapitre(Astro.props.id);
+const { id, ton = 'pierre', class: classe } = Astro.props;
+const c = chapitre(id);
 ---
 
-<section id={c.id} class="chapitre" aria-labelledby={`${c.id}-titre`} data-chapitre={c.id}>
-  <h2 id={`${c.id}-titre`} class="chapitre__titre">
-    <span class="chapitre__num" aria-hidden="true">0{c.num}</span>
-    {c.titre}
-  </h2>
+<section
+  id={c.id}
+  class:list={['chapitre', { [`acte-${ton} panneau`]: ton !== 'pierre' }, classe]}
+  aria-labelledby={`${c.id}-titre`}
+  data-chapitre={c.id}
+>
   <slot />
 </section>
 
 <style>
   .chapitre {
     position: relative;
-    padding-block: var(--s9);
-    border-top: 1px solid var(--filet);
   }
 
-  .chapitre__titre {
-    display: flex;
-    align-items: flex-start;
-    gap: 24px;
-    font-size: var(--t-h2);
-    line-height: 1.05;
-    letter-spacing: -0.022em;
+  .chapitre + :global(.chapitre) {
+    margin-top: var(--s9);
   }
 
-  .chapitre__num {
-    font-weight: 400;
-    color: var(--graphite);
-    font-variant-numeric: tabular-nums;
-    font-size: 1rem;
-    letter-spacing: 0;
-    padding-top: 9px;
-    min-width: 34px;
-    border-top: 2px solid var(--bleu);
-  }
-
-  @media (max-width: 640px) {
-    .chapitre {
-      padding-block: var(--s8);
+  @media (max-width: 860px) {
+    .chapitre + :global(.chapitre) {
+      margin-top: var(--s8);
     }
   }
 </style>

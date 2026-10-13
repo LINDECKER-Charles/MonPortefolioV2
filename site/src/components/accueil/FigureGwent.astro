@@ -1,196 +1,380 @@
 ---
 /**
- * Trois cartes originales : cadre ouvragé, illustration plein cadre et
- * valeur en haut à gauche, d’après la silhouette des cartes de Gwent.
- * Références visuelles officielles consultées le 2026-10-08 :
+ * Trois cartes originales, d’après la silhouette des cartes de Gwent : cadre
+ * ouvragé, valeur en haut à gauche, illustration plein cadre (gardées le
+ * 13/10/2026). Références visuelles officielles consultées le 2026-10-08 :
  * https://www.playgwent.com/en/updates/price-of-power
  * https://www.playgwent.com/en/news/6591/gwent-cards-how-they-come-to-life
  * Les valeurs reprennent l’ordre des trois gestes, pas un deck de Charles.
  * Récit : docs/questions.md, C8.
+ *
+ * Le cadre reste codé, aux couleurs des jetons (laiton pour l’insigne et les
+ * ornements, aucun doré) ; l’illustration de chaque carte est une gravure du
+ * registre (ACC-18 à ACC-20), vue par la fenêtre du cadre. Chaque carte
+ * s’allume depuis la lanterne de son illustration à son arrivée dans l’écran,
+ * se soulève, puis se rejoue d’un clic ou au clavier
+ * (scripts/figure-animations.ts).
  */
+import Visuel from '../ui/Visuel.astro';
+
+/** La fenêtre de l’illustration, dans le repère du cadre (220 × 312). */
+const FENETRE = 'M31 27h157l9 11v249l-8 8H30l-8-8V38z';
+const BOITE = { x: 22, y: 27, largeur: 175, hauteur: 268 };
+
 const cartes = [
-  { titre: 'Lire le jeu', resume: 'Comprendre ce qui se joue.' },
-  { titre: 'Tester mes idées', resume: 'Apprendre de chaque tentative.' },
-  { titre: 'Prendre le contre-pied', resume: 'Construire mon propre chemin.' },
-];
+  { titre: 'Lire le jeu', resume: 'Comprendre ce qui se joue.', visuel: 'ACC-18', lumiere: [35, 72] },
+  { titre: 'Tester mes idées', resume: 'Apprendre de chaque tentative.', visuel: 'ACC-19', lumiere: [70, 24] },
+  { titre: 'Prendre le contre-pied', resume: 'Construire mon propre chemin.', visuel: 'ACC-20', lumiere: [40, 46] },
+].map((carte) => ({
+  ...carte,
+  cx: Math.round((BOITE.x + (carte.lumiere[0] / 100) * BOITE.largeur) * 10) / 10,
+  cy: Math.round((BOITE.y + (carte.lumiere[1] / 100) * BOITE.hauteur) * 10) / 10,
+}));
 ---
 
-<figure class="figure gwent" id="fig-gwent">
-  <div class="gwent__plan">
-    <ol class="gwent__cartes">
-      {cartes.map((carte, i) => (
-        <li>
-          <div class="gwent__contenu">
-            <button type="button" class="gwent__visuel" data-rejouer data-figure-animation aria-label={`Rejouer l’animation : ${carte.titre}`}>
-              <svg class="gwent__carte" viewBox="0 0 220 312" aria-hidden="true" focusable="false">
-                <defs>
-                  <clipPath id={`gwent-scene-${i}`}><path d="M31 27h157l9 11v249l-8 8H30l-8-8V38z" /></clipPath>
-                  <linearGradient id={`gwent-ciel-${i}`} x1="0" y1="0" x2=".8" y2="1">
-                    <stop class="gwent__degrade-clair" offset="0" /><stop class="gwent__degrade-bleu" offset="1" />
-                  </linearGradient>
-                  <linearGradient id={`gwent-metal-${i}`} x1="0" x2="1" y1="0" y2="1">
-                    <stop class="gwent__metal-clair" offset="0" /><stop class="gwent__metal-bleu" offset=".4" /><stop class="gwent__metal-clair" offset=".65" /><stop class="gwent__metal-bleu" offset="1" />
-                  </linearGradient>
-                </defs>
-                <path class="gwent__fond" d="M26 15h165l17 17v257l-16 16H25L11 289V33z" />
-                <g clip-path={`url(#gwent-scene-${i})`}>
-                  <path fill={`url(#gwent-ciel-${i})`} d="M22 27h176v270H22z" />
-                  {i === 0 && (
-                    <>
-                      <g class="gwent__nuages gwent__fin">
-                        <path d="M58 50h35m22 10h43M39 80h48m37 13h57M90 42h23" />
-                        <path d="M29 139l31-39 35 20 30-29 58 44 24-16" />
-                      </g>
-                      <circle class="gwent__soleil" cx="151" cy="67" r="19" />
-                      <path class="gwent__ombre" d="M23 176 61 150l41 20 32-13 64 37v103H22z" />
-                      <g class="gwent__citadelle">
-                        <path class="gwent__pierre" d="M66 214V121H53V91h13V80h13v11h14V80h13v11h12v30h-12v93M61 123h49M71 145h28M70 179h30M65 207h44" />
-                        <path class="gwent__fin" d="M61 99h49M62 113h45M79 127v11m14 12v14m-17 18v15m-9-45h11m15 17h14M72 108h10m10-5h11" />
-                        <path class="gwent__bleu" d="M79 160v-14q7-13 13 0v14zM75 214v-22q11-17 22 0v22" />
-                        <path class="gwent__pierre" d="M117 211V150h8v-10h11v10h10v-10h11v10h9v61M124 158h33M133 177v14m14-14v14" />
-                        <path class="gwent__trait" d="M50 215h127M64 214l-14 12h128l-14-15" />
-                      </g>
-                      <path class="gwent__chemin gwent__trait" d="M137 296c-40-22-79-26-52-46s59-17 66-28" />
-                      <path class="gwent__fin" d="m39 247 13-10-3 13m114 20 14-14-4 15M39 277l15-6m103 15h25" />
-                      <g class="gwent__observation">
-                        <circle class="gwent__papier" cx="139" cy="221" r="24" />
-                        <circle class="gwent__trait" cx="139" cy="221" r="17" />
-                        <path class="gwent__trait" d="m155 239 17 21 7-6-18-20M126 221q13-13 26 0-13 13-26 0" />
-                        <circle class="gwent__bleu" cx="139" cy="221" r="4" />
-                      </g>
-                      <path class="gwent__repere gwent__accent" d="M118 122h11m-6-5v10M48 203h10m-5-5v10M168 190h10m-5-5v10" />
-                    </>
-                  )}
-                  {i === 1 && (
-                    <>
-                      <path class="gwent__fin" d="M36 118V41h149v77M54 41v78m34-78v78m34-78v78m34-78v78M36 81h149" />
-                      <path class="gwent__ombre" d="M22 163q84-35 176 7v127H22z" />
-                      <path class="gwent__papier" d="M30 219 70 190h116l17 33-51 57H25z" />
-                      <path class="gwent__fin" d="m30 234 126 5 41-13M48 219l125 4M37 260l106 4" />
-                      <g class="gwent__essai gwent__essai--fond">
-                        <path class="gwent__papier" d="m48 177 70-22 19 66-70 22z" />
-                        <path class="gwent__fin" d="m59 184 38-12m-34 24 24-8m-20 22 35-11" />
-                        <path class="gwent__trait" d="m108 208 9 9m0-9-9 9" />
-                      </g>
-                      <g class="gwent__essai gwent__essai--devant">
-                        <path class="gwent__papier" d="m82 153 64 5-9 82-64-5z" />
-                        <path class="gwent__fin" d="m91 171 44 3m-45 10 31 2m-32 11 41 3" />
-                        <path class="gwent__ecriture gwent__trait" d="m92 217 8 7 18-18M90 229l33 3" />
-                      </g>
-                      <g class="gwent__plume">
-                        <path class="gwent__pierre" d="M112 197q-5-56 43-84 6 32-21 57z" />
-                        <path class="gwent__trait" d="m106 213 43-88m-35 68 16-2m-10-18 18-1m-12-21 17-2M122 176l-6-17" />
-                      </g>
-                      <g class="gwent__encrier">
-                        <path class="gwent__bleu" d="M151 206h19l6 8v22h-31v-22z" />
-                        <path class="gwent__clair" d="M153 205v-6h16v6m-17 14h16" />
-                      </g>
-                      <path class="gwent__etincelles gwent__accent" d="m145 103 4-9m16 19 9-2m-13 17 6 5M91 141l-5-8" />
-                    </>
-                  )}
-                  {i === 2 && (
-                    <>
-                      <circle class="gwent__soleil" cx="146" cy="60" r="20" />
-                      <path class="gwent__fin" d="M132 43q25 5 21 34M35 117l32-39 38 25 30-16 49 33M49 73h33m41 30h42" />
-                      <path class="gwent__ombre" d="M21 155q41-30 85 1t93-6v147H22z" />
-                      <path class="gwent__bleu gwent__montagne" d="M21 218q39-26 71-15t108 1v91H21z" />
-                      <path class="gwent__ancien-chemin gwent__clair" d="M163 297c9-39-67-49-44-71s52-4 49-36" />
-                      <path class="gwent__chemin-neuf gwent__accent" d="M61 296c6-35 70-41 61-74s-54-29-54-61" />
-                      <g class="gwent__arbres gwent__trait">
-                        <path d="M41 187V116m-15 28 15-34 17 34m-28 22 11-31 13 31M173 179V115m-14 28 14-34 17 34m-27 23 10-29 14 29" />
-                      </g>
-                      <g class="gwent__lanterne">
-                        <path class="gwent__papier" d="M77 122h49l-6 71H83z" />
-                        <path class="gwent__trait" d="M75 122h54M81 116h42M87 115V99q15-21 30 0v16M81 195h42M83 194l-8 10h54l-9-10M89 129v55m26-55v55M102 127v-12" />
-                        <path class="gwent__lueur" d="M101 169c-18-13-9-24 2-37 2 11 17 21 5 36z" />
-                        <path class="gwent__trait" d="M101 172v9" />
-                      </g>
-                      <path class="gwent__rayons gwent__accent" d="M65 153H53m15-20-10-8m7 47-12 7M137 152h14m-18-20 10-9m-9 49 13 6" />
-                      <path class="gwent__fin" d="M38 240l8-5m105 38 8-3M32 263h10m140-25h6" />
-                    </>
-                  )}
-                </g>
-                <path class="gwent__metal" fill={`url(#gwent-metal-${i})`} fill-rule="evenodd" d="M26 15h165l17 17v257l-16 16H25L11 289V33zM31 27l-9 11v249l8 8h159l8-8V38l-9-11z" />
-                <path class="gwent__cadre" d="M28 21h159l15 14v251l-13 13H29l-12-13V36zM36 31h148l9 10v243l-8 7H35l-8-8V42" />
-                <path class="gwent__gravure" d="M52 22h31m54 0h38M17 77l8 11-8 11 8 11-8 11m185-42-8 11 8 11-8 11 8 11M17 180l8 12-8 12 8 12-8 12m185-50-8 12 8 12-8 12 8 12M43 299h38m58 0h34" />
-                <path class="gwent__ornement" d="m90 20 19-8 20 8-20 10zM90 298l19-9 20 9-20 10zM17 245l8 10-8 10m185-20-8 10 8 10M176 17l7 10 13 3-6 8m-166 236 4 14 13 4m131 0 13-4 5-14" />
-                <path class="gwent__insigne" d="M15 14h29l12 13-4 26-23 14L9 52 5 28z" />
-                <path class="gwent__gravure" d="M19 20h20l10 10-4 19-15 10-14-10-4-20zM16 14 8 7m35 7 6-8" />
-                <text class="gwent__valeur" x="30" y="46" text-anchor="middle">{i + 1}</text>
-              </svg>
-            </button>
-            <span class="gwent__titre">{carte.titre}</span>
-            <span class="gwent__resume">{carte.resume}</span>
+<figure class="gwent" id="fig-gwent">
+  <ol class="gwent__cartes">
+    {cartes.map((carte, i) => (
+      <li class="gwent__carte">
+        <div class="gwent__plan" data-figure-animation>
+          <div class="gwent__fenetre">
+            <Visuel id={carte.visuel} alt="" sizes="(max-width: 640px) 110px, 210px" />
           </div>
-        </li>
-      ))}
-    </ol>
-  </div>
-  <figcaption class="legende">Des cartes pour raconter ma méthode sur Gwent.</figcaption>
+          <button type="button" class="gwent__visuel" data-rejouer aria-label={`Rejouer l’animation : ${carte.titre}`}>
+            <svg class="gwent__dessin" viewBox="0 0 220 312" aria-hidden="true" focusable="false">
+              <defs>
+                <clipPath id={`gwent-fenetre-${i}`}><path d={FENETRE} /></clipPath>
+                <radialGradient id={`gwent-nuit-${i}`} gradientUnits="userSpaceOnUse" cx={carte.cx} cy={carte.cy} r="170">
+                  <stop offset="0" class="gwent__trou" /><stop offset="0.18" class="gwent__trou" /><stop offset="1" class="gwent__ombre" />
+                </radialGradient>
+                <radialGradient id={`gwent-halo-${i}`} gradientUnits="userSpaceOnUse" cx={carte.cx} cy={carte.cy} r="46">
+                  <stop offset="0" class="gwent__eclat" /><stop offset="1" class="gwent__eteint" />
+                </radialGradient>
+                <linearGradient id={`gwent-metal-${i}`} x1="0" x2="1" y1="0" y2="1">
+                  <stop class="gwent__metal-clair" offset="0" /><stop class="gwent__metal-sombre" offset=".4" /><stop class="gwent__metal-clair" offset=".65" /><stop class="gwent__metal-sombre" offset="1" />
+                </linearGradient>
+              </defs>
+              <g clip-path={`url(#gwent-fenetre-${i})`}>
+                <g class="gwent__voile" style={`transform-origin:${carte.cx}px ${carte.cy}px`}>
+                  <rect x="-500" y="-500" width="1220" height="1312" fill={`url(#gwent-nuit-${i})`} />
+                </g>
+                <circle class="gwent__halo" cx={carte.cx} cy={carte.cy} r="46" fill={`url(#gwent-halo-${i})`} style={`transform-origin:${carte.cx}px ${carte.cy}px`} />
+              </g>
+              <path class="gwent__metal" fill={`url(#gwent-metal-${i})`} fill-rule="evenodd" d="M26 15h165l17 17v257l-16 16H25L11 289V33zM31 27l-9 11v249l8 8h159l8-8V38l-9-11z" />
+              <path class="gwent__cadre" d="M28 21h159l15 14v251l-13 13H29l-12-13V36zM36 31h148l9 10v243l-8 7H35l-8-8V42" />
+              <path class="gwent__gravure" d="M52 22h31m54 0h38M17 77l8 11-8 11 8 11-8 11m185-42-8 11 8 11-8 11 8 11M17 180l8 12-8 12 8 12-8 12m185-50-8 12 8 12-8 12 8 12M43 299h38m58 0h34" />
+              <path class="gwent__ornement" d="m90 20 19-8 20 8-20 10zM90 298l19-9 20 9-20 10zM17 245l8 10-8 10m185-20-8 10 8 10M176 17l7 10 13 3-6 8m-166 236 4 14 13 4m131 0 13-4 5-14" />
+              <path class="gwent__insigne" d="M15 14h29l12 13-4 26-23 14L9 52 5 28z" />
+              <path class="gwent__gravure" d="M19 20h20l10 10-4 19-15 10-14-10-4-20zM16 14 8 7m35 7 6-8" />
+              <text class="gwent__valeur" x="30" y="47" text-anchor="middle">{i + 1}</text>
+            </svg>
+          </button>
+        </div>
+        <span class="gwent__titre">{carte.titre}</span>
+        <span class="gwent__resume">{carte.resume}</span>
+      </li>
+    ))}
+  </ol>
+  <figcaption class="gwent__legende">Des cartes pour raconter ma méthode sur Gwent.</figcaption>
 </figure>
 
 <style>
-  .gwent__plan { padding: 20px 0 0; }
-  .gwent__cartes { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; padding: 0; margin: 0; }
-  .gwent__cartes li { min-width: 0; }
-  .gwent__contenu { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 4px; }
-  .gwent__visuel { display: block; width: 100%; max-width: 200px; margin: 0 0 16px; padding: 0; border: 0; background: transparent; cursor: pointer; border-radius: 3px; -webkit-tap-highlight-color: transparent; }
-  .gwent__visuel:focus-visible { outline: 2px solid var(--bleu); outline-offset: 7px; }
-  .gwent__carte { width: 100%; display: block; color: var(--bleu); overflow: visible; }
-  .gwent__fond, .gwent__insigne { fill: var(--blanc); stroke: currentColor; stroke-width: 1.5; stroke-linejoin: round; }
-  .gwent__metal { stroke: currentColor; stroke-width: 1; }
-  .gwent__degrade-clair { stop-color: var(--blanc); }
-  .gwent__degrade-bleu { stop-color: color-mix(in srgb, var(--bleu) 28%, var(--blanc)); }
-  .gwent__metal-clair { stop-color: var(--blanc); }
-  .gwent__metal-bleu { stop-color: color-mix(in srgb, var(--bleu) 35%, var(--blanc)); }
-  .gwent__cadre, .gwent__gravure, .gwent__ornement, .gwent__trait, .gwent__fin, .gwent__pierre, .gwent__papier, .gwent__clair, .gwent__accent { stroke: currentColor; stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-  .gwent__cadre { stroke-width: 1.1; }
-  .gwent__gravure { stroke-width: .8; }
-  .gwent__ornement { stroke-width: 1.2; fill: var(--blanc); }
-  .gwent__fin { stroke-width: 1; opacity: .6; }
-  .gwent__pierre { fill: color-mix(in srgb, var(--bleu) 15%, var(--blanc)); }
-  .gwent__papier { fill: var(--blanc); }
-  .gwent__ombre { fill: var(--bleu); opacity: .1; }
-  .gwent__bleu { fill: var(--bleu); }
-  .gwent__montagne { opacity: .7; }
-  .gwent__clair { stroke: var(--blanc); stroke-width: 1.8; }
-  .gwent__accent { stroke: var(--colza); stroke-width: 2.5; }
-  .gwent__soleil, .gwent__lueur { fill: var(--colza); opacity: .75; }
-  .gwent__soleil { stroke: currentColor; stroke-width: 1; }
-  .gwent__valeur { fill: currentColor; font: 700 29px var(--font-note); }
-  .gwent__titre { font-size: 1rem; font-weight: 700; color: var(--encre); }
-  .gwent__resume { font-size: .875rem; color: var(--graphite); margin-top: 4px; }
+  .gwent {
+    margin: 0;
+    --gwent-halo: 0;
+    --gwent-ombre: 0.62;
+  }
+
+  :global(:root[data-theme='nuit']) .gwent {
+    --gwent-halo: 0.5;
+    --gwent-ombre: 0.82;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme])) .gwent {
+      --gwent-halo: 0.5;
+      --gwent-ombre: 0.82;
+    }
+  }
+
+  .gwent__cartes {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .gwent__carte {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+    text-align: center;
+  }
+
+  .gwent__plan {
+    position: relative;
+    width: 100%;
+    max-width: 210px;
+    aspect-ratio: 220 / 312;
+    margin-bottom: var(--s3);
+  }
+
+  /* L’illustration, vue par la fenêtre octogonale du cadre. */
+  .gwent__fenetre {
+    position: absolute;
+    left: 10%;
+    right: 10.45%;
+    top: 8.65%;
+    bottom: 5.45%;
+    clip-path: polygon(5.14% 0, 94.86% 0, 100% 4.1%, 100% 97%, 95.4% 100%, 4.57% 100%, 0 97%, 0 4.1%);
+  }
+
+  .gwent__fenetre :global(.visuel) {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    border-radius: 0;
+  }
+
+  /* Sous l’insigne de valeur, l’étiquette de l’emplacement reste lisible. */
+  .gwent__fenetre :global(.visuel__contenu) {
+    padding-top: 26%;
+  }
+
+  .gwent__visuel {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: var(--r2);
+    background: transparent;
+    color: var(--encre);
+  }
+
+  .gwent__dessin {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .gwent__metal {
+    stroke: var(--trait);
+    stroke-width: 1;
+  }
+
+  .gwent__metal-clair {
+    stop-color: var(--surface);
+  }
+
+  .gwent__metal-sombre {
+    stop-color: color-mix(in srgb, var(--trait) 42%, var(--surface));
+  }
+
+  .gwent__cadre,
+  .gwent__gravure,
+  .gwent__ornement,
+  .gwent__insigne {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .gwent__cadre {
+    stroke: var(--eteint);
+    stroke-width: 1.1;
+  }
+
+  .gwent__gravure {
+    stroke: var(--eteint);
+    stroke-width: 0.8;
+  }
+
+  .gwent__ornement {
+    fill: var(--surface);
+    stroke: var(--laiton);
+    stroke-width: 1.2;
+  }
+
+  .gwent__insigne {
+    fill: var(--surface);
+    stroke: var(--laiton);
+    stroke-width: 1.5;
+  }
+
+  .gwent__valeur {
+    fill: var(--encre);
+    font: 600 26px var(--police-texte);
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  .gwent__voile {
+    opacity: 0;
+    transform-box: view-box;
+  }
+
+  .gwent__trou {
+    stop-color: var(--suie);
+    stop-opacity: 0;
+  }
+
+  .gwent__ombre {
+    stop-color: var(--suie);
+    stop-opacity: var(--gwent-ombre);
+  }
+
+  .gwent__halo {
+    opacity: var(--gwent-halo);
+    transform-box: view-box;
+  }
+
+  .gwent__eclat {
+    stop-color: var(--lanterne);
+    stop-opacity: 0.7;
+  }
+
+  .gwent__eteint {
+    stop-color: var(--lanterne);
+    stop-opacity: 0;
+  }
+
+  .gwent__titre {
+    font-family: var(--police-titre);
+    font-size: var(--t-l);
+    line-height: 1.15;
+    color: var(--encre);
+  }
+
+  .gwent__resume {
+    margin-top: var(--s1);
+    font-size: var(--t-xs);
+    line-height: 1.4;
+    color: var(--eteint);
+  }
+
+  .gwent__legende {
+    margin-top: var(--s4);
+    font-size: var(--t-xs);
+    color: var(--eteint);
+    text-align: center;
+  }
+
   @media (prefers-reduced-motion: no-preference) {
-    .gwent__visuel:global(.animation-en-cours) .gwent__nuages { animation: gwent-horizon 1.9s ease both; }
-    .gwent__visuel:global(.animation-en-cours) .gwent__observation { animation: gwent-observer 1.9s cubic-bezier(.3,.7,.2,1) both; }
-    .gwent__visuel:global(.animation-en-cours) .gwent__repere { animation: gwent-reperer 1.9s ease both; }
-    .gwent__visuel:global(.animation-en-cours) .gwent__essai--fond { transform-origin: center; transform-box: fill-box; animation: gwent-essayer 1.9s ease both; }
-    .gwent__visuel:global(.animation-en-cours) .gwent__essai--devant { animation: gwent-feuille 1.9s ease both; }
-    .gwent__visuel:global(.animation-en-cours) .gwent__plume { transform-origin: 106px 213px; animation: gwent-ecrire 1.9s ease both; }
-    .gwent__visuel:global(.animation-en-cours) .gwent__ecriture { stroke-dasharray: 70; animation: gwent-tracer 1.9s ease both; }
-    .gwent__visuel:global(.animation-en-cours) .gwent__etincelles { animation: gwent-reperer 1.9s ease both; }
-    .gwent__visuel:global(.animation-en-cours) .gwent__lanterne { transform-origin: 102px 99px; animation: gwent-lanterne 2.1s ease both; }
-    .gwent__visuel:global(.animation-en-cours) .gwent__lueur,
-    .gwent__visuel:global(.animation-en-cours) .gwent__rayons { animation: gwent-allumer 2.1s ease both; }
-    .gwent__visuel:global(.animation-en-cours) .gwent__chemin-neuf { stroke-dasharray: 220; animation: gwent-chemin 2.1s ease both; }
-    @keyframes gwent-horizon { 0% { transform: translateX(-8px); opacity: .25; } 100% { transform: translateX(0); opacity: .6; } }
-    @keyframes gwent-observer { 0% { transform: translate(0, 0); } 30% { transform: translate(-38px, -42px); } 60% { transform: translate(8px, -38px); } 100% { transform: translate(0, 0); } }
-    @keyframes gwent-reperer { 0%, 25% { opacity: 0; } 45% { opacity: 1; } 60% { opacity: .3; } 100% { opacity: 1; } }
-    @keyframes gwent-essayer { 0%, 100% { transform: rotate(0); } 25% { transform: translate(-8px, 4px) rotate(-9deg); } 60% { transform: translate(-3px, 0) rotate(-4deg); } }
-    @keyframes gwent-feuille { 0% { transform: translateY(15px); opacity: .25; } 30%, 100% { transform: translateY(0); opacity: 1; } }
-    @keyframes gwent-ecrire { 0%, 100% { transform: rotate(0); } 30% { transform: translate(-11px, -11px) rotate(-8deg); } 52% { transform: translate(-4px, -5px) rotate(4deg); } 72% { transform: translate(11px, -8px) rotate(-5deg); } }
-    @keyframes gwent-tracer { 0%, 35% { stroke-dashoffset: 70; } 80%, 100% { stroke-dashoffset: 0; } }
-    @keyframes gwent-lanterne { 0% { transform: rotate(-8deg); } 30% { transform: rotate(5deg); } 60% { transform: rotate(-2deg); } 100% { transform: rotate(0); } }
-    @keyframes gwent-allumer { 0%, 20% { opacity: .1; } 40% { opacity: 1; } 50% { opacity: .45; } 65%, 100% { opacity: .75; } }
-    @keyframes gwent-chemin { 0%, 30% { stroke-dashoffset: 220; } 100% { stroke-dashoffset: 0; } }
+    .gwent__plan {
+      transition: transform var(--d-scene) var(--courbe);
+    }
+
+    .gwent__plan:hover {
+      transform: translateY(-4px);
+    }
+
+    .gwent__plan:global(.animation-en-cours) {
+      animation: gwent-lever 1.9s var(--courbe) both;
+    }
+
+    .gwent__plan:global(.animation-en-cours) .gwent__voile {
+      animation: gwent-voile 1.9s var(--courbe) both;
+    }
+
+    .gwent__plan:global(.animation-en-cours) .gwent__halo {
+      animation: gwent-halo 1.9s ease both;
+    }
+
+    .gwent__carte:nth-child(2) .gwent__plan:global(.animation-en-cours) {
+      animation-name: gwent-lever-droite;
+    }
+
+    @keyframes gwent-lever {
+      0%,
+      100% {
+        transform: translateY(0) rotate(0);
+      }
+      30% {
+        transform: translateY(-10px) rotate(-1.5deg);
+      }
+      62% {
+        transform: translateY(-4px) rotate(0.6deg);
+      }
+    }
+
+    @keyframes gwent-lever-droite {
+      0%,
+      100% {
+        transform: translateY(0) rotate(0);
+      }
+      30% {
+        transform: translateY(-10px) rotate(1.5deg);
+      }
+      62% {
+        transform: translateY(-4px) rotate(-0.6deg);
+      }
+    }
+
+    @keyframes gwent-voile {
+      0%,
+      16% {
+        opacity: 1;
+        transform: scale(0.3);
+      }
+      74% {
+        opacity: 0.5;
+        transform: scale(2.4);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(2.4);
+      }
+    }
+
+    @keyframes gwent-halo {
+      0% {
+        opacity: 0;
+        transform: scale(0.3);
+      }
+      10% {
+        opacity: 1;
+        transform: scale(1.15);
+      }
+      18% {
+        opacity: 0.55;
+      }
+      26% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      100% {
+        opacity: var(--gwent-halo);
+        transform: scale(1);
+      }
+    }
   }
+
+  /* Mobile : les trois cartes restent côte à côte, comme une main de jeu. */
   @media (max-width: 640px) {
-    .gwent__cartes { grid-template-columns: minmax(0, 1fr); gap: 22px; }
-    .gwent__contenu { display: grid; grid-template-columns: 108px minmax(0, 1fr); column-gap: 22px; align-items: center; text-align: left; }
-    .gwent__visuel { grid-column: 1; grid-row: 1 / 3; margin-bottom: 0; }
-    .gwent__titre { grid-column: 2; align-self: end; }
-    .gwent__resume { grid-column: 2; }
-    .gwent__cartes li + li { border-top: 1px solid var(--filet); padding-top: 22px; }
+    .gwent__cartes {
+      gap: var(--s3);
+    }
+
+    .gwent__plan {
+      margin-bottom: var(--s2);
+    }
+
+    .gwent__titre {
+      font-size: var(--t-m);
+    }
+
+    .gwent__resume {
+      font-size: var(--t-xs);
+      line-height: 1.35;
+    }
+
+    .gwent__fenetre :global(.visuel__contenu) {
+      padding: 30% 6px 6px;
+    }
   }
-  @media print { .gwent__visuel { cursor: default; } .gwent__visuel * { animation: none !important; } }
 </style>
