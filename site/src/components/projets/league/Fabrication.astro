@@ -108,8 +108,8 @@ import { LIENS } from '../../../config/league-of-database';
       <figcaption id="trafic-legende">Les anciens patchs ont leur propre cache&nbsp;: une visite des archives laisse sa place au patch actuel.</figcaption>
     </figure>
     <div class="actions bloc__liens">
-      <LienAction href={LIENS.routage} emplacement="preuves">Le routage des deux caches</LienAction>
-      <LienAction href={LIENS.ingestion} emplacement="preuves">L’ingestion des patchs</LienAction>
+      <LienAction href={LIENS.routage} emplacement="preuves" class="lien-action--compact">Le routage des deux caches</LienAction>
+      <LienAction href={LIENS.ingestion} emplacement="preuves" class="lien-action--compact">L’ingestion des patchs</LienAction>
     </div>
   </section>
 
@@ -155,8 +155,8 @@ import { LIENS } from '../../../config/league-of-database';
         <figcaption id="sauvegardes-legende">Avant une migration, une copie supplémentaire permet aussi le retour à la version précédente.</figcaption>
       </figure>
       <div class="actions bloc__liens">
-        <LienAction href={LIENS.sauvegardes} emplacement="preuves">Le dispositif, dans le dépôt</LienAction>
-        <LienAction href={LIENS.migration} emplacement="preuves">La copie avant migration</LienAction>
+        <LienAction href={LIENS.sauvegardes} emplacement="preuves" class="lien-action--compact">Le dispositif, dans le dépôt</LienAction>
+        <LienAction href={LIENS.migration} emplacement="preuves" class="lien-action--compact">La copie avant migration</LienAction>
       </div>
     </section>
 
@@ -190,7 +190,7 @@ import { LIENS } from '../../../config/league-of-database';
         <figcaption id="livraison-legende">Même empreinte d’un environnement à l’autre.</figcaption>
       </figure>
       <div class="actions bloc__liens">
-        <LienAction href={LIENS.ci} emplacement="preuves">La chaîne de livraison</LienAction>
+        <LienAction href={LIENS.ci} emplacement="preuves" class="lien-action--compact">La chaîne de livraison</LienAction>
       </div>
     </section>
 
@@ -217,7 +217,7 @@ import { LIENS } from '../../../config/league-of-database';
         <figcaption id="audience-legende">La mesure d’audience complète les métriques du serveur&nbsp;: les visites et la charge technique se lisent séparément.</figcaption>
       </figure>
       <div class="actions bloc__liens">
-        <LienAction href={LIENS.mesure} emplacement="preuves">La mesure, dans le dépôt</LienAction>
+        <LienAction href={LIENS.mesure} emplacement="preuves" class="lien-action--compact">La mesure, dans le dépôt</LienAction>
       </div>
     </section>
   </div>
@@ -259,17 +259,12 @@ import { LIENS } from '../../../config/league-of-database';
     color: var(--eteint);
   }
 
-  /* Les preuves d’un même bloc restent groupées, même empilées : une cible
-     de 36 px (au-dessus des 24 px de WCAG 2.2) au lieu de 48, sans écart.
-     Le lien d’action tient sa hauteur de son padding (global.css) : 6 px de
-     part et d’autre d’une ligne de 24 px. */
+  /* Les preuves d’un même bloc restent groupées, même empilées, sans écart :
+     liens d’action compacts (global.css), 36 px sur ordinateur, 44 px sous
+     860 px. */
   .bloc__liens {
     margin-top: var(--s1);
     row-gap: 0;
-  }
-
-  .bloc__liens :global(.lien-action) {
-    padding-block: 6px;
   }
 
   .schema {

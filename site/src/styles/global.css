@@ -311,6 +311,18 @@ button {
   line-height: 1.5;
 }
 
+/* Liens de preuve empilés sous un bloc : 36 px de haut sur ordinateur, la
+   cible de 44 px sous 860 px (règle E7). */
+.lien-action--compact {
+  padding-block: 6px;
+}
+
+@media (max-width: 860px) {
+  .lien-action--compact {
+    padding-block: 10px;
+  }
+}
+
 .fleche {
   font-family: var(--police-texte);
   font-weight: 400;
