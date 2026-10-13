@@ -207,12 +207,27 @@ export const FICHES = [
 /* Autour de l’encyclopédie (page À propos, relevée le 13/10/2026)     */
 /* ------------------------------------------------------------------ */
 
-export const PLATEFORME = [
-  { titre: 'Des builds partagés', texte: 'Un éditeur pour composer un build d’objets étape par étape, puis le partager par un lien. Les builds se votent, un profil public les rassemble.' },
+export interface FonctionPlateforme {
+  titre: string;
+  texte: string;
+  /** Affichage non validé par Charles (matiere-premiere.md, « À confirmer par Charles »). */
+  aConfirmer?: string;
+}
+
+export const PLATEFORME: readonly FonctionPlateforme[] = [
+  {
+    titre: 'Des builds partagés',
+    texte: 'Un éditeur pour composer un build d’objets étape par étape, puis le partager par un lien. Les builds se votent, un profil public les rassemble.',
+    aConfirmer: 'Affichage des builds à confirmer par Charles',
+  },
   { titre: 'Les tendances', texte: 'Les fiches les plus consultées du site : une mesure de l’attention, pas des statistiques de parties.' },
-  { titre: 'Une API publique', texte: 'Une API REST en JSON pour les profils publics, les builds partagés et les tendances, avec une offre gratuite et des packs de crédits.' },
-  { titre: 'Gratuit, sans publicité', texte: 'Le site vit de dons volontaires. Il s’installe comme une application, et les pages déjà visitées restent lisibles hors connexion.' },
-] as const;
+  { titre: 'Une API publique', texte: 'Une API REST en JSON pour les profils publics, les builds partagés et les tendances, avec une offre gratuite.' },
+  {
+    titre: 'Gratuit, sans publicité',
+    texte: 'Le site vit de dons volontaires et s’installe comme une application web.',
+    aConfirmer: 'Affichage des dons à confirmer par Charles',
+  },
+];
 
 /* ------------------------------------------------------------------ */
 /* Ce que les données ne disent pas (héritage § 5 et § 6)              */

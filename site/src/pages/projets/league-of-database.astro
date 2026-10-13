@@ -24,6 +24,7 @@ import Fabrication from '../../components/projets/league/Fabrication.astro';
 import FriseReecriture from '../../components/projets/league/FriseReecriture.astro';
 import OngletsCaptures from '../../components/projets/league/OngletsCaptures.astro';
 import PiegesDonnees from '../../components/projets/league/PiegesDonnees.astro';
+import AConfirmer from '../../components/ui/AConfirmer.astro';
 import LienAction from '../../components/ui/LienAction.astro';
 import Visionneuse from '../../components/ui/Visionneuse.astro';
 import Visuel from '../../components/ui/Visuel.astro';
@@ -174,7 +175,10 @@ const ADRESSE = 'league-of-data-base.com';
           PLATEFORME.map((fonction) => (
             <li>
               <h3>{typo(fonction.titre)}</h3>
-              <p>{typo(fonction.texte)}</p>
+              <p>
+                {typo(fonction.texte)}
+                {fonction.aConfirmer && <AConfirmer titre={fonction.aConfirmer} />}
+              </p>
             </li>
           ))
         }
