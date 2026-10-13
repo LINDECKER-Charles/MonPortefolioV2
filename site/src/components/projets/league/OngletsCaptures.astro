@@ -10,8 +10,9 @@
  *   <OngletsCaptures nom="fiche" legende="Explorer les fiches du patch 16.20.1"
  *     onglets={[{ id: 'ahri', libelle: 'Le champion', capture: { nom: 'ahri', alt, legende } }]} />
  *
- * Sur mobile, en pile, les onglets défilent en une rangée (règle E7) ; le
- * script ramène l’onglet choisi dans la rangée.
+ * Sur mobile, en pile, les onglets défilent en une rangée (règle E7), avec
+ * un fondu sur le bord qui cache encore des onglets ; le script ramène
+ * l’onglet choisi dans la rangée.
  *
  * Chaque onglet peut porter un détail sous son libellé (titre et
  * sous-titre, dans sa langue) et un lien sortant sous sa capture. La hauteur des captures suit celle de
@@ -94,6 +95,18 @@ if (onglets.length < 2 || onglets.length > 6) throw new Error(`<OngletsCaptures 
 </fieldset>
 
 <script>
+  // Sur mobile, la rangée d’onglets défile : ses fondus de bord disent de
+  // quel côté il reste des onglets (début, milieu ou fin du défilement).
+  for (const rangee of document.querySelectorAll<HTMLElement>('.onglets--pile .onglets__choix')) {
+    const marquer = () => {
+      const reste = rangee.scrollWidth - rangee.clientWidth - rangee.scrollLeft;
+      rangee.dataset.defile = rangee.scrollLeft <= 4 ? 'debut' : reste <= 4 ? 'fin' : 'milieu';
+    };
+    rangee.addEventListener('scroll', marquer, { passive: true });
+    window.addEventListener('resize', marquer, { passive: true });
+    marquer();
+  }
+
   // Sur mobile, la rangée d’onglets défile : l’onglet choisi y revient en entier.
   for (const groupe of document.querySelectorAll<HTMLElement>('.onglets--pile')) {
     groupe.addEventListener('change', (evenement) => {
@@ -102,10 +115,12 @@ if (onglets.length < 2 || onglets.length > 6) throw new Error(`<OngletsCaptures 
       if (!etiquette || !rangee || rangee.scrollWidth <= rangee.clientWidth) return;
       const cadre = rangee.getBoundingClientRect();
       const onglet = etiquette.getBoundingClientRect();
-      // Le fondu de droite (48 px) masque ce qui le traverse : l’onglet doit finir avant.
-      if (onglet.left >= cadre.left && onglet.right <= cadre.right - 48) return;
-      // Aligné au début de la rangée, l’onglet tombe sur un point d’accroche du défilement.
-      rangee.scrollTo({ left: rangee.scrollLeft + onglet.left - cadre.left - 16, behavior: 'instant' });
+      // Les fondus masquent ce qui les traverse : 72 px à droite, 40 px à
+      // gauche dès que la rangée a défilé. L’onglet doit tenir entre les deux.
+      const gauche = rangee.scrollLeft > 0 ? 40 : 0;
+      if (onglet.left >= cadre.left + gauche && onglet.right <= cadre.right - 72) return;
+      // Aligné après le fondu de gauche, l’onglet tombe sur un point d’accroche du défilement.
+      rangee.scrollTo({ left: rangee.scrollLeft + onglet.left - cadre.left - 48, behavior: 'instant' });
     });
   }
 </script>
@@ -281,19 +296,33 @@ if (onglets.length < 2 || onglets.length > 6) throw new Error(`<OngletsCaptures 
       font-size: var(--t-xs);
     }
 
-    /* En pile, une seule rangée d’onglets qui défile (règle E7) : un fondu à
-       droite dit qu’il en reste ; la marge de fin laisse le dernier sortir du
-       fondu. */
+    /* En pile, une seule rangée d’onglets qui défile (règle E7) : un fondu
+       de bord dit qu’il en reste, à droite tant que la rangée n’est pas au
+       bout, à gauche dès qu’elle a défilé (le script pose `data-defile`) ;
+       la marge de fin laisse le dernier sortir du fondu. Sans script, le
+       fondu de droite reste seul, toujours. */
     .onglets--pile .onglets__choix {
+      --fondu-debut: 0px;
+      --fondu-fin: 72px;
+
       flex-wrap: nowrap;
       margin-inline: calc(-1 * var(--s4));
       padding: 2px var(--s7) 4px var(--s4);
       overflow-x: auto;
       scroll-snap-type: x proximity;
-      scroll-padding-inline: var(--s4);
+      scroll-padding-inline: var(--s7) var(--s4);
       scrollbar-width: none;
-      -webkit-mask-image: linear-gradient(to right, var(--encre) calc(100% - var(--s7)), transparent);
-      mask-image: linear-gradient(to right, var(--encre) calc(100% - var(--s7)), transparent);
+      -webkit-mask-image: linear-gradient(to right, transparent, var(--encre) var(--fondu-debut), var(--encre) calc(100% - var(--fondu-fin)), transparent);
+      mask-image: linear-gradient(to right, transparent, var(--encre) var(--fondu-debut), var(--encre) calc(100% - var(--fondu-fin)), transparent);
+    }
+
+    .onglets--pile .onglets__choix[data-defile='milieu'] {
+      --fondu-debut: 40px;
+    }
+
+    .onglets--pile .onglets__choix[data-defile='fin'] {
+      --fondu-debut: 40px;
+      --fondu-fin: 0px;
     }
 
     .onglets--pile .onglets__choix::-webkit-scrollbar {
