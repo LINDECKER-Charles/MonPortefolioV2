@@ -69,12 +69,12 @@ hors exemption), `data-distinct-id` (identifiant durable, hors exemption),
 
   <a href="/contact"
      data-umami-event="contact-page"
-     data-umami-event-emplacement="discutons">Parlons de votre projet</a>
+     data-umami-event-emplacement="discutons">Discutons</a>
 
-  <a href="https://github.com/LINDECKER-Charles"
+  <a href="https://github.com/LINDECKER-Charles?tab=repositories"
      data-umami-event="lien-sortant"
      data-umami-event-domaine="github.com"
-     data-umami-event-emplacement="discutons">Contribuer à mes projets open source</a>
+     data-umami-event-emplacement="discutons">Tous mes dépôts publics</a>
   ```
 
   Pour un lien ouvert dans le même onglet (`mailto:`, lien interne), le traceur **retient la
@@ -144,11 +144,13 @@ d’adresse et les liens vers les profils publics. Les autres liens internes du 
 des navigations ordinaires : les pages vues permettent de lire ce parcours. Les ouvertures de
 détail des illustrations ne créent aucun événement supplémentaire.
 
-L’essai de conclusion de l’accueil du 2026-10-08 conserve l’ancre et la valeur `discutons` pour
-le chapitre 03 « La suite, à plusieurs ». Son action principale « Parlons de votre projet »
-utilise l’événement `contact-page`, avec `emplacement` = `discutons`. L’invitation
-« Contribuer à mes projets open source » utilise `lien-sortant`, `domaine` = `github.com` et
-`emplacement` = `discutons`. Les liens de « Pour aller plus loin » vers Projets, Parcours et Blog
+La conclusion de l’accueil conserve l’ancre et la valeur `discutons` pour le chapitre 03 « La
+suite, à plusieurs ». Son action principale « Discutons » utilise l’événement `contact-page`, avec
+`emplacement` = `discutons` ; le « Discutons » de la couverture utilise le même événement, avec
+`emplacement` = `hero`. Depuis le 2026-10-13, l’invitation « Contribuer à mes projets open source »
+mène au bloc « Contribuer » de la vitrine (`/projets#contribuer`) au lieu du profil GitHub entier :
+c’est une navigation ordinaire, sans événement, et l’objectif O3 se mesure sur les liens de ce
+bloc (voir ci-dessous). Les liens de « Pour aller plus loin » vers Projets, Parcours et Blog
 restent des navigations ordinaires.
 
 L’emplacement `preuves` reste actif sur les pages de projets qui utilisent le composant `Fiche`.
@@ -189,7 +191,7 @@ les chemins comme sur les noms d'événements.
 |---|---|---|---|
 | O1 | Contacts | événement `contact-*` | page Contact ouverte depuis un CTA, e-mail ouvert ou adresse copiée : les intentions de contact |
 | O2 | Récit lu jusqu'au bout | `lecture` avec `chapitre` = `discutons` | le visiteur a atteint l'appel à l'action |
-| O3 | Invitation open source suivie | `lien-sortant` avec `emplacement` = `discutons` et `domaine` = `github.com` | l’invitation finale donne envie de découvrir les projets publics |
+| O3 | Invitation open source suivie | `lien-sortant` avec `emplacement` = `discutons` et `domaine` = `github.com` | l’invitation à contribuer (bloc « Contribuer » de la vitrine, où mène celle de l’accueil) donne envie de découvrir les projets publics |
 | O4 | Pages introuvables | événement `erreur-404` | qualité : liens cassés, anciennes adresses à rediriger |
 
 O2 et O3 portent sur des valeurs de propriété. Si l'écran des objectifs ne filtre pas sur les
