@@ -49,8 +49,11 @@ de progression illustrent une partie et ne mesurent pas l’adoption du projet.
 ## Autres visuels et conversion
 
 La capture de PvZ Fusion existante est conservée : aucun jeu local n’est disponible pour la
-renouveler. `bloodborne/yharnam.webp` provient du visuel déjà utilisé sur la page dédiée ;
-ses crédits figurent dans cette page.
+renouveler. `bloodborne/yharnam.webp`, fond de l’en-tête de la page Bloodborne Legendary Run,
+est une capture du jeu par MoonlightGhost, publiée sur le Bloodborne Wiki (visuels du jeu
+© Sony Interactive Entertainment / FromSoftware). Ce n’est ni une capture de l’application, ni une
+illustration de Charles : son crédit est écrit dans la note de sources de la page (« Crédits »),
+qui fait la « mention contraire » prévue par les mentions légales. Gardée le 13 octobre 2026.
 
 Les PNG originaux des nouvelles captures sont convertis en WebP ; les captures historiques
 sont déjà dans ce format. Astro produit les tailles adaptées et les AVIF.
