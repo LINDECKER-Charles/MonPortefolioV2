@@ -17,7 +17,8 @@
  * DecisionsProjet). Tout tient dans le premier écran à 1 440 × 900 ; les
  * éléments `[data-pli]` (titre, identité, preuve, action) y sont visibles à
  * 1 440 et à 390 px de large (règle E1). Sur mobile, les repères passent
- * avant le visuel.
+ * avant le visuel, et le fil d’Ariane s’arrête à « Projets » : le nom suit
+ * aussitôt (la page courante reste lue par les lecteurs d’écran).
  */
 import FilAriane from '../../pages/FilAriane.astro';
 import LienAction from '../../ui/LienAction.astro';
@@ -31,7 +32,8 @@ import type { DonneesFiche, LienProjet, PreuveEnTete } from './types';
 
 interface Props {
   projet: ProjetVitrine['id'];
-  titre: string;
+  /** Le titre ; en tableau, une ligne par phrase (« Traduire un jeu. », « Faire grandir une équipe. »). */
+  titre: string | readonly string[];
   chapeau: string;
   /** Actions après « Comment je l’ai construit » : application, dépôt public… */
   liens?: readonly LienProjet[];
@@ -47,6 +49,7 @@ const { projet: id, titre, chapeau, liens = [], preuves, fiche, construit = 'con
 if (preuves.length < 1 || preuves.length > 3) throw new Error(`<EnTeteProjet projet="${id}"> : un à trois repères chiffrés (règle E5).`);
 if (preuves.filter((preuve) => preuve.surligne).length > 1) throw new Error(`<EnTeteProjet projet="${id}"> : un seul chiffre surligné dans l’en-tête.`);
 const { projet } = projetDeLaVitrine(id);
+const lignes = typeof titre === 'string' ? [titre] : titre;
 ---
 
 <header class="projet-tete" data-projet={id}>
@@ -58,7 +61,7 @@ const { projet } = projetDeLaVitrine(id);
           <span>{projet.nom}</span>
           <span class="projet-tete__preuve">{typo(projet.preuve)}</span>
         </p>
-        <h1 class="projet-tete__titre" data-pli="titre">{typo(titre)}</h1>
+        <h1 class="projet-tete__titre" data-pli="titre">{lignes.map((ligne, index) => <>{index > 0 && ' '}<span class="projet-tete__ligne">{typo(ligne)}</span></>)}</h1>
         <p class="chapeau projet-tete__chapeau" data-pli="identite">{typo(chapeau)}</p>
         <div class="actions projet-tete__actions" data-pli="action">
           <LienAction href={`#${construit}`}>Comment je l’ai construit</LienAction>
@@ -145,6 +148,11 @@ const { projet } = projetDeLaVitrine(id);
     letter-spacing: var(--ls-affiche);
   }
 
+  /* Une phrase par ligne : le parallèle des deux phrases ne se casse pas. */
+  .projet-tete__ligne {
+    display: block;
+  }
+
   .projet-tete__chapeau {
     margin-top: var(--s4);
     max-width: 38em;
@@ -194,6 +202,8 @@ const { projet } = projetDeLaVitrine(id);
     }
 
     .projet-tete__visuel {
+      justify-self: center;
+      width: 100%;
       max-width: 40rem;
     }
   }
@@ -201,6 +211,15 @@ const { projet } = projetDeLaVitrine(id);
   @media (max-width: 860px) {
     .projet-tete__titre {
       max-width: none;
+    }
+
+    .projet-tete :global(.projet-tete__ariane li[aria-current]) {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
     }
 
     .projet-tete__actions {

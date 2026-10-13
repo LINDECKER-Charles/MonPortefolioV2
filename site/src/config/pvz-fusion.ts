@@ -39,7 +39,8 @@ export const LIENS = {
 /* ------------------------------------------------------------------ */
 
 export const EN_TETE = {
-  titre: 'Traduire un jeu. Faire grandir une équipe.',
+  /** Une phrase par ligne : le parallèle des deux phrases ne se casse pas. */
+  titre: ['Traduire un jeu.', 'Faire grandir une équipe.'],
   chapeau:
     'PvZ Fusion change toutes les deux ou trois semaines. Quand je suis arrivé, la traduction française avait plusieurs versions de retard. Dix mois plus tard, avec l’équipe que j’ai recrutée et formée, il ne manquait plus une seule entrée.',
   liens: [{ href: AMONT, libelle: 'Le projet multilingue' }],

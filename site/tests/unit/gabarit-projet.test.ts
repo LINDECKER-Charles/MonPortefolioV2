@@ -69,7 +69,15 @@ describe('EnTeteProjet', () => {
   it('marque le premier écran : titre, identité, preuve, action', async () => {
     const html = await rendre(EnTeteProjet, props);
     for (const marque of ['titre', 'identite', 'preuve', 'action']) expect(html).toContain(`data-pli="${marque}"`);
-    expect(html).toMatch(/<h1[^>]*data-pli="titre"[^>]*>Traduire un jeu\. Faire grandir une équipe\.<\/h1>/);
+    // Une phrase par ligne : le parallèle des deux phrases ne se casse pas.
+    const titre = /<h1[^>]*data-pli="titre"[^>]*>(.*?)<\/h1>/.exec(html)?.[1] ?? '';
+    expect([...titre.matchAll(/<span class="projet-tete__ligne"[^>]*>([^<]+)<\/span>/g)].map((m) => m[1])).toEqual(['Traduire un jeu.', 'Faire grandir une équipe.']);
+    expect(titre.replace(/<[^>]+>/g, '')).toBe('Traduire un jeu. Faire grandir une équipe.');
+  });
+
+  it('accepte aussi un titre d’un seul tenant', async () => {
+    const html = await rendre(EnTeteProjet, { ...props, titre: 'Un titre en une phrase.' });
+    expect(html).toMatch(/<h1[^>]*data-pli="titre"[^>]*><span class="projet-tete__ligne"[^>]*>Un titre en une phrase\.<\/span><\/h1>/);
   });
 
   it('reprend le nom canonique et l’étiquette de la vitrine, et mène d’abord à « Comment je l’ai construit »', async () => {
