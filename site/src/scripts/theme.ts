@@ -9,6 +9,13 @@
  * qu’on vient d’allumer ; vers le jour, la lumière part d’elle. View
  * Transitions et masque radial centré sur la bascule. Sans View Transitions,
  * les couleurs glissent ; en mouvement réduit, le thème change d’un coup.
+ *
+ * Une image générée a deux rendus, jour et nuit (components/ui/Visuel.astro),
+ * et celui du thème masqué n’est pas téléchargé. Avant de basculer, le script
+ * charge et décode le rendu visé des images proches de l’écran, 300 ms au
+ * plus : la nouvelle vue capturée par la transition a déjà ses images. Il
+ * s’y prend dès que la bascule devient probable (survol, focus, toucher de la
+ * lanterne), pour que l’attente soit le plus souvent nulle.
  */
 import { mesurer } from './mesure';
 
@@ -42,6 +49,33 @@ function lanterneVisible(origine?: Element): DOMRect | undefined {
   return undefined;
 }
 
+/** L’attente la plus longue avant de basculer, quand le rendu visé tarde. */
+const ATTENTE_RENDUS = 300;
+
+/**
+ * Les images du rendu `theme` (jour ou nuit) des images générées à moins d’un
+ * écran de la vue, hors des actes sombres, qui montrent la nuit dans les deux
+ * thèmes. Un emplacement masqué (sans boîte) n’en a pas besoin.
+ */
+function rendusProches(theme: Theme): HTMLImageElement[] {
+  const marge = window.innerHeight;
+  return [...document.querySelectorAll<HTMLImageElement>(`figure.visuel--jour-nuit > picture.visuel__${theme} > img`)].filter((image) => {
+    const figure = image.closest('figure')!;
+    if (figure.closest('.acte-veille, .acte-bleu')) return false;
+    const boite = figure.getBoundingClientRect();
+    return boite.width > 0 && boite.bottom > -marge && boite.top < window.innerHeight + marge;
+  });
+}
+
+/** Lance le chargement du rendu `theme` des images proches ; se résout quand elles sont décodées, ou au plus tard après ATTENTE_RENDUS. */
+function prechauffer(theme: Theme): Promise<void> {
+  const images = rendusProches(theme);
+  if (!images.length) return Promise.resolve();
+  for (const image of images) image.loading = 'eager';
+  const decodees = Promise.all(images.map((image) => image.decode().catch(() => {})));
+  return Promise.race([decodees.then(() => {}), new Promise<void>((fin) => setTimeout(fin, ATTENTE_RENDUS))]);
+}
+
 function poser(theme: Theme): void {
   document.documentElement.setAttribute('data-theme', theme);
   for (const bouton of document.querySelectorAll<HTMLButtonElement>('[data-theme-bascule]')) {
@@ -72,10 +106,13 @@ export function brancherTheme(): void {
     themeVise = theme;
     transition?.skipTransition();
     if (finCouleurs) clearTimeout(finCouleurs);
+    const rendus = prechauffer(theme);
 
     if (mouvementReduit.matches) {
       terminer();
-      poser(theme);
+      void rendus.then(() => {
+        if (themeVise === theme) poser(theme);
+      });
       return;
     }
 
@@ -88,7 +125,11 @@ export function brancherTheme(): void {
         racine.style.setProperty('--vt-y', `${Math.round(boite.top + boite.height / 2)}px`);
       }
       racine.setAttribute('data-transition-theme', theme === 'nuit' ? 'vers-nuit' : 'vers-jour');
-      const nouvelleTransition = document.startViewTransition(() => poser(theme));
+      // La vue de départ est capturée tout de suite ; la nouvelle, une fois les rendus visés prêts.
+      const nouvelleTransition = document.startViewTransition(async () => {
+        await rendus;
+        poser(themeVise);
+      });
       transition = nouvelleTransition;
       // Un second geste peut interrompre la transition précédente avant sa capture.
       void nouvelleTransition.ready.catch(() => {});
@@ -101,14 +142,20 @@ export function brancherTheme(): void {
       return;
     }
 
-    racine.setAttribute('data-transition-theme', 'couleurs');
-    // Établir les couleurs actuelles avant de poser les nouvelles.
-    void racine.offsetWidth;
-    poser(theme);
-    finCouleurs = setTimeout(terminer, 820);
+    void rendus.then(() => {
+      if (themeVise !== theme) return;
+      racine.setAttribute('data-transition-theme', 'couleurs');
+      // Établir les couleurs actuelles avant de poser les nouvelles.
+      void racine.offsetWidth;
+      poser(theme);
+      finCouleurs = setTimeout(terminer, 820);
+    });
   }
 
   for (const bouton of document.querySelectorAll<HTMLButtonElement>('[data-theme-bascule]')) {
+    // La bascule devient probable : le rendu de l’autre thème part sur le réseau.
+    const anticiper = () => void prechauffer(themeVise === 'nuit' ? 'jour' : 'nuit');
+    for (const evenement of ['pointerenter', 'focus', 'touchstart'] as const) bouton.addEventListener(evenement, anticiper, { passive: true });
     bouton.addEventListener('click', () => {
       const suivant: Theme = themeVise === 'nuit' ? 'jour' : 'nuit';
       choixSession = true;

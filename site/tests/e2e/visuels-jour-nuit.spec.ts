@@ -9,7 +9,8 @@ import { visuelParId } from '../../src/config/visuels';
  * acte sombre (PVZ-04) ; le jour à l’impression. La version masquée n’est ni
  * affichée, ni lue, ni téléchargée : avec JavaScript par le chargement
  * différé, même quand la page demande un chargement immédiat ; sans, par une
- * source neutre (`(scripting: none)`).
+ * source neutre (`(scripting: none)`). À la bascule, le rendu visé est chargé
+ * et décodé avant que la nouvelle vue s’affiche (scripts/theme.ts).
  */
 
 const PAGE = '/projets/pvz-fusion';
@@ -37,6 +38,30 @@ const charge = (image: ReturnType<typeof rendus>['jour']) => image.evaluate((img
 /** Le rendu d’une image d’Astro : `/_astro/<ID>_<l>x<h>.<empreinte>.<format>`, `.nuit.` pour la nuit. */
 const rendu = (id: string, version: 'jour' | 'nuit') => (url: string) =>
   version === 'nuit' ? new RegExp(`/${id}_\\d+x\\d+\\.nuit\\.[^/]+$`).test(url) : new RegExp(`/${id}_\\d+x\\d+\\.(?!nuit\\.)[^/]+$`).test(url);
+
+/** Un réseau lent, émulé par Chromium. */
+async function ralentir(page: Page, latence: number, debit: number) {
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send('Network.enable');
+  await cdp.send('Network.emulateNetworkConditions', { offline: false, latency: latence, downloadThroughput: debit, uploadThroughput: debit });
+}
+
+/**
+ * Relève, à chaque image animée jusqu’à la fin de la bascule, si l’image
+ * affichée de la figure est chargée : jamais de cadre vide à l’écran.
+ */
+async function releverPendantBascule(figure: ReturnType<typeof rendus>['figure']) {
+  await figure.evaluate((element) => {
+    const releves: boolean[] = [];
+    (window as unknown as { releves: boolean[] }).releves = releves;
+    const relever = () => {
+      const affichee = [...element.querySelectorAll('picture')].find((p) => getComputedStyle(p).display !== 'none')?.querySelector('img');
+      releves.push(Boolean(affichee && affichee.complete && affichee.naturalWidth > 1));
+      if (document.documentElement.hasAttribute('data-transition-theme') || releves.length < 30) requestAnimationFrame(relever);
+    };
+    relever();
+  });
+}
 
 test('le jour : la version de jour s’affiche, seule lue et seule téléchargée ; un acte sombre garde la nuit', async ({ page }) => {
   const urls = suivreImages(page);
@@ -199,6 +224,44 @@ test.describe('chargement demandé immédiat', () => {
     await expect.poll(() => charge(nuit)).toBe(true);
     await page.waitForLoadState('networkidle');
     expect(urls.filter(rendu('PRJ-01', 'jour'))).toEqual([]);
+  });
+});
+
+test.describe('bascule sur un réseau lent', () => {
+  test('survoler la lanterne charge le rendu visé ; la bascule ne montre jamais de cadre vide', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'le survol est un geste de souris');
+    await page.goto(PAGE);
+    const { figure, jour, nuit } = rendus(page);
+    await figure.scrollIntoViewIfNeeded();
+    await expect.poll(() => charge(jour)).toBe(true);
+    await ralentir(page, 300, 50 * 1024);
+    const bascule = page.locator('[data-theme-bascule]:visible').first();
+    await bascule.hover();
+    // La nuit, encore masquée, part sur le réseau dès le survol.
+    await expect.poll(() => charge(nuit), { timeout: 10_000 }).toBe(true);
+    await releverPendantBascule(figure);
+    await bascule.click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'nuit');
+    await expect(page.locator('html')).not.toHaveAttribute('data-transition-theme', /.+/, { timeout: 4_000 });
+    const releves = await page.evaluate(() => (window as unknown as { releves: boolean[] }).releves);
+    expect(releves.length).toBeGreaterThan(5);
+    expect(releves.filter((charge) => !charge).length, 'images animées où le cadre est vide').toBe(0);
+  });
+
+  test('sans survol, la bascule attend le rendu visé avant de montrer la nouvelle vue', async ({ page }) => {
+    await page.goto(PAGE);
+    const { figure, jour, nuit } = rendus(page);
+    await figure.scrollIntoViewIfNeeded();
+    await expect.poll(() => charge(jour)).toBe(true);
+    await ralentir(page, 60, 2 * 1024 * 1024);
+    await releverPendantBascule(figure);
+    // Un clic sans survol ni focus préalables : seule l’attente de appliquer() charge la nuit.
+    await page.locator('[data-theme-bascule]:visible').first().dispatchEvent('click');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'nuit');
+    await expect(page.locator('html')).not.toHaveAttribute('data-transition-theme', /.+/, { timeout: 4_000 });
+    await expect.poll(() => charge(nuit)).toBe(true);
+    const releves = await page.evaluate(() => (window as unknown as { releves: boolean[] }).releves);
+    expect(releves.filter((charge) => !charge).length, 'images animées où le cadre est vide').toBe(0);
   });
 });
 

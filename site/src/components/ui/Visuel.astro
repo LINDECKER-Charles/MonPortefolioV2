@@ -18,7 +18,8 @@
  * l’impression repasse au jour. L’autre est en `display: none` : hors de
  * l’arbre d’accessibilité, il n’est lu par aucun lecteur d’écran. Pas de
  * fondu entre les deux : la bascule de thème (View Transitions, ou couleurs
- * qui glissent) ne montre jamais deux images.
+ * qui glissent) ne montre jamais deux images ; scripts/theme.ts charge et
+ * décode la version visée des images proches de l’écran avant la bascule.
  *
  * Seule la version affichée part sur le réseau :
  *   - avec JavaScript, les deux versions sont chargées à la demande
