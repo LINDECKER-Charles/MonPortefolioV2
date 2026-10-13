@@ -1,0 +1,53 @@
+---
+/**
+ * Les quatre repères d’une partie, chacun lu dans la version joueur des
+ * règles du moteur : le texte et les chiffres du schéma du plateau
+ * (PlateauPartie), au même numéro que ses cibles.
+ *
+ *   <ReperesPartie />
+ *
+ * Données : REPERES_PARTIE (config/omnicard.ts).
+ */
+import { REPERES_PARTIE } from '../../../config/omnicard';
+import { typo } from '../../../lib/typo';
+---
+
+<ol class="reperes" aria-label="Les repères d’une partie">
+  {
+    REPERES_PARTIE.map((repere, index) => (
+      <li>
+        <span class="oc-cible" aria-hidden="true">{index + 1}</span>
+        <span><b class="reperes__valeur">{repere.valeur}</b> {typo(repere.libelle)}</span>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .reperes {
+    display: grid;
+    gap: var(--s3);
+    margin: var(--s5) 0 0;
+    padding: var(--s4) 0 0;
+    border-top: 1px solid var(--trait);
+    list-style: none;
+  }
+
+  li {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s3);
+    font-size: var(--t-s);
+    line-height: 1.5;
+  }
+
+  li > :global(.oc-cible) {
+    translate: 0 4px;
+  }
+
+  .reperes__valeur {
+    font-size: var(--t-l);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+</style>
