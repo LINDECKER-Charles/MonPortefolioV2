@@ -63,6 +63,8 @@ test('la fiche : sept cases, statut hors ligne à forme et mot, dates à confirm
   const fiche = page.getByRole('group', { name: 'Fiche du projet' });
   await expect(fiche.locator('dt')).toHaveText(['Besoin', 'Ma part', 'Rôle', 'Période', 'Équipe', 'Statut', 'Liens publics']);
   await expect(fiche.locator('.statut')).toHaveText('Hors ligne, en attente de refonte');
+  // Un seul rôle : les règles du jeu papier sont co-écrites, le jeu en ligne est fait seul.
+  await expect(fiche.locator('.fiche-projet__case--role dd')).toHaveText(`Co-auteur du jeu papier${NBSP}; seul pour le jeu en ligne (équilibrage, moteur, interface)`);
   await expect(fiche.locator('.statut')).toHaveClass(/statut--eteint/);
   await expect(fiche.locator('.fiche-projet__case--periode .a-confirmer')).toHaveText('à confirmer');
   await expect(fiche).toContainText('moteur de règles en C#');

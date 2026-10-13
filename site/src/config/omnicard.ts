@@ -76,7 +76,7 @@ export const PREUVES: readonly PreuveEnTete[] = [
 export const FICHE: DonneesFiche = {
   besoin: 'Faire enfin passer au numérique le jeu de cartes que nous avions inventé sur papier, mon cousin et moi.',
   part: 'J’ai repris le projet seul : rééquilibré les cartes, écrit le moteur de règles en C# qui arbitre les parties côté serveur, puis construit l’interface Angular.',
-  role: 'Co-auteur du jeu papier, seul pour le jeu en ligne',
+  role: 'Co-auteur du jeu papier ; seul pour le jeu en ligne (équilibrage, moteur, interface)',
   periode: 'Depuis l’adolescence, puis en ligne',
   equipe: 'À deux sur papier, seul pour le code',
   statut: { texte: 'Hors ligne, en attente de refonte', etat: 'eteint' },
