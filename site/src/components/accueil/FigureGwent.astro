@@ -14,6 +14,10 @@
  * s’allume depuis la lanterne de son illustration à son arrivée dans l’écran,
  * se soulève, puis se rejoue d’un clic ou au clavier
  * (scripts/figure-animations.ts).
+ *
+ * Sous 600 px, les cartes passent en rangée défilante (scroll-snap), à 66 %
+ * de la largeur de l’écran, avec leur rang « 1 / 3 » (non annoncé : la liste
+ * le dit déjà) : l’illustration y passe à environ 200 px de large.
  */
 import Visuel from '../ui/Visuel.astro';
 
@@ -38,7 +42,7 @@ const cartes = [
       <li class="gwent__carte">
         <div class="gwent__plan" data-figure-animation>
           <div class="gwent__fenetre">
-            <Visuel id={carte.visuel} alt="" sizes="(max-width: 640px) 110px, 210px" />
+            <Visuel id={carte.visuel} alt="" sizes="(max-width: 599px) 50vw, 210px" />
           </div>
           <button type="button" class="gwent__visuel" data-rejouer aria-label={`Rejouer l’animation : ${carte.titre}`}>
             <svg class="gwent__dessin" viewBox="0 0 220 312" aria-hidden="true" focusable="false">
@@ -70,6 +74,7 @@ const cartes = [
             </svg>
           </button>
         </div>
+        <span class="gwent__compteur" aria-hidden="true">{i + 1}&nbsp;/&nbsp;{cartes.length}</span>
         <span class="gwent__titre">{carte.titre}</span>
         <span class="gwent__resume">{carte.resume}</span>
       </li>
@@ -243,6 +248,10 @@ const cartes = [
     stop-opacity: 0;
   }
 
+  .gwent__compteur {
+    display: none;
+  }
+
   .gwent__titre {
     font-family: var(--police-titre);
     font-size: var(--t-l);
@@ -354,7 +363,7 @@ const cartes = [
     }
   }
 
-  /* Mobile : les trois cartes restent côte à côte, comme une main de jeu. */
+  /* Petite tablette : les trois cartes restent côte à côte, comme une main de jeu. */
   @media (max-width: 640px) {
     .gwent__cartes {
       gap: var(--s3);
@@ -375,6 +384,45 @@ const cartes = [
 
     .gwent__fenetre :global(.visuel__contenu) {
       padding: 30% 6px 6px;
+    }
+  }
+
+  /* Mobile : une rangée défilante, une carte et demie à l’écran. */
+  @media (max-width: 599px) {
+    .gwent__cartes {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: 66vw;
+      gap: var(--s4);
+      padding-block: var(--s3);
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: thin;
+    }
+
+    .gwent__carte {
+      scroll-snap-align: start;
+    }
+
+    .gwent__plan {
+      max-width: none;
+    }
+
+    .gwent__compteur {
+      display: block;
+      margin-bottom: var(--s1);
+      font-size: var(--t-xs);
+      font-variant-numeric: tabular-nums;
+      color: var(--eteint);
+    }
+
+    .gwent__titre {
+      font-size: var(--t-l);
+    }
+
+    .gwent__fenetre :global(.visuel__contenu) {
+      padding: 26% 10px 10px;
     }
   }
 </style>

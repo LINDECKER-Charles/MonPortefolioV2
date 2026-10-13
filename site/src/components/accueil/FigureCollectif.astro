@@ -4,6 +4,8 @@
  * laisser contribuer en autonomie (réponses C6 et C7). Trois scènes du
  * registre (ACC-21 à ACC-23) : chacune s’allume depuis sa lanterne à son
  * arrivée, puis se rejoue au clic ou au clavier (components/accueil/Scene).
+ * Sur mobile, les étapes s’empilent : la scène pleine largeur, en 3:2, au-dessus
+ * de son titre.
  */
 import Scene from './Scene.astro';
 
@@ -19,7 +21,7 @@ const etapes = [
   <ol class="collectif__etapes">
     {etapes.map((etape, i) => (
       <li class="collectif__etape">
-        <Scene id={etape.visuel} nom={etape.nom} legende={etape.titre} lumiere={etape.lumiere} muette sizes="(max-width: 640px) 140px, 340px" class="collectif__scene" />
+        <Scene id={etape.visuel} nom={etape.nom} legende={etape.titre} lumiere={etape.lumiere} muette sizes="(max-width: 640px) calc(100vw - 64px), 340px" class="collectif__scene" />
         <p class="collectif__nom"><span class="collectif__rang" aria-hidden="true">{i + 1}</span>{etape.titre}</p>
         <p class="collectif__resume">{etape.resume}</p>
       </li>
@@ -100,41 +102,26 @@ const etapes = [
   @media (max-width: 640px) {
     .collectif__etapes {
       grid-template-columns: minmax(0, 1fr);
-      gap: 0;
-    }
-
-    .collectif__etape {
-      display: grid;
-      grid-template-columns: 140px minmax(0, 1fr);
-      column-gap: var(--s4);
-      align-items: center;
-      padding-block: var(--s4);
+      gap: var(--s6);
     }
 
     .collectif__etape + .collectif__etape {
+      padding-top: var(--s5);
       border-top: 1px solid var(--filet);
     }
 
     .collectif__etape + .collectif__etape::before {
       content: '↓';
       top: -0.7rem;
-      left: 60px;
-      padding-inline: var(--s1);
+      left: 50%;
+      width: auto;
+      padding-inline: var(--s2);
+      transform: translateX(-50%);
       background: var(--fond);
     }
 
-    .collectif__etape :global(.collectif__scene) {
-      grid-row: 1 / 3;
-    }
-
     .collectif__nom {
-      align-self: end;
-      margin-top: 0;
       font-size: var(--t-l);
-    }
-
-    .collectif__resume {
-      align-self: start;
     }
   }
 </style>

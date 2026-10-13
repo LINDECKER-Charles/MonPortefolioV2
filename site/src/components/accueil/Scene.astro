@@ -17,7 +17,12 @@
  * `legende` nomme la scène (bouton et légende) ; `muette` retire la légende
  * visible quand la scène a déjà son titre à côté (FigureCollectif) ;
  * `recadrage` affiche l’image à un autre ratio, centrée (« 2 / 1 » pour la
- * voie et le bureau, comme la maquette) : la lumière suit le même recadrage.
+ * voie et le bureau, comme la maquette), sur ordinateur seulement : sous
+ * 861 px, l’image garde le ratio du registre, plus haut et plus lisible. La
+ * lumière suit le même recadrage.
+ *
+ * Une scène très large (21:9) est basse sur mobile : la commande d’un
+ * emplacement vide n’y garde que son identifiant, son sujet et son format.
  */
 import Visuel from '../ui/Visuel.astro';
 import { visuelParId } from '../../config/visuels';
@@ -43,9 +48,10 @@ const cx = Math.round(lumiere[0] * largeur) / 100;
 const cy = lumiere[1];
 const texte = typo(legende);
 const gid = `scene-${nom}`;
+const basse = a / b > 2;
 ---
 
-<figure class:list={['scene', { 'scene--recadree': recadrage }, classe]} data-scene={nom} data-figure-animation style={recadrage ? `--scene-recadrage:${recadrage}` : undefined}>
+<figure class:list={['scene', { 'scene--recadree': recadrage, 'scene--basse': basse }, classe]} data-scene={nom} data-figure-animation style={recadrage ? `--scene-recadrage:${recadrage}` : undefined}>
   <div class="scene__plan">
     <Visuel id={id} alt="" sizes={sizes} />
     <button type="button" class="scene__rejouer" data-rejouer aria-label={`Rejouer l’animation : ${texte}`}>
@@ -104,18 +110,27 @@ const gid = `scene-${nom}`;
     border-radius: 0;
   }
 
-  .scene--recadree .scene__plan :global(.visuel) {
-    aspect-ratio: var(--scene-recadrage);
+  @media (min-width: 861px) {
+    .scene--recadree .scene__plan :global(.visuel) {
+      aspect-ratio: var(--scene-recadrage);
+    }
   }
 
   /* La commande de l’emplacement vide tient dans son cadre : quatre lignes
-     (sous 260 px, le composant Visuel la masque déjà). */
+     (sous 260 px, le composant Visuel la masque déjà) ; aucune dans une
+     scène basse de moins de 600 px. */
   @container (min-width: 261px) {
     .scene__plan :global(.visuel__consigne) {
       display: -webkit-box;
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 4;
       overflow: hidden;
+    }
+  }
+
+  @container (max-width: 599px) {
+    .scene--basse .scene__plan :global(.visuel__consigne) {
+      display: none;
     }
   }
 
