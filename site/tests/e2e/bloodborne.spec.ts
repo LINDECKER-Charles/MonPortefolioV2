@@ -144,7 +144,7 @@ test.describe('mouvement réduit', () => {
     const video = page.locator('video[data-blr-allumage]');
     await page.waitForTimeout(600);
     expect(await video.evaluate((v: HTMLVideoElement) => v.paused && v.currentTime === 0)).toBe(true);
-    await expect(video).toHaveAttribute('poster', '/demos/bloodborne/boss-poster.webp');
+    await expect(video).toHaveAttribute('poster', '/demos/bloodborne/boss-fin-poster.webp');
     const planche = page.locator('[data-scene="blr-constellations"]');
     await planche.scrollIntoViewIfNeeded();
     await expect(planche).not.toHaveClass(/animation-en-cours/);

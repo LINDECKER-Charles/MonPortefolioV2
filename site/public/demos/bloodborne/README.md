@@ -22,7 +22,11 @@ rituel ne sont ni accélérés, ni recomposés. Les clips sont sans piste audio.
 | `gemme` | `spr-001` — Gemme radiale rouge | Gemme de sang |
 
 Les quatre clips durent **10,4 secondes**. Les fichiers `*-poster.webp` sont des images
-capturées pendant la cérémonie. `captures.json` conserve les objectifs, les dimensions,
+capturées pendant la cérémonie. `boss-fin-poster.webp`, poster de l’en-tête de la page du
+projet, est la dernière image de `boss.mp4` (retour au ciel, étoile allumée), extraite le
+13 octobre 2026 sans retouche : `ffmpeg -sseof -0.15 -i boss.mp4 -frames:v 1`, puis
+`cwebp -q 80`. Elle remplace dans l’en-tête l’image de la proclamation, presque noire et
+coiffée de l’icône de son de l’application. `captures.json` conserve les objectifs, les dimensions,
 les durées, les poids et le résultat de la vérification de chaque allumage. Les chiffres de
 progression visibles ne mesurent pas l’adoption de l’application.
 

@@ -7,9 +7,10 @@
  * La vidéo est muette et se joue une fois à son arrivée dans l’écran, puis
  * se rejoue d’un clic ou au clavier sur le téléphone
  * (scripts/bloodborne-allumage.ts). En mouvement réduit, le poster reste :
- * l’image prise au milieu de la cérémonie. Sans JavaScript, les commandes
- * natives du lecteur restent. Sur mobile, seul le téléphone : la carte
- * d’ordinateur y serait illisible.
+ * la dernière image de la cérémonie, l’étoile allumée sur la carte
+ * (boss-fin-poster.webp, public/demos/bloodborne/README.md). Sans JavaScript,
+ * les commandes natives du lecteur restent. Sur mobile, seul le téléphone :
+ * la carte d’ordinateur y serait illisible, et la légende ne la nomme plus.
  */
 import { Picture } from 'astro:assets';
 import CadreCapture from '../../ui/CadreCapture.astro';
@@ -42,7 +43,7 @@ import yharnam from '../../../assets/projets/bloodborne/yharnam.webp';
           muted
           playsinline
           preload="none"
-          poster="/demos/bloodborne/boss-poster.webp"
+          poster="/demos/bloodborne/boss-fin-poster.webp"
           width="390"
           height="844"
           aria-label="L’allumage d’une étoile dans l’application"
@@ -55,7 +56,7 @@ import yharnam from '../../../assets/projets/bloodborne/yharnam.webp';
       <button class="blr-tete__rejouer" type="button" data-blr-rejouer data-js-seulement aria-label="Rejouer l’allumage de l’étoile"></button>
     </div>
     <figcaption class="blr-tete__legende">
-      Un boss vaincu&nbsp;: l’étoile s’allume. Derrière, la carte des constellations sur ordinateur.
+      Un boss vaincu&nbsp;: l’étoile s’allume.<span class="blr-tete__legende-bureau"> Derrière, la carte des constellations sur ordinateur.</span>
     </figcaption>
   </figure>
   <p class="sr" id="blr-allumage-description">Un appui maintenu éveille l’étoile du Monstre clérical. Une proclamation annonce la victoire, puis la carte retrouve l’étoile allumée.</p>
@@ -171,7 +172,8 @@ import yharnam from '../../../assets/projets/bloodborne/yharnam.webp';
       text-align: center;
     }
 
-    .blr-tete :global(.blr-tete__bureau) {
+    .blr-tete :global(.blr-tete__bureau),
+    .blr-tete__legende-bureau {
       display: none;
     }
 
