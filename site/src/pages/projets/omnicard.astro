@@ -54,7 +54,7 @@ const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(h
       </div>
     </SectionProjet>
 
-    <SectionProjet id="reequilibrer" titre="Rééquilibrer mes propres cartes">
+    <SectionProjet id="reequilibrer" titre="Rééquilibrer mes propres cartes" alignement="centre">
       <Fragment slot="texte">
         <p>Avant le code, il y a eu les cartes. Je les reprends une à une pour le passage au numérique&nbsp;: un coût qui baisse ou qui monte, des statistiques revues.</p>
         <p>L’archive publique garde la saison&nbsp;1&nbsp;; on y voit, carte par carte, ce qui a changé.</p>
@@ -62,6 +62,7 @@ const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(h
       <ComparateurCartes slot="figure" />
     </SectionProjet>
 
+    <div class="oc-acte acte-teinte">
     <SectionProjet id="partie" titre="Une partie en trente secondes" alignement="centre">
       <Fragment slot="texte">
         <p>Deux joueurs s’affrontent au tour par tour. Chacun pioche dans un deck de 40&nbsp;cartes, pose ses unités sur deux lignes, joue sorts, équipements, terrains et pièges, et tente de faire tomber à zéro les points de vie adverses.</p>
@@ -71,6 +72,7 @@ const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(h
       <PlateauPartie slot="figure" />
       <EventailCartes />
     </SectionProjet>
+    </div>
 
     <SectionProjet id="jeu" titre="L’idée devient un jeu" chapeau="Une collection à explorer, un deck à préparer, des boosters à ouvrir, puis des duels en temps réel.">
       <GalerieEcrans />
@@ -128,6 +130,18 @@ const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(h
     font-size: var(--t-m);
     line-height: 1.3;
     color: var(--eteint);
+  }
+
+  /* « Une partie » : un changement d’acte, la lumière teintée de la table de
+     jeu (règle B6), sans toucher au gabarit. */
+  .oc-acte {
+    margin-top: var(--s8);
+    padding: 0 clamp(16px, 3.4vw, 40px) clamp(24px, 3.4vw, 40px);
+    border-radius: var(--r2);
+  }
+
+  .oc-acte :global(.section-projet) {
+    padding-top: clamp(24px, 3.4vw, 40px);
   }
 
   .oc-arbitre {
