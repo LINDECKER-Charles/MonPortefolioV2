@@ -153,6 +153,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     alt: '',
     fichier: 'src/assets/visuels/global/GLO-04.svg',
     lot: 3,
+    note: 'Livré le 13 octobre 2026 : un fichier à trois <symbol> (maitriser, reinventer, emmener), dessinés à la main d’après la maquette « Lanterne » et insérés dans la page par components/ui/PictoVerbe.astro, qui les recolore par jetons.',
   },
   {
     id: 'GLO-05',
@@ -320,7 +321,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     alt: '',
     fichier: null,
     reprend: ['GLO-04'],
-    note: 'En attendant GLO-04, trois pictos au trait, repris de la maquette « Lanterne », sont dessinés dans le bandeau (components/accueil/BandeauPreuves.astro).',
+    note: 'Le bandeau des preuves pose les trois pictos de GLO-04 par components/ui/PictoVerbe.astro.',
   },
   {
     id: 'ACC-03',

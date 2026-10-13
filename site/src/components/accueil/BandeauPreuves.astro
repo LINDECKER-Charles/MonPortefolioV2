@@ -6,9 +6,10 @@
  * preuve la plus rare pour un lead (décision du 13/10/2026) : c’est la case
  * la plus forte, la seule éclairée de l’écran, son chiffre en grand.
  *
- * Pictos au trait des trois verbes, repris de la maquette « Lanterne » en
- * attendant GLO-04 (registre ACC-02). Un seul surlignage par preuve.
+ * Pictos au trait des trois verbes : GLO-04 (ui/PictoVerbe.astro, registre
+ * ACC-02). Un seul surlignage par preuve.
  */
+import PictoVerbe from '../ui/PictoVerbe.astro';
 import Surligneur from '../ui/Surligneur.astro';
 ---
 
@@ -16,36 +17,21 @@ import Surligneur from '../ui/Surligneur.astro';
   <ul>
     <li class="preuve">
       <a class="preuve__lien" href="#voie">
-        <svg class="preuve__picto" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
-          <path class="p-trait" d="M20 11.5c-3.2-2.2-8.2-2.8-13.5-2.1v19.8c5.3-.7 10.3-.1 13.5 2.1 3.2-2.2 8.2-2.8 13.5-2.1V9.4c-5.3-.7-10.3-.1-13.5 2.1ZM20 11.5v19.8" />
-          <path class="p-doux" d="M10.2 15h6.2M10.2 19h6.2M10.2 23h4.4M23.6 19h6.2M23.6 23h6.2" />
-          <path class="p-plein" d="M24.2 8.7h4.6v7.6l-2.3-1.7-2.3 1.7Z" />
-        </svg>
+        <PictoVerbe verbe="maitriser" class="preuve__picto" />
         <span class="preuve__verbe">Maîtriser</span>
         <span class="preuve__texte">Le programme de développeur web bouclé en <Surligneur source="docs/questions.md, C5">un mois</Surligneur><span class="fleche" aria-hidden="true">&nbsp;↓</span></span>
       </a>
     </li>
     <li class="preuve">
       <a class="preuve__lien" href="/projets/omnicard">
-        <svg class="preuve__picto" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
-          <rect class="p-trait" x="7.5" y="11" width="12" height="17.5" rx="1.6" transform="rotate(-17 13.5 28.5)" />
-          <rect class="p-trait" x="20.5" y="11" width="12" height="17.5" rx="1.6" transform="rotate(17 26.5 28.5)" />
-          <rect class="p-plein" x="14" y="8.5" width="12" height="17.5" rx="1.6" />
-          <path class="p-creux" d="M17.5 13.5h5M17.5 17h3" />
-        </svg>
+        <PictoVerbe verbe="reinventer" class="preuve__picto" />
         <span class="preuve__verbe">Réinventer</span>
         <span class="preuve__texte">Mon jeu de cartes papier devenu un <Surligneur source="docs/questions.md, D1">jeu en ligne</Surligneur>, avec son moteur de règles<span class="fleche" aria-hidden="true">&nbsp;→</span></span>
       </a>
     </li>
     <li class="preuve preuve--forte foyer">
       <a class="preuve__lien" href="/projets/pvz-fusion">
-        <svg class="preuve__picto" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
-          <path class="p-trait" d="M4.5 16.5 9 12.6l4.5 3.9ZM5.5 16.5v9.5M12.5 16.5v9.5M4 26h10M9 12.6v-2" />
-          <path class="p-plein" d="M9 18.6c1.2 1.2 1.6 2.2 1.6 3a1.6 1.6 0 0 1-3.2 0c0-.8.4-1.8 1.6-3Z" />
-          <path class="p-trait" d="M25.5 19.5 30 15.6l4.5 3.9ZM26.5 19.5v9.5M33.5 19.5v9.5M25 29h10M30 15.6v-2" />
-          <path class="p-plein" d="M30 21.6c1.2 1.2 1.6 2.2 1.6 3a1.6 1.6 0 0 1-3.2 0c0-.8.4-1.8 1.6-3Z" />
-          <path class="p-doux p-pointille" d="M13.5 12c3.5-4.5 9-5 13.5-1" />
-        </svg>
+        <PictoVerbe verbe="emmener" class="preuve__picto" />
         <span class="preuve__verbe">Emmener</span>
         <span class="preuve__texte"><span class="preuve__chiffre"><Surligneur source="docs/matiere-premiere.md, PvZ Fusion, confirmé le 13/10/2026">20</Surligneur></span> contributeurs formés sur PvZ&nbsp;Fusion<span class="fleche" aria-hidden="true">&nbsp;→</span></span>
       </a>
@@ -82,43 +68,12 @@ import Surligneur from '../ui/Surligneur.astro';
     padding-left: var(--s5);
   }
 
-  .preuve__picto {
+  /* La grille de 48 garde une marge de 4 autour du dessin de 40. */
+  .preuve__lien :global(.preuve__picto) {
     grid-row: 1 / span 2;
-    width: 34px;
-    height: 34px;
-    margin-top: 4px;
-    color: var(--encre);
-  }
-
-  .p-trait,
-  .p-doux,
-  .p-creux {
-    fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-
-  .p-trait {
-    stroke: currentColor;
-    stroke-width: 1.6;
-  }
-
-  .p-doux {
-    stroke: var(--trait);
-    stroke-width: 1.2;
-  }
-
-  .p-pointille {
-    stroke-dasharray: 1.5 3;
-  }
-
-  .p-plein {
-    fill: var(--laiton);
-  }
-
-  .p-creux {
-    stroke: var(--fond);
-    stroke-width: 1.4;
+    width: 40px;
+    height: 40px;
+    margin-top: 1px;
   }
 
   .preuve__verbe {
@@ -204,10 +159,10 @@ import Surligneur from '../ui/Surligneur.astro';
       padding: var(--s2) 0;
     }
 
-    .preuve__picto {
-      width: 26px;
-      height: 26px;
-      margin-top: 2px;
+    .preuve__lien :global(.preuve__picto) {
+      width: 30px;
+      height: 30px;
+      margin-top: 0;
     }
 
     .preuve__verbe {
