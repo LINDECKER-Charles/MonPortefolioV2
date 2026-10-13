@@ -861,15 +861,15 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Quarante trophées, plus de mille objectifs »
 - **Note** : Posé avec un alt vide : le texte voisin dit la même chose (84 étoiles au premier ciel, dont les 40 trophées PlayStation, journal public du 06/09/2026). Affiché jusqu’à 540 px de large sur ordinateur, pleine largeur sur mobile.
 
-### BLR-02 · Déclarer → compiler → dessiner
+### BLR-02 · Des fiches déclarées à l’arbre dessiné
 
 - **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
 - **Emplacement** : `/projets/bloodborne-legendary-run` · § 3 _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Déclarer → compiler → dessiner
-- **Composition** : Trois blocs : une fiche d’« actes » et de « familles » (chaîne, gerbe), une flèche « script », un arbre propre à racine unique
+- **Sujet** : Des fiches déclarées à l’arbre dessiné
+- **Composition** : Trois temps de gauche à droite, sans aucun mot ni chiffre : une pile de fiches vierges en éventail, une flèche simple au trait, puis un arbre d’étoiles propre, à racine unique, dont les branches ne se croisent pas ; la lanterne posée sur l’étoile racine, seule source de lumière ; le reste dans la pénombre
 - **Format** : 16:9 ; 4:5 mobile (recadrage mobile 4:5)
 - **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-02.svg`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Déclarer → compiler → dessiner »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une pile de fiches devient, d’un trait, un arbre d’étoiles parti d’une seule racine. »
 - **Note** : Non posé sur la page refaite le 13/10/2026 : la compilation des arbres ne figure pas dans le journal public du projet. À poser dans « Ranger 1 289 objectifs » si Charles l’autorise.
 
 ### BLR-03 · Du wiki à la fiche française
