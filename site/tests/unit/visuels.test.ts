@@ -18,15 +18,15 @@ const MARQUES = /\b(?:pvz|plants vs\.? zombies|riot|league of legends|sony|froms
 const tous = (cle: 'sujet' | 'composition' | 'alt' | 'emplacement' | 'format' | 'note') => VISUELS.flatMap((v) => (v[cle] ? [[v.id, v[cle] as string] as const] : []));
 
 describe('registre des visuels : l’inventaire', () => {
-  it('recense les 154 emplacements, dont 105 « socle » et 49 « élargi »', () => {
-    expect(VISUELS).toHaveLength(154);
-    expect(VISUELS.filter((v) => v.priorite === 'socle')).toHaveLength(105);
+  it('recense les 155 emplacements, dont 106 « socle » et 49 « élargi »', () => {
+    expect(VISUELS).toHaveLength(155);
+    expect(VISUELS.filter((v) => v.priorite === 'socle')).toHaveLength(106);
     expect(VISUELS.filter((v) => v.priorite === 'elargi')).toHaveLength(49);
   });
 
   it('répartit les méthodes comme l’inventaire', () => {
     const par = (m: string) => VISUELS.filter((v) => v.methode === m).length;
-    expect({ IMG: par('IMG'), SVG: par('SVG'), FIG: par('FIG'), CAP: par('CAP'), PHO: par('PHO'), OG: par('OG') }).toEqual({ IMG: 81, SVG: 35, FIG: 25, CAP: 5, PHO: 3, OG: 5 });
+    expect({ IMG: par('IMG'), SVG: par('SVG'), FIG: par('FIG'), CAP: par('CAP'), PHO: par('PHO'), OG: par('OG') }).toEqual({ IMG: 81, SVG: 35, FIG: 25, CAP: 5, PHO: 4, OG: 5 });
   });
 
   it('donne un identifiant unique, de la forme PREFIXE-NN, PREFIXE-FN, PREFIXE-OG ou PREFIXE-PHO', () => {
@@ -150,11 +150,11 @@ describe('registre des visuels : liste des manquants', () => {
 
   it('compte tout comme manquant dans un dossier vide, sans compter deux fois les reprises', () => {
     const etat = etatDesVisuels(racine);
-    expect(etat.total).toBe(154);
+    expect(etat.total).toBe(155);
     expect(etat.presents).toBe(0);
     expect(etat.reprises).toBe(6);
     expect(etat.figuresACoder).toHaveLength(24); // les 25 figures, moins celle du plafond, dont le composant est nommé
-    expect(etat.manquants).toHaveLength(154 - 6 - 24);
+    expect(etat.manquants).toHaveLength(155 - 6 - 24);
     expect(etat.manquantsSocle.length + etat.manquantsElargi.length).toBe(etat.manquants.length);
   });
 
@@ -166,12 +166,12 @@ describe('registre des visuels : liste des manquants', () => {
     expect(etat.manquantsSocle.map((v: { id: string }) => v.id)).toContain('GLO-02');
   });
 
-  it('sur le dépôt réel, ne signale comme présents que la photo de couverture, la figure du plafond, la lanterne de la bascule, les deux dessins animés de l’accueil, les deux captures de la vitrine et la photo du parcours', () => {
+  it('sur le dépôt réel, ne signale comme présents que les photos (couverture, parcours, contact, 404), la figure du plafond, la lanterne de la bascule, les deux dessins animés de l’accueil et les deux captures de la vitrine', () => {
     const etat = etatDesVisuels(SITE);
-    expect(etat.presents).toBe(8);
-    expect(etat.manquantsSocle).toHaveLength(78);
-    for (const id of ['GLO-03', 'ACC-14', 'ACC-17', 'PRJ-04', 'PRJ-05', 'PAR-PHO']) expect(etat.manquantsSocle.map((v: { id: string }) => v.id)).not.toContain(id);
-    expect(resume(etat)).toMatch(/78 visuels « socle » manquants/);
+    expect(etat.presents).toBe(10);
+    expect(etat.manquantsSocle).toHaveLength(77);
+    for (const id of ['GLO-03', 'ACC-14', 'ACC-17', 'PRJ-04', 'PRJ-05', 'PAR-PHO', 'CON-PHO', 'ERR-PHO']) expect(etat.manquantsSocle.map((v: { id: string }) => v.id)).not.toContain(id);
+    expect(resume(etat)).toMatch(/77 visuels « socle » manquants/);
   });
 
   afterAll(() => rmSync(racine, { recursive: true, force: true }));

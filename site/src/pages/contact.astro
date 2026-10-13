@@ -1,31 +1,55 @@
 ---
+/**
+ * Contact : écrire en moins d’une minute, ou choisir un autre canal (cahier,
+ * § 5.12). Sur ordinateur, « Discutons » et la carte d’identité à gauche, le
+ * formulaire à droite, seule zone éclairée de l’écran ; sur mobile, le
+ * formulaire vient juste après le titre.
+ *
+ * Le formulaire est un contrat : ses `id`, ses `data-*`, le piège à robots, le
+ * repli `mailto:` sans JavaScript et le JSON `{ name, email, subject, message,
+ * website }` restent ceux que scripts/contact.ts et tests/e2e/contact.spec.ts
+ * attendent. Les puces de sujet ne font que remplir le champ « Le sujet »
+ * (scripts/contact-sujets.ts) ; le panneau de réussite et la patience
+ * s’affichent en CSS selon l’état que le script pose sur le message d’état.
+ */
 import Base from '../layouts/Base.astro';
 import FilAriane from '../components/pages/FilAriane.astro';
 import ContinuerLecture from '../components/pages/ContinuerLecture.astro';
 import CopierAdresse from '../components/ui/CopierAdresse.astro';
 import Picto from '../components/ui/Picto.astro';
+import Portrait from '../components/ui/Portrait.astro';
+import Visuel from '../components/ui/Visuel.astro';
+import portrait from '../assets/visuels/contact/CON-PHO_800x1000.webp';
 import { CONTACT, MAILTO, SITE } from '../config/site';
-import '../styles/profondeur.css';
+import { attributsMesure } from '../lib/liens';
 
 const titre = `Contact — ${SITE.nom}`;
-const description = 'Un projet, une question technique ou une idée à partager ? Écrire à Charles Lindecker par le formulaire de contact ou directement par e-mail.';
+const description = 'Écrire à Charles Lindecker, architecte logiciel près de Mulhouse : un formulaire en quelques champs, l’adresse e-mail à copier, GitHub et LinkedIn.';
+
+const SUJETS = ['Un échange technique', 'Une équipe ou un projet', 'Contribuer à l’open source'];
+const profils = [
+  { href: CONTACT.github, titre: 'GitHub', detail: 'Les projets et les contributions.', picto: 'reseaux/github' },
+  { href: CONTACT.linkedin, titre: 'LinkedIn', detail: 'Le parcours professionnel.', picto: 'reseaux/linkedin' },
+];
 ---
 
 <Base titre={titre} description={description} chemin="/contact">
-  <div class="wrap profondeur page-contact">
+  <div class="conteneur contact">
     <FilAriane courant="Contact" />
-    <div class="contact-grille">
-      <header class="contact-intro">
-        <h1>Une conversation pour commencer.</h1>
-        <p>Un projet, une question technique ou une idée à partager&nbsp;? Parlons de ce qu’on peut construire à plusieurs.</p>
+    <div class="contact__grille">
+      <header class="contact__tete">
+        <h1 data-pli="titre">Discutons.</h1>
+        <p class="chapeau" data-pli="identite">Un projet, une équipe, une question technique&nbsp;: quelques mots suffisent.</p>
       </header>
-      <section class="contact-lettre" aria-labelledby="formulaire-titre">
-        <div class="contact-lettre__entete">
-          <div><h2 id="formulaire-titre">M’écrire</h2><p>Quelques mots suffisent pour commencer.</p></div>
-          <Picto nom="plume" />
+
+      <section class="contact__lettre foyer" aria-labelledby="formulaire-titre">
+        <div class="contact__lettre-tete">
+          <h2 id="formulaire-titre">M’écrire</h2>
+          <Visuel id="CON-01" alt="" class="contact__signe" sizes="96px" loading="eager" />
         </div>
         <form method="post" action="/api/contact" data-contact-form aria-labelledby="formulaire-titre">
           <p class="contact-obligatoire"><span class="contact-requis" aria-hidden="true">*</span> Tous les champs sont obligatoires.</p>
+          <noscript><p class="contact-sans-js">Activez JavaScript pour utiliser le formulaire, ou <a href={MAILTO} data-umami-event="contact-email" data-umami-event-emplacement="contact">écrivez-moi directement par e-mail</a>.</p></noscript>
           <fieldset class="contact-champs">
             <legend class="sr">Votre message</legend>
             <div class="contact-identite">
@@ -44,10 +68,14 @@ const description = 'Un projet, une question technique ou une idée à partager 
               <label for="contact-subject">Le sujet <span class="contact-requis" aria-hidden="true">*</span><span class="sr"> (obligatoire)</span></label>
               <input id="contact-subject" name="subject" required aria-describedby="contact-subject-error" />
               <p class="contact-erreur" id="contact-subject-error" hidden></p>
+              <div class="contact-sujets" role="group" aria-label="Sujets fréquents" data-js-seulement>
+                {SUJETS.map((sujet) => <button class="contact-sujet" type="button" data-sujet={sujet} aria-pressed="false">{sujet}</button>)}
+                <button class="contact-sujet" type="button" data-sujet="" aria-pressed="false">Autre</button>
+              </div>
             </div>
             <div class="contact-champ">
               <label for="contact-message">Votre message <span class="contact-requis" aria-hidden="true">*</span><span class="sr"> (obligatoire)</span></label>
-              <textarea id="contact-message" name="message" rows="7" required aria-describedby="contact-message-aide contact-message-longueur contact-message-count contact-message-error"></textarea>
+              <textarea id="contact-message" name="message" rows="4" required aria-describedby="contact-message-aide contact-message-longueur contact-message-count contact-message-error"></textarea>
               <p class="contact-aide" id="contact-message-aide">Ce que vous avez en tête, et ce que vous aimeriez qu’on en fasse.</p>
               <div class="contact-longueur"><span id="contact-message-longueur">10 caractères minimum</span><span id="contact-message-count" data-contact-count>0 / 5&#8239;000 caractères</span></div>
               <p class="contact-erreur" id="contact-message-error" hidden></p>
@@ -58,119 +86,598 @@ const description = 'Un projet, une question technique ou une idée à partager 
             </div>
           </fieldset>
           <div class="contact-envoi">
-            <button class="btn btn--plein" type="submit" disabled><span class="contact-attente" data-contact-spinner aria-hidden="true" hidden></span><span data-contact-submit-label>Envoyer le message</span><Picto nom="interface/email" /></button>
-            <p class="contact-confidentialite">Vos coordonnées et votre message servent à vous répondre. <a href="/mentions-legales#donnees">À propos de vos données</a>.</p>
+            <button class="bouton" type="submit" disabled data-pli="action"><span class="contact-attente" data-contact-spinner aria-hidden="true" hidden></span><span data-contact-submit-label>Envoyer le message</span><Picto nom="interface/email" /></button>
+            <p class="contact-confidentialite">Vos coordonnées et votre message servent seulement à vous répondre. <a href="/mentions-legales#donnees">À propos de vos données</a>.</p>
           </div>
-          <p class="contact-statut" role="status" tabindex="-1" data-contact-status hidden></p>
-          <noscript><p class="contact-sans-js">Activez JavaScript pour utiliser le formulaire, ou <a href={MAILTO}>écrivez-moi directement par e-mail</a>.</p></noscript>
+          <div class="contact-retour">
+            <Visuel id="CON-02" alt="" class="contact-retour__image contact-retour__image--succes" sizes="96px" />
+            <Visuel id="CON-03" alt="" class="contact-retour__image contact-retour__image--attente" sizes="96px" />
+            <div class="contact-retour__texte">
+              <p class="contact-statut" role="status" tabindex="-1" data-contact-status hidden></p>
+              <p class="contact-retour__suite">En attendant&nbsp;: <a href="/projets">les projets</a> ou <a href="/parcours">le parcours</a>.</p>
+            </div>
+          </div>
         </form>
       </section>
-      <div class="contact-conversation">
-        <section class="contact-direct" aria-labelledby="email-titre">
-          <h2 id="email-titre">Vous préférez l’e-mail&nbsp;?</h2>
-          <a class="adresse-email" href={MAILTO} data-umami-event="contact-email" data-umami-event-emplacement="contact">
-            <Picto nom="interface/email" /><span data-adresse>{CONTACT.email}</span>
-          </a>
-          <CopierAdresse adresse={CONTACT.email} emplacement="contact" />
-        </section>
-        <section class="contact-profils" aria-labelledby="profils-titre">
-          <h2 id="profils-titre">Retrouvons-nous aussi ici</h2>
-          <ul>
-            <li><a href={CONTACT.github} data-umami-event="lien-sortant" data-umami-event-domaine="github.com" data-umami-event-emplacement="contact"><Picto nom="reseaux/github" /><span><strong>GitHub</strong><span>Les projets et les contributions.</span></span></a></li>
-            <li><a href={CONTACT.linkedin} data-umami-event="lien-sortant" data-umami-event-domaine="www.linkedin.com" data-umami-event-emplacement="contact"><Picto nom="reseaux/linkedin" /><span><strong>LinkedIn</strong><span>Le parcours professionnel.</span></span></a></li>
+
+      <section class="contact__moi" aria-labelledby="moi-titre">
+        <Portrait src={portrait} alt="Charles Lindecker en chemise bleu roi, devant une friche industrielle." widths={[280, 560]} sizes="(max-width: 860px) 128px, 200px" cadrage="50% 30%" lueur="44% 30%" class="contact__portrait" />
+        <div class="contact__colonne">
+          <div class="contact__qui">
+            <h2 id="moi-titre" class="contact__nom">{SITE.nom}</h2>
+            <p class="contact__metier">{SITE.metier} · {SITE.lieu}</p>
+          </div>
+          <div class="contact__courriel">
+            <p class="contact__etiquette">Par e-mail</p>
+            <a class="contact__adresse" href={MAILTO} data-umami-event="contact-email" data-umami-event-emplacement="contact"><span data-adresse>{CONTACT.email}</span><span class="fleche" aria-hidden="true">&nbsp;↗</span></a>
+            <CopierAdresse adresse={CONTACT.email} emplacement="contact" />
+          </div>
+          <ul class="contact__profils" aria-label="Profils">
+            {
+              profils.map(({ href, titre, detail, picto }) => (
+                <li>
+                  <a href={href} rel="me external" {...attributsMesure(href, { emplacement: 'contact' })}>
+                    <Picto nom={picto} />
+                    <span>
+                      <strong>{titre}<span class="fleche" aria-hidden="true">&nbsp;↗</span></strong>
+                      <span>{detail}</span>
+                    </span>
+                  </a>
+                </li>
+              ))
+            }
           </ul>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
+
     <ContinuerLecture liens={[
-      { href: '/projets', titre: 'Les projets', detail: 'Des réalisations et les décisions derrière.' },
+      { href: '/projets', titre: 'Les projets', detail: 'Ce que chaque projet prouve, et les décisions derrière.' },
       { href: '/parcours', titre: 'Le parcours', detail: 'Du développement à la transmission.' },
-      { href: '/', titre: 'Le récit', detail: 'Découvrir ma façon de travailler.' },
+      { href: '/', titre: 'Le récit', detail: 'Ma façon de travailler, depuis le début.' },
     ]} />
   </div>
 </Base>
 
 <script>
   import { brancherContact } from '../scripts/contact';
+  import { brancherSujets } from '../scripts/contact-sujets';
   brancherContact();
+  brancherSujets();
 </script>
 
 <style>
-  .contact-grille { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); column-gap: clamp(40px, 6vw, 88px); row-gap: var(--s7); grid-template-rows: auto 1fr; align-items: start; padding-block: var(--s6) var(--s8); }
-  .contact-intro { grid-column: 1; grid-row: 1; }
-  .contact-conversation { grid-column: 1; grid-row: 2; }
-  .contact-lettre { grid-column: 2; grid-row: 1 / span 2; }
-  .contact-intro h1 { font-size: clamp(2.8rem, 1.9rem + 3.3vw, 5.1rem); line-height: 1.04; letter-spacing: -0.045em; max-width: 12ch; }
-  .contact-intro > p { margin-top: var(--s6); max-width: 37ch; font-size: var(--t-chapeau); line-height: 1.5; }
-  .contact-direct { padding-top: var(--s6); border-top: 1px solid var(--filet); }
-  .contact-direct h2, .contact-profils h2 { font-size: 1.125rem; font-weight: 700; letter-spacing: 0; }
-  .adresse-email { display: flex; align-items: center; gap: var(--s3); padding-block: var(--s4); font-size: clamp(1.1rem, 1rem + 0.35vw, 1.4rem); font-weight: 700; }
-  .adresse-email span { overflow-wrap: anywhere; min-width: 0; user-select: all; }
-  .adresse-email :global(svg) { width: 22px; height: 22px; flex-shrink: 0; }
-  .contact-profils { margin-top: var(--s7); }
-  .contact-profils ul { padding: 0; margin: var(--s4) 0 0; list-style: none; }
-  .contact-profils a { display: flex; align-items: center; gap: var(--s4); min-height: 72px; padding-block: var(--s3); text-decoration: none; }
-  .contact-profils a :global(svg) { width: 24px; height: 24px; flex-shrink: 0; }
-  .contact-profils strong { display: block; font-size: 1.125rem; text-decoration: underline; text-underline-offset: 0.22em; }
-  .contact-profils a > span > span { display: block; color: var(--graphite); font-size: var(--t-petit); }
-  .contact-profils a:hover strong { text-decoration-thickness: 2px; }
-  .contact-lettre { position: relative; padding: clamp(24px, 3.5vw, 48px); border: 1px solid var(--filet); border-top: 4px solid var(--bleu); border-radius: var(--rayon); background: var(--blanc); }
-  .contact-lettre__entete { display: flex; justify-content: space-between; align-items: start; gap: var(--s5); }
-  .contact-lettre__entete h2 { font-size: 2rem; letter-spacing: -0.03em; }
-  .contact-lettre__entete p { color: var(--bleu); font-family: var(--font-note); font-style: italic; font-size: 1.25rem; margin-top: var(--s2); }
-  .contact-lettre__entete > :global(svg) { color: var(--bleu); width: 38px; height: 38px; flex-shrink: 0; }
-  .contact-obligatoire { margin-block: var(--s6) var(--s5); color: var(--graphite); font-size: 0.9375rem; }
-  .contact-requis { color: var(--bleu); font-weight: 700; }
-  .contact-champs { display: grid; gap: var(--s5); border: 0; padding: 0; margin: 0; min-width: 0; }
-  .contact-identite { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s4); }
-  .contact-champ label { display: block; font-size: var(--t-petit); font-weight: 700; margin-bottom: var(--s2); }
-  .contact-champ input, .contact-champ textarea { display: block; width: 100%; min-height: 48px; border: 1px solid var(--trait); border-radius: var(--rayon); background: var(--papier); color: var(--encre); font: inherit; font-size: var(--t-petit); line-height: 1.5; padding: 12px 14px; transition: border-color 150ms ease, background-color 150ms ease; }
-  .contact-champ textarea { resize: vertical; min-height: 176px; }
-  .contact-champ input:focus, .contact-champ textarea:focus { outline: 2px solid var(--bleu); outline-offset: 2px; background: var(--blanc); }
-  .contact-champ:focus-within label { color: var(--bleu); }
-  .contact-champ [data-valid='true'] { border-color: var(--bleu); }
-  .contact-aide { margin-top: var(--s2); font-size: 0.9375rem; line-height: 1.4; color: var(--graphite); }
-  .contact-longueur { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--s2) var(--s4); margin-top: var(--s3); color: var(--graphite); font-size: 0.875rem; font-variant-numeric: tabular-nums; }
-  .contact-longueur [data-state='limite'] { color: var(--encre); font-weight: 700; }
-  .contact-longueur [data-state='error'] { color: #a62929; font-weight: 700; }
-  .contact-erreur { color: #a62929; margin-top: var(--s2); font-size: var(--t-petit); line-height: 1.4; }
-  .contact-champ [aria-invalid='true'] { border-color: #a62929; }
-  :global([data-theme='nuit']) .contact-erreur { color: #ffaaaa; }
-  :global([data-theme='nuit']) .contact-longueur [data-state='error'] { color: #ffaaaa; }
-  :global([data-theme='nuit']) .contact-champ [aria-invalid='true'] { border-color: #ffaaaa; }
-  .contact-piege { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-  .contact-envoi { display: grid; justify-items: start; gap: var(--s4); margin-top: var(--s6); }
-  .contact-envoi button { gap: var(--s3); }
-  .contact-envoi button :global(svg) { width: 20px; height: 20px; }
-  .contact-envoi button:disabled { cursor: wait; opacity: 0.65; }
-  form[data-contact-cooldown] .contact-envoi button { cursor: not-allowed; }
-  form[aria-busy='true'] .contact-envoi button :global(svg) { display: none; }
-  .contact-attente { width: 18px; height: 18px; flex-shrink: 0; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: contact-tour 800ms linear infinite; }
-  .contact-attente[hidden] { display: none; }
-  @keyframes contact-tour { to { transform: rotate(360deg); } }
-  .contact-confidentialite { color: var(--graphite); font-size: 0.9375rem; line-height: 1.5; max-width: 48ch; }
-  .contact-statut { margin-top: var(--s5); padding: var(--s4); border-left: 3px solid var(--bleu); background: var(--papier); font-size: var(--t-petit); overflow-wrap: anywhere; }
-  .contact-statut[data-state='success'] { border-left-width: 5px; font-weight: 700; }
-  .contact-statut[data-state='error'] { border-color: #a62929; color: #a62929; }
-  :global([data-theme='nuit']) .contact-statut[data-state='error'] { border-color: #ffaaaa; color: #ffaaaa; }
-  .contact-sans-js { margin-top: var(--s5); font-size: var(--t-petit); }
-  @media (max-width: 1050px) { .contact-identite { grid-template-columns: minmax(0, 1fr); gap: var(--s5); } }
-  @media (max-width: 800px) {
-    .contact-grille { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; gap: var(--s7); padding-bottom: var(--s7); }
-    .contact-intro, .contact-lettre, .contact-conversation { grid-column: auto; grid-row: auto; }
-    .contact-intro h1 { max-width: 17ch; }
-    .contact-intro > p { max-width: 48ch; }
-    .contact-profils ul { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s6); }
-    .contact-identite { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .contact__grille {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      'tete lettre'
+      'moi lettre';
+    gap: var(--s7) clamp(40px, 6vw, 96px);
+    align-items: start;
+    padding-block: var(--s4) var(--s8);
   }
-  @media (max-width: 540px) {
-    .contact-lettre { padding: var(--s5); }
-    .contact-identite { grid-template-columns: minmax(0, 1fr); }
-    .contact-envoi button { width: 100%; }
-    .contact-profils ul { display: block; }
+
+  .contact__tete { grid-area: tete; }
+  .contact__lettre { grid-area: lettre; }
+  .contact__moi { grid-area: moi; }
+
+  .contact__tete h1 {
+    font-size: var(--t-4xl);
+    line-height: 0.95;
+    letter-spacing: var(--ls-affiche);
   }
+
+  .contact__tete .chapeau {
+    margin-top: var(--s5);
+    max-width: 30ch;
+    color: var(--encre);
+  }
+
+  /* La carte d’identité : la photo, puis qui, comment m’écrire, où me suivre. */
+  .contact__moi {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    grid-template-areas: 'photo colonne';
+    align-items: start;
+    gap: var(--s4) var(--s5);
+    padding-top: var(--s6);
+    border-top: 1px solid var(--trait);
+  }
+
+  .contact__portrait {
+    grid-area: photo;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--r2);
+  }
+
+  .contact__colonne {
+    grid-area: colonne;
+    display: grid;
+    gap: var(--s4);
+  }
+
+
+  .contact__nom {
+    font-size: var(--t-xl);
+    line-height: 1.1;
+  }
+
+  .contact__metier {
+    margin-top: var(--s1);
+    font-size: var(--t-s);
+    color: var(--eteint);
+  }
+
+  .contact__etiquette {
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: var(--ls-petit);
+    color: var(--eteint);
+  }
+
+  .contact__adresse {
+    display: inline-flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    min-height: 44px;
+    padding-block: var(--s2);
+    font-size: var(--t-m);
+    font-weight: 600;
+  }
+
+  .contact__adresse [data-adresse] {
+    overflow-wrap: anywhere;
+    min-width: 0;
+    user-select: all;
+  }
+
+  .contact__courriel :global(.copier) {
+    display: flex;
+    min-height: 44px;
+    margin-top: var(--s1);
+  }
+
+  .contact__profils {
+    display: grid;
+    gap: var(--s1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .contact__profils a {
+    display: flex;
+    align-items: center;
+    gap: var(--s3);
+    min-height: 56px;
+    text-decoration: none;
+  }
+
+  .contact__profils a :global(svg) {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+
+  .contact__profils strong {
+    display: block;
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+  }
+
+  .contact__profils a:hover strong {
+    text-decoration-thickness: 2px;
+  }
+
+  .contact__profils strong + span {
+    display: block;
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  /* La lettre : le formulaire, seule zone éclairée de l’écran. */
+  .contact__lettre {
+    padding: clamp(20px, 3vw, 40px);
+    border: 1px solid var(--filet);
+    border-radius: var(--r2);
+    background: var(--surface);
+    box-shadow: var(--ombre-1);
+  }
+
+  .contact__lettre-tete {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s5);
+  }
+
+  .contact__lettre-tete h2 {
+    font-size: var(--t-xl);
+  }
+
+  .contact__lettre-tete :global(.contact__signe) {
+    width: 96px;
+    flex-shrink: 0;
+  }
+
+  .contact-obligatoire {
+    margin-block: 0 var(--s4);
+    color: var(--eteint);
+    font-size: var(--t-xs);
+  }
+
+  .contact-requis {
+    color: var(--encre);
+    font-weight: 700;
+  }
+
+  .contact-champs {
+    display: grid;
+    gap: var(--s4);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .contact-identite {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s4);
+  }
+
+  .contact-champ label {
+    display: block;
+    margin-bottom: var(--s2);
+    font-size: var(--t-s);
+    font-weight: 600;
+  }
+
+  .contact-champ input,
+  .contact-champ textarea {
+    display: block;
+    width: 100%;
+    min-height: 48px;
+    padding: 11px 14px;
+    border: 1px solid var(--trait);
+    border-radius: var(--r1);
+    background: var(--fond);
+    color: var(--encre);
+    font: inherit;
+    font-size: var(--t-s);
+    line-height: 1.5;
+    transition: border-color var(--d-ui) var(--courbe), box-shadow var(--d-ui) var(--courbe);
+  }
+
+  .contact-champ textarea {
+    min-height: 112px;
+    resize: vertical;
+  }
+
+  .contact-champ input:focus,
+  .contact-champ textarea:focus {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+    border-color: var(--accent);
+  }
+
+  .contact-champ [data-valid='true'] {
+    border-color: var(--accent);
+  }
+
+  /* L’erreur se distingue du focus par sa forme : la nuit, le laiton et
+     l’anneau de focus ont la même teinte. */
+  .contact-champ [aria-invalid='true'] {
+    padding: 10px 13px;
+    border: 2px dashed var(--laiton);
+  }
+
+  .contact-champ [aria-invalid='true']:focus {
+    outline-offset: 4px;
+  }
+
+  .contact-erreur {
+    display: flex;
+    gap: var(--s2);
+    margin-top: var(--s2);
+    color: var(--laiton);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .contact-erreur::before {
+    content: '!';
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: 1.3em;
+    height: 1.3em;
+    border-radius: 50%;
+    background: var(--laiton);
+    color: var(--surface);
+    font-size: 0.85em;
+    line-height: 1;
+  }
+
+  .contact-erreur[hidden] {
+    display: none;
+  }
+
+  /* Les puces de sujet : un raccourci, le champ reste libre. */
+  .contact-sujets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2);
+    margin-top: var(--s3);
+  }
+
+  .contact-sujet {
+    min-height: 44px;
+    padding: 0 var(--s3);
+    border: 0;
+    border-radius: var(--r3);
+    background: transparent;
+    box-shadow: inset 0 0 0 1px var(--trait);
+    color: var(--accent);
+    font-size: var(--t-xs);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--d-ui) var(--courbe), box-shadow var(--d-ui) var(--courbe);
+  }
+
+  .contact-sujet:hover {
+    box-shadow: inset 0 0 0 1px var(--accent);
+  }
+
+  .contact-sujet[aria-pressed='true'] {
+    background: var(--accent);
+    box-shadow: none;
+    color: var(--accent-texte);
+  }
+
+  .contact-aide {
+    margin-top: var(--s2);
+    color: var(--eteint);
+    font-size: var(--t-xs);
+    line-height: 1.4;
+  }
+
+  .contact-longueur {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--s1) var(--s4);
+    margin-top: var(--s2);
+    color: var(--eteint);
+    font-size: var(--t-xs);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .contact-longueur [data-state='limite'] {
+    color: var(--encre);
+    font-weight: 700;
+  }
+
+  .contact-longueur [data-state='error'] {
+    color: var(--laiton);
+    font-weight: 700;
+  }
+
+  .contact-piege {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .contact-envoi {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s3) var(--s5);
+    margin-top: var(--s5);
+  }
+
+  .contact-envoi .bouton :global(svg) {
+    width: 18px;
+    height: 18px;
+  }
+
+  .contact-envoi .bouton:disabled {
+    cursor: wait;
+    opacity: 0.65;
+  }
+
+  form[data-contact-cooldown] .contact-envoi .bouton {
+    cursor: not-allowed;
+  }
+
+  form[aria-busy='true'] .contact-envoi .bouton :global(svg) {
+    display: none;
+  }
+
+  .contact-attente {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: contact-tour 800ms linear infinite;
+  }
+
+  .contact-attente[hidden] {
+    display: none;
+  }
+
+  @keyframes contact-tour {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .contact-confidentialite {
+    flex: 1 1 18rem;
+    color: var(--eteint);
+    font-size: var(--t-xs);
+    line-height: 1.5;
+  }
+
+  /* Le retour du serveur : le message d’état, et selon lui le panneau de
+     réussite (lanterne sur la lettre, suite de la visite) ou la patience. */
+  .contact-retour {
+    display: none;
+    align-items: center;
+    gap: var(--s4);
+    margin-top: var(--s5);
+    padding: var(--s4);
+    border-radius: var(--r2);
+    background: var(--fond);
+  }
+
+  .contact-retour:has([data-contact-status]:not([hidden])) {
+    display: flex;
+  }
+
+  .contact-retour :global(.contact-retour__image),
+  .contact-retour__suite {
+    display: none;
+  }
+
+  .contact-retour :global(.contact-retour__image) {
+    flex: none;
+    width: 96px;
+  }
+
+  .contact-retour:has([data-state='success']:not([hidden])) {
+    box-shadow: inset 0 0 0 1px var(--trait);
+  }
+
+  .contact-retour:has([data-state='success']:not([hidden])) :global(.contact-retour__image--succes),
+  .contact-retour:has([data-state='error']:not([hidden])) :global(.contact-retour__image--attente),
+  .contact-retour:has([data-state='success']:not([hidden])) .contact-retour__suite {
+    display: block;
+  }
+
+  .contact-retour__texte {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  /* Pas de transition sur le message : en mouvement réduit, global.css en pose
+     une de 0,01 ms sur toutes les propriétés, et le panneau grandirait après
+     que le script l’a amené dans l’écran. */
+  .contact-statut {
+    transition-property: none;
+    font-size: var(--t-s);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+
+  .contact-statut:focus {
+    outline: none;
+  }
+
+  .contact-statut[data-state='success'] {
+    font-family: var(--police-titre);
+    font-size: var(--t-xl);
+    font-weight: 400;
+    line-height: 1.15;
+  }
+
+  .contact-statut[data-state='error'] {
+    color: var(--laiton);
+  }
+
+  .contact-retour__suite {
+    margin-top: var(--s2);
+    color: var(--eteint);
+    font-size: var(--t-s);
+  }
+
+  .contact-sans-js {
+    margin-block: 0 var(--s4);
+    font-size: var(--t-s);
+  }
+
+  @media (max-width: 1100px) {
+    .contact-identite {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s5);
+    }
+
+    .contact__moi {
+      grid-template-columns: 150px minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 860px) {
+    .contact__grille {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto;
+      grid-template-areas:
+        'tete'
+        'lettre'
+        'moi';
+      gap: var(--s6);
+      padding-bottom: 0;
+    }
+
+    .contact__tete h1 {
+      font-size: var(--t-3xl);
+    }
+
+    .contact__tete .chapeau {
+      margin-top: var(--s3);
+    }
+
+    .contact-identite {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .contact__colonne {
+      display: contents;
+    }
+
+    .contact__qui { grid-area: qui; }
+    .contact__courriel { grid-area: courriel; }
+    .contact__profils { grid-area: profils; }
+
+    .contact__moi {
+      grid-template-columns: 128px minmax(0, 1fr);
+      grid-template-rows: auto;
+      grid-template-areas:
+        'photo qui'
+        'courriel courriel'
+        'profils profils';
+      align-items: end;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .contact__lettre {
+      margin-inline: calc(-1 * var(--s2));
+      padding: var(--s4);
+    }
+
+    .contact-identite {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .contact-envoi .bouton {
+      width: 100%;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .contact-envoi button, .contact-champ input, .contact-champ textarea { transition: none; }
-    .contact-attente { animation: none; }
+    .contact-attente {
+      animation: none;
+    }
   }
 </style>

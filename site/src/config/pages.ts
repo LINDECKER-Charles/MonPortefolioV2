@@ -21,7 +21,7 @@ export const PAGES_SITEMAP = [
   { chemin: '/parcours/professionnel', maj: '2026-10-08' },
   { chemin: '/parcours/competences', maj: '2026-10-13' },
   { chemin: '/parcours/formation', maj: '2026-10-08' },
-  { chemin: '/contact', maj: '2026-10-08' },
-  { chemin: '/blog', maj: '2026-10-08' },
-  { chemin: '/mentions-legales', maj: '2026-10-07' },
+  { chemin: '/contact', maj: '2026-10-13' },
+  { chemin: '/blog', maj: '2026-10-13' },
+  { chemin: '/mentions-legales', maj: '2026-10-13' },
 ] as const;

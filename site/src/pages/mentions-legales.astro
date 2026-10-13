@@ -1,128 +1,210 @@
 ---
 /**
- * Mentions légales et confidentialité, en une page : qui publie, qui héberge,
- * ce qui est mesuré et comment s'y opposer (cadre CNIL de la mesure
- * d'audience exemptée de consentement, docs/mesure-audience.md). Les faits
- * d'hébergement viennent des mentions de la V1 ; la durée des journaux, du
- * dépôt infra-vps.
+ * Mentions légales et confidentialité, en une page sobre (cahier, § 5.14) :
+ * qui publie, qui héberge, quelles données passent par le site (tableau
+ * « donnée, finalité, durée, destinataires »), ce qui est mesuré et comment
+ * s’y opposer (cadre CNIL de la mesure d’audience exemptée de consentement,
+ * docs/mesure-audience.md), ce qui reste dans le navigateur, et les crédits.
+ * Aucun visuel. La section #mesure-audience et son bouton [data-opposition]
+ * sont un contrat (scripts/opposition.ts, tests/e2e/mesure.spec.ts) ; la page
+ * Contact renvoie vers #donnees.
  *
- * Texte à relire par Charles avant la mise en production.
+ * Les faits d’hébergement viennent des mentions de la V1. Durée de la session
+ * (12 h) : backend/src/admin.rs. Durée du journal : relevé de l’administration
+ * du serveur, à faire confirmer par Charles (aucune source dans ce dépôt).
+ * Ce qui n’est pas encore établi (durée de conservation des messages, service
+ * d’envoi des notifications) reste marqué « à confirmer ». Texte à faire
+ * relire par Charles.
  */
 import Base from '../layouts/Base.astro';
+import FilAriane from '../components/pages/FilAriane.astro';
+import NavigationPage from '../components/pages/NavigationPage.astro';
+import AConfirmer from '../components/ui/AConfirmer.astro';
 import { CONTACT, SITE } from '../config/site';
 
-const majour = '7 octobre 2026';
+const majour = { iso: '2026-10-13', texte: '13 octobre 2026' };
+const SECTIONS = [
+  { id: 'editeur', titre: 'Éditeur' },
+  { id: 'hebergement', titre: 'Hébergement' },
+  { id: 'donnees', titre: 'Données personnelles' },
+  { id: 'mesure-audience', titre: 'Mesure d’audience' },
+  { id: 'stockage', titre: 'Stockage local' },
+  { id: 'credits', titre: 'Crédits' },
+] as const;
+const courriel = `mailto:${CONTACT.email}`;
 ---
 
 <Base
   titre="Mentions légales, Charles Lindecker"
   description="Qui publie ce site, qui l’héberge, ce qui est mesuré et comment s’y opposer. Ni cookie, ni traceur publicitaire, ni donnée revendue."
   chemin="/mentions-legales"
+  sommaire={SECTIONS}
 >
-  <article class="wrap document" aria-labelledby="document-titre">
-    <h1 id="document-titre">Mentions légales</h1>
-    <p class="document__maj">Dernière mise à jour&nbsp;: {majour}</p>
-
-    <p class="document__resume">
-      En bref&nbsp;: ce site personnel ne dépose aucun cookie et n’affiche aucune publicité. Il compte ses visites avec
-      un outil hébergé sur son propre serveur, sans vous identifier, et vous pouvez vous y opposer d’un clic.
-    </p>
-
-    <section aria-labelledby="editeur">
-      <h2 id="editeur">Éditeur</h2>
-      <p>
-        Ce site est édité par {SITE.nom}, à titre personnel, qui en est aussi le directeur de la publication. Contact&nbsp;:
-        <a href={`mailto:${CONTACT.email}`} data-umami-event="contact-email" data-umami-event-emplacement="mentions"
-          >{CONTACT.email}</a
-        >.
+  <div class="conteneur document">
+    <FilAriane courant="Mentions légales" />
+    <header class="document__tete">
+      <h1 data-pli="titre">Mentions légales</h1>
+      <p class="document__maj">Dernière mise à jour&nbsp;: <time datetime={majour.iso}>{majour.texte}</time></p>
+      <p class="document__resume chapeau" data-pli="identite">
+        En bref&nbsp;: ce site personnel ne dépose aucun cookie et n’affiche aucune publicité. Il compte ses visites avec
+        un outil hébergé sur son propre serveur, sans vous identifier, et vous pouvez vous y opposer d’un clic.
       </p>
-    </section>
+    </header>
 
-    <section aria-labelledby="hebergement">
-      <h2 id="hebergement">Hébergement</h2>
-      <p>
-        Le site est servi par un serveur privé virtuel loué à Hostinger International Ltd., 61 Lordou Vironos Street,
-        6023 Larnaca, Chypre (<a href="https://www.hostinger.fr">hostinger.fr</a>). Le logiciel du serveur, du site
-        aux certificats de sécurité, est administré par l’éditeur.
-      </p>
-    </section>
-
-    <section aria-labelledby="mesure-audience">
-      <h2 id="mesure-audience">Mesure d’audience</h2>
-      <p>
-        Le site compte ses visites avec Umami, un outil installé sur le même serveur que lui. Il sert à savoir quelles
-        pages sont lues, jusqu’où le récit est lu et quels liens sont suivis&nbsp;: jamais à vous identifier, ni à vous
-        suivre d’un site à l’autre.
-      </p>
-      <ul>
-        <li>
-          <strong>Ce qui est compté</strong>&nbsp;: les pages vues et leur provenance (réduite au nom du site
-          d’origine), les chapitres atteints, les clics sur les liens de contact et vers d’autres sites, l’ouverture du
-          glossaire, le passage en mode nuit, les temps de chargement, ainsi que le type d’appareil, le navigateur, la
-          langue et le pays.
-        </li>
-        <li>
-          <strong>Ce qui ne l’est pas</strong>&nbsp;: ni cookie, ni adresse IP conservée, ni paramètre de campagne, ni
-          enregistrement de votre navigation. Les statistiques sont agrégées et conservées 25&nbsp;mois au plus.
-        </li>
-        <li>
-          <strong>Ce qui est respecté sans rien faire</strong>&nbsp;: les signaux Global Privacy Control et Do Not
-          Track de votre navigateur.
-        </li>
-      </ul>
-      <div class="opposition">
-        <p class="opposition__etat" role="status" data-opposition-etat>
-          Avec JavaScript désactivé, aucune mesure n’a lieu.
+    <NavigationPage entrees={SECTIONS} class="document__corps">
+      <section id="editeur" aria-labelledby="editeur-titre">
+        <h2 id="editeur-titre">Éditeur</h2>
+        <p>
+          Ce site est édité par {SITE.nom}, à titre personnel, qui en est aussi le directeur de la publication. Contact&nbsp;:
+          <a href={courriel} data-umami-event="contact-email" data-umami-event-emplacement="mentions">{CONTACT.email}<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>.
         </p>
-        <button class="btn btn--contour" type="button" data-opposition hidden>Ne plus être mesuré</button>
-        <p class="opposition__aide">
-          Votre choix est gardé dans ce navigateur, sans date d’expiration. Il vaut pour ce site seulement.
+      </section>
+
+      <section id="hebergement" aria-labelledby="hebergement-titre">
+        <h2 id="hebergement-titre">Hébergement</h2>
+        <p>
+          Le site est servi par un serveur privé virtuel loué à Hostinger International Ltd., 61 Lordou Vironos Street,
+          6023 Larnaca, Chypre (<a href="https://www.hostinger.fr" rel="external">hostinger.fr<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>). Le logiciel du serveur, du site
+          aux certificats de sécurité, est administré par l’éditeur.
         </p>
-      </div>
-    </section>
+      </section>
 
-    <section aria-labelledby="donnees">
-      <h2 id="donnees">Données personnelles</h2>
-      <ul>
-        <li>
-          Si vous m’écrivez, vos coordonnées et votre message sont conservés dans un espace privé pour vous répondre,
-          avec une notification par e-mail. Ils ne sont jamais inclus dans les statistiques de visite. Une demande
-          peut être consultée au moyen d’un assistant connecté à cet espace privé.
-        </li>
-        <li>
-          Comme tout serveur, celui-ci tient un journal des requêtes (adresse IP, page demandée, navigateur), conservé
-          90&nbsp;jours pour sa sécurité et le diagnostic des pannes.
-        </li>
-        <li>
-          Vous pouvez demander l’accès à vos données, leur correction ou leur effacement en écrivant à
-          <a href={`mailto:${CONTACT.email}`} data-umami-event="contact-email" data-umami-event-emplacement="mentions"
-          >{CONTACT.email}</a
-        >. En cas de désaccord, vous pouvez saisir la
-          <a href="https://www.cnil.fr/fr/plaintes">CNIL</a>.
-        </li>
-      </ul>
-    </section>
+      <section id="donnees" aria-labelledby="donnees-titre">
+        <h2 id="donnees-titre">Données personnelles</h2>
+        <div class="tableau">
+          <table>
+            <caption class="sr">Les données qui passent par le site&nbsp;: finalité, durée de conservation et destinataires</caption>
+            <thead>
+              <tr>
+                <th scope="col">Donnée</th>
+                <th scope="col">Pourquoi</th>
+                <th scope="col">Combien de temps</th>
+                <th scope="col">Qui la reçoit</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row" data-titre="Donnée">Votre message (nom, e-mail, sujet, texte)</th>
+                <td data-titre="Pourquoi">Vous répondre</td>
+                <td data-titre="Combien de temps"><AConfirmer titre="Durée de conservation des messages à fixer par Charles">à confirmer</AConfirmer></td>
+                <td data-titre="Qui la reçoit">L’éditeur, dans un espace privé&nbsp;; le service d’envoi d’e-mails qui transmet la notification<AConfirmer titre="Nom du service d’envoi à confirmer par Charles">à confirmer</AConfirmer></td>
+              </tr>
+              <tr>
+                <th scope="row" data-titre="Donnée">Journal du serveur (adresse IP, page demandée, navigateur)</th>
+                <td data-titre="Pourquoi">Sécurité et diagnostic des pannes</td>
+                <td data-titre="Combien de temps" class="chiffres">90&nbsp;jours</td>
+                <td data-titre="Qui la reçoit">L’éditeur</td>
+              </tr>
+              <tr>
+                <th scope="row" data-titre="Donnée">Mesure d’audience (pages vues, provenance, appareil, langue, pays)</th>
+                <td data-titre="Pourquoi">Savoir ce qui est lu, sans vous identifier</td>
+                <td data-titre="Combien de temps" class="chiffres">25&nbsp;mois au plus, en statistiques agrégées</td>
+                <td data-titre="Qui la reçoit">L’éditeur, sur le même serveur</td>
+              </tr>
+              <tr>
+                <th scope="row" data-titre="Donnée">Vos préférences (mode jour ou nuit, refus de la mesure)</th>
+                <td data-titre="Pourquoi">Garder vos choix d’une visite à l’autre</td>
+                <td data-titre="Combien de temps">Jusqu’à ce que vous les effaciez</td>
+                <td data-titre="Qui la reçoit">Personne&nbsp;: elles restent dans votre navigateur</td>
+              </tr>
+              <tr>
+                <th scope="row" data-titre="Donnée">Session de l’espace d’administration (cookie)</th>
+                <td data-titre="Pourquoi">Garder l’éditeur connecté</td>
+                <td data-titre="Combien de temps" class="chiffres">12&nbsp;heures au plus</td>
+                <td data-titre="Qui la reçoit">L’éditeur seul</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ul>
+          <li>
+            Si vous m’écrivez, vos coordonnées et votre message sont conservés dans un espace privé pour vous répondre,
+            avec une notification par e-mail. Ils ne sont jamais inclus dans les statistiques de visite. Une demande
+            peut être consultée au moyen d’un assistant connecté à cet espace privé.
+          </li>
+          <li>
+            Vous pouvez demander l’accès à vos données, leur correction ou leur effacement en écrivant à
+            <a href={courriel} data-umami-event="contact-email" data-umami-event-emplacement="mentions">{CONTACT.email}<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>.
+            En cas de désaccord, vous pouvez saisir la
+            <a href="https://www.cnil.fr/fr/plaintes" rel="external">CNIL<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>.
+          </li>
+        </ul>
+      </section>
 
-    <section aria-labelledby="stockage">
-      <h2 id="stockage">Stockage dans votre navigateur</h2>
-      <p>Les pages publiques ne déposent aucun cookie. La connexion à l’espace d’administration utilise un cookie
-        de session nécessaire, valable 12&nbsp;heures au plus. Deux préférences sont gardées dans le stockage local
-        de votre navigateur&nbsp;:</p>
-      <ul>
-        <li><code>cl-theme</code>&nbsp;: votre choix entre le mode jour et le mode nuit, si vous en faites un&nbsp;;</li>
-        <li><code>umami.disabled</code>&nbsp;: votre refus de la mesure d’audience, si vous l’exprimez.</li>
-      </ul>
-    </section>
+      <section id="mesure-audience" aria-labelledby="mesure-audience-titre">
+        <h2 id="mesure-audience-titre">Mesure d’audience</h2>
+        <p>
+          Le site compte ses visites avec Umami, un outil installé sur le même serveur que lui. Il sert à savoir quelles
+          pages sont lues, jusqu’où le récit est lu et quels liens sont suivis&nbsp;: jamais à vous identifier, ni à vous
+          suivre d’un site à l’autre.
+        </p>
+        <ul>
+          <li>
+            <strong>Ce qui est compté</strong>&nbsp;: les pages vues et leur provenance (réduite au nom du site
+            d’origine), les chapitres atteints, les clics sur les liens de contact et vers d’autres sites, l’ouverture du
+            glossaire, le passage en mode nuit, les temps de chargement, ainsi que le type d’appareil, le navigateur, la
+            langue et le pays.
+          </li>
+          <li>
+            <strong>Ce qui ne l’est pas</strong>&nbsp;: ni cookie, ni adresse IP conservée, ni paramètre de campagne, ni
+            enregistrement de votre navigation. Les statistiques sont agrégées et conservées 25&nbsp;mois au plus.
+          </li>
+          <li>
+            <strong>Ce qui est respecté sans rien faire</strong>&nbsp;: les signaux Global Privacy Control et Do Not
+            Track de votre navigateur.
+          </li>
+        </ul>
+        <div class="opposition">
+          <p class="opposition__etat" role="status" data-opposition-etat>
+            Avec JavaScript désactivé, aucune mesure n’a lieu.
+          </p>
+          <button class="bouton bouton--contour" type="button" data-opposition hidden>Ne plus être mesuré</button>
+          <p class="opposition__aide">
+            Votre choix est gardé dans ce navigateur, sans date d’expiration. Il vaut pour ce site seulement.
+          </p>
+        </div>
+      </section>
 
-    <section aria-labelledby="credits">
-      <h2 id="credits">Propriété intellectuelle et crédits</h2>
-      <p>
-        Les textes, photographies et illustrations du site appartiennent à {SITE.nom}, sauf mention contraire. Les
-        polices Instrument Serif et Instrument Sans (Instrument) sont distribuées sous licence SIL Open Font
-        License&nbsp;1.1. Les noms de jeux et de logiciels cités appartiennent à leurs détenteurs.
-      </p>
-    </section>
-  </article>
+      <section id="stockage" aria-labelledby="stockage-titre">
+        <h2 id="stockage-titre">Stockage dans votre navigateur</h2>
+        <p>
+          Les pages publiques ne déposent aucun cookie. La connexion à l’espace d’administration utilise un cookie de
+          session nécessaire, valable 12&nbsp;heures au plus. Deux préférences sont gardées dans le stockage local de votre
+          navigateur&nbsp;:
+        </p>
+        <ul>
+          <li><code>cl-theme</code>&nbsp;: votre choix entre le mode jour et le mode nuit, si vous en faites un&nbsp;;</li>
+          <li><code>umami.disabled</code>&nbsp;: votre refus de la mesure d’audience, si vous l’exprimez.</li>
+        </ul>
+      </section>
+
+      <section id="credits" aria-labelledby="credits-titre">
+        <h2 id="credits-titre">Propriété intellectuelle et crédits</h2>
+        <p>
+          Les textes, photographies et illustrations du site appartiennent à {SITE.nom}, sauf mention contraire. Les noms
+          de jeux et de logiciels cités appartiennent à leurs détenteurs.
+        </p>
+        <dl class="credits">
+          <div>
+            <dt>Polices</dt>
+            <dd>
+              Instrument Serif (© 2022 The Instrument Serif Project Authors) et Instrument Sans (© 2022 The Instrument
+              Sans Project Authors), sous licence SIL Open Font License&nbsp;1.1. Elles sont servies par ce site, sans
+              service de polices tiers.
+            </dd>
+          </div>
+          <div>
+            <dt>Logos des technologies</dt>
+            <dd>
+              Logos de la page Compétences, repris de Devicon (licence MIT) et des sources officielles de chaque projet,
+              sous leurs licences respectives&nbsp;; ils servent seulement à identifier les technologies et restent la
+              propriété de leurs détenteurs.
+            </dd>
+          </div>
+        </dl>
+      </section>
+    </NavigationPage>
+  </div>
 </Base>
 
 <script>
@@ -132,49 +214,63 @@ const majour = '7 octobre 2026';
 
 <style>
   .document {
-    max-width: 48rem;
-    padding-block: clamp(48px, 7vw, 96px);
+    padding-bottom: var(--s9);
   }
 
-  h1 {
-    font-size: var(--t-h2);
-    line-height: 1.05;
-    letter-spacing: -0.022em;
+  .document__tete {
+    padding-block: var(--s5) var(--s7);
+    max-width: 48rem;
+  }
+
+  .document__tete h1 {
+    font-size: var(--t-3xl);
+    line-height: 1;
+    letter-spacing: var(--ls-affiche);
   }
 
   .document__maj {
     margin-top: var(--s3);
-    font-size: var(--t-petit);
-    color: var(--graphite);
+    font-size: var(--t-xs);
+    color: var(--eteint);
+    font-variant-numeric: tabular-nums;
   }
 
   .document__resume {
-    margin-top: var(--s6);
-    font-size: var(--t-chapeau);
-    line-height: 1.5;
+    margin-top: var(--s5);
   }
 
   section {
-    margin-top: var(--s8);
-    padding-top: var(--s6);
-    border-top: 1px solid var(--filet);
+    max-width: 48rem;
+    padding-block: var(--s6);
+    border-top: 1px solid var(--trait);
+  }
+
+  section:first-child {
+    padding-top: var(--s2);
+    border-top: 0;
   }
 
   h2 {
-    font-size: var(--t-h3);
-    line-height: 1.25;
+    font-size: var(--t-2xl);
+    line-height: 1.1;
   }
 
   section > p,
-  section > ul {
+  section > ul,
+  section > .tableau,
+  section > .credits {
     margin-top: var(--s4);
-    max-width: 40rem;
+    max-width: var(--mesure);
   }
 
-  ul {
-    padding-left: 1.2rem;
+  section > .tableau {
+    max-width: none;
+  }
+
+  section > ul {
     display: grid;
     gap: var(--s3);
+    padding-left: 1.2rem;
   }
 
   code {
@@ -182,24 +278,100 @@ const majour = '7 octobre 2026';
     font-size: 0.875em;
   }
 
+  /* Le tableau des données : à filets, en fiches sur mobile. */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--t-s);
+    line-height: 1.45;
+  }
+
+  th,
+  td {
+    padding: var(--s3) var(--s3) var(--s3) 0;
+    border-bottom: 1px solid var(--filet);
+    text-align: start;
+    vertical-align: top;
+  }
+
+  thead th {
+    border-bottom-color: var(--trait);
+    color: var(--eteint);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: var(--ls-petit);
+  }
+
+  tbody th {
+    font-weight: 600;
+  }
+
   .opposition {
-    margin-top: var(--s6);
-    padding: var(--s5);
-    background: var(--blanc);
-    border: 1px solid var(--filet);
-    border-top: 4px solid var(--bleu);
-    border-radius: var(--rayon);
     display: grid;
-    gap: var(--s4);
     justify-items: start;
+    gap: var(--s4);
+    margin-top: var(--s5);
+    padding: var(--s5);
+    border-radius: var(--r2);
+    background: var(--surface);
+    box-shadow: var(--ombre-1);
   }
 
   .opposition__etat {
-    font-weight: 700;
+    font-weight: 600;
   }
 
   .opposition__aide {
-    font-size: var(--t-petit);
-    color: var(--graphite);
+    color: var(--eteint);
+    font-size: var(--t-xs);
+  }
+
+  .credits {
+    display: grid;
+    gap: var(--s4);
+  }
+
+  .credits dt {
+    font-weight: 600;
+  }
+
+  .credits dd {
+    margin: var(--s1) 0 0;
+  }
+
+  @media (max-width: 860px) {
+    table,
+    tbody,
+    tr,
+    th,
+    td {
+      display: block;
+    }
+
+    thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+
+    tbody tr {
+      padding-block: var(--s3);
+      border-bottom: 1px solid var(--trait);
+    }
+
+    tbody th,
+    tbody td {
+      padding: var(--s1) 0;
+      border: 0;
+    }
+
+    tbody td::before {
+      content: attr(data-titre) '\00a0: ';
+      color: var(--eteint);
+      font-size: var(--t-xs);
+      font-weight: 600;
+    }
   }
 </style>

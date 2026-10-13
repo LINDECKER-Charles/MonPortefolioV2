@@ -1,9 +1,25 @@
 ---
-// Gabarit compilé une fois ; le serveur y insère les seules publications publiques.
+/**
+ * Gabarit des articles, compilé une fois : server/blog.mjs y remplace
+ * l’emplacement #blog-article-slot par l’article publié (ou l’aperçu privé),
+ * retire les <noscript> et réécrit titre, métas et JSON-LD. Hors index ; son
+ * adresse publique renvoie une 404. Styles des articles : styles/blog.css.
+ * « Pour continuer » reste hors de l’emplacement : chaque article finit sur
+ * une issue (le blog, les projets, « Discutons »), aperçu compris.
+ * Contrat vérifié sur le vrai fichier construit : server/blog-dist.test.mjs.
+ */
 import Base from '../layouts/Base.astro';
+import ContinuerLecture from '../components/pages/ContinuerLecture.astro';
 import '../styles/blog.css';
 ---
 <Base titre="Aperçu d’un article | Charles Lindecker" description="Relire un article de Charles Lindecker dans sa mise en page complète avant sa publication sur le blog du portfolio personnel." chemin="/blog" horsIndex>
   <div id="blog-article-slot"></div>
-  <noscript><div class="wrap"><h1>Aperçu d’un article</h1><p>Ouvrez l’aperçu depuis le backoffice.</p></div></noscript>
+  <noscript><div class="conteneur blog-article"><h1>Aperçu d’un article</h1><p>Ouvrez l’aperçu depuis le backoffice.</p></div></noscript>
+  <div class="conteneur">
+    <ContinuerLecture liens={[
+      { href: '/blog', titre: 'Le blog', detail: 'Tous les articles publiés.' },
+      { href: '/projets', titre: 'Les projets', detail: 'Ce que chaque projet prouve, et les décisions derrière.' },
+      { href: '/contact', titre: 'Discutons', detail: 'Écrire en quelques mots, depuis la page Contact.' },
+    ]} />
+  </div>
 </Base>
