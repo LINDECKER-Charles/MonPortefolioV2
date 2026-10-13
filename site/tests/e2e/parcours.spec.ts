@@ -17,7 +17,7 @@ const EXPERIENCES = [
   { id: 'mission-locale', poste: 'Mentor et animateur d’ateliers', repere: 'Mission Locale', dates: ['2026-01'], statut: 'Terminé', nature: 'Bénévolat' },
   { id: 'elan', poste: 'Formateur en développement web', repere: 'Elan Formation', dates: ['2025-12'], statut: 'Mission terminée', nature: 'Freelance' },
   { id: 'devmates', poste: 'Développeur indépendant', repere: 'Dev-Mates', dates: ['2025-11'], statut: 'Société ouverte', nature: 'Freelance' },
-  { id: 'pvz', poste: 'Lead et mainteneur', repere: 'PvZ Fusion', dates: ['2025-10'], statut: 'En cours', nature: 'Bénévolat' },
+  { id: 'pvz', poste: 'Lead et mainteneur', repere: 'PvZ Fusion', dates: ['2025-10', '2025-12'], statut: 'En cours', nature: 'Bénévolat' },
   { id: 'atis', poste: 'Développeur full stack', repere: 'ATIS Solutions', dates: ['2025-08', '2025-09'], statut: 'Stage terminé', nature: 'Stage' },
 ] as const;
 
@@ -53,16 +53,16 @@ test.describe('hub', () => {
     await page.goto('/parcours');
     const portes = page.getByRole('navigation', { name: 'Explorer le parcours', exact: true });
     await expect(portes.getByRole('link', { name: 'Parcours professionnel', exact: true })).toHaveAccessibleDescription(/6 expériences.*20 contributeurs formés/);
-    await expect(portes.getByRole('link', { name: 'Compétences', exact: true })).toHaveAccessibleDescription(/C#, \.NET, Angular, TypeScript, PostgreSQL, Docker/);
+    await expect(portes.getByRole('link', { name: 'Compétences', exact: true })).toHaveAccessibleDescription(/C#, \.NET, Angular, TypeScript, PostgreSQL, MySQL.*à valider/);
     await expect(portes.getByRole('link', { name: 'Formation et certifications', exact: true })).toHaveAccessibleDescription(/Titre DWWM, RNCP niveau 5.*12 certifications/);
     for (const id of ['PAR-01', 'PAR-02', 'PAR-03']) await expect(portes.locator(`[data-visuel="${id}"]`)).toHaveCount(1);
     // Aucune flèche de sortie pour un lien interne.
     await expect(portes).not.toContainText('↗');
   });
 
-  test('la frise montre le parcours de 2023 à aujourd’hui, chaque ligne vers sa fiche', async ({ page }) => {
+  test('la frise montre le parcours de septembre 2023 à aujourd’hui, chaque ligne vers sa fiche', async ({ page }) => {
     await page.goto('/parcours');
-    const frise = page.getByRole('figure', { name: 'De 2023 à aujourd’hui' });
+    const frise = page.getByRole('figure', { name: 'De septembre 2023 à aujourd’hui' });
     await expect(frise).toBeVisible();
     const liens = frise.getByRole('link');
     await expect(liens).toHaveCount(8);
@@ -72,8 +72,11 @@ test.describe('hub', () => {
     for (const lien of await liens.all()) {
       await expect(lien).toHaveAttribute('href', /^\/parcours\/(?:professionnel|formation)#[a-z-]+$/);
     }
-    await expect(frise.getByRole('link', { name: /Formateur, Elan Formation, Freelance, décembre 2025 → fin à confirmer/ })).toHaveCount(1);
-    await expect(frise.getByRole('link', { name: /BUT Réseaux & Télécoms, Formation, 2023–2024/ })).toHaveAttribute('href', '/parcours/formation#reseaux');
+    // Le nom du lien lit la période en mots : jamais « flèche droite ».
+    await expect(frise.getByRole('link', { name: 'Formateur, Elan Formation, Freelance, décembre 2025, fin à confirmer', exact: true })).toHaveCount(1);
+    await expect(frise.getByRole('link', { name: 'BUT Réseaux & Télécoms, Formation, de 2023 à 2024', exact: true })).toHaveAttribute('href', '/parcours/formation#reseaux');
+    await expect(frise.getByRole('link', { name: 'Titre DWWM, Elan Formation, Formation, avril à octobre 2025', exact: true })).toHaveCount(1);
+    for (const lien of await liens.all()) expect(await lien.getAttribute('aria-label')).not.toContain('→');
 
     await frise.getByRole('link', { name: /^Architecte logiciel, B-Hive/ }).click();
     await expect(page).toHaveURL(/\/parcours\/professionnel#architecture$/);
@@ -87,6 +90,89 @@ test.describe('hub', () => {
     await expect(discutons).toHaveAttribute('href', '/contact');
     await expect(discutons).toHaveAttribute('data-umami-event', 'contact-page');
     await expect(discutons).toHaveAttribute('data-umami-event-emplacement', 'discutons');
+  });
+});
+
+test.describe('PvZ Fusion : lead depuis décembre 2025, jamais depuis octobre', () => {
+  for (const chemin of ['/parcours', '/parcours/professionnel']) {
+    test(`frise de ${chemin}`, async ({ page }) => {
+      await page.goto(chemin);
+      const lignes = page.locator('.frise__ligne a');
+      await expect(lignes.first()).toBeVisible();
+      for (const lien of await lignes.all()) {
+        const nom = (await lien.getAttribute('aria-label')) ?? '';
+        const texte = (await lien.innerText()).replace(/\s+/g, ' ');
+        for (const ligne of [nom, texte]) {
+          // Aucune ligne n’affirme « Lead … octobre 2025 » sans dire quand le rôle a commencé.
+          if (/lead/i.test(ligne)) expect(ligne).toContain('lead depuis décembre 2025');
+          expect(ligne).not.toMatch(/^Lead/);
+        }
+      }
+      const pvz = page.getByRole('link', { name: 'Traducteur puis lead, PvZ Fusion, Bénévolat, depuis octobre 2025, lead depuis décembre 2025', exact: true });
+      await expect(pvz).toHaveCount(1);
+      // La barre se coupe en deux : la part de traducteur, puis celle de lead.
+      await expect(pvz.locator('.frise__barre')).toHaveCount(2);
+      await expect(pvz.locator('.frise__barre--avant')).toHaveCount(1);
+    });
+  }
+});
+
+test.describe('mise en page', () => {
+  test('le contenu du hub tient en moins de deux écrans sur ordinateur, la frise commence dans le premier', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'mesure sur ordinateur');
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/parcours');
+    const fin = await page.locator('main').evaluate((main) => main.getBoundingClientRect().bottom + window.scrollY);
+    expect(fin).toBeLessThan(2 * 900);
+    const frise = await page.getByRole('figure', { name: 'De septembre 2023 à aujourd’hui' }).boundingBox();
+    expect(frise!.y).toBeLessThan(900);
+  });
+
+  for (const largeur of [1440, 1024, 800]) {
+    test(`les stations d’avant le DWWM restent compactes, sur une rangée, à ${largeur} px`, async ({ page, isMobile }) => {
+      test.skip(isMobile, 'mesure sur ordinateur et tablette');
+      await page.setViewportSize({ width: largeur, height: 900 });
+      await page.goto('/parcours/formation');
+      const dwwm = await page.locator('#dwwm').boundingBox();
+      const stations = page.locator('.etape--station');
+      await expect(stations).toHaveCount(5);
+      const boites = await stations.evaluateAll((elements) => elements.map((e) => e.getBoundingClientRect().toJSON()));
+      for (const boite of boites) expect(Math.round(boite.top)).toBe(Math.round(boites[0].top));
+      // Le chemin d’avant pèse bien moins que le titre obtenu : vignette à gauche sur ordinateur.
+      const hauteurs = await page.locator('.station').evaluateAll((elements) => elements.map((e) => e.getBoundingClientRect().height));
+      for (const hauteur of hauteurs) {
+        expect(hauteur).toBeLessThan(largeur >= 1300 ? 190 : 260);
+        expect(hauteur).toBeLessThan(dwwm!.height * (largeur >= 1300 ? 0.45 : 0.65));
+      }
+      // Le trait de la frise finit sur la dernière pastille, sans dépasser la liste.
+      const depasse = await page.locator('.formation-timeline').evaluate((liste) => {
+        const droite = liste.getBoundingClientRect().right;
+        const derniere = liste.lastElementChild as HTMLElement;
+        const trait = getComputedStyle(derniere, '::before');
+        return derniere.getBoundingClientRect().right - parseFloat(trait.right) > droite + 0.5;
+      });
+      expect(depasse).toBe(false);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    });
+  }
+
+  test('les certificats sont des cibles de 44 px', async ({ page }) => {
+    await page.goto('/parcours/formation');
+    const hauteurs = await page.locator('a.certification-preuve').evaluateAll((liens) => liens.map((lien) => lien.getBoundingClientRect().height));
+    expect(hauteurs).toHaveLength(12);
+    for (const hauteur of hauteurs) expect(hauteur).toBeGreaterThanOrEqual(44);
+  });
+
+  test('sur mobile, le rôle et le titre obtenu précèdent leur visuel', async ({ page, isMobile }) => {
+    test.skip(!isMobile, 'ordre propre au mobile');
+    await page.goto('/parcours/professionnel');
+    const titre = await page.locator('#architecture h3').boundingBox();
+    const visuel = await page.locator('#architecture [data-visuel]').boundingBox();
+    expect(titre!.y).toBeLessThan(visuel!.y);
+    await page.goto('/parcours/formation');
+    const dwwm = await page.locator('#dwwm h3').boundingBox();
+    const image = await page.locator('#dwwm [data-visuel]').boundingBox();
+    expect(dwwm!.y).toBeLessThan(image!.y);
   });
 });
 
@@ -112,8 +198,8 @@ test.describe('page Professionnel', () => {
     await expect(lignes.first()).toBeInViewport();
     await expect(lignes.first()).toContainText('CDI, depuis août 2026');
     for (const [index, { id }] of EXPERIENCES.entries()) await expect(lignes.nth(index)).toHaveAttribute('href', `#${id}`);
-    await expect(chronologie.getByRole('link', { name: /Mentor, Mission Locale, Bénévolat, janvier 2026 → fin à confirmer/ })).toHaveCount(1);
-    await expect(chronologie.getByRole('link', { name: /Stage, ATIS Solutions, Stage, août → septembre 2025/ })).toHaveCount(1);
+    await expect(chronologie.getByRole('link', { name: 'Mentor, Mission Locale, Bénévolat, janvier 2026, fin à confirmer', exact: true })).toHaveCount(1);
+    await expect(chronologie.getByRole('link', { name: 'Développeur full stack, ATIS Solutions, Stage, août à septembre 2025', exact: true })).toHaveCount(1);
 
     await lignes.nth(2).click();
     await expect(page).toHaveURL(/#elan$/);
@@ -184,8 +270,11 @@ test.describe('page Professionnel', () => {
       await expect(pvz.getByRole('list', { name: 'Évolution du rôle' }).getByRole('listitem')).toHaveText([
         /Traducteur\s+octobre 2025/, /Lead du pôle francophone\s+décembre 2025/, /Mainteneur du projet multilingue/,
       ]);
+      // Arrivé comme traducteur en octobre 2025 ; lead seulement depuis décembre 2025.
+      await expect(pvz.locator('.fiche__periode')).toHaveText(/^\s*Depuis octobre 2025\s+\(lead depuis décembre 2025\)\s*$/);
       const preuve = pvz.locator('mark.surligneur');
       await expect(preuve).toHaveText('20');
+      await expect(pvz).toContainText('confirmé le 13 octobre 2026');
       await expect(preuve).toHaveAttribute('data-source', /Témoignage/);
       await expect(pvz.getByRole('link', { name: /Voir le travail avec la communauté/ })).toHaveAttribute('href', '/projets/pvz-fusion');
       await expect(page.locator('#atis mark.surligneur')).toHaveText('−30 %');
@@ -258,6 +347,7 @@ test.describe('page Formation', () => {
       for (const index of [1, 3, 4, 5]) await expect(etapes.nth(index).locator('time')).toHaveCount(0);
       await expect(etapes.nth(1)).not.toContainText(/20\d\d/);
       await expect(etapes.nth(5)).toContainText(/vers\s*13\s*ans/i);
+      await expect(etapes.nth(5)).toContainText('Le C, pour passer ensuite au C++ et coder mes jeux sur Unreal Engine');
       await expect(etapes.nth(1).getByRole('link', { name: /Mes exercices/ })).toHaveAttribute('href', 'https://github.com/LINDECKER-Charles/Piscine42-Mulhouse-2024');
 
       await expect(page.locator('#formation ~ #certifications')).toHaveCount(1);
@@ -295,7 +385,7 @@ test.describe('page Formation', () => {
       await expect(pratique.getByRole('link', { name: /Voir mon profil Frontend Mentor/ })).toHaveAttribute('href', 'https://www.frontendmentor.io/profile/LINDECKER-Charles');
       await expect(pratique).toContainText(/20\s*solutions publiées/);
       await expect(pratique).toContainText(/385\s*points/);
-      await expect(pratique).toContainText('Repères relevés en octobre 2026.');
+      await expect(pratique).toContainText('Repères relevés le 9 octobre 2026.');
       await expect(pratique.locator('[data-visuel="FOR-09"]')).toHaveCount(1);
     });
   });
