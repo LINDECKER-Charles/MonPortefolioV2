@@ -240,18 +240,43 @@ const { class: classe } = Astro.props;
     margin-bottom: var(--s2);
   }
 
+  /* Un dépliant, pas un lien : l’encre et le chevron qui pivote. */
   .rattrapage__releves summary {
     display: inline-flex;
     align-items: center;
+    gap: var(--s3);
     min-height: 44px;
     font-size: var(--t-s);
     font-weight: 600;
-    color: var(--accent);
+    color: var(--encre);
+    list-style: none;
     cursor: pointer;
   }
 
+  .rattrapage__releves summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .rattrapage__releves summary::after {
+    content: '';
+    width: 7px;
+    height: 7px;
+    margin-top: -4px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    rotate: 45deg;
+    transition: rotate var(--d-ui) var(--courbe), margin var(--d-ui) var(--courbe);
+  }
+
+  .rattrapage__releves[open] summary::after {
+    rotate: 225deg;
+    margin-top: 4px;
+  }
+
   .rattrapage__releves summary:hover {
-    color: var(--accent-survol);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
   }
 
   .rattrapage__table {
