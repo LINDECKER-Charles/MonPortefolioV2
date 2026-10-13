@@ -37,7 +37,8 @@
  * dessinent en CSS.
  */
 import type { ImageMetadata } from 'astro';
-import { getImage, Picture } from 'astro:assets';
+import { getImage } from 'astro:assets';
+import ImageAdaptative from './ImageAdaptative.astro';
 import Picto from './Picto.astro';
 import { typo } from '../../lib/typo';
 
@@ -80,6 +81,8 @@ interface Props {
   widths?: number[];
   sizes?: string;
   loading?: 'lazy' | 'eager';
+  /** Requête média sous laquelle la capture ne télécharge rien : la page la masque (ImageAdaptative). */
+  neutre?: string;
   agrandir?: boolean;
   class?: string;
   /** Variables CSS posées sur la figure (`--nom:valeur;…`), pour un composant qui l’enveloppe. */
@@ -100,6 +103,7 @@ const {
   widths,
   sizes = '(max-width: 860px) 100vw, 50vw',
   loading = 'lazy',
+  neutre,
   agrandir = false,
   class: classe,
   style: styleFigure,
@@ -138,11 +142,11 @@ const aLegende = Boolean(legende) || Astro.slots.has('legende');
           <slot name="media" />
         ) : src && pleineTaille ? (
           <a class="capture__agrandir" href={pleineTaille.src} data-agrandir data-legende={legende ? typo(legende) : alt}>
-            <Picture src={src} formats={['avif']} fallbackFormat="webp" widths={largeurs} sizes={sizes} alt={alt} loading={loading} decoding="async" />
+            <ImageAdaptative src={src} widths={largeurs} sizes={sizes} alt={alt} loading={loading} neutre={neutre} />
             <span class="capture__loupe-picto" aria-hidden="true"><Picto nom="interface/agrandir" /></span>
           </a>
         ) : (
-          src && <Picture src={src} formats={['avif']} fallbackFormat="webp" widths={largeurs} sizes={sizes} alt={alt} loading={loading} decoding="async" />
+          src && <ImageAdaptative src={src} widths={largeurs} sizes={sizes} alt={alt} loading={loading} neutre={neutre} />
         )
       }
       <slot />

@@ -472,29 +472,70 @@ describe('composant Visuel', () => {
     expect(html).toContain('--visuel-ratio-mobile:4 / 5');
   });
 
-  it('pose les deux rendus d’une image générée livrée, le jour puis la nuit, avec le même alt, les mêmes tailles et le même chargement', async () => {
+  /** Les deux <picture> d’un rendu de Visuel : classe, source neutre et attributs de l’<img>. */
+  const rendusDe = (html: string) =>
+    [...html.matchAll(/<picture\b([^>]*)>([\s\S]*?)<\/picture>/g)].map((p) => {
+      const img = /<img\b[^>]*>/.exec(p[2])![0];
+      return {
+        classe: /class="([^"]+)"/.exec(p[1])?.[1],
+        neutre: /<source media="([^"]+)" srcset="data:image\/gif;base64,[^"]+">/.exec(p[2])?.[1],
+        attr: (nom: string) => new RegExp(`\\s${nom}="([^"]*)"`).exec(img)?.[1],
+      };
+    });
+
+  it('pose les deux rendus d’une image générée livrée, le jour puis la nuit, avec le même alt et les mêmes tailles', async () => {
     const conteneur = await AstroContainer.create();
-    for (const [props, chargement] of [[{ id: 'ACC-03' }, 'lazy'], [{ id: 'PVZ-01', loading: 'eager', sizes: '(max-width: 1100px) 100vw, 520px' }, 'eager'], [{ id: 'PRJ-03' }, 'lazy']] as const) {
+    for (const props of [{ id: 'ACC-03' }, { id: 'PVZ-01', loading: 'eager', sizes: '(max-width: 1100px) 100vw, 520px' }, { id: 'PRJ-03' }] as const) {
       // Une reprise (PRJ-03) montre les deux rendus de l’image qu’elle reprend (OMN-01).
       const v = visuelParId(props.id === 'PRJ-03' ? 'OMN-01' : props.id)!;
       const html = await conteneur.renderToString(Visuel, { props });
       expect(html, props.id).not.toContain('visuel--manquant');
       expect(html, props.id).toContain('visuel--jour-nuit');
-      const pictures = [...html.matchAll(/<picture\b([^>]*)>([\s\S]*?)<\/picture>/g)];
-      expect(pictures.map((p) => /class="([^"]+)"/.exec(p[1])?.[1]), props.id).toEqual(['visuel__jour', 'visuel__nuit']);
-      const imgs = pictures.map((p) => /<img\b[^>]*>/.exec(p[2])![0]);
-      const attr = (img: string, nom: string) => new RegExp(`\\s${nom}="([^"]*)"`).exec(img)?.[1];
-      for (const nom of ['alt', 'sizes', 'loading', 'decoding', 'width', 'height']) expect(attr(imgs[1], nom), `${props.id} ${nom}`).toBe(attr(imgs[0], nom));
-      expect(attr(imgs[0], 'alt'), props.id).toBe(visuelParId(props.id)!.alt);
-      expect(attr(imgs[0], 'loading'), props.id).toBe(chargement);
-      if ('sizes' in props) expect(attr(imgs[0], 'sizes')).toBe(props.sizes);
-      // Mêmes largeurs, l’une tirée du rendu de jour, l’autre du rendu de nuit.
-      const largeurs = (img: string) => attr(img, 'srcset')!.split(', ').map((x) => x.split(' ')[1]);
-      expect(largeurs(imgs[1]), props.id).toEqual(largeurs(imgs[0]));
+      const [jour, nuit] = rendusDe(html);
+      expect([jour.classe, nuit.classe], props.id).toEqual(['visuel__jour', 'visuel__nuit']);
+      for (const nom of ['alt', 'sizes', 'loading', 'decoding', 'width', 'height', 'fetchpriority']) expect(nuit.attr(nom), `${props.id} ${nom}`).toBe(jour.attr(nom));
+      expect(jour.attr('alt'), props.id).toBe(visuelParId(props.id)!.alt);
+      if ('sizes' in props) expect(jour.attr('sizes')).toBe(props.sizes);
+      // Mêmes largeurs, l’une tirée du rendu de jour, l’autre du rendu de nuit, avec un palier de 480 px.
+      const largeurs = (r: ReturnType<typeof rendusDe>[number]) => r.attr('srcset')!.split(', ').map((x) => x.split(' ')[1]);
+      expect(largeurs(nuit), props.id).toEqual(largeurs(jour));
+      expect(largeurs(jour), props.id).toContain('480w');
       const nom = path.posix.basename(v.fichier!, '.webp');
-      expect(attr(imgs[0], 'src'), props.id).toContain(`${nom}.webp`);
-      expect(attr(imgs[1], 'src'), props.id).toContain(path.posix.basename(fichierNuit(v)!));
+      expect(jour.attr('src'), props.id).toContain(`${nom}.webp`);
+      expect(nuit.attr('src'), props.id).toContain(path.posix.basename(fichierNuit(v)!));
     }
+  });
+
+  it('ne fait partir sur le réseau que le rendu affiché : différé avec JavaScript, une source neutre sans', async () => {
+    const conteneur = await AstroContainer.create();
+    // Toujours différés, même quand la page demande un chargement immédiat : la priorité passe en fetchpriority.
+    for (const [props, priorite] of [[{ id: 'ACC-03' }, undefined], [{ id: 'PVZ-01', loading: 'eager' }, 'high']] as const) {
+      const [jour, nuit] = rendusDe(await conteneur.renderToString(Visuel, { props }));
+      expect([jour.attr('loading'), nuit.attr('loading')], props.id).toEqual(['lazy', 'lazy']);
+      expect([jour.attr('fetchpriority'), nuit.attr('fetchpriority')], props.id).toEqual([priorite, priorite]);
+      // Sans JavaScript, la préférence du système masque une version : elle prend la source neutre.
+      expect(jour.neutre, props.id).toBe('screen and (scripting: none) and (prefers-color-scheme: dark)');
+      expect(nuit.neutre, props.id).toBe('screen and (scripting: none) and (prefers-color-scheme: light)');
+    }
+
+    // Dans un acte sombre, la nuit s’affiche dans les deux thèmes : elle garde le chargement demandé, le jour ne part jamais à l’écran.
+    const acte = await conteneur.renderToString(Visuel, { props: { id: 'PRJ-01', loading: 'eager', acte: true } });
+    expect(acte).toMatch(/<figure[^>]+data-acte/);
+    const [jour, nuit] = rendusDe(acte);
+    expect([jour.attr('loading'), nuit.attr('loading'), nuit.attr('fetchpriority')]).toEqual(['lazy', 'eager', 'high']);
+    expect([jour.neutre, nuit.neutre]).toEqual(['screen and (scripting: none)', undefined]);
+
+    // Un emplacement que la page masque (sous une largeur, ou sans script) ne télécharge rien sans JavaScript.
+    const masque = rendusDe(await conteneur.renderToString(Visuel, { props: { id: 'GUP-01', masqueSous: 860 } }));
+    expect(masque.map((r) => r.neutre)).toEqual([
+      'screen and (scripting: none) and (prefers-color-scheme: dark), screen and (scripting: none) and (max-width: 860px)',
+      'screen and (scripting: none) and (prefers-color-scheme: light), screen and (scripting: none) and (max-width: 860px)',
+    ]);
+    const sansScript = rendusDe(await conteneur.renderToString(Visuel, { props: { id: 'CON-02', masqueSansScript: true } }));
+    expect(sansScript.map((r) => r.neutre)).toEqual([
+      'screen and (scripting: none) and (prefers-color-scheme: dark), screen and (scripting: none)',
+      'screen and (scripting: none) and (prefers-color-scheme: light), screen and (scripting: none)',
+    ]);
   });
 
   it('montre le jour par défaut, la nuit sous les trois portes de jetons.css, et le jour à l’impression', () => {

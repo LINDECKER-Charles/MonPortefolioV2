@@ -77,6 +77,13 @@ if (!bureau) throw new Error(`<CaptureLeague nom="${nom}"> : capture absente de 
 const telephone = mobile === false ? undefined : captures[chemin(`${nom}-mobile`)];
 const vueMobile = mobile === false ? {} : mobile;
 const annotee = Boolean(cible || loupe);
+/**
+ * Sans JavaScript, le navigateur ignore le chargement différé : la vue que la
+ * largeur masque (l’ordinateur sous 861 px, le téléphone au-delà) prend une
+ * source neutre et ne télécharge rien (ImageAdaptative).
+ */
+const neutreBureau = telephone ? 'screen and (scripting: none) and (max-width: 860px)' : undefined;
+const neutreMobile = 'screen and (scripting: none) and (min-width: 861px)';
 // L’alt suit la typographie du texte visible (espaces insécables avant « : ; ! ? »).
 const alt = typo(altBrut);
 ---
@@ -98,9 +105,10 @@ const alt = typo(altBrut);
         agrandir
         sizes={sizes}
         loading={loading}
+        neutre={neutreBureau}
       />
     ) : (
-      <CadreCapture class="capture-league__bureau" type="navigateur" adresse={adresse} src={bureau} alt={alt} legende={legende} ratio={ratio} position={position} agrandir sizes={sizes} loading={loading} />
+      <CadreCapture class="capture-league__bureau" type="navigateur" adresse={adresse} src={bureau} alt={alt} legende={legende} ratio={ratio} position={position} agrandir sizes={sizes} loading={loading} neutre={neutreBureau} />
     )
   }
   {
@@ -118,6 +126,7 @@ const alt = typo(altBrut);
           agrandir
           sizes="(max-width: 860px) 340px, 1px"
           loading="lazy"
+          neutre={neutreMobile}
         />
       ) : (
         <CadreCapture
@@ -131,6 +140,7 @@ const alt = typo(altBrut);
           agrandir
           sizes="(max-width: 860px) 340px, 1px"
           loading="lazy"
+          neutre={neutreMobile}
         />
       ))
   }

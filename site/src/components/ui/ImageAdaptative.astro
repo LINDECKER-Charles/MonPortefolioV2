@@ -1,0 +1,65 @@
+---
+/**
+ * Une image matricielle du site en <picture> : AVIF, repli WebP, aux largeurs
+ * et à l’attribut `sizes` donnés. C’est le <Picture> d’Astro, plus une source
+ * neutre : sous la condition `neutre` (une requête média), le navigateur
+ * choisit un GIF transparent de 1 × 1 inscrit dans la page et ne télécharge
+ * rien.
+ *
+ *   <ImageAdaptative src={image} alt="" widths={[600, 1200]} sizes="100vw" />
+ *   <ImageAdaptative … neutre="(scripting: none) and (max-width: 860px)" />
+ *
+ * À quoi sert la source neutre : une image masquée en CSS mais chargée à la
+ * demande (`loading="lazy"`) n’est jamais téléchargée… tant que JavaScript
+ * tourne. Sans script, le navigateur ignore le chargement différé
+ * (spécification HTML) et télécharge toutes les images de la page, même en
+ * `display: none`. `(scripting: none)` borne la source neutre à ce cas : avec
+ * JavaScript, elle ne s’applique jamais et rien ne change. Précéder la
+ * condition de `screen` laisse l’impression choisir la vraie image.
+ *
+ * Les attributs `data-astro-cid-*` du composant appelant passent sur <picture>
+ * et sur <img>, comme avec <Picture> : ses styles à portée limitée s’y
+ * appliquent.
+ */
+import type { ImageMetadata } from 'astro';
+import { getImage } from 'astro:assets';
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  widths: number[];
+  sizes: string;
+  loading?: 'lazy' | 'eager';
+  fetchpriority?: 'high' | 'low' | 'auto';
+  /** Requête média sous laquelle l’image ne télécharge rien (source neutre). */
+  neutre?: string;
+  /** Attributs de l’élément <picture> (classe, données). */
+  pictureAttributes?: Record<string, string>;
+  class?: string;
+}
+
+/** Un GIF transparent de 1 × 1, inscrit dans la page : aucune requête. */
+const SOURCE_NEUTRE = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+
+const { src, alt, widths, sizes, loading = 'lazy', fetchpriority, neutre, pictureAttributes = {}, class: classe, ...reste } = Astro.props;
+const portee = Object.fromEntries(Object.entries(reste).filter(([cle]) => cle.startsWith('data-astro-cid')));
+const [avif, webp] = await Promise.all([getImage({ src, format: 'avif', widths, sizes }), getImage({ src, format: 'webp', widths, sizes })]);
+---
+
+<picture {...pictureAttributes} {...portee}>
+  {neutre && <source media={neutre} srcset={SOURCE_NEUTRE} />}
+  <source srcset={avif.srcSet.attribute} type="image/avif" sizes={sizes} />
+  <img
+    src={webp.src}
+    srcset={webp.srcSet.attribute}
+    sizes={sizes}
+    alt={alt}
+    loading={loading}
+    decoding="async"
+    fetchpriority={fetchpriority}
+    width={src.width}
+    height={src.height}
+    class={classe}
+    {...portee}
+  />
+</picture>

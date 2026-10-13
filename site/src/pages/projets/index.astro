@@ -68,9 +68,9 @@ const description = 'Cinq projets menés au bout, rangés par ce qu’ils prouve
               pli={index === 0 ? 'preuve' : undefined}
             >
               {/* La vedette garde le 16:10 sur mobile : son chiffre reste au premier écran. */}
-              {projet.id === 'pvz' && <Visuel slot="visuel" id="PRJ-01" ratioMobile="16 / 10" loading="eager" sizes="(max-width: 860px) 100vw, 720px" class="vitrine-visuel vitrine-visuel--vedette" />}
-              {projet.id === 'league' && <Visuel slot="visuel" id="PRJ-02" alt="" sizes="(max-width: 860px) 100vw, 300px" class="vitrine-visuel vitrine-visuel--ligne" />}
-              {projet.id === 'omnicard' && <Visuel slot="visuel" id="PRJ-03" alt="" sizes="(max-width: 860px) 100vw, 300px" class="vitrine-visuel vitrine-visuel--ligne" />}
+              {projet.id === 'pvz' && <Visuel slot="visuel" id="PRJ-01" ratioMobile="16 / 10" loading="eager" acte sizes="(max-width: 860px) 100vw, 760px" class="vitrine-visuel vitrine-visuel--vedette" />}
+              {projet.id === 'league' && <Visuel slot="visuel" id="PRJ-02" alt="" acte sizes="(max-width: 860px) 100vw, 730px" class="vitrine-visuel vitrine-visuel--ligne" />}
+              {projet.id === 'omnicard' && <Visuel slot="visuel" id="PRJ-03" alt="" acte sizes="(max-width: 860px) 100vw, 610px" class="vitrine-visuel vitrine-visuel--ligne" />}
               {
                 projet.id === 'bloodborne' && (
                   <CadreCapture

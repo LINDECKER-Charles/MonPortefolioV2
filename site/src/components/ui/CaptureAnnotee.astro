@@ -57,10 +57,12 @@ interface Props {
   widths?: number[];
   sizes?: string;
   loading?: 'lazy' | 'eager';
+  /** Requête média sous laquelle ni la capture ni sa loupe ne téléchargent rien (CadreCapture). */
+  neutre?: string;
   class?: string;
 }
 
-const { src, alt, legende, type = 'navigateur', adresse, ratio = '16 / 10', position, cible, loupe, agrandir = false, widths, sizes, loading, class: classe } = Astro.props;
+const { src, alt, legende, type = 'navigateur', adresse, ratio = '16 / 10', position, cible, loupe, agrandir = false, widths, sizes, loading, neutre, class: classe } = Astro.props;
 const detail = loupe ? await getImage({ src, format: 'webp', width: Math.min(src.width, 2000) }) : undefined;
 const styleLoupe = loupe
   ? [`--lx:${loupe.x}%`, `--ly:${loupe.y}%`, `--lz:${loupe.zoom}`, `--lw:${loupe.largeur ?? 50}%`, `--lr:${loupe.ratio ?? '4 / 3'}`].join(';')
@@ -86,12 +88,16 @@ const dessous = Boolean(loupe?.dessous);
   widths={widths}
   sizes={sizes}
   loading={loading}
+  neutre={neutre}
 >
   {cible && <span class="cible" style={`--cx:${cible.x}%;--cy:${cible.y}%`} aria-hidden="true"><span class="cible__num">1</span></span>}
   {
     loupe && detail && (
       <span class:list={['loupe', `loupe--${loupe.coin ?? 'bas-droite'}`, { 'loupe--dessous': dessous }]} style={styleLoupe} aria-hidden="true">
-        <img src={detail.src} alt="" loading="lazy" decoding="async" />
+        <picture>
+          {neutre && <source media={neutre} srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />}
+          <img src={detail.src} alt="" loading="lazy" decoding="async" />
+        </picture>
         {cible && <span class="cible__num loupe__num">1</span>}
       </span>
     )
@@ -149,7 +155,12 @@ const dessous = Boolean(loupe?.dessous);
     pointer-events: none;
   }
 
-  .loupe > img {
+  /* La source neutre (sans JavaScript, sous `neutre`) : <picture> ne fait pas de boîte. */
+  .loupe > picture {
+    display: contents;
+  }
+
+  .loupe > picture > img {
     position: absolute;
     left: 50%;
     top: 50%;

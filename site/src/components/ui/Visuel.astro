@@ -10,16 +10,29 @@
  *
  * Une image générée a deux rendus dessinés, le jour (`fichier`) et la nuit
  * (`<ID>_<l>x<h>.nuit.webp`, `fichierNuitAffiche`, qui suit aussi une reprise
- * comme PRJ-03) : les deux sont posés, avec le
- * même alt, les mêmes tailles et le même chargement, et un seul s’affiche,
- * selon les trois portes de la nuit de styles/jetons.css : le jour par défaut,
- * la nuit sous `:root[data-theme='nuit']`, dans un acte sombre
- * (`.acte-veille`, `.acte-bleu`) et, sans JavaScript, sous
- * `prefers-color-scheme: dark` ; l’impression repasse au jour. L’autre est en
- * `display: none` : hors de l’arbre d’accessibilité, il n’est lu par aucun
- * lecteur d’écran et, chargé à la demande (`loading="lazy"`, le défaut), il
- * n’est pas téléchargé. Pas de fondu entre les deux : la bascule de thème
- * (View Transitions, ou couleurs qui glissent) ne montre jamais deux images.
+ * comme PRJ-03) : les deux sont posés, avec le même alt et les mêmes tailles,
+ * et un seul s’affiche, selon les trois portes de la nuit de
+ * styles/jetons.css : le jour par défaut, la nuit sous
+ * `:root[data-theme='nuit']`, dans un acte sombre (`.acte-veille`,
+ * `.acte-bleu`) et, sans JavaScript, sous `prefers-color-scheme: dark` ;
+ * l’impression repasse au jour. L’autre est en `display: none` : hors de
+ * l’arbre d’accessibilité, il n’est lu par aucun lecteur d’écran. Pas de
+ * fondu entre les deux : la bascule de thème (View Transitions, ou couleurs
+ * qui glissent) ne montre jamais deux images.
+ *
+ * Seule la version affichée part sur le réseau :
+ *   - avec JavaScript, les deux versions sont chargées à la demande
+ *     (`loading="lazy"`), toujours : une image différée en `display: none`
+ *     n’est jamais téléchargée, et celle qui s’affiche dans l’écran part dès
+ *     la première mise en page. Une page qui demande `loading="eager"`
+ *     obtient `fetchpriority="high"` sur les deux, pas un chargement
+ *     immédiat, qui téléchargerait aussi la version masquée ;
+ *   - sans JavaScript, le navigateur ignore le chargement différé : une source
+ *     neutre (`ImageAdaptative`, `(scripting: none)`) remplace la version que
+ *     `prefers-color-scheme` masque ;
+ *   - `acte` : l’emplacement vit toujours dans un acte sombre, où la nuit
+ *     s’affiche dans les deux thèmes. La nuit y garde le chargement demandé ;
+ *     le jour, qui ne sert qu’à l’impression, ne part jamais à l’écran.
  *
  * Le fichier manque : deux rendus, selon le moment.
  *   - En ligne (le build de production, par défaut) : un cadre neutre au bon
@@ -38,6 +51,9 @@
  *
  *   <Visuel id="GUP-01" largeur="320px" />    largeur d’affichage (bornée à 100 %)
  *   <Visuel id="PRJ-01" ratioMobile="16 / 10" />   remplace le ratio du registre
+ *   <Visuel id="PVZ-04" acte />           posé dans un acte sombre (la nuit à l’écran)
+ *   <Visuel id="GUP-01" masqueSous={860} />   masqué en CSS sous 860 px : rien à télécharger
+ *   <Visuel id="CON-02" masqueSansScript />   affiché par un script seulement
  *
  * Le ton vient de l’acte qui contient l’emplacement, par les jetons : clair
  * sur la pierre de la page, sombre dans un acte de veille (`.acte-veille`) ou
@@ -61,7 +77,7 @@
  * page qui passe `class` peut les surcharger sans sélecteur d’identifiant.
  */
 import type { ImageMetadata } from 'astro';
-import { Picture } from 'astro:assets';
+import ImageAdaptative from './ImageAdaptative.astro';
 import { fichierNuitAffiche, fichiersAttendus, visuelParId } from '../../config/visuels';
 import { typo } from '../../lib/typo';
 import { svgEnLigne, visuelsEnBrouillon } from '../../lib/visuels';
@@ -81,10 +97,16 @@ interface Props {
   ratioMobile?: string;
   /** Largeur d’affichage (longueur CSS : « 320px », « 60% »), bornée à 100 %. */
   largeur?: string;
+  /** Posé dans un acte sombre (`.acte-veille`, `.acte-bleu`) : la nuit s’y affiche dans les deux thèmes. */
+  acte?: boolean;
+  /** Largeur (px) sous laquelle la page masque l’emplacement en CSS : sans JavaScript, rien n’y est téléchargé. */
+  masqueSous?: number;
+  /** L’emplacement ne s’affiche qu’avec JavaScript (un état posé par un script) : sans lui, rien n’est téléchargé. */
+  masqueSansScript?: boolean;
   class?: string;
 }
 
-const { id, alt: altPropre, sizes = '100vw', loading = 'lazy', foyer = false, ratio: ratioPropre, ratioMobile: ratioMobilePropre, largeur, class: classe } = Astro.props;
+const { id, alt: altPropre, sizes = '100vw', loading = 'lazy', foyer = false, ratio: ratioPropre, ratioMobile: ratioMobilePropre, largeur, acte = false, masqueSous, masqueSansScript = false, class: classe } = Astro.props;
 
 const visuel = visuelParId(id);
 if (!visuel) throw new Error(`<Visuel id="${id}"> : identifiant absent de src/config/visuels.ts`);
@@ -114,7 +136,26 @@ const ratio = ratioPropre ?? visuel.ratio ?? '16 / 10';
 const ratioMobile = ratioMobilePropre ?? visuel.ratioMobile;
 const brouillon = visuelsEnBrouillon();
 const style = [`--visuel-ratio:${ratio}`, !brouillon && embleme && `--visuel-embleme:url("${embleme}")`, ratioMobile && `--visuel-ratio-mobile:${ratioMobile}`, largeur && `--visuel-largeur:${largeur}`].filter(Boolean).join(';');
-const largeurs = image ? [...new Set([Math.round(image.width / 2), image.width])].filter((l) => l >= 320 || l === image.width) : [];
+// Un palier étroit (480) pour les vignettes et les colonnes de 320 à 360 px, puis la moitié et la pleine largeur.
+const largeurs = image ? [...new Set([480, Math.round(image.width / 2), image.width])].filter((l) => (l >= 320 && l <= image.width) || l === image.width).sort((a, b) => a - b) : [];
+
+/**
+ * Le chargement des deux rendus d’une image générée (voir l’en-tête) : différé
+ * pour les deux, sauf la nuit d’un acte sombre ; la priorité demandée par la
+ * page passe en `fetchpriority`. Sans JavaScript, la source neutre écarte la
+ * version que la page masque.
+ */
+const SANS_SCRIPT = 'screen and (scripting: none)';
+const masque = masqueSansScript ? SANS_SCRIPT : masqueSous ? `${SANS_SCRIPT} and (max-width: ${masqueSous}px)` : undefined;
+const priorite: 'high' | undefined = loading === 'eager' ? 'high' : undefined;
+const rendus = imageNuit
+  ? {
+      jour: { loading: 'lazy' as const, fetchpriority: acte ? undefined : priorite, neutre: acte ? SANS_SCRIPT : `${SANS_SCRIPT} and (prefers-color-scheme: dark)` },
+      nuit: { loading: acte ? loading : ('lazy' as const), fetchpriority: priorite, neutre: acte ? undefined : `${SANS_SCRIPT} and (prefers-color-scheme: light)` },
+    }
+  : { jour: { loading, fetchpriority: priorite, neutre: undefined }, nuit: undefined };
+/** La source neutre d’un rendu : celle du thème qu’il ne montre pas, ou celle de l’emplacement masqué. */
+const neutre = (propre: string | undefined) => [propre, masque].filter(Boolean).join(', ') || undefined;
 
 const NATURE = { IMG: 'Image à générer', SVG: 'Dessin à faire', FIG: 'Figure à coder', CAP: 'Capture à faire', PHO: 'Photo réelle', OG: 'Image de partage' } as const;
 const reprise = visuel.reprend?.length ? `reprend ${visuel.reprend.join(', ')}` : '';
@@ -126,9 +167,31 @@ const format = [visuel.format, mobile, reprise].filter(Boolean).join(' · ');
   dessin ? (
     <figure class:list={['visuel', 'visuel--dessin', { foyer }, classe]} style={style} data-visuel={id} set:html={svgEnLigne(dessin, { alt })} />
   ) : image ? (
-    <figure class:list={['visuel', { foyer, 'visuel--jour-nuit': imageNuit }, classe]} style={style} data-visuel={id}>
-      <Picture src={image} formats={['avif']} fallbackFormat="webp" widths={largeurs} sizes={sizes} alt={alt} loading={loading} decoding="async" pictureAttributes={imageNuit ? { class: 'visuel__jour', 'data-rendu': 'jour' } : {}} />
-      {imageNuit && <Picture src={imageNuit} formats={['avif']} fallbackFormat="webp" widths={largeurs} sizes={sizes} alt={alt} loading={loading} decoding="async" pictureAttributes={{ class: 'visuel__nuit', 'data-rendu': 'nuit' }} />}
+    <figure class:list={['visuel', { foyer, 'visuel--jour-nuit': imageNuit }, classe]} style={style} data-visuel={id} data-acte={acte ? '' : undefined}>
+      <ImageAdaptative
+        src={image}
+        widths={largeurs}
+        sizes={sizes}
+        alt={alt}
+        loading={rendus.jour.loading}
+        fetchpriority={rendus.jour.fetchpriority}
+        neutre={neutre(rendus.jour.neutre)}
+        pictureAttributes={imageNuit ? { class: 'visuel__jour', 'data-rendu': 'jour' } : {}}
+      />
+      {
+        imageNuit && rendus.nuit && (
+          <ImageAdaptative
+            src={imageNuit}
+            widths={largeurs}
+            sizes={sizes}
+            alt={alt}
+            loading={rendus.nuit.loading}
+            fetchpriority={rendus.nuit.fetchpriority}
+            neutre={neutre(rendus.nuit.neutre)}
+            pictureAttributes={{ class: 'visuel__nuit', 'data-rendu': 'nuit' }}
+          />
+        )
+      }
     </figure>
   ) : !brouillon ? (
     <figure
