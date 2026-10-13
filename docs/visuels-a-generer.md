@@ -4,7 +4,7 @@
 
 ## La mission
 
-Tu produis les visuels de la refonte du portfolio de Charles Lindecker. Le registre recense **126 emplacements** (82 « socle », 44 « élargi »). Pour chaque fiche ci-dessous, livre le **fichier attendu**, au chemin indiqué, en respectant le sujet, la composition et le format. Les règles communes valent pour toutes les fiches.
+Tu produis les visuels de la refonte du portfolio de Charles Lindecker. Le registre recense **127 emplacements** (82 « socle », 45 « élargi »). Pour chaque fiche ci-dessous, livre le **fichier attendu**, au chemin indiqué, en respectant le sujet, la composition et le format. Les règles communes valent pour toutes les fiches.
 
 - **Socle** : nécessaire au lancement de la refonte. À produire d’abord.
 - **Élargi** : enrichit le site et peut suivre.
@@ -53,14 +53,14 @@ Exceptions à la règle 3 : le nom dans les déclinaisons du logo, et les images
 | Projets (hub) | 12 | 5 | IMG 10 · SVG 0 · FIG 0 · CAP 2 · PHO 0 · OG 0 |
 | PvZ Fusion | 17 | 13 | IMG 10 · SVG 0 · FIG 6 · CAP 0 · PHO 0 · OG 1 |
 | League Of Data Base | 7 | 4 | IMG 3 · SVG 2 · FIG 2 · CAP 0 · PHO 0 · OG 0 |
-| Omnicard | 8 | 5 | IMG 2 · SVG 4 · FIG 1 · CAP 0 · PHO 0 · OG 1 |
+| Omnicard | 9 | 5 | IMG 2 · SVG 2 · FIG 3 · CAP 1 · PHO 0 · OG 1 |
 | Bloodborne Legendary Run | 7 | 4 | IMG 4 · SVG 1 · FIG 1 · CAP 0 · PHO 0 · OG 1 |
 | gup | 6 | 2 | IMG 2 · SVG 1 · FIG 3 · CAP 0 · PHO 0 · OG 0 |
 | Parcours : hub, professionnel, compétences, formation | 32 | 27 | IMG 24 · SVG 4 · FIG 3 · CAP 0 · PHO 1 · OG 0 |
 | Contact | 4 | 3 | IMG 3 · SVG 0 · FIG 0 · CAP 0 · PHO 1 · OG 0 |
 | Blog | 2 | 1 | IMG 2 · SVG 0 · FIG 0 · CAP 0 · PHO 0 · OG 0 |
 | États : 404 et hors ligne | 2 | 1 | IMG 1 · SVG 1 · FIG 0 · CAP 0 · PHO 0 · OG 0 |
-| **Total** | **126** | **82** | IMG 73 · SVG 23 · FIG 19 · CAP 3 · PHO 3 · OG 5 |
+| **Total** | **127** | **82** | IMG 73 · SVG 21 · FIG 21 · CAP 4 · PHO 3 · OG 5 |
 
 ## File de travail « socle »
 
@@ -71,7 +71,7 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Projets (hub)** : PRJ-01 (IMG), PRJ-02 (IMG)
 - **PvZ Fusion** : PVZ-01 (IMG), PVZ-02 (IMG), PVZ-04 (IMG), PVZ-05 (IMG), PVZ-06 (IMG), PVZ-07 (IMG), PVZ-08 (IMG), PVZ-11 (IMG)
 - **League Of Data Base** : LOD-03 (SVG), LOD-04 (IMG)
-- **Omnicard** : OMN-01 (IMG), OMN-03 (SVG), OMN-04 (SVG), OMN-06 (SVG)
+- **Omnicard** : OMN-01 (IMG), OMN-04 (SVG), OMN-06 (SVG)
 - **Bloodborne Legendary Run** : BLR-01 (IMG), BLR-02 (SVG), BLR-04 (IMG)
 - **gup** : GUP-02 (SVG)
 - **Parcours : hub, professionnel, compétences, formation** : PAR-01 (IMG), PAR-02 (IMG), PAR-03 (IMG), PRO-01 (IMG), PRO-02 (IMG), PRO-03 (IMG), PRO-04 (IMG), PRO-05 (IMG), CMP-02 (IMG), CMP-03 (IMG), CMP-04 (IMG), CMP-05 (IMG), CMP-06 (IMG), CMP-07 (IMG), CMP-08 (IMG), CMP-10 (SVG), FOR-01 (IMG), FOR-02 (IMG), FOR-03 (IMG), FOR-04 (IMG), FOR-05 (IMG), FOR-06 (IMG), FOR-07 (IMG)
@@ -770,73 +770,89 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 ### OMN-01 · Du papier au jeu en ligne
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/projets/omnicard` · En-tête (et PRJ-03) _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/projets/omnicard` · En-tête, à droite du titre (et PRJ-03 sur la vitrine) _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Du papier au jeu en ligne
-- **Composition** : Une carte plastifiée à la main (pochette visible, coin corné) à cheval sur le bord d’une fenêtre de navigateur, où elle devient numérique ; face générique (cadre, losange, pastilles de coût et de stats sans chiffres)
+- **Composition** : Une carte à jouer plastifiée à la main, pochette visible et coin corné, posée à cheval sur le bord d’une fenêtre de navigateur générique : la moitié hors de la fenêtre reste papier (bords de découpe aux ciseaux, reflet du plastique), la moitié dans la fenêtre devient une carte numérique nette. Face générique : cadre, losange central, pastille de coût et deux pastilles de statistiques vides, sans chiffre ni lettre. Sur la table, deux ou trois cartes papier éparses. La lanterne, posée hors champ à gauche, éclaire la carte seule ; la fenêtre et la table restent dans l’ombre. Aucun personnage, aucune illustration de carte reconnaissable, aucun texte
 - **Format** : 4:3, 1600 × 1200 ; 1:1 mobile (recadrage mobile 1:1)
 - **Fichier attendu** : `site/src/assets/visuels/omnicard/OMN-01_1600x1200.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Du papier au jeu en ligne »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une carte plastifiée à la main qui devient numérique en passant dans une fenêtre de navigateur. »
+- **Note** : Le recadrage 1:1 mobile garde la carte entière, au centre. Recadré en 16:10 pour la vitrine (PRJ-03) : la carte reste au tiers droit.
 
 ### OMN-02 · Les éditions sans fin
 
 - **Priorité** : socle · **Méthode** : IMG, rien à produire, le fichier est celui d’un autre emplacement
-- **Emplacement** : `/projets/omnicard` · § 2 _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/projets/omnicard` · « Le jeu papier », à côté du récit des éditions _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Les éditions sans fin
-- **Composition** : Même fichier qu’ACC-04
+- **Composition** : Même fichier qu’ACC-04 : table d’après-midi d’été vue de dessus, piles de cartes imprimées, plastifieuse, ciseaux, cartes en pochettes aux coins cornés, feuille de règles griffonnée illisible, deux paires de mains d’adolescents
 - **Format** : 3:2
 - **Fichier attendu** : aucun, reprend `ACC-04`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Les éditions sans fin »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Deux adolescents découpent et plastifient leurs cartes sur une table d’été. »
 
 ### OMN-03 · Le plateau, en schéma
 
-- **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
-- **Emplacement** : `/projets/omnicard` · § 4, repli si la capture manque _(contexte : ne pas le recopier dans un prompt)_
+- **Priorité** : socle · **Méthode** : FIG, à coder (figure de données), rien à générer
+- **Emplacement** : `/projets/omnicard` · « Une partie en trente secondes », à côté du résumé des règles _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Le plateau, en schéma
-- **Composition** : Deux lignes, points de vie, énergie et cristaux, main ; présenté comme un schéma, jamais comme une capture
-- **Format** : 16:10
-- **Fichier attendu** : `site/src/assets/visuels/omnicard/OMN-03.svg`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Le plateau, en schéma »
+- **Composition** : Les deux camps face à face : pour chacun, le héros et ses 30 points de vie, deux lignes d’unités, le deck de 40 cartes, la jauge de mana (10 au plus) et les cristaux (5 au plus) ; la main adverse en dos de cartes. Quatre cibles numérotées renvoient à la liste des repères en HTML ; présenté comme un schéma, jamais comme une capture
+- **Format** : libre, suit la colonne de la figure
+- **Fichier attendu** : aucune image, figure codée
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Schéma du plateau : deux héros à 30 points de vie, deux lignes d’unités chacun, un deck de 40 cartes, la mana et les cristaux. »
+- **Note** : Dessinée en HTML et CSS depuis la version joueur des règles du moteur (docs/rules.md du dépôt de présentation), sans image à générer : components/projets/omnicard/PlateauPartie.astro. Repli tant que la capture d’une vraie partie (OMN-08) manque.
 
 ### OMN-04 · Le serveur arbitre
 
 - **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
-- **Emplacement** : `/projets/omnicard` · § 6 _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/projets/omnicard` · « D’une phrase à une règle », au-dessus du trajet d’une action _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Le serveur arbitre
-- **Composition** : Deux navigateurs et un œil (spectateur) reliés à un serveur central ; flèches « intention » vers le serveur, « ta vue » vers chacun ; la main adverse en dos de cartes ; trois états livrés en calques
+- **Composition** : Deux fenêtres de navigateur génériques, une à gauche et une à droite, tournées vers un serveur central dessiné comme une table d’arbitre que la lanterne éclaire seule. De chaque fenêtre part une flèche vers le serveur (l’action jouée) ; du serveur repart vers chacune une flèche (l’état de la partie). Dans chaque fenêtre, la main du joueur face visible et la main adverse en dos de cartes, faces génériques sans illustration. Pas de spectateur, aucun texte, aucun logo
 - **Format** : 16:9, 1600 × 900
 - **Fichier attendu** : `site/src/assets/visuels/omnicard/OMN-04.svg`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Le serveur arbitre »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Deux navigateurs envoient leurs actions à un serveur qui arbitre et renvoie à chacun l’état de la partie. »
+- **Note** : Trait constant, deux aplats au plus, recolorés par les jetons (currentColor) ; les intitulés des trois étapes restent en HTML sous le dessin.
 
 ### OMN-05 · Le compte à rebours
 
-- **Priorité** : élargi · **Méthode** : SVG, à dessiner (vectoriel)
-- **Emplacement** : `/projets/omnicard` · § 5 _(contexte : ne pas le recopier dans un prompt)_
+- **Priorité** : élargi · **Méthode** : FIG, à coder (figure de données), rien à générer
+- **Emplacement** : `/projets/omnicard` · « D’une phrase à une règle », à côté de la carte GitGud _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Le compte à rebours
-- **Composition** : Carte de face, cinq encoches au bord droit alternant deux tons (lanceur, adversaire)
-- **Format** : 1:1, 600
-- **Fichier attendu** : `site/src/assets/visuels/omnicard/OMN-05.svg`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Le compte à rebours »
+- **Composition** : La carte GitGud, puis neuf fins de tour en frise qui alternent le lanceur et l’adversaire ; le compteur part de 5 et ne baisse qu’aux fins de tour du lanceur, jusqu’à 0 et l’égalité, à la lanterne. Les fins de tour s’allument une à une à l’arrivée, puis au clic sur la frise
+- **Format** : libre, frise de neuf étapes ; en grille sur mobile
+- **Fichier attendu** : aucune image, figure codée
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Le compteur de GitGud baisse de 5 à 0 aux seules fins de tour du lanceur : cinq tours sur neuf fins de tour. »
+- **Note** : Dessinée en HTML et CSS depuis la carte (docs/cards/wtf.md) et le mot-clé Délai (docs/keywords.md), sans image à générer : components/projets/omnicard/CompteARebours.astro.
 
 ### OMN-06 · Annotations de la partie
 
 - **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
-- **Emplacement** : `/projets/omnicard` · § 4, calque _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/projets/omnicard` · « Une partie en trente secondes », calque de la capture OMN-08 _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Annotations de la partie
-- **Composition** : Quatre pastilles numérotées et filets de rappel, posés sur CAP-OC-1
+- **Composition** : Quatre pastilles numérotées et filets de rappel, posés sur la capture d’une vraie partie (OMN-08) : points de vie, deck, mana et cristaux, lignes d’unités
 - **Format** : format de la capture
 - **Fichier attendu** : `site/src/assets/visuels/omnicard/OMN-06.svg`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Quatre annotations numérotées sur la capture d’une partie »
-- **Note** : Socle si la capture CAP-OC-1 existe.
+- **Note** : Socle si la capture OMN-08 existe. Mêmes pastilles que les cibles numérotées des captures annotées (CaptureAnnotee).
 
 ### OMN-07 · Du papier au lancement
 
 - **Priorité** : élargi · **Méthode** : FIG, à coder (figure de données), rien à générer
-- **Emplacement** : `/projets/omnicard` · § 8 _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/projets/omnicard` · « Ce que j’en retiens » _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Du papier au lancement
-- **Composition** : Frise : jeu papier → saison 1 (2025) → première ligne (mars 2026) → lancement (16 mai 2026) → hors ligne, refonte
+- **Composition** : Frise : jeu papier → saison 1 → première ligne de code → lancement en ligne → hors ligne, en attente de refonte. Dates à confirmer par Charles avant tout affichage (cahier, Q8)
 - **Format** : 5:1
 - **Fichier attendu** : aucune image, figure codée
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Du papier au lancement »
+- **Note** : Non posée : la date de lancement (16/05/2026, CHANGELOG du dépôt de présentation) attend la validation de Charles.
+
+### OMN-08 · Une partie en cours contre l’ordinateur
+
+- **Priorité** : élargi · **Méthode** : CAP, à capturer (écran réel), rien à générer
+- **Emplacement** : `/projets/omnicard` · « Une partie en trente secondes », à la place du schéma OMN-03 quand elle existe _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Une partie en cours contre l’ordinateur
+- **Composition** : Capture réelle d’une partie contre l’ordinateur, en cours : les deux héros et leurs points de vie, des unités sur les deux lignes, la main du joueur, la mana et les cristaux visibles. Compte de démonstration, aucune donnée personnelle ni pseudonyme réel à l’écran
+- **Format** : 16:10, 1600 × 1000 ; recadrage 4:5 mobile (recadrage mobile 4:5)
+- **Fichier attendu** : `site/src/assets/visuels/omnicard/OMN-08_1600x1000.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une partie d’Omnicard contre l’ordinateur : deux héros, deux lignes d’unités chacun, la main du joueur, la mana et les cristaux. »
+- **Note** : Capture à faire par Charles sur la stack locale (cahier § 6.12, CAP-OC-1). Annotée ensuite par OMN-06.
 
 ### OMN-OG · Carte et engrenage imbriqués
 
