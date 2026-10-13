@@ -14,7 +14,7 @@ import { typo } from '../../../lib/typo';
   {
     PIEGES.map((piege) => (
       <li class="piege">
-        <Visuel id={piege.visuel} class="piege__picto" sizes="72px" />
+        <Visuel id={piege.visuel} class="piege__picto" sizes="96px" />
         <h3 class="piege__titre">{typo(piege.piege)}</h3>
         <p class="piege__reponse"><span class="sr">Réponse&nbsp;: </span>{typo(piege.reponse)}</p>
       </li>
@@ -45,7 +45,7 @@ import { typo } from '../../../lib/typo';
   }
 
   .piege :global(.piege__picto) {
-    width: 72px;
+    width: 96px;
     margin-bottom: var(--s1);
   }
 
@@ -67,13 +67,14 @@ import { typo } from '../../../lib/typo';
 
   @media (max-width: 860px) {
     .piege {
-      grid-template-columns: 72px minmax(0, 1fr);
+      grid-template-columns: 96px minmax(0, 1fr);
       column-gap: var(--s3);
+      padding: var(--s3);
     }
 
     .piege :global(.piege__picto) {
       grid-row: span 2;
-      width: 72px;
+      width: 96px;
       margin: 0;
     }
   }

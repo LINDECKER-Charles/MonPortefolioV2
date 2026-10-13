@@ -26,7 +26,7 @@ const dernier = JALONS.length - 1;
     JALONS.map((jalon, index) => (
       <li class:list={['jalon', { 'jalon--atteint': index === dernier }]}>
         <span class="jalon__point" aria-hidden="true" />
-        <Visuel id={jalon.visuel} class="jalon__picto" sizes="64px" />
+        <Visuel id={jalon.visuel} class="jalon__picto" sizes="96px" />
         <time class="jalon__date" datetime={jalon.date}>{jalon.libelle}</time>
         <h3 class="jalon__titre">{typo(jalon.titre)}</h3>
         <p class="jalon__texte">{typo(jalon.texte)}</p>
@@ -92,7 +92,7 @@ const dernier = JALONS.length - 1;
   }
 
   .jalon :global(.jalon__picto) {
-    width: 72px;
+    width: 96px;
     margin-bottom: var(--s2);
   }
 
@@ -167,13 +167,13 @@ const dernier = JALONS.length - 1;
       position: absolute;
       right: 0;
       top: 0;
-      width: 72px;
+      width: 96px;
       margin: 0;
     }
 
     .jalon__titre,
     .jalon__texte {
-      padding-right: 84px;
+      padding-right: 108px;
     }
   }
 </style>
