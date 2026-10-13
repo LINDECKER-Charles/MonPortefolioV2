@@ -145,6 +145,23 @@ for (const [id, nom] of [['fig-gwent', 'Gwent'], ['fig-2', 'PvZ']] as const) {
   });
 }
 
+// PvZ Fusion : les deux scènes gardées par la page (figures codées depuis les relevés).
+for (const scene of ['pvz-equipe', 'pvz-rattrapage']) {
+  test(`la scène ${scene} de PvZ Fusion joue à son arrivée puis se rejoue au clic et au clavier`, async ({ page }) => {
+    await page.goto('/projets/pvz-fusion');
+    const bouton = page.locator(`[data-rejouer][data-scene="${scene}"]`);
+    await expect(bouton).toHaveCount(1);
+    await verifierPremiereApparition(bouton, bouton);
+    const zone = zoneAnimee(bouton);
+    await cliquerDessin(bouton);
+    await expect(zone).toHaveClass(/animation-en-cours/);
+    await expect.poll(async () => (await mouvements(zone)).length > 0).toBe(true);
+    await expect(zone).not.toHaveClass(/animation-en-cours/, { timeout: 4_000 });
+    await rejouerAuClavier(page, bouton, bouton);
+    await expect(bouton.locator('svg:visible')).toHaveCount(1);
+  });
+}
+
 test('les commandes de rejeu enveloppent les dessins sans bouton ajouté à côté', async ({ page }) => {
   await page.goto('/');
   const boutons = page.locator('[data-rejouer]');

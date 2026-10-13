@@ -25,8 +25,11 @@ test('la fin du récit mène à la vitrine et à des projets qui se répondent',
   await expect(page).toHaveURL(/\/projets$/);
   await page.locator('[data-project-card="pvz"]').getByRole('link', { name: 'Page du projet PVZF Translation', exact: true }).click();
   await expect(page).toHaveURL(/\/projets\/pvz-fusion$/);
-  await page.locator('main a[href="/projets/omnicard"]').first().click();
-  await expect(page).toHaveURL(/\/projets\/omnicard$/);
+  // La sortie commune des pages de projet mène au projet suivant de la vitrine.
+  await page.locator('#retiens').getByRole('link', { name: /Projet suivant/ }).click();
+  await expect(page).toHaveURL(/\/projets\/league-of-database$/);
+  await page.locator('main a[href="/projets/bloodborne-legendary-run"]').first().click();
+  await expect(page).toHaveURL(/\/projets\/bloodborne-legendary-run$/);
   await page.locator('main a[href="/projets/gup"]').first().click();
   await expect(page).toHaveURL(/\/projets\/gup$/);
 });
