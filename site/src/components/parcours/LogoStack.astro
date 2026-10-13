@@ -1,4 +1,19 @@
 ---
+/**
+ * Le logo d’une technologie, décoratif (le lien qui l’entoure porte le nom).
+ * Logos réels de src/assets/stacks/ (licences : LISEZMOI.md) ; à défaut, un
+ * picto de repli dessiné de la même main (IllustrationStack, CMP-10). Un nom
+ * inconnu fait échouer le build : aucune case vide.
+ *
+ *   <LogoStack nom="Angular" taille="grand" />   en couleur, 56 px (Au quotidien)
+ *   <LogoStack nom="Sass" />                      gris, 28 px, couleur au survol du lien
+ *   <LogoStack nom="Go" taille="petit" />         gris, 18 px (étiquettes)
+ *
+ * Harmonisation (direction « Lanterne ») : hors du premier niveau, les logos
+ * passent en gris et retrouvent leur couleur au survol ou au focus du lien
+ * (`.techno`). Les logos monochromes s’inversent la nuit et dans les actes
+ * sombres ; ceux qui exigent un fond clair gardent un petit papier.
+ */
 import angular from '../../assets/stacks/angular.svg?url';
 import typescript from '../../assets/stacks/typescript.svg?url';
 import csharp from '../../assets/stacks/csharp.svg?url';
@@ -65,8 +80,11 @@ import chartjs from '../../assets/stacks/chartjs.svg?url';
 import mcp from '../../assets/stacks/mcp.svg?url';
 import IllustrationStack, { type OutilIllustre } from './IllustrationStack.astro';
 
-interface Props { nom: string; }
-const { nom } = Astro.props;
+interface Props {
+  nom: string;
+  taille?: 'grand' | 'moyen' | 'petit';
+}
+const { nom, taille = 'moyen' } = Astro.props;
 const logos: Record<string, string> = {
   Angular: angular,
   TypeScript: typescript,
@@ -142,10 +160,11 @@ const illustration = outilsIllustres.find((outil) => outil === nom);
 if (!src && !illustration) throw new Error(`Visuel de stack inconnu : ${nom}`);
 const monochrome = ['Linux', 'Symfony', 'Express', 'Rust', 'Tokio', 'xUnit', 'MCP'].includes(nom);
 const supportClair = ['Bash', 'Leaflet', 'Photino.NET', 'OpenTelemetry'].includes(nom);
+const pixels = { grand: 56, moyen: 28, petit: 18 }[taille];
 ---
 
-{illustration ? <IllustrationStack nom={illustration} /> : <img
-  class:list={['logo-stack', {
+{illustration ? <IllustrationStack nom={illustration} taille={taille} /> : <img
+  class:list={['logo-stack', `logo-stack--${taille}`, {
     'logo-stack--monochrome': monochrome,
     'logo-stack--clair': nom === 'GSAP',
     'logo-stack--sur-papier': supportClair,
@@ -153,24 +172,52 @@ const supportClair = ['Bash', 'Leaflet', 'Photino.NET', 'OpenTelemetry'].include
   src={src}
   alt=""
   aria-hidden="true"
-  width="32"
-  height="32"
+  width={pixels}
+  height={pixels}
   loading="lazy"
   decoding="async"
 />}
 
 <style>
-  .logo-stack { display: block; width: 32px; height: 32px; flex: 0 0 32px; object-fit: contain; }
-  .logo-stack--clair { filter: invert(1); }
-  .logo-stack--sur-papier { box-sizing: border-box; padding: 2px; border-radius: 3px; background: #fff; }
-  :global([data-theme='nuit']) .logo-stack--monochrome { filter: invert(1); }
-  :global([data-theme='nuit']) .logo-stack--clair { filter: none; }
+  /* Un seul filtre, composé de trois réglages : gris, inversion, éclat. */
+  .logo-stack {
+    --gris: 1;
+    --inverse: 0;
+    --eclat: 1;
+    display: block;
+    flex: none;
+    object-fit: contain;
+    filter: grayscale(var(--gris)) invert(var(--inverse)) brightness(var(--eclat));
+    transition: filter var(--d-ui) var(--courbe);
+  }
+  .logo-stack--grand { --gris: 0; width: 56px; height: 56px; }
+  .logo-stack--moyen { width: 28px; height: 28px; }
+  .logo-stack--petit { width: 18px; height: 18px; }
+  .logo-stack--sur-papier { box-sizing: border-box; padding: 2px; border-radius: var(--r1); background: var(--papier-logo, #fff); }
+  /* GSAP est blanc : inversé sur le fond clair du jour. */
+  .logo-stack--clair { --inverse: 1; }
+
+  /* Hors du premier niveau, gris ; la couleur revient au survol ou au focus du lien. */
+  :global(.techno:is(:hover, :focus-visible)) .logo-stack { --gris: 0; }
+
+  /* La nuit et dans les actes sombres : les monochromes s’inversent, GSAP redevient blanc. */
+  :global(.acte-veille) .logo-stack--monochrome { --inverse: 1; }
+  :global(.acte-veille) .logo-stack--clair { --inverse: 0; }
+  :global(:root[data-theme='nuit']) .logo-stack { --eclat: 1.25; }
+  :global(:root[data-theme='nuit']) .logo-stack--grand { --eclat: 1; }
+  :global(:root[data-theme='nuit']) .logo-stack--monochrome { --inverse: 1; --eclat: 1; }
+  :global(:root[data-theme='nuit']) .logo-stack--clair { --inverse: 0; --eclat: 1; }
   @media (prefers-color-scheme: dark) {
-    :global(:root:not([data-theme])) .logo-stack--monochrome { filter: invert(1); }
-    :global(:root:not([data-theme])) .logo-stack--clair { filter: none; }
+    :global(:root:not([data-theme])) .logo-stack { --eclat: 1.25; }
+    :global(:root:not([data-theme])) .logo-stack--grand { --eclat: 1; }
+    :global(:root:not([data-theme])) .logo-stack--monochrome { --inverse: 1; --eclat: 1; }
+    :global(:root:not([data-theme])) .logo-stack--clair { --inverse: 0; --eclat: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .logo-stack { transition: none; }
   }
   @media print {
-    .logo-stack--monochrome { filter: none !important; }
-    .logo-stack--clair { filter: invert(1) !important; }
+    .logo-stack { --gris: 0 !important; --inverse: 0 !important; --eclat: 1 !important; }
+    .logo-stack--clair { --inverse: 1 !important; }
   }
 </style>

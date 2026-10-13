@@ -140,24 +140,25 @@ est reproduite dans `MCP-LICENSE.txt`. Le logo est utilisé pour identifier le p
 
 ## Illustrations au trait
 
-`site/src/components/parcours/IllustrationStack.astro` contient les pictogrammes propres au
-portfolio. Ils représentent la fonction de l’outil et ne prétendent pas être des logos officiels.
-Leur couleur suit le thème jour/nuit.
+`site/src/components/parcours/IllustrationStack.astro` contient les pictogrammes de repli
+propres au portfolio (emplacement CMP-10 de `site/src/config/visuels.ts`), dessinés de la
+même main que les pictos du site : trait de 1,5 sur une grille de 24, à l’encre du thème.
+Ils représentent la fonction de l’outil et ne prétendent pas être des logos officiels.
 
 | Outil | Illustration | Source officielle |
 |---|---|---|
-| SQL | Base et syntaxe de requête | [ISO/IEC 9075](https://www.iso.org/standard/76583.html) |
-| Axum | Requête répartie vers des routes | [tokio-rs/axum](https://github.com/tokio-rs/axum) |
-| SQLx | Requête validée et base de données | [transact-rs/sqlx](https://github.com/transact-rs/sqlx) |
-| Stockage S3 compatible | Objets dans un compartiment | [API S3](https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html) |
-| Dompdf | Document et conversion | [Dompdf](https://dompdf.github.io/) |
-| OpenTUI | Interface dans un terminal | [OpenTUI](https://opentui.com/) |
-| Make | Sources assemblées en un résultat | [GNU Make](https://www.gnu.org/software/make/) |
-| axe-core | Accessibilité et vérification | [dequelabs/axe-core](https://github.com/dequelabs/axe-core) |
-| Claude | Dialogue et suggestion | [Claude](https://claude.com/) |
-| Codex | Terminal et code | [Codex](https://openai.com/codex/) |
+| SQL | Cylindre de base de données | [ISO/IEC 9075](https://www.iso.org/standard/76583.html) |
+| Axum | Deux blocs reliés (requête, route) | [tokio-rs/axum](https://github.com/tokio-rs/axum) |
+| SQLx | Base de données et coche de requête validée | [transact-rs/sqlx](https://github.com/transact-rs/sqlx) |
+| Stockage S3 compatible | Seau d’objets | [API S3](https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html) |
+| Dompdf | Feuille cornée et lignes | [Dompdf](https://dompdf.github.io/) |
+| OpenTUI | Fenêtre de terminal et invite | [OpenTUI](https://opentui.com/) |
+| Make | Trois nœuds en arbre (cibles et dépendances) | [GNU Make](https://www.gnu.org/software/make/) |
+| axe-core | Silhouette d’accessibilité | [dequelabs/axe-core](https://github.com/dequelabs/axe-core) |
+| Claude | Bulle de dialogue | [Claude](https://claude.com/) |
+| Codex | Chevrons et barre oblique de code | [Codex](https://openai.com/codex/) |
 | Kokoro | Haut-parleur et ondes sonores | [hexgrad/Kokoro](https://huggingface.co/hexgrad/Kokoro-82M) |
-| Piper | Texte transformé en voix | [OHF-Voice/piper1-gpl](https://github.com/OHF-Voice/piper1-gpl) |
+| Piper | Barres d’égaliseur (voix synthétisée) | [OHF-Voice/piper1-gpl](https://github.com/OHF-Voice/piper1-gpl) |
 
 Les visuels Claude, Codex, Kokoro et Piper sont des illustrations créées pour le portfolio,
 pas des logos de ces produits. Ils utilisent `currentColor`, suivent les couleurs du thème
@@ -170,9 +171,13 @@ centralisés dans `site/src/config/competences.ts`, vérifiés le 2026-10-09.
 
 ## Composant
 
-`site/src/components/parcours/LogoStack.astro` s’utilise avec `<LogoStack nom="Angular" />`.
-Il affiche une icône décorative de 32 × 32 px : le parent doit toujours fournir le libellé
-visible. Un nom inconnu fait échouer le build.
+`site/src/components/parcours/LogoStack.astro` s’utilise avec `<LogoStack nom="Angular" />`
+et une taille : `grand` (56 px, en couleur, niveau « Au quotidien »), `moyen` (28 px, par
+défaut) ou `petit` (18 px, étiquettes). Hors du niveau « Au quotidien », les logos sont
+harmonisés en gris et retrouvent leur couleur au survol ou au focus du lien ; les logos
+monochromes s’inversent la nuit et dans les actes sombres. L’icône est décorative : le
+parent fournit toujours le libellé visible (`LienTechno.astro` sur la page Compétences).
+Un nom inconnu fait échouer le build.
 
 Noms pris en charge : Angular, TypeScript, C#, .NET, ASP.NET Core, SignalR, PostgreSQL,
 MySQL, Git, GitHub Actions, Docker, Linux, Python, PHP, Symfony et Node.js.

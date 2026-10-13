@@ -1,98 +1,47 @@
 ---
-// Pictogrammes métier du portfolio, distincts des logos de marque.
+/**
+ * Pictos de repli des technologies sans logo officiel utilisable (CMP-10),
+ * dessinés de la même main que les pictos du site : trait de 1,5 sur une
+ * grille de 24, à l’encre du thème. Ils représentent la fonction de l’outil
+ * et ne prétendent pas être des logos (src/assets/stacks/LISEZMOI.md).
+ * Décoratifs : le lien qui les entoure porte le nom.
+ *
+ *   <IllustrationStack nom="SQL" taille="moyen" />
+ */
 export type OutilIllustre = 'SQL' | 'Axum' | 'SQLx' | 'Stockage S3 compatible' | 'Dompdf' | 'OpenTUI' | 'Make' | 'axe-core' | 'Claude' | 'Codex' | 'Kokoro' | 'Piper';
-interface Props { nom: OutilIllustre; }
-const { nom } = Astro.props;
+interface Props {
+  nom: OutilIllustre;
+  taille?: 'grand' | 'moyen' | 'petit';
+}
+const { nom, taille = 'moyen' } = Astro.props;
+
+/** Un dessin par fonction ; deux outils de même fonction (SQL, SQLx) se distinguent par un détail. */
+const DESSINS: Record<OutilIllustre, string> = {
+  SQL: 'M5 5.5c0-1.4 3.1-2.5 7-2.5s7 1.1 7 2.5-3.1 2.5-7 2.5-7-1.1-7-2.5Zm0 0v13c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-13M5 12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5',
+  SQLx: 'M4 5.5C4 4.1 6.9 3 10.5 3S17 4.1 17 5.5 14.1 8 10.5 8 4 6.9 4 5.5Zm0 0v12c0 1.4 2.9 2.5 6.5 2.5M17 5.5V10M4 11.5c0 1.4 2.9 2.5 6.5 2.5m3.5 3 2.5 2.5L21 14.5',
+  Axum: 'M3.5 4h17v6h-17zM3.5 14h17v6h-17zM7 7h.01M7 17h.01M12 10v4',
+  'Stockage S3 compatible': 'M4 6c0-1.4 3.6-2.5 8-2.5s8 1.1 8 2.5-3.6 2.5-8 2.5S4 7.4 4 6Zm0 0 2 12.5c.2 1.4 2.8 2.5 6 2.5s5.8-1.1 6-2.5L20 6',
+  Dompdf: 'M6 3h8l4 4v14H6zM14 3v4h4M9 12h6M9 15.5h6M9 9h2.5',
+  OpenTUI: 'M3 4.5h18v15H3zM7 10l3 2.5L7 15M12.5 15.5H17',
+  Make: 'M6 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Zm12 0a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Zm-6 12a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM7.5 8l3.3 7.8M16.5 8l-3.3 7.8',
+  'axe-core': 'M12 2.7a1.8 1.8 0 1 1 0 3.6 1.8 1.8 0 0 1 0-3.6ZM5 8.5l7 1.5 7-1.5M12 10v4.5m0 0-3.5 6m3.5-6 3.5 6',
+  Claude: 'M4 5.5h16v10h-9l-4.5 3.5v-3.5H4zM8.5 10.5h.01M12 10.5h.01M15.5 10.5h.01',
+  Codex: 'm8 7-5 5 5 5M16 7l5 5-5 5M13.5 5l-3 14',
+  Kokoro: 'M4 9.5h3.5L12 5.5v13l-4.5-4H4zM15.5 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11',
+  Piper: 'M3 12h1.5M6.5 9v6M9.5 5.5v13M12.5 8v8M15.5 10v4M18.5 7v10M21 12h.01',
+};
+const pixels = { grand: 56, moyen: 28, petit: 18 }[taille];
 ---
 
-<svg class="logo-stack illustration-stack" viewBox="0 0 64 64" width="32" height="32" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-  {nom === 'SQL' && (
-    <>
-      <ellipse cx="32" cy="13" rx="21" ry="8" />
-      <path d="M11 13v34c0 4.4 9.4 8 21 8s21-3.6 21-8V13M11 30c0 4.4 9.4 8 21 8s21-3.6 21-8" />
-      <path d="m23 43-5 4 5 4m18-8 5 4-5 4m-7-9-4 14" />
-    </>
-  )}
-  {nom === 'Axum' && (
-    <>
-      <rect x="7" y="23" width="15" height="18" rx="3" />
-      <rect x="42" y="6" width="15" height="15" rx="3" />
-      <rect x="42" y="25" width="15" height="15" rx="3" />
-      <rect x="42" y="44" width="15" height="15" rx="3" />
-      <path d="M22 32h11V14h9m-9 18h9m-9 0v19h9M12 29l5 4-5 4" />
-    </>
-  )}
-  {nom === 'SQLx' && (
-    <>
-      <ellipse cx="23" cy="13" rx="16" ry="7" />
-      <path d="M7 13v31c0 4 7 7 16 7m16-38v18M7 29c0 4 7 7 16 7m-1-7 6 6 12-14" />
-      <rect x="31" y="39" width="26" height="19" rx="3" />
-      <path d="m37 44 5 4-5 4m11 0h4" />
-    </>
-  )}
-  {nom === 'Stockage S3 compatible' && (
-    <>
-      <path d="M17 29H13a9 9 0 0 1-1-18 14 14 0 0 1 26-1 10 10 0 1 1 9 19h-5" />
-      <path d="M17 29h30l-4 28H21l-4-28Z" />
-      <path d="M24 29v-4a8 8 0 0 1 16 0v4m-10 13h8m-4-4v8" />
-    </>
-  )}
-  {nom === 'Dompdf' && (
-    <>
-      <path d="M15 6h22l12 12v39H15V6Zm22 0v12h12" />
-      <path d="M23 27h18m-18 7h12m-3 7v12m-5-5 5 5 5-5" />
-      <path d="M10 23H6v23h4m43-23h5v23h-5" />
-    </>
-  )}
-  {nom === 'OpenTUI' && (
-    <>
-      <rect x="5" y="9" width="54" height="46" rx="4" />
-      <path d="M5 19h54m-46-5h1m5 0h1m5 0h1M13 28l5 4-5 4m11 0h8" />
-      <rect x="12" y="43" width="18" height="5" rx="1" />
-      <path d="M37 28h14m-14 7h14m-14 8h14" />
-    </>
-  )}
-  {nom === 'Make' && (
-    <>
-      <path d="M13 10h13v17H13V10Zm25 0h13v17H38V10ZM20 27v10h25V27m-13 10v7" />
-      <path d="m32 43 14 8-14 8-14-8 14-8Zm-14 8V39l14-8 14 8v12m-14-8V31" />
-    </>
-  )}
-  {nom === 'axe-core' && (
-    <>
-      <circle cx="25" cy="12" r="5" />
-      <path d="m8 23 17 4 17-4m-17 4v13m0 0L15 56m10-16 10 16" />
-      <circle cx="48" cy="43" r="11" />
-      <path d="m43 43 4 4 7-8" />
-    </>
-  )}
-  {nom === 'Claude' && (
-    <>
-      <path d="M43 9H17a10 10 0 0 0-10 10v18a10 10 0 0 0 10 10h6v10l13-10h11a10 10 0 0 0 10-10V24" />
-      <path d="M17 23h18M17 31h24M17 39h16m16-34 2 7 7 2-7 2-2 7-2-7-7-2 7-2 2-7Z" />
-    </>
-  )}
-  {nom === 'Codex' && (
-    <>
-      <rect x="5" y="11" width="54" height="44" rx="4" />
-      <path d="M5 21h54m-46-5h1m5 0h1m5 0h1m-8 12-7 7 7 7m28-14 7 7-7 7m-10-18-6 22" />
-    </>
-  )}
-  {nom === 'Kokoro' && (
-    <>
-      <path d="M7 25h10L29 13v38L17 39H7V25Zm32-5a17 17 0 0 1 0 24m9-31a27 27 0 0 1 0 38" />
-      <path d="M17 25v14" />
-    </>
-  )}
-  {nom === 'Piper' && (
-    <>
-      <path d="M8 7h24l8 8v18H8V7Zm24 0v8h8M15 19h17m-17 7h10m-10 17h16m-6-6 6 6-6 6" />
-      <path d="M38 37h6l9-8v28l-9-8h-6V37Zm21-1a10 10 0 0 1 0 14" />
-    </>
-  )}
+<svg class:list={['logo-stack', 'illustration-stack', `illustration-stack--${taille}`]} viewBox="0 0 24 24" width={pixels} height={pixels} fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+  <path d={DESSINS[nom]} />
 </svg>
 
 <style>
-  .illustration-stack { display: block; width: 32px; height: 32px; flex: 0 0 32px; color: var(--bleu); }
+  .illustration-stack { display: block; flex: none; color: var(--encre); }
+  .illustration-stack--grand { width: 56px; height: 56px; }
+  .illustration-stack--moyen { width: 28px; height: 28px; }
+  .illustration-stack--petit { width: 18px; height: 18px; }
+  :global(.techno:is(:hover, :focus-visible)) .illustration-stack { color: var(--accent); }
   @media (forced-colors: active) { .illustration-stack { color: CanvasText; } }
 </style>
