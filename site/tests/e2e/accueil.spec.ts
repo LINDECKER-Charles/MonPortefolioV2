@@ -138,13 +138,63 @@ test('les faits du récit : C puis C++, lead depuis décembre 2025, « Seul on v
   await expect(page.locator('main')).not.toContainText('un moment j’en ai eu marre');
 });
 
+test('sous les preuves, une entrée vers tous les projets, hors du pli', async ({ page }) => {
+  await page.goto('/');
+  const suite = page.locator('.couverture__suite');
+  await expect(suite).toContainText('Un parcours, une méthode, des réalisations.');
+  await expect(suite.getByRole('link', { name: /^Voir tous mes projets/ })).toHaveAttribute('href', '/projets');
+  await expect(suite.locator('[data-pli]')).toHaveCount(0);
+});
+
+test('chaque preuve n’est surlignée qu’une fois dans le récit, en plus du bandeau', async ({ page }) => {
+  await page.goto('/');
+  // Les règles renvoient à la preuve par un lien, sans la surligner de nouveau.
+  await expect(page.locator('#regles mark')).toHaveCount(0);
+  await expect(page.locator('main mark', { hasText: /^un mois$/ })).toHaveCount(2);
+  await expect(page.locator('main mark', { hasText: /^20$/ })).toHaveCount(2);
+});
+
+test('les quatre gestes du pôle : l’image en tête, en grand, sans « semaine type »', async ({ page }) => {
+  await page.goto('/');
+  const gestes = page.locator('#collectif .gestes');
+  await expect(gestes).toContainText('Comment j’organise le pôle, en quatre gestes');
+  await expect(gestes).not.toContainText('semaine type');
+  const visuels = gestes.locator('.geste [data-visuel]');
+  await expect(visuels).toHaveCount(4);
+  const minimum = bureau(page.viewportSize()?.width) ? 200 : 150;
+  for (const visuel of await visuels.all()) {
+    const boite = await visuel.boundingBox();
+    expect(boite?.width ?? 0).toBeGreaterThanOrEqual(minimum);
+    // L’étiquette de l’emplacement tient entière dans son cadre.
+    const etiquette = visuel.locator('.visuel__id');
+    if (await etiquette.count()) {
+      expect(await etiquette.evaluate((e) => e.scrollWidth <= e.clientWidth + 1 && e.getBoundingClientRect().right <= (e.closest('.visuel') as Element).getBoundingClientRect().right + 1)).toBe(true);
+    }
+  }
+});
+
+test('la figure du plafond se lit : aucun libellé sous 12 px', async ({ page }) => {
+  await page.goto('/');
+  const figure = page.locator('#fig-1 svg:visible');
+  await figure.scrollIntoViewIfNeeded();
+  const tailles = await figure.locator('text').evaluateAll((textes) => textes.map((t) => {
+    const svg = t.closest('svg') as SVGSVGElement;
+    const echelle = svg.getBoundingClientRect().width / svg.viewBox.baseVal.width;
+    return Number.parseFloat(getComputedStyle(t).fontSize) * echelle;
+  }));
+  expect(tailles.length).toBeGreaterThan(5);
+  expect(Math.min(...tailles)).toBeGreaterThanOrEqual(12);
+});
+
 test('les cartes de projets suivent l’ordre de la vitrine', async ({ page }) => {
   await page.goto('/');
   const construits = page.getByRole('list', { name: 'Trois projets que je construis' }).locator(':scope > li');
   await expect(construits).toHaveCount(3);
   const liens = await construits.locator('.construit__nom a').evaluateAll((a) => a.map((lien) => lien.getAttribute('href')));
   expect(liens).toEqual(['/projets/league-of-database', '/projets/bloodborne-legendary-run', '/projets/gup']);
-  await expect(construits.locator('.construit__rang')).toHaveText(['2', '4', '5']);
+  // Hors de l’index de /projets, les cartes ne portent pas le rang de la vitrine.
+  await expect(construits.locator('.construit__rang')).toHaveCount(0);
+  await expect(construits.locator('.construit__preuve')).toHaveText(['Un système en production', 'Un produit de bout en bout', 'Un outil open source']);
   for (const carte of await construits.all()) {
     await expect(carte).toContainText('Voir le projet');
     await expect(carte.locator('img').first()).toHaveAttribute('alt', /.{40,}/);
@@ -152,6 +202,9 @@ test('les cartes de projets suivent l’ordre de la vitrine', async ({ page }) =
   const omnicard = page.locator('#omnicard');
   await expect(omnicard.getByRole('link', { name: 'Omnicard', exact: true })).toHaveAttribute('href', '/projets/omnicard');
   await expect(omnicard).toContainText('Hors ligne, en attente de refonte');
+  // Omnicard porte le verbe du bandeau, sans rang.
+  await expect(omnicard.locator('.carte-projet__rang')).toHaveCount(0);
+  await expect(omnicard.locator('.carte-projet__preuve')).toHaveText('Réinventer');
 });
 
 test('la conclusion mène à Discutons, aux projets open source, puis plus loin', async ({ page }) => {

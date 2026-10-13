@@ -15,10 +15,16 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 
 test.use({ reducedMotion: 'no-preference' });
 
+/**
+ * La hauteur de mise en page (offsetHeight), pas celle de la boîte affichée :
+ * une carte de Gwent qui se soulève en tournant de 1,5° grandit à l’écran de
+ * quelques pixels sans rien décaler autour d’elle. C’est le décalage qu’on
+ * interdit, pas le mouvement.
+ */
 async function lireEtat(zone: Locator) {
   return zone.evaluate((element) => ({
     texte: element.textContent,
-    hauteur: element.getBoundingClientRect().height,
+    hauteur: element instanceof HTMLElement ? element.offsetHeight : element.getBoundingClientRect().height,
   }));
 }
 
