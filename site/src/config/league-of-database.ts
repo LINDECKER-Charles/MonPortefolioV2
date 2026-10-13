@@ -199,7 +199,7 @@ export const FICHES = [
     titre: 'Les runes',
     adresse: 'fr/runes/8000-precision',
     alt: 'L’arbre Précision et les effets de la rune Attaque soutenue, au patch 16.20.1.',
-    legende: 'L’arbre Précision et ses runes.',
+    legende: 'L’arbre Précision et ses runes ; les sorts d’invocateur ont aussi leurs fiches.',
   },
 ] as const;
 
@@ -282,7 +282,7 @@ export const DECISIONS: readonly Decision[] = [
 /* ------------------------------------------------------------------ */
 
 export const LIENS_SORTIE: readonly LienProjet[] = [
-  { href: LIENS.application, libelle: 'L’application' },
+  { href: LIENS.application, libelle: 'Un ancien patch en tête ? Explorer l’application' },
   { href: LIENS.patchs, libelle: 'L’historique des 403 patchs' },
   { href: LIENS.code, libelle: 'Le code' },
   { href: LIENS.parite, libelle: 'Le rapport de parité' },
