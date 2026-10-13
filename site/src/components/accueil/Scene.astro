@@ -108,12 +108,15 @@ const gid = `scene-${nom}`;
     aspect-ratio: var(--scene-recadrage);
   }
 
-  /* La commande de l’emplacement vide tient dans son cadre : quatre lignes. */
-  .scene__plan :global(.visuel__consigne) {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 4;
-    overflow: hidden;
+  /* La commande de l’emplacement vide tient dans son cadre : quatre lignes
+     (sous 260 px, le composant Visuel la masque déjà). */
+  @container (min-width: 261px) {
+    .scene__plan :global(.visuel__consigne) {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 4;
+      overflow: hidden;
+    }
   }
 
   .scene__rejouer {

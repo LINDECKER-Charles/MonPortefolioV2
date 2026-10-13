@@ -146,6 +146,15 @@ const cartes = CONSTRUITS.map((c) => ({ ...c, ...projetDeLaVitrine(c.id) }));
     margin-bottom: var(--s4);
   }
 
+  /* Correctif local : une capture recadrée (CadreCapture, `ratio`) étend sa
+     règle d’image à celle de la loupe, qui s’écrase alors au lieu d’agrandir
+     son détail. La loupe garde sa propre géométrie. */
+  .construits .construit :global(.capture__vue .loupe > img) {
+    height: auto;
+    object-fit: fill;
+    object-position: 50% 50%;
+  }
+
   .construit__preuve {
     display: flex;
     align-items: center;
