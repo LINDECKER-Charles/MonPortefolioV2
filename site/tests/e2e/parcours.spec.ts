@@ -179,14 +179,16 @@ test.describe('mise en page', () => {
 });
 
 test.describe('onglets du parcours', () => {
-  test('l’onglet courant reste visible et entier sur mobile', async ({ page, isMobile }) => {
-    test.skip(!isMobile, 'la barre ne défile que sur mobile');
+  test('sur téléphone, les quatre onglets restent visibles et entiers, vue d’ensemble comprise', async ({ page, isMobile }) => {
+    test.skip(!isMobile, 'deux rangées sur téléphone seulement');
     for (const [, chemin, court] of rubriques) {
       await page.goto(chemin);
-      const onglet = ongletsDuParcours(page).getByRole('link', { name: court, exact: true });
-      await expect(onglet).toHaveAttribute('aria-current', 'page');
-      // Entier, à l’arrondi du sous-pixel près.
-      await expect(onglet).toBeInViewport({ ratio: 0.99 });
+      const onglets = ongletsDuParcours(page);
+      await expect(onglets.getByRole('link', { name: court, exact: true })).toHaveAttribute('aria-current', 'page');
+      // Entiers, à l’arrondi du sous-pixel près : aucun ne sort par la gauche.
+      for (const nom of ['Vue d’ensemble', 'Professionnel', 'Compétences', 'Formation']) {
+        await expect(onglets.getByRole('link', { name: nom, exact: true })).toBeInViewport({ ratio: 0.99 });
+      }
     }
   });
 });
