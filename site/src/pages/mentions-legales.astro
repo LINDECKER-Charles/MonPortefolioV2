@@ -11,7 +11,8 @@
  *
  * Les faits d’hébergement viennent des mentions de la V1. Durée de la session
  * (12 h) : backend/src/admin.rs. Durée du journal : relevé de l’administration
- * du serveur, à faire confirmer par Charles (aucune source dans ce dépôt).
+ * du serveur, marquée « à confirmer » (aucune source dans ce dépôt), comme
+ * l’auteur des photographies et la cession de leurs droits.
  * Ce qui n’est pas encore établi (durée de conservation des messages, service
  * d’envoi des notifications) reste marqué « à confirmer ». Texte à faire
  * relire par Charles.
@@ -95,7 +96,7 @@ const CNIL = 'https://www.cnil.fr/fr/plaintes';
               <tr>
                 <th scope="row" data-titre="Donnée">Journal du serveur (adresse IP, page demandée, navigateur)</th>
                 <td data-titre="Pourquoi">Sécurité et diagnostic des pannes</td>
-                <td data-titre="Combien de temps" class="chiffres">90&nbsp;jours</td>
+                <td data-titre="Combien de temps" class="chiffres">90&nbsp;jours<AConfirmer titre="Durée du journal du serveur à confirmer par Charles" /></td>
                 <td data-titre="Qui la reçoit">L’éditeur</td>
               </tr>
               <tr>
@@ -184,10 +185,16 @@ const CNIL = 'https://www.cnil.fr/fr/plaintes';
       <section id="credits" aria-labelledby="credits-titre">
         <h2 id="credits-titre">Propriété intellectuelle et crédits</h2>
         <p>
-          Les textes, photographies et illustrations du site appartiennent à {SITE.nom}, sauf mention contraire. Les noms
+          Les textes et illustrations du site appartiennent à {SITE.nom}, sauf mention contraire. Les noms
           de jeux et de logiciels cités appartiennent à leurs détenteurs.
         </p>
         <dl class="credits">
+          <div>
+            <dt>Photographies</dt>
+            <dd>
+              Portraits de {SITE.nom}, issus d’une séance photo&nbsp;: auteur et droits<AConfirmer titre="Nom du photographe et cession des droits à confirmer par Charles" />.
+            </dd>
+          </div>
           <div>
             <dt>Polices</dt>
             <dd>
