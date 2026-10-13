@@ -1,116 +1,319 @@
 ---
+/**
+ * La vitrine des projets (cahier des charges, § 5.2) : un titre, une phrase,
+ * l’index des étiquettes de preuve, puis les cinq projets dans l’ordre de ce
+ * qu’ils prouvent — PvZ Fusion en vedette, puis League Of Data Base,
+ * Omnicard, Bloodborne Legendary Run et gup. Chaque carte mène à sa page
+ * (« Voir le projet → ») et porte un chiffre sourcé, un rôle, un statut et
+ * ses liens publics. Suivent la rangée « Aussi », les projets archivés
+ * (discrets), « Contribuer » et l’appel « Discutons ».
+ *
+ * Ordre et noms : config/projets.ts (VITRINE) ; contenu des cartes :
+ * config/vitrine.ts. Page complète sans JavaScript.
+ */
 import Base from '../../layouts/Base.astro';
+import AppelDiscutons from '../../components/pages/AppelDiscutons.astro';
+import CarteProjet from '../../components/pages/CarteProjet.astro';
 import FilAriane from '../../components/pages/FilAriane.astro';
-import ProjetALaUne from '../../components/projets/ProjetALaUne.astro';
-import ApercuProjet from '../../components/projets/ApercuProjet.astro';
+import IndexPreuves from '../../components/pages/IndexPreuves.astro';
+import Vitrine from '../../components/pages/Vitrine.astro';
+import CadreCapture from '../../components/ui/CadreCapture.astro';
+import Visuel from '../../components/ui/Visuel.astro';
+import ArchivesProjets from '../../components/vitrine/ArchivesProjets.astro';
+import BlocContribuer from '../../components/vitrine/BlocContribuer.astro';
+import RangeeAussi from '../../components/vitrine/RangeeAussi.astro';
+import atlas from '../../assets/projets/bloodborne/atlas.webp';
+import gup from '../../assets/projets/gup-selection.webp';
 import { SITE } from '../../config/site';
-import { PROJETS_ACTIFS, PROJETS_ARCHIVES, PROJET_A_LA_UNE, THEMES_PROJETS } from '../../config/projets';
-import '../../styles/profondeur.css';
+import { VITRINE } from '../../config/projets';
+import { CARTES, RELEVE } from '../../config/vitrine';
+import { typo } from '../../lib/typo';
 
-const titre = `Projets de ${SITE.nom}`;
-const description = 'Explorez les projets de Charles Lindecker selon vos envies : un compagnon de jeu, des outils du quotidien et une traduction communautaire.';
-const vedette = PROJETS_ACTIFS.find((projet) => projet.id === PROJET_A_LA_UNE)!;
+const titre = `Projets — ${SITE.nom}`;
+const description = 'Cinq projets menés au bout, rangés par ce qu’ils prouvent : une équipe bénévole, un système en production, un jeu inventé, un produit complet, un outil open source.';
 ---
 
 <Base titre={titre} description={description} chemin="/projets">
-  <div class="wrap profondeur projets-hub" data-project-hub>
+  <header class="vitrine-tete conteneur">
     <FilAriane courant="Projets" />
-    <header class="hub-intro">
-      <h1>Quel projet allez-vous explorer&nbsp;?</h1>
-      <p>Suivre une partie, explorer les données de League of Legends,
-        jouer en français ou mettre à jour ses logiciels.</p>
-    </header>
-
-    <ProjetALaUne projet={vedette} />
-
-    <section class="orientation" aria-labelledby="orientation-titre">
-      <div class="orientation__tete">
-        <h2 id="orientation-titre">Suivez ce qui vous intéresse.</h2>
-        <p>Des projets différents, un point commun&nbsp;: répondre à un besoin concret.</p>
+    <div class="vitrine-tete__grille">
+      <div class="vitrine-tete__texte foyer">
+        <h1 data-pli="titre">Projets</h1>
+        <p class="chapeau" data-pli="identite">Des projets menés au bout&nbsp;: une équipe, des systèmes en production, des outils publiés.</p>
       </div>
-      <nav class="themes" aria-label="Explorer par centre d’intérêt">
-        {THEMES_PROJETS.map((theme) => <a class:list={['theme', `theme--${theme.id}`]} href={`#theme-${theme.id}`} data-project-theme={theme.id}>
-          <span class="theme__icone" aria-hidden="true">{theme.id === 'jeux' ? <svg viewBox="0 0 64 64"><path d="M15 43 9 25l15-10 22 6 9 18-17 13Z"/><path d="m9 25 24 7 13-11M33 32l5 20M15 43l18-11"/><circle cx="24" cy="24" r="2"/><circle cx="44" cy="38" r="2"/></svg> : <svg viewBox="0 0 64 64"><rect x="9" y="13" width="46" height="36" rx="5"/><path d="M9 23h46m-35 8 6 5-6 5m13 0h10"/><circle cx="17" cy="18" r="1"/><circle cx="22" cy="18" r="1"/></svg>}</span>
-          <span class="theme__contenu"><strong>{theme.nom}</strong><span>{theme.resume}</span></span>
-          <span class="theme__direction" aria-hidden="true">↘</span>
-        </a>)}
-      </nav>
-    </section>
+      <IndexPreuves entrees={VITRINE.map(({ id, preuve }) => ({ id, preuve }))} />
+    </div>
+  </header>
 
-    {THEMES_PROJETS.map((theme) => {
-      const projets = PROJETS_ACTIFS.filter((projet) => (projet.categories as readonly string[]).includes(theme.id));
-      return <section class:list={['exploration', `exploration--${theme.id}`]} id={`theme-${theme.id}`} aria-labelledby={`titre-${theme.id}`} data-project-section={theme.id}>
-      <div class="exploration__tete">
-        <h2 id={`titre-${theme.id}`}>{theme.nom}</h2>
-        <p>{projets.length} projet{projets.length > 1 ? 's' : ''}</p>
-      </div>
-      <div class="exploration__grille">
-        {projets.map((projet) => <article class="projet-apercu" data-project-card={projet.id} data-project-categories={projet.categories.join(' ')}>
-          <a class="projet-apercu__visuel" href={projet.href} aria-label={`Voir le projet ${projet.nom}`}><ApercuProjet projet={projet} /></a>
-          <div class="projet-apercu__contenu">
-          <p class="projet-apercu__usage">{projet.usage}</p>
-          <h3>{projet.nom}</h3>
-          <p class="projet-apercu__promesse">{projet.promesse}</p>
-          <p class="projet-apercu__resume">{projet.resume}</p>
-          <div class="projet-apercu__actions"><a class="btn btn--contour" href={projet.href}>Page du projet<span class="sr"> {projet.nom}</span></a></div>
-          </div>
-        </article>)}
-      </div>
-    </section>;})}
+  <div class="conteneur vitrine-corps">
+    <Vitrine label="Cinq projets, ordonnés par ce qu’ils prouvent">
+      {
+        VITRINE.map((projet, index) => {
+          const carte = CARTES[projet.id];
+          return (
+            <CarteProjet
+              variante={index === 0 ? 'vedette' : 'ligne'}
+              id={projet.id}
+              rang={index + 1}
+              href={projet.href}
+              nom={projet.nom}
+              preuve={projet.preuve}
+              besoin={carte.besoin}
+              chiffre={carte.chiffre}
+              role={carte.role}
+              statut={carte.statut}
+              liens={[...carte.liens]}
+              technos={[...carte.technos]}
+              aConfirmer={carte.aConfirmer}
+            >
+              {projet.id === 'pvz' && <Visuel slot="visuel" id="PRJ-01" loading="eager" sizes="(max-width: 860px) 100vw, 720px" class="vitrine-visuel vitrine-visuel--vedette" />}
+              {projet.id === 'league' && <Visuel slot="visuel" id="PRJ-02" alt="" sizes="(max-width: 860px) 100vw, 300px" class="vitrine-visuel vitrine-visuel--ligne" />}
+              {projet.id === 'omnicard' && <Visuel slot="visuel" id="PRJ-03" alt="" sizes="(max-width: 860px) 100vw, 300px" class="vitrine-visuel vitrine-visuel--ligne" />}
+              {
+                projet.id === 'bloodborne' && (
+                  <CadreCapture
+                    slot="visuel"
+                    type="telephone"
+                    src={atlas}
+                    alt="L’atlas de Bloodborne Legendary Run sur téléphone : chaque galaxie d’objectifs avec sa progression, et la chasse à reprendre en tête."
+                    ratioMobile="4 / 5"
+                    widths={[390, 780]}
+                    sizes="(max-width: 860px) 200px, 150px"
+                    class="vitrine-telephone"
+                  />
+                )
+              }
+              {
+                projet.id === 'gup' && (
+                  <CadreCapture
+                    slot="visuel"
+                    type="terminal"
+                    src={gup}
+                    alt="gup en français dans un terminal : les mises à jour classées par source, et une source en échec qui ne bloque pas les autres."
+                    widths={[640, 1280]}
+                    sizes="(max-width: 860px) 100vw, 300px"
+                    class="vitrine-terminal"
+                  />
+                )
+              }
+            </CarteProjet>
+          );
+        })
+      }
+    </Vitrine>
+    <p class="petit vitrine-releve">{typo(RELEVE)}</p>
+  </div>
 
-    <details class="archives" id="projets-archives">
-      <summary>Projets archivés{PROJETS_ARCHIVES.length > 0 && <span> ({PROJETS_ARCHIVES.length})</span>}</summary>
-      {PROJETS_ARCHIVES.length === 0 ? <p>Aucun projet archivé pour le moment.</p> : <ul>
-        {PROJETS_ARCHIVES.map((projet) => <li><a href={projet.href}>{projet.nom}</a><p>{projet.resume}</p></li>)}
-      </ul>}
-    </details>
+  <RangeeAussi />
+  <ArchivesProjets />
+  <BlocContribuer />
 
-    <div class="projets-suite"><p>Un projet commence souvent par une discussion.</p><a class="btn" href="/contact">Discutons</a></div>
+  <div class="conteneur vitrine-fin">
+    <AppelDiscutons emplacement="discutons">Un projet commence souvent par une discussion.</AppelDiscutons>
   </div>
 </Base>
 
 <style>
-  .hub-intro { display: grid; grid-template-columns: 1.15fr 1fr; align-items: end; gap: var(--s7); padding-block: var(--s5) var(--s6); }
-  .hub-intro h1 { font-size: clamp(2.3rem, 1.5rem + 1.8vw, 3.15rem); line-height: 1.04; letter-spacing: -.045em; max-width: 22ch; }
-  .hub-intro p { max-width: 46ch; font-size: 1.0625rem; color: var(--graphite); }
-  .orientation { padding-top: var(--s8); }
-  .orientation__tete { display: grid; grid-template-columns: 1fr 1fr; align-items: end; gap: var(--s6); margin-bottom: var(--s6); }
-  .orientation h2 { font-size: clamp(1.9rem, 1.35rem + 1.35vw, 2.6rem); line-height: 1.15; letter-spacing: -.03em; max-width: 23ch; }
-  .orientation__tete > p { font-size: var(--t-petit); color: var(--graphite); max-width: 43ch; }
-  .themes { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s5); }
-  .theme { position: relative; display: flex; align-items: center; gap: 20px; padding: 28px 24px; min-height: 150px; border-radius: 8px; border: 1px solid var(--filet); background: var(--blanc); color: var(--encre); text-decoration: none; }
-  .theme:hover { border-color: var(--bleu); }
-  .theme__icone { flex: 0 0 64px; width: 64px; height: 64px; color: var(--bleu); }
-  .theme__icone svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.7; }
-  .theme__contenu { display: grid; gap: 8px; padding-right: 15px; }
-  .theme__contenu strong { font-size: 1.375rem; letter-spacing: -.025em; line-height: 1.15; }
-  .theme__contenu > span { font-size: .9375rem; line-height: 1.45; color: var(--graphite); max-width: 37ch; }
-  .theme__direction { position: absolute; right: 18px; top: 18px; color: var(--bleu); font-size: 1.4rem; }
-  .exploration { margin-top: var(--s8); }
-  .exploration + .exploration { border-top: 1px solid var(--filet); padding-top: var(--s7); }
-  .exploration__tete { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s5); margin-bottom: var(--s6); }
-  .exploration__tete h2 { font-size: clamp(1.75rem, 1.4rem + .8vw, 2.2rem); line-height: 1.2; letter-spacing: -.03em; }
-  .exploration__tete > p { color: var(--graphite); font-size: .875rem; flex-shrink: 0; }
-  .exploration__grille { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s6); align-items: start; }
-  .exploration--outils .exploration__grille { grid-template-columns: minmax(0, 1fr); }
-  .exploration--outils .projet-apercu { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s6); align-items: center; }
-  .exploration--outils .projet-apercu__usage { margin-top: 0; }
-  .projet-apercu { min-width: 0; }
-  .projet-apercu__visuel { display: block; text-decoration: none; border-radius: 7px; }
-  .projet-apercu__usage { font-size: .8125rem; color: var(--graphite); margin-block: 20px 8px; }
-  .projet-apercu h3 { font-size: 1.7rem; letter-spacing: -.035em; line-height: 1.12; max-width: 22ch; }
-  .projet-apercu__promesse { margin-top: var(--s4); font-size: 1.0625rem; font-weight: 700; line-height: 1.35; }
-  .projet-apercu__resume { margin-top: var(--s2); font-size: .9375rem; color: var(--graphite); line-height: 1.5; max-width: 45ch; }
-  .projet-apercu__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin-top: 20px; }
-  .projet-apercu__actions .btn { min-height: 44px; padding: 8px 16px; font-size: .875rem; }
-  .archives { margin-top: var(--s8); border-top: 1px solid var(--filet); padding-top: var(--s4); color: var(--graphite); font-size: var(--t-petit); }
-  .archives summary { width: fit-content; min-height: 44px; cursor: pointer; padding-block: 9px; }
-  .archives p { margin-top: var(--s3); max-width: 65ch; }
-  .archives ul { padding-left: var(--s5); }
-  .archives li { padding-block: var(--s4); }
-  .projets-suite { display: flex; gap: var(--s5); align-items: center; justify-content: space-between; padding-block: var(--s7) var(--s8); }
-  .projets-suite p { font-family: var(--font-note); font-style: italic; font-size: 1.65rem; }
-  @media (max-width: 1050px) { .theme { gap: 12px; padding: 24px 20px; } .theme__icone { flex-basis: 48px; width: 48px; height: 48px; } .theme__contenu strong { font-size: 1.2rem; } .exploration__grille { gap: var(--s5); } .projet-apercu h3 { font-size: 1.5rem; } }
-  @media (max-width: 849px) { .hub-intro, .orientation__tete { grid-template-columns: minmax(0, 1fr); gap: var(--s4); } .hub-intro { padding-top: var(--s4); } .hub-intro h1 { max-width: 20ch; } .themes { grid-template-columns: minmax(0, 1fr); gap: var(--s4); } .theme { min-height: 125px; } .theme__icone { flex-basis: 64px; width: 64px; height: 64px; } .exploration__grille { grid-template-columns: minmax(0, 1fr); gap: var(--s7); } .exploration--outils .projet-apercu { grid-template-columns: minmax(0, 1fr); gap: 20px; } .projet-apercu h3 { font-size: 1.8rem; } }
-  @media (max-width: 480px) { .projets-suite { flex-direction: column; align-items: flex-start; } .theme__contenu strong { font-size: 1.25rem; } .theme__icone { flex-basis: 48px; width: 48px; height: 48px; } .exploration__tete { align-items: flex-start; } }
+  .vitrine-tete {
+    padding-bottom: var(--s6);
+  }
+
+  /* Le titre à gauche, l’index des preuves à droite, en colonne (greffe de B). */
+  .vitrine-tete__grille {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 25rem);
+    align-items: end;
+    gap: var(--s5) var(--s8);
+    padding-top: var(--s3);
+  }
+
+  .vitrine-tete__texte {
+    max-width: 52rem;
+    padding-bottom: var(--s2);
+  }
+
+  .vitrine-tete :global(.index-preuves ol) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .vitrine-tete :global(.index-preuves li + li) {
+    border-left: 0;
+    border-top: 1px solid var(--filet);
+  }
+
+  .vitrine-tete :global(.index-preuves a),
+  .vitrine-tete :global(.index-preuves li:first-child a) {
+    padding: var(--s2) 0;
+    font-size: var(--t-m);
+  }
+
+  h1 {
+    font-size: var(--t-3xl);
+    line-height: 0.98;
+    letter-spacing: var(--ls-affiche);
+  }
+
+  .chapeau {
+    max-width: 34em;
+    margin-top: var(--s4);
+    color: var(--eteint);
+  }
+
+  /* L’index : la flèche reste collée au dernier mot. */
+  .vitrine-tete :global(.index-preuves a) {
+    display: block;
+  }
+
+  .vitrine-tete :global(.index-preuves__rang) {
+    margin-right: var(--s2);
+  }
+
+  /* Les visuels des cartes : à la taille de leur cadre. */
+  .vitrine-corps :global(.vitrine-visuel) {
+    width: 100%;
+  }
+
+  /* Le téléphone entier sur ordinateur, à la hauteur de la carte. */
+  .vitrine-corps :global(.vitrine-telephone) {
+    justify-self: center;
+    width: min(150px, 100%);
+  }
+
+  .vitrine-corps :global(.vitrine-terminal) {
+    width: 100%;
+  }
+
+  .vitrine-releve {
+    margin-top: var(--s4);
+    color: var(--eteint);
+  }
+
+  /* Sur ordinateur, le visuel d’une carte « ligne » remplit tout son panneau
+     (portrait) au lieu d’un 16:10 perdu au milieu du noir ; la composition
+     du registre se lit recadrée au centre (consigne de PRJ-02 et PRJ-03). */
+  @media (min-width: 861px) {
+    .vitrine-corps :global(.carte-projet--ligne .carte-projet__visuel:has(.vitrine-visuel--ligne)) {
+      align-items: stretch;
+    }
+
+    .vitrine-corps :global(.vitrine-visuel--ligne) {
+      height: 100%;
+      min-height: 240px;
+      aspect-ratio: auto;
+    }
+
+    /* gup : le terminal remplit le panneau, recadré sur la liste des paquets
+       (sources, versions, et Scoop en échec) ; entier sur mobile. */
+    .vitrine-corps :global(.carte-projet__visuel:has(.vitrine-terminal)) {
+      align-items: stretch;
+      padding: var(--s3);
+    }
+
+    .vitrine-corps :global(.vitrine-terminal),
+    .vitrine-corps :global(.vitrine-terminal .capture__cadre) {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .vitrine-corps :global(.vitrine-terminal .capture__cadre),
+    .vitrine-corps :global(.vitrine-terminal .capture__vue) {
+      flex: 1;
+    }
+
+    .vitrine-corps :global(.vitrine-terminal .capture__vue) {
+      min-height: 240px;
+      overflow: hidden;
+    }
+
+    .vitrine-corps :global(.vitrine-terminal .capture__vue img) {
+      position: absolute;
+      inset: 0;
+      height: 100%;
+      object-fit: cover;
+      object-position: 56% 0;
+    }
+  }
+
+  .vitrine-fin {
+    padding-bottom: var(--s8);
+  }
+
+  @media (max-width: 860px) {
+    .vitrine-tete {
+      padding-bottom: var(--s5);
+    }
+
+    .vitrine-tete__grille {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s5);
+      padding-top: var(--s2);
+    }
+
+    .vitrine-tete__texte {
+      padding-bottom: 0;
+    }
+
+    .chapeau {
+      margin-top: var(--s3);
+    }
+
+    /* L’index en une ligne défilable : le chiffre de la vedette reste au
+       premier écran (E1), une ombre signale la suite (E7). */
+    .vitrine-tete :global(.index-preuves ol) {
+      display: flex;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x proximity;
+      scrollbar-width: none;
+      background:
+        linear-gradient(to left, var(--fond) 30%, transparent) right / 48px 100% no-repeat local,
+        radial-gradient(farthest-side at 100% 50%, color-mix(in srgb, var(--encre) 18%, transparent), transparent) right / 14px 100% no-repeat scroll;
+    }
+
+    .vitrine-tete :global(.index-preuves ol::-webkit-scrollbar) {
+      display: none;
+    }
+
+    .vitrine-tete :global(.index-preuves li) {
+      flex: none;
+      scroll-snap-align: start;
+    }
+
+    .vitrine-tete :global(.index-preuves li + li) {
+      border-top: 0;
+      border-left: 1px solid var(--filet);
+    }
+
+    .vitrine-tete :global(.index-preuves a),
+    .vitrine-tete :global(.index-preuves li:first-child a) {
+      padding: var(--s2) var(--s4) var(--s2) var(--s3);
+      white-space: nowrap;
+    }
+
+    .vitrine-tete :global(.index-preuves li:first-child a) {
+      padding-left: 0;
+    }
+
+    /* La vedette garde son visuel en 16:10 : le chiffre reste au pli. */
+    .vitrine-corps :global(.vitrine-visuel--vedette) {
+      aspect-ratio: 16 / 10;
+    }
+
+    .vitrine-corps :global(.vitrine-telephone) {
+      width: min(200px, 70%);
+    }
+
+    /* Tant que l’image manque, la consigne d’un emplacement s’arrête net
+       (points de suspension) au lieu d’être tranchée par le cadre en 16:10. */
+    @container (min-width: 261px) {
+      .vitrine-corps :global(.visuel__consigne) {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 4;
+        line-clamp: 4;
+        overflow: hidden;
+      }
+    }
+  }
 </style>

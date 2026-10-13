@@ -388,82 +388,88 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
 - **Emplacement** : `/projets` · Carte PvZ (première, grande) _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : La traduction comme travail d’équipe
-- **Composition** : Tableau de travail à trois colonnes (à faire, en relecture, livré) sans marque, plusieurs mains anonymes, un paquet scellé qui part vers un grand dépôt commun
+- **Composition** : Un tableau de travail mural vu de face, légèrement en plongée, en trois colonnes de fiches épinglées (à faire, en relecture, livré), sans aucune inscription ; quatre ou cinq mains anonymes, aux manches différentes, déplacent chacune une fiche d’une colonne à l’autre ; à droite, une main referme un paquet scellé de fiches qui part vers un grand coffre-dépôt commun, plus large que le tableau ; la lanterne, posée en bas au centre, éclaire la colonne du milieu et laisse le reste dans la pénombre. Tableau et mains au centre du cadre, lisibles recadrés en 4:5
 - **Format** : 16:10, 1600 × 1000 ; 4:5 mobile (recadrage mobile 4:5)
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-01_1600x1000.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « La traduction comme travail d’équipe »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un tableau de travail en trois colonnes où plusieurs mains déplacent des fiches, et un paquet scellé qui part vers un dépôt commun. »
+- **Note** : Sur la vitrine, la carte vedette garde le 16:10 sur mobile pour que son chiffre reste au premier écran : la composition doit se lire entière en 16:10 comme recadrée en 4:5.
 
 ### PRJ-02 · Une archive versionnée
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
 - **Emplacement** : `/projets` · Carte LoD (et LOD-01) _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Une archive versionnée
-- **Composition** : Registre relié ouvert dont les pages sont des couches datées superposées qui s’éventaillent vers la droite, marque-page sur une page ancienne ; aucun personnage
-- **Format** : 16:10 + 1:1
+- **Composition** : Un registre relié, ouvert sur un pupitre, vu de trois quarts : ses pages sont des couches minces superposées qui s’éventaillent vers la droite comme un éventail de cartes, chacune avec une tranche marquée de simples traits, sans chiffre ni lettre ; un marque-page de tissu glissé loin dans les pages anciennes ; la lanterne, à gauche, éclaire la page marquée, les couches récentes s’estompent dans l’ombre ; aucun personnage. Le registre ouvert, la page marquée et la lanterne tiennent dans le tiers central du cadre : l’image doit rester lisible recadrée en 1:1 (LOD-01) et en portrait 2:3 (carte de la vitrine sur ordinateur)
+- **Format** : 16:10 + 1:1 ; portrait 2:3 recadré dans la carte
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-02_1600x1000.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une archive versionnée »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un registre ouvert dont les pages datées s’éventaillent, un marque-page glissé dans les plus anciennes. »
+- **Note** : Dans la carte de la vitrine, le visuel remplit tout son panneau : en 16:10 sur mobile, recadré en portrait (environ 300 × 450 px, 2:3) sur ordinateur ; décoratif (alt vide), le nom de la carte dit le reste. Repris en 1:1 par LOD-01 sur la page du projet.
 
 ### PRJ-03 · Du papier au jeu en ligne
 
 - **Priorité** : socle · **Méthode** : IMG, rien à produire, le fichier est celui d’un autre emplacement
 - **Emplacement** : `/projets` · Carte Omnicard _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Du papier au jeu en ligne
-- **Composition** : Recadrage d’OMN-01
-- **Format** : 16:10
+- **Composition** : Recadrage d’OMN-01, sans nouvelle image : la carte plastifiée à la main (pochette visible, coin corné) à cheval sur le bord d’une fenêtre de navigateur, moitié papier, moitié numérique. Le recadrage garde au centre le bord de la fenêtre qui traverse la carte, les deux moitiés de la carte entières et la lumière de la lanterne sur la moitié papier ; il coupe d’abord le fond de la fenêtre et la table. Deux cadres : 16:10 sur mobile, portrait 2:3 (environ 300 × 450 px) sur ordinateur, où la carte, droite, doit tenir entière en hauteur
+- **Format** : 16:10 ; portrait 2:3 recadré dans la carte
 - **Fichier attendu** : aucun, reprend `OMN-01`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Du papier au jeu en ligne »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une carte de jeu plastifiée à la main qui passe le bord d’une fenêtre de navigateur et y devient numérique. »
+- **Note** : Si OMN-01 ne laisse pas la carte entière dans le portrait 2:3, demander une variante en 2:3 (1000 × 1500) plutôt qu’un recadrage qui la coupe. Décoratif sur la vitrine (alt vide), le nom de la carte dit le reste.
 
 ### PRJ-04 · Le ciel des objectifs
 
 - **Priorité** : socle · **Méthode** : CAP, à capturer (écran réel), rien à générer
 - **Emplacement** : `/projets` · Carte Bloodborne _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Le ciel des objectifs
-- **Composition** : Capture réelle atlas.webp ou constellation mobile dans GLO-05
-- **Format** : 16:10
-- **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-04_1600x1000.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Le ciel des objectifs »
-- **Note** : Capture réelle existante : atlas.webp (assets/projets/bloodborne), ou constellation mobile.
+- **Composition** : Capture réelle de l’atlas sur téléphone (écran /fr/sky à 390 × 844, densité 2), montrée entière dans le cadre téléphone (GLO-05) sur ordinateur, coupée sous la première galaxie sur mobile
+- **Format** : 9:19,5, 780 × 1688 ; 4:5 mobile (recadrage mobile 4:5)
+- **Fichier attendu** : `site/src/assets/projets/bloodborne/atlas.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « L’atlas de Bloodborne Legendary Run sur téléphone : chaque galaxie d’objectifs avec sa progression, et la chasse à reprendre en tête. »
+- **Note** : Capture existante du 8 octobre 2026, provenance dans src/assets/projets/README.md. Posée par CadreCapture, pas par Visuel.
 
 ### PRJ-05 · La sélection des mises à jour
 
 - **Priorité** : socle · **Méthode** : CAP, à capturer (écran réel), rien à générer
 - **Emplacement** : `/projets` · Carte gup _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : La sélection des mises à jour
-- **Composition** : Capture packages-select en français, SVG, dans le cadre terminal
-- **Format** : 16:10
-- **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-05_1600x1000.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « La sélection des mises à jour »
-- **Note** : Capture existante à régénérer en français : packages-select.
+- **Composition** : Capture réelle de l’écran packages-select en français, déjà fenêtrée, dans le cadre terminal (GLO-05) : les paquets classés par source, une source en échec qui ne bloque pas les autres
+- **Format** : ≈ 3:2, 1624 × 1052
+- **Fichier attendu** : `site/src/assets/projets/gup-selection.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « gup en français dans un terminal : les mises à jour classées par source, et une source en échec qui ne bloque pas les autres. »
+- **Note** : Capture existante (générateur de captures de gup, exécuté en français), provenance dans src/assets/projets/README.md. Posée par CadreCapture, pas par Visuel.
 
 ### PRJ-06 · Décider quoi faire d’une branche
 
 - **Priorité** : élargi · **Méthode** : IMG, à générer (image)
 - **Emplacement** : `/projets` · « Aussi », GitHealth _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Décider quoi faire d’une branche
-- **Composition** : Trois branches stylisées, chacune avec un picto de verdict (garder, revoir, nettoyer), sans texte
+- **Composition** : Trois branches d’un même tronc, dessinées comme des rameaux stylisés partant d’une racine commune, chacune terminée par un petit picto de verdict sans texte : un sceau plein (garder), une loupe (revoir), un balai (nettoyer) ; la lanterne, posée au pied du tronc, éclaire la branche à revoir ; fond nu, aucun personnage
 - **Format** : 4:3, 1200 × 900
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-06_1200x900.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Décider quoi faire d’une branche »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Trois branches d’un même tronc, chacune avec son verdict : garder, revoir ou nettoyer. »
+- **Note** : Vignette de la rangée « Aussi » (4:3, environ 300 px de large sur ordinateur) : décorative sur la vitrine, le texte voisin dit la même chose.
 
 ### PRJ-07 · Une animation pixel art dans une page
 
 - **Priorité** : élargi · **Méthode** : IMG, à générer (image)
 - **Emplacement** : `/projets` · « Aussi », Life Pixel _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Une animation pixel art dans une page
-- **Composition** : Grille de pixel art, mascotte en trois images en pelure d’oignon, flèche vers une page web où elle s’anime
+- **Composition** : Une grille de pixel art posée à plat sur une table, une petite mascotte ronde et générique (jamais un personnage connu) dessinée en trois images successives, superposées en pelure d’oignon ; un trait de lumière mène vers une fenêtre de navigateur vide de texte où la même mascotte, plus grande, s’anime ; la lanterne éclaire la grille
 - **Format** : 4:3
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-07_1600x1200.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une animation pixel art dans une page »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une mascotte en pixel art dessinée image par image, puis animée dans une page web. »
+- **Note** : Vignette de la rangée « Aussi » (4:3, environ 300 px de large sur ordinateur) : décorative sur la vitrine, le texte voisin dit la même chose.
 
 ### PRJ-08 · Une image, des variantes
 
 - **Priorité** : élargi · **Méthode** : IMG, à générer (image)
 - **Emplacement** : `/projets` · « Aussi », img-convertor _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Une image, des variantes
-- **Composition** : Une grande image qui se décline en quatre variantes de largeurs différentes, sans poids chiffré
+- **Composition** : Une grande image encadrée (un paysage simple) à gauche, d’où partent quatre copies de la même image, de largeurs décroissantes, alignées en escalier vers la droite comme sur des écrans de tailles différentes (grand écran, portable, tablette, téléphone), sans poids ni chiffre ; la lanterne éclaire l’original
 - **Format** : 4:3
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-08_1600x1200.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une image, des variantes »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une image et ses quatre déclinaisons, de la plus large à la plus étroite. »
+- **Note** : Vignette de la rangée « Aussi » (4:3, environ 300 px de large sur ordinateur) : décorative sur la vitrine, le texte voisin dit la même chose.
 
 ### PRJ-09 · La veille qui devient lecture
 
@@ -480,20 +486,22 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Priorité** : élargi · **Méthode** : IMG, à générer (image)
 - **Emplacement** : `/projets` · « Aussi », Shreksophone _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : L’absurde assumé
-- **Composition** : Un saxophone qui surgit d’une fenêtre de navigateur, notes qui débordent du cadre ; aucun personnage
-- **Format** : 1:1, 960 × 960
-- **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-10_960x960.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « L’absurde assumé »
+- **Composition** : Une fenêtre de navigateur vide de texte, vue de face ; un saxophone en surgit à moitié, pavillon vers le haut, comme s’il crevait l’interface ; des notes de musique débordent du cadre et s’envolent ; absurde assumé, même gravure que le reste de la série ; aucun personnage ; la lanterne éclaire le pavillon
+- **Format** : 4:3, 1600 × 1200 (comme le reste de la rangée « Aussi »)
+- **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-10_1600x1200.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un saxophone qui surgit d’une fenêtre de navigateur, des notes qui débordent du cadre. »
+- **Note** : Vignette de la rangée « Aussi » (4:3, environ 300 px de large sur ordinateur) : décorative sur la vitrine, le texte voisin dit la même chose. Passée de 1:1 à 4:3 pour s’aligner sur les trois autres.
 
 ### PRJ-11 · Les portes ouvertes de l’open source
 
 - **Priorité** : élargi · **Méthode** : IMG, à générer (image)
 - **Emplacement** : `/projets` · Bloc « Contribuer » _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Les portes ouvertes de l’open source
-- **Composition** : Trois lanternes posées sur trois boîtes (dépôts), un chemin qui y mène
-- **Format** : 3:1, 1800 × 600
+- **Composition** : Un chemin de pierres plates part du bas à gauche et mène à trois boîtes ouvertes de tailles différentes, posées en ligne (des dépôts) ; une petite lanterne est posée sur chaque couvercle : la première est allumée et seule éclaire la scène, les deux autres attendent qu’on les allume ; de la première boîte dépassent des outils simples (une règle, un pinceau) ; nuit, aucun personnage. Sur mobile, le cadre passe en 3:2 centré sur la première boîte et sa lanterne : le chemin et les deux autres boîtes peuvent sortir du cadre
+- **Format** : 3:1, 1800 × 600 (recadrage mobile 3:2)
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-11_1800x600.webp`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Les portes ouvertes de l’open source »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un chemin qui mène à trois boîtes ouvertes, une lanterne allumée sur la première, les deux autres prêtes. »
+- **Note** : Posé dans l’acte de veille (sombre, jour et nuit) du bloc « Contribuer » : sur ordinateur, au pied de la colonne du titre (environ 530 × 177 px), aligné sur la fin de la liste ; sur mobile, en 3:2 sous la liste. Décoratif, le texte voisin dit la même chose.
 
 ### PRJ-12 · La version précédente
 
@@ -504,7 +512,7 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Format** : 4:3
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-12_1600x1200.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « La version précédente »
-- **Note** : Reprend ILL-10 de docs/assets-a-generer.md.
+- **Note** : Reprend ILL-10 de docs/assets-a-generer.md. À poser dans le volet des projets archivés quand il contiendra un projet : tant qu’il est vide, il reste une simple ligne.
 
 ## PvZ Fusion
 

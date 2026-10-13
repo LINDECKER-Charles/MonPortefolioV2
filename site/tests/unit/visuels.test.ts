@@ -72,7 +72,8 @@ describe('registre des visuels : fichiers attendus', () => {
     for (const v of VISUELS) {
       if (v.reprend?.length || v.methode === 'FIG' || !v.fichier) continue;
       const nom = path.posix.basename(v.fichier);
-      if (['ACC-01'].includes(v.id)) continue; // photo existante, nommée avant la refonte
+      // Photo et captures réelles existantes, nommées avant la refonte (la vitrine les pose dans leurs cadres).
+      if (['ACC-01', 'PRJ-04', 'PRJ-05'].includes(v.id)) continue;
       if (v.methode === 'SVG') expect(v.fichier, v.id).toMatch(new RegExp(`^src/assets/visuels/${v.serie}/${v.id}\\.(?:svg|txt)$`));
       else if (v.methode === 'OG') expect(v.fichier, v.id).toBe(`public/og/${v.id}_1200x630.png`);
       else {
@@ -165,12 +166,14 @@ describe('registre des visuels : liste des manquants', () => {
     expect(etat.manquantsSocle.map((v: { id: string }) => v.id)).toContain('GLO-02');
   });
 
-  it('sur le dépôt réel, ne signale comme présents que la photo de couverture, la figure du plafond et la lanterne de la bascule', () => {
+  it('sur le dépôt réel, ne signale comme présents que la photo de couverture, la figure du plafond, la lanterne de la bascule et les deux captures de la vitrine', () => {
     const etat = etatDesVisuels(SITE);
-    expect(etat.presents).toBe(3);
-    expect(etat.manquantsSocle).toHaveLength(65);
+    expect(etat.presents).toBe(5);
+    expect(etat.manquantsSocle).toHaveLength(63);
+    expect(etat.manquantsSocle.map((v: { id: string }) => v.id)).not.toContain('PRJ-04');
+    expect(etat.manquantsSocle.map((v: { id: string }) => v.id)).not.toContain('PRJ-05');
     expect(etat.manquantsSocle.map((v: { id: string }) => v.id)).not.toContain('GLO-03');
-    expect(resume(etat)).toMatch(/65 visuels « socle » manquants/);
+    expect(resume(etat)).toMatch(/63 visuels « socle » manquants/);
   });
 
   afterAll(() => rmSync(racine, { recursive: true, force: true }));
