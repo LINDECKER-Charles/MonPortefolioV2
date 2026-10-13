@@ -399,21 +399,22 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
 - **Emplacement** : `/projets` · Carte LoD (et LOD-01) _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Une archive versionnée
-- **Composition** : Un registre relié, ouvert sur un pupitre, vu de trois quarts : ses pages sont des couches minces superposées qui s’éventaillent vers la droite comme un éventail de cartes, chacune avec une tranche marquée de simples traits, sans chiffre ni lettre ; un marque-page de tissu glissé loin dans les pages anciennes ; la lanterne, à gauche, éclaire la page marquée, les couches récentes s’estompent dans l’ombre ; aucun personnage. Sujet centré, lisible recadré en 1:1 (LOD-01)
-- **Format** : 16:10 + 1:1
+- **Composition** : Un registre relié, ouvert sur un pupitre, vu de trois quarts : ses pages sont des couches minces superposées qui s’éventaillent vers la droite comme un éventail de cartes, chacune avec une tranche marquée de simples traits, sans chiffre ni lettre ; un marque-page de tissu glissé loin dans les pages anciennes ; la lanterne, à gauche, éclaire la page marquée, les couches récentes s’estompent dans l’ombre ; aucun personnage. Le registre ouvert, la page marquée et la lanterne tiennent dans le tiers central du cadre : l’image doit rester lisible recadrée en 1:1 (LOD-01) et en portrait 2:3 (carte de la vitrine sur ordinateur)
+- **Format** : 16:10 + 1:1 ; portrait 2:3 recadré dans la carte
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-02_1600x1000.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un registre ouvert dont les pages datées s’éventaillent, un marque-page glissé dans les plus anciennes. »
-- **Note** : Posé dans la carte de la vitrine (16:10) et repris en 1:1 par LOD-01 sur la page du projet.
+- **Note** : Dans la carte de la vitrine, le visuel remplit tout son panneau : en 16:10 sur mobile, recadré en portrait (environ 300 × 450 px, 2:3) sur ordinateur ; décoratif (alt vide), le nom de la carte dit le reste. Repris en 1:1 par LOD-01 sur la page du projet.
 
 ### PRJ-03 · Du papier au jeu en ligne
 
 - **Priorité** : socle · **Méthode** : IMG, rien à produire, le fichier est celui d’un autre emplacement
 - **Emplacement** : `/projets` · Carte Omnicard _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Du papier au jeu en ligne
-- **Composition** : Recadrage d’OMN-01
-- **Format** : 16:10
+- **Composition** : Recadrage d’OMN-01, sans nouvelle image : la carte plastifiée à la main (pochette visible, coin corné) à cheval sur le bord d’une fenêtre de navigateur, moitié papier, moitié numérique. Le recadrage garde au centre le bord de la fenêtre qui traverse la carte, les deux moitiés de la carte entières et la lumière de la lanterne sur la moitié papier ; il coupe d’abord le fond de la fenêtre et la table. Deux cadres : 16:10 sur mobile, portrait 2:3 (environ 300 × 450 px) sur ordinateur, où la carte, droite, doit tenir entière en hauteur
+- **Format** : 16:10 ; portrait 2:3 recadré dans la carte
 - **Fichier attendu** : aucun, reprend `OMN-01`
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Du papier au jeu en ligne »
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une carte de jeu plastifiée à la main qui passe le bord d’une fenêtre de navigateur et y devient numérique. »
+- **Note** : Si OMN-01 ne laisse pas la carte entière dans le portrait 2:3, demander une variante en 2:3 (1000 × 1500) plutôt qu’un recadrage qui la coupe. Décoratif sur la vitrine (alt vide), le nom de la carte dit le reste.
 
 ### PRJ-04 · Le ciel des objectifs
 
@@ -496,11 +497,11 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Priorité** : élargi · **Méthode** : IMG, à générer (image)
 - **Emplacement** : `/projets` · Bloc « Contribuer » _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Les portes ouvertes de l’open source
-- **Composition** : Un chemin de pierres plates part du bas à gauche et mène à trois boîtes ouvertes de tailles différentes, posées en ligne (des dépôts) ; une petite lanterne est posée sur chaque couvercle : la première est allumée et seule éclaire la scène, les deux autres attendent qu’on les allume ; de la première boîte dépassent des outils simples (une règle, un pinceau) ; nuit, aucun personnage
-- **Format** : 3:1, 1800 × 600
+- **Composition** : Un chemin de pierres plates part du bas à gauche et mène à trois boîtes ouvertes de tailles différentes, posées en ligne (des dépôts) ; une petite lanterne est posée sur chaque couvercle : la première est allumée et seule éclaire la scène, les deux autres attendent qu’on les allume ; de la première boîte dépassent des outils simples (une règle, un pinceau) ; nuit, aucun personnage. Sur mobile, le cadre passe en 3:2 centré sur la première boîte et sa lanterne : le chemin et les deux autres boîtes peuvent sortir du cadre
+- **Format** : 3:1, 1800 × 600 (recadrage mobile 3:2)
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-11_1800x600.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un chemin qui mène à trois boîtes ouvertes, une lanterne allumée sur la première, les deux autres prêtes. »
-- **Note** : Posé dans l’acte de veille (sombre, jour et nuit) du bloc « Contribuer », sous son titre : décoratif, le texte voisin dit la même chose.
+- **Note** : Posé dans l’acte de veille (sombre, jour et nuit) du bloc « Contribuer » : sur ordinateur, au pied de la colonne du titre (environ 530 × 177 px), aligné sur la fin de la liste ; sur mobile, en 3:2 sous la liste. Décoratif, le texte voisin dit la même chose.
 
 ### PRJ-12 · La version précédente
 
