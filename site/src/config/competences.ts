@@ -166,7 +166,7 @@ export const SITES_OFFICIELS = {
 
 /**
  * Compétences humaines : un intitulé, trois verbes, une illustration
- * (CMP-02 à CMP-08). `demarche` : les verbes forment une suite (→) plutôt
+ * (CMP-02 à CMP-08). `demarche` : les verbes forment une suite (›) plutôt
  * qu’une liste (·). `aConfirmer` : verbes reformulés depuis la V1 (adjectifs
  * ou noms seuls), à confirmer par Charles. Pas de ligne de fait (Q9).
  */

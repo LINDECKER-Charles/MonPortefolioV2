@@ -150,7 +150,7 @@ const PILE = [
             <p class="humaine__verbes">
               {competence.verbes.map((verbe, index) => (
                 <>
-                  <span class="humaine__verbe">{verbe}{index < competence.verbes.length - 1 && <><span class="sr">,</span>&nbsp;<span class="humaine__lien" aria-hidden="true">{competence.demarche ? '→' : '·'}</span></>}</span>{' '}
+                  <span class="humaine__verbe">{verbe}{index < competence.verbes.length - 1 && <><span class="sr">,</span>&nbsp;<span class="humaine__lien" aria-hidden="true">{competence.demarche ? '›' : '·'}</span></>}</span>{' '}
                 </>
               ))}
               {competence.aConfirmer && <AConfirmer titre="Verbes reformulés depuis la première version, à confirmer">à confirmer</AConfirmer>}
@@ -498,8 +498,10 @@ const PILE = [
     line-height: 1.5;
   }
 
+  /* Séparateurs décoratifs, jamais une flèche (→ et ↗ sont réservés aux liens,
+     règle E2) : un chevron pour une démarche, un point médian pour une liste. */
   .humaine__lien {
-    color: var(--laiton);
+    color: var(--eteint);
   }
 
   .humaine__verbe {

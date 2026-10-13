@@ -227,9 +227,10 @@ const debutTexte = moisEnClair(e.debut);
     gap: var(--s2);
   }
 
+  /* Une suite, pas un lien : un chevron décoratif (→ reste aux liens, règle E2). */
   .fiche__etapes li:not(:last-child)::after {
-    content: '→';
-    color: var(--trait);
+    content: '›' / '';
+    color: var(--eteint);
   }
 
   .fiche__etapes b {

@@ -22,16 +22,17 @@ interface Etape {
   texte: string;
   outils?: string[];
   empreinte?: boolean;
-  etiquettes?: string;
+  /** Étiquettes des images ; `suite` : la seconde remplace la première (›, lu « puis »). */
+  etiquettes?: { noms: [string, string]; suite?: boolean };
   porte?: boolean;
 }
 
 const ETAPES: Etape[] = [
   { titre: 'Vérifier', texte: 'Types, tests unitaires et tests de bout en bout, avant de construire l’image publiée.', outils: ['Vitest', 'Playwright'] },
-  { titre: 'Construire une fois', texte: 'Les images du site et de l’API, construites une seule fois par révision et publiées sur le registre.', outils: ['GitHub Actions', 'Docker'], empreinte: true, etiquettes: 'sha · staging' },
+  { titre: 'Construire une fois', texte: 'Les images du site et de l’API, construites une seule fois par révision et publiées sur le registre.', outils: ['GitHub Actions', 'Docker'], empreinte: true, etiquettes: { noms: ['sha', 'staging'] } },
   { titre: 'Déployer en test', texte: 'Ces images tournent d’abord sur l’environnement de test.', empreinte: true },
   { titre: 'Ouvrir la porte', texte: 'Une fusion faite à la main, et seulement elle, mène à la production.', empreinte: true, porte: true },
-  { titre: 'Promouvoir', texte: 'La production reçoit les images testées, réétiquetées, sans jamais les reconstruire.', empreinte: true, etiquettes: 'staging → prod' },
+  { titre: 'Promouvoir', texte: 'La production reçoit les images testées, réétiquetées, sans jamais les reconstruire.', empreinte: true, etiquettes: { noms: ['staging', 'prod'], suite: true } },
 ];
 ---
 
@@ -59,7 +60,13 @@ const ETAPES: Etape[] = [
         </p>
         <p class="chaine__pied">
           {etape.empreinte && <span class="chaine__empreinte">même empreinte</span>}
-          {etape.etiquettes && <span class="chaine__etiquettes">{etape.etiquettes}</span>}
+          {etape.etiquettes && (
+            <span class="chaine__etiquettes">
+              {etape.etiquettes.noms[0]}
+              {etape.etiquettes.suite ? <><span class="chaine__suite" aria-hidden="true">›</span><span class="sr"> puis </span></> : ' · '}
+              {etape.etiquettes.noms[1]}
+            </span>
+          )}
         </p>
       </li>
     ))}
@@ -258,8 +265,11 @@ const ETAPES: Etape[] = [
     color: var(--encre);
   }
 
+  /* Un filet plein : le pointillé reste aux emplacements à générer. La flèche
+     → étant réservée aux liens (règle E2), la suite se dit par un chevron. */
   .chaine__etiquettes {
-    border: 1px dashed var(--trait);
+    gap: 0.4em;
+    border: 1px solid var(--filet);
     color: var(--eteint);
   }
 
