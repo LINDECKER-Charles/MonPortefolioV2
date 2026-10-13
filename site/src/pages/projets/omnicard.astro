@@ -48,7 +48,10 @@ const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(h
         <p>Le passage au jeu vidéo traîne. Alors je reprends le projet, seul, et je me lance avec les outils que je connais&nbsp;: Angular et .NET.</p>
         <blockquote class="citation foyer oc-citation"><p>«&nbsp;Je voulais me lancer direct et pas perdre de temps.&nbsp;»</p></blockquote>
       </Fragment>
-      <Visuel slot="figure" id="OMN-02" sizes="(max-width: 1100px) 100vw, 480px" />
+      <div slot="figure" class="oc-papier">
+        <Visuel id="OMN-02" sizes="(max-width: 1100px) 100vw, 480px" />
+        <p class="oc-papier__note">Du papier au navigateur, la même envie d’inventer.</p>
+      </div>
     </SectionProjet>
 
     <SectionProjet id="reequilibrer" titre="Rééquilibrer mes propres cartes">
@@ -75,8 +78,8 @@ const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(h
 
     <SectionProjet id="moteur" titre="D’une phrase à une règle">
       <Fragment slot="texte">
-        <p>J’ai écrit le moteur de règles sans moteur de jeu existant. En C#, côté serveur, il démarre la partie, mélange, fait piocher, déroule les tours et résout chaque effet&nbsp;; le navigateur affiche l’interface Angular.</p>
-        <p>Sur une carte, une phrase suffit. Le moteur, lui, doit savoir de quels tours elle parle.</p>
+        <p>Les outils existaient&nbsp;; le jeu restait à construire. J’ai écrit le moteur de règles sans moteur de jeu existant. En C#, côté serveur, il démarre la partie, mélange, fait piocher, déroule les tours et résout chaque effet&nbsp;; le navigateur affiche l’interface Angular.</p>
+        <p>Les cartes s’appuient sur des effets et des conditions que l’on peut combiner. Sur une carte, une phrase suffit. Le moteur, lui, doit savoir de quels tours elle parle.</p>
       </Fragment>
       <CompteARebours />
       <div class="oc-arbitre">
@@ -88,7 +91,7 @@ const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(h
       </div>
     </SectionProjet>
 
-    <DecisionsProjet decisions={DECISIONS} chapeau="Une stack que je maîtrisais, un jeu qu’elle n’était pas faite pour porter : chaque limite m’a obligé à aller plus loin." />
+    <DecisionsProjet decisions={DECISIONS} chapeau="Apprendre en dépassant ce que je savais faire : une stack que je maîtrisais, un jeu qu’elle n’était pas faite pour porter." />
 
     <SortieProjet projet="omnicard" liens={LIENS_SORTIE}>
       <p data-citation>«&nbsp;Le projet qui m’a fait le plus apprendre.&nbsp;»</p>
@@ -96,7 +99,7 @@ const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(h
     </SortieProjet>
 
     <SourcesProjet>
-      <p><b>Le projet.</b> Le jeu papier, les éditions, la reprise du projet seul, les trois mois de développement cumulé et le choix d’Angular et de .NET viennent de mon témoignage (questionnaire du portfolio, D1 et D2)&nbsp;; le statut hors ligne, en attente de refonte, est confirmé au 13/10/2026. Le moteur de règles en C# déroule les parties côté serveur&nbsp;: mélange, pioche et tours.</p>
+      <p><b>Le projet.</b> Le jeu papier, les éditions, la reprise du projet seul, les trois mois de travail cumulé et le choix d’Angular et de .NET viennent de mon témoignage (questionnaire du portfolio, D1 et D2)&nbsp;; le statut hors ligne, en attente de refonte, est confirmé au 13/10/2026. Le moteur de règles en C# déroule les parties côté serveur&nbsp;: mélange, pioche et tours.</p>
       <p><b>Cartes.</b> Les cartes de la saison&nbsp;1 sont celles de <a {...sortant(LIENS.archive)}>l’archive du dépôt de présentation<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. À droite, les exports de l’outil du projet faits le 13/10/2026&nbsp;; le catalogue public 1.2.0 affiche encore 4/8 pour Gehrman et 0/4 pour Floppa&nbsp;: Mage. Les effets cités viennent du <a {...sortant(LIENS.galerie)}>catalogue public, version 1.2.0<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>, qui compte 181&nbsp;cartes&nbsp;: 114 Bloodborne, 51 JoJo et 16 WTF.</p>
       <p><b>Règles.</b> Points de vie, deck, mana, cristaux, lignes et types de cartes&nbsp;: <a {...sortant(LIENS.regles)}>version joueur des règles du moteur<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. Le compte à rebours de GitGud suit le mot-clé Délai du <a {...sortant(LIENS.motsCles)}>glossaire<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>&nbsp;: le compteur ne baisse qu’à la fin du tour du joueur qui a programmé l’effet. Relevés le 13/10/2026.</p>
       <p><b>Captures.</b> Collection, deck et booster&nbsp;: captures d’une version précédente du jeu, conservées par la première version de ce portfolio&nbsp;; leur date n’est pas documentée et leurs compteurs ne sont pas des chiffres actuels.</p>
@@ -116,6 +119,15 @@ const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(h
   .oc-citation {
     margin: var(--s5) 0 0;
     font-size: var(--t-xl);
+  }
+
+  .oc-papier__note {
+    margin-top: var(--s3);
+    font-family: var(--police-titre);
+    font-style: italic;
+    font-size: var(--t-m);
+    line-height: 1.3;
+    color: var(--eteint);
   }
 
   .oc-arbitre {

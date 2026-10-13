@@ -52,7 +52,7 @@ export const EN_TETE = {
 export const PREUVES: readonly PreuveEnTete[] = [
   {
     valeur: '≈ 3 mois',
-    libelle: 'de développement cumulé, seul',
+    libelle: 'de travail cumulé, seul',
     source: 'Témoignage',
     date: 'questionnaire D1 et D2',
     surligne: true,
@@ -248,7 +248,7 @@ export const TRAJET = [
 
 export const DECISIONS: readonly Decision[] = [
   {
-    contrainte: 'Le passage au jeu vidéo traînait, et je voulais jouer vite.',
+    contrainte: 'Le passage au jeu vidéo traînait, et je voulais me lancer sans perdre de temps.',
     choix: 'Angular et .NET, que je connaissais déjà, plutôt qu’un moteur de jeu à découvrir.',
     effet: 'Un jeu dans le navigateur, sur une stack maîtrisée mais pas faite pour ça.',
   },
