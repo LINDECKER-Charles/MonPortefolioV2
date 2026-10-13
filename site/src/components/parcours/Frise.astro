@@ -1,0 +1,479 @@
+---
+/**
+ * Frise chronologique codée depuis les données (FIG) : la mini-frise du hub
+ * (PAR-F1, trois couloirs) et la chronologie de la page Professionnel
+ * (PRO-F1). Une ligne par activité, chacune un lien vers sa fiche ; la barre
+ * dessine la durée, l’échelle est honnête (un mois vaut un mois).
+ *
+ *   <Frise titre="De 2023 à aujourd’hui" debut="2023-01" couloirs={[…]} />
+ *
+ * Nature en forme et en mot (règle A2 : jamais la couleur seule) : plein pour
+ * un CDI, laiton pour une mission, hachures pour le bénévolat, gris pour un
+ * stage, contour pour une formation. Une activité en cours finit en pointe à
+ * droite ; une fin inconnue se dissout et le texte dit « fin à confirmer ».
+ * L’échelle s’arrête au mois de la construction du site.
+ *
+ * Un rôle tenu seulement depuis un mois donné (`bascule`, PvZ Fusion :
+ * traducteur, puis lead) coupe la barre en deux : la part d’avant en contour,
+ * celle du rôle affiché pleine.
+ *
+ * Le texte de chaque ligne porte tout (rôle, nature, période) et forme le nom
+ * du lien, dans l’ordre affiché, avec une période lue en mots (« août à
+ * septembre 2025 », jamais « flèche ») : les barres sont décoratives pour les
+ * lecteurs d’écran. Un filet plein marque l’origine de l’échelle. Sur mobile,
+ * le libellé passe au-dessus de sa barre.
+ */
+import { NATURES, rangDuMois, type Mois, type Nature } from '../../config/parcours';
+import { typo } from '../../lib/typo';
+
+export interface LigneFrise {
+  cle: string;
+  href: string;
+  libelle: string;
+  /** Période et nature en clair : « CDI, depuis août 2026 ». */
+  periode: string;
+  nature: Nature;
+  debut: Mois;
+  /** Dernier mois ; `null` : en cours, ou fin à confirmer avec `finAConfirmer`. */
+  fin: Mois | null;
+  finAConfirmer?: boolean;
+  /** Début et fin seulement connus à l’année (« 2023–2024 ») : bords estompés. */
+  bornesFloues?: boolean;
+  /** Mois où commence le rôle du libellé : la barre se coupe à cet endroit. */
+  bascule?: Mois;
+}
+
+export interface CouloirFrise {
+  nom?: string;
+  lignes: readonly LigneFrise[];
+}
+
+interface Props {
+  titre: string;
+  /** Premier mois de l’échelle. */
+  debut: Mois;
+  couloirs: readonly CouloirFrise[];
+  /** Repères de trimestre en plus des années. */
+  trimestres?: boolean;
+  id?: string;
+  class?: string;
+}
+
+const { titre, debut, couloirs, trimestres = false, id, class: classe } = Astro.props;
+
+const maintenant = new Date();
+const origine = rangDuMois(debut);
+const jours = new Date(maintenant.getFullYear(), maintenant.getMonth() + 1, 0).getDate();
+const terme = maintenant.getFullYear() * 12 + maintenant.getMonth() + maintenant.getDate() / jours;
+const etendue = terme - origine;
+const position = (rang: number) => Math.max(0, Math.min(100, ((rang - origine) / etendue) * 100));
+const arrondi = (valeur: number) => Math.round(valeur * 100) / 100;
+
+/** Une fin inconnue s’estompe sur trois mois, sans jamais dépasser l’échelle. */
+const FONDU = 3;
+
+function barre(ligne: LigneFrise) {
+  const depart = rangDuMois(ligne.debut);
+  let arrivee: number;
+  if (ligne.fin) arrivee = rangDuMois(ligne.fin) + 1;
+  else if (ligne.finAConfirmer) arrivee = Math.min(terme, depart + 1 + FONDU);
+  else arrivee = terme;
+  const d = position(depart);
+  const f = position(arrivee);
+  const etat = ligne.fin ? 'close' : ligne.finAConfirmer ? 'incertaine' : 'en-cours';
+  const b = ligne.bascule ? arrondi(position(rangDuMois(ligne.bascule))) : null;
+  return { d: arrondi(d), f: arrondi(f), b, etat };
+}
+
+/** La période en mots pour le nom du lien : « août à septembre 2025 », « de 2023 à 2024 ». */
+const periodeLue = (periode: string) =>
+  periode
+    .replace(' → fin à confirmer', ', fin à confirmer')
+    .replace(' → terminé', ', terminé')
+    .replace(' → ', ' à ')
+    .replace(/(\d{4})–(\d{4})/, 'de $1 à $2');
+
+// Repères : chaque 1er janvier (trait plein), chaque trimestre si demandé.
+const reperes: { x: number; annee: boolean }[] = [];
+for (let rang = Math.ceil(origine); rang < terme; rang += 1) {
+  if (rang === origine) continue;
+  const mois = rang % 12;
+  if (mois === 0) reperes.push({ x: arrondi(position(rang)), annee: true });
+  else if (trimestres && mois % 3 === 0) reperes.push({ x: arrondi(position(rang)), annee: false });
+}
+
+// Années, centrées dans leur portion de l’échelle (au moins deux mois).
+const annees: { annee: number; x: number }[] = [];
+for (let annee = Math.floor(origine / 12); annee * 12 < terme; annee += 1) {
+  const de = Math.max(origine, annee * 12);
+  const a = Math.min(terme, (annee + 1) * 12);
+  if (a - de >= 2) annees.push({ annee, x: arrondi((position(de) + position(a)) / 2) });
+}
+
+const presentes = [...new Set(couloirs.flatMap((c) => c.lignes.map((l) => l.nature)))];
+const avecEnCours = couloirs.some((c) => c.lignes.some((l) => !l.fin && !l.finAConfirmer));
+const avecIncertaine = couloirs.some((c) => c.lignes.some((l) => l.finAConfirmer));
+const titreId = `${id ?? 'frise'}-titre`;
+const avecCouloirs = couloirs.some((c) => c.nom);
+---
+
+<figure class:list={['frise', { 'frise--couloirs': avecCouloirs }, classe]} id={id} aria-labelledby={titreId}>
+  <div class="frise__tete">
+    <figcaption class="frise__titre" id={titreId}>{typo(titre)}</figcaption>
+    <ul class="frise__legende" aria-label="Légende">
+      {presentes.map((nature) => <li><span class:list={['frise__echantillon', `frise__barre--${nature}`]} aria-hidden="true"></span>{NATURES[nature]}</li>)}
+      {avecEnCours && <li><span class="frise__echantillon frise__echantillon--en-cours" aria-hidden="true"></span>en cours</li>}
+      {avecIncertaine && <li><span class="frise__echantillon frise__echantillon--incertaine" aria-hidden="true"></span>fin à confirmer</li>}
+    </ul>
+  </div>
+  <div class="frise__corps">
+    <div class="frise__fond" aria-hidden="true">
+      <span class="frise__repere frise__repere--origine" style="--x:0"></span>
+      {reperes.map((r) => <span class:list={['frise__repere', { 'frise__repere--annee': r.annee }]} style={`--x:${r.x}`}></span>)}
+    </div>
+    <p class="frise__echelle" aria-hidden="true">
+      {annees.map((a) => <span style={`--x:${a.x}`}>{a.annee}</span>)}
+    </p>
+    {
+      couloirs.map((couloir) => (
+        <div class="frise__couloir">
+          {couloir.nom && <p class="frise__couloir-nom">{couloir.nom}</p>}
+          <ol class="frise__lignes" role="list" aria-label={couloir.nom}>
+            {couloir.lignes.map((ligne) => {
+              const { d, f, b, etat } = barre(ligne);
+              return (
+                <li class="frise__ligne" style={`--d:${d};--f:${f}${b === null ? '' : `;--b:${b}`}`}>
+                  <a href={ligne.href} aria-label={typo(`${ligne.libelle}, ${periodeLue(ligne.periode)}`)}>
+                    <span class="frise__texte">
+                      <span class="frise__libelle">{typo(ligne.libelle)}</span>
+                      <span class="frise__periode">{typo(ligne.periode)}</span>
+                    </span>
+                    <span class="frise__piste" aria-hidden="true">
+                      {b !== null && <span class:list={['frise__barre', 'frise__barre--avant', `frise__barre--${ligne.nature}`]} />}
+                      <span class:list={['frise__barre', `frise__barre--${ligne.nature}`, `frise__barre--${etat}`, { 'frise__barre--floue': ligne.bornesFloues, 'frise__barre--apres': b !== null }]} />
+                    </span>
+                  </a>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      ))
+    }
+  </div>
+</figure>
+
+<style>
+  .frise {
+    --nom: 0px;
+    --libelles: 19rem;
+    --ecart: var(--s5);
+    margin: 0;
+  }
+
+  .frise__tete {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s2) var(--s5);
+    margin-bottom: var(--s3);
+  }
+
+  .frise__titre {
+    font-size: var(--t-s);
+    font-weight: 600;
+    color: var(--encre);
+  }
+
+  .frise__legende {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s1) var(--s4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  .frise__legende li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s2);
+  }
+
+  .frise__echantillon {
+    position: relative;
+    display: inline-block;
+    width: 22px;
+    height: 10px;
+    border-radius: var(--r1);
+  }
+
+  .frise__echantillon--en-cours {
+    background: var(--encre);
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 50%, calc(100% - 6px) 100%, 0 100%);
+  }
+
+  .frise__echantillon--incertaine {
+    background: var(--encre);
+    mask-image: linear-gradient(90deg, #000 30%, transparent);
+  }
+
+  .frise__corps {
+    position: relative;
+    padding-bottom: var(--s2);
+    border-bottom: 1px solid var(--trait);
+  }
+
+  /* Le fond : un trait par 1er janvier, plus fin par trimestre. */
+  .frise__fond {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--nom) + var(--libelles) + var(--ecart));
+    right: 0;
+    pointer-events: none;
+  }
+
+  .frise__repere {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--x) * 1%);
+    border-left: 1px dashed var(--filet);
+  }
+
+  .frise__repere--annee {
+    border-left: 1px solid var(--filet);
+  }
+
+  /* L’origine de l’échelle : la grille commence ici. */
+  .frise__repere--origine {
+    border-left: 1px solid var(--trait);
+  }
+
+  .frise__echelle {
+    position: relative;
+    height: 24px;
+    margin-left: calc(var(--nom) + var(--libelles) + var(--ecart));
+    font-size: var(--t-xs);
+    font-variant-numeric: tabular-nums lining-nums;
+    color: var(--eteint);
+  }
+
+  .frise__echelle span {
+    position: absolute;
+    left: calc(var(--x) * 1%);
+    transform: translateX(-50%);
+    line-height: 24px;
+  }
+
+  .frise__couloir + .frise__couloir {
+    margin-top: var(--s2);
+  }
+
+  .frise__couloir-nom {
+    position: relative;
+    width: var(--libelles);
+    padding-block: var(--s1) 0;
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: var(--ls-petit);
+    color: var(--eteint);
+  }
+
+  .frise__lignes {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .frise__ligne a {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--libelles) minmax(0, 1fr);
+    column-gap: var(--ecart);
+    align-items: center;
+    min-height: 36px;
+    padding-block: 2px;
+    border-radius: var(--r1);
+    color: var(--encre);
+    text-decoration: none;
+  }
+
+  .frise__texte {
+    display: flex;
+    flex-direction: column;
+    font-size: var(--t-xs);
+    line-height: 1.35;
+  }
+
+  .frise__libelle {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .frise__periode {
+    color: var(--eteint);
+  }
+
+  .frise__ligne a:hover {
+    background: color-mix(in srgb, var(--accent) 7%, transparent);
+  }
+
+  .frise__ligne a:hover .frise__libelle {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+  }
+
+  .frise__piste {
+    position: relative;
+    height: 12px;
+  }
+
+  .frise__barre {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--d) * 1%);
+    width: max(6px, calc((var(--f) - var(--d)) * 1%));
+    border-radius: var(--r1);
+  }
+
+  /* Natures : une forme chacune. */
+  .frise__barre--cdi {
+    background: var(--encre);
+  }
+
+  .frise__barre--freelance {
+    background: var(--laiton);
+  }
+
+  .frise__barre--benevolat {
+    box-shadow: inset 0 0 0 1.5px var(--encre);
+    background: repeating-linear-gradient(-45deg, var(--encre) 0 1.5px, transparent 1.5px 5px);
+  }
+
+  .frise__barre--stage {
+    background: var(--eteint);
+  }
+
+  .frise__barre--formation {
+    box-shadow: inset 0 0 0 1.5px var(--encre);
+    background: color-mix(in srgb, var(--encre) 34%, transparent);
+  }
+
+  /* Un rôle pris en cours de route : la part d’avant en contour, coupée net. */
+  .frise__barre--avant {
+    width: max(4px, calc((var(--b) - var(--d)) * 1% - 3px));
+    background: none;
+    box-shadow: inset 0 0 0 1.5px var(--encre);
+  }
+
+  .frise__barre--apres {
+    left: calc(var(--b) * 1%);
+    width: max(6px, calc((var(--f) - var(--b)) * 1%));
+  }
+
+  /* En cours : une pointe vers aujourd’hui. */
+  .frise__barre--en-cours {
+    border-radius: var(--r1) 0 0 var(--r1);
+    clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 50%, calc(100% - 7px) 100%, 0 100%);
+  }
+
+  /* Fin à confirmer : la barre se dissout. */
+  .frise__barre--incertaine {
+    mask-image: linear-gradient(90deg, #000 25%, transparent);
+  }
+
+  /* Seulement l’année : les deux bords s’estompent. */
+  .frise__barre--floue {
+    mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent);
+  }
+
+  .frise__ligne a:hover .frise__barre,
+  .frise__ligne a:focus-visible .frise__barre {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* Écran large : libellé et période sur une ligne, la frise reste basse. */
+  @media (min-width: 1200px) {
+    .frise {
+      --libelles: 29rem;
+    }
+
+    .frise__texte {
+      flex-direction: row;
+      flex-wrap: wrap;
+      column-gap: 0.6em;
+    }
+
+    /* Le nom du couloir dans sa propre colonne, à gauche de ses lignes. */
+    .frise--couloirs {
+      --nom: 7rem;
+      --libelles: 30rem;
+    }
+
+    .frise--couloirs .frise__couloir {
+      display: grid;
+      grid-template-columns: var(--nom) minmax(0, 1fr);
+      align-items: start;
+    }
+
+    .frise--couloirs .frise__couloir-nom {
+      width: auto;
+      padding-block: 10px 0;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .frise {
+      --libelles: 0px;
+      --ecart: 0px;
+    }
+
+    .frise__couloir-nom {
+      width: auto;
+    }
+
+    .frise__ligne a {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: var(--s1);
+      min-height: 44px;
+      padding-block: var(--s2);
+    }
+
+    /* Les repères passent derrière la barre, jamais à travers le texte. */
+    .frise__texte {
+      position: relative;
+      justify-self: start;
+      padding-right: var(--s2);
+      line-height: 1.3;
+      background: var(--fond-frise, var(--surface));
+    }
+  }
+
+  @media (forced-colors: active) {
+    .frise__barre,
+    .frise__echantillon {
+      background: CanvasText;
+      forced-color-adjust: none;
+    }
+  }
+
+  @media print {
+    .frise__corps {
+      break-inside: avoid;
+    }
+
+    .frise__barre,
+    .frise__echantillon {
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+  }
+</style>
