@@ -198,6 +198,10 @@
   font-weight: 600;
 }
 
+.blog-pagination:not(:has(a)) {
+  display: none;
+}
+
 .blog-pagination a {
   display: inline-flex;
   align-items: center;
