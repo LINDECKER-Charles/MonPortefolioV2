@@ -99,6 +99,12 @@ a:hover {
   border-radius: var(--r1);
 }
 
+/* Un titre atteint par le sommaire reçoit le focus pour les lecteurs d’écran
+   (scripts/entete.ts) : il n’est pas une commande, pas de contour. */
+.cible-sommaire:focus {
+  outline: none;
+}
+
 ::selection {
   background: var(--surligneur);
   color: var(--sur-surligneur);
