@@ -995,47 +995,47 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Charles Lindecker, en chemise bleu roi, la main au menton, devant un parc. »
 - **Note** : Livrée le 13 octobre 2026 : recadrage de design/assets/photos/sources/1536x2304_charles-3.webp (lignes 300 à 2 220, 1 536 px de large), jamais régénérée.
 
-### PAR-F1 · Mini-frise 2023 → aujourd’hui
+### PAR-F1 · Mini-frise septembre 2023 → aujourd’hui
 
 - **Priorité** : socle · **Méthode** : FIG, à coder (figure de données), rien à générer
 - **Emplacement** : `/parcours` · Hub, sous le bandeau d’identité, pleine largeur _(contexte : ne pas le recopier dans un prompt)_
-- **Sujet** : Mini-frise 2023 → aujourd’hui
-- **Composition** : Codée en HTML depuis config/parcours.ts (components/parcours/Frise.astro) : trois couloirs (formation, travail, communauté), une ligne par activité, un mois vaut un mois de janvier 2023 au mois de construction ; chaque ligne mène à sa fiche ; nature en forme et en mot, pointe pour ce qui continue, fondu pour une fin à confirmer, bords estompés pour une date connue à l’année
+- **Sujet** : Mini-frise septembre 2023 → aujourd’hui
+- **Composition** : Codée en HTML depuis config/parcours.ts (components/parcours/Frise.astro) : trois couloirs (formation, travail, communauté), une ligne par activité, un mois vaut un mois de septembre 2023 (première activité) au mois de construction, filet plein à l’origine ; chaque ligne mène à sa fiche ; nature en forme et en mot, pointe pour ce qui continue, fondu pour une fin à confirmer, bords estompés pour une date connue à l’année ; la barre de PvZ Fusion se coupe en décembre 2025 (traducteur en contour, puis lead)
 - **Format** : 16:5 sur ordinateur ; libellé au-dessus de chaque barre sur mobile
 - **Fichier attendu** : aucune image, figure codée
-- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Le parcours de 2023 à aujourd’hui, en trois couloirs : formation, travail et communauté. »
-- **Note** : Codée le 13 octobre 2026. La position du BUT Réseaux & Télécoms (connu à l’année, 2023–2024) est estompée aux deux bords.
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Le parcours de septembre 2023 à aujourd’hui, en trois couloirs : formation, travail et communauté. »
+- **Note** : Codée le 13 octobre 2026. La position du BUT Réseaux & Télécoms (connu à l’année, 2023–2024) est estompée aux deux bords. L’échelle commence en septembre 2023 : les huit premiers mois de 2023 étaient vides.
 
 ### PAR-01 · Concevoir
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/parcours` · Hub, porte Professionnel : en tête de la carte (pleine largeur de la carte ; 16:9 sur mobile) _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours` · Hub, porte Professionnel : en tête de la carte (bandeau 2:1 pleine largeur de la carte, pour garder les portes près du pli ; 16:9 sur mobile) _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Concevoir
-- **Composition** : Une table à dessin vue de trois quarts, en légère plongée : un plan d’architecture logicielle déplié (blocs rectangulaires reliés par des flèches, trois couches empilées, sans aucune lettre), tenu à plat par une règle et un compas ; la lanterne posée à l’angle supérieur droit éclaire le plan en cône et laisse les bords dans l’ombre ; aucun personnage, aucun écran. Sujet centré : recadrable en 16:9 sans perdre la lanterne ni le plan. Même angle et même lumière que les autres visuels de la page.
-- **Format** : 4:3, 1200 × 900 ; 16:9 sur mobile (recadrage mobile 16:9)
-- **Fichier attendu** : `site/src/assets/visuels/parcours/PAR-01_1200x900.webp`
+- **Composition** : Une table à dessin vue de trois quarts, en légère plongée : un plan d’architecture logicielle déplié (blocs rectangulaires reliés par des flèches, trois couches empilées, sans aucune lettre), tenu à plat par une règle et un compas ; la lanterne posée à l’angle supérieur droit éclaire le plan en cône et laisse les bords dans l’ombre ; aucun personnage, aucun écran. Composition en largeur, sujet centré dans la moitié centrale : recadrable en 16:9 sur mobile sans perdre la lanterne ni le plan. Même angle et même lumière que les autres visuels de la page.
+- **Format** : 2:1, 1600 × 800 ; 16:9 sur mobile (recadrage mobile 16:9)
+- **Fichier attendu** : `site/src/assets/visuels/parcours/PAR-01_1600x800.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une table à dessin où un plan d’architecture logicielle déplié est éclairé par une lanterne. »
 - **Note** : Posé dans la carte de la porte (pages/parcours.astro) ; décoratif à l’usage (alt vide), le titre de la carte porte le lien. Série : trois quarts en légère plongée, trait gravé, deux ou trois aplats, la lanterne seule source de lumière ; aucun texte, aucun chiffre, aucune marque dans l’image.
 
 ### PAR-02 · La boîte à outils
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/parcours` · Hub, porte Compétences : en tête de la carte (pleine largeur de la carte ; 16:9 sur mobile) _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours` · Hub, porte Compétences : en tête de la carte (bandeau 2:1 pleine largeur de la carte, pour garder les portes près du pli ; 16:9 sur mobile) _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : La boîte à outils
-- **Composition** : Une boîte à outils en bois ouverte, vue de trois quarts en plongée, à quatre compartiments reconnaissables à leur forme et non à un mot : une équerre et des gabarits (l’interface), des engrenages imbriqués (l’API), des tiroirs de fiches empilées (les données), une caisse scellée prête à partir (la livraison) ; la lanterne accrochée à la poignée éclaire l’intérieur ; aucun logo. Sujet centré : recadrable en 16:9. Même angle et même lumière que les autres visuels de la page.
-- **Format** : 4:3, 1200 × 900 ; 16:9 sur mobile (recadrage mobile 16:9)
-- **Fichier attendu** : `site/src/assets/visuels/parcours/PAR-02_1200x900.webp`
+- **Composition** : Une boîte à outils en bois ouverte, vue de trois quarts en plongée, à quatre compartiments reconnaissables à leur forme et non à un mot : une équerre et des gabarits (l’interface), des engrenages imbriqués (l’API), des tiroirs de fiches empilées (les données), une caisse scellée prête à partir (la livraison) ; la lanterne accrochée à la poignée éclaire l’intérieur ; aucun logo. Composition en largeur, sujet centré dans la moitié centrale : recadrable en 16:9 sur mobile. Même angle et même lumière que les autres visuels de la page.
+- **Format** : 2:1, 1600 × 800 ; 16:9 sur mobile (recadrage mobile 16:9)
+- **Fichier attendu** : `site/src/assets/visuels/parcours/PAR-02_1600x800.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une boîte à outils ouverte, à quatre compartiments, éclairée par une lanterne accrochée à sa poignée. »
 - **Note** : Posé dans la carte de la porte (pages/parcours.astro) ; décoratif à l’usage (alt vide), le titre de la carte porte le lien. Série : trois quarts en légère plongée, trait gravé, deux ou trois aplats, la lanterne seule source de lumière ; aucun texte, aucun chiffre, aucune marque dans l’image.
 
 ### PAR-03 · Ce que j’ai dans mon sac
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/parcours` · Hub, porte Formation : en tête de la carte (pleine largeur de la carte ; 16:9 sur mobile) _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours` · Hub, porte Formation : en tête de la carte (bandeau 2:1 pleine largeur de la carte, pour garder les portes près du pli ; 16:9 sur mobile) _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Ce que j’ai dans mon sac
-- **Composition** : Une pile de livres reliés couchés, dos sans titre, de tailles décroissantes ; au sommet, un diplôme roulé noué d’un ruban ; quelques fiches volantes (des certificats, sans texte ni sceau lisible) glissées entre deux livres ; la lanterne sert de serre-livre à droite et éclaire la tranche des livres ; aucune marque d’école. Sujet centré : recadrable en 16:9. Même angle et même lumière que les autres visuels de la page.
-- **Format** : 4:3, 1200 × 900 ; 16:9 sur mobile (recadrage mobile 16:9)
-- **Fichier attendu** : `site/src/assets/visuels/parcours/PAR-03_1200x900.webp`
+- **Composition** : Une pile de livres reliés couchés, dos sans titre, de tailles décroissantes ; au sommet, un diplôme roulé noué d’un ruban ; quelques fiches volantes (des certificats, sans texte ni sceau lisible) glissées entre deux livres ; la lanterne sert de serre-livre à droite et éclaire la tranche des livres ; aucune marque d’école. Composition en largeur, sujet centré dans la moitié centrale : recadrable en 16:9 sur mobile. Même angle et même lumière que les autres visuels de la page.
+- **Format** : 2:1, 1600 × 800 ; 16:9 sur mobile (recadrage mobile 16:9)
+- **Fichier attendu** : `site/src/assets/visuels/parcours/PAR-03_1600x800.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une pile de livres et un diplôme roulé, la lanterne en serre-livre. »
 - **Note** : Posé dans la carte de la porte (pages/parcours.astro) ; décoratif à l’usage (alt vide), le titre de la carte porte le lien. Série : trois quarts en légère plongée, trait gravé, deux ou trois aplats, la lanterne seule source de lumière ; aucun texte, aucun chiffre, aucune marque dans l’image.
 
@@ -1044,7 +1044,7 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Priorité** : socle · **Méthode** : FIG, à coder (figure de données), rien à générer
 - **Emplacement** : `/parcours/professionnel` · Professionnel, en tête du contenu, au-dessus des fiches _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Chronologie
-- **Composition** : Codée en HTML depuis config/parcours.ts (components/parcours/Frise.astro) : une ligne par expérience, de la plus récente à la plus ancienne, d’août 2025 au mois de construction, repères d’année et de trimestre ; nature en forme et en mot (plein, laiton, hachures, gris), pointe pour ce qui continue, fondu et mention « fin à confirmer » pour une date de fin inconnue ; chaque ligne mène à sa fiche
+- **Composition** : Codée en HTML depuis config/parcours.ts (components/parcours/Frise.astro) : une ligne par expérience, de la plus récente à la plus ancienne, d’août 2025 au mois de construction, repères d’année et de trimestre ; nature en forme et en mot (plein, laiton, hachures, gris), pointe pour ce qui continue, fondu et mention « fin à confirmer » pour une date de fin inconnue ; filet plein à l’origine de l’échelle ; la barre de PvZ Fusion se coupe en décembre 2025 (traducteur en contour, puis lead) ; chaque ligne mène à sa fiche
 - **Format** : 16:6 sur ordinateur ; libellé au-dessus de chaque barre sur mobile
 - **Fichier attendu** : aucune image, figure codée
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Mes six expériences d’août 2025 à aujourd’hui, avec leurs durées et leurs chevauchements. »
@@ -1053,10 +1053,10 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 ### PRO-01 · Architecture logicielle
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/parcours/professionnel` · Professionnel, fiche du poste actuel : colonne de droite de la fiche (320 px), pleine largeur au-dessus du texte sur mobile _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours/professionnel` · Professionnel, fiche du poste actuel : colonne de droite de la fiche (320 px) ; sur mobile, bandeau 16:9 pleine largeur sous le texte, pour que le rôle reste en tête _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Architecture logicielle
-- **Composition** : Un grand plan épinglé au mur d’un atelier, vu de face : blocs rectangulaires reliés par des flèches, trois conteneurs empilés, des services disposés autour d’un noyau, sans aucune lettre ; des punaises, une règle posée en bas ; la lanterne posée sur la table devant le mur éclaire le centre du plan ; aucun élément qui identifie un employeur, aucun personnage. Même angle et même lumière que les autres visuels de la page.
-- **Format** : 3:2, 900 × 600
+- **Composition** : Un grand plan épinglé au mur d’un atelier, vu de face : blocs rectangulaires reliés par des flèches, trois conteneurs empilés, des services disposés autour d’un noyau, sans aucune lettre ; des punaises, une règle posée en bas ; la lanterne posée sur la table devant le mur éclaire le centre du plan ; aucun élément qui identifie un employeur, aucun personnage. Sujet centré : recadrable en 16:9 sur mobile. Même angle et même lumière que les autres visuels de la page.
+- **Format** : 3:2, 900 × 600 ; 16:9 sur mobile (recadrage mobile 16:9)
 - **Fichier attendu** : `site/src/assets/visuels/parcours/PRO-01_900x600.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un plan d’architecture logicielle épinglé au mur, éclairé par une lanterne. »
 - **Note** : Posé dans la fiche (components/parcours/FicheExperience.astro) ; décoratif à l’usage (alt vide), la fiche dit tout. Série : trois quarts en légère plongée, trait gravé, deux ou trois aplats, la lanterne seule source de lumière ; aucun texte, aucun chiffre, aucune marque dans l’image.
@@ -1064,10 +1064,10 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 ### PRO-02 · Former jusqu’au titre
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/parcours/professionnel` · Professionnel, fiche Elan Formation : colonne de droite de la fiche (320 px), pleine largeur au-dessus du texte sur mobile _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours/professionnel` · Professionnel, fiche Elan Formation : colonne de droite de la fiche (320 px) ; sur mobile, bandeau 16:9 pleine largeur sous le texte, pour que le rôle reste en tête _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Former jusqu’au titre
-- **Composition** : Une salle de formation vue depuis le pupitre du formateur : un tableau blanc couvert d’un schéma à trois blocs reliés (interface, API, base, en formes sans mots), une dizaine de chaises alignées et vides, au premier plan des diplômes roulés et noués posés sur le pupitre ; la lanterne sur le pupitre, seule lumière de la salle ; aucune silhouette reconnaissable, aucun logo d’organisme. Même angle et même lumière que les autres visuels de la page.
-- **Format** : 3:2, 1800 × 1200
+- **Composition** : Une salle de formation vue depuis le pupitre du formateur : un tableau blanc couvert d’un schéma à trois blocs reliés (interface, API, base, en formes sans mots), une dizaine de chaises alignées et vides, au premier plan des diplômes roulés et noués posés sur le pupitre ; la lanterne sur le pupitre, seule lumière de la salle ; aucune silhouette reconnaissable, aucun logo d’organisme. Sujet centré : recadrable en 16:9 sur mobile. Même angle et même lumière que les autres visuels de la page.
+- **Format** : 3:2, 1800 × 1200 ; 16:9 sur mobile (recadrage mobile 16:9)
 - **Fichier attendu** : `site/src/assets/visuels/parcours/PRO-02_1800x1200.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une salle de formation : un schéma au tableau, des chaises alignées et des diplômes roulés sur le pupitre. »
 - **Note** : Posé dans la fiche (components/parcours/FicheExperience.astro) ; décoratif à l’usage (alt vide), la fiche dit tout. Série : trois quarts en légère plongée, trait gravé, deux ou trois aplats, la lanterne seule source de lumière ; aucun texte, aucun chiffre, aucune marque dans l’image.
@@ -1075,10 +1075,10 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 ### PRO-03 · Le pôle
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/parcours/professionnel` · Professionnel, fiche du pôle francophone : colonne de droite de la fiche (320 px), pleine largeur au-dessus du texte sur mobile _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours/professionnel` · Professionnel, fiche du pôle francophone : colonne de droite de la fiche (320 px) ; sur mobile, bandeau 16:9 pleine largeur sous le texte, pour que le rôle reste en tête _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Le pôle
-- **Composition** : Un tableau de tâches à trois colonnes (à faire, en relecture, livré) vu de face, couvert de cartes épinglées portant chacune un petit fanion de couleur unie (aucun drapeau national, aucun texte) ; quelques mains anonymes déplacent des cartes vers la colonne de droite ; dans le coin supérieur droit, deux pousses stylisées qui se rejoignent en une seule tige (la fusion) ; la lanterne éclaire la colonne des cartes livrées ; aucun personnage ni décor tiré d’un jeu existant. Même angle et même lumière que les autres visuels de la page.
-- **Format** : 3:2, 1800 × 1200
+- **Composition** : Un tableau de tâches à trois colonnes (à faire, en relecture, livré) vu de face, couvert de cartes épinglées portant chacune un petit fanion de couleur unie (aucun drapeau national, aucun texte) ; quelques mains anonymes déplacent des cartes vers la colonne de droite ; dans le coin supérieur droit, deux pousses stylisées qui se rejoignent en une seule tige (la fusion) ; la lanterne éclaire la colonne des cartes livrées ; aucun personnage ni décor tiré d’un jeu existant. Sujet centré : recadrable en 16:9 sur mobile. Même angle et même lumière que les autres visuels de la page.
+- **Format** : 3:2, 1800 × 1200 ; 16:9 sur mobile (recadrage mobile 16:9)
 - **Fichier attendu** : `site/src/assets/visuels/parcours/PRO-03_1800x1200.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un tableau de tâches à trois colonnes couvert de cartes, que des mains déplacent vers la colonne des cartes livrées. »
 - **Note** : Posé dans la fiche (components/parcours/FicheExperience.astro) ; décoratif à l’usage (alt vide), la fiche dit tout. Série : trois quarts en légère plongée, trait gravé, deux ou trois aplats, la lanterne seule source de lumière ; aucun texte, aucun chiffre, aucune marque dans l’image.
@@ -1086,10 +1086,10 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 ### PRO-04 · Initier au web
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/parcours/professionnel` · Professionnel, fiche Mission Locale : colonne de droite de la fiche (320 px), pleine largeur au-dessus du texte sur mobile _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours/professionnel` · Professionnel, fiche Mission Locale : colonne de droite de la fiche (320 px) ; sur mobile, bandeau 16:9 pleine largeur sous le texte, pour que le rôle reste en tête _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Initier au web
-- **Composition** : Une table d’atelier vue de trois quarts : trois ordinateurs portables ouverts sur un premier programme (lignes de code illisibles), des post-it vierges collés au bord des écrans, des chaises tirées comme à la fin d’un atelier ; la lanterne posée au centre de la table ; aucune silhouette, aucun logo. Même angle et même lumière que les autres visuels de la page.
-- **Format** : 3:2, 1800 × 1200
+- **Composition** : Une table d’atelier vue de trois quarts : trois ordinateurs portables ouverts sur un premier programme (lignes de code illisibles), des post-it vierges collés au bord des écrans, des chaises tirées comme à la fin d’un atelier ; la lanterne posée au centre de la table ; aucune silhouette, aucun logo. Sujet centré : recadrable en 16:9 sur mobile. Même angle et même lumière que les autres visuels de la page.
+- **Format** : 3:2, 1800 × 1200 ; 16:9 sur mobile (recadrage mobile 16:9)
 - **Fichier attendu** : `site/src/assets/visuels/parcours/PRO-04_1800x1200.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une table d’atelier avec des ordinateurs portables ouverts et des post-it, éclairée par une lanterne. »
 - **Note** : Posé dans la fiche (components/parcours/FicheExperience.astro) ; décoratif à l’usage (alt vide), la fiche dit tout. Série : trois quarts en légère plongée, trait gravé, deux ou trois aplats, la lanterne seule source de lumière ; aucun texte, aucun chiffre, aucune marque dans l’image.
@@ -1097,10 +1097,10 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 ### PRO-05 · Un tiers de temps administratif en moins
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/parcours/professionnel` · Professionnel, fiche du stage : colonne de droite de la fiche (320 px), pleine largeur au-dessus du texte sur mobile _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours/professionnel` · Professionnel, fiche du stage : colonne de droite de la fiche (320 px) ; sur mobile, bandeau 16:9 pleine largeur sous le texte, pour que le rôle reste en tête _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Un tiers de temps administratif en moins
-- **Composition** : Un formulaire de suivi des temps et des contrats posé à plat (cases et colonnes sans aucun chiffre ni mot), un sablier à côté dont le sable du haut a diminué d’un tiers, un tampon et un stylo ; la lanterne éclaire le sablier ; aucun logo de logiciel ni d’entreprise. Même angle et même lumière que les autres visuels de la page.
-- **Format** : 3:2, 1800 × 1200
+- **Composition** : Un formulaire de suivi des temps et des contrats posé à plat (cases et colonnes sans aucun chiffre ni mot), un sablier à côté dont le sable du haut a diminué d’un tiers, un tampon et un stylo ; la lanterne éclaire le sablier ; aucun logo de logiciel ni d’entreprise. Sujet centré : recadrable en 16:9 sur mobile. Même angle et même lumière que les autres visuels de la page.
+- **Format** : 3:2, 1800 × 1200 ; 16:9 sur mobile (recadrage mobile 16:9)
 - **Fichier attendu** : `site/src/assets/visuels/parcours/PRO-05_1800x1200.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un formulaire de suivi des temps et un sablier dont le sable a baissé d’un tiers. »
 - **Note** : Posé dans la fiche (components/parcours/FicheExperience.astro) ; décoratif à l’usage (alt vide), la fiche dit tout. Série : trois quarts en légère plongée, trait gravé, deux ou trois aplats, la lanterne seule source de lumière ; aucun texte, aucun chiffre, aucune marque dans l’image.
@@ -1108,10 +1108,10 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 ### PRO-06 · Sur mesure
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/parcours/professionnel` · Professionnel, fiche Dev-Mates : colonne de droite de la fiche (320 px), pleine largeur au-dessus du texte sur mobile _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours/professionnel` · Professionnel, fiche Dev-Mates : colonne de droite de la fiche (320 px) ; sur mobile, bandeau 16:9 pleine largeur sous le texte, pour que le rôle reste en tête _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Sur mesure
-- **Composition** : Un cahier des charges relié, ouvert et annoté dans la marge (traits sans texte), posé à côté d’une maquette d’application dessinée sur papier (un écran de téléphone et un écran de navigateur en traits) ; une règle et un crayon ; la lanterne éclaire le point où les deux documents se touchent ; aucun logo. Même angle et même lumière que les autres visuels de la page.
-- **Format** : 3:2, 1800 × 1200
+- **Composition** : Un cahier des charges relié, ouvert et annoté dans la marge (traits sans texte), posé à côté d’une maquette d’application dessinée sur papier (un écran de téléphone et un écran de navigateur en traits) ; une règle et un crayon ; la lanterne éclaire le point où les deux documents se touchent ; aucun logo. Sujet centré : recadrable en 16:9 sur mobile. Même angle et même lumière que les autres visuels de la page.
+- **Format** : 3:2, 1800 × 1200 ; 16:9 sur mobile (recadrage mobile 16:9)
 - **Fichier attendu** : `site/src/assets/visuels/parcours/PRO-06_1800x1200.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un cahier des charges annoté à côté d’une maquette d’application dessinée sur papier. »
 - **Note** : Posé : l’expérience Dev-Mates est gardée (Q9 : seule la mention « sans client actuellement » est retirée). Série : trois quarts en légère plongée, trait gravé, deux ou trois aplats, la lanterne seule source de lumière ; aucun texte, aucun chiffre, aucune marque dans l’image.
@@ -1240,7 +1240,7 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 ### FOR-01 · Une application web
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/parcours/formation` · Formation, titre DWWM : à droite du titre obtenu (au-dessus du texte sur mobile) _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours/formation` · Formation, titre DWWM : à droite du titre obtenu (sous le texte sur mobile, pour que le titre obtenu reste en tête) _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Une application web
 - **Composition** : Une application web en perspective, comme une maquette éclatée en trois plans superposés : à l’avant un écran responsive (un navigateur et un téléphone côte à côte, blocs de contenu sans texte), au milieu un composant d’API (connecteurs, flèches de requête et de réponse), au fond une base de données (cylindres empilés) ; la lanterne posée au pied de la pile éclaire les trois plans ; aucun logo de framework. Même angle et même lumière que les autres visuels de la page.
 - **Format** : 16:9, 1400 × 788
@@ -1262,9 +1262,9 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 ### FOR-03 · Autodidacte vers 13 ans
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/parcours/formation` · Formation, station du chemin d’avant le titre : vignette au-dessus de l’intitulé (200 px sur ordinateur, 96 px à gauche du texte sur mobile) _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours/formation` · Formation, station du chemin d’avant le titre : vignette carrée de 56 px à gauche de l’intitulé (au-dessus de lui dans une colonne étroite), 72 px à gauche du texte sur mobile : la station reste compacte, le titre obtenu domine _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Autodidacte vers 13 ans
-- **Composition** : Un vieux livre de programmation ouvert à plat sur un bureau d’adolescent, page de listing illisible, un clavier ancien à côté ; la lanterne éclaire la page. Cadrage serré : le sujet occupe au moins 60 % du cadre et se lit à 96 px.
+- **Composition** : Un vieux livre de programmation ouvert à plat sur un bureau d’adolescent, page de listing illisible, un clavier ancien à côté ; la lanterne éclaire la page. Cadrage serré : le sujet occupe au moins 70 % du cadre et se lit à 56 px, une seule forme dominante.
 - **Format** : 1:1, 384
 - **Fichier attendu** : `site/src/assets/visuels/parcours/FOR-03_384x384.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un livre de programmation ouvert à la lumière d’une lanterne. »
@@ -1273,9 +1273,9 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 ### FOR-04 · BUT Informatique
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/parcours/formation` · Formation, station du chemin d’avant le titre : vignette au-dessus de l’intitulé (200 px sur ordinateur, 96 px à gauche du texte sur mobile) _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours/formation` · Formation, station du chemin d’avant le titre : vignette carrée de 56 px à gauche de l’intitulé (au-dessus de lui dans une colonne étroite), 72 px à gauche du texte sur mobile : la station reste compacte, le titre obtenu domine _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : BUT Informatique
-- **Composition** : Une feuille de cours avec un organigramme d’algorithme (losanges de décision, rectangles, flèches) et quelques lignes de code illisibles en marge, un crayon posé ; la lanterne en haut à droite. Cadrage serré : le sujet occupe au moins 60 % du cadre et se lit à 96 px.
+- **Composition** : Une feuille de cours avec un organigramme d’algorithme (losanges de décision, rectangles, flèches) et quelques lignes de code illisibles en marge, un crayon posé ; la lanterne en haut à droite. Cadrage serré : le sujet occupe au moins 70 % du cadre et se lit à 56 px, une seule forme dominante.
 - **Format** : 1:1, 384
 - **Fichier attendu** : `site/src/assets/visuels/parcours/FOR-04_384x384.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un organigramme d’algorithme et quelques lignes de code sur une feuille de cours. »
@@ -1284,9 +1284,9 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 ### FOR-05 · Physique-chimie
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/parcours/formation` · Formation, station du chemin d’avant le titre : vignette au-dessus de l’intitulé (200 px sur ordinateur, 96 px à gauche du texte sur mobile) _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours/formation` · Formation, station du chemin d’avant le titre : vignette carrée de 56 px à gauche de l’intitulé (au-dessus de lui dans une colonne étroite), 72 px à gauche du texte sur mobile : la station reste compacte, le titre obtenu domine _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Physique-chimie
-- **Composition** : De la verrerie de laboratoire (erlenmeyer, tube à essai, bécher) devant le dessin d’un atome à trois orbites ; la lanterne éclaire le liquide d’un des flacons. Cadrage serré : le sujet occupe au moins 60 % du cadre et se lit à 96 px.
+- **Composition** : De la verrerie de laboratoire (erlenmeyer, tube à essai, bécher) devant le dessin d’un atome à trois orbites ; la lanterne éclaire le liquide d’un des flacons. Cadrage serré : le sujet occupe au moins 70 % du cadre et se lit à 56 px, une seule forme dominante.
 - **Format** : 1:1, 384
 - **Fichier attendu** : `site/src/assets/visuels/parcours/FOR-05_384x384.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « De la verrerie de laboratoire devant le dessin d’un atome. »
@@ -1295,9 +1295,9 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 ### FOR-06 · BUT Réseaux & Télécoms
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/parcours/formation` · Formation, station du chemin d’avant le titre : vignette au-dessus de l’intitulé (200 px sur ordinateur, 96 px à gauche du texte sur mobile) _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours/formation` · Formation, station du chemin d’avant le titre : vignette carrée de 56 px à gauche de l’intitulé (au-dessus de lui dans une colonne étroite), 72 px à gauche du texte sur mobile : la station reste compacte, le titre obtenu domine _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : BUT Réseaux & Télécoms
-- **Composition** : Un petit réseau vu de dessus : un routeur relié à un commutateur, lui-même relié à trois postes, câbles visibles ; la lanterne éclaire le commutateur ; aucune marque d’équipement. Cadrage serré : le sujet occupe au moins 60 % du cadre et se lit à 96 px.
+- **Composition** : Un petit réseau vu de dessus : un routeur relié à un commutateur, lui-même relié à trois postes, câbles visibles ; la lanterne éclaire le commutateur ; aucune marque d’équipement. Cadrage serré : le sujet occupe au moins 70 % du cadre et se lit à 56 px, une seule forme dominante.
 - **Format** : 1:1, 384
 - **Fichier attendu** : `site/src/assets/visuels/parcours/FOR-06_384x384.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un routeur, un commutateur et trois postes reliés par des câbles. »
@@ -1306,9 +1306,9 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 ### FOR-07 · Un terminal et un chronomètre, avec une échelle de piscine en clin d’œil
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/parcours/formation` · Formation, station du chemin d’avant le titre : vignette au-dessus de l’intitulé (200 px sur ordinateur, 96 px à gauche du texte sur mobile) _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/parcours/formation` · Formation, station du chemin d’avant le titre : vignette carrée de 56 px à gauche de l’intitulé (au-dessus de lui dans une colonne étroite), 72 px à gauche du texte sur mobile : la station reste compacte, le titre obtenu domine _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet pour le prompt** : Un terminal et un chronomètre, avec une échelle de piscine en clin d’œil
-- **Composition** : Un terminal ouvert (lignes illisibles) et un chronomètre lancé, avec l’échelle d’un bassin de piscine en clin d’œil au premier plan ; la lanterne éclaire le terminal ; sans le logo ni le nom de l’école. Cadrage serré : le sujet occupe au moins 60 % du cadre et se lit à 96 px.
+- **Composition** : Un terminal ouvert (lignes illisibles) et un chronomètre lancé, avec l’échelle d’un bassin de piscine en clin d’œil au premier plan ; la lanterne éclaire le terminal ; sans le logo ni le nom de l’école. Cadrage serré : le sujet occupe au moins 70 % du cadre et se lit à 56 px, une seule forme dominante.
 - **Format** : 1:1, 384
 - **Fichier attendu** : `site/src/assets/visuels/parcours/FOR-07_384x384.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un terminal et un chronomètre, une échelle de piscine au premier plan. »
