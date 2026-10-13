@@ -22,13 +22,14 @@ import TeteEtape from '../components/accueil/TeteEtape.astro';
 import Illustration from '../components/accueil/Illustration.astro';
 import Terme from '../components/ui/Terme.astro';
 import { GLOSSAIRE } from '../config/glossaire';
+import { CHAPITRES } from '../config/chapitres';
 
 const titre = 'Charles Lindecker, mode d’emploi';
 const description =
   'Architecte logiciel, je code depuis mes 13 ans. Mon parcours, ma méthode et mes réalisations, du jeu de cartes aux projets open source.';
 ---
 
-<Base titre={titre} description={description} chemin="/" accueil>
+<Base titre={titre} description={description} chemin="/" accueil sommaire={CHAPITRES.map(({ id, titre }) => ({ id, titre }))}>
   <Couverture />
 
   <Manuel>

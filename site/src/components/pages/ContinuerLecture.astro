@@ -1,4 +1,10 @@
 ---
+/**
+ * « Pour continuer » : deux ou trois pages où poursuivre, en fin de page.
+ * Un seul bloc de suite par page (cahier, § 4.3).
+ *
+ *   <ContinuerLecture liens={[{ href: '/projets', titre: 'Les projets', detail: '…' }]} />
+ */
 interface Lien {
   href: string;
   titre: string;
@@ -17,7 +23,7 @@ const { liens } = Astro.props;
   <ul>
     {liens.map((lien) => <li>
       <a href={lien.href}>
-        <span class="suite-lecture__nom">{lien.titre}</span>
+        <span class="suite-lecture__nom">{lien.titre}<span class="fleche" aria-hidden="true">&nbsp;→</span></span>
         <span class="suite-lecture__detail">{lien.detail}</span>
       </a>
     </li>)}
@@ -28,48 +34,61 @@ const { liens } = Astro.props;
   .suite-lecture {
     padding-block: var(--s7) var(--s8);
     margin-top: var(--s8);
-    border-top: 1px solid var(--filet);
+    border-top: 1px solid var(--trait);
   }
 
   .suite-lecture__titre {
-    color: var(--graphite);
-    font-size: var(--t-petit);
-    margin-bottom: var(--s5);
+    color: var(--eteint);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: var(--ls-petit);
+    margin-bottom: var(--s4);
   }
 
   ul {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
-    gap: var(--s5) var(--s7);
+    gap: var(--s4) var(--s6);
     list-style: none;
     padding: 0;
     margin: 0;
   }
 
+  li {
+    border-top: 1px solid var(--filet);
+  }
+
   a {
     display: block;
     min-height: 68px;
+    padding-top: var(--s3);
+    color: var(--encre);
     text-decoration: none;
   }
 
   .suite-lecture__nom {
     display: block;
-    font-size: 1.5rem;
-    font-weight: 700;
-    line-height: 1.2;
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
+    font-family: var(--police-titre);
+    font-size: var(--t-xl);
+    line-height: 1.1;
+  }
+
+  .fleche {
+    color: var(--accent);
+    font-size: var(--t-s);
   }
 
   .suite-lecture__detail {
     display: block;
     margin-top: var(--s2);
-    font-size: var(--t-petit);
-    color: var(--graphite);
+    font-size: var(--t-s);
+    color: var(--eteint);
     max-width: 35ch;
   }
 
   a:hover .suite-lecture__nom {
-    text-decoration-thickness: 2px;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.14em;
   }
 </style>

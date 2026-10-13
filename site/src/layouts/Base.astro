@@ -7,12 +7,22 @@
  * Aucun script en ligne : /theme.js et /mesure.js sont des fichiers (le
  * second est écrit au démarrage du serveur selon l'environnement), et les
  * scripts des composants sont des modules construits par Astro.
+ *
+ * Contrats avec le serveur (server/blog.mjs, gabarits blog et blog-modele) :
+ * une balise <title>, des <meta name|property> à l'attribut name/property
+ * avant content, le JSON-LD en <script type="application/ld+json">, /mesure.js
+ * en <script defer src>, et aucun <noscript> dans la coque (le serveur retire
+ * ceux du gabarit d'article).
+ *
+ * `sommaire` : les sections de la page, proposées par le bouton « Sommaire »
+ * de l'en-tête sur mobile et tablette.
  */
 import { Font, getImage } from 'astro:assets';
 import Entete from '../components/layout/Entete.astro';
 import PiedDePage from '../components/layout/PiedDePage.astro';
 import photo from '../assets/photos/charles-4.webp';
 import { SITE } from '../config/site';
+import type { EntreeSommaire } from '../config/navigation';
 import { absolue, jsonLd, noeudPage, noeudPersonne } from '../lib/seo';
 import '../styles/global.css';
 
@@ -25,9 +35,11 @@ interface Props {
   horsIndex?: boolean;
   /** Accueil : la marque de l'en-tête ramène en haut de page au lieu de recharger. */
   accueil?: boolean;
+  /** Sections de la page pour le sommaire de l'en-tête (mobile et tablette). */
+  sommaire?: readonly EntreeSommaire[];
 }
 
-const { titre, description, chemin, horsIndex = false, accueil = false } = Astro.props;
+const { titre, description, chemin, horsIndex = false, accueil = false, sommaire } = Astro.props;
 const canonique = absolue(chemin);
 const imagePartage = {
   url: absolue('/og/accueil.png'),
@@ -94,7 +106,7 @@ if (!horsIndex) {
   </head>
   <body id="top">
     <a class="evitement" href="#contenu">Aller au contenu</a>
-    <Entete accueil={accueil} chemin={chemin} />
+    <Entete accueil={accueil} chemin={chemin} sommaire={sommaire} />
     <main id="contenu" tabindex="-1">
       <slot />
     </main>

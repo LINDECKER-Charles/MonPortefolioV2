@@ -1,19 +1,27 @@
 ---
+/**
+ * Le logo livre-lanterne : l’emblème, et le nom à côté quand il y a la place.
+ * Toujours décoratif : le lien qui l’entoure porte le nom accessible.
+ *
+ * La nuit, l’emblème passe à l’encre de lune et seules les lumières de la
+ * lanterne gardent leur couleur (LogoImage).
+ *
+ *   <Logo />            emblème et nom (le nom se masque sous 860 px)
+ *   <Logo nom={false} /> emblème seul
+ */
 import LogoImage from './LogoImage.astro';
 import symbole from '../../assets/marque/logo-symbole.webp';
-import nom from '../../assets/marque/logo-nom.webp';
-import entier from '../../assets/marque/logo-complet.webp';
+import nomImage from '../../assets/marque/logo-nom.webp';
 import { cadrages, lumieres } from '../../assets/marque/cadrages.json';
-import { SITE } from '../../config/site';
 
 interface Props {
-  complet?: boolean;
-  sousTitre?: boolean;
-  decoratif?: boolean;
+  /** Affiche le nom à côté de l’emblème. */
+  nom?: boolean;
+  class?: string;
 }
 
-const { complet = false, sousTitre = false, decoratif = false } = Astro.props;
-const cadrage = complet ? cadrages.complet : cadrages.symbole;
+const { nom = true, class: classe } = Astro.props;
+const cadrage = cadrages.symbole;
 const clips = lumieres.map(({ left, top, width, height }) => {
   const haut = ((top - cadrage.top) / cadrage.height) * 100;
   const droite = ((cadrage.left + cadrage.width - left - width) / cadrage.width) * 100;
@@ -23,35 +31,35 @@ const clips = lumieres.map(({ left, top, width, height }) => {
 });
 ---
 
-<span class:list={['logo', { 'logo--complet': complet }]} role={decoratif ? undefined : 'img'} aria-label={decoratif ? undefined : SITE.nom} aria-hidden={decoratif ? 'true' : undefined}>
-  {complet ? (
-    <LogoImage src={entier} lumieres={clips} />
-  ) : (
-    <>
-      <span class="logo__symbole"><LogoImage src={symbole} lumieres={clips} /></span>
-      <span class="logo__identite">
-        <span class="logo__nom"><LogoImage src={nom} /></span>
-        {sousTitre && <span class="logo__sous">{SITE.sousTitre}</span>}
-      </span>
-    </>
-  )}
+<span class:list={['logo', classe]} aria-hidden="true">
+  <span class="logo__embleme"><LogoImage src={symbole} lumieres={clips} /></span>
+  {nom && <span class="logo__nom"><LogoImage src={nomImage} /></span>}
 </span>
 
 <style>
-  .logo { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-  .logo__symbole { width: 64px; flex-shrink: 0; }
-  .logo__identite { display: flex; flex-direction: column; gap: 4px; }
-  .logo__nom { width: 180px; }
-  .logo__sous { font-size: .8125rem; color: var(--graphite); line-height: 1.2; }
-  .logo--complet { display: block; width: 200px; }
-  @media (max-width: 760px) {
-    .logo { gap: 8px; }
-    .logo__symbole { width: 42px; }
-    .logo__nom { width: 112px; }
-    .logo__sous { font-size: .75rem; }
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s3);
+    flex-shrink: 0;
   }
-  @media (max-width: 374px) {
-    .logo__symbole { width: 52px; }
-    .logo__identite { display: none; }
+
+  .logo__embleme {
+    width: 52px;
+    flex-shrink: 0;
+  }
+
+  .logo__nom {
+    width: 122px;
+  }
+
+  @media (max-width: 860px) {
+    .logo__embleme {
+      width: 44px;
+    }
+
+    .logo__nom {
+      display: none;
+    }
   }
 </style>
