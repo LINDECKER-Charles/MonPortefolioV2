@@ -68,12 +68,12 @@ export const PREUVES: readonly PreuveEnTete[] = [
     source: 'Historique public de l’application',
     date: 'relevé le 13/10/2026',
     surligne: true,
-    href: '#anciennes-fiches',
+    href: '#versions',
   },
   { valeur: '21', libelle: 'langues, celles que publie Riot', source: 'Page « À propos » de l’application', date: 'relevé le 13/10/2026' },
   {
     valeur: '12 260',
-    libelle: 'écarts entre les deux versions, tous expliqués avant la bascule',
+    libelle: 'écarts entre les deux versions, tous classés avant la bascule',
     source: 'Rapport de parité public',
     date: '26/09/2026',
     href: '#reecriture',
@@ -247,7 +247,7 @@ export const PIEGES = [
 
 export const JALONS = [
   { date: '2025-08-03', libelle: 'Août 2025', titre: 'Première version', texte: 'Symfony, Go et Vue : trois langages.', visuel: 'LOD-05', logos: ['symfony', 'go', 'vuejs'] },
-  { date: '2026-09-24', libelle: '24/09/2026', titre: 'Dix décisions écrites', texte: '.NET 10 et Angular 22 : deux langages, un seul serveur.', visuel: 'LOD-10', logos: [] },
+  { date: '2026-09-24', libelle: '24/09/2026', titre: 'Dix décisions écrites', texte: '.NET 10 et Angular 22 : deux langages au lieu de trois, une seule API.', visuel: 'LOD-10', logos: [] },
   { date: '2026-09-26', libelle: '26/09/2026', titre: 'Parité vérifiée', texte: '75 couples (version, langue) comparés : 12\u00a0260 écarts, tous classés.', visuel: 'LOD-11', logos: [] },
   { date: '2026-10-04', libelle: '04/10/2026', titre: 'Bascule en production', texte: 'Version 3.0.0 : comptes, builds, favoris et clés d’API intacts.', visuel: 'LOD-12', logos: ['dotnet', 'angular'] },
 ] as const;
