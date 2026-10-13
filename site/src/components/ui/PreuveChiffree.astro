@@ -86,6 +86,19 @@ const fleche = href ? FLECHES[sorteDeLien(href)] : '';
     color: var(--accent);
   }
 
+  /* Mobile : une cible de 44 px (règle E7) sans déplacer la ligne. */
+  @media (max-width: 860px) {
+    a.preuve-chiffree__libelle {
+      position: relative;
+    }
+
+    a.preuve-chiffree__libelle::after {
+      content: '';
+      position: absolute;
+      inset: -11px -4px;
+    }
+  }
+
   .preuve-chiffree__source {
     font-size: var(--t-xs);
     line-height: 1.4;

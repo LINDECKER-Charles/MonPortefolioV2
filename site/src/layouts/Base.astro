@@ -16,6 +16,11 @@
  *
  * `sommaire` : les sections de la page, proposées par le bouton « Sommaire »
  * de l'en-tête sur mobile et tablette.
+ *
+ * `titre` : le titre court de la page ; le <title> et og:title suivent un seul
+ * gabarit, « Titre — Charles Lindecker » (lib/seo.ts, titreDePage). Le JSON-LD
+ * décrit la page, Charles, le fil d’Ariane (BreadcrumbList) et, sur une page
+ * de projet, le projet lui-même.
  */
 import { existsSync } from 'node:fs';
 import path from 'node:path';
@@ -24,9 +29,9 @@ import Entete from '../components/layout/Entete.astro';
 import PiedDePage from '../components/layout/PiedDePage.astro';
 import photo from '../assets/photos/charles-4.webp';
 import { SITE } from '../config/site';
-import { visuelParId } from '../config/visuels';
 import type { EntreeSommaire } from '../config/navigation';
-import { absolue, jsonLd, noeudPage, noeudPersonne } from '../lib/seo';
+import { imagePartageDe, PARTAGE_DEFAUT } from '../lib/partage';
+import { absolue, jsonLd, noeudAriane, noeudPage, noeudPersonne, noeudProjet, titreDePage } from '../lib/seo';
 import '../styles/global.css';
 
 interface Props {
@@ -40,30 +45,42 @@ interface Props {
   accueil?: boolean;
   /** Sections de la page pour le sommaire de l'en-tête (mobile et tablette). */
   sommaire?: readonly EntreeSommaire[];
+  /** Image de partage propre à la page (adresse sous public/, 1 200 × 630) ; sinon lib/partage.ts. */
+  ogImage?: string;
+  /** Texte alternatif de `ogImage`. */
+  ogImageAlt?: string;
 }
 
-const { titre, description, chemin, horsIndex = false, accueil = false, sommaire } = Astro.props;
+const { titre: titreDonne, description, chemin, horsIndex = false, accueil = false, sommaire, ogImage, ogImageAlt } = Astro.props;
+const titre = titreDePage(titreDonne, chemin);
 const canonique = absolue(chemin);
-/* L’image de partage de la direction « Lanterne » (GLO-07) dès qu’elle est
-   livrée, avec l’alt du registre (« mode d’emploi » n’y reste qu’en clin
-   d’œil, décision du 13/10/2026). D’ici là, l’image actuelle, que son alt
-   décrit telle qu’elle est : son titre dit encore « mode d’emploi ». */
-const partage = visuelParId('GLO-07');
-const partageLivre = partage?.fichier ? existsSync(path.resolve(partage.fichier)) : false;
+/** La barre du navigateur mobile : bleu roi le jour, suie la nuit. */
+const COULEUR_NUIT = '#0b0d12';
+/* L’image de partage de la page (lib/partage.ts, rendue par
+   tools/generer-partage.mjs) : la sienne, sinon l’image par défaut (GLO-07),
+   sinon public/og/accueil.png. Une page peut passer la sienne (`ogImage`,
+   adresse sous public/, et `ogImageAlt`). */
+const prevue = imagePartageDe(chemin);
+const livree = (fichier: string) => existsSync(path.resolve(fichier));
+const fichierPartage = [prevue, PARTAGE_DEFAUT].find((image) => livree(image.fichier));
 const imagePartage = {
-  url: absolue(partageLivre && partage?.fichier ? partage.fichier.replace(/^public/, '') : '/og/accueil.png'),
+  url: absolue(ogImage ?? (fichierPartage ? fichierPartage.fichier.replace(/^public/, '') : '/og/accueil.png')),
   largeur: 1200,
   hauteur: 630,
-  alt: partageLivre && partage ? partage.alt : 'Charles Lindecker, mode d’emploi. Je maîtrise d’abord les règles du jeu. Ensuite, je les réinvente.',
+  alt: ogImageAlt ?? fichierPartage?.alt ?? PARTAGE_DEFAUT.alt,
 };
 
 let donnees: string | undefined;
 if (!horsIndex) {
   const portrait = await getImage({ src: photo, width: 800, format: 'jpg', quality: 80 });
-  donnees = jsonLd([
-    noeudPage({ chemin, titre, description }),
-    noeudPersonne({ url: absolue(portrait.src), largeur: 800, hauteur: Math.round((800 * photo.height) / photo.width) }),
-  ]);
+  donnees = jsonLd(
+    [
+      noeudPage({ chemin, titre, description }),
+      noeudPersonne({ url: absolue(portrait.src), largeur: 800, hauteur: Math.round((800 * photo.height) / photo.width) }),
+      noeudAriane(chemin, titreDonne),
+      noeudProjet(chemin, description),
+    ].filter((noeud): noeud is NonNullable<typeof noeud> => Boolean(noeud)),
+  );
 }
 ---
 
@@ -85,7 +102,8 @@ if (!horsIndex) {
       )
     }
     <meta name="author" content={SITE.nom} />
-    <meta name="theme-color" content={SITE.couleurTheme} />
+    <meta name="theme-color" content={SITE.couleurTheme} media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content={COULEUR_NUIT} media="(prefers-color-scheme: dark)" />
     <meta property="og:type" content={chemin === '/' ? 'profile' : 'website'} />
     <meta property="og:site_name" content={SITE.nom} />
     <meta property="og:locale" content={SITE.locale} />
@@ -100,10 +118,10 @@ if (!horsIndex) {
     {chemin === '/' && <meta property="profile:first_name" content="Charles" />}
     {chemin === '/' && <meta property="profile:last_name" content="Lindecker" />}
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="icon" href="/favicon.ico?v=20261008-transparent" sizes="16x16 32x32 48x48" />
-    <link rel="icon" href="/favicon.png?v=20261008-transparent" type="image/png" sizes="64x64" media="(prefers-color-scheme: light)" />
-    <link rel="icon" href="/favicon-nuit.png?v=20261008-transparent" type="image/png" sizes="64x64" media="(prefers-color-scheme: dark)" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" href="/favicon.ico?v=20261013-embleme" sizes="16x16 32x32 48x48" />
+    <link rel="icon" href="/favicon.png?v=20261013-embleme" type="image/png" sizes="64x64" media="(prefers-color-scheme: light)" />
+    <link rel="icon" href="/favicon-nuit.png?v=20261013-embleme" type="image/png" sizes="64x64" media="(prefers-color-scheme: dark)" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20261013-embleme" />
     <link rel="manifest" href="/site.webmanifest" />
     {/* Synchrone, avant les styles : le thème est posé avant le premier rendu. */}
     <script is:inline src="/theme.js"></script>

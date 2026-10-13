@@ -85,3 +85,33 @@ describe('l’acte teinté et l’acte bleu, la nuit (règle B6)', () => {
     expect(contraste(jeton(bleu, 'trait'), suie)).toBeGreaterThanOrEqual(3);
   });
 });
+
+/** Une couleur `rgb(r g b / a)` posée sur un fond opaque, comme la page la compose. */
+function composer(dessus: string, dessous: string): string {
+  const [r, g, b, a] = /rgb\((\d+) (\d+) (\d+) \/ ([\d.]+)\)/.exec(dessus)?.slice(1).map(Number) ?? [];
+  if (a === undefined) throw new Error(`Couleur translucide illisible : ${dessus}`);
+  const fond = [1, 3, 5].map((i) => parseInt(dessous.slice(i, i + 2), 16));
+  return `#${[r, g, b].map((c, i) => Math.round(a * c + (1 - a) * fond[i]).toString(16).padStart(2, '0')).join('')}`;
+}
+
+function translucide(source: string, nom: string): string {
+  const valeur = new RegExp(`--${nom}:\\s*(rgb\\([^)]+\\))`).exec(source)?.[1];
+  if (!valeur) throw new Error(`Jeton --${nom} absent ou pas en rgb()`);
+  return valeur;
+}
+
+describe('le texte éteint sous la lumière d’un foyer (.foyer, --lumiere)', () => {
+  it('garde 4,5:1 au centre du halo, à pleine opacité, sur le fond et la surface, le jour comme la nuit', () => {
+    for (const [nom, theme] of [['jour', jour], ['nuit', nuit]] as const) {
+      for (const fond of ['fond', 'surface']) {
+        const compose = composer(translucide(theme, 'lumiere'), jeton(theme, fond));
+        expect(contraste(jeton(theme, 'eteint'), compose), `${nom}, ${fond} + lumière (${compose})`).toBeGreaterThanOrEqual(4.5);
+      }
+    }
+  });
+
+  it('vaut aussi pour le repli sans JavaScript (préférence du système)', () => {
+    const repli = bloc('  :root:not([data-theme]) {');
+    expect(jeton(repli, 'eteint')).toBe(jeton(nuit, 'eteint'));
+  });
+});

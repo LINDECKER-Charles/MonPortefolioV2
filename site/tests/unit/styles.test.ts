@@ -12,6 +12,13 @@ import { describe, expect, it } from 'vitest';
  * Exceptions assumées : le backoffice (hors refonte), et les tailles des
  * textes internes aux figures SVG, en unités de leur viewBox (une coordonnée,
  * pas une taille d’interface) : les fichiers de FIGURES_SVG.
+ *
+ * Même règle pour le mouvement (M2) : une durée ou un délai d’animation et de
+ * transition s’écrit avec --d-ui, --d-scene ou --d-recit (au besoin en
+ * multiple : `calc(var(--d-scene) * 4)`), jamais en dur. Seuls `0s` et
+ * `0.01ms` (mouvement réduit) restent littéraux. DUREES_A_MIGRER liste les
+ * fichiers qui écrivaient encore leurs durées en dur le 13 octobre 2026 : la
+ * liste ne fait que raccourcir, et tout autre fichier échoue.
  */
 
 const SRC = new URL('../../src/', import.meta.url).pathname;
@@ -25,7 +32,23 @@ const FIGURES_SVG = new Set([
   'components/projets/pvz/FigureRattrapage.astro',
 ]);
 
+const DUREES_A_MIGRER = new Set([
+  'components/accueil/FigureGwent.astro',
+  'components/accueil/FigurePlafond.astro',
+  'components/accueil/Regles.astro',
+  'components/accueil/Scene.astro',
+  'components/accueil/SceneLanternes.astro',
+  'components/accueil/SceneSysteme.astro',
+  'components/parcours/ChaineLivraison.astro',
+  'components/projets/bloodborne/Constellations.astro',
+  'components/projets/omnicard/CompteARebours.astro',
+  'components/projets/pvz/FigureEquipe.astro',
+  'pages/contact.astro',
+]);
+
 const COULEUR = /#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?|oklch|lab|lch)\(|(?<![\w-])(?:white|black|red|blue|green|gr[ae]y|yellow|orange|purple)(?![\w-])/i;
+/** Une durée littérale (hors 0s et 0.01ms) dans une déclaration d’animation ou de transition. */
+const DUREE = /(?:animation|transition)(?:-duration|-delay)?\s*:[^;]*?(?<![\w.-])(?!0s\b|0\.01ms\b)\d*\.?\d+m?s\b/;
 const TAILLE = /font-size\s*:(?!\s*(?:var\(|inherit|100%))|(?<![\w-])font\s*:[^;]*\d(?:px|rem|em|pt)\b/;
 
 function fichiers(dossier: string): string[] {
@@ -67,5 +90,17 @@ describe('styles du site (règle T13)', () => {
       .filter(({ nom }) => !FIGURES_SVG.has(nom))
       .flatMap(({ chemin, nom }) => lignesDeStyle(chemin).filter(({ texte }) => TAILLE.test(texte)).map(({ ligne, texte }) => `${nom}:${ligne} ${texte.trim()}`));
     expect(fautes).toEqual([]);
+  });
+
+  it('n’écrit aucune durée d’animation ou de transition en dur hors des jetons (règle M2)', () => {
+    const fautes = sources
+      .filter(({ nom }) => !DUREES_A_MIGRER.has(nom))
+      .flatMap(({ chemin, nom }) => lignesDeStyle(chemin).filter(({ texte }) => DUREE.test(texte)).map(({ ligne, texte }) => `${nom}:${ligne} ${texte.trim()}`));
+    expect(fautes).toEqual([]);
+  });
+
+  it('reconnaît une durée écrite en dur, et laisse passer les jetons et le mouvement réduit', () => {
+    for (const faute of ['animation: x 1.9s ease both;', 'transition: opacity 0.45s ease;', 'transition-delay: 1.45s;', 'animation-delay: calc(var(--rang) * 70ms);', 'animation: y 800ms linear infinite;']) expect(DUREE.test(faute), faute).toBe(true);
+    for (const juste of ['animation: x var(--d-recit) var(--courbe) both;', 'transition: rotate var(--d-ui) var(--courbe);', 'animation: z calc(var(--d-scene) * 4) var(--courbe) both;', 'transition-duration: 0s !important;', 'animation-duration: 0.01ms !important;']) expect(DUREE.test(juste), juste).toBe(false);
   });
 });

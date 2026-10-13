@@ -16,6 +16,7 @@ export type Emplacement =
   | 'sommaire'
   | 'hero'
   | 'preuves'
+  | 'fiche-projet'
   | 'competences'
   | 'discutons'
   | 'contact'

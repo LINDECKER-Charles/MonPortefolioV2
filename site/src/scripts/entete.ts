@@ -6,10 +6,30 @@
  * ailleurs ou sur un lien le referme ; en ouvrir un referme l’autre ; passer
  * en largeur d’ordinateur referme le menu mobile.
  *
+ * Choisir une section dans le sommaire referme le menu et donne le focus au
+ * titre atteint (tabindex="-1", sans défilement : l’ancre s’en charge, sous
+ * l’en-tête grâce à scroll-padding-top). Un lecteur d’écran annonce ce
+ * titre, et non le corps de la page.
+ *
  * La barre de 2 px (visible sous 860 px) suit la part de la page déjà lue ;
  * le sommaire de l’en-tête marque la section en cours (scripts/sommaire.ts).
  */
 import { brancherSommaire } from './sommaire';
+
+/** Le titre de la section visée par une ancre (ou la section elle-même) reçoit le focus. */
+function donnerLeFocus(ancre: string): void {
+  let section: HTMLElement | null = null;
+  try {
+    section = document.getElementById(decodeURIComponent(ancre.slice(1)));
+  } catch {
+    return;
+  }
+  if (!section) return;
+  const titre = section.matches('h1, h2, h3') ? section : (section.querySelector<HTMLElement>('h2, h3') ?? section);
+  if (!titre.hasAttribute('tabindex')) titre.setAttribute('tabindex', '-1');
+  titre.classList.add('cible-sommaire');
+  titre.focus({ preventScroll: true });
+}
 
 export function brancherEntete(): void {
   if (document.querySelector('.entete [data-sommaire]')) brancherSommaire();
@@ -34,7 +54,11 @@ export function brancherEntete(): void {
 
   for (const menu of menus) {
     menu.addEventListener('click', (evenement) => {
-      if ((evenement.target as Element).closest('a')) menu.open = false;
+      const lien = (evenement.target as Element).closest('a');
+      if (!lien) return;
+      menu.open = false;
+      // Après la navigation vers l’ancre, qui rend le focus au corps de page.
+      if (lien.hash && lien.pathname === location.pathname) setTimeout(() => donnerLeFocus(lien.hash), 0);
     });
     menu.addEventListener('toggle', () => {
       if (!menu.open) return;

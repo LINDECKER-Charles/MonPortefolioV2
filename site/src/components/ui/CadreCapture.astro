@@ -28,11 +28,29 @@
  * « media » remplace l’image (vidéo).
  *
  *   <CadreCapture type="terminal" src={ecran} alt="…" region={{ x: 27, y: 11.3, l: 71, h: 83.7 }} agrandir />
+ *
+ * Les cadres suivent le dessin GLO-05 du registre
+ * (src/assets/visuels/global/GLO-05.svg) : le composant en reprend les trois
+ * points de la barre et le haut-parleur du téléphone, insérés en ligne dans
+ * les teintes de cadre. Le contour, lui, reste en CSS pour suivre la taille de
+ * la capture (coins selon les jetons). Sans le fichier, les points se
+ * dessinent en CSS.
  */
 import type { ImageMetadata } from 'astro';
 import { getImage, Picture } from 'astro:assets';
 import Picto from './Picto.astro';
 import { typo } from '../../lib/typo';
+
+/** Les pièces du dessin des cadres (GLO-05), quand il est livré. */
+const cadres = import.meta.glob<string>('/src/assets/visuels/global/GLO-05.svg', { eager: true, query: '?raw', import: 'default' });
+const dessinCadres = cadres['/src/assets/visuels/global/GLO-05.svg'];
+const piece = (id: string) => {
+  const trouve = dessinCadres && new RegExp(`<symbol id="${id}" viewBox="([^"]+)">([\\s\\S]*?)</symbol>`).exec(dessinCadres);
+  return trouve ? { viewBox: trouve[1], corps: trouve[2].trim() } : undefined;
+};
+const POINTS = piece('points');
+/** Le haut-parleur : le seul trait plein du téléphone de GLO-05. */
+const HAUT_PARLEUR = piece('telephone')?.corps.match(/<rect\b[^>]*fill="currentColor"[^>]*\/>/)?.[0];
 
 /** Une région de l’image, en pourcentages de sa largeur et de sa hauteur. */
 export interface Region {
@@ -109,10 +127,11 @@ const aLegende = Boolean(legende) || Astro.slots.has('legende');
   <div class="capture__cadre">
     {type === 'navigateur' && (
       <div class="capture__barre" aria-hidden="true">
-        <span class="capture__points"></span>
+        {POINTS ? <svg class="capture__points capture__points--dessin" viewBox={POINTS.viewBox} focusable="false" set:html={POINTS.corps} /> : <span class="capture__points"></span>}
         {adresse && <span class="capture__adresse">{adresse}</span>}
       </div>
     )}
+    {type === 'telephone' && HAUT_PARLEUR && <svg class="capture__haut-parleur" viewBox="21 6 12 2.5" aria-hidden="true" focusable="false" set:html={HAUT_PARLEUR} />}
     <div class="capture__vue" style={style}>
       {
         Astro.slots.has('media') ? (
@@ -196,6 +215,12 @@ const aLegende = Boolean(legende) || Astro.slots.has('legende');
     width: 34px;
     height: 8px;
     background: radial-gradient(circle 4px at 4px 4px, var(--cadre-point) 98%, transparent) 0 0 / 13px 8px repeat-x;
+  }
+
+  .capture__points--dessin {
+    height: 8px;
+    background: none;
+    color: var(--cadre-point);
   }
 
   .capture__adresse {
@@ -313,8 +338,19 @@ const aLegende = Boolean(legende) || Astro.slots.has('legende');
   }
 
   .capture--telephone .capture__cadre {
+    position: relative;
     padding: 6px;
     border-radius: 26px;
+  }
+
+  .capture__haut-parleur {
+    position: absolute;
+    top: 1.5px;
+    left: 50%;
+    width: 22px;
+    height: 3px;
+    translate: -50% 0;
+    color: var(--cadre-point);
   }
 
   .capture--telephone .capture__vue {

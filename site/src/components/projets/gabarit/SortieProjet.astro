@@ -3,7 +3,10 @@
  * La sortie commune des pages de projet (gabarit E5 · 5) : ce que j’en
  * retiens (le slot), l’appel « Discutons → » vers /contact, les liens
  * publics du projet, puis le projet précédent et le suivant dans l’ordre de
- * la vitrine (config/projets.ts) et le retour à la vitrine.
+ * la vitrine (config/projets.ts) et le retour à la vitrine. La flèche dit le
+ * sens de lecture : « Projet suivant → », « ← Projet précédent ». Le dernier
+ * projet de la vitrine n’a pas de suivant : sa sortie mène aux projets
+ * publics de la rangée « Aussi » (/projets#aussi).
  *
  *   <SortieProjet projet="pvz" liens={LIENS_SORTIE}>
  *     <p>Ce dont je suis le plus fier : …</p>
@@ -29,10 +32,17 @@ interface Props {
 
 const { projet: id, liens = [], id: ancre = 'retiens', titre = 'Ce que j’en retiens', emplacement = 'preuves' } = Astro.props;
 const { precedent, suivant } = projetDeLaVitrine(id);
-const voisins = [
-  suivant && { sens: 'Projet suivant', projet: suivant },
-  precedent && { sens: 'Projet précédent', projet: precedent },
-].filter((voisin): voisin is NonNullable<typeof voisin> => Boolean(voisin));
+interface Voisin {
+  sens: string;
+  nom: string;
+  href: string;
+  preuve: string;
+  retour?: boolean;
+}
+const voisins: Voisin[] = [
+  suivant ? { sens: 'Projet suivant', nom: suivant.nom, href: suivant.href, preuve: suivant.preuve } : { sens: 'Aussi', nom: 'Les autres projets publics', href: '/projets#aussi', preuve: 'Des projets publics, sans page dédiée' },
+];
+if (precedent) voisins.push({ sens: 'Projet précédent', nom: precedent.nom, href: precedent.href, preuve: precedent.preuve, retour: true });
 ---
 
 <section id={ancre} class="sortie-projet" aria-labelledby={`${ancre}-titre`}>
@@ -64,11 +74,15 @@ const voisins = [
     }
     <nav class="sortie-projet__voisins" aria-label="Autres projets">
       {
-        voisins.map(({ sens, projet }) => (
-          <a class="voisin" href={projet.href}>
+        voisins.map(({ sens, nom, href, preuve, retour }) => (
+          <a class:list={['voisin', { 'voisin--retour': retour }]} href={href}>
             <span class="voisin__sens">{sens}</span>
-            <span class="voisin__nom">{projet.nom}<span class="fleche" aria-hidden="true">&nbsp;→</span></span>
-            <span class="voisin__preuve">{typo(projet.preuve)}</span>
+            {retour ? (
+              <span class="voisin__nom"><span class="fleche" aria-hidden="true">←&nbsp;</span>{nom}</span>
+            ) : (
+              <span class="voisin__nom">{nom}<span class="fleche" aria-hidden="true">&nbsp;→</span></span>
+            )}
+            <span class="voisin__preuve">{typo(preuve)}</span>
           </a>
         ))
       }

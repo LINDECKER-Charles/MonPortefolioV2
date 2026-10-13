@@ -50,6 +50,20 @@ const id = `terme-${t.id}`;
     color: var(--accent);
   }
 
+  /* Mobile : une cible de 44 px (règle E7) sans déplacer la ligne. La zone
+     de toucher déborde du mot de 10 px en haut et en bas. */
+  @media (max-width: 860px) {
+    .terme {
+      position: relative;
+    }
+
+    .terme::after {
+      content: '';
+      position: absolute;
+      inset: -10px -4px;
+    }
+  }
+
   /* Sans API Popover, la bulle n'existe pas : le mot se lit comme du texte. */
   .terme__bulle {
     display: none;

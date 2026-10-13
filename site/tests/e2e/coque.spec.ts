@@ -68,7 +68,8 @@ test.describe('nuit choisie', () => {
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'nuit');
     await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(11, 13, 18)');
     await expect(page.getByRole('button', { name: 'Mode nuit' })).toHaveAttribute('aria-pressed', 'true');
-    const halo = await page.locator('.entete .logo__embleme').evaluate((e) => getComputedStyle(e, '::after').opacity);
+    // L’emblème affiché : l’illustré sur ordinateur, le dessin GLO-01 sur mobile.
+    const halo = await page.locator('.entete .logo__embleme:visible').evaluate((e) => getComputedStyle(e, '::after').opacity);
     expect(halo).toBe('1');
   });
 });

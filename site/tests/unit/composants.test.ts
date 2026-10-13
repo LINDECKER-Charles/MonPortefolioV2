@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import AConfirmer from '../../src/components/ui/AConfirmer.astro';
 import Acte from '../../src/components/ui/Acte.astro';
@@ -182,10 +182,49 @@ describe('captures', () => {
 });
 
 describe('Visuel manquant', () => {
-  it('affiche la commande complète : identifiant, nature, sujet, composition et format', async () => {
+  afterEach(() => {
+    delete process.env.VISUELS_BROUILLON;
+  });
+
+  it('en ligne, montre un cadre neutre au bon ratio, avec l’alt du registre, jamais la commande', async () => {
+    process.env.VISUELS_BROUILLON = '0';
+    const html = await rendre(Visuel, { id: 'PRJ-01' });
+    expect(html).toContain('visuel--attente');
+    expect(html).toContain('data-manquant');
+    expect(html).toContain('--visuel-ratio:16 / 10');
+    expect(html).toMatch(/role="img"[^>]*aria-label="[^"]+"|aria-label="[^"]+"[^>]*role="img"/);
+    for (const commande of ['PRJ-01</strong>', 'Image à générer', 'visuel__consigne', 'visuel__format', '1600 × 1000']) expect(html).not.toContain(commande);
+    const decoratif = await rendre(Visuel, { id: 'PRJ-01', alt: '' });
+    expect(decoratif).toContain('aria-hidden="true"');
+    expect(decoratif).not.toContain('role="img"');
+  });
+
+  it('en brouillon (VISUELS_BROUILLON=1), affiche la commande', async () => {
+    process.env.VISUELS_BROUILLON = '1';
+    expect(await rendre(Visuel, { id: 'PRJ-01' })).toContain('Image à générer · socle');
+  });
+
+  it('affiche la commande complète en développement : identifiant, nature, sujet, composition et format', async () => {
     const html = await rendre(Visuel, { id: 'PRJ-01', foyer: true });
     expect(html).toContain('visuel--foyer');
     expect(html).toContain('Image à générer · socle');
     expect(html).toMatch(/class="visuel__format[^"]*"[^>]*>16:10, 1600 × 1000/);
+  });
+});
+
+describe('Visuel dessiné (méthode SVG)', () => {
+  it('insère le dessin en ligne : son trait en currentColor suit le thème, jamais un <img src=*.svg>', async () => {
+    const html = await rendre(Visuel, { id: 'ACC-14' });
+    expect(html).toContain('visuel--dessin');
+    expect(html).toMatch(/<svg[^>]*stroke="currentColor"/);
+    expect(html).toMatch(/<svg[^>]*role="img"[^>]*aria-label="Trois lanternes/);
+    expect(html).not.toMatch(/<img\b[^>]*src="[^"]*\.svg/);
+    expect(html).not.toContain('<title>');
+  });
+
+  it('reste décoratif quand l’alt est vide', async () => {
+    const html = await rendre(Visuel, { id: 'ACC-14', alt: '' });
+    expect(html).toMatch(/<svg[^>]*aria-hidden="true"/);
+    expect(html).not.toContain('role="img"');
   });
 });

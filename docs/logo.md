@@ -34,6 +34,19 @@ node tools/preparer-logo.mjs
 L’image de partage est un rendu de `design/assets/partage/og-mode-d-emploi.html` à 1200 × 630 px,
 copié vers `site/public/og/accueil.png`. Aucun événement de mesure n’est ajouté.
 
+**Mise à jour du 2026-10-13 (refonte, direction « Lanterne »).** Deux dérivés remplacent ces
+exports pour les petites tailles et le partage, sans toucher au logo validé de l’en-tête
+d’ordinateur et du pied de page :
+
+- **Emblème seul (GLO-01)** : `site/src/assets/visuels/global/GLO-01.svg`, l’emblème redessiné à
+  la main sur une grille de 32 (deux aplats, flamme lisible à 16 px). Il sert à l’en-tête mobile
+  et aux icônes : `node tools/preparer-icones.mjs` (dans `site/`) régénère favicons jour et nuit,
+  ICO, icône Apple et icônes d’application.
+- **Images de partage (GLO-07 et GLO-08)** : `node --disable-warning=ExperimentalWarning
+  tools/generer-partage.mjs` compose une image par page, avec Instrument Serif et Instrument
+  Sans, le logo validé et les photos de séance (`site/src/lib/partage.ts`). L’image par défaut
+  est aussi copiée en `site/public/og/accueil.png`, l’image de repli des articles du blog.
+
 ## L'idée
 
 Un livre ouvert avec une lanterne gothique en son creux. La composition est validée.

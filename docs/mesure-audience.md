@@ -127,7 +127,7 @@ Précisions :
 
 | Propriété | Valeurs |
 |---|---|
-| `emplacement` | `en-tete`, `sommaire`, `hero`, `preuves`, `competences`, `discutons`, `contact`, `pied-de-page`, `page-404`, `mentions` |
+| `emplacement` | `en-tete`, `sommaire`, `hero`, `preuves`, `fiche-projet`, `competences`, `discutons`, `contact`, `pied-de-page`, `page-404`, `mentions` |
 | `chapitre` | `origine`, `aujourdhui`, `discutons` |
 | `choix` | `nuit`, `jour` |
 | `origine` | `interne`, `externe`, `directe` |
@@ -160,6 +160,12 @@ de projet et de la rangée « Aussi » utilisent `lien-sortant` avec l’emplace
 guides de contribution et « Tous mes dépôts publics » du bloc « Contribuer » sont l’invitation
 open source de l’objectif O3 (`lien-sortant`, emplacement `discutons`, domaine `github.com`) ;
 « Discutons » utilise `contact-page` avec l’emplacement `discutons`.
+
+Depuis le 2026-10-13, la fiche technique en tête de chaque page de projet porte, sous ses liens
+publics, un appel « Discutons de ce projet » vers `/contact` : l’événement `contact-page` avec
+l’emplacement `fiche-projet`. Il sépare les prises de contact décidées dès la fiche, au premier
+écran, de celles de la sortie de page (`discutons`). Les liens publics de la même fiche gardent
+`lien-sortant` avec l’emplacement `preuves`.
 
 Depuis le 2026-10-09, les liens officiels des technologies et de Trello sur `/parcours/competences`
 utilisent `lien-sortant` avec l’emplacement `competences` et le seul nom d’hôte de leur cible.
