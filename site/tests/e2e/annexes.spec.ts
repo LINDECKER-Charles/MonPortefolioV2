@@ -100,10 +100,12 @@ test.describe('contact', () => {
   test.describe('sans JavaScript', () => {
     test.use({ javaScriptEnabled: false });
 
-    test('les puces, qui ne feraient rien, ne s’affichent pas', async ({ page }) => {
+    test('les champs, qui ne partiraient pas, ne s’affichent pas : l’e-mail reste la voie', async ({ page }) => {
       await page.goto('/contact');
       await expect(page.getByRole('group', { name: 'Sujets fréquents' })).toBeHidden();
-      await expect(page.locator('#contact-subject')).toBeVisible();
+      await expect(page.locator('#contact-subject')).toBeHidden();
+      await expect(page.locator('.contact-obligatoire')).toBeHidden();
+      await expect(page.locator('.contact-sans-js a[href^="mailto:"]')).toBeVisible();
     });
   });
 });
