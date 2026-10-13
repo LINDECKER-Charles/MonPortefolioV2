@@ -39,36 +39,40 @@ function estAutorisee(texte: string): boolean {
   return AUTORISEES.some((citation) => motif.test(citation));
 }
 
+type Jeton = { type: 'texte' | 'ouvrante' | 'fermante'; nom?: string; attrs?: Map<string, string>; texte?: string; brut?: boolean };
+
 /** Textes présentés comme citations dans un HTML. */
 function citationsAffichees(html: string): string[] {
   const trouvees: string[] = [];
   const ouvertes: { nom: string; profondeur: number; texte: string[] }[] = [];
   const pile: string[] = [];
   const VIDES = /^(area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)$/;
+  const LEGENDES = /^(cite|figcaption|footer)$/;
   /** Attribution (« — Charles ») : lue comme légende, pas comme citation. */
   let legende = 0;
-  for (const j of decouper(html)) {
+  for (const j of decouper(html) as Jeton[]) {
+    const nom = j.nom ?? '';
     if (j.type === 'texte') {
-      if (!j.brut && !legende) for (const o of ouvertes) o.texte.push(j.texte);
+      if (!j.brut && !legende) for (const o of ouvertes) o.texte.push(j.texte ?? '');
       continue;
     }
     if (j.type === 'ouvrante') {
-      if (j.nom === 'br') for (const o of ouvertes) o.texte.push(' ');
-      if (VIDES.test(j.nom)) continue;
-      pile.push(j.nom);
-      if (j.nom === 'cite' || j.nom === 'figcaption' || j.nom === 'footer') legende += 1;
-      if (j.nom === 'blockquote' || j.nom === 'q' || j.attrs.has('data-citation')) {
-        ouvertes.push({ nom: j.nom, profondeur: pile.length, texte: [] });
+      if (nom === 'br') for (const o of ouvertes) o.texte.push(' ');
+      if (VIDES.test(nom)) continue;
+      pile.push(nom);
+      if (LEGENDES.test(nom)) legende += 1;
+      if (nom === 'blockquote' || nom === 'q' || j.attrs?.has('data-citation')) {
+        ouvertes.push({ nom, profondeur: pile.length, texte: [] });
       }
       continue;
     }
-    if (j.nom === 'cite' || j.nom === 'figcaption' || j.nom === 'footer') legende = Math.max(0, legende - 1);
+    if (LEGENDES.test(nom)) legende = Math.max(0, legende - 1);
     const dernier = ouvertes.at(-1);
-    if (dernier && dernier.nom === j.nom && dernier.profondeur === pile.length) {
+    if (dernier && dernier.nom === nom && dernier.profondeur === pile.length) {
       trouvees.push(dernier.texte.join(' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim());
       ouvertes.pop();
     }
-    const i = pile.lastIndexOf(j.nom);
+    const i = pile.lastIndexOf(nom);
     if (i >= 0) pile.length = i;
   }
   return trouvees.filter(Boolean);

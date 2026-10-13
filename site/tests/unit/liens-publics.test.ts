@@ -9,7 +9,6 @@ import { DELAI_BUILD, pagesConstruites } from './support/dist';
  */
 
 const AUTORISES = new Set(DEPOTS_PUBLICS.map((d) => d.nom.toLowerCase()));
-const COMPTE = COMPTE_GITHUB.toLowerCase();
 
 /** Dépôts `github.com/<compte>/<dépôt>` cités dans un HTML (profil seul ignoré). */
 function depotsCites(html: string): string[] {
