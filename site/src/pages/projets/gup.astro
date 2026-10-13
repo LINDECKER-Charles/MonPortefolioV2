@@ -172,7 +172,7 @@ const capture = (nom: string) => {
     </DecisionsProjet>
 
     <SortieProjet projet="gup" liens={LIENS_SORTIE}>
-      <p>Apprendre les règles de 153&nbsp;outils, pour n’avoir plus qu’un geste à faire.<AConfirmer titre="Formulation proposée, à valider par Charles" /></p>
+      <p>Absorber les exceptions de chaque outil, pour qu’il ne reste qu’un geste.<AConfirmer titre="Formulation proposée, à valider par Charles" /></p>
     </SortieProjet>
 
     <SourcesProjet>
@@ -326,7 +326,7 @@ const capture = (nom: string) => {
 
   .gup-pratiques {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: var(--s5);
     margin: var(--s6) 0 0;
     padding: 0;
@@ -410,6 +410,12 @@ const capture = (nom: string) => {
     gap: var(--s2);
     padding-top: var(--s3);
     border-top: 1px solid var(--trait);
+  }
+
+  @media (max-width: 1280px) {
+    .gup-pratiques {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
   }
 
   @media (max-width: 1100px) {

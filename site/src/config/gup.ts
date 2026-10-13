@@ -279,6 +279,11 @@ export const PRATIQUES: readonly { titre: string; texte: string; trace: LienProj
     trace: { href: LIENS.architecture, libelle: 'L’architecture' },
   },
   {
+    titre: 'Une gouvernance écrite',
+    texte: 'Le projet est mené par son mainteneur ; les décisions se prennent en public, sur les issues et les pull requests.',
+    trace: { href: LIENS.gouvernance, libelle: 'La gouvernance' },
+  },
+  {
     titre: 'Anglais et français',
     texte: 'L’interface parle les deux langues ; les captures de cette page sont en français.',
     trace: { href: LIENS.langue, libelle: 'La configuration' },
@@ -338,5 +343,4 @@ export const LIENS_SORTIE: readonly LienProjet[] = [
   { href: DEPOT, libelle: 'Le code' },
   { href: LIENS.site, libelle: 'Le site de gup' },
   { href: LIENS.npm, libelle: 'Le paquet npm' },
-  { href: LIENS.contribuer, libelle: 'Ajouter une source : le guide de contribution' },
 ];
