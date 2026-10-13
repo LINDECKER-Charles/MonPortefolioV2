@@ -4,7 +4,7 @@
 
 ## La mission
 
-Tu produis les visuels de la refonte du portfolio de Charles Lindecker. Le registre recense **126 emplacements** (82 « socle », 44 « élargi »). Pour chaque fiche ci-dessous, livre le **fichier attendu**, au chemin indiqué, en respectant le sujet, la composition et le format. Les règles communes valent pour toutes les fiches.
+Tu produis les visuels de la refonte du portfolio de Charles Lindecker. Le registre recense **131 emplacements** (87 « socle », 44 « élargi »). Pour chaque fiche ci-dessous, livre le **fichier attendu**, au chemin indiqué, en respectant le sujet, la composition et le format. Les règles communes valent pour toutes les fiches.
 
 - **Socle** : nécessaire au lancement de la refonte. À produire d’abord.
 - **Élargi** : enrichit le site et peut suivre.
@@ -54,13 +54,13 @@ Exceptions à la règle 3 : le nom dans les déclinaisons du logo, et les images
 | PvZ Fusion | 17 | 13 | IMG 10 · SVG 0 · FIG 6 · CAP 0 · PHO 0 · OG 1 |
 | League Of Data Base | 7 | 4 | IMG 3 · SVG 2 · FIG 2 · CAP 0 · PHO 0 · OG 0 |
 | Omnicard | 8 | 5 | IMG 2 · SVG 4 · FIG 1 · CAP 0 · PHO 0 · OG 1 |
-| Bloodborne Legendary Run | 7 | 4 | IMG 4 · SVG 1 · FIG 1 · CAP 0 · PHO 0 · OG 1 |
+| Bloodborne Legendary Run | 12 | 9 | IMG 4 · SVG 6 · FIG 1 · CAP 0 · PHO 0 · OG 1 |
 | gup | 6 | 2 | IMG 2 · SVG 1 · FIG 3 · CAP 0 · PHO 0 · OG 0 |
 | Parcours : hub, professionnel, compétences, formation | 32 | 27 | IMG 24 · SVG 4 · FIG 3 · CAP 0 · PHO 1 · OG 0 |
 | Contact | 4 | 3 | IMG 3 · SVG 0 · FIG 0 · CAP 0 · PHO 1 · OG 0 |
 | Blog | 2 | 1 | IMG 2 · SVG 0 · FIG 0 · CAP 0 · PHO 0 · OG 0 |
 | États : 404 et hors ligne | 2 | 1 | IMG 1 · SVG 1 · FIG 0 · CAP 0 · PHO 0 · OG 0 |
-| **Total** | **126** | **82** | IMG 73 · SVG 23 · FIG 19 · CAP 3 · PHO 3 · OG 5 |
+| **Total** | **131** | **87** | IMG 73 · SVG 28 · FIG 19 · CAP 3 · PHO 3 · OG 5 |
 
 ## File de travail « socle »
 
@@ -72,7 +72,7 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **PvZ Fusion** : PVZ-01 (IMG), PVZ-02 (IMG), PVZ-04 (IMG), PVZ-05 (IMG), PVZ-06 (IMG), PVZ-07 (IMG), PVZ-08 (IMG), PVZ-11 (IMG)
 - **League Of Data Base** : LOD-03 (SVG), LOD-04 (IMG)
 - **Omnicard** : OMN-01 (IMG), OMN-03 (SVG), OMN-04 (SVG), OMN-06 (SVG)
-- **Bloodborne Legendary Run** : BLR-01 (IMG), BLR-02 (SVG), BLR-04 (IMG)
+- **Bloodborne Legendary Run** : BLR-01 (IMG), BLR-02 (SVG), BLR-04 (IMG), BLR-06 (SVG), BLR-07 (SVG), BLR-08 (SVG), BLR-09 (SVG), BLR-10 (SVG)
 - **gup** : GUP-02 (SVG)
 - **Parcours : hub, professionnel, compétences, formation** : PAR-01 (IMG), PAR-02 (IMG), PAR-03 (IMG), PRO-01 (IMG), PRO-02 (IMG), PRO-03 (IMG), PRO-04 (IMG), PRO-05 (IMG), CMP-02 (IMG), CMP-03 (IMG), CMP-04 (IMG), CMP-05 (IMG), CMP-06 (IMG), CMP-07 (IMG), CMP-08 (IMG), CMP-10 (SVG), FOR-01 (IMG), FOR-02 (IMG), FOR-03 (IMG), FOR-04 (IMG), FOR-05 (IMG), FOR-06 (IMG), FOR-07 (IMG)
 - **Contact** : CON-01 (IMG), CON-02 (IMG)
@@ -853,12 +853,13 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 ### BLR-01 · Quarante trophées, plus de mille objectifs
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image)
-- **Emplacement** : `/projets/bloodborne-legendary-run` · § 1, le problème _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/projets/bloodborne-legendary-run` · § Ranger 1 289 objectifs, sous le texte (colonne de gauche) _(contexte : ne pas le recopier dans un prompt)_
 - **Sujet** : Quarante trophées, plus de mille objectifs
-- **Composition** : À gauche, un carnet de cases à cocher qui déborde de la page ; à droite, une petite rangée nette de 40 médailles ; aucune référence visuelle au jeu ni à une console ; la légende est en HTML
+- **Composition** : À gauche, un carnet de cases à cocher qui déborde de la page, la plupart encore vides ; à droite, une petite rangée nette de quarante médailles ; la lanterne posée sur le carnet éclaire la case suivante et laisse le reste dans l’ombre ; aucune référence visuelle au jeu ni à une console ; la légende est en HTML
 - **Format** : 3:2, 1500 × 1000
 - **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-01_1500x1000.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Quarante trophées, plus de mille objectifs »
+- **Note** : Posé avec un alt vide : le texte voisin dit la même chose (84 étoiles au premier ciel, dont les 40 trophées PlayStation, journal public du 06/09/2026). Affiché jusqu’à 540 px de large sur ordinateur, pleine largeur sur mobile.
 
 ### BLR-02 · Déclarer → compiler → dessiner
 
@@ -869,6 +870,7 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Format** : 16:9 ; 4:5 mobile (recadrage mobile 4:5)
 - **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-02.svg`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Déclarer → compiler → dessiner »
+- **Note** : Non posé sur la page refaite le 13/10/2026 : la compilation des arbres ne figure pas dans le journal public du projet. À poser dans « Ranger 1 289 objectifs » si Charles l’autorise.
 
 ### BLR-03 · Du wiki à la fiche française
 
@@ -879,6 +881,7 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Format** : 16:9
 - **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-03_1600x900.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Du wiki à la fiche française »
+- **Note** : Non posé sur la page refaite le 13/10/2026 (élargi) : la section du guide montre la vraie fiche du Père Gascoigne. Place prévue : sous ses trois repères.
 
 ### BLR-04 · Une réussite, une étoile
 
@@ -889,6 +892,7 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Format** : 1:1, 800
 - **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-04_800x800.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une réussite, une étoile »
+- **Note** : Non posé pour l’instant : les quatre vidéos ont déjà un poster réel pris au milieu de la cérémonie (public/demos/bloodborne, fichiers -poster.webp), qui reste affiché en mouvement réduit.
 
 ### BLR-05 · Un ciel dans la main
 
@@ -900,6 +904,61 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-05_960x1200.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un ciel dans la main »
 
+### BLR-06 · Le ciel dans un navigateur
+
+- **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
+- **Emplacement** : `/projets/bloodborne-legendary-run` · § L’essayer, carte « Application web » (remplace le dessin au trait bleu de l’ancienne page) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Le ciel dans un navigateur
+- **Composition** : Une fenêtre de navigateur vue de face, sans marque, sans texte ni barre d’adresse lisible ; dans la fenêtre, un petit ciel de quatre étoiles reliées par des traits ; la lanterne posée devant la fenêtre éclaire l’étoile la plus haute, le reste de la scène dans l’ombre ; sujet centré, lisible à 88 px
+- **Format** : 1:1, viewBox 120 (affiché de 88 à 120 px)
+- **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-06.svg`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Pendant de BLR-07 : même angle, même trait, même lanterne. Décoratif : le titre de la carte dit « Application web ».
+
+### BLR-07 · Le ciel dans un téléphone
+
+- **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
+- **Emplacement** : `/projets/bloodborne-legendary-run` · § L’essayer, carte « Application Android » (remplace le dessin au trait bleu de l’ancienne page) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Le ciel dans un téléphone
+- **Composition** : Un téléphone tenu droit, vu de face, sans marque ni texte ; à l’écran, trois étoiles reliées en chemin qui monte ; la lanterne posée à côté du téléphone éclaire l’étoile du haut ; sujet centré, lisible à 88 px
+- **Format** : 1:1, viewBox 120 (affiché de 88 à 120 px)
+- **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-07.svg`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Pendant de BLR-06. Décoratif : le titre de la carte dit « Application Android ».
+
+### BLR-08 · Le même ciel, deux écrans
+
+- **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
+- **Emplacement** : `/projets/bloodborne-legendary-run` · § Comment je l’ai construit, couche « L’interface » (remplace le dessin au trait bleu de l’ancienne page) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Le même ciel, deux écrans
+- **Composition** : Une fenêtre de navigateur et, devant elle à droite, un téléphone tenu droit ; les deux écrans montrent la même petite constellation de quatre étoiles reliées ; la lanterne posée entre eux éclaire l’étoile commune ; aucun texte, aucune marque
+- **Format** : 2:1, viewBox 440 × 220 (affiché de 96 à 300 px)
+- **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-08.svg`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Série de trois (BLR-08 à BLR-10) dans les cartes cliquables des couches : même cadrage horizontal, même ligne de sol, même lanterne. Sous 860 px, la carte l’affiche à 96 px de large : le sujet doit se lire en petit.
+
+### BLR-09 · Une réussite qui passe par le serveur
+
+- **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
+- **Emplacement** : `/projets/bloodborne-legendary-run` · § Comment je l’ai construit, couche « L’API » (remplace le dessin au trait bleu de l’ancienne page) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : Une réussite qui passe par le serveur
+- **Composition** : Trois fiches empilées au centre, comme des requêtes rangées ; une étoile entre par la gauche le long d’une flèche et ressort à droite, rangée ; la lanterne posée au pied de la pile éclaire la fiche du dessus ; aucun texte, aucune marque
+- **Format** : 2:1, viewBox 440 × 220 (affiché de 96 à 300 px)
+- **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-09.svg`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Série BLR-08 à BLR-10. Décoratif : la carte dit « L’API » et sa fonction.
+
+### BLR-10 · La partie gardée
+
+- **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
+- **Emplacement** : `/projets/bloodborne-legendary-run` · § Comment je l’ai construit, couche « La sauvegarde » (remplace le dessin au trait bleu de l’ancienne page) _(contexte : ne pas le recopier dans un prompt)_
+- **Sujet** : La partie gardée
+- **Composition** : Une pile de trois disques, comme une base de données, scellée au sommet par une étoile allumée ; la lanterne posée à côté éclaire le sceau, le reste dans l’ombre ; aucun texte, aucune marque
+- **Format** : 2:1, viewBox 440 × 220 (affiché de 96 à 300 px)
+- **Fichier attendu** : `site/src/assets/visuels/bloodborne/BLR-10.svg`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Série BLR-08 à BLR-10. Décoratif : la carte dit « La sauvegarde » et sa fonction.
+
 ### BLR-F1 · Les 22 galaxies réelles
 
 - **Priorité** : socle · **Méthode** : FIG, à coder (figure de données), rien à générer
@@ -909,6 +968,7 @@ Les visuels « socle » à produire ici (IMG, SVG, OG), dans l’ordre des séri
 - **Format** : 16:9 ; 3:4 mobile (recadrage mobile 3:4)
 - **Fichier attendu** : aucune image, figure codée
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Les 22 galaxies réelles »
+- **Note** : Codée : components/projets/bloodborne/Constellations.astro, depuis config/bloodborne-constellations.ts (généré par tools/extraire-constellations.mjs depuis constellation.json). Une scène : les constellations s’allument l’une après l’autre à l’arrivée, rejouable au clic.
 
 ### BLR-OG · Trois silhouettes de galaxies
 
