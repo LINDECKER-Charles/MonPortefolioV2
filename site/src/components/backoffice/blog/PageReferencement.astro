@@ -24,8 +24,9 @@
       </div>
       <div class="blog-field">
         <label for="blog-slug">Adresse de l’article</label>
-        <div class="blog-slug"><span aria-hidden="true">/blog/</span><input id="blog-slug" maxlength="100" required pattern="[a-z0-9]+(?:-[a-z0-9]+)*" aria-describedby="blog-slug-help" /></div>
+        <div class="blog-slug"><span aria-hidden="true">/blog/</span><input id="blog-slug" maxlength="100" required pattern="[a-z0-9]+(?:-[a-z0-9]+)*" aria-describedby="blog-slug-help" aria-errormessage="blog-slug-erreur" /></div>
         <p class="bo-help" id="blog-slug-help">Lettres minuscules, chiffres et tirets. Gardez une adresse stable après publication.</p>
+        <p class="blog-aide-erreur" id="blog-slug-erreur">Cette adresse n’est pas valide&nbsp;: lettres minuscules sans accent, chiffres et tirets uniquement, sans espace ni tiret au début ou à la fin.</p>
       </div>
     </div>
 

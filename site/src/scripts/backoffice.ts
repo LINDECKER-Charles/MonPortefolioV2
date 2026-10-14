@@ -2,7 +2,8 @@
  * Le backoffice : session, navigation entre rubriques et rubriques simples
  * (demandes, adresse, boîte à outils). Les accès MCP vivent dans
  * backoffice-acces.ts, l’atelier du blog dans blog-editor.ts (chargé à la
- * demande).
+ * demande) ; sa barre, ses retours et ses aides d’erreur dans
+ * backoffice-atelier.ts.
  *
  * Les textes reçus de l’API sont toujours insérés comme texte.
  *
@@ -17,6 +18,7 @@
  */
 import type { BlogWorkspace } from './blog-editor';
 import { brancherAccesMcp } from './backoffice-acces';
+import { brancherAtelier } from './backoffice-atelier';
 import { ErreurApi, messageDe, type Dire, type Etat } from './backoffice-commun';
 import { TITRES_RUBRIQUES, type Rubrique } from '../components/backoffice/rubriques';
 
@@ -85,6 +87,7 @@ export function brancherBackoffice(): void {
   let requestSequence = 0;
   const limit = 50;
   let blog: BlogWorkspace | undefined;
+  const atelier = brancherAtelier();
   let chargementBlog: Promise<void> | undefined;
   let navigationQueue = Promise.resolve();
   let visibleURL = `${window.location.pathname}${window.location.search}`;
@@ -175,7 +178,7 @@ export function brancherBackoffice(): void {
       history.go(historyPosition - targetPosition);
     } else history.replaceState({ ...history.state, backofficeIndex: historyPosition }, '', visibleURL);
   }
-  async function appliquerRoute(value: string, replace = false, popPosition?: number): Promise<void> {
+  async function appliquerRoute(value: string, replace = false, popPosition?: number, retourAvant = atelier.avantNavigation()): Promise<void> {
     const url = new URL(value, window.location.origin);
     if (url.origin !== window.location.origin) return;
     let destination = `${url.pathname}${url.search}`;
@@ -192,18 +195,25 @@ export function brancherBackoffice(): void {
       historyPosition += 1;
       history.pushState({ backofficeIndex: historyPosition }, '', destination);
     }
+    const memeVue = rubrique === activePanel && destination === visibleURL;
     visibleURL = destination;
     const arrivee = rubrique !== activePanel;
+    if (rubrique === 'blog' && !memeVue) atelier.apresNavigation(retourAvant);
     choisirRubrique(rubrique);
     // La dernière utilisation des accès change sans nous : relue à chaque visite.
     if (rubrique === 'tokens' && arrivee && authenticated) void acces.charger().catch((cause: unknown) => erreur(cause, element('bo-tokens-retour')));
     if (rubrique === 'blog' && authenticated) {
+      // La vue demandée est déjà affichée (une validation qui y ramène, un
+      // enregistrement sans changement d’adresse) : la rouvrir déplacerait le
+      // focus et fermerait la bulle d’erreur du champ.
+      const dejaOuvert = memeVue && blog !== undefined;
       await chargerBlog();
-      if (authenticated) await blog?.open(destination);
+      if (authenticated && !dejaOuvert) await blog?.open(destination);
     }
   }
   function naviguer(value: string, replace = false): Promise<void> {
-    const operation = navigationQueue.then(() => appliquerRoute(value, replace));
+    const retourAvant = atelier.avantNavigation();
+    const operation = navigationQueue.then(() => appliquerRoute(value, replace, undefined, retourAvant));
     navigationQueue = operation.catch((cause: unknown) => erreur(cause));
     return navigationQueue;
   }
@@ -211,7 +221,8 @@ export function brancherBackoffice(): void {
     if (restoringHistory) { restoringHistory = false; return; }
     const destination = `${window.location.pathname}${window.location.search}`;
     const position = typeof event.state?.backofficeIndex === 'number' ? event.state.backofficeIndex : historyPosition;
-    const operation = navigationQueue.then(() => appliquerRoute(destination, false, position));
+    const retourAvant = atelier.avantNavigation();
+    const operation = navigationQueue.then(() => appliquerRoute(destination, false, position, retourAvant));
     navigationQueue = operation.catch((cause: unknown) => erreur(cause));
   });
   function resetLinkForm(): void {
@@ -527,7 +538,7 @@ export function brancherBackoffice(): void {
     element<HTMLInputElement>('bo-email').value = reglages.email;
     await Promise.all([chargerDemandes(), chargerOutils(), acces.charger()]);
     if (authenticated) {
-      blog?.restoreDraft();
+      if (blog?.restoreDraft()) atelier.conserver();
       await naviguer(`${window.location.pathname}${window.location.search}`, true);
     }
     if (authenticated) notice.hidden = true;

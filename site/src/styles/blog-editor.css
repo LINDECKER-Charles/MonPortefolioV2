@@ -28,6 +28,14 @@
   display: grid;
 }
 
+/* Pendant l’édition, la barre collante couvre le haut de l’écran : le
+   défilement lui réserve sa hauteur réelle (--barre-article, mesurée par
+   scripts/backoffice-atelier.ts, retour compris). Un champ qui reçoit le
+   focus s’arrête sous elle (WCAG 2.4.11). */
+html:has(.bo-blog > #blog-edit-view:not([hidden])) {
+  scroll-padding-top: calc(var(--barre-article, 0px) + var(--s3));
+}
+
 /* Pendant l’édition seulement : la barre colle, sur le fond de la page. */
 .bo-blog:has(> #blog-edit-view:not([hidden])) > .blog-barre {
   position: sticky;
@@ -787,6 +795,21 @@
 
 .blog-slug:has(input:user-invalid) {
   border-color: var(--erreur);
+}
+
+/* L’erreur dite en mots sous le champ refusé, même quand la bulle du
+   navigateur s’est fermée (scripts/backoffice-atelier.ts, aria-errormessage). */
+.blog-aide-erreur {
+  display: none;
+  margin: 0;
+  color: var(--erreur);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.blog-field:has(:is(input, textarea):user-invalid, [aria-invalid='true']) > .blog-aide-erreur {
+  display: block;
 }
 
 .bo .blog-slug input:focus-visible {

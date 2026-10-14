@@ -110,7 +110,9 @@ async function section(page: Page, target: Section, id?: number) {
 async function accessible(page: Page) {
   // La barre de l’article colle en haut pendant l’édition : selon le défilement,
   // axe la compte comme un obstacle posé sur les commandes qu’elle survole
-  // (target-size, color-contrast). L’analyse part donc du haut de la page.
+  // (target-size, color-contrast). L’analyse part donc du haut de la page ;
+  // l’état défilé, lui, est couvert par « la barre collante ne masque jamais
+  // le champ qui reçoit le focus », au clavier, sur chaque page de l’article.
   await page.evaluate(() => window.scrollTo(0, 0));
   const result = await new AxeBuilder({ page }).withTags(REGLES_AXE).analyze();
   expect(result.violations.map((entry) => ({ rule: entry.id, nodes: entry.nodes.map((node) => node.target) }))).toEqual([]);
@@ -434,3 +436,67 @@ for (const theme of ['jour', 'nuit'] as const) {
     });
   });
 }
+
+test('la barre collante ne masque jamais le champ qui reçoit le focus, sur chaque page de l’article', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await mockApi(page, [post()]);
+  // Un retour sur plusieurs lignes fait grandir la barre : le défilement doit suivre.
+  for (const target of SECTIONS) {
+    await page.goto(`/backoffice/blog/${target}?id=1`);
+    await onlySection(page, target);
+    await page.evaluate(() => {
+      const retour = document.getElementById('blog-notice')!;
+      retour.textContent = 'Un retour assez long pour passer sur plusieurs lignes à 390 px : la barre grandit, et le défilement lui réserve sa nouvelle hauteur.';
+      retour.hidden = false;
+    });
+    // Du bas de la page, en remontant au clavier jusqu’à la barre.
+    await page.locator('.bo-pied a').first().focus();
+    const masques: string[] = [];
+    for (let pas = 0; pas < 120; pas += 1) {
+      await page.keyboard.press('Shift+Tab');
+      // Ce que voit la personne : après le défilement du focus, deux images plus tard.
+      await page.evaluate(() => new Promise((fin) => requestAnimationFrame(() => requestAnimationFrame(fin))));
+      const mesure = await page.evaluate(() => {
+        const actif = document.activeElement as HTMLElement | null;
+        const barre = document.querySelector('.blog-barre')!;
+        if (!actif || actif === document.body) return { fin: true };
+        if (barre.contains(actif) || actif.closest('.bo-entete, .bo-rubrique__entete, .blog-article-nav')) return { fin: true };
+        const boite = actif.getBoundingClientRect();
+        const bas = barre.getBoundingClientRect().bottom;
+        const visible = boite.height <= window.innerHeight - bas ? boite.top >= bas - 1 : boite.bottom > bas + 1;
+        return { fin: false, visible, nom: `${actif.tagName.toLowerCase()}${actif.id ? `#${actif.id}` : ''} (haut ${Math.round(boite.top)}, barre ${Math.round(bas)}` };
+      });
+      if (mesure.fin) break;
+      if (!mesure.visible) masques.push(`${target} : ${mesure.nom}`);
+    }
+    expect(masques).toEqual([]);
+  }
+});
+
+test('une adresse refusée le dit sous le champ et garde le focus ; le retour d’enregistrement ne survit ni à une page ni à une retouche', async ({ page }) => {
+  await mockApi(page, [post()]);
+  await page.goto('/backoffice/blog/seo?id=1');
+  await onlySection(page, 'seo');
+  await page.locator('#blog-save').click();
+  await expect(page.locator('#blog-notice')).toContainText('Le brouillon est enregistré');
+
+  // Une retouche efface « enregistré » : l’état dit seul ce qui reste à faire.
+  await page.locator('#blog-slug').fill('Slug Invalide !!');
+  await expect(page.locator('#blog-notice')).toBeHidden();
+  await page.locator('#blog-save').click();
+  await expect(page.locator('#blog-slug')).toBeFocused();
+  await expect(page.locator('#blog-slug')).toHaveAttribute('aria-invalid', 'true');
+  await expect(page.locator('#blog-slug-erreur')).toBeVisible();
+  await expect(page.locator('#blog-slug')).toHaveAttribute('aria-describedby', 'blog-slug-help blog-slug-erreur');
+  await accessible(page);
+  await page.locator('#blog-slug').fill('slug-valide');
+  await expect(page.locator('#blog-slug-erreur')).toBeHidden();
+  await expect(page.locator('#blog-slug')).not.toHaveAttribute('aria-invalid', 'true');
+  await expect(page.locator('#blog-slug')).toHaveAttribute('aria-describedby', 'blog-slug-help');
+
+  // Changer de page de l’article efface aussi le retour.
+  await page.locator('#blog-save').click();
+  await expect(page.locator('#blog-notice')).toContainText('Le brouillon est enregistré');
+  await section(page, 'publication', 1);
+  await expect(page.locator('#blog-notice')).toBeHidden();
+});
