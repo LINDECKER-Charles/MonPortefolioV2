@@ -220,3 +220,17 @@ for (const theme of ['jour', 'nuit'] as const) {
     });
   });
 }
+
+for (const theme of ['jour', 'nuit'] as const) {
+  test.describe(`plaque des images, thème ${theme}`, () => {
+    test.use({ colorScheme: theme === 'nuit' ? 'dark' : 'light' });
+
+    test(`une image transparente garde une plaque claire (${theme})`, async ({ page }) => {
+      await ouvrir(page);
+      const fond = await page.locator('.blog-prose figure img[src*="/api/blog/media/4"]').evaluate((img) => getComputedStyle(img).backgroundColor);
+      const [r, g, b, a = 1] = (fond.match(/[\d.]+/g) ?? []).map(Number);
+      expect(a, fond).toBe(1);
+      expect((0.2126 * r + 0.7152 * g + 0.0722 * b) / 255, fond).toBeGreaterThan(0.8);
+    });
+  });
+}

@@ -163,7 +163,6 @@
   aspect-ratio: 16 / 9;
   object-fit: cover;
   border-radius: var(--r2);
-  background: var(--emplacement);
 }
 
 .blog-meta {
@@ -418,6 +417,16 @@
   max-height: 800px;
   object-fit: contain;
   border-radius: var(--r2);
+}
+
+/* Une image transparente au trait sombre disparaîtrait la nuit : les images
+   d’article reposent sur la plaque claire des logos, la même de jour et de
+   nuit, invisible sous une image opaque. */
+.blog-prose figure img,
+.blog-prose > img,
+.blog-article__cover,
+.blog-list__article img {
+  background: var(--papier-logo);
 }
 
 .blog-prose figcaption {
