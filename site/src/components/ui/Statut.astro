@@ -7,6 +7,8 @@
  *   <Statut>En ligne</Statut>                      disque plein : actif
  *   <Statut etat="ouvert">Open source</Statut>     losange : ouvert, publié
  *   <Statut etat="eteint">Hors ligne, en refonte</Statut>  cercle vide, texte éteint
+ *
+ * Sur deux lignes, la forme reste centrée sur la première, pas entre les deux.
  */
 interface Props {
   etat?: 'actif' | 'ouvert' | 'eteint';
@@ -21,7 +23,7 @@ const { etat = 'actif', class: classe } = Astro.props;
 <style>
   .statut {
     display: inline-flex;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--s2);
     font-size: var(--t-xs);
     font-weight: 500;
@@ -34,6 +36,8 @@ const { etat = 'actif', class: classe } = Astro.props;
     flex: none;
     width: 8px;
     height: 8px;
+    /* Centrée sur la première ligne (hauteur de ligne 1.4). */
+    margin-top: calc(0.7em - 4px);
     border-radius: 50%;
     background: var(--encre);
   }
@@ -41,6 +45,7 @@ const { etat = 'actif', class: classe } = Astro.props;
   .statut--ouvert::before {
     width: 7px;
     height: 7px;
+    margin-top: calc(0.7em - 3.5px);
     border-radius: 1px;
     rotate: 45deg;
   }
