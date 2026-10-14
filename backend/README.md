@@ -241,8 +241,10 @@ au plus, sinon `422 IMAGE_TOO_LARGE`), puis la décode (160 Mio d’allocation a
 orientation EXIF comprise, et prépare des variantes réduites aux largeurs 480, 960 et 1 600 px
 (et à sa propre largeur si elle ne dépasse pas 1 600 px) : JPEG de qualité 80, ou WebP sans
 perte si l’image a de la transparence. Une variante qui ne pèse pas moins que l’original n’est
-pas gardée ; une image animée (GIF, PNG ou WebP) n’en a aucune. L’original reste intact. Une
-image dont même l’en-tête ne se lit pas est refusée ; celle que le décodeur ne lit qu’en partie
+pas gardée ; une image animée (GIF, PNG ou WebP) n’en a aucune. L’original est gardé sans ses
+métadonnées : EXIF (position GPS, appareil, date), XMP, IPTC, commentaires et textes PNG,
+vignettes et images secondaires JPEG partent ; seule l’orientation est réécrite, seule, pour
+qu’il s’affiche comme avant. Une image dont même l’en-tête ne se lit pas est refusée ; celle que le décodeur ne lit qu’en partie
 reste admise, mesurée par son en-tête et sans variante. Les images importées avant cette mesure
 sont traitées une fois, au démarrage : chacune est d’abord marquée 0 × 0, pour qu’une image qui
 ferait tomber le service ne soit jamais relue. Chaque image de la bibliothèque porte `width`, `height` et

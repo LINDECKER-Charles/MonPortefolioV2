@@ -201,9 +201,10 @@ pub(crate) fn initialize(connection: &Connection) -> Result<(), StoreError> {
             )?;
         }
     }
-    // Les images importées avant la mesure reçoivent dimensions et variantes une
-    // fois. Chacune est d’abord marquée 0 × 0 : une image illisible, ou qui
-    // ferait tomber le service, n’est jamais relue à chaque démarrage.
+    // Les images importées avant la mesure reçoivent dimensions, variantes et
+    // original sans métadonnées une fois. Chacune est d’abord marquée 0 × 0 :
+    // une image illisible, ou qui ferait tomber le service, n’est jamais relue
+    // à chaque démarrage.
     let pending: Vec<(i64, String)> = connection
         .prepare("SELECT id,content_type FROM blog_media WHERE width IS NULL ORDER BY id")?
         .query_map([], |row| Ok((row.get(0)?, row.get(1)?)))?
@@ -215,6 +216,10 @@ pub(crate) fn initialize(connection: &Connection) -> Result<(), StoreError> {
                 r.get(0)
             })?;
         if let Ok(processed) = crate::blog_media::process(&bytes, &content_type) {
+            connection.execute(
+                "UPDATE blog_media SET data=?2 WHERE id=?1",
+                params![id, processed.original],
+            )?;
             store_processed(connection, id, &processed)?;
         }
     }
@@ -898,7 +903,7 @@ impl Store {
         let tx = connection.transaction()?;
         tx.execute(
             "INSERT INTO blog_media(filename,content_type,data) VALUES(?1,?2,?3)",
-            params![upload.filename, upload.content_type, bytes],
+            params![upload.filename, upload.content_type, processed.original],
         )?;
         let id = tx.last_insert_rowid();
         store_processed(&tx, id, &processed)?;

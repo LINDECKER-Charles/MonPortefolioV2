@@ -662,6 +662,57 @@ async fn imported_images_are_measured_and_get_lighter_variants_once_published() 
     );
 }
 
+/// Un JPEG d’appareil photo : EXIF avec orientation (6) et position GPS.
+fn photo_with_gps() -> Vec<u8> {
+    let mut tiff = b"MM\0\x2a\0\0\0\x08".to_vec();
+    tiff.extend_from_slice(&[0, 2]);
+    tiff.extend_from_slice(&[0x01, 0x12, 0, 3, 0, 0, 0, 1, 0, 6, 0, 0]);
+    tiff.extend_from_slice(&[0x88, 0x25, 0, 4, 0, 0, 0, 1, 0, 0, 0, 38]);
+    tiff.extend_from_slice(&[0, 0, 0, 0]);
+    tiff.extend_from_slice(&[0, 1, 0, 1, 0, 2, 0, 0, 0, 2, b'N', 0, 0, 0]);
+    tiff.extend_from_slice(&[0, 0, 0, 0]);
+    tiff.extend_from_slice(b"GPS-48.85N-2.35E");
+    let plain = photo(300, 200);
+    let mut bytes = plain[..2].to_vec();
+    bytes.extend_from_slice(&[0xff, 0xe1]);
+    bytes.extend_from_slice(&((tiff.len() + 8) as u16).to_be_bytes());
+    bytes.extend_from_slice(b"Exif\0\0");
+    bytes.extend_from_slice(&tiff);
+    bytes.extend_from_slice(&plain[2..]);
+    bytes
+}
+
+#[tokio::test]
+async fn a_published_photo_never_leaves_with_its_gps_position() {
+    let (app, store, _) = fixture();
+    let original = photo_with_gps();
+    let media = upload(&store, "vacances.jpg", "image/jpeg", &original);
+    // L’orientation reste appliquée : 300 × 200 tournée d’un quart de tour.
+    assert_eq!((media.width, media.height), (Some(200), Some(300)));
+    let mut p = input("photo-gps");
+    p.cover_image = Some(media.url.clone());
+    p.cover_alt = "Une photo".into();
+    let post = store.create_blog_post(p).unwrap();
+    store.publish_blog_post(post.id, post.revision).unwrap();
+    let mut paths = vec![media.url.clone()];
+    paths.extend(media.variants.iter().map(|w| format!("{}/{w}", media.url)));
+    for path in paths {
+        let response = app
+            .clone()
+            .oneshot(request("GET", &path, json!(null), None))
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::OK, "{path}");
+        let bytes = response.into_body().collect().await.unwrap().to_bytes();
+        assert!(
+            !bytes.windows(3).any(|w| w == b"GPS"),
+            "{path} ne porte aucune position"
+        );
+        let decoded = image::load_from_memory(&bytes).unwrap();
+        assert!(decoded.width() > 0, "{path} reste lisible");
+    }
+}
+
 #[test]
 fn images_imported_before_measurement_are_measured_at_startup() {
     let path = std::env::temp_dir().join(format!(
