@@ -48,7 +48,7 @@ test('la fiche technique : sept cases, statut à forme et mot, aucun lien public
   await page.goto(CHEMIN);
   const fiche = page.getByRole('group', { name: 'Fiche du projet' });
   await expect(fiche.locator('dt')).toHaveText(['Besoin', 'Ma part', 'Rôle', 'Période', 'Équipe', 'Statut', 'Liens publics']);
-  await expect(fiche.locator('.statut')).toHaveText('Outil personnel, en usage quotidien');
+  await expect(fiche.locator('.statut')).toHaveText('Outil personnel, en usage sur ma machine');
   await expect(fiche).toContainText('Conception et développement');
   await expect(fiche).toContainText('Depuis septembre 2026');
   await expect(fiche.locator('a')).toHaveCount(0);

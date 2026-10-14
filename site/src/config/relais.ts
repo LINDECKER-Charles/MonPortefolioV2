@@ -41,7 +41,10 @@ export const CARTE: CarteVitrine = {
   chiffre: { valeur: '1 011', libelle: 'décisions de permission en trois jours de service', releve: '23 septembre 2026' },
   // git log à bdf041f : 260 commits, un seul auteur.
   role: 'Conçu et développé seul',
-  statut: { texte: 'Outil personnel, en usage quotidien' },
+  // Une instance en service sur la machine, vue le 14/10/2026 ; « en usage
+  // quotidien » n’est pas sourcé et attend la réponse de Charles, comme pour
+  // Sillage et Karl Scraper (docs/a-confirmer.md).
+  statut: { texte: 'Outil personnel, en usage sur ma machine' },
   liens: [],
   // backend/Cargo.toml (Rust, rusqlite), frontend/package.json (Angular 21.2).
   technos: [
@@ -107,8 +110,9 @@ export const FICHE: DonneesFiche = {
   periode: 'Depuis septembre 2026',
   // 260 commits à bdf041f, tous de Charles (deux graphies du nom).
   equipe: 'Projet personnel, seul',
-  // Une instance en service sur la machine, vue le 14/10/2026.
-  statut: { texte: 'Outil personnel, en usage quotidien' },
+  // Une instance en service sur la machine, vue le 14/10/2026 ; « en usage
+  // quotidien » attend la réponse de Charles.
+  statut: { texte: 'Outil personnel, en usage sur ma machine' },
   liens: [],
 };
 
