@@ -351,6 +351,13 @@
   margin-top: var(--s2);
 }
 
+/* Dans une liste, une citation ou une cellule, les blocs gardent un écart :
+   global.css met les paragraphes à zéro, et .blog-prose > * + * ne vise que
+   les blocs de premier niveau. */
+.blog-prose :is(li, blockquote, td, th) > * + * {
+  margin-top: var(--s3);
+}
+
 .blog-prose blockquote {
   padding: var(--s2) 0 var(--s2) var(--s5);
   border-inline-start: 2px solid var(--trait);
@@ -358,6 +365,22 @@
   font-style: italic;
   font-size: var(--t-xl);
   line-height: 1.25;
+}
+
+/* Un titre cité se distingue de la citation : la voix du texte courant, en
+   petit et en graisse 600, comme un intitulé. */
+.blog-prose blockquote :is(h2, h3, h4) {
+  margin-top: var(--s4);
+  font-family: var(--police-texte);
+  font-style: normal;
+  font-weight: 600;
+  font-size: var(--t-s);
+  letter-spacing: var(--ls-petit);
+  line-height: 1.4;
+}
+
+.blog-prose blockquote > :first-child {
+  margin-top: 0;
 }
 
 .blog-prose pre {

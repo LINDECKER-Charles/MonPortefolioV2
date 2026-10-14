@@ -150,6 +150,17 @@ test('tableaux et blocs de code défilent au clavier', async ({ page }) => {
   }
 });
 
+test('les paragraphes restent séparés dans les listes, les citations et les cellules', async ({ page }) => {
+  await ouvrir(page);
+  const ecarts = await page.evaluate(() => ['li > p + p', 'blockquote > p + p', 'td > p + p', 'blockquote > h3 + p'].map((selecteur) => {
+    const el = document.querySelector(`.blog-prose ${selecteur}`);
+    return [selecteur, el ? parseFloat(getComputedStyle(el).marginTop) : -1] as const;
+  }));
+  for (const [selecteur, ecart] of ecarts) expect(ecart, selecteur).toBeGreaterThan(0);
+  const titre = await page.locator('.blog-prose blockquote h3').evaluate((el) => [getComputedStyle(el).fontStyle, getComputedStyle(el.nextElementSibling!).fontStyle]);
+  expect(titre[0], 'un titre cité se distingue du texte cité').not.toBe(titre[1]);
+});
+
 test('les images réservent leur place, ne s’agrandissent pas et chargent la variante utile', async ({ page }) => {
   await page.addInitScript(() => {
     (window as unknown as { decalage: number }).decalage = 0;
