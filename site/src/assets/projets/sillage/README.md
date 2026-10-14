@@ -35,17 +35,26 @@ instances réelles du poste n’ont reçu aucune requête.
 
 ## Fichiers
 
-Chaque PNG est converti en WebP avec Sharp, sans recadrage, retouche ni recomposition ; les trois
-vues de fenêtre sont ramenées de 2 880 à 2 400 px de large (qualité 90), les autres gardent leur
-taille (qualité 92 pour le dialogue, 90 sinon).
+Chaque PNG est converti en WebP avec Sharp, sans retouche ni recomposition ; les trois vues de
+fenêtre sont ramenées de 2 880 à 2 400 px de large (qualité 90), les autres gardent leur taille
+(qualité 92 pour le dialogue, 90 sinon). Seul `recapitulatif-mobile.webp` est recadré dans son
+fichier (le haut du panneau, 530 px). Les autres recadrages de la page se font en CSS
+(`region`, `ratio` de CadreCapture) : le fichier reste entier pour la visionneuse.
+
+Les deux vues de téléphone du dialogue et du récapitulatif ont été capturées le même jour, sur
+les mêmes données de démonstration rejouées, dans une fenêtre de 390 px de large (densité 2) :
+la page les montre sous 861 px, où les vues de bureau deviendraient illisibles. Leurs heures et
+leurs commits diffèrent de ceux des vues de bureau : ils changent à chaque rejeu.
 
 | Fichier | Scène | Dimensions | Usage |
 |---|---|---|---|
-| `graphe-en-direct.webp` | « Partager un carnet » en direct : cadrage terminé, coordinateur « Attend 3 / 3 enfants », trois sous-agents créés pendant l’exécution, relecture en attente ; bandeau « Exécution en direct ». Fenêtre 1 440 × 900. | 2400 × 1500 | En-tête de `/projets/sillage` ; carte de la vitrine (recadrée en CSS) |
+| `graphe-en-direct.webp` | « Partager un carnet » en direct : cadrage terminé, coordinateur « Attend 3 / 3 enfants », trois sous-agents créés pendant l’exécution, relecture en attente ; bandeau « Exécution en direct ». Fenêtre 1 440 × 900. | 2400 × 1500 | En-tête de `/projets/sillage`, recadré sur le coordinateur et ses sous-agents ; carte de la vitrine (recadrée en CSS) |
 | `creer-avec-un-agent.webp` | L’assistant compose « Rappels avant un atelier » : étapes, journal « Brouillon ouvert / Agent ajouté / Agent refusé (dépendance inconnue) / Relit le brouillon », et la demande. Fenêtre 1 440 × 1 040. | 2400 × 1733 | Section « Composer une tâche » |
 | `reprendre-execution.webp` | Dialogue « Reprendre l’exécution » de « Recherche plein texte » : étape interrompue reprise dans sa session encore active, agent réutilisé sans nouvelle session, « Relancer 2 étapes ». Boîte du dialogue seule. | 1240 × 1432 | Section « Reprendre après une coupure » |
 | `recapitulatif.webp` | « Ce qui a été fait » de l’export PDF terminé : dossier, branche et commit du résultat, worktrees de l’exécution, puis le résultat de chaque agent. Panneau seul. | 1588 × 2998 | Section « Le résultat » |
-| `page-projet.webp` | Page du projet « Carnet de route » : actions, activité en cours, tâches et leur état. Fenêtre 1 440 × 900. | 2400 × 1500 | Section « Le principe », au-delà de 860 px |
+| `page-projet.webp` | Page du projet « Carnet de route » : actions, activité en cours, tâches et leur état. Fenêtre 1 440 × 900. | 2400 × 1500 | Section « Le principe », au-delà de 860 px, recadrée sur l’activité et les tâches |
+| `reprendre-execution-mobile.webp` | Le même dialogue dans une fenêtre de 390 px de large. Boîte du dialogue seule. | 740 × 1648 | Section « Reprendre après une coupure », jusqu’à 860 px |
+| `recapitulatif-mobile.webp` | Le haut du même panneau dans une fenêtre de 390 px de large : « Résultat final », dossier, branche et commit. | 664 × 530 | Section « Le résultat », jusqu’à 860 px |
 | `page-projet-mobile.webp` | La même page en 390 × 844 : rail replié en menu, actions empilées, activité du projet. | 780 × 1688 | Section « Le principe », jusqu’à 860 px, dans un cadre de téléphone |
 
 Non retenues : les paramètres (adresse du faux fournisseur, jeton) et l’onglet des échanges (JSON

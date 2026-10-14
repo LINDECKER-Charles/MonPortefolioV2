@@ -27,7 +27,9 @@ import graphe from '../../assets/projets/sillage/graphe-en-direct.webp';
 import projet from '../../assets/projets/sillage/page-projet.webp';
 import projetMobile from '../../assets/projets/sillage/page-projet-mobile.webp';
 import recapitulatif from '../../assets/projets/sillage/recapitulatif.webp';
+import recapitulatifMobile from '../../assets/projets/sillage/recapitulatif-mobile.webp';
 import reprendre from '../../assets/projets/sillage/reprendre-execution.webp';
+import reprendreMobile from '../../assets/projets/sillage/reprendre-execution-mobile.webp';
 import { SITE } from '../../config/site';
 import { DECISIONS, ECRANS, EN_TETE, FICHE, LIENS_SORTIE, PREUVES, SECTIONS } from '../../config/sillage';
 import { typo } from '../../lib/typo';
@@ -35,12 +37,14 @@ import { typo } from '../../lib/typo';
 // ≤ 45 caractères avant « — Charles Lindecker » (titre ≤ 65 au total).
 const titre = `Sillage, orchestrer des agents IA — ${SITE.nom}`;
 // 110 à 165 caractères.
-const description = 'Sillage lance sur ma machine un graphe d’agents IA, les suit, leur fait corriger une réponse mal formée et reprend après une coupure. Conçu et développé seul.';
+const description = 'Sillage orchestre sur ma machine des agents IA qui écrivent du code, les suit, leur fait corriger une réponse mal formée et reprend après une coupure.';
 
 /**
- * La page projet suit la largeur de l’écran, comme l’application : la vue de
- * bureau au-delà de 860 px, la vue de téléphone en dessous. Sans JavaScript,
- * la vue masquée prend une source neutre et ne télécharge rien.
+ * La page projet, le dialogue de reprise et le récapitulatif suivent la
+ * largeur de l’écran, comme l’application : la vue de bureau au-delà de
+ * 860 px, la vue de téléphone (capturée à 390 px) en dessous, où la vue de
+ * bureau deviendrait illisible. Sans JavaScript, la vue masquée prend une
+ * source neutre et ne télécharge rien.
  */
 const neutreBureau = 'screen and (scripting: none) and (max-width: 860px)';
 const neutreMobile = 'screen and (scripting: none) and (min-width: 861px)';
@@ -57,29 +61,32 @@ const alt = (ecran: keyof typeof ECRANS) => typo(ECRANS[ecran].alt);
       alt={alt('graphe')}
       legende={ECRANS.graphe.legende}
       class="sil-entete-capture"
-      sizes="(max-width: 860px) 100vw, (max-width: 1100px) 640px, 560px"
-      widths={[640, 1200, 1600, 2400]}
+      region={{ x: 42.5, y: 23.2, l: 49, h: 67.6 }}
+      regionMobile={{ x: 42.5, y: 26.8, l: 32, h: 63.6 }}
+      sizes="(max-width: 860px) 313vw, (max-width: 1100px) 1310px, 1150px"
+      widths={[1200, 1600, 2400]}
       loading="eager"
       agrandir
     />
   </EnTeteProjet>
 
   <CorpsProjet sections={SECTIONS}>
-    <SectionProjet id="principe" etiquette="Le principe" titre="Une tâche, c’est un graphe d’agents" alignement="centre">
+    <SectionProjet id="principe" etiquette="Le principe" titre="Une tâche, c’est un graphe d’agents">
       <Fragment slot="texte">
         <p>Dans Sillage, je décris une tâche comme un graphe. Certains agents ont une place fixe&nbsp;; d’autres coordonnent et créent leurs sous-agents en cours de route. Chacun reçoit sa mission, ses dossiers et le livrable qu’il doit rendre.</p>
-        <p>Sillage ne lance pas les agents lui-même&nbsp;: il confie chaque session à <a href="/projets/relais">Relais</a>, mon fournisseur d’agents, par son API. <a href="/projets/karl-scraper">Karl Scraper</a> y pousse aussi ses plans, pour qu’un agent en compose les tâches.</p>
-        <p>La page d’un projet montre ce qui tourne. En haut de cette page, l’une de ces exécutions en direct&nbsp;: un coordinateur a créé trois sous-agents, au travail en même temps.</p>
+        <p>Sillage ne démarre pas lui-même les sessions des agents&nbsp;: il les confie à <a href="/projets/relais">Relais</a>, mon point d’accès local aux agents, par son API. <a href="/projets/karl-scraper">Karl Scraper</a> y pousse aussi ses plans, pour qu’un agent en compose les tâches.</p>
+        <p>La page d’un projet rassemble ses tâches et ce qui tourne&nbsp;: ici, un assistant compose une tâche pendant qu’une autre s’exécute.</p>
       </Fragment>
-      <div slot="figure" class="sil-projet">
+      <div class="sil-projet">
         <CadreCapture
           class="sil-projet__bureau"
           type="navigateur"
           src={projet}
           alt={alt('projet')}
           legende={ECRANS.projet.legende}
-          sizes="(max-width: 860px) 1px, (max-width: 1100px) 100vw, 560px"
-          widths={[640, 1200, 1600]}
+          region={{ x: 18.75, y: 8, l: 79.25, h: 78 }}
+          sizes="(max-width: 860px) 1px, (max-width: 1100px) 115vw, 1320px"
+          widths={[1200, 1600, 2400]}
           neutre={neutreBureau}
           agrandir
         />
@@ -99,7 +106,7 @@ const alt = (ecran: keyof typeof ECRANS) => typo(ECRANS[ecran].alt);
 
     <SectionProjet id="composer" etiquette="Composer une tâche" titre="Un agent compose la tâche, Sillage la vérifie">
       <Fragment slot="texte">
-        <p>Je peux dessiner le graphe à la main, ou décrire ce que je veux à un assistant. Il compose alors la tâche par les outils MCP de Sillage, un agent par appel, dans un brouillon que je vois se remplir.</p>
+        <p>Je peux dessiner le graphe à la main, ou décrire ce que je veux à un assistant. Il compose alors la tâche par les outils que Sillage lui ouvre (MCP), un agent par appel, dans un brouillon que je vois se remplir.</p>
         <p>Chaque ajout passe par les validations de Sillage. Ici, la relecture arrive avant l’équipe dont elle dépend&nbsp;: elle est refusée. L’assistant ajoute l’équipe, puis la relecture. Pour cette demande, il ne lit que le projet et ne lance rien sans moi.</p>
       </Fragment>
       <CaptureAnnotee
@@ -117,55 +124,83 @@ const alt = (ecran: keyof typeof ECRANS) => typo(ECRANS[ecran].alt);
       />
     </SectionProjet>
 
-    <SectionProjet id="reprendre" etiquette="Reprendre après une coupure" titre="Une coupure ne fait pas tout recommencer" alignement="centre">
-      <Fragment slot="texte">
-        <p>Une exécution peut s’arrêter en route&nbsp;: un redémarrage du serveur, une coupure. Sillage propose alors de la reprendre là où elle en était.</p>
-        <p>Les agents qui avaient fini gardent leur résultat. Celui qui travaillait reprend sa session, encore ouverte chez Relais, sans en ouvrir une nouvelle&nbsp;; les étapes suivantes repartent ensuite. Je peux ajouter des consignes avant de relancer.</p>
-      </Fragment>
-      <CadreCapture
-        slot="figure"
-        class="sil-panneau sil-reprendre"
-        type="terminal"
-        src={reprendre}
-        alt={alt('reprendre')}
-        legende={ECRANS.reprendre.legende}
-        sizes="(max-width: 860px) 100vw, (max-width: 1100px) 640px, 480px"
-        widths={[640, 960, 1240]}
-        agrandir
-      />
-    </SectionProjet>
+    <div class="sil-acte acte-teinte">
+      <SectionProjet id="reprendre" etiquette="Reprendre après une coupure" titre="Une coupure ne fait pas tout recommencer" alignement="centre">
+        <Fragment slot="texte">
+          <p>Une exécution peut s’arrêter en route&nbsp;: un redémarrage du serveur, une coupure. Sillage propose alors de la reprendre là où elle en était.</p>
+          <p>Les agents qui avaient fini gardent leur résultat. Celui qui travaillait reprend sa session, encore ouverte chez Relais, sans en ouvrir une nouvelle&nbsp;; les étapes suivantes repartent ensuite. Si j’ajoute des consignes de reprise, il repart dans une nouvelle session qui les reçoit.</p>
+        </Fragment>
+        <div slot="figure" class="sil-paire sil-reprendre">
+          <CadreCapture
+            class="sil-paire__bureau"
+            type="panneau"
+            src={reprendre}
+            alt={alt('reprendre')}
+            legende={ECRANS.reprendre.legende}
+            sizes="(max-width: 860px) 1px, (max-width: 1100px) 640px, 480px"
+            widths={[640, 960, 1240]}
+            neutre={neutreBureau}
+            agrandir
+          />
+          <CadreCapture
+            class="sil-paire__mobile"
+            type="panneau"
+            src={reprendreMobile}
+            alt={alt('reprendre')}
+            legende={ECRANS.reprendre.legende}
+            sizes="(max-width: 860px) min(100vw, 416px), 1px"
+            widths={[390, 740]}
+            neutre={neutreMobile}
+            agrandir
+          />
+        </div>
+      </SectionProjet>
 
-    <SectionProjet id="resultat" etiquette="Le résultat" titre="À la fin, je sais où est le résultat">
-      <Fragment slot="texte">
-        <p>Quand l’exécution se termine, le récapitulatif dit où se trouve le résultat final&nbsp;: le dossier, la branche, le commit. Il dit aussi ce que sont devenus les worktrees, les copies de travail Git où chaque agent a écrit&nbsp;: ceux qui restent à fusionner, ceux qui ont été supprimés.</p>
-        <p>Puis, agent par agent, ce qu’il a rendu&nbsp;: un résumé, ses décisions, ses contrôles et la suite qu’il propose. C’est le résultat court que chaque agent doit tenir, et ce que reçoivent les agents qui le suivent.</p>
-      </Fragment>
-      <CadreCapture
-        slot="figure"
-        class="sil-panneau sil-resultat"
-        type="terminal"
-        src={recapitulatif}
-        alt={alt('resultat')}
-        legende={ECRANS.resultat.legende}
-        ratio="4 / 5"
-        position="50% 0"
-        sizes="(max-width: 860px) 100vw, (max-width: 1100px) 640px, 520px"
-        widths={[640, 1040, 1588]}
-        agrandir
-      />
-    </SectionProjet>
+      <SectionProjet id="resultat" etiquette="Le résultat" titre="À la fin, je sais où est le résultat">
+        <Fragment slot="texte">
+          <p>Quand l’exécution se termine, le récapitulatif dit où se trouve le résultat final&nbsp;: le dossier, la branche, le commit. Il dit aussi ce que sont devenus les worktrees, les copies de travail Git où chaque agent a écrit&nbsp;: ceux qui restent à fusionner, ceux qui ont été supprimés.</p>
+          <p>Puis, agent par agent, ce qu’il a rendu&nbsp;: un résumé, ses décisions, ses contrôles et la suite qu’il propose. C’est le résultat court que chaque agent doit tenir, et ce que reçoivent les agents qui le suivent.</p>
+        </Fragment>
+        <div class="sil-paire sil-resultat">
+          <CadreCapture
+            class="sil-paire__bureau"
+            type="panneau"
+            src={recapitulatif}
+            alt={alt('resultat')}
+            legende={ECRANS.resultat.legende}
+            ratio="1588 / 1420"
+            position="50% 0"
+            sizes="(max-width: 860px) 1px, 800px"
+            widths={[1040, 1588]}
+            neutre={neutreBureau}
+            agrandir
+          />
+          <CadreCapture
+            class="sil-paire__mobile"
+            type="panneau"
+            src={recapitulatifMobile}
+            alt={alt('resultatMobile')}
+            legende={ECRANS.resultatMobile.legende}
+            sizes="(max-width: 860px) min(100vw, 416px), 1px"
+            widths={[390, 664]}
+            neutre={neutreMobile}
+            agrandir
+          />
+        </div>
+      </SectionProjet>
+    </div>
 
-    <DecisionsProjet decisions={DECISIONS} chapeau="Quatre choix qui ne se voient pas à l’écran, chacun né d’un problème mesuré." />
+    <DecisionsProjet decisions={DECISIONS} chapeau="Quatre choix qui ne se voient pas à l’écran, chacun né d’un problème relevé. Le serveur les tient par 643 tests, que l’intégration continue joue sous Windows et macOS." />
 
     <SortieProjet projet="sillage" titre="Aujourd’hui" liens={LIENS_SORTIE}>
-      <p>Neuf exécutions réelles en huit jours, 579&nbsp;agents lancés, sept blocages durs relevés puis traités&nbsp;: Sillage tourne aujourd’hui sur mon poste, avec Relais.</p>
+      <p>Neuf exécutions réelles en huit jours, 579&nbsp;agents lancés, 63&nbsp;500 appels d’outils, sept blocages durs relevés puis traités&nbsp;: Sillage tourne sur ma machine, avec Relais.</p>
     </SortieProjet>
 
     <SourcesProjet>
       <p><b>Le projet.</b> Dépôt privé, présenté sans lien, relu le 14/10/2026 à la révision c256e76 du 13/10/2026&nbsp;: un serveur en Rust (Axum, Tokio, SQLite embarqué) et une interface Angular&nbsp;22, testés en intégration continue sous Windows et macOS, sur processeurs Apple et Intel. 783&nbsp;commits d’un seul auteur, du 19/09 au 13/10/2026.</p>
-      <p><b>Chiffres.</b> Les 579&nbsp;agents et les 63&nbsp;500 appels d’outils, dont 1&nbsp;004 en échec à l’origine de sept blocages durs, viennent du registre des blocages du dépôt (révision 9b4533a du 05/10/2026)&nbsp;; il couvre neuf exécutions réelles, du 26/09 au 03/10/2026. Les 643&nbsp;tests du serveur sont comptés dans son code à la révision c256e76&nbsp;; avec 206&nbsp;tests Node, 22&nbsp;parcours d’interface et 14&nbsp;scénarios de bout en bout, ils se jouent contre un fournisseur simulé, sans abonnement.</p>
-      <p><b>Décisions.</b> Les 10&nbsp;000 à 27&nbsp;000 caractères par réponse viennent des contrats de contexte (révision 480e358)&nbsp;; les 26&nbsp;commandes Git bloquées et les 39&nbsp;blocages de commit, du registre des blocages&nbsp;; les 2,19&nbsp;milliards de tokens relus sur 79&nbsp;sessions, de la mesure qui a motivé la fenêtre de compaction (révision ae2efd8 du 12/10/2026)&nbsp;; le découplage de Relais, du rapport d’architecture (révision ed4080b). Les deux corrections au plus et la fenêtre de 300&nbsp;000 tokens sont lues dans le code.</p>
-      <p><b>Écrans.</b> L’application lancée en local à la révision c256e76, contre le faux fournisseur des tests du dépôt, sur des projets, des tâches et des résultats de démonstration&nbsp;: aucun abonnement, aucune donnée ni tâche réelle. Leurs durées et leurs commits ne mesurent rien.</p>
+      <p><b>Chiffres.</b> Les 579&nbsp;agents et les 63&nbsp;500 appels d’outils, dont 1&nbsp;004 en échec, viennent du registre des blocages du dépôt (révision 9b4533a du 05/10/2026), qui en tire sept blocages durs&nbsp;; il couvre neuf exécutions réelles, du 26/09 au 03/10/2026. Les 643&nbsp;tests du serveur sont comptés dans son code à la révision c256e76&nbsp;; avec 206&nbsp;tests Node, 22&nbsp;parcours d’interface et 14&nbsp;scénarios de bout en bout, aucun ne consomme d’abonnement&nbsp;: ceux qui parlent à un fournisseur passent par un fournisseur simulé.</p>
+      <p><b>Décisions.</b> Les 10&nbsp;000 à 27&nbsp;000 caractères que rendent les agents, quelle que soit la cible annoncée, viennent des contrats de contexte (révision 480e358)&nbsp;; les 26&nbsp;commandes Git bloquées et les 39&nbsp;blocages dus au bac à sable des agents, du registre des blocages&nbsp;; les 2,19&nbsp;milliards de tokens relus sur 79&nbsp;sessions, de la mesure qui a motivé la fenêtre de compaction (révision ae2efd8 du 12/10/2026)&nbsp;; le découplage de Relais et ses trois lectures du dossier voisin, du rapport d’architecture (révision ed4080b). Les deux corrections au plus, la fenêtre de 300&nbsp;000 tokens et les cas où Sillage crée le worktree d’un agent sont lus dans le code.</p>
+      <p><b>Écrans.</b> L’application lancée en local à la révision c256e76, contre le faux fournisseur des tests du dépôt, sur des projets, des tâches et des résultats de démonstration&nbsp;: aucun abonnement, aucune donnée ni tâche réelle. Les vues de téléphone sont capturées à 390&nbsp;px de large. Leurs durées et leurs commits ne mesurent rien.</p>
     </SourcesProjet>
   </CorpsProjet>
 
@@ -173,9 +208,11 @@ const alt = (ecran: keyof typeof ECRANS) => typo(ECRANS[ecran].alt);
 </Base>
 
 <style>
-  /* La page projet : la vue de bureau, ou la vue de téléphone sous 861 px. */
+  /* La page projet, en pleine largeur sous son texte : la vue de bureau, ou
+     la vue de téléphone sous 861 px. */
   .sil-projet {
     min-width: 0;
+    margin-top: var(--s6);
   }
 
   .sil-projet :global(.sil-projet__mobile) {
@@ -187,29 +224,57 @@ const alt = (ecran: keyof typeof ECRANS) => typo(ECRANS[ecran].alt);
     margin-top: var(--s6);
   }
 
-  /* Le dialogue et le panneau : capturés seuls, sans fenêtre autour ; un
-     filet et les coins des cadres les posent sur la page. */
-  :global(figure.sil-panneau.capture--terminal .capture__cadre) {
-    border: 1px solid var(--trait);
+  /* « Reprendre » et « Le résultat » : un changement d’acte, la lumière
+     teintée (règle B6), sans toucher au gabarit. */
+  .sil-acte {
+    margin-top: var(--s8);
+    padding: 0 clamp(16px, 3.4vw, 40px) clamp(24px, 3.4vw, 40px);
     border-radius: var(--r2);
-    background: var(--cadre);
-    box-shadow: var(--ombre-1);
   }
 
-  :global(.sil-reprendre),
-  :global(.sil-resultat) {
+  .sil-acte :global(.section-projet) {
+    padding-top: clamp(24px, 3.4vw, 40px);
+  }
+
+  /* Le dialogue et le récapitulatif : la vue de bureau, ou celle capturée à
+     390 px sous 861 px. */
+  .sil-paire {
+    min-width: 0;
+  }
+
+  .sil-paire :global(.sil-paire__mobile) {
+    display: none;
+  }
+
+  .sil-reprendre :global(.sil-paire__bureau) {
     max-width: 30rem;
     margin-inline: auto;
   }
 
+  .sil-resultat {
+    margin-top: var(--s6);
+  }
+
+  .sil-resultat :global(.sil-paire__bureau) {
+    max-width: 50rem;
+    margin-inline: auto;
+  }
+
   @media (max-width: 860px) {
-    .sil-projet :global(.sil-projet__bureau) {
+    .sil-projet :global(.sil-projet__bureau),
+    .sil-paire :global(.sil-paire__bureau) {
       display: none;
     }
 
     .sil-projet :global(.sil-projet__mobile) {
       display: block;
       width: min(100%, 300px);
+      margin-inline: auto;
+    }
+
+    .sil-paire :global(.sil-paire__mobile) {
+      display: block;
+      max-width: 26rem;
       margin-inline: auto;
     }
   }

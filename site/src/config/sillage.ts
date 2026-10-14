@@ -6,17 +6,24 @@
  * Dépôt privé (décision de Charles du 14/10/2026) : aucun lien, aucun nom de
  * dépôt, aucune tâche réelle nommée. Faits relus le 14/10/2026 à la révision
  * c256e76 du dépôt (13/10/2026), sauf mention :
- *   - 579 agents, 63 500 appels d’outils (dont 1 004 en échec, à l’origine de
- *     sept blocages durs), 26 commandes Git bloquées, 39 blocages de commit :
- *     registre des blocages, l. 3-6 et 23-35, révision 9b4533a (05/10/2026) ;
- *   - 10 000 à 27 000 caractères par réponse : contrats de contexte,
- *     révision 480e358 ;
+ *   - 579 agents, 63 500 appels d’outils, dont 1 004 en échec (l. 3-6), sept
+ *     blocages durs (l. 23-31), 26 commandes Git bloquées (B5) et 39 blocages
+ *     dus au bac à sable des agents (B1 : ni commit, ni navigateur, ni réseau,
+ *     l. 25 et 74-82) : registre des blocages, révision 9b4533a (05/10/2026) ;
+ *   - 10 000 à 27 000 caractères rendus quelle que soit la cible annoncée :
+ *     contrats de contexte, l. 46-47, révision 480e358 ;
+ *   - worktree créé par Sillage quand la mission le demande ou qu’un autre
+ *     agent écrit en même temps dans le même dossier : worktrees/managed.rs ;
  *   - 2,19 milliards de tokens relus sur 79 sessions de trois tâches,
  *     compaction vers 270 000 : plan de contexte, l. 8-34, révision ae2efd8
  *     (12/10/2026) ;
- *   - découplage de Relais : rapport d’architecture, révision ed4080b ;
+ *   - découplage de Relais (trois lectures du dossier voisin dans le code
+ *     exécuté, puis aucune) : rapport d’architecture, révision ed4080b ;
  *   - deux corrections au plus (MAX_REPAIRS), fenêtre de 300 000 tokens par
- *     défaut, 643 tests Rust : code du serveur à c256e76.
+ *     défaut, 643 tests Rust joués en intégration continue sous Windows et
+ *     macOS : code du serveur et workflow de compatibilité à c256e76.
+ * Statut : « en usage sur ma machine » (dossier de faits, § 6) ; « en usage
+ * quotidien » attend la réponse de Charles (docs/a-confirmer.md).
  * Les écrans : src/assets/projets/sillage/README.md (données de démonstration).
  */
 import type { EntreeSommaire } from './navigation';
@@ -32,11 +39,11 @@ import grapheEnDirect from '../assets/projets/sillage/graphe-en-direct.webp';
 /* ------------------------------------------------------------------ */
 
 export const CARTE: CarteVitrine = {
-  besoin: 'Confier un long travail à plusieurs agents IA sans perdre la main : dessiner leur graphe, puis les lancer, les suivre et reprendre après une coupure.',
+  besoin: 'Confier un long travail de développement à plusieurs agents IA sans perdre la main : dessiner leur graphe, puis suivre l’exécution et la reprendre après une coupure.',
   // Registre des blocages, l. 3-6 @ 9b4533a (05/10/2026) : neuf exécutions réelles, du 26/09 au 03/10/2026.
   chiffre: { valeur: '579', libelle: 'agents lancés sur neuf exécutions réelles', releve: '14 octobre 2026' },
   role: 'Conçu et développé seul',
-  statut: { texte: 'Outil personnel, en usage quotidien' },
+  statut: { texte: 'Outil personnel, en usage sur ma machine' },
   liens: [],
   technos: [
     { src: rust, alt: 'Rust', mono: true },
@@ -63,7 +70,7 @@ export const CARTE: CarteVitrine = {
 export const EN_TETE = {
   titre: 'Confier un long travail à des agents, sans perdre la main.',
   chapeau:
-    'Sillage lance sur ma machine un graphe d’agents IA, chacun avec sa mission, ses dossiers et son livrable. Il les suit, leur fait corriger une réponse mal formée et reprend le travail après une coupure. Je l’ai conçu et développé seul.',
+    'Sillage orchestre sur ma machine des agents IA qui écrivent du code. Je décris le travail comme un graphe : qui fait quoi, dans quel ordre, avec quels dossiers et quel livrable. Sillage suit les agents, leur fait corriger une réponse mal formée et reprend le travail après une coupure. Je l’ai conçu et développé seul.',
   liens: [] satisfies LienProjet[],
 };
 
@@ -81,24 +88,24 @@ export const PREUVES: readonly PreuveEnTete[] = [
     libelle: 'appels d’outils pendant ces neuf exécutions',
     source: 'Registre des blocages du dépôt',
     date: 'du 26/09 au 03/10/2026',
-    href: '#sources',
+    href: '#retiens',
   },
   {
     valeur: '643',
     libelle: 'tests du serveur, en Rust',
     source: 'Code du serveur',
     date: 'relevé le 14/10/2026',
-    href: '#sources',
+    href: '#construit',
   },
 ];
 
 export const FICHE: DonneesFiche = {
-  besoin: 'Confier un long travail à plusieurs agents IA sans perdre la main.',
+  besoin: 'Confier un long travail de développement à plusieurs agents IA sans perdre la main.',
   part: 'J’ai conçu et développé seul le serveur en Rust, l’interface Angular et leurs tests.',
   role: 'Conception et développement',
   periode: 'Depuis septembre 2026',
   equipe: 'Projet personnel, seul',
-  statut: { texte: 'Outil personnel, en usage quotidien' },
+  statut: { texte: 'Outil personnel, en usage sur ma machine' },
   liens: [],
 };
 
@@ -124,8 +131,8 @@ export interface EcranSillage {
 
 export const ECRANS = {
   graphe: {
-    alt: 'Une exécution en direct dans Sillage : le cadrage est terminé, un coordinateur a créé trois sous-agents en cours de route, la relecture finale attend.',
-    legende: 'Une exécution en direct, sur un projet de démonstration. Un clic l’agrandit.',
+    alt: 'Une exécution en direct dans Sillage : un coordinateur a créé trois sous-agents en cours de route, au travail en même temps, et la relecture finale les attend.',
+    legende: 'Une exécution en direct, sur un projet de démonstration. Un clic montre l’écran entier.',
   },
   projet: {
     alt: 'La page du projet Carnet de route dans Sillage : un assistant compose une tâche pendant qu’une exécution tourne, et quatre tâches avec leur état.',
@@ -143,6 +150,10 @@ export const ECRANS = {
     alt: 'Le récapitulatif d’une exécution terminée dans Sillage : dossier, branche et commit du résultat, état des worktrees, puis le résumé, les décisions et les contrôles de chaque agent.',
     legende: 'Le résultat final, les worktrees, puis ce que chaque agent a rendu. Un clic montre le panneau entier.',
   },
+  resultatMobile: {
+    alt: 'Le récapitulatif d’une exécution terminée dans Sillage, en largeur de téléphone : dossier, branche et commit du résultat final.',
+    legende: 'Le résultat final : le dossier, la branche, le commit.',
+  },
 } as const satisfies Record<string, EcranSillage>;
 
 /* ------------------------------------------------------------------ */
@@ -151,25 +162,25 @@ export const ECRANS = {
 
 export const DECISIONS: readonly Decision[] = [
   {
-    contrainte: 'Les agents rendaient de 10\u00a0000 à 27\u00a0000 caractères, quelle que soit la suite, et une réponse mal formée cassait la chaîne.',
-    choix: 'Chaque agent rend un résultat court et structuré : résumé, décisions, contrôles, blocages, suite. Une réponse hors contrat lui revient dans la même session, avec l’erreur, deux fois au plus.',
-    effet: 'Les agents suivants reçoivent des faits et des références, pas des transcriptions ; un blocage arrête la suite.',
+    contrainte: 'Les agents rendent de 10\u00a0000 à 27\u00a0000 caractères, quelle que soit la cible qu’on leur annonce, et une seule réponse mal formée peut casser la chaîne.',
+    choix: 'Chaque agent rend un résultat court et structuré : résumé, décisions, contrôles, blocages, suite. Une réponse hors du format attendu lui revient dans la même session, avec l’erreur, deux fois au plus.',
+    effet: 'Les agents suivants reçoivent des faits et des références, pas des conversations entières ; un blocage arrête la suite.',
     lien: { href: '#resultat', libelle: 'Le récapitulatif' },
   },
   {
-    contrainte: 'Des agents en parallèle dans un même dossier se gênaient : 26 commandes Git bloquées sur un verrou, des commits réécrits par un autre agent. Les agents que leur bac à sable empêchait de committer ont bloqué 39 fois en trois exécutions.',
-    choix: 'Sillage crée lui-même le worktree de chaque agent avant sa première session, le garde pour les suivantes, committe pour l’agent si besoin, puis fusionne.',
-    effet: 'Un seul mécanisme règle les deux blocages. Seuls les worktrees propres et fusionnés sont nettoyés, jamais les branches.',
+    contrainte: 'Des agents en parallèle dans un même dossier se gênaient : 26 commandes Git bloquées sur un verrou, des commits réécrits par un autre agent. Enfermés dans leur bac à sable, d’autres agents ne pouvaient ni committer, ni ouvrir un navigateur, ni joindre le réseau : 39 blocages en trois exécutions.',
+    choix: 'Quand un agent en a besoin (sa mission le demande, ou un autre agent écrit en même temps dans le même dossier), Sillage crée lui-même son worktree avant sa première session, le garde pour les suivantes, committe pour l’agent si besoin, puis fusionne.',
+    effet: 'Le même mécanisme committe pour les agents enfermés et sépare ceux qui écrivent en parallèle. Seuls les worktrees propres et fusionnés sont nettoyés, jamais les branches.',
   },
   {
-    contrainte: 'À chaque appel, toute la conversation de l’agent était relue : 2,19 milliards de tokens sur 79 sessions de trois tâches, et rien ne bornait une session.',
-    choix: 'Chaque session demande à Relais une fenêtre de compaction, de 300\u00a0000 tokens par défaut, réglable ou désactivable.',
-    effet: 'Une session se compacte vers 270\u00a0000 tokens au lieu de grossir jusqu’à la limite du modèle.',
+    contrainte: 'À chaque appel, toute la conversation de l’agent était relue : 2,19 milliards de tokens, les unités de texte que lit le modèle, sur 79 sessions de trois tâches, et rien ne bornait une session.',
+    choix: 'Chaque session demande à Relais une fenêtre de compaction, de 300\u00a0000 tokens par défaut, réglable ou désactivable : au-delà, sa conversation est résumée.',
+    effet: 'Une session est résumée vers 270\u00a0000 tokens au lieu de grossir jusqu’à la limite du modèle.',
   },
   {
-    contrainte: 'Des notions propres à Sillage étaient entrées dans Relais, et Sillage allait lire le jeton de Relais dans son dossier.',
+    contrainte: 'Des notions propres à Sillage étaient entrées dans Relais, et Sillage allait lire le jeton de Relais dans son dossier : trois lectures dans le code exécuté.',
     choix: 'Relais n’expose que des capacités génériques. Sillage garde son schéma de création de tâche et ses validations, et reçoit le jeton par ses paramètres.',
-    effet: 'Plus aucune lecture du dossier voisin : deux applications qui s’installent séparément, et un fournisseur que d’autres outils utilisent.',
+    effet: 'Plus aucune lecture du dossier voisin : deux applications qui s’installent séparément, et un point d’accès que d’autres outils utilisent.',
     lien: { href: '/projets/relais', libelle: 'Relais' },
   },
 ];

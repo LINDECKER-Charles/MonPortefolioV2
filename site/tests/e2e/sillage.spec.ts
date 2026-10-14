@@ -47,7 +47,7 @@ test('la fiche technique : sept cases, statut à forme et mot, dépôt privé sa
   await page.goto(CHEMIN);
   const fiche = page.getByRole('group', { name: 'Fiche du projet' });
   await expect(fiche.locator('dt')).toHaveText(['Besoin', 'Ma part', 'Rôle', 'Période', 'Équipe', 'Statut', 'Liens publics']);
-  await expect(fiche.locator('.statut')).toHaveText('Outil personnel, en usage quotidien');
+  await expect(fiche.locator('.statut')).toHaveText('Outil personnel, en usage sur ma machine');
   await expect(fiche.locator('.fiche-projet__case--part')).toContainText('serveur en Rust');
   await expect(fiche.locator('.fiche-projet__case--liens')).toHaveText(/Aucun\s:\sle code est dans un dépôt privé\./);
   await expect(fiche.locator('a')).toHaveCount(0);
@@ -96,7 +96,7 @@ test('de vrais écrans, dans l’ordre du récit, qui s’ouvrent en grand et se
     const image = page.locator(`${section} .capture`).filter({ visible: true }).locator('img').first();
     await expect(image, section).toHaveAttribute('alt', alt);
   }
-  const agrandir = page.locator('#reprendre a[data-agrandir]');
+  const agrandir = page.locator('#reprendre a[data-agrandir]').filter({ visible: true });
   await agrandir.scrollIntoViewIfNeeded();
   await agrandir.click();
   const visionneuse = page.locator('dialog[data-visionneuse]');
@@ -140,6 +140,40 @@ test('la page projet suit la largeur de l’écran : bureau au-delà de 860 px, 
     await expect(mobile).toBeVisible();
     await expect(mobile).toHaveClass(/capture--telephone/);
   }
+});
+
+test('le dialogue et le récapitulatif restent lisibles : la vue capturée à 390 px sous 861 px, celle de bureau au-delà', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const etroit = (page.viewportSize()?.width ?? 0) <= 860;
+  // Largeur d’écran de chaque capture (en px CSS, densité 2), bureau puis téléphone.
+  const largeurs: Record<string, [number, number]> = { '#reprendre': [620, 370], '#resultat': [794, 332] };
+  for (const section of ['#reprendre', '#resultat']) {
+    const bureau = page.locator(`${section} .sil-paire__bureau`);
+    const mobile = page.locator(`${section} .sil-paire__mobile`);
+    await expect(etroit ? mobile : bureau, section).toBeVisible();
+    await expect(etroit ? bureau : mobile, section).toBeHidden();
+    // Un panneau sans fenêtre : le cadre « panneau », filet et coins, sans barre de navigateur.
+    await expect(etroit ? mobile : bureau, section).toHaveClass(/capture--panneau/);
+    // Échelle d’affichage : la capture (densité 2) n’est jamais réduite sous 0,55 de sa taille d’écran.
+    const image = (etroit ? mobile : bureau).locator('img');
+    await image.scrollIntoViewIfNeeded();
+    const affichee = (await image.boundingBox())!.width;
+    expect(affichee / largeurs[section][etroit ? 1 : 0], section).toBeGreaterThan(0.55);
+  }
+});
+
+test('la capture d’en-tête est recadrée sur le coordinateur et ses sous-agents', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const figure = page.locator('.sil-entete-capture');
+  await expect(figure).toHaveClass(/capture--region/);
+  const [vue, image] = await Promise.all([figure.locator('.capture__vue').boundingBox(), figure.locator('img').boundingBox()]);
+  // L’image déborde de sa vue : seule la région du graphe se voit, à plus de deux fois la largeur du cadre.
+  expect(image!.width).toBeGreaterThan(vue!.width * 2);
+});
+
+test('« Reprendre » et « Le résultat » changent de lumière : un acte teinté', async ({ page }) => {
+  await page.goto(CHEMIN);
+  for (const section of ['#reprendre', '#resultat']) await expect(page.locator(`.acte-teinte ${section}`), section).toHaveCount(1);
 });
 
 test('la sortie : Karl Scraper avant, Relais après, retour à la vitrine, « Discutons » vers /contact', async ({ page }) => {
@@ -211,10 +245,10 @@ test.describe('sans JavaScript', () => {
     await page.goto(CHEMIN, { waitUntil: 'load' });
     for (const marque of ['titre', 'identite', 'preuve', 'action']) await expect(page.locator(`[data-pli="${marque}"]`)).toBeInViewport();
     await expect(page.locator('.sil-entete-capture img').first()).toBeVisible();
-    await expect(page.locator('#resultat .capture img').first()).toBeVisible();
+    await expect(page.locator('#resultat .capture img').filter({ visible: true })).toHaveCount(1);
     const largeur = page.viewportSize()?.width ?? 0;
     // La vue que la largeur masque prend une source neutre (ImageAdaptative) : rien ne part.
-    const masquee = largeur > 860 ? /\/page-projet-mobile\.[^/]*\.webp/ : /\/page-projet\.[^/]*\.webp/;
+    const masquee = largeur > 860 ? /\/(page-projet|reprendre-execution|recapitulatif)-mobile\.[^/]*\.webp/ : /\/(page-projet|reprendre-execution|recapitulatif)\.[^/]*\.webp/;
     expect(requetes.filter((url) => masquee.test(url))).toEqual([]);
     await page.locator('[data-pli="action"]').getByRole('link', { name: /Comment je l’ai construit/ }).click();
     expect(new URL(page.url()).hash).toBe('#construit');
