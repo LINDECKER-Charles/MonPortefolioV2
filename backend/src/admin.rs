@@ -154,6 +154,7 @@ pub fn routes(state: AppState) -> Router<AppState> {
             "/api/backoffice/tokens/{id}",
             axum::routing::delete(delete_token),
         )
+        .route("/api/backoffice/storage", get(storage))
         .route_layer(middleware::from_fn_with_state(state, require_session));
     Router::new()
         .merge(protected)
@@ -624,6 +625,19 @@ async fn delete_contact(
     Path(id): Path<i64>,
 ) -> Result<Json<Value>, ApiError> {
     changed(state.store.delete_contact(id).map_err(storage_error)?)
+}
+
+/// L’onglet Stockage : ce que la base occupe, par catégorie, image et article.
+/// La base est parcourue entière (`dbstat`) : hors des fils d’Axum.
+async fn storage(
+    State(state): State<AppState>,
+) -> Result<Json<crate::usage::StorageReport>, ApiError> {
+    let store = state.store.clone();
+    let report = tokio::task::spawn_blocking(move || store.storage_report())
+        .await
+        .map_err(|_| storage_error(StoreError))?
+        .map_err(storage_error)?;
+    Ok(Json(report))
 }
 
 #[derive(Deserialize)]

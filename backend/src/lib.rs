@@ -10,6 +10,7 @@ mod rate_limit;
 pub mod routes;
 pub mod storage;
 mod two_factor;
+pub mod usage;
 
 use std::sync::Arc;
 

@@ -1039,21 +1039,43 @@ impl Store {
         if !exists {
             return Err(BlogError::NotFound);
         }
-        let path = format!("/api/blog/media/{id}");
-        let used: bool = tx.query_row(
-            "SELECT EXISTS(SELECT 1 FROM blog_posts,json_tree(blog_posts.editable_json) WHERE json_tree.type='text' AND json_tree.key IN ('src','cover_image','og_image') AND json_tree.value=?1)
-             OR EXISTS(SELECT 1 FROM blog_posts,json_tree(blog_posts.scheduled_json) WHERE blog_posts.scheduled_json IS NOT NULL AND json_tree.type='text' AND json_tree.key IN ('src','cover_image','og_image') AND json_tree.value=?1)
-             OR EXISTS(SELECT 1 FROM blog_posts,json_tree(blog_posts.published_json) WHERE blog_posts.published_json IS NOT NULL AND json_tree.type='text' AND json_tree.key IN ('src','cover_image','og_image') AND json_tree.value=?1)",
-            [path],
-            |r| r.get(0),
-        )?;
-        if used {
+        if !media_citations(&tx, Some(id))?.is_empty() {
             return Err(BlogError::MediaInUse);
         }
         tx.execute("DELETE FROM blog_media WHERE id=?1", [id])?;
         tx.commit()?;
         Ok(())
     }
+}
+/// Les articles qui citent une image, `(article, image)`, toutes versions
+/// comprises : travail, programmée et publiée, dans le contenu, la couverture
+/// ou l’image de partage. `Some(id)` pour une seule image, `None` pour toutes.
+/// La suppression (`MEDIA_IN_USE`) et l’onglet Stockage suivent cette seule règle.
+pub(crate) fn media_citations(
+    connection: &Connection,
+    media: Option<i64>,
+) -> rusqlite::Result<Vec<(i64, i64)>> {
+    let cited = "json_tree.type='text' AND json_tree.key IN ('src','cover_image','og_image') \
+         AND json_tree.value LIKE '/api/blog/media/%' AND (?1 IS NULL OR json_tree.value=?1)";
+    let query = format!(
+        "SELECT blog_posts.id,json_tree.value FROM blog_posts,json_tree(blog_posts.editable_json) WHERE {cited}
+         UNION SELECT blog_posts.id,json_tree.value FROM blog_posts,json_tree(blog_posts.scheduled_json) WHERE blog_posts.scheduled_json IS NOT NULL AND {cited}
+         UNION SELECT blog_posts.id,json_tree.value FROM blog_posts,json_tree(blog_posts.published_json) WHERE blog_posts.published_json IS NOT NULL AND {cited}"
+    );
+    let path = media.map(|id| format!("/api/blog/media/{id}"));
+    let rows = connection
+        .prepare(&query)?
+        .query_map([path], |r| {
+            Ok((r.get::<_, i64>(0)?, r.get::<_, String>(1)?))
+        })?
+        .collect::<rusqlite::Result<Vec<_>>>()?;
+    let mut citations: Vec<(i64, i64)> = rows
+        .into_iter()
+        .filter_map(|(post, path)| Some((post, media_id(&path)?)))
+        .collect();
+    citations.sort_unstable();
+    citations.dedup();
+    Ok(citations)
 }
 const MEDIA_COLUMNS: &str = "id,filename,content_type,length(data),created_at,width,height";
 /// Les largeurs des variantes, puis celle de l’image fixe d’une image animée.

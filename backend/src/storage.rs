@@ -1,5 +1,5 @@
 use std::{
-    path::Path,
+    path::{Path, PathBuf},
     sync::{Mutex, MutexGuard},
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
@@ -111,6 +111,8 @@ pub(crate) enum TwoFactorResult {
 
 pub struct Store {
     connection: Mutex<Connection>,
+    /// Le fichier de la base ; `None` pour une base en mémoire.
+    path: Option<PathBuf>,
 }
 
 impl Store {
@@ -135,16 +137,21 @@ impl Store {
             file.set_permissions(std::fs::Permissions::from_mode(0o600))
                 .map_err(|_| StoreError)?;
         }
-        Self::initialize(Connection::open(path)?, bootstrap_email)
+        Self::initialize(
+            Connection::open(path)?,
+            bootstrap_email,
+            Some(path.to_path_buf()),
+        )
     }
 
     pub fn in_memory(email: &str) -> Result<Self, StoreError> {
-        Self::initialize(Connection::open_in_memory()?, Some(email))
+        Self::initialize(Connection::open_in_memory()?, Some(email), None)
     }
 
     fn initialize(
         connection: Connection,
         bootstrap_email: Option<&str>,
+        path: Option<PathBuf>,
     ) -> Result<Self, StoreError> {
         connection.busy_timeout(Duration::from_secs(5))?;
         connection.execute_batch(
@@ -204,7 +211,12 @@ impl Store {
         )?;
         Ok(Self {
             connection: Mutex::new(connection),
+            path,
         })
+    }
+
+    pub(crate) fn path(&self) -> Option<&Path> {
+        self.path.as_deref()
     }
 
     pub(crate) fn connection(&self) -> Result<MutexGuard<'_, Connection>, StoreError> {
