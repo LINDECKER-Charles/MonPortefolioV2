@@ -9,31 +9,34 @@ import { surveillerConsole } from './support/navigateur';
 
 /**
  * Un article publié, rendu par le vrai serveur de production (server/server.mjs
- * sur dist/) et lu dans Chromium aux deux largeurs : le texte de l’auteur ne
- * déborde pas, les tableaux et le code défilent au clavier, l’impression et la
- * nuit restent lisibles. Le backend est une doublure qui sert
- * tests/fixtures/article-complet.json (document que la validation Rust admet,
- * backend/tests/blog_api.rs) et des images dessinées ici, avec leurs variantes.
+ * sur dist/) et lu dans Chromium aux deux largeurs, de jour et de nuit : le
+ * texte de l’auteur ne déborde pas, les ancres mènent à leur titre, les
+ * tableaux et le code défilent au clavier, l’impression reste lisible et les
+ * images tiennent dans le budget. Le backend est une doublure qui sert
+ * tests/fixtures/article-complet.json (document qui emploie tout l’inventaire
+ * de schema-blog.json et que la validation Rust publie, backend/tests/blog_api.rs)
+ * et les images de article-complet-media.json, dessinées ici avec leurs variantes.
  *
  * Les deux serveurs tournent dans le processus de chaque worker, sur des ports
  * libres : les serveurs de playwright.config.ts restent sans backend, comme
  * l’exige « le blog ne publie aucun article fictif » (pages.spec.ts).
  */
-const ARTICLE = JSON.parse(readFileSync(new URL('../fixtures/article-complet.json', import.meta.url), 'utf8'));
+type Image = { width: number; height: number; type: 'image/jpeg' | 'image/png'; variants: number[]; transparent?: boolean };
+type Noeud = { type: string; attrs?: Record<string, unknown>; content?: Noeud[] };
+const fixture = (nom: string) => JSON.parse(readFileSync(new URL(`../fixtures/${nom}`, import.meta.url), 'utf8'));
+const ARTICLE = fixture('article-complet.json');
+const IMAGES: Record<string, Image> = fixture('article-complet-media.json').images;
 const DIST = new URL('../../dist', import.meta.url).pathname;
 const CHEMIN = `/blog/${ARTICLE.slug}`;
 const REGLES = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'];
-
-/** Les images de l’article : dimensions réelles et variantes, comme blog_media.rs les produit. */
-const IMAGES: Record<number, { width: number; height: number; type: 'image/jpeg' | 'image/png'; variants: number[]; transparent?: boolean }> = {
-  1: { width: 1600, height: 1000, type: 'image/jpeg', variants: [480, 960, 1600] },
-  2: { width: 800, height: 2800, type: 'image/png', variants: [480] },
-  3: { width: 320, height: 200, type: 'image/png', variants: [] },
-  4: { width: 1200, height: 800, type: 'image/png', variants: [480, 960], transparent: true },
-  5: { width: 800, height: 1400, type: 'image/jpeg', variants: [480, 800] },
-  6: { width: 1200, height: 630, type: 'image/png', variants: [] },
-};
+/** Budget d’images d’une page (AGENTS.md, « Budgets ») : 1,5 Mo. */
+const BUDGET_IMAGES = 1.5 * 1024 * 1024;
 const MEDIA = Object.fromEntries(Object.entries(IMAGES).map(([id, { width, height, variants }]) => [`/api/blog/media/${id}`, { width, height, variants }]));
+
+/** Les nœuds d’un type dans l’article de test. */
+function compter(type: string, node: Noeud = ARTICLE.content): number {
+  return (node.type === type ? 1 : 0) + (node.content ?? []).reduce((total, enfant) => total + compter(type, enfant), 0);
+}
 
 function dessin(largeur: number, hauteur: number, transparent = false) {
   const r = Math.min(largeur, hauteur) / 3;
@@ -103,16 +106,24 @@ async function ouvrir(page: Page, chemin = CHEMIN) {
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
 }
 
+/**
+ * Les éléments du texte qui dépassent l’écran ou sont rognés, hors des régions
+ * qui défilent et des troncatures voulues (points de suspension du fil d’Ariane).
+ */
+function debordements(page: Page, selecteur: string) {
+  return page.evaluate((cible) => {
+    const largeur = document.documentElement.clientWidth;
+    return [...document.querySelectorAll<HTMLElement>(cible)]
+      .filter((el) => !el.closest('.blog-table, pre'))
+      .filter((el) => { const boite = el.getBoundingClientRect(); return boite.width > 0 && (boite.right > largeur + 0.5 || boite.left < -0.5 || (el.scrollWidth > el.clientWidth + 1 && !['visible', 'hidden'].includes(getComputedStyle(el).overflowX)) || (el.scrollWidth > el.clientWidth + 1 && getComputedStyle(el).overflowX === 'hidden' && getComputedStyle(el).textOverflow !== 'ellipsis')); })
+      .map((el) => `${el.tagName.toLowerCase()} « ${(el.textContent ?? '').trim().slice(0, 40)} »`);
+  }, selecteur);
+}
+
 test('le texte de l’auteur reste dans l’écran : titre, étiquettes, carte de la liste', async ({ page }) => {
   for (const chemin of [CHEMIN, '/blog']) {
     await ouvrir(page, chemin);
-    const debordements = await page.evaluate(() => {
-      const largeur = document.documentElement.clientWidth;
-      return [...document.querySelectorAll<HTMLElement>('.blog-article__header *, .blog-list *')]
-        .filter((el) => { const boite = el.getBoundingClientRect(); return boite.width > 0 && (boite.right > largeur + 0.5 || el.scrollWidth > el.clientWidth + 1); })
-        .map((el) => `${el.tagName.toLowerCase()} « ${(el.textContent ?? '').trim().slice(0, 40)} »`);
-    });
-    expect(debordements, chemin).toEqual([]);
+    expect(await debordements(page, '.blog-article__header *, .blog-list *'), chemin).toEqual([]);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), chemin).toBe(true);
   }
 });
@@ -133,22 +144,56 @@ test('un tableau large défile au lieu de couper ses mots lettre à lettre', asy
   expect(lignes, '« Montant » tient sur une ligne').toBe(1);
 });
 
-test('les cellules gardent l’alignement choisi par l’auteur', async ({ page }) => {
+test('les cellules et les paragraphes gardent l’alignement choisi par l’auteur', async ({ page }) => {
   await ouvrir(page);
   const alignements = await page.locator('.blog-table').nth(1).evaluate((region) => [...region.querySelectorAll('[class*="blog-align-"]')].map((cellule) => [cellule.className, getComputedStyle(cellule).textAlign]));
   expect(alignements.length).toBe(6);
   for (const [classe, valeur] of alignements) expect(valeur, classe).toBe(classe.replace('blog-align-', ''));
+  const blocs = await page.locator('.blog-prose > :is(p, h2, h3, h4)[class*="blog-align-"]').evaluateAll((liste) => liste.map((el) => [el.className, getComputedStyle(el).textAlign]));
+  expect(blocs.length).toBeGreaterThanOrEqual(5);
+  for (const [classe, valeur] of blocs) expect(valeur, classe).toBe(classe.replace('blog-align-', ''));
 });
 
-test('tableaux et blocs de code défilent au clavier', async ({ page }) => {
+test('chaque ancre de l’article mène à son titre', async ({ page }) => {
   await ouvrir(page);
-  for (const selecteur of ['.blog-table', '.blog-prose pre']) {
-    const region = page.locator(selecteur).first();
+  const ancres = await page.locator('.blog-prose a[href^="#"]').evaluateAll((liens) => liens.map((lien) => lien.getAttribute('href')!.slice(1)));
+  expect(ancres.length).toBeGreaterThanOrEqual(3);
+  for (const ancre of ancres) {
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+    await page.locator(`.blog-prose a[href="#${ancre}"]`).first().click();
+    await expect(page).toHaveURL(new RegExp(`#${ancre}$`));
+    const titre = page.locator(`[id="${ancre}"]`);
+    await expect(titre, ancre).toHaveCount(1);
+    await expect(titre, ancre).toBeInViewport();
+  }
+});
+
+test('chaque tableau et chaque bloc de code s’atteint à la tabulation et défile au clavier', async ({ page }) => {
+  await ouvrir(page);
+  const regions = page.locator('.blog-table, .blog-prose pre');
+  await expect(regions).toHaveCount(compter('table') + compter('codeBlock'));
+  // Tout le parcours au clavier : chaque région y passe, avec un contour visible.
+  const atteintes = new Set<string>();
+  await page.locator('body').focus();
+  for (let n = 0; n < 400 && atteintes.size < (await regions.count()); n += 1) {
+    await page.keyboard.press('Tab');
+    const region = await page.evaluate(() => {
+      const actif = document.activeElement as HTMLElement | null;
+      if (!actif?.matches('.blog-table, .blog-prose pre')) return null;
+      return { nom: actif.getAttribute('aria-label') ?? '', contour: getComputedStyle(actif).outlineStyle };
+    });
+    if (region) {
+      expect(region.contour, region.nom).not.toBe('none');
+      atteintes.add(region.nom);
+    }
+  }
+  expect([...atteintes].sort()).toEqual((await regions.evaluateAll((liste) => liste.map((el) => el.getAttribute('aria-label') ?? ''))).sort());
+  for (const region of await regions.all()) {
+    if (!(await region.evaluate((el) => el.scrollWidth > el.clientWidth))) continue;
     await region.focus();
-    await expect(region).toBeFocused();
     const avant = await region.evaluate((el) => el.scrollLeft);
     await page.keyboard.press('ArrowRight');
-    await expect.poll(() => region.evaluate((el) => el.scrollLeft), selecteur).toBeGreaterThan(avant);
+    await expect.poll(() => region.evaluate((el) => el.scrollLeft), (await region.getAttribute('aria-label')) ?? '').toBeGreaterThan(avant);
   }
 });
 
@@ -187,18 +232,37 @@ test('les images réservent leur place, ne s’agrandissent pas et chargent la v
     rendu: [img.getBoundingClientRect().width, img.getBoundingClientRect().height],
     naturel: [img.naturalWidth, img.naturalHeight],
   })));
-  expect(images).toHaveLength(6);
+  expect(images).toHaveLength(compter('image') + 1);
   for (const image of images) {
     expect(image.attributs.every(Boolean), image.source).toBe(true);
     expect(Math.abs(image.rendu[0] / image.rendu[1] - image.naturel[0] / image.naturel[1]), `${image.source} garde ses proportions`).toBeLessThan(0.02);
     expect(image.rendu[1], image.source).toBeLessThanOrEqual(800.5);
+    expect(image.naturel[0], `${image.source} : jamais plus de 1 600 px servis`).toBeLessThanOrEqual(1600);
   }
   expect(images.find((image) => image.source.startsWith('/api/blog/media/1'))?.source, 'la variante de 960 px suffit aux deux largeurs').toBe('/api/blog/media/1/960');
   const petites = images.filter((image) => image.source === '/api/blog/media/3');
-  expect(petites.map((image) => Math.round(image.rendu[0]))).toEqual([320, 160]);
+  expect(petites.map((image) => Math.round(image.rendu[0])), 'une petite image n’est jamais agrandie').toEqual([320, 160, 320]);
   expect(await page.evaluate(() => (window as unknown as { decalage: number }).decalage)).toBeLessThan(0.02);
   await expect(page.locator('.blog-article__cover')).toHaveAttribute('fetchpriority', 'high');
 });
+
+for (const javaScript of [true, false]) {
+  test(`les images de l’article tiennent dans le budget de la page (${javaScript ? 'avec' : 'sans'} JavaScript)`, async ({ browser }, testInfo) => {
+    const { viewport, deviceScaleFactor, isMobile, hasTouch, userAgent } = testInfo.project.use;
+    const contexte = await browser.newContext({ viewport, deviceScaleFactor, isMobile, hasTouch, userAgent, javaScriptEnabled: javaScript, reducedMotion: 'reduce' });
+    const page = await contexte.newPage();
+    const tailles: Promise<number>[] = [];
+    page.on('response', (reponse) => { if (reponse.request().resourceType() === 'image') tailles.push(reponse.body().then((corps) => corps.length, () => 0)); });
+    await page.goto(base + CHEMIN);
+    // Sans JavaScript, la page se parcourt à la molette : les images différées arrivent aussi.
+    for (let n = 0; n < 40; n += 1) await page.mouse.wheel(0, 800);
+    await page.waitForLoadState('networkidle');
+    const total = (await Promise.all(tailles)).reduce((somme, taille) => somme + taille, 0);
+    expect(tailles.length).toBeGreaterThanOrEqual(compter('image'));
+    expect(total, `${Math.round(total / 1024)} Kio d’images`).toBeLessThanOrEqual(BUDGET_IMAGES);
+    await contexte.close();
+  });
+}
 
 test('la vignette de la liste reste recadrée en 16:9, quelles que soient les dimensions de l’image', async ({ page }) => {
   await ouvrir(page, '/blog');
@@ -208,20 +272,15 @@ test('la vignette de la liste reste recadrée en 16:9, quelles que soient les di
   expect(largeur / hauteur).toBeCloseTo(16 / 9, 1);
 });
 
-test('à l’impression, le code et les tableaux ne sont pas rognés', async ({ page }) => {
-  await ouvrir(page);
-  await page.emulateMedia({ media: 'print' });
-  const rognes = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('.blog-prose pre, .blog-table')].filter((el) => el.scrollWidth > el.clientWidth + 1).map((el) => el.getAttribute('aria-label') ?? el.className));
-  expect(rognes).toEqual([]);
-});
-
 test('sans JavaScript, l’article est complet', async ({ browser }) => {
   const contexte = await browser.newContext({ javaScriptEnabled: false });
   const page = await contexte.newPage();
   await page.goto(base + CHEMIN);
   await expect(page.locator('.blog-article h1')).toContainText('extraordinairementlong');
-  await expect(page.locator('.blog-prose table')).toHaveCount(4);
-  await expect(page.locator('.blog-prose figure img')).toHaveCount(5);
+  await expect(page.locator('.blog-prose table')).toHaveCount(compter('table'));
+  await expect(page.locator('.blog-prose pre')).toHaveCount(compter('codeBlock'));
+  await expect(page.locator('.blog-prose figure img')).toHaveCount(compter('image'));
+  await expect(page.locator('.blog-prose :is(h2, h3, h4)')).toHaveCount(compter('heading'));
   await contexte.close();
 });
 
@@ -231,18 +290,24 @@ for (const theme of ['jour', 'nuit'] as const) {
 
     test(`axe : l’article publié, sans erreur de console ni de CSP (${theme})`, async ({ page }) => {
       const problemes = surveillerConsole(page);
+      await page.addInitScript(() => {
+        const csp: string[] = [];
+        (window as unknown as { csp: string[] }).csp = csp;
+        document.addEventListener('securitypolicyviolation', (evenement) => csp.push(`${evenement.violatedDirective} ${evenement.blockedURI}`));
+      });
       await ouvrir(page);
       await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
       const resultats = await new AxeBuilder({ page }).withTags(REGLES).analyze();
       expect(resultats.violations.map((v) => ({ regle: v.id, cibles: v.nodes.slice(0, 3).map((n) => n.target.join(' ')) }))).toEqual([]);
+      expect(await page.evaluate(() => (window as unknown as { csp: string[] }).csp)).toEqual([]);
       expect(problemes).toEqual([]);
     });
-  });
-}
 
-for (const theme of ['jour', 'nuit'] as const) {
-  test.describe(`plaque des images, thème ${theme}`, () => {
-    test.use({ colorScheme: theme === 'nuit' ? 'dark' : 'light' });
+    test(`aucun élément de l’article ne déborde de l’écran (${theme})`, async ({ page }) => {
+      await ouvrir(page);
+      expect(await debordements(page, '.blog-article *')).toEqual([]);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    });
 
     test(`une image transparente garde une plaque claire (${theme})`, async ({ page }) => {
       await ouvrir(page);
@@ -250,6 +315,14 @@ for (const theme of ['jour', 'nuit'] as const) {
       const [r, g, b, a = 1] = (fond.match(/[\d.]+/g) ?? []).map(Number);
       expect(a, fond).toBe(1);
       expect((0.2126 * r + 0.7152 * g + 0.0722 * b) / 255, fond).toBeGreaterThan(0.8);
+    });
+
+    test(`à l’impression, le code et les tableaux ne sont pas rognés (${theme})`, async ({ page }) => {
+      await ouvrir(page);
+      await page.emulateMedia({ media: 'print' });
+      const rognes = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('.blog-prose pre, .blog-table')].filter((el) => el.scrollWidth > el.clientWidth + 1).map((el) => el.getAttribute('aria-label') ?? el.className));
+      expect(rognes).toEqual([]);
+      expect(await debordements(page, '.blog-article *'), 'rien ne sort de la page imprimée').toEqual([]);
     });
   });
 }

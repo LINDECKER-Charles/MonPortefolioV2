@@ -1,0 +1,63 @@
+{
+  "description": "Inventaire des nœuds, marques et attributs qu’un article du blog admet, avec des valeurs admises et refusées. Rust (backend/tests/blog_api.rs) vérifie que la validation accepte chaque valeur admise et refuse chaque valeur refusée, et tout attribut absent d’ici ; Node (server/blog-schema.test.mjs) vérifie que article-complet.json emploie chaque entrée (et chaque valeur des attributs marqués chaqueValeur) et qu’une valeur refusée se rend comme un attribut absent. Les adresses des liens et des images sont dans liens-blog.json.",
+  "noeuds": {
+    "doc": {},
+    "paragraph": {
+      "textAlign": { "chaqueValeur": true, "admis": [null, "left", "center", "right", "justify"], "refuses": ["start", "", 1] }
+    },
+    "heading": {
+      "level": { "chaqueValeur": true, "admis": [2, 3, 4], "refuses": [1, 5, 0, "2", null, 2.5] },
+      "textAlign": { "chaqueValeur": true, "admis": [null, "left", "center", "right", "justify"], "refuses": ["end", "", 1] }
+    },
+    "text": {},
+    "hardBreak": {},
+    "horizontalRule": {},
+    "bulletList": {},
+    "orderedList": {
+      "start": { "admis": [null, 1, 7, 1000000], "refuses": [0, -1, 1000001, "3", 1.5] },
+      "type": { "chaqueValeur": true, "admis": [null, "1", "a", "A", "i", "I"], "refuses": ["x", "b", 1, ""] }
+    },
+    "listItem": {},
+    "blockquote": {},
+    "codeBlock": {
+      "language": { "admis": [null, "", "rust", "c++", "c#", "objective-c", "shell_session"], "refuses": ["java script", "<script>", "abcdefghijabcdefghijabcdefghijabcdefghijx", 1] }
+    },
+    "image": {
+      "src": { "admis": ["/api/blog/media/1"], "refuses": ["/assets/demo.png", "/images/charles.webp", "javascript:alert(1)", null, 1] },
+      "alt": { "admis": [null, "", "Une image : l’essai"], "refuses": [1, "un\u0007contrôle", ["x"]] },
+      "title": { "admis": [null, "", "Une légende"], "refuses": [1, "un\u0000contrôle", {}] },
+      "width": { "admis": [null, 1, 160, 10000], "refuses": [0, 10001, "160", -1, 1.5] },
+      "height": { "admis": [null, 1, 300, 10000], "refuses": [0, 10001, "300", -1, 1.5] }
+    },
+    "table": {
+      "class": { "admis": [null], "refuses": ["x", ""] }
+    },
+    "tableRow": {},
+    "tableCell": {
+      "align": { "chaqueValeur": true, "admis": [null, "left", "center", "right", "justify"], "refuses": ["start", "", 1] },
+      "colspan": { "admis": [1, 2, 100], "refuses": [0, 101, null, "2", 1.5] },
+      "rowspan": { "admis": [1, 2, 100], "refuses": [0, 101, null, "2", 1.5] },
+      "colwidth": { "admis": [null, [200], [100, 200]], "refuses": [[0], [10001], "200", ["200"], 200] }
+    },
+    "tableHeader": {
+      "align": { "chaqueValeur": true, "admis": [null, "left", "center", "right", "justify"], "refuses": ["start", "", 1] },
+      "colspan": { "admis": [1, 2, 100], "refuses": [0, 101, null, "2", 1.5] },
+      "rowspan": { "admis": [1, 2, 100], "refuses": [0, 101, null, "2", 1.5] },
+      "colwidth": { "admis": [null, [200], [100, 200]], "refuses": [[0], [10001], "200", ["200"], 200] }
+    }
+  },
+  "marques": {
+    "bold": {},
+    "italic": {},
+    "strike": {},
+    "underline": {},
+    "code": {},
+    "link": {
+      "href": { "admis": ["/blog", "#le-contexte", "https://example.org/"], "refuses": ["javascript:alert(1)", "mailto:owner@example.org", null, 1] },
+      "target": { "chaqueValeur": true, "admis": [null, "_blank", "_self"], "refuses": ["_top", "x", 1] },
+      "title": { "admis": [null, "", "Un titre : l’essai"], "refuses": [1, "un\u0007contrôle", []] },
+      "rel": { "admis": [null, "", "noopener noreferrer nofollow"], "refuses": [1, "un\u0000contrôle"] },
+      "class": { "admis": [null, "", "lien-auteur"], "refuses": [1, "un\u0000contrôle"] }
+    }
+  }
+}

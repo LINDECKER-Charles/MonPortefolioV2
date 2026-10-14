@@ -1,13 +1,14 @@
 {
-  "title": "Article de test : un mot extraordinairementlongsansaucuneespacepourlacoupure",
+  "title": "Article de test : l'essai $& d'un mot extraordinairementlongsansaucuneespacepourlacoupure",
   "slug": "article-complet",
-  "excerpt": "Un article de test qui réunit tableaux larges, code, listes, citations et images, pour vérifier leur rendu à 390 et 1 440 pixels, de jour comme de nuit et à l’impression.",
+  "excerpt": "Un article de test qui réunit tableaux larges, code, listes, citations et images, pour vérifier leur rendu à 390 et 1 440 pixels, de jour comme de nuit et à l'impression. Motifs $$ et $' compris !",
   "cover_image": "/api/blog/media/5",
   "cover_alt": "Couverture de test en portrait.",
   "og_image": "/api/blog/media/6",
   "tags": [
     "tests",
-    "uneétiquettetrèslonguesansespacepourvoirledébord"
+    "uneétiquettetrèslonguesansespacepourvoirledébord",
+    "l'été $`"
   ],
   "seo_title": "",
   "seo_description": "",
@@ -1443,6 +1444,842 @@
           "title": "Petite affichée à 160 pixels.",
           "width": 160
         }
+      },
+      {
+        "type": "heading",
+        "attrs": {
+          "level": 2
+        },
+        "content": [
+          {
+            "type": "text",
+            "text": "Formes du texte"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "Du "
+          },
+          {
+            "type": "text",
+            "text": "gras",
+            "marks": [
+              {
+                "type": "bold"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "text": ", de l'"
+          },
+          {
+            "type": "text",
+            "text": "italique",
+            "marks": [
+              {
+                "type": "italic"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "text": ", du "
+          },
+          {
+            "type": "text",
+            "text": "souligné",
+            "marks": [
+              {
+                "type": "underline"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "text": ", du "
+          },
+          {
+            "type": "text",
+            "text": "barré",
+            "marks": [
+              {
+                "type": "strike"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "text": " et "
+          },
+          {
+            "type": "text",
+            "text": "tout()",
+            "marks": [
+              {
+                "type": "bold"
+              },
+              {
+                "type": "italic"
+              },
+              {
+                "type": "underline"
+              },
+              {
+                "type": "strike"
+              },
+              {
+                "type": "code"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "text": " à la fois."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "attrs": {
+          "textAlign": "left"
+        },
+        "content": [
+          {
+            "type": "text",
+            "text": "Paragraphe à gauche."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "attrs": {
+          "textAlign": "center"
+        },
+        "content": [
+          {
+            "type": "text",
+            "text": "Paragraphe centré."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "attrs": {
+          "textAlign": "right"
+        },
+        "content": [
+          {
+            "type": "text",
+            "text": "Paragraphe à droite."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "attrs": {
+          "textAlign": "justify"
+        },
+        "content": [
+          {
+            "type": "text",
+            "text": "Paragraphe justifié, assez long pour passer sur plusieurs lignes à 390 pixels de large, et même un peu plus loin encore."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "attrs": {
+          "textAlign": null
+        },
+        "content": [
+          {
+            "type": "text",
+            "text": "Paragraphe sans alignement choisi."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "Typographie naïve : l'apostrophe droite, des \"guillemets\", la ponctuation double ; vraiment ?! Oui ! « Entre guillemets » puis un saut de ligne"
+          },
+          {
+            "type": "hardBreak"
+          },
+          {
+            "type": "text",
+            "text": "juste après le saut."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "Motifs de remplacement : 5 $$, $& puis $' et $` dans le texte."
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "Liens : "
+          },
+          {
+            "type": "text",
+            "text": "la page 2",
+            "marks": [
+              {
+                "type": "link",
+                "attrs": {
+                  "href": "/blog?page=2",
+                  "target": "_self"
+                }
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "text": ", "
+          },
+          {
+            "type": "text",
+            "text": "le code plus bas",
+            "marks": [
+              {
+                "type": "link",
+                "attrs": {
+                  "href": "#motifs-dans-le-code"
+                }
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "text": ", "
+          },
+          {
+            "type": "text",
+            "text": "un site",
+            "marks": [
+              {
+                "type": "bold"
+              },
+              {
+                "type": "link",
+                "attrs": {
+                  "href": "https://example.org/doc",
+                  "target": "_blank",
+                  "title": "Documentation d'exemple",
+                  "rel": "noopener noreferrer nofollow",
+                  "class": "lien-auteur"
+                }
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "text": " en deux morceaux",
+            "marks": [
+              {
+                "type": "link",
+                "attrs": {
+                  "href": "https://example.org/doc",
+                  "target": "_blank",
+                  "title": "Documentation d'exemple",
+                  "rel": "noopener noreferrer nofollow",
+                  "class": "lien-auteur"
+                }
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "text": ", "
+          },
+          {
+            "type": "text",
+            "text": "un lien http",
+            "marks": [
+              {
+                "type": "link",
+                "attrs": {
+                  "href": "http://example.com/",
+                  "target": null,
+                  "title": null,
+                  "rel": null,
+                  "class": null
+                }
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "text": " et "
+          },
+          {
+            "type": "text",
+            "text": "du_code()",
+            "marks": [
+              {
+                "type": "code"
+              },
+              {
+                "type": "link",
+                "attrs": {
+                  "href": "/projets"
+                }
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "text": "."
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "attrs": {
+          "level": 3,
+          "textAlign": "left"
+        },
+        "content": [
+          {
+            "type": "text",
+            "text": "Un titre à gauche"
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "attrs": {
+          "level": 3,
+          "textAlign": "center"
+        },
+        "content": [
+          {
+            "type": "text",
+            "text": "Un titre centré"
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "attrs": {
+          "level": 4,
+          "textAlign": "right"
+        },
+        "content": [
+          {
+            "type": "text",
+            "text": "Un titre de niveau 4"
+          },
+          {
+            "type": "hardBreak"
+          },
+          {
+            "type": "text",
+            "text": "sur deux lignes"
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "attrs": {
+          "level": 3,
+          "textAlign": "justify"
+        },
+        "content": [
+          {
+            "type": "text",
+            "text": "Un titre justifié"
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "attrs": {
+          "level": 2,
+          "textAlign": null
+        },
+        "content": [
+          {
+            "type": "text",
+            "text": "Motifs $& dans le "
+          },
+          {
+            "type": "text",
+            "text": "code",
+            "marks": [
+              {
+                "type": "code"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "codeBlock",
+        "attrs": {
+          "language": "bash"
+        },
+        "content": [
+          {
+            "type": "text",
+            "text": "IFS=$'\\n'\necho $$ \"$&\" $` $'\nprintf '%s' \"l'apostrophe : reste droite ; ici !\""
+          }
+        ]
+      },
+      {
+        "type": "codeBlock",
+        "attrs": {
+          "language": null
+        },
+        "content": [
+          {
+            "type": "text",
+            "text": "\tTabulation\n\t\tdouble <script>alert(1)</script>"
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "attrs": {
+          "level": 2
+        },
+        "content": [
+          {
+            "type": "text",
+            "text": "Listes numérotées"
+          }
+        ]
+      },
+      {
+        "type": "orderedList",
+        "attrs": {
+          "start": 3,
+          "type": "i"
+        },
+        "content": [
+          {
+            "type": "listItem",
+            "content": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Trois en chiffres romains."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "listItem",
+            "content": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Quatre."
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "orderedList",
+        "attrs": {
+          "start": null,
+          "type": "A"
+        },
+        "content": [
+          {
+            "type": "listItem",
+            "content": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Premier, en lettres capitales."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "listItem",
+            "content": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Second."
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "orderedList",
+        "attrs": {
+          "start": 7,
+          "type": "1"
+        },
+        "content": [
+          {
+            "type": "listItem",
+            "content": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Sept."
+                  }
+                ]
+              },
+              {
+                "type": "orderedList",
+                "attrs": {
+                  "start": 1,
+                  "type": "a"
+                },
+                "content": [
+                  {
+                    "type": "listItem",
+                    "content": [
+                      {
+                        "type": "paragraph",
+                        "content": [
+                          {
+                            "type": "text",
+                            "text": "Sous-élément a."
+                          }
+                        ]
+                      },
+                      {
+                        "type": "orderedList",
+                        "attrs": {
+                          "start": 1,
+                          "type": "I"
+                        },
+                        "content": [
+                          {
+                            "type": "listItem",
+                            "content": [
+                              {
+                                "type": "paragraph",
+                                "content": [
+                                  {
+                                    "type": "text",
+                                    "text": "Sous-sous-élément I."
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "orderedList",
+        "attrs": {
+          "start": 1,
+          "type": null
+        },
+        "content": [
+          {
+            "type": "listItem",
+            "content": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Sans type."
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "horizontalRule"
+      },
+      {
+        "type": "heading",
+        "attrs": {
+          "level": 2
+        },
+        "content": [
+          {
+            "type": "text",
+            "text": "Tableau fusionné"
+          }
+        ]
+      },
+      {
+        "type": "table",
+        "attrs": {
+          "class": null
+        },
+        "content": [
+          {
+            "type": "tableRow",
+            "content": [
+              {
+                "type": "tableHeader",
+                "attrs": {
+                  "colspan": 2,
+                  "rowspan": 1,
+                  "colwidth": null
+                },
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "Deux colonnes fusionnées"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "tableHeader",
+                "attrs": {
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "colwidth": [
+                    240
+                  ]
+                },
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "Large"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "tableRow",
+            "content": [
+              {
+                "type": "tableCell",
+                "attrs": {
+                  "colspan": 1,
+                  "rowspan": 2,
+                  "colwidth": null
+                },
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "Sur deux lignes"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "tableCell",
+                "attrs": {
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "colwidth": null
+                },
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "a"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "tableCell",
+                "attrs": {
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "colwidth": [
+                    240
+                  ]
+                },
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "b"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "tableRow",
+            "content": [
+              {
+                "type": "tableCell",
+                "attrs": {
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "colwidth": null
+                },
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "c"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "tableCell",
+                "attrs": {
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "colwidth": [
+                    240
+                  ]
+                },
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "d"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "attrs": {
+          "level": 2
+        },
+        "content": [
+          {
+            "type": "text",
+            "text": "Images sans légende"
+          }
+        ]
+      },
+      {
+        "type": "image",
+        "attrs": {
+          "src": "/api/blog/media/1",
+          "alt": "Image de test 1, d'une hauteur choisie.",
+          "title": "Hauteur seule : 300 pixels.",
+          "width": null,
+          "height": 300
+        }
+      },
+      {
+        "type": "image",
+        "attrs": {
+          "src": "/api/blog/media/3",
+          "alt": null,
+          "title": null,
+          "width": null,
+          "height": null
+        }
+      },
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "Retour "
+          },
+          {
+            "type": "text",
+            "text": "aux tableaux",
+            "marks": [
+              {
+                "type": "link",
+                "attrs": {
+                  "href": "#les-tableaux"
+                }
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "text": " ou "
+          },
+          {
+            "type": "text",
+            "text": "au titre de niveau 4",
+            "marks": [
+              {
+                "type": "link",
+                "attrs": {
+                  "href": "#un-titre-de-niveau-4-sur-deux-lignes"
+                }
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "text": "."
+          }
+        ]
       }
     ]
   }

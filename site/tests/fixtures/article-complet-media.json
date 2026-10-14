@@ -1,0 +1,11 @@
+{
+  "description": "Les images de article-complet.json, telles que le backend les décrit sous `media` (dimensions réelles et largeurs des variantes, backend/src/blog_media.rs). server/blog-schema.test.mjs les passe au rendu ; tests/e2e/blog-article.spec.ts les dessine et les sert avec leurs variantes.",
+  "images": {
+    "1": { "width": 1600, "height": 1000, "type": "image/jpeg", "variants": [480, 960, 1600] },
+    "2": { "width": 800, "height": 2800, "type": "image/png", "variants": [480] },
+    "3": { "width": 320, "height": 200, "type": "image/png", "variants": [] },
+    "4": { "width": 1200, "height": 800, "type": "image/png", "variants": [480, 960], "transparent": true },
+    "5": { "width": 800, "height": 1400, "type": "image/jpeg", "variants": [480, 800] },
+    "6": { "width": 1200, "height": 630, "type": "image/png", "variants": [] }
+  }
+}
