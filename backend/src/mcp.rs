@@ -243,6 +243,11 @@ async fn handle(
             "Accept doit inclure application/json et text/event-stream.",
         );
     }
+    // La place d’un gros import (`upload_queue`), que son traitement garde jusqu’au bout.
+    let turn = request
+        .extensions()
+        .get::<crate::upload_queue::UploadTurn>()
+        .cloned();
     let bytes = match to_bytes(request.into_body(), MAX_REQUEST_BYTES).await {
         Ok(bytes) => bytes,
         Err(_) => {
@@ -412,8 +417,10 @@ async fn handle(
         }
         "tools/call" => {
             // SQLite et le traitement des images importées bloquent : hors des fils d’Axum.
+            // Un import y garde sa place jusqu’au bout, même si le client part.
             let (params, id) = (params.clone(), id.cloned());
             tokio::task::spawn_blocking(move || {
+                let _turn = turn;
                 call_tool(&state, &scopes, &params, id.as_ref(), modern)
             })
             .await

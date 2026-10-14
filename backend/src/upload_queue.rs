@@ -267,4 +267,120 @@ mod tests {
         assert_eq!(response.headers()["connection"], "close");
         feeder.abort();
     }
+
+    /// Bloque le traitement des images (`blog_media::TURN`) jusqu’à ce que le
+    /// canal rendu soit lâché.
+    fn hold_processing() -> std::sync::mpsc::Sender<()> {
+        let (release, released) = std::sync::mpsc::channel::<()>();
+        let (locked, is_locked) = std::sync::mpsc::channel();
+        std::thread::spawn(move || {
+            let _turn = crate::blog_media::TURN
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
+            locked.send(()).unwrap();
+            let _ = released.recv();
+        });
+        is_locked.recv().unwrap();
+        release
+    }
+
+    async fn places_become(slots: &Semaphore, expected: usize) {
+        tokio::time::timeout(Duration::from_secs(5), async {
+            while slots.available_permits() != expected {
+                tokio::time::sleep(Duration::from_millis(5)).await;
+            }
+        })
+        .await
+        .unwrap_or_else(|_| panic!("{expected} places libres attendues"));
+    }
+
+    #[tokio::test]
+    async fn an_import_keeps_its_place_until_processed_even_if_its_client_leaves() {
+        use crate::{
+            config::{AppEnvironment, BackofficeConfig},
+            storage::Store,
+        };
+        use axum::http::header;
+        use base64::{Engine, engine::general_purpose::STANDARD};
+
+        let store = Arc::new(Store::in_memory("owner@example.org").unwrap());
+        let state = AppState::with_store(
+            None,
+            None,
+            store.clone(),
+            Some(BackofficeConfig {
+                email: "admin@example.org".into(),
+                password: "correct horse battery staple".into(),
+                environment: AppEnvironment::Development,
+                totp_encryption_key: None,
+            }),
+            false,
+        )
+        .unwrap();
+        let slots = state.upload_queue.slots.clone();
+        let app = crate::routes::router(state);
+        let cookie = format!(
+            "portfolio_backoffice={}",
+            store.create_session(Duration::from_secs(600)).unwrap()
+        );
+        let (_, token) = store
+            .create_token_with_scopes("Imports", &["blog:read".into(), "blog:write".into()])
+            .unwrap();
+        // Un PNG d’un pixel suivi de 70 000 octets : plus de 64 Kio en base64.
+        let mut image = Vec::new();
+        {
+            let mut encoder = png::Encoder::new(&mut image, 1, 1);
+            encoder.set_color(png::ColorType::Rgba);
+            let mut writer = encoder.write_header().unwrap();
+            writer.write_image_data(&[0, 0, 0, 255]).unwrap();
+        }
+        image.extend_from_slice(&[0; 70_000]);
+        let upload = serde_json::json!({
+            "filename": "grande.png",
+            "content_type": "image/png",
+            "data_base64": STANDARD.encode(&image),
+        });
+        let post = |path: &str, payload: serde_json::Value| {
+            Request::post(path)
+                .header(header::HOST, "portfolio.test")
+                .header(header::ORIGIN, "https://portfolio.test")
+                .header(header::CONTENT_TYPE, "application/json")
+                .header("x-backoffice-request", "1")
+                .header(header::COOKIE, &cookie)
+                .header(header::AUTHORIZATION, format!("Bearer {token}"))
+                .header(header::ACCEPT, "application/json, text/event-stream")
+                .body(Body::from(payload.to_string()))
+                .unwrap()
+        };
+        let mcp = serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "tools/call",
+            "params": {"name": "blog_upload_media", "arguments": upload},
+        });
+        for (way, request) in [
+            (
+                "backoffice",
+                post("/api/backoffice/blog/media", upload.clone()),
+            ),
+            ("MCP", post("/mcp", mcp)),
+        ] {
+            let release = hold_processing();
+            let pending = tokio::spawn(app.clone().oneshot(request));
+            places_become(&slots, UPLOAD_SLOTS - 1).await;
+            // Le corps est lu, le traitement attend son tour : le client part.
+            tokio::time::sleep(Duration::from_millis(100)).await;
+            pending.abort();
+            let _ = pending.await;
+            tokio::time::sleep(Duration::from_millis(50)).await;
+            assert_eq!(
+                slots.available_permits(),
+                UPLOAD_SLOTS - 1,
+                "{way} : le traitement garde sa place après le départ du client"
+            );
+            drop(release);
+            places_become(&slots, UPLOAD_SLOTS).await;
+        }
+        assert_eq!(store.list_blog_media(10, 0).unwrap().len(), 2);
+    }
 }

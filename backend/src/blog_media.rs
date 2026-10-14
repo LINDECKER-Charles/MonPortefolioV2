@@ -98,7 +98,7 @@ const JPEG_QUALITY: u8 = 80;
 /// Un seul traitement à la fois : quelques imports simultanés suffiraient sinon
 /// à épuiser la mémoire du service, et le formulaire de contact avec lui. Les
 /// corps des imports, eux, attendent leur tour avant d’être lus (`upload_queue`).
-static TURN: Mutex<()> = Mutex::new(());
+pub(crate) static TURN: Mutex<()> = Mutex::new(());
 
 pub struct Variant {
     pub width: u32,
