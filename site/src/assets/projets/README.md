@@ -78,6 +78,21 @@ la cérémonie et le retour à l’étoile allumée sont conservés. Dates, obje
 `public/` pour ne pas être servis.
 Le script `tools/capturer-bloodborne.cjs` permet de les refaire sans modifier le dépôt source.
 
+## Pages entrées dans la vitrine le 14 octobre 2026
+
+GitHealth, Karl Scraper, Sillage et Relais ont chacun leur dossier et leur provenance détaillée
+(version capturée, données, navigateur, conversion, recadrages). Méthode commune : vraies vues de
+l’application lancée en local sur une copie du dépôt, avec des données de démonstration, sans
+retouche ni recomposition de l’interface ; aucune donnée ni aucun compte réels. Karl Scraper,
+Sillage et Relais sont des dépôts privés : ni nommés ni liés, ici comme sur le site.
+
+| Dossier | Registre | Révision | Données de démonstration |
+|---|---|---|---|
+| [`githealth/`](githealth/README.md) | `GTH-C1` | `bd2e5c9` (`dev`, version affichée 0.2.0) | dépôts Git fabriqués, auteurs fictifs en `example.invalid` |
+| [`karl-scraper/`](karl-scraper/README.md) | `KSC-C1` | `6615950` | faux serveur source, trois projets et seize tâches fictifs ; **captures provisoires**, à refaire après la refonte graphique |
+| [`sillage/`](sillage/README.md) | `SIL-C1` | `c256e76` | faux fournisseur des tests du dépôt, trois projets de démonstration |
+| [`relais/`](relais/README.md) | `REL-C1` | `bdf041f` (version 0.2.0) | agent de démonstration aux tours écrits à l’avance, sans inférence |
+
 ## Logos techniques
 
 Les logos dans `bloodborne/technos/` sont les SVG officiels, sans redessin :
