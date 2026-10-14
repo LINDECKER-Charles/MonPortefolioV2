@@ -37,10 +37,13 @@ export function renderDocument(doc, { preview = false, reserved = [] } = {}) {
     used.add(id);
     return id;
   };
-  const render = (node, depth = 0) => {
+  let tables = 0; let codes = 0;
+  // `portee` : portée des en-têtes de la ligne en cours (col en thead, row ailleurs).
+  const render = (node, depth = 0, portee = 'row') => {
     if (!node || typeof node !== 'object' || depth > 30 || ++count > 20_000) return '';
     const attrs = node.attrs ?? {};
-    const children = () => (Array.isArray(node.content) ? node.content : []).map((child) => render(child, depth + 1)).join('');
+    const contenu = Array.isArray(node.content) ? node.content : [];
+    const children = (suite = portee) => contenu.map((child) => render(child, depth + 1, suite)).join('');
     const align = ['center', 'right', 'justify'].includes(attrs.textAlign) ? ` class="blog-align-${attrs.textAlign}"` : '';
     switch (node.type) {
       case 'doc': return children();
@@ -59,13 +62,21 @@ export function renderDocument(doc, { preview = false, reserved = [] } = {}) {
       case 'orderedList': return `<ol${Number.isSafeInteger(attrs.start) && attrs.start > 0 ? ` start="${attrs.start}"` : ''}${['1', 'a', 'A', 'i', 'I'].includes(attrs.type) ? ` type="${attrs.type}"` : ''}>${children()}</ol>`;
       case 'listItem': return `<li>${children()}</li>`;
       case 'blockquote': return `<blockquote>${children()}</blockquote>`;
-      case 'codeBlock': return `<pre><code>${children()}</code></pre>`;
+      // Tableaux et code défilent en largeur : la région prend le focus pour défiler au clavier (WCAG 2.1.1).
+      case 'codeBlock': { codes += 1; const langage = typeof attrs.language === 'string' && attrs.language ? ` (${escapeHtml(attrs.language)})` : ''; return `<pre tabindex="0" role="region" aria-label="Code ${codes}${langage}"><code>${children()}</code></pre>`; }
       case 'hardBreak': return '<br>';
       case 'horizontalRule': return '<hr>';
       case 'image': { const src = safeUrl(attrs.src, true, preview); if (!src) return ''; const dimension = (key) => Number.isInteger(attrs[key]) && attrs[key] > 0 && attrs[key] <= 10_000 ? ` ${key}="${attrs[key]}"` : ''; const width = dimension('width') ? ` style="width:${attrs.width}px;max-width:100%;height:auto"` : ''; return `<figure><img src="${escapeHtml(src)}" alt="${escapeHtml(attrs.alt)}"${dimension('width')}${dimension('height')}${width} loading="lazy" decoding="async">${attrs.title ? `<figcaption>${escapeHtml(attrs.title)}</figcaption>` : ''}</figure>`; }
-      case 'table': return `<div class="blog-table"><table><tbody>${children()}</tbody></table></div>`;
+      case 'table': {
+        tables += 1;
+        // Une première ligne faite d’en-têtes devient l’en-tête du tableau.
+        const premiere = contenu[0];
+        const entete = premiere?.type === 'tableRow' && Array.isArray(premiere.content) && premiere.content.length > 0 && premiere.content.every((cellule) => cellule?.type === 'tableHeader');
+        const corps = (entete ? contenu.slice(1) : contenu).map((ligne) => render(ligne, depth + 1, 'row')).join('');
+        return `<div class="blog-table" tabindex="0" role="region" aria-label="Tableau ${tables}"><table>${entete ? `<thead>${render(premiere, depth + 1, 'col')}</thead>` : ''}<tbody>${corps}</tbody></table></div>`;
+      }
       case 'tableRow': return `<tr>${children()}</tr>`;
-      case 'tableCell': case 'tableHeader': { const tag = node.type === 'tableHeader' ? 'th' : 'td'; const span = (key) => Number.isInteger(attrs[key]) && attrs[key] > 1 && attrs[key] <= 100 ? ` ${key}="${attrs[key]}"` : ''; const alignment = ['center', 'right', 'justify'].includes(attrs.align) ? ` class="blog-align-${attrs.align}"` : ''; const widths = Array.isArray(attrs.colwidth) && attrs.colwidth.length <= 100 && attrs.colwidth.every((w) => Number.isInteger(w) && w > 0 && w <= 10_000) ? attrs.colwidth.reduce((sum, width) => sum + width, 0) : 0; return `<${tag}${alignment}${span('colspan')}${span('rowspan')}${widths ? ` style="width:${widths}px;min-width:${widths}px"` : ''}>${children()}</${tag}>`; }
+      case 'tableCell': case 'tableHeader': { const tag = node.type === 'tableHeader' ? 'th' : 'td'; const span = (key) => Number.isInteger(attrs[key]) && attrs[key] > 1 && attrs[key] <= 100 ? ` ${key}="${attrs[key]}"` : ''; const alignment = ['center', 'right', 'justify'].includes(attrs.align) ? ` class="blog-align-${attrs.align}"` : ''; const widths = Array.isArray(attrs.colwidth) && attrs.colwidth.length <= 100 && attrs.colwidth.every((w) => Number.isInteger(w) && w > 0 && w <= 10_000) ? attrs.colwidth.reduce((sum, width) => sum + width, 0) : 0; return `<${tag}${alignment}${tag === 'th' ? ` scope="${portee}"` : ''}${span('colspan')}${span('rowspan')}${widths ? ` style="width:${widths}px;min-width:${widths}px"` : ''}>${children('row')}</${tag}>`; }
       default: return '';
     }
   };

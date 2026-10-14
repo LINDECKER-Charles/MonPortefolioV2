@@ -89,3 +89,28 @@ test('chaque titre reçoit un identifiant stable, unique et distinct de ceux du 
   assert.deepEqual(ids, ['le-contexte', 'le-contexte-2', 'oeuvre-coeur-l-ete-a-noel', 'avec-du-code-et-un-saut', 'discutons-2', 'section', 'x'.repeat(80)]);
   assert.equal(compter(html, /id="discutons"/g), 1, 'l’identifiant du gabarit reste unique');
 });
+
+const cellule = (type, valeur, attrs = {}) => ({ type, attrs: { colspan: 1, rowspan: 1, colwidth: null, ...attrs }, content: [{ type: 'paragraph', content: [texte(valeur)] }] });
+const ligne = (...cellules) => ({ type: 'tableRow', content: cellules });
+
+test('tableaux et blocs de code défilent dans une région atteignable au clavier, nommée et numérotée', () => {
+  const html = renderDocument({ type: 'doc', content: [
+    { type: 'table', content: [ligne(cellule('tableCell', 'a'))] },
+    { type: 'codeBlock', attrs: { language: 'bash' }, content: [texte('echo 1')] },
+    { type: 'table', content: [ligne(cellule('tableCell', 'b'))] },
+    { type: 'codeBlock', attrs: { language: null }, content: [texte('x')] },
+  ] });
+  assert.match(html, /^<div class="blog-table" tabindex="0" role="region" aria-label="Tableau 1"><table>/);
+  assert.match(html, /<div class="blog-table" tabindex="0" role="region" aria-label="Tableau 2">/);
+  assert.match(html, /<pre tabindex="0" role="region" aria-label="Code 1 \(bash\)"><code>echo 1<\/code><\/pre>/);
+  assert.match(html, /<pre tabindex="0" role="region" aria-label="Code 2"><code>x<\/code><\/pre>/);
+});
+
+test('la ligne d’en-tête passe en thead et chaque en-tête déclare sa portée', () => {
+  const html = renderDocument({ type: 'doc', content: [{ type: 'table', content: [
+    ligne(cellule('tableHeader', 'Ligne'), cellule('tableHeader', 'Montant', { align: 'right' })),
+    ligne(cellule('tableHeader', 'Total'), cellule('tableCell', '12', { align: 'right' })),
+  ] }, { type: 'table', content: [ligne(cellule('tableHeader', 'Seule'), cellule('tableCell', 'ligne'))] }] });
+  assert.match(html, /<table><thead><tr><th scope="col"><p>Ligne<\/p><\/th><th class="blog-align-right" scope="col"><p>Montant<\/p><\/th><\/tr><\/thead><tbody><tr><th scope="row"><p>Total<\/p><\/th><td class="blog-align-right"><p>12<\/p><\/td><\/tr><\/tbody><\/table>/);
+  assert.match(html, /<table><tbody><tr><th scope="row"><p>Seule<\/p><\/th><td><p>ligne<\/p><\/td><\/tr><\/tbody><\/table>/, 'une ligne mixte reste dans tbody');
+});

@@ -19,7 +19,7 @@ test('le document rend la mise en page et échappe tous les textes et liens', ()
   ] });
   assert.match(html, /blog-align-center/);
   assert.match(html, /&lt;script&gt;/);
-  assert.match(html, /<th class="blog-align-right"><p>Critère<\/p><\/th>/);
+  assert.match(html, /<th class="blog-align-right" scope="col"><p>Critère<\/p><\/th>/);
   assert.doesNotMatch(html, /<script|javascript:|onerror|iframe|evil.test/);
 });
 
