@@ -611,12 +611,16 @@ html:has(.bo-blog > #blog-edit-view:not([hidden])) {
   border-top: 1px solid var(--trait);
 }
 
+/* L’image s’affiche comme dans l’article publié (`.blog-prose figure img`) :
+   la taille vient de ses attributs ou de l’image elle-même, au plus la colonne
+   et 800 px de haut, alignée à gauche ; une petite image reste petite. La
+   plaque claire garde visible, la nuit, une image transparente au trait sombre. */
 .blog-editor-content figure img {
-  width: 100%;
   height: auto;
   max-height: 800px;
   object-fit: contain;
   border-radius: var(--r2);
+  background: var(--papier-logo);
 }
 
 .blog-editor-content figcaption {
@@ -711,10 +715,16 @@ html:has(.bo-blog > #blog-edit-view:not([hidden])) {
   border: 1px solid var(--filet);
 }
 
+/* L’image porte elle-même le ratio : `height: 100%` ne se résout pas dans une
+   rangée de grille automatique. Elle reprend ainsi le recadrage centré de la
+   liste du blog (`.blog-list__article img`). */
 #blog-cover-preview {
+  display: block;
   width: 100%;
-  height: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
+  background: var(--papier-logo);
 }
 
 .blog-cover-placeholder {

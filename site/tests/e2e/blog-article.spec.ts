@@ -19,7 +19,9 @@ import { surveillerConsole } from './support/navigateur';
  * et les images de article-complet-media.json, dessinées ici avec leurs variantes
  * (l’original `lourd` est du bruit, plus lourd que le budget : seules ses
  * variantes, légères, doivent partir). La liste ajoute quatre articles, avec et
- * sans couverture, pour la grille.
+ * sans couverture, pour la grille. L’atelier du blog ouvre le même article,
+ * API privée doublée dans le navigateur : ses images s’y affichent comme en
+ * public.
  *
  * Les deux serveurs tournent dans le processus de chaque worker, sur des ports
  * libres : les serveurs de playwright.config.ts restent sans backend, comme
@@ -65,10 +67,12 @@ async function fichiers() {
 let backend: Server;
 let site: Server;
 let base = '';
+let octets: Map<string, { type: string; octets: Buffer }>;
+let publie: Record<string, unknown>;
 
 test.beforeAll(async () => {
-  const octets = await fichiers();
-  const publie = { id: 1, ...ARTICLE, status: 'published', published_at: 1791468000, scheduled_at: null, created_at: '2026-10-08T12:00:00Z', updated_at: '2026-10-08T12:00:00Z', revision: 2, has_unpublished_changes: false, scheduled_revision: null, media: MEDIA };
+  octets = await fichiers();
+  publie = { id: 1, ...ARTICLE, status: 'published', published_at: 1791468000, scheduled_at: null, created_at: '2026-10-08T12:00:00Z', updated_at: '2026-10-08T12:00:00Z', revision: 2, has_unpublished_changes: false, scheduled_revision: null, media: MEDIA };
   const { content: _contenu, ...resume } = publie;
   // Après la vedette, deux rangées de la grille : sans puis avec couverture, et l’inverse.
   const carte = (id: number, slug: string, couverture: string | null) => ({ ...resume, id, slug, title: `Carte ${slug}`, excerpt: 'Un résumé de deux lignes environ, pour la grille de la liste.', cover_image: couverture, cover_alt: couverture ? 'Une couverture' : '', media: couverture ? { [couverture]: MEDIA[couverture] } : {} });
@@ -317,6 +321,80 @@ test('la vignette de la liste reste recadrée en 16:9, quelles que soient les di
   expect(largeur / hauteur).toBeCloseTo(16 / 9, 1);
 });
 
+/**
+ * L’atelier du blog sur le même article : la session et l’API privée sont
+ * doublées dans le navigateur, et ses images privées servent les mêmes octets
+ * que les publiques.
+ */
+async function ouvrirAtelier(page: Page, page_: 'redaction' | 'medias') {
+  await page.context().route('**/api/backoffice/**', async (route) => {
+    const chemin = new URL(route.request().url()).pathname.replace('/api/backoffice', '');
+    const image = /^\/blog\/media\/(\d+)$/.exec(chemin);
+    if (image) {
+      const fichier = octets.get(image[1]);
+      await (fichier ? route.fulfill({ contentType: fichier.type, body: fichier.octets }) : route.fulfill({ status: 404, body: '{}' }));
+      return;
+    }
+    const json = (valeur: unknown) => route.fulfill({ contentType: 'application/json', body: JSON.stringify(valeur) });
+    if (chemin === '/session') { await json({ authenticated: true, smtp_configured: true }); return; }
+    if (chemin === '/settings') { await json({ email: 'e2e-contact@example.test' }); return; }
+    if (chemin === '/contacts') { await json({ contacts: [], total: 0, new_count: 0 }); return; }
+    if (chemin === '/links') { await json({ links: [] }); return; }
+    if (chemin === '/tokens') { await json({ tokens: [] }); return; }
+    if (chemin === '/blog/media') { await json({ media: [], offset: 0, limit: 100 }); return; }
+    if (chemin === '/blog/posts') { await json({ posts: [], total: 0, offset: 0, limit: 20 }); return; }
+    if (chemin === '/blog/posts/1') { await json(publie); return; }
+    await route.fulfill({ status: 404, contentType: 'application/json', body: '{}' });
+  });
+  const reponse = await page.goto(`${base}/backoffice/blog/${page_}?id=1`);
+  expect(reponse?.status()).toBe(200);
+}
+
+/** Les images chargées d’une zone : source (sans origine ni préfixe privé), boîte et fond. */
+function boites(page: Page, selecteur: string) {
+  return page.locator(selecteur).evaluateAll((liste) => (liste as HTMLImageElement[]).map((img) => ({
+    source: img.src.replace(location.origin, '').replace('/api/backoffice/', '/api/'),
+    boite: [Math.round(img.getBoundingClientRect().width), Math.round(img.getBoundingClientRect().height)],
+    gauche: Math.round(img.getBoundingClientRect().left - img.closest('figure')!.getBoundingClientRect().left),
+    colonne: img.closest('figure')!.clientWidth,
+  })));
+}
+
+test('la rédaction montre les images à la taille de l’article publié', async ({ page }) => {
+  await ouvrir(page);
+  const publiques = (await boites(page, '.blog-prose figure img')).filter((image) => image.source === '/api/blog/media/3');
+  expect(publiques.map((image) => image.boite)).toEqual([[320, 200], [160, 100], [320, 200]]);
+  expect(publiques.map((image) => image.gauche)).toEqual([0, 0, 0]);
+  await ouvrirAtelier(page, 'redaction');
+  const figures = page.locator('.blog-editor-content figure img');
+  await expect(figures).toHaveCount(compter('image'));
+  await expect.poll(() => figures.evaluateAll((liste) => (liste as HTMLImageElement[]).every((img) => img.complete && img.naturalWidth > 0))).toBe(true);
+  const atelier = (await boites(page, '.blog-editor-content figure img')).filter((image) => image.source === '/api/blog/media/3');
+  // La feuille de rédaction peut être plus étroite que la colonne de l’article (390 px) :
+  // l’image y tient alors, sans changer de proportions, jamais agrandie.
+  const attendu = publiques.map(({ boite: [largeur, hauteur] }, rang) => {
+    const echelle = Math.min(1, atelier[rang]?.colonne / largeur);
+    return [Math.round(largeur * echelle), Math.round(hauteur * echelle)];
+  });
+  expect(atelier.map((image) => image.boite), 'même taille qu’en public, au plus la feuille').toEqual(attendu);
+  expect(atelier.map((image) => image.gauche), 'alignées à gauche, comme en public').toEqual([0, 0, 0]);
+});
+
+test('l’aperçu de couverture recadre l’image en 16:9, comme la liste du blog', async ({ page }) => {
+  await ouvrirAtelier(page, 'medias');
+  const apercu = page.locator('#blog-cover-preview');
+  await expect(apercu).toBeVisible();
+  await expect.poll(() => apercu.evaluate((img) => (img as HTMLImageElement).complete && (img as HTMLImageElement).naturalWidth > 0)).toBe(true);
+  const { image, scene } = await apercu.evaluate((img) => {
+    const boite = (el: Element) => { const r = el.getBoundingClientRect(); return { haut: r.top, bas: r.bottom, largeur: r.width, hauteur: r.height }; };
+    return { image: boite(img), scene: boite(img.closest('.blog-cover-stage')!) };
+  });
+  expect(image.largeur / image.hauteur).toBeCloseTo(16 / 9, 1);
+  expect(image.bas, 'l’image tient dans sa scène : rien n’est rogné en bas').toBeLessThanOrEqual(scene.bas + 1);
+  await expect(apercu).toHaveCSS('object-fit', 'cover');
+  await expect(apercu).toHaveCSS('object-position', '50% 50%');
+});
+
 test('dans la grille de la liste, deux cartes voisines alignent leur date, avec ou sans couverture', async ({ page }) => {
   test.skip((page.viewportSize()?.width ?? 0) <= 860, 'une seule colonne sous 861 px');
   await ouvrir(page, '/blog');
@@ -374,6 +452,16 @@ for (const theme of ['jour', 'nuit'] as const) {
     test(`une image transparente garde une plaque claire (${theme})`, async ({ page }) => {
       await ouvrir(page);
       const fond = await page.locator('.blog-prose figure img[src*="/api/blog/media/4"]').evaluate((img) => getComputedStyle(img).backgroundColor);
+      const [r, g, b, a = 1] = (fond.match(/[\d.]+/g) ?? []).map(Number);
+      expect(a, fond).toBe(1);
+      expect((0.2126 * r + 0.7152 * g + 0.0722 * b) / 255, fond).toBeGreaterThan(0.8);
+    });
+
+    test(`dans la rédaction aussi, une image transparente garde une plaque claire (${theme})`, async ({ page }) => {
+      await ouvrirAtelier(page, 'redaction');
+      const image = page.locator('.blog-editor-content figure img[src$="/api/backoffice/blog/media/4"]');
+      await expect(image).toBeVisible();
+      const fond = await image.evaluate((img) => getComputedStyle(img).backgroundColor);
       const [r, g, b, a = 1] = (fond.match(/[\d.]+/g) ?? []).map(Number);
       expect(a, fond).toBe(1);
       expect((0.2126 * r + 0.7152 * g + 0.0722 * b) / 255, fond).toBeGreaterThan(0.8);
