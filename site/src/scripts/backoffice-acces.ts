@@ -161,9 +161,13 @@ export function brancherAccesMcp(contexte: ContexteAcces): RubriqueAcces {
     delete zone.dataset.state;
   }
 
-  /** La commande en mots : une option ne se coupe jamais, seul le secret peut aller à la ligne. */
+  /**
+   * La commande en mots : une option ne se coupe jamais, seul le secret peut aller à la ligne.
+   * Chaque ligne de la commande est un bloc en retrait suspendu : sa suite, si la largeur la
+   * coupe, est en retrait, et ne se lit pas comme une commande à part.
+   */
   function afficherCommande(secretAcces: string): void {
-    const lignes = lignesCommande(window.location.origin, serveur, secretAcces).map((mots) => {
+    const lignes = lignesCommande(window.location.origin, serveur, secretAcces).map((mots, rangLigne, toutes) => {
       const morceaux: Node[] = [];
       mots.forEach((mot, rang) => {
         if (rang) morceaux.push(document.createTextNode(' '));
@@ -172,9 +176,14 @@ export function brancherAccesMcp(contexte: ContexteAcces): RubriqueAcces {
         if (position) morceaux.push(creer('span', 'bo-commande__mot', mot.slice(0, position)));
         morceaux.push(creer('span', 'bo-commande__secret', mot.slice(position)));
       });
-      return morceaux;
+      // Le saut de ligne reste dans le texte, pour qui sélectionne la commande à la main.
+      if (rangLigne < toutes.length - 1) morceaux.push(document.createTextNode('\n'));
+      const ligne = document.createElement('span');
+      ligne.className = 'bo-commande__ligne';
+      ligne.append(...morceaux);
+      return ligne;
     });
-    commande.replaceChildren(...lignes.flatMap((morceaux, rang) => (rang ? [document.createTextNode('\n'), ...morceaux] : morceaux)));
+    commande.replaceChildren(...lignes);
   }
 
   function cacherSecret(): void {

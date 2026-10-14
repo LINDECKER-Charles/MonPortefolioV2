@@ -1024,6 +1024,15 @@
   white-space: nowrap;
 }
 
+/* Une ligne de la commande par bloc, en retrait suspendu : quand la largeur la
+   coupe, sa suite part en retrait et ne passe pas pour une commande à part
+   (« 2>/dev/null » seul sur sa ligne). */
+.bo-commande__ligne {
+  display: block;
+  padding-left: 2ch;
+  text-indent: -2ch;
+}
+
 .bo-commande__secret {
   overflow-wrap: anywhere;
 }

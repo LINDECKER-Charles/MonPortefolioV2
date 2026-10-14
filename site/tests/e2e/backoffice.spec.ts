@@ -438,6 +438,23 @@ test('nouvel accès MCP en un geste : Rédaction sans les demandes, commande pr�
   await expect(page.locator('#bo-token-command')).toHaveText(commande);
   await expect(page.locator('#bo-token-command .bo-commande__secret')).toHaveText(`${SECRET}"`);
   await expect(page.locator('#bo-token-command .bo-commande__mot').filter({ hasText: /^--scope$/ })).toHaveCount(2);
+  // Une ligne de commande par bloc, sans ligne vide entre les deux ; quand la largeur
+  // coupe une ligne, sa suite part en retrait (retrait suspendu) : elle ne se lit pas
+  // comme une commande à part.
+  const lignes = await page.locator('#bo-token-command .bo-commande__ligne').evaluateAll((blocs) => blocs.map((bloc) => {
+    const mots = [...bloc.querySelectorAll('.bo-commande__mot, .bo-commande__secret')].flatMap((mot) => [...mot.getClientRects()]);
+    const hauts = [...new Set(mots.map((rect) => Math.round(rect.top)))].sort((a, b) => a - b);
+    const debut = bloc.getBoundingClientRect().left + Number.parseFloat(getComputedStyle(bloc).paddingLeft);
+    const premiers = hauts.map((haut) => Math.min(...mots.filter((rect) => Math.round(rect.top) === haut).map((rect) => rect.left)));
+    return { texte: bloc.textContent, haut: bloc.getBoundingClientRect().top, bas: bloc.getBoundingClientRect().bottom, lignes: hauts.length, interligne: Number.parseFloat(getComputedStyle(bloc).lineHeight), retraits: premiers.map((gauche) => Math.round(gauche - debut)) };
+  }));
+  expect(lignes.map(({ texte }) => texte)).toEqual(commande.split('\n').map((ligne, rang, toutes) => (rang < toutes.length - 1 ? `${ligne}\n` : ligne)));
+  expect(Math.round(lignes[1].haut), 'aucune ligne vide entre les deux commandes').toBe(Math.round(lignes[0].bas));
+  for (const ligne of lignes) {
+    expect(Math.round(ligne.bas - ligne.haut), `${ligne.texte} : autant de lignes que de rangées de mots`).toBe(Math.round(ligne.lignes * ligne.interligne));
+    expect(ligne.retraits[0], 'la commande commence au bord').toBeLessThan(0);
+    for (const retrait of ligne.retraits.slice(1)) expect(retrait, 'sa suite est en retrait').toBeGreaterThanOrEqual(-1);
+  }
   await expect(page.locator('#bo-secret-retour')).toHaveText('Accès créé avec la permission Rédaction.');
   await expect(page.locator('#bo-secret [data-serveur-mcp]')).toHaveText('portfolio-local');
   await page.getByRole('button', { name: 'Copier la commande', exact: true }).click();
