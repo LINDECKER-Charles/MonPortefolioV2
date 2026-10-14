@@ -15,9 +15,28 @@ function safeUrl(value, image = false, preview = false) {
   return src && preview ? src.replace('/api/blog/media/', '/api/backoffice/blog/media/') : src;
 }
 
-/** Documents structurés uniquement : aucun HTML d’auteur ne traverse le renderer. */
-export function renderDocument(doc, { preview = false } = {}) {
+/** Identifiant d’ancre d’un titre : ASCII, minuscules et tirets, comme les slugs (« Œuvre & cœur » → oeuvre-coeur). */
+export function slugTitre(texte) {
+  const slug = String(texte).replace(/œ/gi, 'oe').replace(/æ/gi, 'ae').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+/, '').slice(0, 80).replace(/-+$/, '');
+  return slug || 'section';
+}
+const texteDe = (node) => (node?.type === 'text' ? String(node.text ?? '') : node?.type === 'hardBreak' ? ' ' : (Array.isArray(node?.content) ? node.content : []).map(texteDe).join(''));
+
+/**
+ * Documents structurés uniquement : aucun HTML d’auteur ne traverse le renderer.
+ * Chaque titre porte un identifiant tiré de son texte, unique dans la page
+ * (`reserved` : ceux du gabarit), pour les ancres `#…` de l’auteur.
+ */
+export function renderDocument(doc, { preview = false, reserved = [] } = {}) {
   let count = 0;
+  const used = new Set(reserved);
+  const identifiant = (node) => {
+    const base = slugTitre(texteDe(node));
+    let id = base;
+    for (let n = 2; used.has(id); n += 1) id = `${base}-${n}`;
+    used.add(id);
+    return id;
+  };
   const render = (node, depth = 0) => {
     if (!node || typeof node !== 'object' || depth > 30 || ++count > 20_000) return '';
     const attrs = node.attrs ?? {};
@@ -35,7 +54,7 @@ export function renderDocument(doc, { preview = false } = {}) {
         return text;
       }
       case 'paragraph': return `<p${align}>${children()}</p>`;
-      case 'heading': { const level = [2, 3, 4].includes(attrs.level) ? attrs.level : 2; return `<h${level}${align}>${children()}</h${level}>`; }
+      case 'heading': { const level = [2, 3, 4].includes(attrs.level) ? attrs.level : 2; return `<h${level}${align} id="${identifiant(node)}">${children()}</h${level}>`; }
       case 'bulletList': return `<ul>${children()}</ul>`;
       case 'orderedList': return `<ol${Number.isSafeInteger(attrs.start) && attrs.start > 0 ? ` start="${attrs.start}"` : ''}${['1', 'a', 'A', 'i', 'I'].includes(attrs.type) ? ` type="${attrs.type}"` : ''}>${children()}</ol>`;
       case 'listItem': return `<li>${children()}</li>`;
@@ -77,7 +96,7 @@ function metadata(post, preview) {
 export function renderArticle(template, post, { preview = false } = {}) {
   const reading = Math.max(1, Math.ceil(textContent(post.content).trim().split(/\s+/).length / 220));
   const image = safeUrl(post.cover_image, true, preview);
-  const content = `<article class="wrap blog-article">${preview ? '<aside class="blog-preview-notice" role="status">Aperçu privé de la version de travail. Cet article n’est pas publié par cette action.</aside>' : ''}<nav class="blog-article__nav" aria-label="Fil d’Ariane"><a href="/">Accueil</a><a href="/blog">Blog</a><span aria-current="page">${escapeHtml(post.title)}</span></nav><header class="blog-article__header"><p class="blog-meta">${AUTHOR}${post.published_at ? ` — <time datetime="${isoDate(post.published_at)}">${escapeHtml(frenchDate(post.published_at))}</time>` : ''} — ${reading} min de lecture</p><h1>${escapeHtml(post.title)}</h1><p class="blog-article__intro">${escapeHtml(post.excerpt)}</p>${tagsHtml(post)}</header>${image ? `<img class="blog-article__cover" src="${escapeHtml(image)}" alt="${escapeHtml(post.cover_alt)}" decoding="async">` : ''}<div class="blog-prose">${renderDocument(post.content, { preview })}</div></article>`;
+  const content = `<article class="wrap blog-article">${preview ? '<aside class="blog-preview-notice" role="status">Aperçu privé de la version de travail. Cet article n’est pas publié par cette action.</aside>' : ''}<nav class="blog-article__nav" aria-label="Fil d’Ariane"><a href="/">Accueil</a><a href="/blog">Blog</a><span aria-current="page">${escapeHtml(post.title)}</span></nav><header class="blog-article__header"><p class="blog-meta">${AUTHOR}${post.published_at ? ` — <time datetime="${isoDate(post.published_at)}">${escapeHtml(frenchDate(post.published_at))}</time>` : ''} — ${reading} min de lecture</p><h1>${escapeHtml(post.title)}</h1><p class="blog-article__intro">${escapeHtml(post.excerpt)}</p>${tagsHtml(post)}</header>${image ? `<img class="blog-article__cover" src="${escapeHtml(image)}" alt="${escapeHtml(post.cover_alt)}" decoding="async">` : ''}<div class="blog-prose">${renderDocument(post.content, { preview, reserved: [...template.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]) })}</div></article>`;
   // Remplacement par fonction : un texte d’auteur qui porte $&, $' ou $$ serait sinon lu comme un motif de String.replace.
   let html = template.replace(/<title>[\s\S]*?<\/title>/, '').replace(/<meta\s+(?:name="(?:description|robots|twitter:[^"]*)"|property="(?:og:|article:)[^"]*")[^>]*>/g, '').replace(/<link rel="canonical"[^>]*>/g, '').replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '').replace('</head>', () => metadata(post, preview) + '</head>').replace(/<div id="blog-article-slot"[^>]*><\/div>/, () => content).replace(/<noscript>[\s\S]*?<\/noscript>/g, '');
   if (preview) html = html.replace(/<script[^>]*src="\/mesure.js"[^>]*><\/script>/g, '');

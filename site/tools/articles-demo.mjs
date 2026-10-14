@@ -37,6 +37,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import { typo } from '../src/lib/typo.ts';
+import { slugTitre } from '../server/blog.mjs';
 
 const RACINE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const args = process.argv.slice(2);
@@ -211,6 +212,7 @@ function aLaLongueur(texte, n) {
   if (caracteres.length < n) arreter(`texte trop court pour ${n} caractères : ${caracteres.length}`);
   return caracteres.slice(0, n).join('').replace(/\s$/, '.');
 }
+const TITRE_LONG = 'Septième titre de cent cinquante caractères environ, pour voir comment un intertitre très long se coupe sur un téléphone et sur un écran large';
 const URL_LONGUE = 'https://example.org/demonstration/un-chemin-tres-long-sans-espace-pour-voir-la-coupure/avec-des-segments-encore-plus-longs?parametre=valeur-demo';
 
 /* ===== Les articles ===== */
@@ -274,7 +276,7 @@ function articles(I) {
       og_image: I.partage,
       content: doc(
         AVERTISSEMENT(),
-        p('Sommaire à la main, avec des ancres vers les titres : ', t('aller au titre centré', lien('#titre-centre')), ', ', t('aller au titre long', lien('#titre-long')), ', ', t('aller à la fin', lien('#fin')), '.'),
+        p('Sommaire à la main, avec des ancres vers les identifiants que le rendu donne aux titres : ', t('aller au titre centré', lien(`#${slugTitre('Troisième titre, centré')}`)), ', ', t('aller au titre long', lien(`#${slugTitre(TITRE_LONG)}`)), ', ', t('aller à la fin', lien(`#${slugTitre('Dixième titre : la fin')}`)), '. Une ancre vers un titre inconnu ne mène nulle part : ', t('ancre morte', lien('#titre-inexistant')), '.'),
         h(2, 'Premier titre de niveau 2'),
         p('Liens internes : ', t('les projets', lien('/projets')), ', ', t('l’article sur le code', lien('/blog/demo-code-blocs')), ', ', t('le blog', lien('/blog', { target: '_self' })), ', ', t('les décisions d’Omnicard', lien('/projets/omnicard#decisions')), ' et ', t('la deuxième page du blog', lien('/blog?page=2')), '.'),
         p('Liens sortants : ', t('un site d’exemple avec un titre', lien('https://example.org/', { title: 'Site d’exemple, ouvert dans un nouvel onglet', target: '_blank', rel: 'noopener noreferrer nofollow', class: 'lien-demo' })), ' et ', t('un autre en http', lien('http://example.com/demo', { target: null, title: null, rel: null, class: null })), '.'),
@@ -294,7 +296,7 @@ function articles(I) {
         ha(4, 'left', 'Un titre de niveau 4 aligné à gauche'),
         h(2, 'Cinquième titre', br(), 'avec un retour à la ligne forcé'),
         h(2, 'Sixième titre avec du ', t('code_en_ligne()', 'c'), ' et ', t('un lien', lien('/projets'))),
-        h(2, 'Septième titre de cent cinquante caractères environ, pour voir comment un intertitre très long se coupe sur un téléphone et sur un écran large'),
+        h(2, TITRE_LONG),
         h(2, 'Huitième titre'),
         h(3, 'Niveau 3 sous le huitième'),
         h(4, 'Niveau 4 sous le niveau 3'),

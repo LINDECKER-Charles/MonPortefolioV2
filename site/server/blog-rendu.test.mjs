@@ -73,3 +73,19 @@ test('le rendu garde les liens internes avec ancre ou paramètres et retire mail
   assert.doesNotMatch(html, /mailto:|\/assets\/|\/images\//);
   assert.match(html, /<p>lien<\/p>$/, 'le texte d’un lien refusé reste, sans lien');
 });
+
+test('chaque titre reçoit un identifiant stable, unique et distinct de ceux du gabarit', () => {
+  const titre = (level, ...content) => ({ type: 'heading', attrs: { level }, content });
+  const html = renderArticle(GABARIT.replace('<footer>', '<footer id="discutons">'), article({ content: { type: 'doc', content: [
+    titre(2, texte('Le contexte')),
+    titre(3, texte('Le contexte')),
+    titre(2, texte('Œuvre & cœur : l’été à Noël !')),
+    titre(2, texte('Avec du '), texte('code()', [{ type: 'code' }]), { type: 'hardBreak' }, texte('et un saut')),
+    titre(4, texte('Discutons')),
+    titre(2, texte('???')),
+    titre(2, texte('x'.repeat(200))),
+  ] } }));
+  const ids = [...html.matchAll(/<h[234][^>]* id="([^"]+)"/g)].map((m) => m[1]);
+  assert.deepEqual(ids, ['le-contexte', 'le-contexte-2', 'oeuvre-coeur-l-ete-a-noel', 'avec-du-code-et-un-saut', 'discutons-2', 'section', 'x'.repeat(80)]);
+  assert.equal(compter(html, /id="discutons"/g), 1, 'l’identifiant du gabarit reste unique');
+});
