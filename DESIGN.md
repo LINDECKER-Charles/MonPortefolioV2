@@ -337,8 +337,14 @@ Chaque composant est documenté en tête de son fichier.
   que le fichier manque, un cadre neutre en ligne et un cadre hachuré qui porte sa commande en
   développement.
 - **Vitrine** (`pages/IndexPreuves.astro`, `pages/CarteProjet.astro`, `pages/Vitrine.astro`) :
-  l’index des étiquettes de preuve, puis les cartes (vedette, ligne), chacune avec « Voir le
-  projet → ».
+  l’index des étiquettes de preuve, en bande, une colonne par famille (repliée sous 860 px en
+  pastilles numérotées, l’étiquette ne restant que dans le nom du lien), puis une section par
+  famille (« Lead et équipe », « Jeu vidéo », « Outils », « IA », titres en `h2`), ses cartes (vedette, ligne ; une famille de trois
+  en trois colonnes au-delà de 1 100 px, une carte par ligne entre 861 et 1 100 px), chacune avec
+  « Voir le projet → » ; une carte de dépôt privé sans lien public dit « Dépôt privé ». En fin
+  de page, le
+  volet replié des projets archivés (`vitrine/ArchivesProjets.astro`), avec leurs vignettes ;
+  une ancre qui le vise (`#projets-archives`) l’ouvre.
 - **Appel** (`pages/AppelDiscutons.astro`) : « Discutons → » vers `/contact`, après un filet ou sur
   l’aplat bleu roi.
 - **Gabarit de projet** (`projets/gabarit/`) : `EnTeteProjet`, `FicheProjet`, `CorpsProjet`,

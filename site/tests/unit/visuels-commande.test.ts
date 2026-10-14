@@ -27,7 +27,7 @@ import { COMMANDE, rendreCommande, SORTIE } from '../../tools/generer-visuels.mj
  * ou livre un fichier sans régénérer l’autre.
  */
 
-const MARQUES = /\b(?:pvz|plants vs\.? zombies|riot|league of legends|sony|fromsoftware|trello|b-hive|elan formation|atis|mission locale|shrek|gwent|bloodborne|omnicard|unreal|unity)\b|\b42\b/i;
+const MARQUES = /\b(?:pvz|plants vs\.? zombies|riot|league of legends|sony|fromsoftware|trello|b-hive|karl|nom-interne|claude|codex|elan formation|atis|mission locale|shrek|gwent|bloodborne|omnicard|unreal|unity)\b|\b42\b/i;
 const DEPOT = new URL('../../../', import.meta.url).pathname;
 
 describe('commande de production des visuels', () => {

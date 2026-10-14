@@ -46,7 +46,7 @@ interface Props {
   src: ImageMetadata;
   alt: string;
   legende: string;
-  type?: 'navigateur' | 'telephone' | 'terminal';
+  type?: 'navigateur' | 'telephone' | 'terminal' | 'panneau';
   adresse?: string;
   ratio?: string;
   position?: string;
@@ -160,13 +160,20 @@ const dessous = Boolean(loupe?.dessous);
     display: contents;
   }
 
-  .loupe > picture > img {
+  /* L’image entière, à sa proportion. Préfixé par la vue : plus spécifique que
+     les recadrages de CadreCapture (`.capture--recadree .capture__vue picture img`,
+     `.capture--region …`), qui visent toute `picture img` de la vue et que la
+     loupe, enveloppée elle aussi dans un <picture>, égalait. À égalité, l’ordre
+     des feuilles décidait : l’image de la loupe prenait la hauteur de la loupe,
+     son `object-fit: cover` ou son décalage, et n’en montrait que le haut. */
+  :global(.capture__vue) .loupe > picture > img {
     position: absolute;
     left: 50%;
     top: 50%;
     width: calc(var(--lz) * 100%);
     max-width: none;
     height: auto;
+    object-fit: fill;
     translate: calc(-1 * var(--lx)) calc(-1 * var(--ly));
   }
 

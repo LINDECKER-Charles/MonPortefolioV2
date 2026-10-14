@@ -6,10 +6,12 @@
  * cliquables à part, mesurés en `lien-sortant`.
  *
  *   vedette  pleine largeur, visuel à gauche (PvZ Fusion)
- *   ligne    visuel et texte côte à côte, une demi-largeur
+ *   ligne    visuel et texte côte à côte, une demi-largeur ; empilés (visuel
+ *            au-dessus) dans une famille de trois cartes au-delà de 1 100 px
+ *            (Vitrine colonnes={3})
  *
- *   <Vitrine label="Cinq projets, ordonnés par ce qu’ils prouvent">
- *     <CarteProjet variante="vedette" rang={1} id="pvz" href="/projets/pvz-fusion"
+ *   <Vitrine labelledby="famille-equipe-titre">
+ *     <CarteProjet variante="vedette" rang={1} id="pvz" niveau={3} href="/projets/pvz-fusion"
  *       nom="PvZ Fusion, pôle francophone" preuve="Une équipe formée et menée"
  *       besoin="Rattraper, à plusieurs, la traduction française d’un jeu qui sort une nouvelle version chaque mois environ."
  *       chiffre={{ valeur: '20', libelle: 'personnes formées au pôle francophone' }}
@@ -26,7 +28,10 @@
  * `pli` marque le chiffre de la carte pour le contrôle du premier écran
  * (`data-pli`, règle E1). Les liens publics disent de quel projet ils sont
  * (« Code de gup », le nom en texte masqué). Le visuel vient du slot
- * « visuel », posé sur un acte de veille (la nuit dans le jour).
+ * « visuel », posé sur un acte de veille (la nuit dans le jour) ; une carte
+ * sans visuel (slot vide) n’a que son texte, sur toute sa largeur. Un projet
+ * en dépôt privé sans lien public (`prive`) le dit à la place des liens,
+ * « Dépôt privé », dans le vocabulaire de sa fiche (FicheProjet).
  */
 import type { ImageMetadata } from 'astro';
 import AConfirmer from '../ui/AConfirmer.astro';
@@ -46,6 +51,8 @@ interface Props {
   role: string;
   statut: { texte: string; etat?: 'actif' | 'ouvert' | 'eteint' };
   liens?: { href: string; libelle: string }[];
+  /** Dépôt privé (VITRINE, `prive`) : sans lien public, la carte le dit. */
+  prive?: boolean;
   technos?: { src: ImageMetadata; alt: string; mono?: boolean }[];
   /** Ce qui reste à confirmer sur le nom (info-bulle de la marque). */
   aConfirmer?: string;
@@ -70,6 +77,7 @@ const {
   role,
   statut,
   liens = [],
+  prive = false,
   technos = [],
   aConfirmer,
   emplacement = 'preuves',
@@ -78,14 +86,15 @@ const {
   pli,
 } = Astro.props;
 const Titre = niveau === 3 ? 'h3' : 'h2';
+const sansLienPrive = prive && liens.length === 0;
+/** Le visuel du slot, rendu d’abord : un slot vide (carte en attente de visuel) ne pose pas de panneau. */
+const visuel = Astro.slots.has('visuel') ? (await Astro.slots.render('visuel')).trim() : '';
 /** « de gup », « d’Omnicard » : le projet d’un lien public, pour les lecteurs d’écran. */
 const duProjet = /^[aeiouyhâéèêîôû]/i.test(nom) ? ` d’${nom}` : ` de ${nom}`;
 ---
 
-<Element class:list={['carte-projet', `carte-projet--${variante}`]} id={id}>
-  <div class="carte-projet__visuel acte-veille">
-    <slot name="visuel" />
-  </div>
+<Element class:list={['carte-projet', `carte-projet--${variante}`, { 'carte-projet--sans-visuel': !visuel }]} id={id}>
+  {visuel && <div class="carte-projet__visuel acte-veille" set:html={visuel} />}
   <div class="carte-projet__corps">
     <p class="carte-projet__preuve">
       {rang && <span class="carte-projet__rang" aria-hidden="true">{String(rang).padStart(2, '0')}</span>}
@@ -104,8 +113,9 @@ const duProjet = /^[aeiouyhâéèêîôû]/i.test(nom) ? ` d’${nom}` : ` de ${
       <dd><Statut etat={statut.etat}>{typo(statut.texte)}</Statut></dd>
     </dl>
     {
-      (liens.length > 0 || technos.length > 0) && (
+      (liens.length > 0 || sansLienPrive || technos.length > 0) && (
         <div class="carte-projet__bas">
+          {sansLienPrive && <p class="carte-projet__prive">Dépôt privé</p>}
           {liens.length > 0 && (
             <ul class="carte-projet__liens">
               {liens.map((lien) => (
@@ -336,6 +346,15 @@ const duProjet = /^[aeiouyhâéèêîôû]/i.test(nom) ? ` d’${nom}` : ` de ${
     font-size: var(--t-xs);
   }
 
+  /* À la place des liens d’un dépôt privé : à la hauteur d’un lien, en texte éteint. */
+  .carte-projet__prive {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
   .carte-projet__liens a {
     display: inline-flex;
     align-items: center;
@@ -381,6 +400,32 @@ const duProjet = /^[aeiouyhâéèêîôû]/i.test(nom) ? ` d’${nom}` : ` de ${
   .carte-projet--ligne .carte-projet__corps {
     gap: var(--s2);
     padding: var(--s5) var(--s5) var(--s4);
+  }
+
+  /* Sans visuel : le texte seul, sur toute la carte. */
+  .carte-projet--sans-visuel {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+  }
+
+  .carte-projet--sans-visuel .carte-projet__corps > :global(*) {
+    max-width: 44rem;
+  }
+
+  /* Dans une famille de trois (Vitrine colonnes={3}), au-delà de 1 100 px :
+     le visuel au-dessus du texte, sur les deux rangées de la ligne partagées
+     en sous-grille, pour que les trois visuels aient la même hauteur. */
+  @media (min-width: 1101px) {
+    :global(.vitrine--trois) > .carte-projet--ligne {
+      grid-row: span 2;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: subgrid;
+      row-gap: 0;
+    }
+
+    :global(.vitrine--trois) > .carte-projet--sans-visuel .carte-projet__corps {
+      grid-row: 1 / -1;
+    }
   }
 
   @media (max-width: 860px) {

@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { PAGES_SITEMAP } from '../../src/config/pages';
+import { VITRINE } from '../../src/config/projets';
 import { visuelParId } from '../../src/config/visuels';
 import { IMAGES_PARTAGE, imagePartageDe, PARTAGE_DEFAUT } from '../../src/lib/partage';
 import { DELAI_BUILD, pagesConstruites } from './support/dist';
@@ -38,6 +39,15 @@ describe('images de partage', () => {
     expect(visuelParId('GLO-07')).toMatchObject({ fichier: PARTAGE_DEFAUT.fichier, alt: PARTAGE_DEFAUT.alt });
     const declinaisons = visuelParId('GLO-08')?.declinaisons ?? [];
     expect(declinaisons.map(({ fichier, alt }) => ({ fichier, alt }))).toEqual(IMAGES_PARTAGE.filter((i) => i !== PARTAGE_DEFAUT).map(({ fichier, alt }) => ({ fichier, alt })));
+  });
+
+  it('décline chaque projet dans l’ordre de la vitrine, son étiquette dans l’alt avec la seule initiale en minuscule', () => {
+    const projets = IMAGES_PARTAGE.filter((image) => VITRINE.some((projet) => projet.href === image.chemin));
+    expect(projets.map((image) => image.chemin)).toEqual(VITRINE.map((projet) => projet.href));
+    for (const projet of VITRINE) {
+      // « Encadrer des agents IA » → « encadrer des agents IA » : un sigle garde ses capitales.
+      expect(imagePartageDe(projet.href).alt, projet.id).toBe(`Charles Lindecker, ${projet.nom}\u00a0: ${projet.preuve.charAt(0).toLowerCase()}${projet.preuve.slice(1).replace(/\.$/, '')}.`);
+    }
   });
 
   it('donne à chaque image un alt qui nomme Charles et la page, sans « mode d’emploi »', () => {

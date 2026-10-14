@@ -6,10 +6,15 @@
 import { VITRINE, type ProjetVitrine } from '../config/projets';
 import { CONTACT, SITE } from '../config/site';
 import { FICHE as FICHE_BLOODBORNE } from '../config/bloodborne';
+import { FICHE as FICHE_GITHEALTH, SCHEMA as SCHEMA_GITHEALTH } from '../config/githealth';
 import { FICHE as FICHE_GUP } from '../config/gup';
+import { FICHE as FICHE_KARL_SCRAPER, SCHEMA as SCHEMA_KARL_SCRAPER } from '../config/karl-scraper';
 import { FICHE as FICHE_LEAGUE } from '../config/league-of-database';
 import { FICHE as FICHE_OMNICARD } from '../config/omnicard';
 import { FICHE as FICHE_PVZ } from '../config/pvz-fusion';
+import { FICHE as FICHE_RELAIS, SCHEMA as SCHEMA_RELAIS } from '../config/relais';
+import { FICHE as FICHE_SILLAGE, SCHEMA as SCHEMA_SILLAGE } from '../config/sillage';
+import type { SchemaProjet } from '../components/projets/gabarit/types';
 
 /** Adresse absolue sur l'hôte canonique : '/x' -> 'https://charles-lindecker.com/x'. */
 export function absolue(chemin: string): string {
@@ -95,13 +100,23 @@ export function noeudAriane(chemin: string, titre: string) {
   };
 }
 
-/** Ce que schema.org dit de chaque projet, et son adresse publique (premier lien de sa fiche). */
-const PROJETS_SCHEMA: Readonly<Record<ProjetVitrine['id'], { type: string; url: string; categorie?: string; systemes?: string }>> = {
-  pvz: { type: 'CreativeWork', url: FICHE_PVZ.liens[0].href },
-  league: { type: 'SoftwareApplication', url: FICHE_LEAGUE.liens[0].href, categorie: 'ReferenceApplication', systemes: 'Web' },
-  omnicard: { type: 'CreativeWork', url: FICHE_OMNICARD.liens[0].href },
-  bloodborne: { type: 'SoftwareApplication', url: FICHE_BLOODBORNE.liens[0].href, categorie: 'GameApplication', systemes: 'Web, Android' },
-  gup: { type: 'SoftwareApplication', url: FICHE_GUP.liens[0].href, categorie: 'DeveloperApplication', systemes: 'Windows, macOS, Linux' },
+/**
+ * Ce que schema.org dit de chaque projet, et son adresse publique : le premier
+ * lien de sa fiche, ou rien pour un projet sans lien public (dépôt privé), que
+ * le nœud nomme alors par sa page. Les projets entrés le 14/10/2026 décrivent
+ * le leur dans leur fichier (config/<projet>.ts, export SCHEMA).
+ */
+const PROJETS_SCHEMA: Readonly<Record<ProjetVitrine['id'], SchemaProjet & { url?: string }>> = {
+  pvz: { type: 'CreativeWork', url: FICHE_PVZ.liens[0]?.href },
+  league: { type: 'SoftwareApplication', url: FICHE_LEAGUE.liens[0]?.href, categorie: 'ReferenceApplication', systemes: 'Web' },
+  omnicard: { type: 'CreativeWork', url: FICHE_OMNICARD.liens[0]?.href },
+  bloodborne: { type: 'SoftwareApplication', url: FICHE_BLOODBORNE.liens[0]?.href, categorie: 'GameApplication', systemes: 'Web, Android' },
+  // Interface en anglais et en français (`gup language fr`) : docs/matiere-premiere.md.
+  gup: { type: 'SoftwareApplication', url: FICHE_GUP.liens[0]?.href, categorie: 'DeveloperApplication', systemes: 'Windows, macOS, Linux', langue: ['en', 'fr'] },
+  githealth: { ...SCHEMA_GITHEALTH, url: FICHE_GITHEALTH.liens[0]?.href },
+  'karl-scraper': { ...SCHEMA_KARL_SCRAPER, url: FICHE_KARL_SCRAPER.liens[0]?.href },
+  sillage: { ...SCHEMA_SILLAGE, url: FICHE_SILLAGE.liens[0]?.href },
+  relais: { ...SCHEMA_RELAIS, url: FICHE_RELAIS.liens[0]?.href },
 };
 
 /** Le projet d’une page de projet de la vitrine (CreativeWork ou SoftwareApplication), dont Charles est l’auteur. */
@@ -114,9 +129,9 @@ export function noeudProjet(chemin: string, description: string) {
     '@id': `${absolue(chemin)}#projet`,
     name: projet.nom,
     description,
-    url: schema.url,
+    url: schema.url ?? absolue(chemin),
     author: { '@id': PERSONNE_ID },
-    inLanguage: SITE.langue,
+    inLanguage: schema.langue ?? SITE.langue,
     ...(schema.categorie && { applicationCategory: schema.categorie }),
     ...(schema.systemes && { operatingSystem: schema.systemes }),
   };

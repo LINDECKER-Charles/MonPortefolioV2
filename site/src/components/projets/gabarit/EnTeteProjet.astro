@@ -18,7 +18,9 @@
  * éléments `[data-pli]` (titre, identité, preuve, action) y sont visibles à
  * 1 440 et à 390 px de large (règle E1). Sur mobile, les repères passent
  * avant le visuel, et le fil d’Ariane s’arrête à « Projets » : le nom suit
- * aussitôt (la page courante reste lue par les lecteurs d’écran).
+ * aussitôt (la page courante reste lue par les lecteurs d’écran). Sans
+ * visuel (slot vide), le texte prend toute la largeur. Un projet privé
+ * (`prive` dans VITRINE) le dit dans sa fiche, à la place des liens publics.
  */
 import FilAriane from '../../pages/FilAriane.astro';
 import LienAction from '../../ui/LienAction.astro';
@@ -50,12 +52,13 @@ if (preuves.length < 1 || preuves.length > 3) throw new Error(`<EnTeteProjet pro
 if (preuves.filter((preuve) => preuve.surligne).length > 1) throw new Error(`<EnTeteProjet projet="${id}"> : un seul chiffre surligné dans l’en-tête.`);
 const { projet } = projetDeLaVitrine(id);
 const lignes = typeof titre === 'string' ? [titre] : titre;
+const avecVisuel = Astro.slots.has('visuel');
 ---
 
 <header class="projet-tete" data-projet={id}>
   <div class="conteneur">
     <FilAriane courant={projet.nom} projet class="projet-tete__ariane" />
-    <div class="projet-tete__grille">
+    <div class:list={['projet-tete__grille', { 'projet-tete__grille--sans-visuel': !avecVisuel }]}>
       <div class="projet-tete__texte foyer">
         <p class="projet-tete__nom">
           <span>{projet.nom}</span>
@@ -73,10 +76,14 @@ const lignes = typeof titre === 'string' ? [titre] : titre;
           {preuves.map((preuve) => <PreuveChiffree {...preuve} />)}
         </PreuvesChiffrees>
       </div>
-      <div class="projet-tete__visuel">
-        <slot name="visuel" />
-      </div>
-      <FicheProjet class="projet-tete__fiche" fiche={fiche} emplacement={emplacement} />
+      {
+        avecVisuel && (
+          <div class="projet-tete__visuel">
+            <slot name="visuel" />
+          </div>
+        )
+      }
+      <FicheProjet class="projet-tete__fiche" fiche={fiche} prive={projet.prive} emplacement={emplacement} />
     </div>
   </div>
 </header>
@@ -99,6 +106,13 @@ const lignes = typeof titre === 'string' ? [titre] : titre;
       'fiche fiche';
     gap: var(--s4) var(--s7);
     align-items: center;
+  }
+
+  .projet-tete__grille--sans-visuel {
+    grid-template-areas:
+      'texte texte'
+      'preuves preuves'
+      'fiche fiche';
   }
 
   .projet-tete__texte {

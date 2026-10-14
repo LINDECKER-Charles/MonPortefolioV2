@@ -17,6 +17,7 @@ import {
   positionLanterne,
   plafondPoids,
   REGLES_COMMUNES,
+  SERIES_VITRINE_FINALE,
   sujetPourGenerateur,
   visuelParId,
   VISUELS,
@@ -33,19 +34,27 @@ import { dimensionsDuNom, etatDesVisuels, rapport, resume, verifierLivres } from
 
 const SITE = new URL('../../', import.meta.url).pathname;
 const SRC = path.join(SITE, 'src');
-const MARQUES = /\b(?:pvz|plants vs\.? zombies|riot|league of legends|sony|fromsoftware|trello|b-hive|elan formation|atis|mission locale|shrek|gwent|bloodborne|omnicard|unreal|unity)\b|\b42\b/i;
+const MARQUES = /\b(?:pvz|plants vs\.? zombies|riot|league of legends|sony|fromsoftware|trello|b-hive|karl|nom-interne|claude|codex|elan formation|atis|mission locale|shrek|gwent|bloodborne|omnicard|unreal|unity)\b|\b42\b/i;
 const tous = (cle: 'sujet' | 'composition' | 'cadrage' | 'alt' | 'emplacement' | 'format' | 'note' | 'raisonNonPose') => VISUELS.flatMap((v) => (v[cle] ? [[v.id, v[cle] as string] as const] : []));
 const images = VISUELS.filter((v) => v.methode === 'IMG' && !v.reprend?.length);
+/**
+ * L’inventaire figé : tout le registre, sauf les séries des quatre pages
+ * entrées dans la vitrine le 14/10/2026 (SERIES_VITRINE_FINALE), que chaque
+ * page tient sous son repère. Les compteurs ci-dessous ne comptent que lui :
+ * une page qui ajoute ses entrées n’y touche pas ; les règles, elles, valent
+ * pour tout le registre.
+ */
+const INVENTAIRE = VISUELS.filter((v) => !SERIES_VITRINE_FINALE.includes(v.serie));
 
 describe('registre des visuels : l’inventaire', () => {
-  it('recense les 176 emplacements, dont 122 « socle » et 54 « élargi »', () => {
-    expect(VISUELS).toHaveLength(176);
-    expect(VISUELS.filter((v) => v.priorite === 'socle')).toHaveLength(122);
-    expect(VISUELS.filter((v) => v.priorite === 'elargi')).toHaveLength(54);
+  it('recense les 176 emplacements de l’inventaire, dont 123 « socle » et 53 « élargi »', () => {
+    expect(INVENTAIRE).toHaveLength(176);
+    expect(INVENTAIRE.filter((v) => v.priorite === 'socle')).toHaveLength(123);
+    expect(INVENTAIRE.filter((v) => v.priorite === 'elargi')).toHaveLength(53);
   });
 
   it('répartit les méthodes comme l’inventaire, captures du cahier (§ 6.12) comprises', () => {
-    const par = (m: string) => VISUELS.filter((v) => v.methode === m).length;
+    const par = (m: string) => INVENTAIRE.filter((v) => v.methode === m).length;
     expect({ IMG: par('IMG'), SVG: par('SVG'), FIG: par('FIG'), CAP: par('CAP'), PHO: par('PHO'), OG: par('OG') }).toEqual({ IMG: 79, SVG: 37, FIG: 25, CAP: 26, PHO: 4, OG: 5 });
   });
 
@@ -62,6 +71,14 @@ describe('registre des visuels : l’inventaire', () => {
     const rangs = VISUELS.map((v) => ORDRE_SERIES.indexOf(v.serie));
     expect(rangs.every((r) => r >= 0)).toBe(true);
     expect(rangs).toEqual([...rangs].sort((a, b) => a - b));
+    // Les quatre pages entrées le 14/10/2026, après gup, chacune son préfixe et son repère dans le registre.
+    expect(ORDRE_SERIES.slice(ORDRE_SERIES.indexOf('gup') + 1, ORDRE_SERIES.indexOf('gup') + 5)).toEqual([...SERIES_VITRINE_FINALE]);
+    const prefixes = { githealth: 'GTH', 'karl-scraper': 'KSC', sillage: 'SIL', relais: 'REL' } as const;
+    const source = readFileSync(path.join(SRC, 'config/visuels.ts'), 'utf8');
+    for (const serie of SERIES_VITRINE_FINALE) {
+      for (const v of VISUELS.filter((x) => x.serie === serie)) expect(v.id, serie).toMatch(new RegExp(`^${prefixes[serie as keyof typeof prefixes]}-`));
+      expect(source, serie).toContain(`  // ${prefixes[serie as keyof typeof prefixes]} — `);
+    }
   });
 
   it('remplit sujet, composition, emplacement, format et page', () => {
@@ -84,7 +101,7 @@ describe('registre des visuels : l’inventaire', () => {
 
   it('cite des emplacements existants quand il en reprend le fichier, et les six reprises attendues', () => {
     for (const v of VISUELS) for (const cible of v.reprend ?? []) expect(visuelParId(cible), `${v.id} reprend ${cible}`).toBeDefined();
-    expect(VISUELS.filter((v) => v.reprend?.length && v.methode !== 'FIG').map((v) => v.id).sort()).toEqual(['ACC-02', 'ACC-15', 'LOD-01', 'OMN-02', 'PRJ-03', 'PVZ-02']);
+    expect(INVENTAIRE.filter((v) => v.reprend?.length && v.methode !== 'FIG').map((v) => v.id).sort()).toEqual(['ACC-02', 'ACC-15', 'LOD-01', 'OMN-02', 'PRJ-03', 'PVZ-02']);
   });
 
   it('compte chaque lot : pièces d’un SVG, déclinaisons d’une image de partage, emplacements repris', () => {
@@ -233,7 +250,7 @@ describe('registre des visuels : fichiers attendus', () => {
 
   it('nomme le composant de chaque figure codée, sauf les trois qui restent à coder', () => {
     const figures = VISUELS.filter((v) => v.methode === 'FIG');
-    expect(figures.filter((v) => !v.fichier).map((v) => v.id)).toEqual(['ACC-10', 'ACC-12', 'OMN-07']);
+    expect(figures.filter((v) => !v.fichier && INVENTAIRE.includes(v)).map((v) => v.id)).toEqual(['ACC-10', 'ACC-12', 'OMN-07']);
     for (const v of figures.filter((x) => !x.fichier)) expect(v.priorite, v.id).toBe('elargi');
     for (const v of figures.filter((x) => x.fichier)) {
       expect(v.fichier, v.id).toMatch(/^src\/components\/.+\.astro$/);
@@ -250,7 +267,7 @@ describe('registre des visuels : fichiers attendus', () => {
     expect(fichiersAttendus(visuelParId('ACC-15')!)).toHaveLength(4);
     expect(fichiersAttendus(visuelParId('PVZ-02')!)).toEqual(['a', 'b', 'c'].map((c) => `src/assets/visuels/pvz-fusion/PVZ-02${c}_1200x900.webp`));
     expect(fichiersAttendus(visuelParId('OMN-02')!)).toEqual(fichiersAttendus(visuelParId('ACC-04')!));
-    expect(fichiersAttendus(visuelParId('GLO-08')!)).toHaveLength(13);
+    expect(fichiersAttendus(visuelParId('GLO-08')!)).toHaveLength(17);
   });
 
   it('nomme les deux masters et le rendu de nuit d’une image générée, et seulement d’elle', () => {
@@ -303,7 +320,7 @@ describe('registre des visuels : textes', () => {
   });
 
   it('prévoit un alt pour tout visuel qui informe, vide pour un décor', () => {
-    const decoratifs = VISUELS.filter((v) => v.alt === '').map((v) => v.id).sort();
+    const decoratifs = INVENTAIRE.filter((v) => v.alt === '').map((v) => v.id).sort();
     expect(decoratifs).toEqual(['ACC-02', 'ACC-15', 'BLR-06', 'BLR-07', 'BLR-08', 'BLR-09', 'BLR-10', 'BLR-C4', 'CMP-09', 'CMP-10', 'ERR-02', 'FOR-08', 'GLO-01', 'GLO-03', 'GLO-04', 'GLO-05', 'GLO-06', 'GLO-09', 'GLO-10', 'GLO-11', 'GLO-12', 'GLO-13', 'GUP-02', 'GUP-C1', 'LOD-03', 'LOD-05', 'LOD-06', 'LOD-07', 'LOD-08', 'LOD-09', 'LOD-10', 'LOD-11', 'LOD-12', 'PRO-07']);
     for (const v of VISUELS) expect(v.alt.length, v.id).toBeLessThanOrEqual(140);
   });
@@ -320,7 +337,7 @@ describe('registre des visuels : textes', () => {
   });
 
   it('garde un sujet neutre là où le sujet nomme une marque', () => {
-    const avecNeutre = VISUELS.filter((v) => v.sujetNeutre).map((v) => v.id).sort();
+    const avecNeutre = INVENTAIRE.filter((v) => v.sujetNeutre).map((v) => v.id).sort();
     expect(avecNeutre).toEqual(['FOR-07', 'PVZ-10', 'PVZ-C2', 'PVZ-C3']);
     for (const v of VISUELS.filter((x) => x.sujetNeutre)) expect(v.sujetNeutre, v.id).not.toMatch(MARQUES);
   });
@@ -349,7 +366,7 @@ describe('registre des visuels : liste des manquants', () => {
   };
 
   it('compte tout comme manquant dans un dossier vide, sans compter deux fois les reprises', () => {
-    const etat = etatDesVisuels(racine);
+    const etat = etatDesVisuels(racine, INVENTAIRE);
     expect(etat.total).toBe(176);
     expect(etat.presents).toBe(0);
     expect(etat.reprises).toBe(6);
@@ -362,7 +379,7 @@ describe('registre des visuels : liste des manquants', () => {
   it('retire de la liste un visuel livré, et attend toutes les déclinaisons d’un lot', () => {
     ecrire('src/assets/visuels/league-of-database/LOD-03.svg');
     ecrire('public/og/GLO-08-projets_1200x630.png');
-    const etat = etatDesVisuels(racine);
+    const etat = etatDesVisuels(racine, INVENTAIRE);
     expect(etat.presents).toBe(1);
     expect(etat.manquantsSocle.map((v: { id: string }) => v.id)).not.toContain('LOD-03');
     expect(etat.manquantsSocle.map((v: { id: string }) => v.id)).toContain('LOD-06');
@@ -387,7 +404,7 @@ describe('registre des visuels : liste des manquants', () => {
   });
 
   it('sur le dépôt réel : les photos, les dessins et captures livrés, les images de partage, les composants des figures', () => {
-    const etat = etatDesVisuels(SITE);
+    const etat = etatDesVisuels(SITE, INVENTAIRE);
     // 57 fichiers de l’équipe, puis les 74 images générées livrées le 13 octobre 2026, jour et nuit.
     expect(etat.presents).toBe(131);
     const images = etat.livres.filter((v: { methode: string }) => v.methode === 'IMG');
@@ -397,7 +414,14 @@ describe('registre des visuels : liste des manquants', () => {
     // Plus aucun « socle » manquant : les images générées étaient les dernières.
     expect(etat.manquantsSocle).toHaveLength(0);
     expect(etat.manquants.every((v: { methode: string }) => v.methode !== 'IMG')).toBe(true);
+    expect(etat.manquantsElargi).toHaveLength(36);
     expect(resume(etat)).toMatch(/^\[visuels\] 0 visuels « socle » manquants, 36 « élargi », 0 figures « socle » à coder \(/);
+    // Tout le registre, nouvelles pages comprises : aucun « socle » sans son fichier, aucune nuit absente.
+    const tout = etatDesVisuels(SITE);
+    expect(tout.manquantsSocle.map((v: { id: string }) => v.id)).toEqual([]);
+    expect(tout.nuitsManquantes.map((v: { id: string }) => v.id)).toEqual([]);
+    expect(tout.figuresSocleACoder.map((v: { id: string }) => v.id)).toEqual([]);
+    expect(resume(tout)).toMatch(/^\[visuels\] 0 visuels « socle » manquants, \d+ « élargi », 0 figures « socle » à coder \(/);
   });
 
   it('consigne chaque image générée livrée : ses deux rendus dans le README du site, ses prompts dans celui des masters', () => {

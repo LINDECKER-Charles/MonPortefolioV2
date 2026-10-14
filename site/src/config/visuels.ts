@@ -73,6 +73,10 @@ export type SerieVisuel =
   | 'omnicard'
   | 'bloodborne'
   | 'gup'
+  | 'githealth'
+  | 'karl-scraper'
+  | 'sillage'
+  | 'relais'
   | 'parcours'
   | 'contact'
   | 'blog'
@@ -279,21 +283,25 @@ export const VISUELS: readonly EntreeVisuel[] = [
     emplacement: 'Partage par page',
     sujet: 'Gabarit de GLO-07 avec le visuel de la page : Projets, chaque projet, Parcours et ses trois pages, Contact, Blog, Mentions légales',
     composition: 'Titre à gauche, visuel à droite, emblème en bas',
-    format: '1200 × 630 (×13)',
+    format: '1200 × 630 (×17)',
     ratio: '1200 / 630',
     methode: 'OG',
     priorite: 'socle',
     pose: ['lib/partage.ts', 'layouts/Base.astro'],
     alt: 'Charles Lindecker et le titre de la page partagée, par exemple « Charles Lindecker, Parcours. » (voir chaque déclinaison).',
     fichier: null,
-    lot: 13,
+    lot: 17,
     declinaisons: [
       { nom: 'projets', fichier: 'public/og/GLO-08-projets_1200x630.png', alt: 'Charles Lindecker, Projets.' },
       { nom: 'projets-pvz-fusion', fichier: 'public/og/GLO-08-projets-pvz-fusion_1200x630.png', alt: 'Charles Lindecker, PvZ Fusion, pôle francophone : une équipe formée et menée.' },
-      { nom: 'projets-league-of-database', fichier: 'public/og/GLO-08-projets-league-of-database_1200x630.png', alt: 'Charles Lindecker, League Of Data Base : un système en production.' },
       { nom: 'projets-omnicard', fichier: 'public/og/GLO-08-projets-omnicard_1200x630.png', alt: 'Charles Lindecker, Omnicard : réinventer.' },
       { nom: 'projets-bloodborne-legendary-run', fichier: 'public/og/GLO-08-projets-bloodborne-legendary-run_1200x630.png', alt: 'Charles Lindecker, Bloodborne Legendary Run : un produit de bout en bout.' },
+      { nom: 'projets-league-of-database', fichier: 'public/og/GLO-08-projets-league-of-database_1200x630.png', alt: 'Charles Lindecker, League Of Data Base : un système en production.' },
       { nom: 'projets-gup', fichier: 'public/og/GLO-08-projets-gup_1200x630.png', alt: 'Charles Lindecker, gup : un outil open source.' },
+      { nom: 'projets-githealth', fichier: 'public/og/GLO-08-projets-githealth_1200x630.png', alt: 'Charles Lindecker, GitHealth : une application de bureau.' },
+      { nom: 'projets-karl-scraper', fichier: 'public/og/GLO-08-projets-karl-scraper_1200x630.png', alt: 'Charles Lindecker, Karl Scraper : automatiser des tâches.' },
+      { nom: 'projets-sillage', fichier: 'public/og/GLO-08-projets-sillage_1200x630.png', alt: 'Charles Lindecker, Sillage : orchestrer des agents IA.' },
+      { nom: 'projets-relais', fichier: 'public/og/GLO-08-projets-relais_1200x630.png', alt: 'Charles Lindecker, Relais : encadrer des agents IA.' },
       { nom: 'parcours', fichier: 'public/og/GLO-08-parcours_1200x630.png', alt: 'Charles Lindecker, Parcours.' },
       { nom: 'parcours-professionnel', fichier: 'public/og/GLO-08-parcours-professionnel_1200x630.png', alt: 'Charles Lindecker, Parcours professionnel.' },
       { nom: 'parcours-competences', fichier: 'public/og/GLO-08-parcours-competences_1200x630.png', alt: 'Charles Lindecker, Compétences.' },
@@ -302,7 +310,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
       { nom: 'blog', fichier: 'public/og/GLO-08-blog_1200x630.png', alt: 'Charles Lindecker, Blog.' },
       { nom: 'mentions-legales', fichier: 'public/og/GLO-08-mentions-legales_1200x630.png', alt: 'Charles Lindecker, Mentions légales.' },
     ],
-    note: 'Treize déclinaisons, une par page publique, livrées le 13 octobre 2026 : lib/partage.ts est la seule source de leurs titres et de leurs alts, tools/generer-partage.mjs les compose en HTML avec la vraie typographie, et layouts/Base.astro choisit celle de la page. Le visuel de droite est une photo de séance (Contact, Parcours) ou la lanterne allumée ; PVZ-OG, OMN-OG et BLR-OG pourront le remplacer pour leur projet. La 404 garde l’image par défaut, GLO-07.',
+    note: 'Dix-sept déclinaisons, une par page publique : treize livrées le 13 octobre 2026, puis, le 14 octobre 2026, GitHealth, Karl Scraper, Sillage et Relais, avec Projets et chaque projet dans l’ordre de la vitrine en quatre familles. Ordre et textes : lib/partage.ts est la seule source de leurs titres et de leurs alts, tools/generer-partage.mjs les compose en HTML avec la vraie typographie, et layouts/Base.astro choisit celle de la page. Le visuel de droite est une photo de séance (Contact, Parcours) ou la lanterne allumée ; PVZ-OG, OMN-OG et BLR-OG pourront le remplacer pour leur projet. La 404 garde l’image par défaut, GLO-07.',
   },
   {
     id: 'GLO-09',
@@ -946,11 +954,11 @@ export const VISUELS: readonly EntreeVisuel[] = [
   {
     id: 'PRJ-06',
     serie: 'projets',
-    page: '/projets',
-    emplacement: '« Aussi », GitHealth',
+    page: '/projets/githealth',
+    emplacement: '§ Les verdicts de la page GitHealth, sous la liste des verdicts',
     sujet: 'Décider quoi faire d’une branche',
     composition: 'Trois branches d’un même tronc, dessinées comme des rameaux stylisés partant d’une racine commune, chacune terminée par un petit picto de verdict sans texte : un sceau plein (garder), une loupe (revoir), un balai (nettoyer) ; la lanterne, posée au pied du tronc (vers 50 % de la largeur et 84 % de la hauteur), éclaire la branche à revoir ; fond en réserve, aucun personnage',
-    cadrage: 'Vignette de la rangée « Aussi », 4:3, environ 300 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.',
+    cadrage: 'Sous la liste des verdicts de la page GitHealth, sur la pierre de la page : entier (fond transparent, rien de rogné), environ 280 px de large à toutes les largeurs ; le sujet se lit à cette taille.',
     calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'tronc, branches et pictos de verdict', lumiere: 'flamme et branche à revoir' },
     fond: 'transparent',
     format: '4:3, 1200 × 900',
@@ -959,19 +967,19 @@ export const VISUELS: readonly EntreeVisuel[] = [
     hauteur: 900,
     methode: 'IMG',
     priorite: 'socle',
-    pose: ['config/vitrine.ts', 'components/vitrine/RangeeAussi.astro'],
+    pose: ['pages/projets/githealth.astro'],
     alt: 'Trois branches d’un même tronc, chacune avec son verdict : garder, revoir ou nettoyer.',
     fichier: 'src/assets/visuels/projets/PRJ-06_1200x900.webp',
-    note: 'Posé dans la rangée « Aussi » de la vitrine (config/vitrine.ts, components/vitrine/RangeeAussi.astro) : décoratif, le texte voisin dit la même chose.',
+    note: 'Dessiné pour la rangée « Aussi », il a suivi GitHealth dans la vitrine le 14/10/2026, puis sur sa page quand la carte a reçu sa capture réelle (GTH-C1) : il illustre la liste des verdicts (pages/projets/githealth.astro), hors de tout acte sombre.',
   },
   {
     id: 'PRJ-07',
     serie: 'projets',
     page: '/projets',
-    emplacement: '« Aussi », Life Pixel',
+    emplacement: 'Projets archivés, Life Pixel',
     sujet: 'Une animation pixel art dans une page',
     composition: 'Une grille de pixel art posée à plat sur une table, une petite mascotte ronde et générique (jamais un personnage connu) dessinée en trois images successives, superposées en pelure d’oignon ; un trait de lumière mène vers une fenêtre de navigateur vide de texte où la même mascotte, plus grande, s’anime ; la lanterne posée à gauche de la grille (vers 20 % de la largeur et 66 % de la hauteur) l’éclaire',
-    cadrage: 'Vignette de la rangée « Aussi », 4:3, environ 300 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.',
+    cadrage: 'Vignette du volet des projets archivés, 4:3, environ 280 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.',
     calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'table, grille et fenêtre', lumiere: 'flamme, grille éclairée et trait de lumière' },
     fond: 'aplat',
     format: '4:3',
@@ -980,19 +988,19 @@ export const VISUELS: readonly EntreeVisuel[] = [
     hauteur: 1200,
     methode: 'IMG',
     priorite: 'socle',
-    pose: ['config/vitrine.ts', 'components/vitrine/RangeeAussi.astro'],
+    pose: ['config/projets.ts', 'components/vitrine/ArchivesProjets.astro'],
     alt: 'Une mascotte en pixel art dessinée image par image, puis animée dans une page web.',
     fichier: 'src/assets/visuels/projets/PRJ-07_1600x1200.webp',
-    note: 'Posé dans la rangée « Aussi » de la vitrine (config/vitrine.ts, components/vitrine/RangeeAussi.astro) : décoratif, le texte voisin dit la même chose.',
+    note: 'Dessiné pour la rangée « Aussi », il suit le projet dans le volet des projets archivés le 14/10/2026 (PROJETS_ARCHIVES de config/projets.ts, rendu par components/vitrine/ArchivesProjets.astro) : décoratif, le texte voisin dit la même chose.',
   },
   {
     id: 'PRJ-08',
     serie: 'projets',
     page: '/projets',
-    emplacement: '« Aussi », img-convertor',
+    emplacement: 'Projets archivés, img-convertor',
     sujet: 'Une image, des variantes',
     composition: 'Une grande image encadrée (un paysage simple) à gauche, d’où partent quatre copies de la même image, de largeurs décroissantes, alignées en escalier vers la droite comme sur des écrans de tailles différentes (grand écran, portable, tablette, téléphone), sans poids ni chiffre ; la lanterne posée devant l’original (vers 22 % de la largeur et 78 % de la hauteur) l’éclaire',
-    cadrage: 'Vignette de la rangée « Aussi », 4:3, environ 300 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.',
+    cadrage: 'Vignette du volet des projets archivés, 4:3, environ 280 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.',
     calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'cadres et écrans', lumiere: 'flamme et image originale' },
     fond: 'transparent',
     format: '4:3',
@@ -1001,19 +1009,19 @@ export const VISUELS: readonly EntreeVisuel[] = [
     hauteur: 1200,
     methode: 'IMG',
     priorite: 'socle',
-    pose: ['config/vitrine.ts', 'components/vitrine/RangeeAussi.astro'],
+    pose: ['config/projets.ts', 'components/vitrine/ArchivesProjets.astro'],
     alt: 'Une image et ses quatre déclinaisons, de la plus large à la plus étroite.',
     fichier: 'src/assets/visuels/projets/PRJ-08_1600x1200.webp',
-    note: 'Posé dans la rangée « Aussi » de la vitrine (config/vitrine.ts, components/vitrine/RangeeAussi.astro) : décoratif, le texte voisin dit la même chose.',
+    note: 'Dessiné pour la rangée « Aussi », il suit le projet dans le volet des projets archivés le 14/10/2026 (PROJETS_ARCHIVES de config/projets.ts, rendu par components/vitrine/ArchivesProjets.astro) : décoratif, le texte voisin dit la même chose.',
   },
   {
     id: 'PRJ-09',
     serie: 'projets',
     page: '/projets',
-    emplacement: '« Aussi », MaVeille (si le site revient)',
+    emplacement: 'Projets archivés, MaVeille (si le site revient)',
     sujet: 'La veille qui devient lecture',
     composition: 'Sur une table vue de trois quarts en légère plongée, une pile de rapports imprimés à gauche, aux tranches marquées de simples traits ; à droite, une seule page reliée, ouverte, dont la marge porte un sommaire en traits courts ; un ruban de lumière relie le haut de la pile à la page ; la lanterne posée derrière la page (vers 66 % de la largeur et 40 % de la hauteur) l’éclaire ; aucun chiffre, aucune date ni lettre lisible',
-    cadrage: 'Vignette de la rangée « Aussi », 4:3, environ 300 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.',
+    cadrage: 'Vignette du volet des projets archivés, 4:3, environ 280 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.',
     calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'table, rapports et page', lumiere: 'flamme, ruban de lumière et page ouverte' },
     fond: 'aplat',
     format: '4:3',
@@ -1023,7 +1031,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     methode: 'IMG',
     priorite: 'elargi',
     pose: null,
-    raisonNonPose: 'MaVeille n’est pas dans la rangée « Aussi » tant que son site n’est pas de retour en ligne.',
+    raisonNonPose: 'MaVeille n’est ni dans la vitrine ni dans les projets archivés tant que son site n’est pas de retour en ligne.',
     alt: 'Une pile de rapports imprimés, reliée par un ruban de lumière à une page ouverte et son sommaire.',
     fichier: 'src/assets/visuels/projets/PRJ-09_1600x1200.webp',
   },
@@ -1031,22 +1039,22 @@ export const VISUELS: readonly EntreeVisuel[] = [
     id: 'PRJ-10',
     serie: 'projets',
     page: '/projets',
-    emplacement: '« Aussi », Shreksophone',
+    emplacement: 'Projets archivés, Shreksophone',
     sujet: 'L’absurde assumé',
     composition: 'Une fenêtre de navigateur vide de texte, vue de face ; un saxophone en surgit à moitié, pavillon vers le haut, comme s’il crevait l’interface ; des notes de musique débordent du cadre et s’envolent ; absurde assumé, même gravure que le reste de la série ; aucun personnage ; la lanterne posée au pied de la fenêtre (vers 64 % de la largeur et 82 % de la hauteur) éclaire le pavillon',
-    cadrage: 'Vignette de la rangée « Aussi », 4:3, environ 300 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.',
+    cadrage: 'Vignette du volet des projets archivés, 4:3, environ 280 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.',
     calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'fenêtre, saxophone et notes', lumiere: 'flamme et pavillon éclairé' },
     fond: 'transparent',
-    format: '4:3, 1600 × 1200 (comme le reste de la rangée « Aussi »)',
+    format: '4:3, 1600 × 1200 (comme les autres vignettes des projets archivés)',
     ratio: '4 / 3',
     largeur: 1600,
     hauteur: 1200,
     methode: 'IMG',
     priorite: 'socle',
-    pose: ['config/vitrine.ts', 'components/vitrine/RangeeAussi.astro'],
+    pose: ['config/projets.ts', 'components/vitrine/ArchivesProjets.astro'],
     alt: 'Un saxophone qui surgit d’une fenêtre de navigateur, des notes qui débordent du cadre.',
     fichier: 'src/assets/visuels/projets/PRJ-10_1600x1200.webp',
-    note: 'Posé dans la rangée « Aussi » de la vitrine (config/vitrine.ts, components/vitrine/RangeeAussi.astro) : décoratif, le texte voisin dit la même chose. Passé de 1:1 à 4:3 pour s’aligner sur les trois autres.',
+    note: 'Dessiné pour la rangée « Aussi », il suit le projet dans le volet des projets archivés le 14/10/2026 (PROJETS_ARCHIVES de config/projets.ts, rendu par components/vitrine/ArchivesProjets.astro) : décoratif, le texte voisin dit la même chose. Passé de 1:1 à 4:3 pour s’aligner sur les trois autres.',
   },
   {
     id: 'PRJ-11',
@@ -1074,10 +1082,10 @@ export const VISUELS: readonly EntreeVisuel[] = [
     id: 'PRJ-12',
     serie: 'projets',
     page: '/projets',
-    emplacement: 'Archives (quand elles existent)',
+    emplacement: 'Projets archivés, dernière case du volet',
     sujet: 'La version précédente',
     composition: 'Une étagère vue de face, en légère plongée : à gauche, un livre plus ancien, fermé, debout, au dos usé et sans titre ; à droite, posé à plat sur la tablette, un manuel neuf ouvert ; la lanterne posée entre les deux (vers 50 % de la largeur et 58 % de la hauteur) éclaire le dos de l’ancien livre ; aucun titre, aucune lettre',
-    cadrage: 'Vignette 4:3 d’environ 300 px de large : les deux livres se lisent à cette taille.',
+    cadrage: 'Première case du volet des projets archivés, 4:3, environ 280 px de large sur ordinateur et 45 % de la largeur sur mobile : les deux livres se lisent à cette taille.',
     calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'étagère et livres', lumiere: 'flamme et dos de l’ancien livre' },
     fond: 'aplat',
     format: '4:3',
@@ -1085,12 +1093,11 @@ export const VISUELS: readonly EntreeVisuel[] = [
     largeur: 1600,
     hauteur: 1200,
     methode: 'IMG',
-    priorite: 'elargi',
-    pose: null,
-    raisonNonPose: 'le volet des projets archivés est vide ; il reste une simple ligne tant qu’il ne contient aucun projet.',
+    priorite: 'socle',
+    pose: ['components/vitrine/ArchivesProjets.astro'],
     alt: 'Un livre ancien debout sur une étagère, à côté d’un manuel neuf ouvert, éclairé par une lanterne.',
     fichier: 'src/assets/visuels/projets/PRJ-12_1600x1200.webp',
-    note: 'Reprend ILL-10 de docs/assets-complementaires.md (direction précédente).',
+    note: 'Reprend ILL-10 de docs/assets-complementaires.md (direction précédente). Posé le 14/10/2026 en dernière case du volet des projets archivés, qui reçoit Life Pixel, img-convertor et Shreksophone : décoratif, à la place d’une carte.',
   },
 
   // PVZ
@@ -2683,6 +2690,152 @@ export const VISUELS: readonly EntreeVisuel[] = [
     note: 'CAP-GUP-1 du cahier (§ 6.12) : livrés, provenance dans src/assets/projets/gup/README.md ; leurs alts sont dans config/gup.ts. Les recadrages 4:5 pour mobile restent à faire.',
   },
 
+  // GTH — GitHealth (série « githealth », /projets/githealth) : ses entrées, sous ce repère.
+  {
+    id: 'GTH-C1',
+    serie: 'githealth',
+    page: '/projets/githealth',
+    emplacement: 'En-tête et § Les verdicts, La politique, L’analyse en direct, Les visualisations ; carte de la vitrine (famille « Outils »)',
+    sujet: 'Les écrans de GitHealth, sur des dépôts de démonstration',
+    composition: 'Écrans réels de l’application lancée en local (build de la révision bd2e5c9, thème clair) sur des dépôts Git de démonstration aux auteurs fictifs, sans retouche ni recomposition ; la carte de la vitrine recadre la fiche de branche de la même capture',
+    format: 'format natif des écrans (16:10) ; fiche de branche en portrait pour la carte',
+    ratio: null,
+    methode: 'CAP',
+    priorite: 'socle',
+    pose: ['pages/projets/githealth.astro', 'config/githealth.ts'],
+    alt: '',
+    fichier: null,
+    declinaisons: [
+      { nom: 'diagnostic', fichier: 'src/assets/projets/githealth/diagnostic.webp', alt: '' },
+      { nom: 'fiche-branche', fichier: 'src/assets/projets/githealth/fiche-branche.webp', alt: '' },
+      { nom: 'politique', fichier: 'src/assets/projets/githealth/politique.webp', alt: '' },
+      { nom: 'analyse-en-cours', fichier: 'src/assets/projets/githealth/analyse-en-cours.webp', alt: '' },
+      { nom: 'carte-topologie', fichier: 'src/assets/projets/githealth/carte-topologie.webp', alt: '' },
+      { nom: 'registre-activite', fichier: 'src/assets/projets/githealth/registre-activite.webp', alt: '' },
+      { nom: 'vitrine-fiche-branche', fichier: 'src/assets/projets/githealth/vitrine-fiche-branche.webp', alt: '' },
+    ],
+    note: 'Livrés le 14/10/2026, provenance dans src/assets/projets/githealth/README.md ; leurs alts sont dans config/githealth.ts (CAPTURES et CARTE). Interface en anglais, celle de l’application ; l’engrenage de la barre du haut et le scan planifié viennent de la branche de développement, non publiés.',
+  },
+
+  // ↑ fin des entrées GTH
+
+  // KSC — Karl Scraper (série « karl-scraper », /projets/karl-scraper) : ses entrées, sous ce repère.
+  {
+    id: 'KSC-F1',
+    serie: 'karl-scraper',
+    page: '/projets/karl-scraper',
+    emplacement: '§ Du ticket à la pull request',
+    sujet: 'La chaîne d’un ticket',
+    composition: 'Cinq étapes en ligne, de la synchronisation au statut : qui agit à chaque étape, et ce que chacune peut faire dans l’outil source (le lire, rien, y écrire le statut)',
+    format: '—',
+    ratio: null,
+    methode: 'FIG',
+    priorite: 'socle',
+    pose: ['pages/projets/karl-scraper.astro'],
+    alt: 'Cinq étapes d’un ticket, de la synchronisation au statut ; seule la dernière écrit dans l’outil source, et seulement le statut.',
+    fichier: 'src/components/projets/karl-scraper/FigureChaine.astro',
+    note: 'Codée en HTML, données CHAINE de config/karl-scraper.ts, tirées du code et des plans du dépôt privé (révision 6615950). Elle montre la préparation et la réalisation, que les captures ne montrent pas sans agent lancé.',
+  },
+  {
+    id: 'KSC-C1',
+    serie: 'karl-scraper',
+    page: '/projets/karl-scraper',
+    emplacement: 'En-tête, § Une copie locale, § La Galaxie, § Ce que l’agent lit ; carte de la vitrine',
+    sujet: 'Les écrans de Karl Scraper',
+    composition: 'Écrans réels de l’application lancée en local à la révision 6615950, face à un faux serveur source et sur des données fictives (trois projets, seize tâches, trois observations), aucun agent lancé, sans retouche ni recomposition',
+    format: 'format natif des écrans',
+    ratio: null,
+    methode: 'CAP',
+    priorite: 'socle',
+    pose: ['pages/projets/karl-scraper.astro', 'config/karl-scraper.ts'],
+    alt: '',
+    fichier: null,
+    declinaisons: [
+      { nom: 'enchainements', fichier: 'src/assets/projets/karl-scraper/enchainements.webp', alt: '' },
+      { nom: 'tableau-de-bord', fichier: 'src/assets/projets/karl-scraper/tableau-de-bord.webp', alt: '' },
+      { nom: 'galaxie', fichier: 'src/assets/projets/karl-scraper/galaxie.webp', alt: '' },
+      { nom: 'vue-agent', fichier: 'src/assets/projets/karl-scraper/vue-agent.webp', alt: '' },
+      { nom: 'carte-galaxie', fichier: 'src/assets/projets/karl-scraper/carte-galaxie.webp', alt: '' },
+    ],
+    note: 'Captures provisoires, à refaire après la refonte graphique de l’interface ; provenance dans src/assets/projets/karl-scraper/README.md, alts et légendes dans config/karl-scraper.ts. Aucun libellé qui nomme l’outil source à l’écran.',
+  },
+
+  // ↑ fin des entrées KSC
+
+  // SIL — Sillage (série « sillage », /projets/sillage) : ses entrées, sous ce repère.
+  {
+    id: 'SIL-C1',
+    serie: 'sillage',
+    page: '/projets/sillage',
+    emplacement: 'En-tête, § Un projet, § Composer la tâche, § Reprendre, § Le résultat, et la carte de la vitrine',
+    sujet: 'Les écrans de Sillage, sur des projets de démonstration',
+    composition: 'Écrans réels de l’application lancée en local (révision c256e76) contre le faux fournisseur des tests du dépôt : projets, tâches et résultats de démonstration, sans recomposition',
+    format: 'format natif des écrans',
+    ratio: null,
+    methode: 'CAP',
+    priorite: 'socle',
+    pose: ['pages/projets/sillage.astro', 'config/sillage.ts'],
+    alt: '',
+    fichier: null,
+    declinaisons: [
+      { nom: 'graphe-en-direct', fichier: 'src/assets/projets/sillage/graphe-en-direct.webp', alt: '' },
+      { nom: 'page-projet', fichier: 'src/assets/projets/sillage/page-projet.webp', alt: '' },
+      { nom: 'page-projet-mobile', fichier: 'src/assets/projets/sillage/page-projet-mobile.webp', alt: '' },
+      { nom: 'creer-avec-un-agent', fichier: 'src/assets/projets/sillage/creer-avec-un-agent.webp', alt: '' },
+      { nom: 'reprendre-execution', fichier: 'src/assets/projets/sillage/reprendre-execution.webp', alt: '' },
+      { nom: 'reprendre-execution-mobile', fichier: 'src/assets/projets/sillage/reprendre-execution-mobile.webp', alt: '' },
+      { nom: 'recapitulatif', fichier: 'src/assets/projets/sillage/recapitulatif.webp', alt: '' },
+      { nom: 'recapitulatif-mobile', fichier: 'src/assets/projets/sillage/recapitulatif-mobile.webp', alt: '' },
+    ],
+    note: 'Livrés le 14 octobre 2026, provenance dans src/assets/projets/sillage/README.md ; leurs alts sont dans config/sillage.ts. Dépôt privé : aucune donnée réelle, aucun lien. La page projet, la reprise et le récapitulatif passent de la vue de bureau à la vue de téléphone sous 861 px ; la carte de la vitrine recadre la vue du graphe en CSS (CadreCapture, ratio et position).',
+  },
+
+  // ↑ fin des entrées SIL
+
+  // REL — Relais (série « relais », /projets/relais) : ses entrées, sous ce repère.
+  {
+    id: 'REL-F1',
+    serie: 'relais',
+    page: '/projets/relais',
+    emplacement: '§ 1, le point d’accès : à côté du texte, en colonne',
+    sujet: 'Qui passe par Relais',
+    composition: 'De haut en bas : les outils de la machine en étiquettes, une flèche vers Relais et ce qu’il tient (comptes, périmètre, capacité, frein, conversations), une flèche vers les deux agents et leurs versions épinglées',
+    format: '—',
+    ratio: null,
+    methode: 'FIG',
+    priorite: 'socle',
+    pose: ['pages/projets/relais.astro'],
+    alt: 'Les outils de la machine passent par Relais, qui tient comptes, permissions et conversations, et lance ses propres versions des deux agents.',
+    fichier: 'src/components/projets/relais/FigurePointAcces.astro',
+    note: 'Codée en HTML, données POINT_ACCES de config/relais.ts ; se lit de haut en bas à toutes les largeurs.',
+  },
+  {
+    id: 'REL-C1',
+    serie: 'relais',
+    page: '/projets/relais',
+    emplacement: 'En-tête, § le périmètre, § la capacité, § l’analyse ; carte de la vitrine (/projets)',
+    sujet: 'Les écrans de Relais, sur des données de démonstration',
+    composition: 'Écrans réels de Relais 0.2.0 lancé en local (abonnements, projets et conversations inventés, un agent de démonstration à la place du CLI, aucun compte réel), fenêtre de 1 440 × 900 en densité 2, sans retouche ni recomposition ; la vignette de la carte est un recadrage du panneau de pilotage de la conversation',
+    format: 'format natif des écrans, 2880 × 1800 ; vignette 610 × 490',
+    ratio: null,
+    methode: 'CAP',
+    priorite: 'socle',
+    pose: ['pages/projets/relais.astro', 'config/relais.ts'],
+    alt: '',
+    fichier: null,
+    declinaisons: [
+      { nom: 'dashboard', fichier: 'src/assets/projets/relais/dashboard.webp', alt: '' },
+      { nom: 'conversation-perimetre', fichier: 'src/assets/projets/relais/conversation-perimetre.webp', alt: '' },
+      { nom: 'capacite', fichier: 'src/assets/projets/relais/capacite.webp', alt: '' },
+      { nom: 'garde-fous', fichier: 'src/assets/projets/relais/garde-fous.webp', alt: '' },
+      { nom: 'analyse', fichier: 'src/assets/projets/relais/analyse.webp', alt: '' },
+      { nom: 'carte-dashboard', fichier: 'src/assets/projets/relais/carte-dashboard.webp', alt: '' },
+    ],
+    note: 'Livrés le 14/10/2026, provenance dans src/assets/projets/relais/README.md ; leurs alts sont dans config/relais.ts. La vignette carte-dashboard, recadrage du Dashboard, est posée sur la carte de la vitrine par config/relais.ts (CARTE.visuel), dans un cadre navigateur ; les autres par la page.',
+  },
+
+  // ↑ fin des entrées REL
+
   // PAR
   {
     id: 'PAR-PHO',
@@ -3657,7 +3810,18 @@ export function producteur(visuel: EntreeVisuel): 'codex' | 'equipe' | 'charles'
 }
 
 /** Ordre des séries dans les listes et dans la commande de production. */
-export const ORDRE_SERIES: readonly SerieVisuel[] = ['global', 'accueil', 'projets', 'pvz-fusion', 'league-of-database', 'omnicard', 'bloodborne', 'gup', 'parcours', 'contact', 'blog', 'etats'];
+export const ORDRE_SERIES: readonly SerieVisuel[] = ['global', 'accueil', 'projets', 'pvz-fusion', 'league-of-database', 'omnicard', 'bloodborne', 'gup', 'githealth', 'karl-scraper', 'sillage', 'relais', 'parcours', 'contact', 'blog', 'etats'];
+
+/**
+ * Les séries des quatre pages entrées dans la vitrine le 14/10/2026 (GitHealth,
+ * Karl Scraper, Sillage, Relais), chacune tenue par sa page : ses entrées
+ * s’écrivent sous son repère dans VISUELS (GTH, KSC, SIL, REL). Leurs images
+ * générées rejoignent d’office la série de dessin « Pages de projet »
+ * (FAMILLES), et les compteurs figés de tests/unit/visuels.test.ts ne comptent
+ * que l’inventaire d’avant elles : ajouter une entrée ne touche qu’au repère
+ * de sa série.
+ */
+export const SERIES_VITRINE_FINALE: readonly SerieVisuel[] = ['githealth', 'karl-scraper', 'sillage', 'relais'];
 
 /** Sujet à transmettre à un générateur d’image : sans nom de marque. */
 export function sujetPourGenerateur(visuel: EntreeVisuel): string {
@@ -3808,6 +3972,11 @@ export interface FamilleVisuel {
   lanterne: string;
 }
 
+/** Les images générées (hors reprises) de ces séries, dans l’ordre du registre. */
+function imagesDesSeries(series: readonly SerieVisuel[]): string[] {
+  return VISUELS.filter((v) => series.includes(v.serie) && v.methode === 'IMG' && !v.reprend?.length).map((v) => v.id);
+}
+
 /** Les séries de dessin des images générées : chaque image en fait partie d’une seule. */
 export const FAMILLES: readonly FamilleVisuel[] = [
   {
@@ -3839,7 +4008,7 @@ export const FAMILLES: readonly FamilleVisuel[] = [
     ids: ['PRJ-01', 'PRJ-02', 'PRJ-06', 'PRJ-07', 'PRJ-08', 'PRJ-09', 'PRJ-10', 'PRJ-11', 'PRJ-12'],
     angle: 'de face en légère plongée',
     horizon: 'aux deux tiers de la hauteur',
-    trait: 'trait principal d’environ 3 px à 1 600 px de large, hachures d’environ 1 px ; plus épais pour les vignettes « Aussi » (lisibles à 300 px)',
+    trait: 'trait principal d’environ 3 px à 1 600 px de large, hachures d’environ 1 px ; plus épais pour les vignettes des projets archivés (lisibles à 280 px)',
     lanterne: 'posée bas dans le cadre, à la position de la fiche',
   },
   {
@@ -3860,7 +4029,8 @@ export const FAMILLES: readonly FamilleVisuel[] = [
   },
   {
     nom: 'Pages de projet',
-    ids: ['LOD-02', 'LOD-04', 'OMN-01', 'BLR-01', 'BLR-03', 'BLR-04', 'BLR-05', 'GUP-01', 'GUP-03'],
+    // Les images générées des pages entrées le 14/10/2026 en font partie d’office (SERIES_VITRINE_FINALE).
+    ids: ['LOD-02', 'LOD-04', 'OMN-01', 'BLR-01', 'BLR-03', 'BLR-04', 'BLR-05', 'GUP-01', 'GUP-03', ...imagesDesSeries(SERIES_VITRINE_FINALE)],
     angle: 'trois quarts en légère plongée ; exceptions : LOD-02 et BLR-04 de face, LOD-04 en coupe horizontale',
     horizon: 'aux deux tiers de la hauteur',
     trait: 'trait principal d’environ 3 px à 1 600 px de large',

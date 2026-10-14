@@ -102,13 +102,16 @@ source » mène au bloc « Contribuer » de la vitrine (`/projets#contribuer`). 
 « Pour aller plus loin » mène à Projets, Parcours et Blog. Les pages `/projets`, `/parcours`,
 `/contact` et `/blog` sont accessibles depuis la navigation et reliées entre elles.
 
-Les cinq pages de projet (`site/src/pages/projets/`) suivent l’ordre de la vitrine : PvZ Fusion,
-League Of Data Base, Omnicard, Bloodborne Legendary Run et gup. Elles partagent le gabarit de
+Les neuf pages de projet (`site/src/pages/projets/`) suivent l’ordre de la vitrine, famille par
+famille : PvZ Fusion ; Omnicard, Bloodborne Legendary Run et League Of Data Base ; gup et
+GitHealth ; Karl Scraper, Sillage et Relais. Elles partagent le gabarit de
 `site/src/components/projets/gabarit/` : un en-tête commun (nom canonique, étiquette de preuve,
 fiche technique en tableau à filets, un à trois repères chiffrés sourcés et datés), un corps libre
 avec sa navigation de page, « Comment je l’ai construit », une sortie commune (projet précédent et
 suivant, « Discutons ») et une note de sources. Le corps reste propre à chaque projet ; ses
-données sont dans `site/src/config/<projet>.ts`.
+données sont dans `site/src/config/<projet>.ts`, avec, pour les quatre pages entrées le
+14 octobre 2026, la carte de la vitrine (`CARTE`). Karl Scraper, Sillage et Relais sont des
+dépôts privés : ni lien ni nom de dépôt, leur fiche le dit.
 
 La page `/parcours` est un hub vers `/parcours/professionnel`, `/parcours/competences` et
 `/parcours/formation`. Ces trois pages partagent le gabarit `site/src/layouts/Parcours.astro`,
@@ -175,19 +178,24 @@ composition, format). Un dessin SVG livré est inséré en ligne et suit les jet
 `npm run visuels` liste ce qu’il reste à produire et `npm run visuels:doc` régénère
 [`docs/visuels-a-generer.md`](docs/visuels-a-generer.md), la commande de production des images.
 
-Le hub `/projets` commence par l’index des étiquettes de preuve, puis présente les cinq projets
-dans l’ordre de ce qu’ils prouvent, PvZ Fusion en vedette. Chaque carte donne le besoin, un
-chiffre sourcé, le rôle, le statut et les liens publics, et mène à la page du projet (« Voir le
-projet → »). Suivent la rangée « Aussi » (GitHealth, Life Pixel, img-convertor, Shreksophone), le
-volet des projets archivés et le bloc « Contribuer ». Les démonstrations restent sur les pages
-dédiées : gup utilise les données d’exemple de son dépôt et Bloodborne montre de vraies captures,
-agrandissables au clic dans la visionneuse partagée. La provenance des captures est détaillée dans
-`site/src/assets/projets/README.md`.
+Le hub `/projets` commence par l’index des étiquettes de preuve, puis présente les neuf projets
+en quatre familles : « Lead et équipe » (PvZ Fusion, en vedette), « Jeu vidéo » (Omnicard,
+Bloodborne Legendary Run, League Of Data Base), « Outils » (gup, GitHealth) et « IA » (Karl
+Scraper, Sillage, Relais). Chaque carte donne le besoin, un chiffre sourcé, le rôle, le statut et
+les liens publics, et mène à la page du projet (« Voir le projet → »). Suivent la ligne des
+relevés, le volet des projets archivés et le bloc « Contribuer ». Les démonstrations restent sur
+les pages dédiées : gup utilise les données d’exemple de son dépôt, Bloodborne montre de vraies
+captures, agrandissables au clic dans la visionneuse partagée, et les quatre projets entrés le
+14 octobre 2026 se capturent sur leurs applications lancées en local, avec des données de
+démonstration. La provenance des captures est détaillée dans `site/src/assets/projets/README.md`.
 
-Le volet « Projets archivés » est replié par défaut et vide pour l’instant. Pour déplacer un projet
-hors de la vitrine, ajouter son nom, son adresse et son résumé à `PROJETS_ARCHIVES`
-(`site/src/config/projets.ts`), puis retirer son entrée de `VITRINE`. Conserver sa page et son
-entrée dans `site/src/config/pages.ts` pour que les liens existants continuent à fonctionner.
+Le volet « Projets archivés » est replié par défaut. Depuis le 14 octobre 2026, il porte Life
+Pixel, img-convertor et Shreksophone, l’ancienne rangée « Aussi », avec leurs vignettes et leurs
+liens publics. Pour déplacer un projet hors de la vitrine, ajouter à `PROJETS_ARCHIVES`
+(`site/src/config/projets.ts`) son identifiant, son nom, son résumé, sa vignette du registre et
+soit sa page (`page`), soit ses liens publics (`liens`), puis retirer son entrée de `VITRINE` et
+sa carte. S’il a une page, conserver son entrée dans `site/src/config/pages.ts` pour que les liens
+existants continuent à fonctionner.
 
 ## Mise en ligne
 

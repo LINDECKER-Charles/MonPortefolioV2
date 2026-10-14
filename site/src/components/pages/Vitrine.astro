@@ -1,19 +1,31 @@
 ---
 /**
- * La grille de la vitrine : une carte vedette pleine largeur, puis des cartes
- * en deux colonnes (une sur mobile). Contient des CarteProjet.
+ * La grille d’une famille de la vitrine : une carte vedette pleine largeur,
+ * puis des cartes en deux colonnes (une sur mobile). Contient des CarteProjet.
  *
- *   <Vitrine label="Cinq projets, ordonnés par ce qu’ils prouvent">…</Vitrine>
+ *   <Vitrine labelledby="famille-jeu-titre" colonnes={3}>…</Vitrine>
+ *   <Vitrine label="Trois projets">…</Vitrine>
+ *
+ * Le nom de la liste : le titre de sa section (`labelledby`, l’identifiant du
+ * h2), sinon `label`. `colonnes={3}` pour une famille de trois cartes : trois
+ * colonnes au-delà de 1 100 px, chaque carte empilée (le visuel au-dessus du
+ * texte, les visuels alignés sur une même hauteur), et entre 861 et 1 100 px
+ * une carte par ligne, son visuel à côté du texte : à deux colonnes, le
+ * panneau d’une carte n’y aurait qu’environ 200 px, et une capture d’écran
+ * large (Karl Scraper, Sillage) y devenait illisible.
  */
 interface Props {
-  label: string;
+  label?: string;
+  labelledby?: string;
+  colonnes?: 2 | 3;
   class?: string;
 }
 
-const { label, class: classe } = Astro.props;
+const { label, labelledby, colonnes = 2, class: classe } = Astro.props;
+if (!label && !labelledby) throw new Error('<Vitrine> : un nom de liste (`label` ou `labelledby`).');
 ---
 
-<ol class:list={['vitrine', classe]} aria-label={label}>
+<ol class:list={['vitrine', { 'vitrine--trois': colonnes === 3 }, classe]} aria-label={labelledby ? undefined : label} aria-labelledby={labelledby}>
   <slot />
 </ol>
 
@@ -25,6 +37,23 @@ const { label, class: classe } = Astro.props;
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+
+  /* Trois cartes sur une ligne ; chacune couvre deux rangées (visuel, texte),
+     partagées par sous-grille : les visuels s’alignent sur la même hauteur. */
+  @media (min-width: 1101px) {
+    .vitrine--trois {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      row-gap: 0;
+    }
+  }
+
+  /* Entre 861 et 1 100 px, une carte par ligne : le visuel garde la largeur
+     d’une carte de la vedette ou d’une ligne, au lieu d’un panneau étroit. */
+  @media (min-width: 861px) and (max-width: 1100px) {
+    .vitrine--trois {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 
   @media (max-width: 860px) {

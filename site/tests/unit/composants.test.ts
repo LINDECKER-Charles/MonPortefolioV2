@@ -128,7 +128,7 @@ describe('vitrine', () => {
 
   it('fait de la carte un lien vers le projet, avec son étiquette de preuve et « Voir le projet → »', async () => {
     const html = await rendre(CarteProjet, carte);
-    expect(html).toMatch(/<li id="pvz"[^>]*class="carte-projet carte-projet--vedette"/);
+    expect(html).toMatch(/<li id="pvz"[^>]*class="carte-projet carte-projet--vedette[ "]/);
     expect(html).toMatch(/<h2 class="carte-projet__nom"[^>]*>\s*<a href="\/projets\/pvz-fusion"[^>]*>PvZ Fusion, pôle francophone<\/a>/);
     expect(html).toContain('Mener une équipe');
     expect(html).toMatch(/Voir le projet<span class="fleche"[^>]*>\u00a0→/);
@@ -137,11 +137,27 @@ describe('vitrine', () => {
     expect(await rendre(CarteProjet, { ...carte, niveau: 3 })).toMatch(/<h3 class="carte-projet__nom/);
   });
 
-  it('numérote l’index des preuves et mène à chaque carte', async () => {
-    const html = await rendre(IndexPreuves, { entrees: [{ id: 'pvz', preuve: 'Mener une équipe' }, { id: 'lodb', preuve: 'Un système en production' }] });
+  it('pose le visuel dans un acte de veille, ou rien qu’un texte quand la carte n’en a pas encore', async () => {
+    const avec = await rendre(CarteProjet, carte, { visuel: '<figure class="visuel">x</figure>' });
+    expect(avec).toMatch(/<div class="carte-projet__visuel acte-veille"[^>]*><figure class="visuel">x<\/figure><\/div>/);
+    expect(avec).not.toContain('carte-projet--sans-visuel');
+    const sans = await rendre(CarteProjet, carte);
+    expect(sans).toMatch(/class="carte-projet carte-projet--vedette carte-projet--sans-visuel"/);
+    expect(sans).not.toContain('carte-projet__visuel');
+  });
+
+  it('numérote l’index des preuves par famille, au rang global, et mène à chaque carte', async () => {
+    const html = await rendre(IndexPreuves, {
+      familles: [
+        { id: 'equipe', titre: 'Lead et équipe', entrees: [{ id: 'pvz', rang: 1, preuve: 'Mener une équipe' }] },
+        { id: 'jeu', titre: 'Jeu vidéo', entrees: [{ id: 'lodb', rang: 2, preuve: 'Un système en production' }] },
+      ],
+    });
     expect(html).toContain('href="#pvz"');
     expect(html).toContain('>02<');
     expect(html).toContain('\u00a0↓');
+    // Chaque famille : son titre, qui nomme sa liste.
+    expect(html).toMatch(/<p class="index-preuves__titre"[^>]*id="index-preuves-jeu"[^>]*>Jeu vidéo<\/p>\s*<ol aria-labelledby="index-preuves-jeu"/);
   });
 });
 

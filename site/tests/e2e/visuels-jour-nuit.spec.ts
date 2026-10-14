@@ -266,7 +266,7 @@ test.describe('bascule sur un réseau lent', () => {
 });
 
 test('chaque image générée posée dans un acte sombre le déclare (acte), et seulement elle', async ({ page }) => {
-  for (const chemin of ['/', '/projets', '/projets/pvz-fusion', '/projets/omnicard', '/parcours', '/parcours/professionnel', '/parcours/formation', '/contact']) {
+  for (const chemin of ['/', '/projets', '/projets/pvz-fusion', '/projets/omnicard', '/projets/githealth', '/projets/karl-scraper', '/projets/sillage', '/projets/relais', '/parcours', '/parcours/professionnel', '/parcours/formation', '/contact']) {
     await page.goto(chemin);
     const ecarts = await page.evaluate(() =>
       [...document.querySelectorAll<HTMLElement>('figure.visuel--jour-nuit')]
@@ -285,7 +285,8 @@ test.describe('poids des images à 390 px', () => {
   test.skip(({ viewport }) => (viewport?.width ?? 0) > 390, 'budget mesuré à 390 px');
   const BUDGET = 1.5 * 1024 * 1024;
 
-  for (const [chemin, theme] of [['/', 'light'], ['/', 'dark'], ['/projets/league-of-database', 'light'], ['/parcours/professionnel', 'light'], ['/parcours', 'dark']] as const) {
+  // Les pages de projet entrées le 14/10/2026, chargées en captures, tiennent le même budget.
+  for (const [chemin, theme] of [['/', 'light'], ['/', 'dark'], ['/projets', 'light'], ['/projets/league-of-database', 'light'], ['/projets/githealth', 'light'], ['/projets/karl-scraper', 'light'], ['/projets/sillage', 'light'], ['/projets/relais', 'light'], ['/parcours/professionnel', 'light'], ['/parcours', 'dark']] as const) {
     test(`${chemin} (${theme === 'dark' ? 'nuit' : 'jour'}) : au plus 1,5 Mo d’images`, async ({ page }) => {
       await page.emulateMedia({ colorScheme: theme });
       const poids = new Map<string, number>();
@@ -320,7 +321,8 @@ test.describe('poids des images à 390 px, sans JavaScript', () => {
   test.use({ javaScriptEnabled: false, deviceScaleFactor: 3 });
   const BUDGET = 1.5 * 1024 * 1024;
 
-  for (const [chemin, theme] of [['/', 'light'], ['/', 'dark'], ['/projets/league-of-database', 'light'], ['/projets/league-of-database', 'dark'], ['/parcours/professionnel', 'dark']] as const) {
+  // /projets : sans JavaScript, les vignettes du volet replié des projets archivés partent aussi.
+  for (const [chemin, theme] of [['/', 'light'], ['/', 'dark'], ['/projets', 'light'], ['/projets', 'dark'], ['/projets/league-of-database', 'light'], ['/projets/league-of-database', 'dark'], ['/projets/githealth', 'light'], ['/projets/karl-scraper', 'light'], ['/projets/sillage', 'light'], ['/projets/relais', 'light'], ['/parcours/professionnel', 'dark']] as const) {
     test(`${chemin} (${theme === 'dark' ? 'nuit' : 'jour'}) : au plus 1,5 Mo d’images`, async ({ page }) => {
       await page.emulateMedia({ colorScheme: theme });
       const poids = new Map<string, number>();
