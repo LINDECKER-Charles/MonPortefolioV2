@@ -847,7 +847,12 @@ async fn an_image_is_deleted_only_when_no_version_cites_it() {
 #[test]
 fn the_rendering_fixture_is_a_publishable_document() {
     let store = Store::in_memory("owner@example.org").unwrap();
-    for n in 1..=6 {
+    // Autant d’images importées (identifiants 1 à n) que la fixture en décrit.
+    let media: Value = serde_json::from_str(include_str!(
+        "../../site/tests/fixtures/article-complet-media.json"
+    ))
+    .unwrap();
+    for n in 1..=media["images"].as_object().unwrap().len() {
         upload(&store, &format!("fixture-{n}.png"), "image/png", &png());
     }
     let fixture: BlogInput = serde_json::from_str(include_str!(
