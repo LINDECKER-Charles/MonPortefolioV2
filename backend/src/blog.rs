@@ -196,10 +196,13 @@ fn safe_path(value: &str, prefix: &str) -> bool {
             .bytes()
             .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'/' | b'-' | b'_' | b'.'))
 }
+/// Seules les images importées s’affichent : le site ne sert aucun dossier
+/// d’images d’auteur, et ses propres fichiers (`/images/`, `/og/`) changent
+/// avec lui. Même règle dans server/blog.mjs et l’éditeur.
 pub fn valid_image_url(value: &str) -> bool {
     value.strip_prefix("/api/blog/media/").is_some_and(|id| {
         !id.is_empty() && !id.starts_with('0') && id.bytes().all(|b| b.is_ascii_digit())
-    }) || safe_path(value, "/assets/")
+    })
 }
 fn web_url(value: &str) -> bool {
     value.len() <= 2048
@@ -211,13 +214,32 @@ fn web_url(value: &str) -> bool {
                 && url.password().is_none()
         })
 }
+fn anchor(value: &str) -> bool {
+    !value.is_empty()
+        && value
+            .bytes()
+            .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'-' | b'_'))
+}
+/// Une seule règle de liens, reprise par l’éditeur (blog-editor.ts) et le rendu
+/// (server/blog.mjs) : adresse http(s) absolue ; chemin du site, avec au besoin
+/// des paramètres et une ancre sûrs (`/blog?page=2`, `/projets/omnicard#decisions`) ;
+/// ancre d’un titre de l’article (`#le-contexte`).
 fn link_url(value: &str) -> bool {
-    web_url(value)
-        || safe_path(value, "/")
-        || (value.starts_with('#')
-            && value[1..]
-                .bytes()
-                .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'-' | b'_')))
+    let (rest, fragment) = value
+        .split_once('#')
+        .map_or((value, None), |(rest, fragment)| (rest, Some(fragment)));
+    let (path, query) = rest
+        .split_once('?')
+        .map_or((rest, None), |(path, query)| (path, Some(query)));
+    let internal = safe_path(path, "/")
+        && query.is_none_or(|query| {
+            !query.is_empty()
+                && query.bytes().all(|b| {
+                    b.is_ascii_alphanumeric() || matches!(b, b'=' | b'&' | b'-' | b'_' | b'.')
+                })
+        })
+        && fragment.is_none_or(anchor);
+    web_url(value) || internal || value.strip_prefix('#').is_some_and(anchor)
 }
 
 impl BlogInput {

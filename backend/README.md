@@ -178,9 +178,13 @@ Un article possède `title` (1 à 160 caractères), `slug` (1 à 100 caractères
 chiffres et tirets), `excerpt` (500 caractères au plus), `content`, `tags` (20 au plus, 50
 caractères chacun), `cover_image`, `cover_alt`, `seo_title` (120 caractères au plus),
 `seo_description` (320 caractères au plus), `canonical_url`, `og_image` et `noindex`.
-Les champs facultatifs ont une valeur vide, `null` ou `false` par défaut. Les images utilisent
-les URL importées `/api/blog/media/{id}` ou les assets locaux `/assets/`. L’URL canonique
-accepte une adresse HTTPS absolue sans identifiants.
+Les champs facultatifs ont une valeur vide, `null` ou `false` par défaut. Les images (contenu,
+couverture, partage) utilisent seulement les URL importées `/api/blog/media/{id}`. Un lien est
+une adresse `http(s)` absolue sans identifiants, un chemin du site avec au besoin des paramètres
+et une ancre (`[A-Za-z0-9/_.-]`, `?[A-Za-z0-9=&_.-]`, `#[A-Za-z0-9_-]` : `/blog?page=2`,
+`/projets/omnicard#decisions`) ou l’ancre d’un titre de l’article (`#le-contexte`) ; `mailto:`
+est refusé. L’éditeur et le rendu public appliquent la même règle. L’URL canonique accepte une
+adresse HTTPS absolue sans identifiants.
 
 Exemple d’arguments pour `blog_create_post` :
 

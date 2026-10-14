@@ -1053,7 +1053,7 @@ fn blog_input_schema(update: bool) -> Value {
                             "start": { "type": ["integer", "null"], "minimum": 1, "maximum": 1000000 },
                             "type": { "type": ["string", "null"], "enum": ["1", "a", "A", "i", "I", null] },
                             "language": { "type": ["string", "null"], "maxLength": 40, "pattern": "^[a-zA-Z0-9+#_-]*$" },
-                            "src": { "type": "string", "description": "URL /api/blog/media/{id} d’une image importée ou /assets/ du site." },
+                            "src": { "type": "string", "description": "URL /api/blog/media/{id} d’une image importée (blog_upload_media), seule source admise." },
                             "alt": { "type": ["string", "null"], "maxLength": 300 },
                             "title": { "type": ["string", "null"], "maxLength": 300 },
                             "width": { "type": ["integer", "null"], "minimum": 1, "maximum": 10000 },
@@ -1072,7 +1072,7 @@ fn blog_input_schema(update: bool) -> Value {
                     "type": { "type": "string", "enum": ["bold", "italic", "strike", "underline", "code", "link"] },
                     "attrs": {
                         "type": "object", "properties": {
-                            "href": { "type": "string", "description": "URL HTTP/HTTPS ou lien interne. javascript: et data: sont refusés." },
+                            "href": { "type": "string", "description": "URL HTTP/HTTPS absolue, chemin du site avec paramètres et ancre facultatifs ([A-Za-z0-9/_.-], ?[A-Za-z0-9=&_.-], #[A-Za-z0-9_-] : /blog?page=2, /projets/omnicard#decisions) ou ancre d’un titre (#le-contexte). mailto:, javascript: et data: sont refusés." },
                             "title": { "type": ["string", "null"], "maxLength": 300 },
                             "target": { "type": ["string", "null"], "enum": ["_blank", "_self", null] },
                             "rel": { "type": ["string", "null"] },

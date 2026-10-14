@@ -242,6 +242,54 @@ fn rich_document_rejects_raw_html_active_urls_invalid_attrs_and_excessive_depth(
     assert!(store.create_blog_post(p).is_ok());
 }
 
+/// Les mêmes cas que le rendu Node et l’éditeur (site/server/blog-rendu.test.mjs).
+const SHARED_RULES: &str = include_str!("../../site/tests/fixtures/liens-blog.json");
+
+#[test]
+fn links_and_images_follow_the_rule_shared_with_the_editor_and_the_renderer() {
+    let rules: Value = serde_json::from_str(SHARED_RULES).unwrap();
+    let cases = |group: &str, key: &str| -> Vec<String> {
+        rules[group][key]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|v| v.as_str().unwrap().to_owned())
+            .collect()
+    };
+    let with_link = |href: &str| {
+        let mut p = input("lien");
+        p.content = json!({"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"lien","marks":[{"type":"link","attrs":{"href":href}}]}]}]});
+        p
+    };
+    let with_image = |src: &str| {
+        let mut p = input("image");
+        p.content =
+            json!({"type":"doc","content":[{"type":"image","attrs":{"src":src,"alt":"x"}}]});
+        p
+    };
+    for href in cases("liens", "admis") {
+        assert!(with_link(&href).validate().is_ok(), "lien admis : {href}");
+    }
+    for href in cases("liens", "refuses") {
+        assert!(
+            matches!(with_link(&href).validate(), Err(BlogError::Invalid)),
+            "lien refusé : {href}"
+        );
+    }
+    for src in cases("images", "admises") {
+        assert!(with_image(&src).validate().is_ok(), "image admise : {src}");
+    }
+    for src in cases("images", "refusees") {
+        assert!(
+            matches!(with_image(&src).validate(), Err(BlogError::Invalid)),
+            "image refusée : {src}"
+        );
+        let mut p = input("couverture");
+        p.cover_image = Some(src.clone());
+        assert!(matches!(p.validate(), Err(BlogError::Invalid)));
+    }
+}
+
 #[test]
 fn revisions_prevent_lost_updates_and_reserved_slugs_survive_private_changes() {
     let store = Arc::new(Store::in_memory("owner@example.org").unwrap());
