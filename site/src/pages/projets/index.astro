@@ -6,8 +6,9 @@
  * équipe » (PvZ Fusion, en vedette), « Jeu vidéo », « Outils », « IA ».
  * Chaque carte mène à sa page (« Voir le projet → ») et porte son rang
  * global (01 à 09), un chiffre sourcé, un rôle, un statut et ses liens
- * publics. Suivent la ligne des relevés, les projets archivés (repliés),
- * « Contribuer » et l’appel « Discutons ».
+ * publics. Suivent la ligne des relevés, les projets archivés (repliés,
+ * avec les vignettes de l’ancienne rangée « Aussi »), « Contribuer » et
+ * l’appel « Discutons ».
  *
  * Ordre, familles et noms : config/projets.ts (VITRINE) ; contenu des cartes :
  * config/vitrine.ts (CARTES). Les cinq premières cartes gardent ici leur
@@ -25,7 +26,6 @@ import CadreCapture from '../../components/ui/CadreCapture.astro';
 import Visuel from '../../components/ui/Visuel.astro';
 import ArchivesProjets from '../../components/vitrine/ArchivesProjets.astro';
 import BlocContribuer from '../../components/vitrine/BlocContribuer.astro';
-import RangeeAussi from '../../components/vitrine/RangeeAussi.astro';
 import atlas from '../../assets/projets/bloodborne/atlas.webp';
 import gup from '../../assets/projets/gup-selection.webp';
 import { SITE } from '../../config/site';
@@ -144,7 +144,6 @@ const contenue = (id: string) => visuelParId(id)?.fond === 'transparent';
     <p class="petit vitrine-releve">{typo(RELEVE)}</p>
   </div>
 
-  <RangeeAussi />
   <ArchivesProjets />
   <BlocContribuer />
 

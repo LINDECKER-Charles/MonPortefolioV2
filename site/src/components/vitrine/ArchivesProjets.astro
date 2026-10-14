@@ -1,42 +1,71 @@
 ---
 /**
  * Les projets archivés : un volet discret et replié (demande de Charles du
- * 08/10/2026), pour qu’un projet quitte la vitrine sans perdre sa page ni son
- * adresse. Tant qu’il est vide, il le dit ; son nombre n’apparaît qu’à partir
- * d’un projet archivé. Un signe « + » dit qu’il s’ouvre et tourne en « × »
- * une fois ouvert. Liste : PROJETS_ARCHIVES (config/projets.ts).
+ * 08/10/2026), pour qu’un projet quitte la vitrine sans perdre sa page, son
+ * adresse ni ses liens publics. Depuis le 14/10/2026, il reprend les projets
+ * de l’ancienne rangée « Aussi » (Life Pixel, img-convertor, Shreksophone),
+ * avec le balisage de leurs cartes : la vignette du registre, le nom (en
+ * linéale pour un nom de dépôt), une phrase, puis ses liens publics mesurés
+ * en `lien-sortant` (emplacement `preuves`), ou un lien « → » vers sa page.
+ * L’illustration du volet (PRJ-12, décorative) ferme la liste, en dernière
+ * case : quatre cases, comme l’ancienne rangée.
+ *
+ * Tant qu’il est vide, il le dit ; son nombre n’apparaît qu’à partir d’un
+ * projet archivé. Un signe « + » dit qu’il s’ouvre et tourne en « × » une fois
+ * ouvert. Un titre de niveau 2, masqué à l’œil (le résumé le dit déjà), range
+ * les noms des projets dans le plan de la page. Sans JavaScript, le navigateur
+ * télécharge les vignettes du volet même fermé : elles comptent dans le
+ * budget d’images de /projets. Liste : PROJETS_ARCHIVES (config/projets.ts).
  */
+import LienAction from '../ui/LienAction.astro';
+import Visuel from '../ui/Visuel.astro';
 import { PROJETS_ARCHIVES } from '../../config/projets';
 import { typo } from '../../lib/typo';
+
+const nombre = PROJETS_ARCHIVES.length;
+const VIGNETTE = '(max-width: 860px) 45vw, 280px';
 ---
 
-<div class="conteneur">
+<section class="conteneur" aria-labelledby="projets-archives-titre">
+  <h2 class="sr" id="projets-archives-titre">Projets archivés</h2>
   <details class="archives" id="projets-archives">
-    <summary><span class="archives__signe" aria-hidden="true"></span>Projets archivés{PROJETS_ARCHIVES.length > 0 && <span> ({PROJETS_ARCHIVES.length})</span>}</summary>
+    <summary><span class="archives__signe" aria-hidden="true"></span>Projets archivés{nombre > 0 && <span> ({nombre})</span>}</summary>
     {
-      PROJETS_ARCHIVES.length === 0 ? (
-        <p>Aucun projet archivé pour le moment.</p>
+      nombre === 0 ? (
+        <p class="archives__vide">Aucun projet archivé pour le moment.</p>
       ) : (
-        <ul>
-          {PROJETS_ARCHIVES.map((projet) => (
-            <li>
-              <a href={projet.href}>{projet.nom}<span class="fleche" aria-hidden="true">&nbsp;→</span></a>
-              <p>{typo(projet.resume)}</p>
+        <>
+          <p class="archives__phrase">Des projets publics, sans page dédiée.</p>
+          <ul class="archives__liste">
+            {PROJETS_ARCHIVES.map((projet) => (
+              <li class="archives__projet" id={projet.id}>
+                {projet.visuel && <Visuel id={projet.visuel} alt="" sizes={VIGNETTE} class="archives__visuel" />}
+                <h3 class:list={[{ 'archives__nom--technique': projet.technique }]}>
+                  {projet.page ? <a href={projet.page}>{projet.nom}<span class="fleche" aria-hidden="true">&nbsp;→</span></a> : projet.nom}
+                </h3>
+                <p>{typo(projet.resume)}</p>
+                {projet.liens && (
+                  <div class="archives__liens">
+                    {projet.liens.map((lien) => <LienAction href={lien.href} emplacement="preuves">{lien.libelle}</LienAction>)}
+                  </div>
+                )}
+              </li>
+            ))}
+            <li class="archives__entree" aria-hidden="true">
+              <Visuel id="PRJ-12" alt="" sizes={VIGNETTE} class="archives__visuel" />
             </li>
-          ))}
-        </ul>
+          </ul>
+        </>
       )
     }
   </details>
-</div>
+</section>
 
 <style>
   .archives {
-    margin-top: var(--s4);
+    margin-top: var(--s5);
     padding-top: var(--s2);
     border-top: 1px solid var(--filet);
-    font-size: var(--t-xs);
-    color: var(--eteint);
   }
 
   summary {
@@ -46,6 +75,7 @@ import { typo } from '../../lib/typo';
     min-height: 44px;
     list-style: none;
     font-size: var(--t-s);
+    color: var(--eteint);
     cursor: pointer;
   }
 
@@ -94,25 +124,107 @@ import { typo } from '../../lib/typo';
     }
   }
 
-  .archives p {
+  .archives__vide {
     max-width: 60ch;
     padding-bottom: var(--s3);
+    font-size: var(--t-xs);
+    color: var(--eteint);
   }
 
-  ul {
-    margin: 0;
-    padding: 0;
+  /* Les cartes de l’ancienne rangée « Aussi », l’illustration du volet en tête. */
+  .archives__liste {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--s6) var(--s5);
+    margin: var(--s4) 0 0;
+    padding: 0 0 var(--s4);
     list-style: none;
   }
 
-  li {
-    padding-block: var(--s2);
+  .archives__entree,
+  .archives__projet {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+    min-width: 0;
   }
 
-  li a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
+  .archives__liste :global(.archives__visuel) {
+    width: 100%;
+    margin-bottom: var(--s2);
+  }
+
+  .archives__phrase {
+    margin-top: var(--s2);
     font-size: var(--t-s);
+    color: var(--eteint);
+  }
+
+  /* L’illustration du volet : décorative, en dernière case, à la place d’une carte. */
+  .archives__entree :global(.archives__visuel) {
+    margin-bottom: 0;
+  }
+
+  h3 {
+    padding-top: var(--s3);
+    border-top: 1px solid var(--trait);
+    font-size: var(--t-xl);
+    line-height: 1.1;
+  }
+
+  /* Un nom de dépôt en linéale : le trait d’union de la sérif s’ouvrirait (« img - convertor »). */
+  h3.archives__nom--technique {
+    font-family: var(--police-texte);
+    font-weight: 500;
+    font-size: var(--t-l);
+    /* La hauteur de ligne des titres en sérif : les phrases restent alignées d’une carte à l’autre. */
+    line-height: calc(var(--t-xl) * 1.1);
+    letter-spacing: -0.01em;
+  }
+
+  .archives__projet p {
+    font-size: var(--t-s);
+    line-height: 1.5;
+    color: var(--eteint);
+  }
+
+  .archives__liens {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--s4);
+    margin-top: auto;
+  }
+
+  .archives__liens :global(.lien-action) {
+    font-size: var(--t-s);
+  }
+
+  @media (max-width: 1100px) {
+    .archives__liste {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 860px) {
+    .archives__liste {
+      gap: var(--s5) var(--s4);
+    }
+
+    h3 {
+      font-size: var(--t-l);
+    }
+
+    h3.archives__nom--technique {
+      font-size: var(--t-m);
+      line-height: calc(var(--t-l) * 1.1);
+    }
+
+    .archives__projet p {
+      font-size: var(--t-xs);
+    }
+
+    .archives__liens :global(.lien-action) {
+      font-size: var(--t-xs);
+    }
   }
 </style>

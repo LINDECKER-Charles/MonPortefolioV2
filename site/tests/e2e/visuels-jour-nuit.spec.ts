@@ -285,7 +285,7 @@ test.describe('poids des images à 390 px', () => {
   test.skip(({ viewport }) => (viewport?.width ?? 0) > 390, 'budget mesuré à 390 px');
   const BUDGET = 1.5 * 1024 * 1024;
 
-  for (const [chemin, theme] of [['/', 'light'], ['/', 'dark'], ['/projets/league-of-database', 'light'], ['/parcours/professionnel', 'light'], ['/parcours', 'dark']] as const) {
+  for (const [chemin, theme] of [['/', 'light'], ['/', 'dark'], ['/projets', 'light'], ['/projets/league-of-database', 'light'], ['/parcours/professionnel', 'light'], ['/parcours', 'dark']] as const) {
     test(`${chemin} (${theme === 'dark' ? 'nuit' : 'jour'}) : au plus 1,5 Mo d’images`, async ({ page }) => {
       await page.emulateMedia({ colorScheme: theme });
       const poids = new Map<string, number>();
@@ -320,7 +320,8 @@ test.describe('poids des images à 390 px, sans JavaScript', () => {
   test.use({ javaScriptEnabled: false, deviceScaleFactor: 3 });
   const BUDGET = 1.5 * 1024 * 1024;
 
-  for (const [chemin, theme] of [['/', 'light'], ['/', 'dark'], ['/projets/league-of-database', 'light'], ['/projets/league-of-database', 'dark'], ['/parcours/professionnel', 'dark']] as const) {
+  // /projets : sans JavaScript, les vignettes du volet replié des projets archivés partent aussi.
+  for (const [chemin, theme] of [['/', 'light'], ['/', 'dark'], ['/projets', 'light'], ['/projets', 'dark'], ['/projets/league-of-database', 'light'], ['/projets/league-of-database', 'dark'], ['/parcours/professionnel', 'dark']] as const) {
     test(`${chemin} (${theme === 'dark' ? 'nuit' : 'jour'}) : au plus 1,5 Mo d’images`, async ({ page }) => {
       await page.emulateMedia({ colorScheme: theme });
       const poids = new Map<string, number>();

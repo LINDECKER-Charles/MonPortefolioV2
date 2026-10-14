@@ -10,6 +10,7 @@
  * Ce fichier n’importe que des types (`import type`) : tools/generer-partage.mjs
  * le lit sous Node, sans compilation.
  */
+import type { LienProjet } from '../components/projets/gabarit/types';
 
 /** Les familles de la vitrine. */
 export type FamilleProjet = 'equipe' | 'jeu' | 'outils' | 'ia';
@@ -93,11 +94,56 @@ export function projetDeLaVitrine(id: ProjetVitrine['id']) {
   };
 }
 
-/** Un projet quitte la vitrine en gardant sa page et son adresse. */
-export interface ProjetArchive {
+/**
+ * Un projet sorti de la vitrine, rangé dans le volet replié « Projets
+ * archivés » (components/vitrine/ArchivesProjets.astro) : il garde sa page et
+ * son adresse (`page`), ou, s’il n’en a jamais eu, ses liens publics (`liens` :
+ * dépôt de la liste blanche, démo en ligne).
+ */
+export type ProjetArchive = {
+  /** Identifiant de l’entrée, et son ancre dans /projets. */
+  id: string;
   nom: string;
-  href: `/projets/${string}`;
+  /** Une phrase : ce que fait le projet. */
   resume: string;
-}
+  /** Emplacement du registre des visuels (sa vignette), gardé à l’archivage. */
+  visuel?: string;
+  /** Nom de dépôt technique (« img-convertor ») : composé en linéale, son trait d’union ne s’ouvre pas. */
+  technique?: true;
+} & ({ page: `/projets/${string}`; liens?: never } | { page?: never; liens: readonly LienProjet[] });
 
-export const PROJETS_ARCHIVES: readonly ProjetArchive[] = [];
+/**
+ * Les projets archivés. Life Pixel, img-convertor et Shreksophone quittent la
+ * rangée « Aussi » (décision de Charles du 14/10/2026) avec leur vignette
+ * (PRJ-07, PRJ-08, PRJ-10) et leurs liens publics ; leurs phrases viennent de
+ * la matière première et des README publics. La démo de Shreksophone est
+ * servie par GitHub Pages (réponse 200 vérifiée le 13/10/2026), pas par
+ * l’ancien domaine bloqué.
+ */
+export const PROJETS_ARCHIVES: readonly ProjetArchive[] = [
+  {
+    id: 'life-pixel',
+    nom: 'Life Pixel',
+    visuel: 'PRJ-07',
+    resume: 'Un éditeur d’animations en pixel art qui exporte des lecteurs WebAssembly sans dépendance, avec un serveur MCP.',
+    liens: [{ href: 'https://github.com/LINDECKER-Charles/app-life-pixel', libelle: 'Le code' }],
+  },
+  {
+    id: 'img-convertor',
+    nom: 'img-convertor',
+    technique: true,
+    visuel: 'PRJ-08',
+    resume: 'Convertir un dossier d’images et en tirer les déclinaisons adaptées à chaque largeur d’écran (WebP, AVIF…).',
+    liens: [{ href: 'https://github.com/LINDECKER-Charles/Web-Image-Formateur', libelle: 'Le code' }],
+  },
+  {
+    id: 'shreksophone',
+    nom: 'Shreksophone',
+    visuel: 'PRJ-10',
+    resume: 'Un clic, et l’interface laisse place à Shrek au saxophone. Volontairement absurde.',
+    liens: [
+      { href: 'https://lindecker-charles.github.io/ShrekSophone/', libelle: 'La démo' },
+      { href: 'https://github.com/LINDECKER-Charles/ShrekSophone', libelle: 'Le code' },
+    ],
+  },
+];

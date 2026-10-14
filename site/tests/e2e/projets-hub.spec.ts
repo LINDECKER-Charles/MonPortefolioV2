@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { COMPTE_GITHUB, DEPOTS_PUBLICS } from '../../src/config/liens-publics';
-import { VEDETTE, VITRINE, VITRINE_PAR_FAMILLE, type ProjetVitrine } from '../../src/config/projets';
+import { PROJETS_ARCHIVES, VEDETTE, VITRINE, VITRINE_PAR_FAMILLE, type ProjetVitrine } from '../../src/config/projets';
 import { surveillerConsole } from './support/navigateur';
 
 /**
@@ -11,8 +11,8 @@ import { surveillerConsole } from './support/navigateur';
  * Fusion en vedette), « Jeu vidéo », « Outils », « IA » —, dans l’ordre de
  * VITRINE. Chaque carte mène à sa page au clavier et sans JavaScript, porte
  * son rang, un chiffre, un rôle, un statut et des liens publics mesurés ;
- * suivent la rangée « Aussi », les archives discrètes, « Contribuer » et
- * « Discutons ».
+ * suivent les projets archivés (repliés, avec les vignettes de l’ancienne
+ * rangée « Aussi »), « Contribuer » et « Discutons ».
  *
  * L’ordre, les familles et les noms se lisent dans config/projets.ts : ce test
  * ne fige que les valeurs des cinq premières cartes, et vérifie pour les
@@ -87,7 +87,7 @@ test('les chiffres des cartes portent leur date (règle C1)', async ({ page }) =
   // Le relevé commun des cinq premières cartes, puis celui des cartes relevées à une autre date.
   // Les espaces avant « ; » sont insécables (typo) : \s les lit toutes.
   await expect(releve).toHaveText(/^Chiffres au 13 octobre 2026\s;\sobjectifs de Bloodborne Legendary Run au 8 octobre 2026(?:\s;\s[^;]+ au \d{1,2} [a-zéû]+ \d{4})*\.$/);
-  // Juste sous la dernière famille, avant « Aussi ».
+  // Juste sous la dernière famille, avant les projets archivés.
   expect(await releve.evaluate((p) => p.previousElementSibling?.matches('section.vitrine-famille'))).toBe(true);
 });
 
@@ -234,7 +234,7 @@ test('des captures réelles dans leurs cadres, et les emplacements de la command
   for (const [id, visuel] of [['pvz', 'PRJ-01'], ['league', 'PRJ-02'], ['omnicard', 'PRJ-03']] as const) {
     await expect(carte(page, id).locator(`[data-visuel="${visuel}"]`)).toHaveCount(1);
   }
-  for (const visuel of ['PRJ-07', 'PRJ-08', 'PRJ-10', 'PRJ-11']) {
+  for (const visuel of ['PRJ-07', 'PRJ-08', 'PRJ-10', 'PRJ-11', 'PRJ-12']) {
     await expect(page.locator(`[data-visuel="${visuel}"]`)).toHaveCount(1);
   }
   // Le visuel d’une carte, quand elle en a un, vit dans son panneau, dans l’acte de veille.
@@ -242,17 +242,6 @@ test('des captures réelles dans leurs cadres, et les emplacements de la command
     const panneau = carte(page, projet.id).locator('.carte-projet__visuel');
     if (await panneau.count()) await expect(panneau, projet.id).toHaveClass(/acte-veille/);
   }
-});
-
-test('« Aussi » : trois projets publics, et la démo de Shreksophone en ligne', async ({ page }) => {
-  await page.goto('/projets');
-  const aussi = page.getByRole('region', { name: 'Aussi', exact: true });
-  await expect(aussi.getByRole('heading', { level: 3 })).toHaveText(['Life Pixel', 'img-convertor', 'Shreksophone']);
-  await expect(aussi.getByRole('link', { name: /La démo/ })).toHaveAttribute('href', 'https://lindecker-charles.github.io/ShrekSophone/');
-  await expect(page.locator('a[href*="shrek.charles-lindecker.com"]')).toHaveCount(0);
-  // Un nom de dépôt en linéale : son trait d’union ne s’ouvre pas comme dans la sérif.
-  const depot = aussi.getByRole('heading', { level: 3, name: 'img-convertor' });
-  expect(await depot.evaluate((h) => getComputedStyle(h).fontFamily)).toMatch(/Instrument Sans/);
 });
 
 test('les liens sortants sont publics, marqués « ↗ » et mesurés ; aucun pour un projet privé', async ({ page }) => {
@@ -305,7 +294,8 @@ test('les projets archivés restent discrets, repliés et ouvrables au clavier',
   await page.goto('/projets');
   const archives = page.locator('#projets-archives');
   await expect(archives).not.toHaveAttribute('open');
-  await expect(archives.locator('summary')).toHaveText('Projets archivés');
+  // Le nombre des projets archivés, dès qu’il y en a un.
+  await expect(archives.locator('summary')).toHaveText(`Projets archivés (${PROJETS_ARCHIVES.length})`);
   // Un signe dit qu’il s’ouvre : « + », qui tourne en « × » une fois ouvert.
   const signe = archives.locator('summary .archives__signe');
   await expect(signe).toBeVisible();
@@ -315,8 +305,30 @@ test('les projets archivés restent discrets, repliés et ouvrables au clavier',
   await page.keyboard.press('Enter');
   await expect(archives).toHaveAttribute('open', '');
   await expect(signe).not.toHaveCSS('transform', 'none');
-  await expect(archives).toContainText('Aucun projet archivé pour le moment.');
-  await expect(archives.locator('a')).toHaveCount(0);
+  // Le volet a son titre dans le plan de la page, masqué à l’œil : le résumé le dit déjà.
+  await expect(page.getByRole('region', { name: 'Projets archivés', exact: true })).toContainText('Des projets publics, sans page dédiée.');
+});
+
+test('les archives reprennent les cartes de l’ancienne rangée « Aussi », vignettes et liens publics', async ({ page }) => {
+  await page.goto('/projets');
+  const archives = page.locator('#projets-archives');
+  await archives.locator('summary').click();
+  await expect(archives.getByRole('heading', { level: 3 })).toHaveText(PROJETS_ARCHIVES.map((projet) => projet.nom));
+  for (const projet of PROJETS_ARCHIVES) {
+    const entree = archives.locator(`li#${projet.id}`);
+    await expect(entree.locator('.visuel'), projet.id).toHaveCount(projet.visuel ? 1 : 0);
+    if (projet.visuel) await expect(entree.locator(`[data-visuel="${projet.visuel}"]`)).toBeVisible();
+    for (const lien of projet.liens ?? []) await expect(entree.getByRole('link', { name: new RegExp(`^${exact(lien.libelle)}`) })).toHaveAttribute('href', lien.href);
+  }
+  // L’illustration du volet ferme la liste, décorative.
+  await expect(archives.locator('[data-visuel="PRJ-12"]')).toBeVisible();
+  await expect(archives.getByRole('link', { name: /La démo/ })).toHaveAttribute('href', 'https://lindecker-charles.github.io/ShrekSophone/');
+  await expect(page.locator('a[href*="shrek.charles-lindecker.com"]')).toHaveCount(0);
+  // Un nom de dépôt en linéale : son trait d’union ne s’ouvre pas comme dans la sérif.
+  const depot = archives.getByRole('heading', { level: 3, name: 'img-convertor' });
+  expect(await depot.evaluate((h) => getComputedStyle(h).fontFamily)).toMatch(/Instrument Sans/);
+  // La rangée « Aussi » est rangée dans les archives : plus de section à part.
+  await expect(page.locator('#aussi')).toHaveCount(0);
 });
 
 test('« Discutons » mène à la page Contact et se mesure', async ({ page }) => {
@@ -367,13 +379,14 @@ for (const theme of ['jour', 'nuit'] as const) {
 test.describe('la vitrine sans JavaScript', () => {
   test.use({ javaScriptEnabled: false, reducedMotion: 'reduce' });
 
-  test('tout le contenu est là : les cartes de chaque famille, l’index, « Aussi », « Contribuer » et les archives', async ({ page }) => {
+  test('tout le contenu est là : les cartes de chaque famille, l’index, « Contribuer » et les archives', async ({ page }) => {
     await page.goto('/projets');
     await expect(cartes(page).locator(':scope:visible')).toHaveCount(VITRINE.length);
     await expect(page.locator('section.vitrine-famille:visible')).toHaveCount(VITRINE_PAR_FAMILLE.length);
-    await expect(page.getByRole('region', { name: 'Aussi', exact: true }).locator('li:visible')).toHaveCount(3);
     await expect(page.locator('#contribuer')).toBeVisible();
     await expect(page.locator('#projets-archives summary')).toBeVisible();
+    await page.locator('#projets-archives summary').click();
+    await expect(page.locator('#projets-archives li.archives__projet:visible')).toHaveCount(PROJETS_ARCHIVES.length);
     await index(page).getByRole('link').nth(3).click();
     expect(new URL(page.url()).hash).toBe(`#${VITRINE[3].id}`);
     await expect(carte(page, VITRINE[3].id)).toBeInViewport();

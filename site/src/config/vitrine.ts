@@ -180,50 +180,6 @@ export const CARTES: Readonly<Record<ProjetVitrine['id'], CarteVitrine>> = {
 };
 
 /**
- * « Aussi » : trois projets publics sans page dédiée (décision de Charles du
- * 13/10/2026), chacun avec son emplacement de visuel (PRJ-07 à PRJ-10).
- * GitHealth en est sorti le 14/10/2026 pour la vitrine (famille « Outils »).
- * Descriptions tirées de la matière première et des README publics.
- */
-export interface ProjetAussi {
-  id: string;
-  nom: string;
-  visuel: string;
-  /** Nom de dépôt technique (« img-convertor ») : composé en linéale, son trait d’union ne s’ouvre pas. */
-  technique?: boolean;
-  description: string;
-  liens: readonly LienPublic[];
-}
-
-export const AUSSI: readonly ProjetAussi[] = [
-  {
-    id: 'life-pixel',
-    nom: 'Life Pixel',
-    visuel: 'PRJ-07',
-    description: 'Un éditeur d’animations en pixel art qui exporte des lecteurs WebAssembly sans dépendance, avec un serveur MCP.',
-    liens: [{ href: 'https://github.com/LINDECKER-Charles/app-life-pixel', libelle: 'Le code' }],
-  },
-  {
-    id: 'img-convertor',
-    nom: 'img-convertor',
-    technique: true,
-    visuel: 'PRJ-08',
-    description: 'Convertir un dossier d’images et en tirer les déclinaisons adaptées à chaque largeur d’écran (WebP, AVIF…).',
-    liens: [{ href: 'https://github.com/LINDECKER-Charles/Web-Image-Formateur', libelle: 'Le code' }],
-  },
-  {
-    id: 'shreksophone',
-    nom: 'Shreksophone',
-    visuel: 'PRJ-10',
-    description: 'Un clic, et l’interface laisse place à Shrek au saxophone. Volontairement absurde.',
-    liens: [
-      { href: 'https://lindecker-charles.github.io/ShrekSophone/', libelle: 'La démo' },
-      { href: 'https://github.com/LINDECKER-Charles/ShrekSophone', libelle: 'Le code' },
-    ],
-  },
-];
-
-/**
  * « Contribuer » : les deux projets ouverts aux contributions, avec leur guide
  * (gup : .github/CONTRIBUTING.md ; Console Manager : CONTRIBUTING.md, vérifiés
  * le 13/10/2026).
