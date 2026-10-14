@@ -92,8 +92,8 @@ la lecture des contacts ne marque aucune demande comme lue. Parcours complet, au
 | `site/src/` | pages, composants, scripts, styles, configuration du contenu |
 | `site/server/` | serveur de production : 301 de la V1, 404, cache, en-têtes, mesure `/mesure.js`, adresse persistée et relais API/MCP |
 | `backend/` | API Rust (Axum), SQLite, contacts, administration, notifications SMTP et MCP ; image Docker indépendante |
-| `site/tools/` | contrôles du site construit (SEO, CSP, ancres, typographie française, budgets) |
-| `site/tests/` | `unit/` (Vitest) et `e2e/` (Playwright) |
+| `site/tools/` | contrôles du site construit (SEO, CSP, ancres, typographie française, budgets), outils des visuels et `articles-demo.mjs` (`npm run blog:demo`), qui écrit des articles de démonstration dans un backend local |
+| `site/tests/` | `unit/` (Vitest), `e2e/` (Playwright) et `fixtures/`, les cas partagés avec `backend/tests/blog_api.rs` ([`site/tests/fixtures/README.md`](site/tests/fixtures/README.md)) |
 | `compose*.yaml`, `.env*.example` | piles Compose et modèles d'environnement |
 | `scripts/deploy-remote.sh` | ce qui s'exécute sur le VPS à chaque déploiement |
 | `.github/workflows/` | `ci.yml` orchestre ; `_tests`, `_build`, `_promote`, `_deploy` font le travail |

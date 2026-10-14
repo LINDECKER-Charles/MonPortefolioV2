@@ -349,6 +349,21 @@ Chaque composant est documenté en tête de son fichier.
   l’aplat bleu roi.
 - **Gabarit de projet** (`projets/gabarit/`) : `EnTeteProjet`, `FicheProjet`, `CorpsProjet`,
   `SectionProjet`, `DecisionsProjet`, `SortieProjet`, `SourcesProjet`.
+- **Backoffice** (`components/backoffice/`, depuis le 14 octobre 2026) : le même système que le
+  site, mêmes jetons (`tests/unit/styles.test.ts` le parcourt), styles dans
+  `styles/backoffice.css` et, pour l’atelier du blog, `styles/blog-editor.css`, sur les mêmes
+  primitives. Une coque autonome (`BackofficePage.astro`, hors `Base.astro` : ni mesure, ni
+  en-tête ni pied du site public) ; un en-tête à rubriques non collant (`EnteteBackoffice.astro` :
+  emblème, navigation tirée de `rubriques.ts`, bascule lanterne sans mesure, `mesure={false}`
+  qui pose `data-sans-mesure`, déconnexion) ; chaque rubrique ouverte par `EnTeteRubrique.astro`
+  (un titre en Instrument Serif, une phrase, son action à droite) ; le retour de chaque action
+  posé à côté d’elle (`Retour.astro`, région `status`, forme selon `data-state`). Une zone
+  éclairée (`.foyer`) par écran : la carte de connexion, la carte de l’accès MCP créé (secret et
+  commande à copier), la feuille de rédaction, l’aperçu du résultat de recherche ou la version à
+  publier. Dans l’atelier, la barre de l’article (`blog/BarreArticle.astro`) est collante :
+  Enregistrer et Aperçu restent à portée. Les images de la rédaction s’affichent comme dans
+  l’article publié : taille de leurs attributs, au plus la colonne et 800 px de haut, sur la
+  plaque claire des logos.
 
 ### Motion
 
