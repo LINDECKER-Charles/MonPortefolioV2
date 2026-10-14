@@ -396,6 +396,14 @@
   overflow-x: auto;
 }
 
+/* Un tableau large défile : ses cellules ne prennent pas la coupure « anywhere »
+   de la prose, qui les tasserait lettre à lettre, et gardent une largeur
+   lisible (trois colonnes tiennent encore à 390 px). */
+.blog-prose :is(th, td) {
+  min-width: 7em;
+  overflow-wrap: break-word;
+}
+
 .blog-prose table {
   min-width: 100%;
   border-collapse: collapse;
@@ -414,6 +422,12 @@
 .blog-prose th {
   border-bottom-color: var(--trait);
   font-weight: 600;
+}
+
+/* Une colonne d’en-tête garde le filet de sa ligne : le filet porteur ne
+   souligne que la ligne d’en-tête. */
+.blog-prose tbody th {
+  border-bottom-color: var(--filet);
 }
 
 .blog-prose hr {

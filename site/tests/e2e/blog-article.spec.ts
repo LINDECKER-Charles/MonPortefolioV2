@@ -101,6 +101,34 @@ async function ouvrir(page: Page, chemin = CHEMIN) {
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
 }
 
+test('un tableau large défile au lieu de couper ses mots lettre à lettre', async ({ page }) => {
+  await ouvrir(page);
+  const large = await page.locator('.blog-table').first().evaluate((region) => ({
+    defile: region.scrollWidth > region.clientWidth,
+    plusEtroite: Math.min(...[...region.querySelectorAll('th, td')].map((cellule) => cellule.getBoundingClientRect().width)),
+  }));
+  expect(large.defile).toBe(true);
+  expect(large.plusEtroite).toBeGreaterThanOrEqual(80);
+  const lignes = await page.locator('th', { hasText: 'Montant' }).evaluate((cellule) => {
+    const plage = document.createRange();
+    plage.selectNodeContents(cellule.querySelector('p') ?? cellule);
+    return plage.getClientRects().length;
+  });
+  expect(lignes, '« Montant » tient sur une ligne').toBe(1);
+});
+
+test('tableaux et blocs de code défilent au clavier', async ({ page }) => {
+  await ouvrir(page);
+  for (const selecteur of ['.blog-table', '.blog-prose pre']) {
+    const region = page.locator(selecteur).first();
+    await region.focus();
+    await expect(region).toBeFocused();
+    const avant = await region.evaluate((el) => el.scrollLeft);
+    await page.keyboard.press('ArrowRight');
+    await expect.poll(() => region.evaluate((el) => el.scrollLeft), selecteur).toBeGreaterThan(avant);
+  }
+});
+
 test('les images réservent leur place, ne s’agrandissent pas et chargent la variante utile', async ({ page }) => {
   await page.addInitScript(() => {
     (window as unknown as { decalage: number }).decalage = 0;
