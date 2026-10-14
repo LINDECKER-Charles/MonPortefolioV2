@@ -316,7 +316,7 @@ ligne, la commande `claude mcp remove --scope user …` à lancer côté client.
 |---|---|---|
 | Lecture du blog | `blog:read` | lire les articles, les brouillons, leurs aperçus, l’audit SEO et les images |
 | **Rédaction** (par défaut) | `blog:read`, `blog:write` | tout lire, créer et modifier des brouillons, importer des images ; rien n’est publié |
-| Publication | `blog:read`, `blog:write`, `blog:publish` | la rédaction, plus publier, programmer, retirer ou supprimer un article |
+| Publication | `blog:read`, `blog:write`, `blog:publish` | la rédaction, plus publier, programmer, retirer ou supprimer un article ou une image (si aucun article ne la cite) |
 | case « Lire aussi les demandes de contact » | ajoute `contacts:read` | lire les demandes (noms, e-mails, messages) et la boîte à outils, en lecture seule |
 
 Les demandes de contact contiennent des données personnelles : elles ne sont jamais accordées par
