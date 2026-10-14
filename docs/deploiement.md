@@ -404,6 +404,15 @@ CADDY_DOMAINS=exemple.test BACKEND_PROXY_TOKEN=exemple-token-local-de-trente-deu
   semaine de production :
   `max_over_time(container_memory_working_set_bytes{stack=~"portfolio-.*"}[7d])`.
 
+- **Le backend a 512 Mio pour importer les images du blog.** Son pic n'est pas le trafic mais
+  l'import d'une image, borné par le code (`backend/src/blog_media.rs`) : 40 Mpx et 160 Mio de
+  décodage au plus, une image à la fois. Mesuré sous Linux (`memory.peak` du cgroup) : 314 Mio
+  pour un PNG RGBA de 40 Mpx tourné par son orientation EXIF, 54 Mio pour une photo JPEG de
+  12 Mpx. À 128 Mio, une grande image tuait le conteneur en pleine requête, et le formulaire de
+  contact avec lui jusqu'au redémarrage. Ce plafond est calculé, pas observé : 512 Mio lui
+  laissent 1,6×. Pour baisser la limite, baisser d'abord `MAX_PIXELS` et `MAX_ALLOC`, et
+  aligner `backend/README.md` ; le choix entre les deux est ouvert dans `docs/a-confirmer.md`.
+
 - **Un conteneur `unhealthy` n'est jamais redémarré.** `restart: unless-stopped` réagit à la sortie
   du processus, pas à l'état de santé. Le HEALTHCHECK sert au déploiement, qui refuse de conclure
   sur un conteneur non sain, pas à la supervision continue.

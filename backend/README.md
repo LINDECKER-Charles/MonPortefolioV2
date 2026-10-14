@@ -237,7 +237,9 @@ avec vérification de leur signature et une limite de 4 Mio. L’import prend
 
 À l’import, le backend lit l’en-tête de l’image (10 000 px de côté et 40 millions de pixels
 au plus, sinon `422 IMAGE_TOO_LARGE`), puis la décode (160 Mio d’allocation au plus, une image
-à la fois, quelle que soit la voie : backoffice, MCP ou démarrage), en mesure les dimensions,
+à la fois, quelle que soit la voie : backoffice, MCP ou démarrage ; le pic d’un import de
+40 Mpx atteint 314 Mio, d’où les 512 Mio du service dans `compose.deploy.yaml`, détaillés dans
+[`docs/deploiement.md`](../docs/deploiement.md)), en mesure les dimensions,
 orientation EXIF comprise, et prépare des variantes réduites aux largeurs 480, 960 et 1 600 px
 (et à sa propre largeur si elle ne dépasse pas 1 600 px) : JPEG de qualité 80, ou WebP sans
 perte si l’image a de la transparence. Une variante qui ne pèse pas moins que l’original n’est

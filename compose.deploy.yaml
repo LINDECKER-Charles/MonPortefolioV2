@@ -104,7 +104,17 @@ services:
     deploy:
       resources:
         limits:
-          memory: 128m
+          # Le pic du backend est l'import d'une image du blog, borne par le
+          # code (backend/src/blog_media.rs) : 40 Mpx et 160 Mio de decodage au
+          # plus, une image a la fois. Il tient dans l'image decodee, sa copie
+          # tournee (orientation EXIF de 90 degres) et la variante en cours :
+          # 314 Mio mesures (memory.peak du cgroup, Linux) pour un PNG RGBA de
+          # 40 Mpx tourne, 54 Mio pour une photo JPEG de 12 Mpx. A 128m, une
+          # grande image tuait le conteneur (OOM) en pleine requete, et le
+          # formulaire de contact avec lui. Ce pic est un plafond calcule, pas
+          # une moyenne observee : 512m lui laisse 1,6x, repos compris. Pour
+          # baisser cette limite, baisser d'abord MAX_PIXELS et MAX_ALLOC.
+          memory: 512m
 
 networks:
   # Tissu d'ingress partage, cree une fois par hote par le depot infra-vps. Il
