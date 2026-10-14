@@ -60,7 +60,7 @@ secondaire vers l'hôte canonique, vraie 404 statique, trois régimes de cache, 
 (CSP stricte, sans aucune origine tierce) et le chargeur de mesure `/mesure.js`, écrit au démarrage
 depuis l'environnement du conteneur.
 
-Chaque pile possède aussi un service `backend:8080`, sur son réseau Compose seulement :
+Chaque pile possède aussi un service `backend:8080` (alias `portfolio-backend`), sur son réseau Compose seulement :
 aucun port publié, aucune étiquette Caddy et aucune connexion au réseau `edge`. Le serveur
 Node relaie les routes publiques de contact et de santé, les routes explicitement autorisées
 du backoffice et `/mcp`, en même origine. Les corps sont limités à 24 Kio et le délai à
@@ -382,6 +382,12 @@ CADDY_DOMAINS=exemple.test BACKEND_PROXY_TOKEN=exemple-token-local-de-trente-deu
 - **Un identifiant Umami par environnement**, fixé une fois pour toutes. Le test qui reprendrait
   l'ID de la production mélangerait ses visites aux siennes, et le reconciler signalerait un
   `conflit`.
+
+- **Le relais joint le backend par son alias `portfolio-backend`, jamais par `backend`.** Le
+  service web rejoint le réseau `edge`, partagé par tous les projets de l'hôte, où chaque service
+  est inscrit sous son nom court : un service `backend` d'un autre projet y deviendrait homonyme,
+  et le DNS de Docker pourrait lui envoyer les demandes de contact et le jeton du relais. Règle
+  d'`infra-vps` (`docs/APPLICATIONS.md`, réseaux), vérifiée par le job `infra`.
 
 - **Pas de `ports:` dans `compose.yaml` ni dans `compose.deploy.yaml`.** Sur un hôte mutualisé,
   c'est presque toujours une erreur : ça contourne l'edge et ça entre en collision avec l'autre

@@ -103,7 +103,7 @@ Points à lire avant de remplir :
   modifier ensuite le destinataire dans `/backoffice` met à jour les pages, les liens et les
   prochaines notifications sans redémarrage. Les autres réglages SMTP restent des secrets
   d’environnement. `BACKEND_URL` sert seulement en local à joindre Rust ; Compose fixe la
-  destination à `http://backend:8080`.
+  destination à `http://portfolio-backend:8080`, l’alias du backend sur le réseau de la pile.
   Le jeton partagé accepte 32 à 256 caractères ASCII imprimables sans espace. Il doit être
   différent entre test et production ; aucune valeur remplie ne doit être versionnée.
 

@@ -194,6 +194,10 @@ jobs:
           fi
           echo "— pile de developpement (base + override, chargement implicite)"
           docker compose config -q
+          echo "— le relais joint le backend par son alias, jamais par son nom court"
+          jq -e '.services.backend.networks.default.aliases == ["portfolio-backend"]
+            and .services.web.environment.BACKEND_URL == "http://portfolio-backend:8080"' \
+            "$RUNNER_TEMP/base.json"
 
       - name: Setup Buildx
         uses: docker/setup-buildx-action@v4
