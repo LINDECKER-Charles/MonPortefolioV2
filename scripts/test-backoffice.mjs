@@ -468,6 +468,10 @@ async function main() {
 async function testerBlog(lecture) {
   const jeton = (await requete('/api/backoffice/tokens', { method: 'POST', data: { name: 'Édition blog test', scopes: ['blog:read', 'blog:write', 'blog:publish'] }, session: true, status: 201 })).json;
   const call = async (name, args, bearer = jeton.token) => (await mcp('tools/call', { name, arguments: args }, { bearer })).result;
+  // Le catalogue de la Publication : tout le blog, suppression des images comprise (blog:publish).
+  const catalogue = await mcpModerne('tools/list', {}, { bearer: jeton.token });
+  assert.deepEqual(catalogue.result.tools.map((outil) => outil.name).sort(), ['blog_create_post', 'blog_delete_media', 'blog_delete_post', 'blog_get_post', 'blog_list_media', 'blog_list_posts', 'blog_preview_post', 'blog_publish_post', 'blog_schedule_post', 'blog_seo_audit', 'blog_unpublish_post', 'blog_update_post', 'blog_upload_media']);
+  assert.equal(catalogue.result.cacheScope, 'private');
   const image = (await call('blog_upload_media', { filename: 'figure.png', content_type: 'image/png', data_base64: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aXioAAAAASUVORK5CYII=' })).structuredContent;
   assert.equal(typeof image.url, 'string');
   await requete(image.url, { status: 404 });
@@ -516,9 +520,15 @@ async function testerBlog(lecture) {
   post = (await call('blog_unpublish_post', { id: post.id, revision: post.revision })).structuredContent;
   await requete(`/blog/${post.slug}`, { status: 404 });
   await requete(image.url, { status: 404 });
+  // Une image citée par la version de travail reste ; libérée, elle se supprime par MCP.
+  const enUsage = await call('blog_delete_media', { id: image.id });
+  assert.equal(enUsage.isError, true);
+  assert.equal(enUsage.structuredContent.code, 'MEDIA_IN_USE');
   await requete(`/api/backoffice/blog/posts/${post.id}`, { method: 'DELETE', data: { revision: post.revision }, session: true });
+  assert.deepEqual((await call('blog_delete_media', { id: image.id })).structuredContent, { deleted: true, id: image.id });
+  await requete(image.url.replace('/api/blog/', '/api/backoffice/blog/'), { session: true, status: 404 });
   await requete(`/api/backoffice/tokens/${jeton.id}`, { method: 'DELETE', session: true });
-  console.log('[integration] Blog réel : MCP, brouillon privé, SEO HTML, snapshots, programmation et dépublication : OK');
+  console.log('[integration] Blog réel : MCP, brouillon privé, SEO HTML, snapshots, programmation, dépublication et suppression d’image : OK');
 }
 
 async function testerRenduDeveloppement(post) {
