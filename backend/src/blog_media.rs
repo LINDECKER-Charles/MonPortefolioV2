@@ -34,31 +34,35 @@
 //! réencodée à sa taille.
 //!
 //! Pics mesurés sous Linux (`memory.peak` du cgroup d’un conteneur neuf limité
-//! à 320 Mio sans swap, comme en production, un import par conteneur ; 32 Mio
-//! de service au repos et de connexion au backoffice compris) :
-//! - photo JPEG de 12 Mpx : 73 Mio ; JPEG de 24 Mpx tourné de 90° : 111 Mio ;
-//! - PNG RGBA de 25 Mpx tourné : 124 Mio ; PNG RGBA de 1 600 × 10 000 px,
-//!   réencodé entier : 151 Mio ;
+//! à 320 Mio sans swap, comme en production, avec les réglages de l’allocateur
+//! de `backend/Dockerfile`, un import par conteneur ; 28 Mio de service au
+//! repos et de connexion au backoffice compris) :
+//! - JPEG séquentiel de 24 Mpx, en 4:4:4 ou en CMJN : 92 à 94 Mio ;
 //! - PNG RGBA de 2 500 × 10 000 px, dont la réduction à 1 600 px de large
-//!   côtoie l’image entière : 163 Mio ;
-//! - JPEG progressif en 4:2:0 de 24 Mpx : 165 à 178 Mio ;
-//! - au seuil de `MAX_DECODING` : GIF à cadre décalé de 18,7 Mpx, 172 Mio ;
-//!   PNG RGBA de 16 bits de 12,5 Mpx, 174 ; WebP avec transparence de 13,6
-//!   Mpx, 168 ; WebP sans perte de 21 Mpx, 168 ; JPEG progressif CMJN de 13,5
-//!   Mpx, 182 ; et le pire cas, un JPEG progressif en 4:4:4 de 16,6 Mpx :
-//!   184 Mio ;
-//! - au-delà, l’image est refusée à l’import, sans être décodée : 44 Mio au
-//!   plus (WebP de 24 Mpx avec transparence, JPEG progressif de 24 Mpx en
-//!   4:4:4 ou en CMJN, PNG de 16 bits de 16 Mpx, GIF de 25 Mpx).
+//!   côtoie l’image entière : 144 Mio ;
+//! - JPEG progressif en 4:2:0 de 24 Mpx : 157 à 160 Mio ; photo d’iPhone de
+//!   24,5 Mpx, progressive en 4:2:0 : 163 à 168 Mio, le pire cas ;
+//! - au seuil de `MAX_DECODING` : WebP animé de 9 Mpx, 121 Mio ; WebP sans
+//!   perte de 21 Mpx, 150 ; WebP avec transparence de 13,6 Mpx, 151 ; GIF à
+//!   cadre décalé de 18,7 Mpx, 152 ; PNG RGBA de 16 bits de 12,5 Mpx, 154 ;
+//!   JPEG progressif en 4:4:4 de 16,6 Mpx, 161 à 163 ; JPEG progressif CMJN
+//!   de 13,5 Mpx, 163 ;
+//! - au-delà, l’image est refusée à l’import sans être décodée : rien de plus
+//!   que le service au repos (WebP de 24 Mpx avec transparence, JPEG
+//!   progressif de 24 Mpx en 4:4:4 ou en CMJN, PNG de 16 bits de 16 Mpx, GIF
+//!   de 25 Mpx).
 //!
-//! Les imports simultanés attendent leur place avant d’être lus
-//! (`upload_queue`, deux à la fois) : une image lourde et 8 ou 16 imports de
-//! 4 Mio envoyés ensemble montent à 243 Mio de mémoire anonyme, quel que soit
-//! leur nombre. L’écart avec un import seul vient de l’allocateur de la glibc,
-//! qui garde par fil de traitement ce que ce fil a libéré.
+//! Sans les réglages de l’allocateur, la glibc garde par fil ce que ce fil a
+//! libéré : le pire import seul montait à 184 Mio, et des imports enchaînés
+//! jusqu’à la limite du conteneur, qui en mourait. Les imports simultanés
+//! attendent leur place (`upload_queue`, deux à la fois) : une image lourde et
+//! 8 à 48 imports de 4 Mio envoyés ensemble montent à 171 Mio de mémoire
+//! anonyme ; 48 clients qui enchaînent des imports de 24 Mpx pendant 30 s, à
+//! 175 Mio.
 //!
-//! La limite mémoire du service (`compose.deploy.yaml`, 320 Mio, 1,75 fois le
-//! pire pic mesuré) en dépend : baisser `MAX_DECODING` avant de la baisser.
+//! La limite mémoire du service (`compose.deploy.yaml`, 320 Mio, 1,9 fois le
+//! pire pic d’un import seul et 1,8 fois le pire mesuré sous imports
+//! simultanés) en dépend : baisser `MAX_DECODING` avant de la baisser.
 //! `decoding_cost` repose sur les tampons d’`image`, `image-webp` et
 //! `zune-jpeg` : les remesurer à chaque nouvelle version de ces bibliothèques.
 use std::{

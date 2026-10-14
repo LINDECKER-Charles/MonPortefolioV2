@@ -28,12 +28,14 @@ use tokio::sync::{OwnedSemaphorePermit, Semaphore};
 
 use crate::{AppState, error::ApiError};
 
-/// Deux gros envois lus à la fois : l’un se décode pendant que l’autre attend
-/// son tour de décodage avec son corps déjà lu. Mesuré dans un conteneur de
-/// 320 Mio (`compose.deploy.yaml`), une image lourde et 8 ou 16 imports de
-/// 4 Mio à la fois montent à 243 Mio de mémoire anonyme, contre 184 pour le
-/// pire import seul ; une place de plus ajouterait un corps sans rien
-/// accélérer, puisque le décodage reste un à la fois.
+/// Deux imports à la fois : l’un se décode pendant que l’autre attend son
+/// tour de décodage avec son corps déjà lu. Mesuré dans un conteneur de
+/// 320 Mio (`compose.deploy.yaml`, allocateur réglé par `backend/Dockerfile`),
+/// une image lourde et 8 à 48 imports de 4 Mio à la fois montent à 171 Mio de
+/// mémoire anonyme, et 48 clients qui enchaînent leurs imports pendant 30 s à
+/// 175 Mio, contre 168 Mio pour le pire import seul ; une place de plus
+/// ajouterait un corps sans rien accélérer, puisque le décodage reste un à la
+/// fois.
 pub const UPLOAD_SLOTS: usize = 2;
 /// Au-delà de 64 Kio, un corps passe par la file : une image de plus de 48 Kio
 /// une fois en base64. Un appel MCP ordinaire ou un article tient en dessous ;

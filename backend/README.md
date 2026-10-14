@@ -270,13 +270,16 @@ MCP ou démarrage). Une image dont le décodage demanderait plus (WebP de plus d
 transparence ou de 21 Mpx sans, JPEG progressif de plus de 16 Mpx en 4:4:4, PNG de 16 bits par
 canal de plus de 12,5 Mpx…) est refusée à l’import : `422 IMAGE_TOO_HEAVY`, avec le message
 « Cette image est trop lourde à réduire. Exportez-la en JPEG ou en PNG 8 bits, ou réduisez-la
-(3 000 px de large suffisent). », que l’atelier et l’outil MCP montrent tel quel. Sans
-variante, son original partirait tel quel sur mobile, sans que son auteur le sache. Exportée en
-JPEG séquentiel ou en PNG 8 bits, une image de 25 Mpx au plus passe toujours. Une image déjà en
-base, traitée au démarrage, reste gardée sans variante. Un PNG RGBA de 25 Mpx monte à 124 Mio ;
-le pire pic mesuré, 184 Mio, est un JPEG progressif en 4:4:4 de 16,6 Mpx, borné par ce seuil de
-décodage et non par celui des 25 Mpx ; une image refusée par ce seuil reste sous 44 Mio. D’où
-les 320 Mio du service dans `compose.deploy.yaml`, détaillés dans
+(3 000 px sur le plus grand côté suffisent). », que l’atelier et l’outil MCP montrent tel quel.
+Le seuil dépend du nombre de pixels : à 3 000 × 3 000 px, tous les formats passent, alors qu’un
+portrait ramené à 3 000 px de large peut rester refusé. Sans variante, son original partirait tel
+quel sur mobile, sans que son auteur le sache. Exportée en JPEG séquentiel ou en PNG 8 bits, une
+image de 25 Mpx au plus passe toujours. Une image déjà en base, traitée au démarrage, reste
+gardée sans variante. Avec les réglages de l’allocateur de l’image Docker (`backend/Dockerfile` :
+`MALLOC_ARENA_MAX=2`, `MALLOC_MMAP_THRESHOLD_=1048576`), un PNG RGBA de 2 500 × 10 000 px monte à
+144 Mio ; le pire pic mesuré, 168 Mio, est une photo d’iPhone de 24,5 Mpx en JPEG progressif ;
+une image refusée par le seuil de décodage n’ajoute rien au service au repos (28 Mio). D’où les
+320 Mio du service dans `compose.deploy.yaml`, détaillés dans
 [`docs/deploiement.md`](../docs/deploiement.md).
 
 Les gros imports attendent leur tour avant d’être lus. Une requête dont le corps peut dépasser
@@ -286,12 +289,23 @@ l’une des deux places qu’ils partagent, une fois la session ou le jeton vér
 ne lit pas son corps : TCP freine son client. Après 10 s, elle reçoit `503 UPLOAD_BUSY` avec
 `Retry-After: 10` ; son corps est lu et jeté avant la réponse (9 Mio et 5 s au plus), sans quoi
 la connexion serait réinitialisée et le client perdrait la réponse. Les 10 s laissent à l’import
-le temps de finir avant les 20 s au bout desquelles le relais Node et l’atelier abandonnent. Les
-petites requêtes (appels MCP ordinaires, formulaire de contact, atelier) ne passent jamais par
-cette file. Mesuré dans un conteneur limité à 320 Mio : une image lourde et 8 ou 16 imports de
-4 Mio à la fois aboutissent tous, en 4,6 s au plus, avec 243 Mio de mémoire anonyme au pire ; 48 à
-la fois, 38 aboutissent et 11 reçoivent la réponse 503 après 10 s, sans OOM ; le formulaire de
-contact répond pendant ce temps. Sans cette file, 8 imports simultanés tuaient le conteneur.
+le temps de finir avant les 20 s au bout desquelles le relais Node et l’atelier abandonnent. Un
+import plus petit prend lui aussi une place, une fois son corps lu, avant son décodage : un
+fichier de 15 Kio peut coûter autant à décoder qu’un fichier de 4 Mio (un GIF de 18,7 Mpx), et
+une rafale de tels imports tuait le conteneur. Il reçoit la même réponse `503 UPLOAD_BUSY` après
+10 s. Un import garde sa place jusqu’à la fin de son traitement, même si son client se
+déconnecte. Les autres petites requêtes (appels MCP ordinaires, formulaire de contact, atelier)
+ne passent jamais par cette file.
+
+Mesuré dans un conteneur limité à 320 Mio sans swap, avec les réglages de l’allocateur : une
+image lourde et 8 ou 16 imports de 4 Mio à la fois aboutissent tous, en 4,6 s au plus ; 48 à la
+fois, 38 aboutissent et 11 reçoivent la réponse 503 après 10 s ; 171 Mio de mémoire anonyme au
+pire. 12 à 48 GIF de 15 Kio et de 18,7 Mpx envoyés ensemble aboutissent tous, à 146 Mio au plus.
+48 clients qui enchaînent des imports de 24 Mpx pendant 30 s montent à 175 Mio. Aucun OOM, et le
+formulaire de contact répond pendant ce temps. Sans la file, 8 imports simultanés tuaient le
+conteneur ; sans la place des petits imports, 12 GIF de 15 Kio à la fois ; sans les réglages de
+l’allocateur, qui garde sinon par fil la mémoire libérée, 48 clients en continu le tuaient une
+fois sur deux, à 313 Mio de mémoire anonyme.
 
 Le backend mesure les dimensions de l’image,
 orientation EXIF comprise, et prépare des variantes réduites aux largeurs 480, 960 et 1 600 px
@@ -411,9 +425,10 @@ JSON, sans flux SSE ; GET et DELETE ne sont pas utilisés. En 2026-07-28, `serve
 privé : le catalogue dépend des permissions de l’accès) ; sans elles, Claude Code refuse le
 catalogue. Les appels sont limités à 120 par IP et par minute. Un corps MCP accepte au plus
 8 Mio pour permettre l’import d’images en base64 ; les limites du document et de l’image restent
-contrôlées séparément. Un appel de plus de 64 Kio (un import d’image) attend sa place dans la file
-des imports, partagée avec le backoffice : après 10 s, la réponse HTTP est `503 UPLOAD_BUSY` avec
-`Retry-After`, à réessayer.
+contrôlées séparément. Un appel de plus de 64 Kio attend sa place dans la file des imports,
+partagée avec le backoffice, avant que son corps soit lu ; un import d’image plus petit
+(`blog_upload_media`) la prend une fois son corps lu. Après 10 s, la réponse HTTP est
+`503 UPLOAD_BUSY` avec `Retry-After`, à réessayer.
 
 | Outil | Permission | Rôle |
 |---|---|---|
