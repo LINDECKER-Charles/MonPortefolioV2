@@ -51,7 +51,8 @@ SMTP ne fait pas perdre la demande. Renseigner `SMTP_HOST`, `SMTP_FROM` et les r
 pour activer les notifications.
 
 Le **backoffice `/backoffice`** rassemble les demandes (nouvelles, lues, archivées), leur état de
-notification, le blog, l’adresse de contact, les liens de la boîte à outils et les accès MCP. Il
+notification, le blog, l’adresse de contact, les liens de la boîte à outils, les accès MCP et le stockage (disque, base, images et articles
+par poids, suppression d’une image inutilisée). Il
 suit la direction « Lanterne » du site (jour et nuit, bascule lanterne, sans mesure d’audience) :
 une navigation par rubriques dans l’en-tête et un retour affiché à côté de chaque action. L’adresse
 modifiée est utilisée par le formulaire et les liens e-mail des pages sans redémarrage ni rebuild.
