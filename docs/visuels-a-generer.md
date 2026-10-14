@@ -9,7 +9,7 @@ Tu produis **uniquement les images générées (IMG)** de la refonte du portfoli
 **Ce document est la seule référence de la série.** Il porte les retours de Charles sur la planche d’essai du 13 octobre 2026 (moins « image générée », une vraie version de nuit) et remplace toute consigne antérieure. Lis-le de haut en bas avant la première image.
 
 - **Deux masters par image**, dessinés au même cadrage au pixel près, dans les trois mêmes couleurs de clé : le jour `<ID>.png`, puis la nuit `<ID>.nuit.png`, faite **en édition depuis le master de jour** (section « Version de nuit »). Le site affiche l’un ou l’autre selon le thème.
-- Le registre recense **176 emplacements** (123 « socle », 53 « élargi »), dont **74 images à générer** : 0 restent à livrer, dont 0 « socle ».
+- Le registre recense **178 emplacements** (125 « socle », 53 « élargi »), dont **74 images à générer** : 0 restent à livrer, dont 0 « socle ».
 - **Socle** : posé sur une page du site, qui affiche un cadre hachuré tant que le fichier manque. À produire d’abord.
 - **Élargi** : aucune page ne l’attend encore ; chaque fiche dit pourquoi. Peut suivre.
 - **Le prompt de jour** se rédige en anglais : le bloc de style, la phrase de fond, puis la traduction des seuls champs **Sujet** et **Composition** de la fiche, le calage de la lanterne quand la fiche la place, enfin le prompt négatif. Le champ **Emplacement** donne le contexte et peut nommer une marque ou un jeu : il ne va jamais dans un prompt.
@@ -180,11 +180,12 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 | Omnicard | 13 | 5 | IMG 2 · SVG 2 · FIG 3 · CAP 5 · PHO 0 · OG 1 |
 | Bloodborne Legendary Run | 16 | 8 | IMG 4 · SVG 6 · FIG 1 · CAP 4 · PHO 0 · OG 1 |
 | gup | 7 | 6 | IMG 2 · SVG 1 · FIG 3 · CAP 1 · PHO 0 · OG 0 |
+| Relais | 2 | 2 | IMG 0 · SVG 0 · FIG 1 · CAP 1 · PHO 0 · OG 0 |
 | Parcours : hub, professionnel, compétences, formation | 33 | 30 | IMG 24 · SVG 4 · FIG 3 · CAP 1 · PHO 1 · OG 0 |
 | Contact | 4 | 4 | IMG 3 · SVG 0 · FIG 0 · CAP 0 · PHO 1 · OG 0 |
 | Blog | 2 | 1 | IMG 2 · SVG 0 · FIG 0 · CAP 0 · PHO 0 · OG 0 |
 | États : 404 et hors ligne | 3 | 2 | IMG 1 · SVG 1 · FIG 0 · CAP 0 · PHO 1 · OG 0 |
-| **Total** | **176** | **123** | IMG 79 · SVG 37 · FIG 25 · CAP 26 · PHO 4 · OG 5 |
+| **Total** | **178** | **125** | IMG 79 · SVG 37 · FIG 26 · CAP 27 · PHO 4 · OG 5 |
 
 ## Partie 1 — Commande Codex : les images à générer
 
@@ -1577,7 +1578,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 Rien ici n’est à générer : les dessins vectoriels s’écrivent à la main, les figures se codent depuis des données sourcées, les captures se prennent sur l’application ou la page réelle, les images de partage se composent en HTML.
 
-**Déjà faits** : GLO-01, GLO-03, GLO-04, GLO-05, GLO-07, GLO-08, ACC-01, ACC-06, ACC-14, ACC-17, PRJ-04, PRJ-05, PVZ-03, PVZ-F1, PVZ-F2, PVZ-F3, PVZ-F4, PVZ-F5, LOD-03, LOD-05, LOD-06, LOD-07, LOD-08, LOD-09, LOD-10, LOD-11, LOD-12, LOD-F1, LOD-F2, LOD-F3, LOD-F4, LOD-F5, LOD-F6, OMN-03, OMN-04, OMN-05, BLR-06, BLR-07, BLR-08, BLR-09, BLR-10, BLR-F1, BLR-C4, GUP-02, GUP-F1, GUP-F2, GUP-F3, GUP-C1, PAR-PHO, PAR-F1, PRO-F1, CMP-F1, CMP-09, CMP-10, FOR-09, CON-PHO, ERR-PHO.
+**Déjà faits** : GLO-01, GLO-03, GLO-04, GLO-05, GLO-07, GLO-08, ACC-01, ACC-06, ACC-14, ACC-17, PRJ-04, PRJ-05, PVZ-03, PVZ-F1, PVZ-F2, PVZ-F3, PVZ-F4, PVZ-F5, LOD-03, LOD-05, LOD-06, LOD-07, LOD-08, LOD-09, LOD-10, LOD-11, LOD-12, LOD-F1, LOD-F2, LOD-F3, LOD-F4, LOD-F5, LOD-F6, OMN-03, OMN-04, OMN-05, BLR-06, BLR-07, BLR-08, BLR-09, BLR-10, BLR-F1, BLR-C4, GUP-02, GUP-F1, GUP-F2, GUP-F3, GUP-C1, REL-F1, REL-C1, PAR-PHO, PAR-F1, PRO-F1, CMP-F1, CMP-09, CMP-10, FOR-09, CON-PHO, ERR-PHO.
 
 | Zone | Socle | Élargi |
 |---|---|---|
@@ -2760,6 +2761,34 @@ Fiches pour mémoire : rien à produire.
 - **Fichiers attendus** (5) : `site/src/assets/projets/gup/packages-select.webp` ; `site/src/assets/projets/gup/scan-progress.webp` ; `site/src/assets/projets/gup/confirm-update.webp` ; `site/src/assets/projets/gup/update-running.webp` ; `site/src/assets/projets/gup/journal-activity.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
 - **Note** : CAP-GUP-1 du cahier (§ 6.12) : livrés, provenance dans src/assets/projets/gup/README.md ; leurs alts sont dans config/gup.ts. Les recadrages 4:5 pour mobile restent à faire.
+
+### Relais
+
+#### REL-F1 · Qui passe par Relais
+
+- **Priorité** : socle · **Méthode** : FIG, figure codée depuis des données, rien à générer
+- **Produit par** : équipe Relais
+- **Emplacement** : `/projets/relais` · § 1, le point d’accès : à côté du texte, en colonne _(contexte : ne pas le recopier dans un prompt)_
+- **Posé dans** : `src/pages/projets/relais.astro`
+- **Sujet** : Qui passe par Relais
+- **Composition** : De haut en bas : les outils de la machine en étiquettes, une flèche vers Relais et ce qu’il tient (comptes, périmètre, capacité, frein, conversations), une flèche vers les deux agents et leurs versions épinglées
+- **Format** : —
+- **Composant** : `site/src/components/projets/relais/FigurePointAcces.astro`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Les outils de la machine passent par Relais, qui tient comptes, permissions et conversations, et lance ses propres versions des deux agents. »
+- **Note** : Codée en HTML, données POINT_ACCES de config/relais.ts ; se lit de haut en bas à toutes les largeurs.
+
+#### REL-C1 · Les écrans de Relais, sur des données de démonstration
+
+- **Priorité** : socle · **Méthode** : CAP, capture réelle, rien à générer
+- **Produit par** : équipe Relais
+- **Emplacement** : `/projets/relais` · En-tête, § le périmètre, § la capacité, § l’analyse ; carte de la vitrine (/projets) _(contexte : ne pas le recopier dans un prompt)_
+- **Posé dans** : `src/pages/projets/relais.astro`, `src/config/relais.ts`
+- **Sujet** : Les écrans de Relais, sur des données de démonstration
+- **Composition** : Écrans réels de Relais 0.2.0 lancé en local (abonnements, projets et conversations inventés, un agent de démonstration à la place du CLI, aucun compte réel), fenêtre de 1 440 × 900 en densité 2, sans retouche ni recomposition ; la vignette de la carte est un recadrage du panneau de pilotage de la conversation
+- **Format** : format natif des écrans, 2880 × 1800 ; vignette 610 × 490
+- **Fichiers attendus** (6) : `site/src/assets/projets/relais/dashboard.webp` ; `site/src/assets/projets/relais/conversation-perimetre.webp` ; `site/src/assets/projets/relais/capacite.webp` ; `site/src/assets/projets/relais/garde-fous.webp` ; `site/src/assets/projets/relais/analyse.webp` ; `site/src/assets/projets/relais/carte-perimetre.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Livrés le 14/10/2026, provenance dans src/assets/projets/relais/README.md ; leurs alts sont dans config/relais.ts. La vignette carte-perimetre est posée sur la carte de la vitrine par config/relais.ts (CARTE.visuel) ; les autres par la page.
 
 ### Parcours : hub, professionnel, compétences, formation
 
