@@ -608,11 +608,18 @@
     font-size: var(--t-xs);
   }
 
+  /* Coupés en fin de ligne par la césure, jamais au milieu d’un mot. */
   .blog-prose :is(th, td) {
     width: auto !important;
     min-width: 0 !important;
     padding: var(--s1) var(--s2);
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+
+  /* Une rangée, une image ou un bloc de code reste entier sur sa page. */
+  .blog-prose :is(tr, figure, pre) {
+    break-inside: avoid;
   }
 }
 

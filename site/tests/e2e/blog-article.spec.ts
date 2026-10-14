@@ -379,6 +379,9 @@ for (const theme of ['jour', 'nuit'] as const) {
       const rognes = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('.blog-prose pre, .blog-table')].filter((el) => el.scrollWidth > el.clientWidth + 1).map((el) => el.getAttribute('aria-label') ?? el.className));
       expect(rognes).toEqual([]);
       expect(await debordements(page, '.blog-article *'), 'rien ne sort de la page imprimée').toEqual([]);
+      // Les mots se coupent par la césure, et une rangée ne se partage pas entre deux pages.
+      const papier = await page.evaluate(() => ({ cellule: getComputedStyle(document.querySelector('.blog-prose td')!).hyphens, rangee: getComputedStyle(document.querySelector('.blog-prose tr')!).breakInside }));
+      expect(papier).toEqual({ cellule: 'auto', rangee: 'avoid' });
     });
   });
 }
