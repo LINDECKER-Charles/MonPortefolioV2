@@ -25,22 +25,8 @@
  *
  * Mise en page : en-tête non collant (la barre d’enregistrement de l’atelier
  * du blog l’est), navigation sous l’identité sous 1 100 px, tableau en
- * fiches sous 860 px.
+ * fiches sous 860 px. L’atelier du blog : styles/blog-editor.css.
  */
-
-/* ===== Pont avec l’atelier du blog =====
-   styles/blog-editor.css lit encore les anciennes variables --bo-* : elles
-   pointent désormais vers les jetons, jour et nuit. À retirer quand l’atelier
-   du blog sera refait dans la coque. */
-.bo {
-  --bo-paper: var(--fond);
-  --bo-white: var(--surface);
-  --bo-ink: var(--encre);
-  --bo-muted: var(--eteint);
-  --bo-blue: var(--accent);
-  --bo-rule: var(--filet);
-  --bo-danger: var(--erreur);
-}
 
 /* ===== Base ===== */
 .bo [hidden] {
@@ -95,7 +81,7 @@
 }
 
 /* Largeur de page : le contenu tient dans --largeur, avec la gouttière du
-   site en marge intérieure (l’atelier du blog élargit .bo-main). */
+   site en marge intérieure. */
 .bo-cadre {
   width: 100%;
   max-width: calc(var(--largeur) + 2 * var(--gouttiere));

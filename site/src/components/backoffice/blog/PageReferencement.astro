@@ -1,0 +1,70 @@
+---
+/**
+ * Référencement : le titre, la description et l’adresse de l’article à
+ * gauche ; à droite l’aperçu du résultat de recherche (la zone éclairée) et
+ * les repères à vérifier (#blog-seo-audit, écrit par le script : une marque
+ * et une phrase par repère). Dessous, le partage et l’indexation.
+ */
+---
+
+<section class="blog-page blog-seo-page" data-blog-page="seo" aria-label="Référencement et partage de l’article" hidden>
+  <div class="blog-seo-layout">
+    <div class="bo-carte blog-carte blog-seo-fields">
+      <h3>Le résultat de recherche</h3>
+      <p class="blog-section-intro">Le titre et la description affichés par les moteurs, et l’adresse de l’article.</p>
+      <div class="blog-field">
+        <label for="blog-seo-title">Titre pour les moteurs de recherche</label>
+        <input id="blog-seo-title" maxlength="120" aria-describedby="blog-seo-title-help" />
+        <p class="bo-help" id="blog-seo-title-help">Vide, le titre de l’article est utilisé. <span class="blog-compteur" id="blog-title-counter">0 caractère</span></p>
+      </div>
+      <div class="blog-field">
+        <label for="blog-seo-description">Description pour les moteurs de recherche</label>
+        <textarea id="blog-seo-description" rows="4" maxlength="320" aria-describedby="blog-seo-description-help"></textarea>
+        <p class="bo-help" id="blog-seo-description-help">Vide, le résumé est utilisé. <span class="blog-compteur" id="blog-description-counter">0 caractère</span></p>
+      </div>
+      <div class="blog-field">
+        <label for="blog-slug">Adresse de l’article</label>
+        <div class="blog-slug"><span aria-hidden="true">/blog/</span><input id="blog-slug" maxlength="100" required pattern="[a-z0-9]+(?:-[a-z0-9]+)*" aria-describedby="blog-slug-help" /></div>
+        <p class="bo-help" id="blog-slug-help">Lettres minuscules, chiffres et tirets. Gardez une adresse stable après publication.</p>
+      </div>
+    </div>
+
+    <aside class="blog-seo-preview" aria-label="Aperçu et repères">
+      <figure class="blog-serp foyer">
+        <figcaption class="blog-serp-label">Aperçu du résultat de recherche</figcaption>
+        <p id="blog-serp-url"></p>
+        <strong id="blog-serp-title">Titre de l’article</strong>
+        <p id="blog-serp-description">La description apparaîtra ici.</p>
+      </figure>
+      <div class="blog-seo-checks">
+        <h3>À vérifier</h3>
+        <ul class="blog-seo-audit" id="blog-seo-audit" aria-label="Conseils de référencement"></ul>
+        <p class="bo-help">Des repères de relecture&nbsp;: l’affichage des moteurs et le classement peuvent varier.</p>
+      </div>
+    </aside>
+  </div>
+
+  <div class="bo-carte blog-carte blog-sharing">
+    <h3>Le partage et l’indexation</h3>
+    <div class="blog-sharing-fields">
+      <div class="blog-field">
+        <label for="blog-og-image">Image de partage <span class="bo-muted">(facultative)</span></label>
+        <div class="blog-input-action">
+          <input id="blog-og-image" aria-describedby="blog-og-image-help" />
+          <button class="bo-button" id="blog-og-choose" type="button">Choisir une image de partage</button>
+        </div>
+        <p class="bo-help" id="blog-og-image-help">La couverture est utilisée par défaut.</p>
+      </div>
+      <div class="blog-field">
+        <label for="blog-canonical">Adresse canonique <span class="bo-muted">(facultative)</span></label>
+        <input id="blog-canonical" type="url" maxlength="2048" placeholder="https://" aria-describedby="blog-canonical-help" />
+        <p class="bo-help" id="blog-canonical-help">À renseigner si la version d’origine est publiée à une autre adresse.</p>
+      </div>
+      <div class="bo-case blog-indexation">
+        <input id="blog-noindex" type="checkbox" aria-describedby="blog-noindex-help" />
+        <label for="blog-noindex">Demander aux moteurs de ne pas indexer cet article</label>
+        <p class="bo-choix__aide" id="blog-noindex-help">L’article reste lisible sur le blog. Il sort du plan du site et les moteurs sont priés de ne pas l’indexer.</p>
+      </div>
+    </div>
+  </div>
+</section>

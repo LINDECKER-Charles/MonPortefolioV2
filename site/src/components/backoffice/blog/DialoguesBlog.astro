@@ -1,0 +1,48 @@
+---
+/**
+ * Les deux dialogues de l’atelier du blog, posés à la fin de la page (hors
+ * de #bo-workspace) : la bibliothèque d’images (téléverser, choisir, décrire)
+ * et le lien du texte. scripts/blog-editor.ts les ouvre et les remplit.
+ */
+---
+
+<dialog class="bo-dialog blog-media-dialog" id="blog-media-dialog" aria-labelledby="blog-media-title">
+  <header class="blog-dialog-entete">
+    <h2 id="blog-media-title">Insérer une image</h2>
+    <button class="bo-button bo-button--petit" id="blog-media-close" type="button">Fermer</button>
+  </header>
+  <p class="bo-help">Choisissez une image de la bibliothèque ou téléversez un fichier JPEG, PNG, WebP ou GIF (4&nbsp;Mo au plus).</p>
+  <form id="blog-upload-form" class="blog-televersement">
+    <fieldset><legend class="bo-sr">Téléverser une image</legend>
+      <label for="blog-upload">Fichier image</label>
+      <div class="blog-input-action">
+        <input id="blog-upload" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
+        <button class="bo-button" type="submit">Téléverser l’image</button>
+      </div>
+    </fieldset>
+  </form>
+  <p class="blog-notice blog-media-notice" id="blog-media-notice" role="status" aria-live="polite" hidden></p>
+  <ul id="blog-media-list" class="blog-media-list" aria-label="Bibliothèque d’images"></ul>
+  <button class="bo-button bo-button--petit" id="blog-media-more" type="button" hidden>Charger plus d’images</button>
+  <form id="blog-image-form" class="blog-image-choisie">
+    <fieldset><legend class="bo-sr">Image sélectionnée</legend>
+      <label for="blog-image-src">Adresse de l’image</label>
+      <input id="blog-image-src" readonly required />
+      <label for="blog-image-alt">Description de l’image</label>
+      <input id="blog-image-alt" maxlength="300" required aria-describedby="blog-image-alt-help" />
+      <p class="bo-help" id="blog-image-alt-help">Décrivez ce que montre l’image pour les lecteurs qui ne la voient pas.</p>
+      <label for="blog-image-title">Légende <span class="bo-muted">(facultative)</span></label>
+      <input id="blog-image-title" maxlength="300" />
+      <div class="bo-actions"><button class="bo-button bo-button--primary" type="submit">Utiliser cette image</button></div>
+    </fieldset>
+  </form>
+</dialog>
+
+<dialog class="bo-dialog" id="blog-link-dialog" aria-labelledby="blog-link-title">
+  <form id="blog-link-form">
+    <h2 id="blog-link-title">Ajouter un lien</h2>
+    <label for="blog-link-url">Adresse du lien</label>
+    <input id="blog-link-url" type="text" required placeholder="https:// ou /blog/article" />
+    <div class="bo-actions"><button class="bo-button" id="blog-link-close" type="button">Annuler</button><button class="bo-button bo-button--primary" type="submit">Appliquer le lien</button></div>
+  </form>
+</dialog>

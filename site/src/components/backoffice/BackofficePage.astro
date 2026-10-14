@@ -13,8 +13,8 @@
  * de session (#bo-notice : vérification, expiration, déconnexion), entrée
  * (ConnexionBackoffice), puis #bo-workspace : une <section class="bo-rubrique">
  * par rubrique (rubriques.ts), chacune avec son EnTeteRubrique et ses retours
- * locaux (Retour). Styles : styles/backoffice.css ; l’atelier du blog garde
- * encore styles/blog-editor.css.
+ * locaux (Retour). Styles : styles/backoffice.css, et styles/blog-editor.css
+ * pour l’atelier du blog (BlogWorkspace, blog/*), sur les mêmes primitives.
  *
  * Une nouvelle rubrique : l’ajouter à rubriques.ts, poser sa section
  * `id="bo-panel-<id>"` ici, et son chargement dans scripts/backoffice.ts.
@@ -32,6 +32,7 @@ import RubriqueAdresse from './RubriqueAdresse.astro';
 import RubriqueOutils from './RubriqueOutils.astro';
 import RubriqueAccesMcp from './RubriqueAccesMcp.astro';
 import BlogWorkspace from './BlogWorkspace.astro';
+import DialoguesBlog from './blog/DialoguesBlog.astro';
 
 interface Props { blogSection?: 'list' | 'redaction' | 'medias' | 'seo' | 'publication' }
 const { blogSection } = Astro.props;
@@ -83,8 +84,7 @@ const COULEUR_NUIT = '#0b0d12';
     </main>
     <footer class="bo-pied bo-cadre"><a href="/">Revenir au portfolio</a><span>Espace privé, hors index</span></footer>
     <dialog class="bo-dialog" id="bo-confirm" aria-labelledby="bo-confirm-title" aria-describedby="bo-confirm-message"><form method="dialog"><h2 id="bo-confirm-title">Confirmer la suppression</h2><p id="bo-confirm-message"></p><div class="bo-actions"><button class="bo-button" value="cancel" autofocus>Annuler</button><button class="bo-button bo-button--danger" id="bo-confirm-submit" value="confirm">Supprimer</button></div></form></dialog>
-    <dialog class="bo-dialog blog-media-dialog" id="blog-media-dialog" aria-labelledby="blog-media-title"><header><h2 id="blog-media-title">Insérer une image</h2><button class="bo-button" id="blog-media-close" type="button">Fermer</button></header><p class="bo-help">Choisissez une image existante ou téléversez un fichier JPEG, PNG, WebP ou GIF (4 Mo maximum).</p><form id="blog-upload-form"><fieldset><legend class="bo-sr">Téléverser une image</legend><label for="blog-upload">Fichier image</label><input id="blog-upload" type="file" accept="image/jpeg,image/png,image/webp,image/gif" /><button class="bo-button" type="submit">Téléverser l’image</button></fieldset></form><p class="bo-notice" id="blog-media-notice" role="status" aria-live="polite" hidden></p><ul id="blog-media-list" class="blog-media-list" aria-label="Bibliothèque d’images"></ul><button class="bo-button" id="blog-media-more" type="button" hidden>Charger plus d’images</button><form id="blog-image-form"><fieldset><legend class="bo-sr">Image sélectionnée</legend><label for="blog-image-src">Adresse de l’image</label><input id="blog-image-src" readonly required /><label for="blog-image-alt">Description de l’image</label><input id="blog-image-alt" maxlength="300" required aria-describedby="blog-image-alt-help" /><p class="bo-help" id="blog-image-alt-help">Décrivez ce que montre l’image pour les lecteurs qui ne la voient pas.</p><label for="blog-image-title">Légende <span class="bo-muted">(facultative)</span></label><input id="blog-image-title" maxlength="300" /><button class="bo-button bo-button--primary" type="submit">Utiliser cette image</button></fieldset></form></dialog>
-    <dialog class="bo-dialog" id="blog-link-dialog" aria-labelledby="blog-link-title"><form id="blog-link-form"><h2 id="blog-link-title">Ajouter un lien</h2><label for="blog-link-url">Adresse du lien</label><input id="blog-link-url" type="text" required placeholder="https:// ou /blog/article" /><div class="bo-actions"><button class="bo-button" id="blog-link-close" type="button">Annuler</button><button class="bo-button bo-button--primary" type="submit">Appliquer le lien</button></div></form></dialog>
+    <DialoguesBlog />
     <script>
       import { brancherBackoffice } from '../../scripts/backoffice';
       brancherBackoffice();

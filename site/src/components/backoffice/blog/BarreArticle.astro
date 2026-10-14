@@ -1,0 +1,29 @@
+---
+/**
+ * La barre de l’article ouvert : retour à la liste, titre, statut de
+ * publication et état d’enregistrement à gauche ; Aperçu et Enregistrer à
+ * droite, toujours accessibles. Dessous, #blog-notice : le retour des
+ * actions de l’atelier (chargement, enregistrement, conflit, publication).
+ *
+ * La barre est collante pendant l’édition et disparaît avec la vue
+ * d’édition (#blog-edit-view caché) : le retour reste, lui, visible sur la
+ * liste. Script : scripts/blog-editor.ts.
+ */
+---
+
+<div class="blog-barre">
+  <div class="blog-document-bar">
+    <div class="blog-document-context">
+      <a class="blog-return" id="blog-back" href="/backoffice/blog">Retour aux articles</a>
+      <p class="blog-document-ligne">
+        <strong id="blog-document-title">Nouvel article</strong>
+        <span class="blog-document-state"><span class="bo-state" id="blog-status" data-state="draft">Brouillon</span><span class="blog-save-state" id="blog-save-state" aria-live="polite">Non enregistré</span></span>
+      </p>
+    </div>
+    <div class="blog-save-actions">
+      <button class="bo-button" id="blog-preview" type="button">Aperçu</button>
+      <button class="bo-button bo-button--primary" id="blog-save" type="submit" form="blog-form">Enregistrer</button>
+    </div>
+  </div>
+  <p class="blog-notice" id="blog-notice" role="status" aria-live="polite" hidden></p>
+</div>
