@@ -55,7 +55,7 @@ before(async () => {
     if (req.url.startsWith('/api/blog/posts?')) { res.end(JSON.stringify({ posts: [post, { ...post, id: 2, slug: 'prive-du-sitemap', noindex: true }], total: 2 })); return; }
     if (req.url === '/api/blog/posts/comprendre-les-decisions') { res.end(JSON.stringify(post)); return; }
     if (req.url === '/api/backoffice/blog/posts/1/preview') { if (!req.headers.cookie?.includes('session=test')) { res.writeHead(401); res.end('{}'); return; } res.end(JSON.stringify({ ...post, title: 'Brouillon privé' })); return; }
-    if (req.url === '/api/blog/media/1' || req.url === '/api/backoffice/blog/media/1') { res.setHeader('Content-Type', 'image/png'); res.end(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])); return; }
+    if (req.method === 'GET' && /^\/api\/(backoffice\/)?blog\/media\/1(\/480)?$/.test(req.url)) { res.setHeader('Content-Type', req.url.endsWith('/480') ? 'image/jpeg' : 'image/png'); res.end(Buffer.from(req.url.endsWith('/480') ? [255, 216, 255, 217] : [137, 80, 78, 71, 13, 10, 26, 10])); return; }
     if (req.url === '/api/backoffice/blog/posts/1') { res.end(JSON.stringify(post)); return; }
     res.writeHead(404); res.end('{}');
   });
@@ -100,6 +100,27 @@ test('le relais transmet médias binaires et révision de suppression, avec limi
   assert.equal(calls.at(-1).body, '{"revision":2}');
   assert.equal((await fetch(`${base}/api/contact`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload })).status, 413);
   assert.equal((await fetch(`${base}/api/blog/not-a-route`)).status, 404);
+});
+
+test('le relais sert les variantes et revalide les images publiques par ETag', async () => {
+  const variante = await fetch(`${base}/api/blog/media/1/480`);
+  assert.equal(variante.status, 200);
+  assert.equal(variante.headers.get('content-type'), 'image/jpeg');
+  assert.deepEqual([...new Uint8Array(await variante.arrayBuffer())], [255, 216, 255, 217]);
+  const image = await fetch(`${base}/api/blog/media/1`);
+  const etag = image.headers.get('etag');
+  assert.match(etag ?? '', /^"[\w-]{20,}"$/);
+  assert.equal(image.headers.get('cache-control'), 'no-cache');
+  const revalidee = await fetch(`${base}/api/blog/media/1`, { headers: { 'If-None-Match': etag } });
+  assert.equal(revalidee.status, 304);
+  assert.equal(revalidee.headers.get('etag'), etag);
+  assert.equal((await fetch(`${base}/api/blog/media/1/480`, { headers: { 'If-None-Match': etag } })).status, 200, 'chaque variante a sa propre empreinte');
+  const privee = await fetch(`${base}/api/backoffice/blog/media/1/480`, { headers: { Cookie: 'session=test' } });
+  assert.equal(privee.status, 200);
+  assert.equal(privee.headers.get('cache-control'), 'no-store');
+  assert.equal(privee.headers.get('etag'), null);
+  assert.equal((await fetch(`${base}/api/blog/media/1`, { method: 'DELETE' })).status, 405, 'la route publique reste en lecture');
+  assert.equal((await fetch(`${base}/api/blog/media/1/480/2`)).status, 404);
 });
 
 test('une panne backend ne présente pas le blog comme vide ou les articles comme supprimés', async () => {

@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { isIP } from 'node:net';
 import { request as requestHttp } from 'node:http';
 import { request as requestHttps } from 'node:https';
@@ -156,7 +157,8 @@ export async function relayerApi(req, res, chemin, config, communs, recherche = 
   const mcp = chemin === '/mcp';
   const prive = chemin.startsWith('/api/backoffice/');
   const blog = chemin.startsWith('/api/blog/') || chemin.startsWith('/api/backoffice/blog/');
-  const media = /^\/api\/(?:backoffice\/)?blog\/media\/[1-9]\d*$/.test(chemin);
+  // Une image importée, ou l’une de ses variantes (/{largeur}, backend/src/blog_media.rs).
+  const media = /^\/api\/(?:backoffice\/)?blog\/media\/[1-9]\d*(?:\/[1-9]\d{0,4})?$/.test(chemin);
   const maximumCorps = blog || mcp ? 8 * 1024 * 1024 : TAILLE_MAX;
   const routes = new Map([
     ['/api/backoffice/login', ['POST']], ['/api/backoffice/logout', ['POST']],
@@ -260,7 +262,16 @@ export async function relayerApi(req, res, chemin, config, communs, recherche = 
       const parts = []; let size = 0;
       for await (const part of reponse.body) { size += part.length; if (size > 5 * 1024 * 1024) throw new Error('image trop grande'); parts.push(part); }
       const image = Buffer.concat(parts);
-      res.writeHead(200, { ...communs, 'Content-Type': type, 'Content-Length': image.length, 'Cache-Control': prive ? 'no-store' : 'no-cache', ...(prive ? { 'X-Robots-Tag': 'noindex, nofollow' } : {}) });
+      // Une image publique se revalide (no-cache) : elle redevient introuvable si
+      // son article est retiré. L’empreinte de ses octets évite de la renvoyer.
+      const etag = prive ? null : `"${createHash('sha256').update(image).digest('base64url')}"`;
+      const enTetes = { ...communs, 'Content-Type': type, 'Cache-Control': prive ? 'no-store' : 'no-cache', ...(prive ? { 'X-Robots-Tag': 'noindex, nofollow' } : { ETag: etag }) };
+      if (etag && String(req.headers['if-none-match'] ?? '').split(',').some((valeur) => valeur.trim().replace(/^W\//, '') === etag)) {
+        res.writeHead(304, enTetes);
+        res.end();
+        return;
+      }
+      res.writeHead(200, { ...enTetes, 'Content-Length': image.length });
       res.end(req.method === 'HEAD' ? undefined : image);
       return;
     }

@@ -56,7 +56,7 @@ export default defineConfig({
             define: { 'import.meta.env.PUBLIC_CONTACT_EMAIL': JSON.stringify('') },
             server: {
               proxy: {
-                '^/(api/(contact|health|config/contact|blog/(posts(/[a-z0-9-]+)?|media/[1-9][0-9]*)|backoffice/((login|logout|session|settings|contacts|links|tokens)(/[1-9][0-9]*)?|2fa/(setup|verify)|blog/(posts(/[1-9][0-9]*(/(publish|schedule|unpublish|preview|seo))?)?|media(/[1-9][0-9]*)?)))|mcp)$': {
+                '^/(api/(contact|health|config/contact|blog/(posts(/[a-z0-9-]+)?|media/[1-9][0-9]*(/[1-9][0-9]*)?)|backoffice/((login|logout|session|settings|contacts|links|tokens)(/[1-9][0-9]*)?|2fa/(setup|verify)|blog/(posts(/[1-9][0-9]*(/(publish|schedule|unpublish|preview|seo))?)?|media(/[1-9][0-9]*(/[1-9][0-9]*)?)?)))|mcp)$': {
                   target: backend?.origine,
                   timeout: 20_000,
                   proxyTimeout: 20_000,
