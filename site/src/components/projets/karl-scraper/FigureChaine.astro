@@ -79,9 +79,10 @@ const ACCES: Readonly<Record<AccesSource, string>> = {
     border-top: 1px solid var(--trait);
   }
 
-  /* La flèche vers l’étape suivante, dans la gouttière. */
+  /* La flèche vers l’étape suivante, dans la gouttière : décorative, sans
+     texte de remplacement (l’ordre est celui de la liste ordonnée). */
   .chaine__etape:not(:last-child)::after {
-    content: '→';
+    content: '→' / '';
     position: absolute;
     top: var(--s2);
     right: calc(var(--s4) * -0.75);
@@ -134,6 +135,11 @@ const ACCES: Readonly<Record<AccesSource, string>> = {
     border: 1px dashed var(--trait);
   }
 
+  /* Sans cadre visible, le mot s’aligne sur le texte de l’étape. */
+  .chaine__etape--aucun .chaine__acces {
+    padding-inline: 0;
+  }
+
   /* La seule écriture vers la source : un cadre plein, à l’encre. */
   .chaine__etape--statut {
     border-top-color: var(--encre);
@@ -157,7 +163,7 @@ const ACCES: Readonly<Record<AccesSource, string>> = {
     }
 
     .chaine__etape:not(:last-child)::after {
-      content: '↓';
+      content: '↓' / '';
       top: auto;
       right: auto;
       bottom: calc(var(--s5) * -0.85);

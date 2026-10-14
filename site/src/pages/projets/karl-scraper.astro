@@ -40,7 +40,8 @@ const description = 'Karl Scraper tient une copie locale de mes tâches, la donn
 
 <Base titre={titre} description={description} chemin="/projets/karl-scraper" sommaire={SECTIONS}>
   <EnTeteProjet projet="karl-scraper" titre={EN_TETE.titre} chapeau={EN_TETE.chapeau} liens={EN_TETE.liens} preuves={PREUVES} fiche={FICHE}>
-    <!-- Les réglages des enchaînements, recadrés sur leur colonne (les marges vides de l’écran sortent du cadre). -->
+    <!-- Les réglages des enchaînements, recadrés sur leur colonne (les marges vides de l’écran sortent du cadre) ;
+         sur mobile, les deux règles seules, lisibles (l’écran entier s’agrandit). -->
     <CadreCapture
       slot="visuel"
       type="navigateur"
@@ -48,16 +49,17 @@ const description = 'Karl Scraper tient une copie locale de mes tâches, la donn
       alt={ECRANS.enchainements.alt}
       legende={ECRANS.enchainements.legende}
       region={{ x: 20.5, y: 0, l: 59, h: 100 }}
+      regionMobile={{ x: 22.5, y: 54, l: 39, h: 46 }}
       class="ksc-entete-capture"
       widths={[960, 1400, 1900, 2728]}
-      sizes="(max-width: 860px) 170vw, (max-width: 1100px) 1090px, 950px"
+      sizes="(max-width: 860px) 260vw, (max-width: 1100px) 1090px, 950px"
       loading="eager"
       agrandir
     />
   </EnTeteProjet>
 
   <CorpsProjet sections={SECTIONS}>
-    <SectionProjet id="copie" etiquette="Une copie locale" titre="Une copie locale, scellée à chaque passage">
+    <SectionProjet id="copie" titre="Une copie locale, scellée à chaque passage">
       <Fragment slot="texte">
         <p>Karl Scraper garde ouverte la session d’un navigateur sur l’outil de gestion de tâches et relit mes tâches assignées&nbsp;: description, commentaires, listes à cocher, historique et pièces jointes. Le tout tient dans une base SQLite, sur mon poste.</p>
         <p>Chaque passage scelle une observation qui ne bougera plus. D’une observation à l’autre, l’écart se lit tâche par tâche, et une empreinte évite de relire en détail ce qui n’a pas bougé.</p>
@@ -78,27 +80,31 @@ const description = 'Karl Scraper tient une copie locale de mes tâches, la donn
     </SectionProjet>
 
     <div class="ksc-acte acte-veille">
-      <SectionProjet id="galaxie" etiquette="La Galaxie" titre="Voir d’un coup d’œil où tout en est" alignement="centre">
+      <SectionProjet id="galaxie" titre="Voir d’un coup d’œil où tout en est">
         <Fragment slot="texte">
-          <p>La Galaxie montre la même copie en scène. Chaque tâche est un point sur l’anneau de son statut&nbsp;; les retards sont en rouge, le goulot est nommé en haut, et la frise des observations court en bas.</p>
+          <p>La même copie, en scène&nbsp;: où les tâches s’accumulent, et lesquelles sont en retard.</p>
         </Fragment>
-        <CadreCapture
-          slot="figure"
+        <!-- Pleine largeur, et une loupe sur le compte d’en-tête, trop petit pour se lire à la taille de la page. -->
+        <CaptureAnnotee
           type="navigateur"
           src={galaxie}
           alt={ECRANS.galaxie.alt}
           legende={ECRANS.galaxie.legende}
+          ratio="2400 / 1350"
+          cible={{ x: 18.6, y: 5.2 }}
+          loupe={{ x: 12.5, y: 4.4, zoom: 3.9, largeur: 40, ratio: '4 / 1', coin: 'haut-droite', dessous: true }}
+          class="ksc-capture-large"
           widths={[800, 1200, 1600, 2400]}
-          sizes="(max-width: 1100px) 100vw, 560px"
+          sizes="(max-width: 1100px) 100vw, 1000px"
           agrandir
         />
       </SectionProjet>
     </div>
 
-    <SectionProjet id="agent" etiquette="Ce que l’agent lit" titre="Ce que l’agent lit, et rien de plus">
+    <SectionProjet id="agent" titre="Ce que l’agent lit, et rien de plus">
       <Fragment slot="texte">
-        <p>Les agents lisent cette copie par un serveur MCP&nbsp;: 13&nbsp;outils, dont 10 en lecture seule. Les trois autres déposent une analyse ou demandent un nouveau passage&nbsp;; aucun ne touche à l’outil source.</p>
-        <p>Pour chaque tâche, l’onglet «&nbsp;Vue agent&nbsp;» montre la donnée exacte que le serveur sert, avec l’observation d’où elle vient. Un bouton copie le lien MCP de la tâche, à donner à un agent.</p>
+        <p>Un agent à qui je confie une tâche la lit par un serveur MCP, le protocole qui donne des outils à un agent IA&nbsp;: 13&nbsp;outils, dont 10 en lecture seule. Les trois autres déposent une compréhension de la tâche ou un plan de correction, ou demandent un nouveau passage&nbsp;; aucun n’écrit dans l’outil source ni ne l’appelle lui-même.</p>
+        <p>Un bouton copie le lien MCP d’une tâche, à donner à un agent. Les agents que lance Karl Scraper, eux, n’ont même pas ce serveur&nbsp;: ils lisent une copie de la tâche déposée pour eux.</p>
       </Fragment>
       <CaptureAnnotee
         slot="figure"
@@ -117,9 +123,9 @@ const description = 'Karl Scraper tient une copie locale de mes tâches, la donn
 
     <SectionProjet id="chaine" titre="Du ticket à la pull request">
       <Fragment slot="texte">
-        <p>Après un passage, un agent lit chaque nouvelle tâche et rend une compréhension courte, avec le dépôt et le worktree où la travailler. Je la retiens ou je l’écarte&nbsp;: c’est le seul arbitrage de la chaîne. Une tâche retenue part chez le seul agent qui écrit, dans un worktree, et il ouvre une pull request par dépôt touché.</p>
-        <p>Les enchaînements font à ma place les gestes que j’aurais faits d’un clic&nbsp;: des règles «&nbsp;quand…, alors…&nbsp;» que j’écris et que j’active, sur 14&nbsp;déclencheurs et 18&nbsp;actions. Aucune règle n’est livrée, l’interrupteur général est coupé par défaut et un plafond quotidien borne les lancements d’agent.</p>
-        <p>Ses agents passent tous par <a href="/projets/relais">Relais</a>, qui borne leur dépense&nbsp;; une tâche complexe peut devenir un plan, relu pas à pas, puis confié à <a href="/projets/sillage">Sillage</a>, qui orchestre un graphe d’agents.</p>
+        <p>Après un passage, un agent lit chaque nouvelle tâche et rend une compréhension courte&nbsp;: le dépôt et le worktree, une copie de travail à part du dépôt, où la faire. Je la retiens ou je l’écarte&nbsp;: c’est le seul arbitrage avant que du code s’écrive. Une tâche retenue, je la confie d’un clic au seul agent qui écrit&nbsp;: il travaille dans ce worktree et ouvre une pull request par dépôt touché. Une réalisation réussie attend ensuite sa relecture, «&nbsp;Valider&nbsp;».</p>
+        <p>Les enchaînements peuvent faire ces gestes d’un clic à ma place&nbsp;: des règles «&nbsp;quand…, alors…&nbsp;», à écrire et à activer soi-même, sur 14&nbsp;déclencheurs et 18&nbsp;actions. Aucune règle n’est livrée, l’interrupteur général est coupé par défaut et un plafond quotidien borne les lancements d’agent.</p>
+        <p>Les agents de Karl Scraper passent tous par <a href="/projets/relais">Relais</a>, qui borne leur dépense&nbsp;; une tâche complexe peut devenir un plan, relu pas à pas, puis confié à <a href="/projets/sillage">Sillage</a>, qui orchestre un graphe d’agents.</p>
       </Fragment>
       <FigureChaine />
     </SectionProjet>
@@ -154,13 +160,5 @@ const description = 'Karl Scraper tient une copie locale de mes tâches, la donn
 
   :global(.ksc-capture-large) {
     margin-top: var(--s6);
-  }
-
-  /* La loupe garde l’image entière à sa proportion : sans cette règle, celle
-     d’une capture recadrée (CadreCapture, même spécificité, plus loin dans la
-     feuille) lui impose la hauteur de la loupe et n’en montre que le haut. */
-  :global(#agent .loupe > picture > img) {
-    height: auto;
-    object-fit: fill;
   }
 </style>

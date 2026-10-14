@@ -32,7 +32,7 @@ test('l’en-tête tient dans le premier écran : titre, identité, preuve, acti
   for (const marque of ['titre', 'identite', 'preuve', 'action']) {
     await expect(page.locator(`[data-pli="${marque}"]`), marque).toBeInViewport();
   }
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Automatiser le chemin d’un ticket. Garder la main.');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Automatiser le chemin d’un ticket. Sans ouvrir l’outil aux agents.');
   if ((page.viewportSize()?.width ?? 0) >= 1440) {
     await expect(page.locator('[data-pli="preuve"] li')).toHaveCount(3);
     for (const preuve of await page.locator('[data-pli="preuve"] li').all()) await expect(preuve).toBeInViewport({ ratio: 1 });
@@ -59,7 +59,10 @@ test('la fiche technique : sept cases, statut à forme et mot, dépôt privé sa
   await page.goto(CHEMIN);
   const fiche = page.getByRole('group', { name: 'Fiche du projet' });
   await expect(fiche.locator('dt')).toHaveText(['Besoin', 'Ma part', 'Rôle', 'Période', 'Équipe', 'Statut', 'Liens publics']);
-  await expect(fiche.locator('.statut')).toHaveText('Outil personnel, en usage quotidien');
+  // Seul ce qui est sourcé s’affiche sans marque : le service tourne sur le poste ; la présentation
+  // en projet personnel attend la réponse de Charles (K1).
+  await expect(fiche.locator('.statut')).toHaveText('Outil personnel, en service sur mon poste');
+  await expect(fiche.locator('.fiche-projet__case--equipe .a-confirmer')).toHaveText('à confirmer');
   await expect(fiche.locator('.fiche-projet__case--part')).toContainText('282 commits');
   await expect(fiche.locator('.fiche-projet__case--liens')).toHaveText(/Aucun\s:\sle code est dans un dépôt privé\./);
   await expect(fiche.locator('a')).toHaveCount(0);
@@ -125,12 +128,32 @@ test('quatre vrais écrans : l’en-tête recadré sur sa colonne, chacun s’ou
   await expect(agrandir).toBeFocused();
 });
 
-test('la Galaxie, toujours sombre, vit dans un acte de veille', async ({ page }) => {
+test('la Galaxie, toujours sombre, vit dans un acte de veille, et sa loupe lit le compte d’en-tête', async ({ page }) => {
   await page.goto(CHEMIN);
   const galaxie = page.locator('#galaxie');
   expect(await galaxie.evaluate((section) => Boolean(section.closest('.acte-veille')))).toBe(true);
   await expect(galaxie.locator('img').first()).toHaveAttribute('alt', /seize tâches fictives/);
-  await expect(galaxie.locator('.capture__legende')).toContainText('quel que soit le thème');
+  await expect(galaxie.locator('.capture__legende')).toContainText('le goulot');
+  const capture = galaxie.locator('.capture-annotee');
+  await capture.scrollIntoViewIfNeeded();
+  const imageLoupe = capture.locator('.loupe img');
+  await expect.poll(() => imageLoupe.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
+  const [loupe, detail, ecran] = await Promise.all([capture.locator('.loupe').boundingBox(), imageLoupe.boundingBox(), capture.locator('.capture__vue > a img').boundingBox()]);
+  // L’image de la loupe est entière (2400 × 1350) et agrandie : le compte s’y lit.
+  expect(detail!.width / detail!.height).toBeCloseTo(2400 / 1350, 1);
+  expect(detail!.width).toBeGreaterThan(loupe!.width * 3.5);
+  // La capture entière, à son ratio, et assez large pour la page.
+  expect(ecran!.width / ecran!.height).toBeCloseTo(2400 / 1350, 1);
+  if ((page.viewportSize()?.width ?? 0) >= 1440) expect(ecran!.width).toBeGreaterThan(800);
+});
+
+test('l’en-tête : sur mobile, les deux règles seules, lisibles ; sur ordinateur, la colonne entière', async ({ page }) => {
+  await page.goto(CHEMIN);
+  const vue = page.locator('.ksc-entete-capture .capture__vue');
+  const boite = await vue.boundingBox();
+  const ratio = boite!.width / boite!.height;
+  if ((page.viewportSize()?.width ?? 0) <= 860) expect(ratio).toBeCloseTo((0.39 * 2728) / (0.46 * 1278), 1);
+  else expect(ratio).toBeCloseTo((0.59 * 2728) / 1278, 1);
 });
 
 test('sur mobile, l’écart seul se lit ; sur ordinateur, les trois panneaux', async ({ page }) => {
@@ -175,6 +198,12 @@ test('la chaîne d’un ticket : cinq étapes, une seule écrit dans l’outil s
   await expect(figure.locator('.chaine__etape--statut')).toHaveCount(1);
   await expect(figure.locator('.chaine__etape--statut .chaine__acces')).toHaveText(/y écrit le statut/);
   await expect(figure.locator('.chaine__etape--lecture')).toHaveCount(1);
+  // L’agent qui prépare lit une copie déposée par le service, jamais le serveur MCP.
+  await expect(etapes.nth(1).locator('.chaine__texte')).toContainText('dossier que le service lui prépare');
+  await expect(figure).not.toContainText('MCP');
+  // Les flèches entre étapes sont muettes pour les lecteurs d’écran.
+  const flecheMuette = await etapes.first().evaluate((li) => getComputedStyle(li, '::after').content);
+  expect(flecheMuette).toMatch(/\/\s*""$/);
   // Ce qui n’est pas livré n’est pas présenté : aucune règle fournie, l’interrupteur coupé par défaut.
   await expect(page.locator('#chaine')).toContainText('Aucune règle n’est livrée');
 });

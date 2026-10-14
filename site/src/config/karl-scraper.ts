@@ -35,7 +35,9 @@ export const CARTE: CarteVitrine = {
   // Core/Automation/AutomationAction.cs et AutomationTrigger.cs @ 6615950 : 18 actions, 14 déclencheurs.
   chiffre: { valeur: '18', libelle: 'actions et 14 déclencheurs pour enchaîner les gestes d’un ticket', releve: '14 octobre 2026' },
   role: 'Conçu et développé seul',
-  statut: { texte: 'Outil personnel, en usage quotidien' },
+  // Sourcé : le service tourne sur mon poste (127.0.0.1:5177, relevé le 14/10/2026). L’usage
+  // quotidien attend la réponse de Charles (K3) : la carte n’a pas de marque par champ.
+  statut: { texte: 'Outil personnel, en service sur mon poste' },
   liens: [],
   // backend/Directory.Build.props (net10.0) ; frontend Angular 22 ; EF Core et SQLite (Directory.Packages.props).
   technos: [
@@ -44,13 +46,12 @@ export const CARTE: CarteVitrine = {
     { src: sqlite, alt: 'SQLite' },
   ],
   // La Galaxie se lit à la taille d’une carte : une scène, pas un texte (KSC-C1).
+  // Entière, à son ratio natif (16:9) : un recadrage trancherait ses libellés.
   visuel: {
     capture: {
       type: 'navigateur',
       src: galaxie,
       alt: 'La Galaxie de Karl Scraper : des tâches fictives sur les anneaux de leur statut, les retards en rouge.',
-      ratio: '16 / 10',
-      position: '50% 45%',
       widths: [480, 800, 1200],
     },
   },
@@ -61,9 +62,10 @@ export const CARTE: CarteVitrine = {
 /* ------------------------------------------------------------------ */
 
 export const EN_TETE = {
-  titre: ['Automatiser le chemin d’un ticket.', 'Garder la main.'],
+  // Second vers propre au projet (aucun agent n’ouvre l’outil source), pas la formule de Sillage (K5).
+  titre: ['Automatiser le chemin d’un ticket.', 'Sans ouvrir l’outil aux agents.'],
   chapeau:
-    'Mes tâches vivent dans un outil de gestion de tâches en ligne. Karl Scraper en tient une copie locale, la donne à lire à des agents IA et enchaîne les gestes d’un ticket jusqu’à sa pull request, sans leur ouvrir l’outil source. Je l’ai conçu et développé seul.',
+    'Mes tâches vivent dans un outil de gestion de tâches en ligne. Karl Scraper en tient une copie locale, la donne à lire à des agents IA et enchaîne les gestes d’une tâche, du ticket à sa pull request, sans leur ouvrir l’outil source. Je l’ai conçu et développé seul.',
   liens: [] satisfies LienProjet[],
 };
 
@@ -80,7 +82,7 @@ export const PREUVES: readonly PreuveEnTete[] = [
   {
     // Projet Mcp, Tools/*.cs @ 6615950 : 13 McpServerTool, dont 10 ReadOnly = true.
     valeur: '13',
-    libelle: 'outils MCP pour les agents, dont 10 en lecture seule',
+    libelle: 'outils donnés à un agent IA, dont 10 en lecture seule',
     source: 'Serveur MCP du dépôt',
     date: 'relevé le 14/10/2026',
     href: '#agent',
@@ -98,12 +100,14 @@ export const PREUVES: readonly PreuveEnTete[] = [
 export const FICHE: DonneesFiche = {
   besoin: 'Garder une copie locale de mes tâches, la donner à lire à des agents IA et automatiser le chemin d’un ticket jusqu’à sa pull request.',
   // git log @ 6615950 : 282 commits, un seul auteur, du 28/08 au 09/10/2026.
-  part: 'J’ai conçu et développé seul le service, son serveur MCP et son interface : 282 commits en six semaines.',
+  part: 'J’ai conçu et développé seul le service, le serveur qui sert les tâches aux agents et l’interface : 282 commits en six semaines.',
   role: 'Conception et développement',
   periode: 'Depuis fin août 2026',
   equipe: 'Projet personnel, seul',
-  statut: { texte: 'Outil personnel, en usage quotidien' },
+  // Le service tourne sur mon poste (relevé le 14/10/2026) ; « en usage quotidien » attend K3.
+  statut: { texte: 'Outil personnel, en service sur mon poste' },
   liens: [],
+  aConfirmer: { equipe: 'Présentation en projet personnel à confirmer par Charles (K1)' },
 };
 
 /** Les sections du corps : sommaire de l’en-tête et navigation de page. */
@@ -123,7 +127,7 @@ export const SECTIONS: readonly EntreeSommaire[] = [
 export const ECRANS = {
   enchainements: {
     alt: 'Les réglages des enchaînements : l’interrupteur général allumé, des plafonds de lancement, puis deux règles qui retiennent une lecture et la confient à Relais.',
-    legende: 'Deux règles écrites pour la démonstration : retenir une lecture proposée, puis la confier à un agent. Un clic agrandit l’écran.',
+    legende: 'Deux règles écrites pour la démonstration : retenir la compréhension qu’un agent propose (une « lecture », à l’écran), puis la confier à un agent. Un clic agrandit l’écran.',
   },
   tableauDeBord: {
     alt: 'Le tableau de bord sur trois projets fictifs : les tâches par projet, par statut, et l’écart avec l’observation précédente, cinq statuts changés et une tâche nouvelle.',
@@ -131,11 +135,11 @@ export const ECRANS = {
   },
   galaxie: {
     alt: 'La Galaxie : seize tâches fictives sur les anneaux de leur statut, deux en retard, le goulot à « À faire », et la frise des trois observations.',
-    legende: 'Seize tâches de démonstration, de « À faire », à l’extérieur, à « À valider », au centre. La scène reste sombre, quel que soit le thème.',
+    legende: 'En haut, le compte : seize tâches de démonstration, dont deux en retard, et le goulot. L’anneau extérieur est « À faire », le centre « À valider ».',
   },
   vueAgent: {
     alt: 'L’onglet « Vue agent » d’une tâche fictive : la donnée exacte que le serveur MCP sert à un agent, figée sur une observation scellée.',
-    legende: 'La tâche telle qu’un agent la lit, avec l’observation d’où elle vient.',
+    legende: 'L’observation d’où vient la donnée que montre l’onglet « Vue agent » : la « snapshot » de l’écran, avec son identifiant et sa date.',
   },
 } as const;
 
@@ -148,7 +152,7 @@ export type AccesSource = 'lecture' | 'aucun' | 'statut';
 
 export interface EtapeChaine {
   geste: string;
-  /** Qui agit : le service, un agent, moi, ou une règle que j’ai écrite. */
+  /** Qui agit : le service, un agent, moi, ou une règle écrite et activée. */
   acteur: string;
   texte: string;
   acces: AccesSource;
@@ -160,13 +164,17 @@ export interface EtapeChaine {
  * arbitrage (PLAN-preparation.md, PLAN-chaine-de-travail.md § 2), réalisation
  * (PLAN-realisation.md : un worktree et une PR par dépôt modifié), statut
  * (docs/invariants/securite.md : un clic, ou une règle écrite et activée).
+ * L’agent qui prépare ne passe pas par le serveur MCP : le service recopie
+ * le cache dans le dossier de son lancement (TicketCorpus) et il n’a que
+ * Read, Glob et Grep (docs/invariants/agents.md:84-90, preparation.md:167-168).
+ * Les acteurs disent ce que l’outil permet, pas mon usage (K3).
  */
 export const CHAINE: readonly EtapeChaine[] = [
   { geste: 'Synchroniser', acteur: 'Le service', texte: 'Relit mes tâches assignées et scelle une observation locale.', acces: 'lecture' },
-  { geste: 'Comprendre', acteur: 'Un agent', texte: 'Lit la tâche par le serveur MCP, explore les dépôts en lecture et désigne le dépôt et le worktree.', acces: 'aucun' },
-  { geste: 'Trancher', acteur: 'Moi, ou une règle que j’ai écrite', texte: 'Retenir ou écarter sa lecture : le seul arbitrage de la chaîne.', acces: 'aucun' },
+  { geste: 'Comprendre', acteur: 'Un agent', texte: 'Lit la tâche dans un dossier que le service lui prépare, explore les dépôts en lecture et désigne le dépôt et le worktree où la faire.', acces: 'aucun' },
+  { geste: 'Trancher', acteur: 'Moi, ou une règle écrite et activée', texte: 'Retient ou écarte sa compréhension : le seul arbitrage avant que du code s’écrive.', acces: 'aucun' },
   { geste: 'Réaliser', acteur: 'Un agent, lancé par Relais', texte: 'Travaille dans un worktree et ouvre une pull request par dépôt touché.', acces: 'aucun' },
-  { geste: 'Poser le statut', acteur: 'Moi d’un clic, ou une règle', texte: 'Le statut de la tâche, relu dans la source juste avant.', acces: 'statut' },
+  { geste: 'Poser le statut', acteur: 'Moi d’un clic, ou une règle activée', texte: 'Écrit le statut de la tâche, relu dans la source juste avant.', acces: 'statut' },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -175,22 +183,27 @@ export const CHAINE: readonly EtapeChaine[] = [
 
 export const DECISIONS: readonly Decision[] = [
   {
-    // docs/invariants/securite.md:10-26 ; garde du client HTTP, sur liste blanche @ 6615950.
+    // docs/invariants/securite.md:10-26 ; garde du client HTTP vers l’outil source (KarlGuardHandler,
+    // KarlMethodGuard), sur liste blanche @ 6615950. Les appels vers Relais, Sillage et GitHub n’y passent pas.
     contrainte: 'L’outil garde une session complète sur une application en production.',
-    choix: 'Chaque appel réseau passe par une liste blanche : des lectures, plus une seule écriture, le statut d’une tâche, relu dans la source juste avant.',
+    choix: 'Chaque appel vers l’outil source passe par une liste blanche : des lectures, plus une seule écriture, le statut d’une tâche, relu dans la source juste avant.',
     effet: 'Un défaut de l’outil ne peut modifier qu’un statut.',
   },
   {
     // Core/StorageServiceCollectionExtensions.cs:68-71 (Mode=ReadOnly) ; Tests/Architecture/McpIsolationTests.cs:13-15.
-    contrainte: 'Un agent doit lire les tâches sans pouvoir appeler la source ni écrire dans la copie locale.',
+    // trigger_sync (Mcp/Tools/SyncTools.cs:50-66) demande un passage au service, qui seul lit la source.
+    // Aucune CI à 6615950 : le test tourne avec la suite de tests, pas « à chaque build ».
+    contrainte: 'Un agent doit lire les tâches sans appeler lui-même la source ni écrire dans la copie locale.',
     choix: 'Le serveur MCP tourne dans un processus à part, ouvre la base en lecture seule et ne connaît ni la synchronisation ni le navigateur.',
-    effet: 'Un test d’architecture le vérifie à chaque build : la règle n’est pas qu’un commentaire.',
+    effet: 'Un test d’architecture le vérifie à chaque passage des tests : la règle n’est pas qu’un commentaire.',
   },
   {
-    // AGENTS.md (Stockage) ; docs/invariants/stockage.md:26-47 (magasin illisible en quarantaine, lecture seule).
-    contrainte: 'Un agent doit raisonner sur un état figé, et aucune de mes décisions ne doit se perdre.',
-    choix: 'Chaque passage scelle une observation, et le serveur MCP choisit la sienne à son lancement, jamais en cours de session. Un fichier de décisions illisible reste intact, en lecture seule, au lieu d’être lu vide puis écrasé.',
-    effet: 'Deux appels identiques rendent la même réponse, et une décision prise ne se perd pas.',
+    // AGENTS.md (Stockage) ; docs/invariants/stockage.md:26-47 (magasin illisible en quarantaine, lecture seule) ;
+    // docs/PLAN-snapshots-detail.md:296-301 (source `live` par défaut, `latest` ou un run ; pas de `pin_snapshot` ;
+    // chaque réponse porte sa source).
+    contrainte: 'Un agent doit pouvoir raisonner sur un état figé, et aucune de mes décisions ne doit se perdre.',
+    choix: 'Chaque passage scelle une observation, et le serveur MCP fixe sa source à son lancement, le cache vivant ou une observation scellée, jamais en cours de session ; chaque réponse dit d’où elle vient. Un fichier de décisions illisible reste intact, en lecture seule, au lieu d’être lu vide puis écrasé.',
+    effet: 'Sur une observation, deux appels identiques rendent la même réponse, et une décision prise ne se perd pas.',
   },
   {
     // PLAN-enchainements.md § 0, points 2-3 ; Core/Automation/AutomationHost.cs:32-40.
