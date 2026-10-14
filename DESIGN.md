@@ -339,7 +339,8 @@ Chaque composant est documenté en tête de son fichier.
 - **Vitrine** (`pages/IndexPreuves.astro`, `pages/CarteProjet.astro`, `pages/Vitrine.astro`) :
   l’index des étiquettes de preuve, puis une section par famille (« Lead et équipe », « Jeu
   vidéo », « Outils », « IA », titres en `h2`), ses cartes (vedette, ligne ; une famille de trois
-  en trois colonnes au-delà de 1 100 px), chacune avec « Voir le projet → ». En fin de page, le
+  en trois colonnes au-delà de 1 100 px, une carte par ligne entre 861 et 1 100 px), chacune avec
+  « Voir le projet → ». En fin de page, le
   volet replié des projets archivés (`vitrine/ArchivesProjets.astro`), avec leurs vignettes.
 - **Appel** (`pages/AppelDiscutons.astro`) : « Discutons → » vers `/contact`, après un filet ou sur
   l’aplat bleu roi.
