@@ -16,6 +16,13 @@ export const SITE = {
   locale: 'fr_FR',
   /** Couleur du navigateur mobile : le bleu roi du site. */
   couleurTheme: '#1F4FD1',
+  /**
+   * Jeton de la propriété Search Console de charles-lindecker.com, repris de
+   * la V1 (`front-portfolio/src/index.html`). Google revérifie la propriété de
+   * temps en temps : sans cette balise sur l’accueil, elle se perdrait au
+   * moment où la V2 prend le domaine, celui où il faut suivre la réindexation.
+   */
+  verificationGoogle: '8ktW_VNmaBZquKlGxRbpspq5KO7jrgMHQ3hH1asr06s',
 } as const;
 
 export const CONTACT = {
