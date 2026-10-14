@@ -474,10 +474,15 @@
   background: var(--papier-logo);
 }
 
+/* Une légende garde sa voix partout, même dans une citation en italique. */
 .blog-prose figcaption {
   margin-top: var(--s2);
   color: var(--eteint);
+  font-family: var(--police-texte);
+  font-style: normal;
   font-size: var(--t-xs);
+  line-height: 1.75;
+  letter-spacing: var(--ls-0);
 }
 
 /* Une région qui défile le montre, sans JavaScript : une ombre au bord d’où
