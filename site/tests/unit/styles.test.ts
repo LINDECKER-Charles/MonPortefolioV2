@@ -9,11 +9,10 @@ import { describe, expect, it } from 'vitest';
  * les captures et les logos tiers passent par des jetons (--capture-*,
  * --papier-logo).
  *
- * Exceptions assumées : l’atelier du blog (styles/blog-editor.css), pas
- * encore refait dans la coque du backoffice ; et les tailles des textes
- * internes aux figures SVG, en unités de leur viewBox (une coordonnée, pas une
- * taille d’interface) : les fichiers de FIGURES_SVG. Le reste du backoffice
- * (styles/backoffice.css, components/backoffice) suit la règle depuis sa
+ * Exception assumée : les tailles des textes internes aux figures SVG, en
+ * unités de leur viewBox (une coordonnée, pas une taille d’interface) : les
+ * fichiers de FIGURES_SVG. Le backoffice entier (styles/backoffice.css,
+ * styles/blog-editor.css, components/backoffice) suit la règle depuis sa
  * refonte « Lanterne », le 14 octobre 2026.
  *
  * Même règle pour le mouvement (M2) : une durée ou un délai d’animation et de
@@ -24,7 +23,7 @@ import { describe, expect, it } from 'vitest';
  */
 
 const SRC = new URL('../../src/', import.meta.url).pathname;
-const EXCLUS = new Set(['styles/jetons.css', 'styles/blog-editor.css']);
+const EXCLUS = new Set(['styles/jetons.css']);
 const FIGURES_SVG = new Set([
   'components/accueil/FigureGwent.astro',
   'components/accueil/FigurePlafond.astro',
