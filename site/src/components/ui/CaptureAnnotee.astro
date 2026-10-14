@@ -160,7 +160,12 @@ const dessous = Boolean(loupe?.dessous);
     display: contents;
   }
 
-  .loupe > picture > img {
+  /* Préfixé par la vue : depuis que la loupe est un <picture>, les règles de
+     CadreCapture sur `.capture__vue picture img` (recadrage : hauteur 100 %,
+     object-fit cover ; région) la visaient aussi, à spécificité égale et
+     déclarées après : l’image de la loupe était écrasée à sa hauteur et
+     montrait le haut de l’écran. Ce sélecteur l’emporte sur elles. */
+  :global(.capture__vue) .loupe > picture > img {
     position: absolute;
     left: 50%;
     top: 50%;
