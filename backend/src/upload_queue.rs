@@ -27,10 +27,11 @@ use tokio::sync::{OwnedSemaphorePermit, Semaphore};
 use crate::{AppState, error::ApiError};
 
 /// Deux gros envois lus à la fois : l’un se décode pendant que l’autre attend
-/// son tour de décodage avec son corps déjà lu. Le pic mesuré d’un import
-/// (183 Mio) et deux corps de 8 Mio au plus tiennent dans la limite mémoire du
-/// service (`compose.deploy.yaml`) ; une place de plus ajouterait un corps
-/// sans rien accélérer, puisque le décodage reste un à la fois.
+/// son tour de décodage avec son corps déjà lu. Mesuré dans un conteneur de
+/// 320 Mio (`compose.deploy.yaml`), une image lourde et 8 ou 16 imports de
+/// 4 Mio à la fois montent à 243 Mio de mémoire anonyme, contre 184 pour le
+/// pire import seul ; une place de plus ajouterait un corps sans rien
+/// accélérer, puisque le décodage reste un à la fois.
 pub const UPLOAD_SLOTS: usize = 2;
 /// Au-delà de 64 Kio, un corps passe par la file : une image de plus de 48 Kio
 /// une fois en base64. Un appel MCP ordinaire ou un article tient en dessous ;
@@ -38,8 +39,8 @@ pub const UPLOAD_SLOTS: usize = 2;
 pub const LARGE_BODY_BYTES: u64 = 64 * 1024;
 /// Attente au plus : 10 s. Le relais Node (`DELAI_API`) et l’atelier
 /// abandonnent une requête à 20 s ; il en reste 10 pour l’import lui-même
-/// (moins de 2 s pour le pire cas mesuré), et la réponse 503 arrive avant
-/// qu’ils abandonnent.
+/// (moins d’une seconde pour le pire cas mesuré), et la réponse 503 arrive
+/// avant qu’ils abandonnent.
 pub const UPLOAD_WAIT: Duration = Duration::from_secs(10);
 /// Délai conseillé au client (`Retry-After`), en secondes.
 const RETRY_AFTER_SECONDS: u64 = 10;

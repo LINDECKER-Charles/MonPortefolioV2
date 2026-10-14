@@ -158,7 +158,7 @@ Les routes suivantes nécessitent une session valide, à l’exception de `login
 | `/blog/posts/{id}/preview`, `/blog/posts/{id}/seo` | GET | lire le brouillon ou son audit SEO |
 | `/blog/posts/{id}/publish`, `/blog/posts/{id}/unpublish` | POST | publier ou retirer avec `{"revision":…}` |
 | `/blog/posts/{id}/schedule` | POST | programmer avec `{"revision":…, "scheduled_at":…}` |
-| `/blog/media`, `/blog/media/{id}`, `/blog/media/{id}/{largeur}` | GET/POST, GET/DELETE, GET | lister/importer les images, lire leurs octets ou ceux d’une variante avec la session ; supprimer une image qu’aucune version d’article ne cite (sinon `409 MEDIA_IN_USE`) |
+| `/blog/media`, `/blog/media/{id}`, `/blog/media/{id}/{largeur}` | GET/POST, GET/DELETE, GET | lister/importer les images (refus : `422 IMAGE_TOO_LARGE` ou `IMAGE_TOO_HEAVY`, `503 UPLOAD_BUSY` après 10 s d’attente), lire leurs octets ou ceux d’une variante avec la session ; supprimer une image qu’aucune version d’article ne cite (sinon `409 MEDIA_IN_USE`) |
 | `/storage` | GET | mesurer la place prise (session seulement, refusé à un accès MCP) |
 
 Toutes les mutations, y compris la connexion, exigent `X-Backoffice-Request: 1`. Les requêtes
@@ -257,18 +257,43 @@ Les routes publiques sont `GET /api/blog/posts?limit=…&offset=…` (résumés 
 ni article programmé sans version publiée n’y apparaît. Une image importée reste inaccessible
 par sa route publique tant qu’aucune version publiée ne la référence ; le backoffice peut la lire
 via sa route privée. Les octets des images PNG, JPEG, GIF et WebP sont enregistrés dans SQLite,
-avec vérification de leur signature et une limite de 4 Mio. L’import prend
-`{"filename":"…", "content_type":"image/png", "data_base64":"…"}`, sans préfixe `data:`.
+avec vérification de leur signature et une limite de 4 Mio. Ce plafond est une décision : une
+photo de plus de 4 Mio s’exporte plus petite avant l’import, puisque le site la sert sur
+1 600 px au plus et que la mémoire de l’import dépend de ses pixels, pas du poids du fichier.
+L’import prend `{"filename":"…", "content_type":"image/png", "data_base64":"…"}`, sans préfixe
+`data:`.
 
 À l’import, le backend lit l’en-tête de l’image (10 000 px de côté et 25 millions de pixels
 au plus, sinon `422 IMAGE_TOO_LARGE`), puis la décode : 150 Mo au plus tenus par le décodage,
 tampons propres au décodeur compris, une image à la fois, quelle que soit la voie (backoffice,
 MCP ou démarrage). Une image dont le décodage demanderait plus (WebP de plus de 13 Mpx avec
-transparence, JPEG progressif de plus de 16 Mpx en 4:4:4, PNG de 16 bits par canal de plus de
-12,5 Mpx…) est admise sans variante. Un PNG RGBA de 25 Mpx monte à 124 Mio ; le pire pic mesuré,
-183 Mio, est un JPEG progressif en 4:4:4 de 16,6 Mpx, borné par ce seuil de décodage et non par
-celui des 25 Mpx, d’où les 256 Mio du service dans `compose.deploy.yaml`, détaillés dans
-[`docs/deploiement.md`](../docs/deploiement.md). Le backend en mesure les dimensions,
+transparence ou de 21 Mpx sans, JPEG progressif de plus de 16 Mpx en 4:4:4, PNG de 16 bits par
+canal de plus de 12,5 Mpx…) est refusée à l’import : `422 IMAGE_TOO_HEAVY`, avec le message
+« Cette image est trop lourde à réduire. Exportez-la en JPEG ou en PNG 8 bits, ou réduisez-la
+(3 000 px de large suffisent). », que l’atelier et l’outil MCP montrent tel quel. Sans
+variante, son original partirait tel quel sur mobile, sans que son auteur le sache. Exportée en
+JPEG séquentiel ou en PNG 8 bits, une image de 25 Mpx au plus passe toujours. Une image déjà en
+base, traitée au démarrage, reste gardée sans variante. Un PNG RGBA de 25 Mpx monte à 124 Mio ;
+le pire pic mesuré, 184 Mio, est un JPEG progressif en 4:4:4 de 16,6 Mpx, borné par ce seuil de
+décodage et non par celui des 25 Mpx ; une image refusée par ce seuil reste sous 44 Mio. D’où
+les 320 Mio du service dans `compose.deploy.yaml`, détaillés dans
+[`docs/deploiement.md`](../docs/deploiement.md).
+
+Les gros imports attendent leur tour avant d’être lus. Une requête dont le corps peut dépasser
+64 Kio (`Content-Length` au-dessus, ou absent avec un corps en flux), par le backoffice
+(`POST /api/backoffice/blog/media`) ou par le MCP (`POST /mcp`, outil `blog_upload_media`), prend
+l’une des deux places qu’ils partagent, une fois la session ou le jeton vérifiés. En attente, elle
+ne lit pas son corps : TCP freine son client. Après 10 s, elle reçoit `503 UPLOAD_BUSY` avec
+`Retry-After: 10` ; son corps est lu et jeté avant la réponse (9 Mio et 5 s au plus), sans quoi
+la connexion serait réinitialisée et le client perdrait la réponse. Les 10 s laissent à l’import
+le temps de finir avant les 20 s au bout desquelles le relais Node et l’atelier abandonnent. Les
+petites requêtes (appels MCP ordinaires, formulaire de contact, atelier) ne passent jamais par
+cette file. Mesuré dans un conteneur limité à 320 Mio : une image lourde et 8 ou 16 imports de
+4 Mio à la fois aboutissent tous, en 4,6 s au plus, avec 243 Mio de mémoire anonyme au pire ; 48 à
+la fois, 38 aboutissent et 11 reçoivent la réponse 503 après 10 s, sans OOM ; le formulaire de
+contact répond pendant ce temps. Sans cette file, 8 imports simultanés tuaient le conteneur.
+
+Le backend mesure les dimensions de l’image,
 orientation EXIF comprise, et prépare des variantes réduites aux largeurs 480, 960 et 1 600 px
 (et à sa propre largeur si elle ne dépasse pas 1 600 px) : JPEG de qualité 80, ou WebP sans
 perte si l’image a de la transparence. Une variante qui ne pèse pas moins que l’original n’est
@@ -386,7 +411,9 @@ JSON, sans flux SSE ; GET et DELETE ne sont pas utilisés. En 2026-07-28, `serve
 privé : le catalogue dépend des permissions de l’accès) ; sans elles, Claude Code refuse le
 catalogue. Les appels sont limités à 120 par IP et par minute. Un corps MCP accepte au plus
 8 Mio pour permettre l’import d’images en base64 ; les limites du document et de l’image restent
-contrôlées séparément.
+contrôlées séparément. Un appel de plus de 64 Kio (un import d’image) attend sa place dans la file
+des imports, partagée avec le backoffice : après 10 s, la réponse HTTP est `503 UPLOAD_BUSY` avec
+`Retry-After`, à réessayer.
 
 | Outil | Permission | Rôle |
 |---|---|---|
@@ -417,8 +444,9 @@ ou programmer seulement quand le contenu est validé. Les outils annoncent leurs
 annotations MCP : les lectures sont `readOnlyHint`, les créations/imports sont additifs, et
 les modifications, publications et suppressions signalent leur effet destructif. Les erreurs
 applicatives du blog sont des résultats `isError: true` avec `structuredContent.code` et
-`message` (`PERMISSION_DENIED`, `VALIDATION_ERROR`, `REVISION_CONFLICT`, `NOT_FOUND`…), permettant
-au client de corriger l’appel. Les requêtes JSON-RPC mal formées et les outils inconnus restent
+`message` (`PERMISSION_DENIED`, `VALIDATION_ERROR`, `REVISION_CONFLICT`, `NOT_FOUND`,
+`IMAGE_TOO_LARGE`, `IMAGE_TOO_HEAVY`…), permettant au client de corriger l’appel ; le message est
+à montrer tel quel. Les requêtes JSON-RPC mal formées et les outils inconnus restent
 des erreurs de protocole. Voir la [spécification MCP des outils](https://modelcontextprotocol.io/specification/2026-07-28/server/tools).
 
 ### Codex
