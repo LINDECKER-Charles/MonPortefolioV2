@@ -680,6 +680,8 @@ test('Stockage : le disque, la base, les images et les articles, du plus lourd a
   // Supprimer une image inutilisée : confirmée, puis elle disparaît et les chiffres suivent.
   await inutilisee.getByRole('button', { name: 'Supprimer schema.png', exact: true }).click();
   await expect(page.getByRole('dialog')).toContainText('« schema.png » et ses variantes seront supprimées définitivement');
+  // Une image tout juste téléversée dans un article pas encore enregistré n’est citée nulle part.
+  await expect(page.getByRole('dialog')).toContainText(`Aucun article enregistré ne l’utilise${NBSP}; un article en cours de rédaction dans un autre onglet la perdrait.`);
   await accessibilite(page);
   await page.getByRole('button', { name: 'Annuler', exact: true }).click();
   expect(etat.images).toHaveLength(2);

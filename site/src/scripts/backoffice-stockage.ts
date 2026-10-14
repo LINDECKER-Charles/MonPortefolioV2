@@ -235,7 +235,7 @@ export function brancherStockage(contexte: ContexteStockage): RubriqueStockage {
   async function supprimerImage(image: ImageStockee, bouton: HTMLButtonElement): Promise<void> {
     const accord = await contexte.confirmer(
       'Supprimer cette image ?',
-      `${cite(image.filename)} et ses variantes seront supprimées définitivement de la bibliothèque. Aucun article ne l’utilise.`,
+      `${cite(image.filename)} et ses variantes seront supprimées définitivement de la bibliothèque. Aucun article enregistré ne l’utilise${NBSP}; un article en cours de rédaction dans un autre onglet la perdrait.`,
       'Supprimer l’image',
     );
     if (!accord) return;
