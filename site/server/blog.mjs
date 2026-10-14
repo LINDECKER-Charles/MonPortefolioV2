@@ -16,6 +16,14 @@ export function typoAuteur(texte) {
   return String(texte ?? '').replace(/(\p{L})'(?=\p{L})/gu, '$1’').replace(/[ \t]+([:;!?»])/g, '\u00a0$1').replace(/«[ \t]+/g, '«\u00a0');
 }
 const texteAuteur = (valeur) => escapeHtml(typoAuteur(valeur));
+/**
+ * Un texte d’attribut tel que la validation Rust l’admet (`bounded`) : une chaîne
+ * d’au plus 300 caractères, sans caractère de contrôle hors \n et \t. Toute
+ * autre valeur se rend comme un attribut absent (tests/fixtures/schema-blog.json).
+ */
+const texteBorne = (valeur, max = 300) => (typeof valeur === 'string' && [...valeur].length <= max && !/[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/.test(valeur) ? valeur : '');
+/** Langage d’un bloc de code, comme `codeBlock.language` dans blog.rs. */
+const LANGAGE = /^[A-Za-z0-9+#_-]{1,40}$/;
 const jsonScript = (value) => JSON.stringify(value).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
 
 /** Liens et images suivent la règle du backend (blog-regles.mjs) ; l’aperçu lit les images par la session. */
@@ -109,7 +117,7 @@ export function renderDocument(doc, { preview = false, reserved = [], media = {}
    */
   const lienDe = (node) => (Array.isArray(node?.marks) ? node.marks : []).find((mark) => mark?.type === 'link');
   const ancre = (href, attrs, interieur) => {
-    const titre = attrs?.title ? ` title="${texteAuteur(attrs.title)}"` : '';
+    const titre = texteBorne(attrs?.title) ? ` title="${texteAuteur(attrs.title)}"` : '';
     if (!/^https?:\/\//.test(href)) return `<a href="${escapeHtml(href)}"${titre}>${interieur}</a>`;
     return `<a href="${escapeHtml(href)}"${titre} rel="external" data-umami-event="lien-sortant" data-umami-event-domaine="${escapeHtml(new URL(href).hostname)}" data-umami-event-emplacement="article">${interieur}<span class="fleche" aria-hidden="true">\u00a0↗</span></a>`;
   };
@@ -148,11 +156,11 @@ export function renderDocument(doc, { preview = false, reserved = [], media = {}
       case 'paragraph': return `<p${align}>${enLigne(contenu, depth)}</p>`;
       case 'heading': { const level = [2, 3, 4].includes(attrs.level) ? attrs.level : 2; return `<h${level}${align} id="${identifiant(node)}">${enLigne(contenu, depth)}</h${level}>`; }
       case 'bulletList': return `<ul>${children()}</ul>`;
-      case 'orderedList': return `<ol${Number.isSafeInteger(attrs.start) && attrs.start > 0 ? ` start="${attrs.start}"` : ''}${['1', 'a', 'A', 'i', 'I'].includes(attrs.type) ? ` type="${attrs.type}"` : ''}>${children()}</ol>`;
+      case 'orderedList': return `<ol${Number.isSafeInteger(attrs.start) && attrs.start > 0 && attrs.start <= 1_000_000 ? ` start="${attrs.start}"` : ''}${['1', 'a', 'A', 'i', 'I'].includes(attrs.type) ? ` type="${attrs.type}"` : ''}>${children()}</ol>`;
       case 'listItem': return `<li>${children()}</li>`;
       case 'blockquote': return `<blockquote>${children()}</blockquote>`;
       // Tableaux et code défilent en largeur : la région prend le focus pour défiler au clavier (WCAG 2.1.1).
-      case 'codeBlock': { codes += 1; const langage = typeof attrs.language === 'string' && attrs.language ? ` (${escapeHtml(attrs.language)})` : ''; return `<pre tabindex="0" role="region" aria-label="Code ${codes}${langage}"><code>${contenu.map((ligne) => (ligne?.type === 'text' ? escapeHtml(ligne.text) : '')).join('')}</code></pre>`; }
+      case 'codeBlock': { codes += 1; const langage = typeof attrs.language === 'string' && LANGAGE.test(attrs.language) ? ` (${escapeHtml(attrs.language)})` : ''; return `<pre tabindex="0" role="region" aria-label="Code ${codes}${langage}"><code>${contenu.map((ligne) => (ligne?.type === 'text' ? escapeHtml(ligne.text) : '')).join('')}</code></pre>`; }
       case 'hardBreak': return '<br>';
       case 'horizontalRule': return '<hr>';
       case 'image': {
@@ -160,7 +168,7 @@ export function renderDocument(doc, { preview = false, reserved = [], media = {}
         if (!src) return '';
         const info = infoImage(media, src);
         const taille = tailleImage(attrs, info);
-        return `<figure><img ${sources(src, info, taille?.height ? taille : null, versApercu(preview))} alt="${texteAuteur(attrs.alt)}"${attributsTaille(taille)} loading="lazy" decoding="async">${attrs.title ? `<figcaption>${texteAuteur(attrs.title)}</figcaption>` : ''}</figure>`;
+        return `<figure><img ${sources(src, info, taille?.height ? taille : null, versApercu(preview))} alt="${texteAuteur(texteBorne(attrs.alt))}"${attributsTaille(taille)} loading="lazy" decoding="async">${texteBorne(attrs.title) ? `<figcaption>${texteAuteur(attrs.title)}</figcaption>` : ''}</figure>`;
       }
       case 'table': {
         tables += 1;
