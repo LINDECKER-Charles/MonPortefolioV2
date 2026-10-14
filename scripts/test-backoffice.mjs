@@ -246,13 +246,13 @@ async function capturerInterface() {
       const reception = path.join(dossierImages, `backoffice-${nom}.png`);
       await page.screenshot({ path: reception, fullPage: true });
       screenshots.push(reception);
-      await page.getByRole('tab', { name: 'Boîte à outils' }).click();
+      await page.getByRole('navigation', { name: 'Rubriques du backoffice' }).getByRole('link', { name: 'Boîte à outils' }).click();
       await page.locator('#bo-link-list a').waitFor({ state: 'visible' });
       await stabiliserCapture(page);
       const outils = path.join(dossierImages, `backoffice-tools-${nom}.png`);
       await page.screenshot({ path: outils, fullPage: true });
       screenshots.push(outils);
-      await page.getByRole('tab', { name: 'Blog', exact: true }).click();
+      await page.getByRole('navigation', { name: 'Rubriques du backoffice' }).getByRole('link', { name: 'Blog', exact: true }).click();
       await page.waitForURL('**/backoffice/blog');
       await page.locator('#blog-new').click();
       await page.waitForURL('**/backoffice/blog/redaction');
