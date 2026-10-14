@@ -1,0 +1,60 @@
+name: monportfolio-archive
+
+# Pile de l'archive de la V1 (depot public MonPortfolio, fige sur un commit),
+# servie sur son seul sous-domaine. Construite et deposee sur l'hote par
+# .github/workflows/archive-v1.yml, demarree par scripts/deploy-archive-v1.sh,
+# dans /opt/monportfolio-archive. Elle ne partage ni dossier, ni nom de projet,
+# ni domaine avec les piles de la V1 (monportfolio-staging, monportfolio-prod)
+# ni avec celles de la V2 (portfolio-test, portfolio-prod).
+#
+# Le .env de l'hote est ecrit par le script de deploiement, jamais a la main :
+#   ARCHIVE_IMAGE    image epinglee par son digest (ghcr.io/...@sha256:...)
+#   ARCHIVE_DOMAINE  nom d'hote nu de l'archive (yharnam.charles-lindecker.com)
+#
+# Un seul service, le serveur SSR d'Angular de la V1, tel que son depot le
+# definit (compose.yaml et compose.deploy.yaml de MonPortfolio) : memes variables
+# d'execution, meme sonde de sante (HEALTHCHECK de l'image), memes etiquettes
+# pour l'edge partage d'infra-vps. Aucun port publie.
+
+services:
+  web:
+    image: ${ARCHIVE_IMAGE:?ARCHIVE_IMAGE est obligatoire (image epinglee par digest)}
+    restart: unless-stopped
+    init: true
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: "4000"
+      # Hotes admis par la garde SSRF d'@angular/ssr, en plus d'angular.json.
+      # Sans lui, la V1 retombe en rendu client sur ce domaine.
+      NG_ALLOWED_HOSTS: ${ARCHIVE_DOMAINE:?ARCHIVE_DOMAINE est obligatoire}
+      # X-Robots-Tag: noindex, nofollow sur toutes les reponses : l'archive ne
+      # doit jamais concurrencer la V2 dans les moteurs de recherche. Le
+      # deploiement echoue si l'en-tete manque a la reponse publique.
+      ROBOTS_NOINDEX: "1"
+    networks:
+      - default
+      - edge
+    labels:
+      caddy: ${ARCHIVE_DOMAINE:?ARCHIVE_DOMAINE est obligatoire}
+      caddy.reverse_proxy: "{{upstreams 4000}}"
+      caddy.encode: zstd gzip
+    logging:
+      # Pilote lisible par le collecteur de l'hote (voir compose.yaml de la V2).
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          # Regle infra-vps : 2x le pic observe. Le serveur SSR de la V1 n'a pas
+          # d'historique sur cet hote : 256m est une valeur de depart, comme
+          # pour la V2, a rederiver apres une semaine.
+          memory: 256m
+
+networks:
+  # Tissu d'ingress partage, cree par infra-vps : verifie, jamais cree ici.
+  edge:
+    external: true
+    name: edge

@@ -1,0 +1,75 @@
+/*
+ * Bandeau de l'archive de la V1, posé par-dessus le site d'origine
+ * (archive-v1/bandeau/poser.mjs). Il dit où l'on est et renvoie vers le site
+ * actuel, sans rien déplacer de la mise en page de la V1 : une pastille fixe,
+ * en bas de l'écran, aux couleurs de jour de la V2 (site/src/styles/jetons.css),
+ * lisible sur le fond sombre de la V1.
+ *
+ * Feuille servie à part : la CSP de la V1 admet les styles de sa propre origine.
+ * Les valeurs sont écrites ici en dur, volontairement : ce fichier vit hors des
+ * deux systèmes de jetons, et ne doit dépendre d'aucun des deux.
+ */
+.archive-bandeau {
+  position: fixed;
+  z-index: 1000;
+  left: 50%;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  box-sizing: border-box;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  margin: 0;
+  padding: 10px 16px;
+  border: 1px solid #7b7368;
+  border-radius: 6px;
+  background: #fbfaf7;
+  color: #141312;
+  box-shadow: 0 10px 28px -16px rgb(20 19 18 / 0.6);
+  font: 500 14px/1.4 Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  letter-spacing: normal;
+  text-align: center;
+  text-transform: none;
+}
+
+.archive-bandeau__texte {
+  margin: 0;
+}
+
+/* La pastille couvre le bas de l'écran : une réserve en fin de page laisse le
+   dernier contenu de la V1 remonter au-dessus d'elle. Deux lignes sur mobile. */
+body {
+  padding-bottom: 72px;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding-bottom: 96px;
+  }
+}
+
+.archive-bandeau__lien {
+  color: #1f4fd1;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+
+.archive-bandeau__lien:hover {
+  color: #173fae;
+}
+
+.archive-bandeau__lien:focus-visible {
+  outline: 2px solid #1f4fd1;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+@media print {
+  .archive-bandeau {
+    position: static;
+    transform: none;
+    margin: 0 auto 16px;
+    box-shadow: none;
+  }
+}
