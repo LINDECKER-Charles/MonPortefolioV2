@@ -1229,6 +1229,13 @@
     margin-inline: calc(-1 * var(--s3));
   }
 
+  /* Les libellés s’alignent sur la gouttière ; le trait de la rubrique lue
+     reste sous le texte, sans entrer dans la marge. */
+  .bo-navigation a[aria-current='page'] {
+    box-shadow: none;
+    background: linear-gradient(var(--encre), var(--encre)) center bottom / calc(100% - 2 * var(--s3)) 2px no-repeat;
+  }
+
   .bo-inbox,
   .bo-colonnes,
   .bo-mcp {
