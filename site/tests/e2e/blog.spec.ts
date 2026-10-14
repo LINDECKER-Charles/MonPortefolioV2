@@ -198,7 +198,7 @@ test('l’atelier montre tel quel le refus d’une image trop lourde à réduire
   const notice = page.locator('#blog-media-notice');
   // Les messages du backend (blog.rs, upload_queue.rs), recopiés tels quels.
   for (const refusal of [
-    { status: 422, code: 'IMAGE_TOO_HEAVY', message: 'Cette image est trop lourde à réduire. Exportez-la en JPEG ou en PNG 8 bits, ou réduisez-la (3\u202f000\u00a0px de large suffisent).' },
+    { status: 422, code: 'IMAGE_TOO_HEAVY', message: 'Cette image est trop lourde à réduire. Exportez-la en JPEG ou en PNG 8 bits, ou réduisez-la (3\u202f000\u00a0px sur le plus grand côté suffisent).' },
     { status: 503, code: 'UPLOAD_BUSY', message: 'D’autres images sont en cours d’import. Réessayez dans quelques secondes.' },
   ]) {
     state.uploadRefusal = refusal;
