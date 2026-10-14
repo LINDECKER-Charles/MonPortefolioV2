@@ -1439,6 +1439,14 @@
       {
         "type": "image",
         "attrs": {
+          "src": "/api/blog/media/7",
+          "alt": "Image de test 7.",
+          "title": "Très large et lourde, 3 200 × 1 800."
+        }
+      },
+      {
+        "type": "image",
+        "attrs": {
           "src": "/api/blog/media/3",
           "alt": "Image de test 3.",
           "title": "Petite affichée à 160 pixels.",

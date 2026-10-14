@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
+import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
@@ -15,13 +16,16 @@ import { surveillerConsole } from './support/navigateur';
  * images tiennent dans le budget. Le backend est une doublure qui sert
  * tests/fixtures/article-complet.json (document qui emploie tout l’inventaire
  * de schema-blog.json et que la validation Rust publie, backend/tests/blog_api.rs)
- * et les images de article-complet-media.json, dessinées ici avec leurs variantes.
+ * et les images de article-complet-media.json, dessinées ici avec leurs variantes
+ * (l’original `lourd` est du bruit, plus lourd que le budget : seules ses
+ * variantes, légères, doivent partir). La liste ajoute quatre articles, avec et
+ * sans couverture, pour la grille.
  *
  * Les deux serveurs tournent dans le processus de chaque worker, sur des ports
  * libres : les serveurs de playwright.config.ts restent sans backend, comme
  * l’exige « le blog ne publie aucun article fictif » (pages.spec.ts).
  */
-type Image = { width: number; height: number; type: 'image/jpeg' | 'image/png'; variants: number[]; transparent?: boolean };
+type Image = { width: number; height: number; type: 'image/jpeg' | 'image/png'; variants: number[]; transparent?: boolean; lourd?: boolean };
 type Noeud = { type: string; attrs?: Record<string, unknown>; content?: Noeud[] };
 const fixture = (nom: string) => JSON.parse(readFileSync(new URL(`../fixtures/${nom}`, import.meta.url), 'utf8'));
 const ARTICLE = fixture('article-complet.json');
@@ -49,7 +53,8 @@ async function fichiers() {
   for (const [id, image] of Object.entries(IMAGES)) {
     const source = sharp(dessin(image.width, image.height, image.transparent));
     const encoder = (s: ReturnType<typeof sharp>) => (image.type === 'image/jpeg' ? s.jpeg({ quality: 80 }) : s.png());
-    sortie.set(id, { type: image.type, octets: await encoder(source.clone()).toBuffer() });
+    const original = image.lourd ? sharp(randomBytes(image.width * image.height * 3), { raw: { width: image.width, height: image.height, channels: 3 } }) : source.clone();
+    sortie.set(id, { type: image.type, octets: await encoder(original).toBuffer() });
     for (const largeur of image.variants) {
       sortie.set(`${id}/${largeur}`, { type: image.type, octets: await encoder(source.clone().resize({ width: largeur })).toBuffer() });
     }
