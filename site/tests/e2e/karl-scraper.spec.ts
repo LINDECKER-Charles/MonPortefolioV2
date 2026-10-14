@@ -120,8 +120,11 @@ test('quatre vrais écrans : l’en-tête recadré sur sa colonne, chacun s’ou
   await agrandir.click();
   const visionneuse = page.locator('dialog[data-visionneuse]');
   await expect(visionneuse).toBeVisible();
-  // La visionneuse montre l’écran entier, pas le recadrage.
-  const ratio = await visionneuse.locator('[data-visionneuse-image]').evaluate((img: HTMLImageElement) => img.naturalWidth / img.naturalHeight);
+  // La visionneuse montre l’écran entier, pas le recadrage. Son image se charge à
+  // l’ouverture : ses dimensions se lisent une fois chargée.
+  const entiere = visionneuse.locator('[data-visionneuse-image]');
+  await expect.poll(() => entiere.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
+  const ratio = await entiere.evaluate((img: HTMLImageElement) => img.naturalWidth / img.naturalHeight);
   expect(ratio).toBeCloseTo(2392 / 562, 1);
   await page.keyboard.press('Escape');
   await expect(visionneuse).toBeHidden();

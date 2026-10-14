@@ -145,6 +145,7 @@ test('six vraies captures, chacune avec ce qu’elle prouve ; une s’ouvre en g
   await expect(visionneuse).toBeVisible();
   const entiere = visionneuse.locator('[data-visionneuse-image]');
   await expect(entiere).toBeVisible();
+  await expect.poll(() => entiere.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
   expect(await entiere.evaluate((img: HTMLImageElement) => img.naturalWidth / img.naturalHeight)).toBeCloseTo(2400 / 1500, 2);
   await page.keyboard.press('Escape');
   await expect(visionneuse).toBeHidden();

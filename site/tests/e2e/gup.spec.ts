@@ -255,6 +255,7 @@ test('l’en-tête montre la fenêtre entière, barre de titre comprise ; la vis
   await expect(visionneuse).toBeVisible();
   const entiere = visionneuse.locator('[data-visionneuse-image]');
   await expect(entiere).toBeVisible();
+  await expect.poll(() => entiere.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
   const ratio = await entiere.evaluate((img: HTMLImageElement) => img.naturalWidth / img.naturalHeight);
   expect(ratio).toBeCloseTo(2436 / 1578, 2);
 });
