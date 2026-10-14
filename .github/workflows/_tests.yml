@@ -139,6 +139,12 @@ jobs:
         # variable mal citee y coute un deploiement a moitie applique.
         run: shellcheck scripts/deploy-remote.sh
 
+      - name: Outils de la bascule
+        # Le verificateur de bascule n'a besoin que de Node : aucune
+        # installation. Fichier nomme, pour que le lanceur ne prenne pas
+        # scripts/test-backoffice.mjs, qui attend un backend construit (job e2e).
+        run: node --test scripts/verifier-bascule.test.mjs
+
       - name: Actionlint sur les workflows
         # Un contrat de workflow reutilisable casse (secret non declare, entree
         # inexistante, action mal referencee) ne se voit sinon qu'a l'execution,
