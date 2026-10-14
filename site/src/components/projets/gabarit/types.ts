@@ -51,6 +51,11 @@ export interface SchemaProjet {
   categorie?: string;
   /** Systèmes (`operatingSystem`) : « Windows, macOS, Linux ». */
   systemes?: string;
+  /**
+   * Langue(s) du logiciel (`inLanguage`), code BCP 47 : 'en' pour une
+   * interface en anglais seulement. Sans elle, la langue du site.
+   */
+  langue?: string | readonly string[];
 }
 
 /** Une décision de « Comment je l’ai construit » : contrainte, choix, effet. */

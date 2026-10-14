@@ -111,7 +111,8 @@ const PROJETS_SCHEMA: Readonly<Record<ProjetVitrine['id'], SchemaProjet & { url?
   league: { type: 'SoftwareApplication', url: FICHE_LEAGUE.liens[0]?.href, categorie: 'ReferenceApplication', systemes: 'Web' },
   omnicard: { type: 'CreativeWork', url: FICHE_OMNICARD.liens[0]?.href },
   bloodborne: { type: 'SoftwareApplication', url: FICHE_BLOODBORNE.liens[0]?.href, categorie: 'GameApplication', systemes: 'Web, Android' },
-  gup: { type: 'SoftwareApplication', url: FICHE_GUP.liens[0]?.href, categorie: 'DeveloperApplication', systemes: 'Windows, macOS, Linux' },
+  // Interface en anglais et en français (`gup language fr`) : docs/matiere-premiere.md.
+  gup: { type: 'SoftwareApplication', url: FICHE_GUP.liens[0]?.href, categorie: 'DeveloperApplication', systemes: 'Windows, macOS, Linux', langue: ['en', 'fr'] },
   githealth: { ...SCHEMA_GITHEALTH, url: FICHE_GITHEALTH.liens[0]?.href },
   'karl-scraper': { ...SCHEMA_KARL_SCRAPER, url: FICHE_KARL_SCRAPER.liens[0]?.href },
   sillage: { ...SCHEMA_SILLAGE, url: FICHE_SILLAGE.liens[0]?.href },
@@ -130,7 +131,7 @@ export function noeudProjet(chemin: string, description: string) {
     description,
     url: schema.url ?? absolue(chemin),
     author: { '@id': PERSONNE_ID },
-    inLanguage: SITE.langue,
+    inLanguage: schema.langue ?? SITE.langue,
     ...(schema.categorie && { applicationCategory: schema.categorie }),
     ...(schema.systemes && { operatingSystem: schema.systemes }),
   };

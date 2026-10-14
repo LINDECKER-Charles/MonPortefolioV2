@@ -274,5 +274,9 @@ export const LIENS_SORTIE: readonly LienProjet[] = [
   { href: LIENS.version, libelle: 'La version 0.2.0 et ses installeurs' },
 ];
 
-/** Ce que schema.org dit du projet (lib/seo.ts) : quatre cibles natives, Windows, macOS et Linux. */
-export const SCHEMA: SchemaProjet = { type: 'SoftwareApplication', categorie: 'DeveloperApplication', systemes: 'Windows, macOS, Linux' };
+/**
+ * Ce que schema.org dit du projet (lib/seo.ts) : quatre cibles natives,
+ * Windows, macOS et Linux, et une interface en anglais seulement
+ * (docs/KNOWN_LIMITATIONS.md, section « Interface »).
+ */
+export const SCHEMA: SchemaProjet = { type: 'SoftwareApplication', categorie: 'DeveloperApplication', systemes: 'Windows, macOS, Linux', langue: 'en' };
