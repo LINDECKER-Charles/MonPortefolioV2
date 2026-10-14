@@ -157,3 +157,10 @@ test('l’aperçu dit ce qui est publié, programmé ou en attente, dans un bloc
   assert.match(publie, /Cette version de travail diffère de la version publique/);
   assert.match(apercu({ status: 'published', has_unpublished_changes: false }), /La version publique est celle-ci\./);
 });
+
+test('og:image:alt décrit l’image de partage réellement choisie', () => {
+  const alt = (html) => html.match(/<meta property="og:image:alt" content="([^"]*)">/)[1];
+  assert.equal(alt(renderArticle(GABARIT, article({ title: 'Le titre', cover_image: '/api/blog/media/1', cover_alt: 'La couverture' }))), 'La couverture');
+  assert.equal(alt(renderArticle(GABARIT, article({ title: 'Le titre', cover_image: '/api/blog/media/1', cover_alt: 'La couverture', og_image: '/api/blog/media/2' }))), 'Le titre');
+  assert.equal(alt(renderArticle(GABARIT, article({ title: 'Le titre' }))), 'Le titre');
+});
