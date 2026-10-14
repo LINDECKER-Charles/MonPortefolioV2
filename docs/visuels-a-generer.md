@@ -2819,9 +2819,9 @@ Fiches pour mémoire : rien à produire.
 - **Sujet** : Les écrans de Sillage, sur des projets de démonstration
 - **Composition** : Écrans réels de l’application lancée en local (révision c256e76) contre le faux fournisseur des tests du dépôt : projets, tâches et résultats de démonstration, sans recomposition
 - **Format** : format natif des écrans
-- **Fichiers attendus** (6) : `site/src/assets/projets/sillage/graphe-en-direct.webp` ; `site/src/assets/projets/sillage/page-projet.webp` ; `site/src/assets/projets/sillage/page-projet-mobile.webp` ; `site/src/assets/projets/sillage/creer-avec-un-agent.webp` ; `site/src/assets/projets/sillage/reprendre-execution.webp` ; `site/src/assets/projets/sillage/recapitulatif.webp`
+- **Fichiers attendus** (8) : `site/src/assets/projets/sillage/graphe-en-direct.webp` ; `site/src/assets/projets/sillage/page-projet.webp` ; `site/src/assets/projets/sillage/page-projet-mobile.webp` ; `site/src/assets/projets/sillage/creer-avec-un-agent.webp` ; `site/src/assets/projets/sillage/reprendre-execution.webp` ; `site/src/assets/projets/sillage/reprendre-execution-mobile.webp` ; `site/src/assets/projets/sillage/recapitulatif.webp` ; `site/src/assets/projets/sillage/recapitulatif-mobile.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
-- **Note** : Livrés le 14 octobre 2026, provenance dans src/assets/projets/sillage/README.md ; leurs alts sont dans config/sillage.ts. Dépôt privé : aucune donnée réelle, aucun lien. La page projet passe de la vue de bureau à la vue de téléphone sous 861 px ; la carte de la vitrine recadre la vue du graphe en CSS (CadreCapture, ratio et position).
+- **Note** : Livrés le 14 octobre 2026, provenance dans src/assets/projets/sillage/README.md ; leurs alts sont dans config/sillage.ts. Dépôt privé : aucune donnée réelle, aucun lien. La page projet, la reprise et le récapitulatif passent de la vue de bureau à la vue de téléphone sous 861 px ; la carte de la vitrine recadre la vue du graphe en CSS (CadreCapture, ratio et position).
 
 ### Relais
 

@@ -2782,9 +2782,11 @@ export const VISUELS: readonly EntreeVisuel[] = [
       { nom: 'page-projet-mobile', fichier: 'src/assets/projets/sillage/page-projet-mobile.webp', alt: '' },
       { nom: 'creer-avec-un-agent', fichier: 'src/assets/projets/sillage/creer-avec-un-agent.webp', alt: '' },
       { nom: 'reprendre-execution', fichier: 'src/assets/projets/sillage/reprendre-execution.webp', alt: '' },
+      { nom: 'reprendre-execution-mobile', fichier: 'src/assets/projets/sillage/reprendre-execution-mobile.webp', alt: '' },
       { nom: 'recapitulatif', fichier: 'src/assets/projets/sillage/recapitulatif.webp', alt: '' },
+      { nom: 'recapitulatif-mobile', fichier: 'src/assets/projets/sillage/recapitulatif-mobile.webp', alt: '' },
     ],
-    note: 'Livrés le 14 octobre 2026, provenance dans src/assets/projets/sillage/README.md ; leurs alts sont dans config/sillage.ts. Dépôt privé : aucune donnée réelle, aucun lien. La page projet passe de la vue de bureau à la vue de téléphone sous 861 px ; la carte de la vitrine recadre la vue du graphe en CSS (CadreCapture, ratio et position).',
+    note: 'Livrés le 14 octobre 2026, provenance dans src/assets/projets/sillage/README.md ; leurs alts sont dans config/sillage.ts. Dépôt privé : aucune donnée réelle, aucun lien. La page projet, la reprise et le récapitulatif passent de la vue de bureau à la vue de téléphone sous 861 px ; la carte de la vitrine recadre la vue du graphe en CSS (CadreCapture, ratio et position).',
   },
 
   // ↑ fin des entrées SIL
