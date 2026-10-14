@@ -120,6 +120,21 @@ test('sur ordinateur, une famille de trois tient sur une ligne, ses visuels à l
   }
 });
 
+test('entre 861 et 1 100 px, une famille de trois met une carte par ligne : ses captures restent lisibles', async ({ page }) => {
+  test.skip((page.viewportSize()?.width ?? 0) <= 1100, 'vérifié une fois, depuis le projet bureau');
+  await page.setViewportSize({ width: 1000, height: 900 });
+  await page.goto('/projets');
+  for (const famille of VITRINE_PAR_FAMILLE.filter((f) => f.projets.length === 3)) {
+    const gauches = await page.locator(`#famille-${famille.id} .vitrine > li`).evaluateAll((liste) => liste.map((li) => Math.round(li.getBoundingClientRect().left)));
+    expect(new Set(gauches).size, famille.id).toBe(1);
+  }
+  // Sur deux colonnes, la Galaxie et le graphe tenaient dans un panneau d’environ 200 px.
+  for (const id of ['karl-scraper', 'sillage']) {
+    const largeur = (await carte(page, id).locator('.capture__vue img').first().boundingBox())?.width ?? 0;
+    expect(largeur, id).toBeGreaterThan(320);
+  }
+});
+
 test('une section par famille, dans l’ordre ; chaque projet une seule fois, à son rang', async ({ page }) => {
   await page.goto('/projets');
   const sections = page.locator('section.vitrine-famille');

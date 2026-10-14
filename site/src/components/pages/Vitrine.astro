@@ -10,8 +10,9 @@
  * h2), sinon `label`. `colonnes={3}` pour une famille de trois cartes : trois
  * colonnes au-delà de 1 100 px, chaque carte empilée (le visuel au-dessus du
  * texte, les visuels alignés sur une même hauteur), et entre 861 et 1 100 px
- * deux colonnes dont la dernière carte prend toute la largeur : pas de carte
- * orpheline dans une demi-ligne.
+ * une carte par ligne, son visuel à côté du texte : à deux colonnes, le
+ * panneau d’une carte n’y aurait qu’environ 200 px, et une capture d’écran
+ * large (Karl Scraper, Sillage) y devenait illisible.
  */
 interface Props {
   label?: string;
@@ -47,10 +48,11 @@ if (!label && !labelledby) throw new Error('<Vitrine> : un nom de liste (`label`
     }
   }
 
-  /* Entre 861 et 1 100 px, deux colonnes : la dernière d’un nombre impair prend la ligne. */
+  /* Entre 861 et 1 100 px, une carte par ligne : le visuel garde la largeur
+     d’une carte de la vedette ou d’une ligne, au lieu d’un panneau étroit. */
   @media (min-width: 861px) and (max-width: 1100px) {
-    .vitrine--trois > :global(:last-child:nth-child(odd)) {
-      grid-column: 1 / -1;
+    .vitrine--trois {
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 
