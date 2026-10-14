@@ -17,7 +17,7 @@ const DEMANDE = {
 const REGLES_AXE = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'];
 
 /** Doubles de l’API, sans stockage réel ni envoi de courriel. */
-async function apiDouble(page: Page, options: { authenticated?: boolean; smtp?: boolean; twoFactor?: boolean; enrollment?: boolean; setupFailures?: number } = {}) {
+async function apiDouble(page: Page, options: { authenticated?: boolean; smtp?: boolean; twoFactor?: boolean; enrollment?: boolean; setupFailures?: number; tokenLimit?: boolean } = {}) {
   const etat = {
     authenticated: options.authenticated ?? false,
     smtp: options.smtp ?? true,
@@ -27,7 +27,7 @@ async function apiDouble(page: Page, options: { authenticated?: boolean; smtp?: 
     email: 'contact@example.test',
     contacts: [{ ...DEMANDE }],
     links: [] as { id: number; label: string; url: string; description: string }[],
-    tokens: [] as { id: number; name: string; created_at: string; last_used_at: string | null }[],
+    tokens: [] as { id: number; name: string; created_at: string; last_used_at: string | null; scopes: string[] }[],
     mutations: [] as { path: string; method: string; body: unknown; header: string | undefined }[],
     consultations: [] as string[],
   };
@@ -98,9 +98,11 @@ async function apiDouble(page: Page, options: { authenticated?: boolean; smtp?: 
     }
     if (path === '/tokens') {
       if (method === 'POST') {
-        const jeton = { id: 1, name: body!.name!, created_at: '2026-10-08T09:00:00Z', last_used_at: null };
-        etat.tokens.push(jeton);
-        await repondre({ ...jeton, token: SECRET }); return;
+        if (options.tokenLimit) { await repondre({ code: 'TOKEN_LIMIT_REACHED', message: 'Le portfolio compte déjà 64 accès MCP, le maximum. Révoquez un accès inutilisé pour en créer un autre.' }, 409); return; }
+        const corps = body as unknown as { name: string; scopes: string[] };
+        const jeton = { id: etat.tokens.length + 1, name: corps.name, created_at: '2026-10-08T09:00:00Z', last_used_at: null, scopes: corps.scopes };
+        etat.tokens.unshift(jeton);
+        await repondre({ ...jeton, token: SECRET }, 201); return;
       }
       await repondre({ tokens: etat.tokens }); return;
     }
@@ -124,6 +126,10 @@ async function connecter(page: Page) {
   await expect(page.locator('#bo-workspace')).toBeVisible();
   await expect(page.locator('#bo-notice')).toBeHidden();
 }
+/** Une rubrique, par la navigation de l’en-tête. */
+function rubrique(page: Page, nom: string | RegExp) {
+  return page.getByRole('navigation', { name: 'Rubriques du backoffice' }).getByRole('link', { name: nom });
+}
 function verifierMutations(mutations: { header: string | undefined }[]) {
   expect(mutations.length).toBeGreaterThan(0);
   for (const mutation of mutations) expect(mutation.header).toBe('1');
@@ -141,9 +147,12 @@ test('connexion accessible, hors index et hors mesure même sur le serveur suivi
   await page.getByLabel('Adresse e-mail de connexion', { exact: true }).fill('admin@example.test');
   await page.getByLabel('Mot de passe', { exact: true }).fill('mauvais-mot-de-passe');
   await page.getByRole('button', { name: 'Se connecter', exact: true }).click();
-  await expect(page.locator('#bo-notice')).toHaveText('L’adresse e-mail ou le mot de passe est incorrect.');
+  await expect(page.locator('#bo-login-retour')).toHaveText('L’adresse e-mail ou le mot de passe est incorrect.');
+  await expect(page.locator('#bo-login-retour')).toHaveAttribute('data-state', 'error');
   await expect(page.locator('#bo-workspace')).toBeHidden();
   await connecter(page);
+  await expect(page.getByRole('heading', { name: 'Demandes de contact', level: 2 })).toBeFocused();
+  await expect(rubrique(page, /^Demandes/)).toHaveAttribute('aria-current', 'page');
   await expect(page.locator('#bo-password')).toHaveValue('');
   await accessibilite(page);
   expect(requetesMesure).toEqual([]);
@@ -169,7 +178,7 @@ test('la première connexion configure la 2FA avant l’accès et affiche les co
   await accessibilite(page);
   await page.getByLabel('Code de vérification').fill('000000');
   await page.getByRole('button', { name: 'Activer la vérification', exact: true }).click();
-  await expect(page.locator('#bo-notice')).toHaveText('Le code est incorrect ou a déjà été utilisé.');
+  await expect(page.locator('#bo-two-factor-retour')).toHaveText('Le code est incorrect ou a déjà été utilisé.');
   await expect(page.getByLabel('Clé à saisir manuellement')).toHaveValue(CLE_DEUX_FACTEURS);
   await expect(page.locator('#bo-login')).toBeHidden();
   await page.getByLabel('Code de vérification').fill('123456');
@@ -224,7 +233,7 @@ test('une préparation interrompue peut être relancée et un défi expiré revi
   await page.getByLabel('Adresse e-mail de connexion').fill('admin@example.test');
   await page.getByLabel('Mot de passe', { exact: true }).fill('mot-de-passe-test');
   await page.getByRole('button', { name: 'Se connecter', exact: true }).click();
-  await expect(page.locator('#bo-notice')).toHaveText('La configuration est momentanément indisponible. Réessayez.');
+  await expect(page.locator('#bo-two-factor-retour')).toHaveText('La configuration est momentanément indisponible. Réessayez.');
   await expect(page.getByRole('button', { name: 'Revenir à la connexion' })).toBeEnabled();
   await page.getByRole('button', { name: 'Réessayer la configuration' }).click();
   await expect(page.getByLabel('Clé à saisir manuellement')).toHaveValue(CLE_DEUX_FACTEURS);
@@ -291,8 +300,11 @@ test('la boîte réception gère les statuts et confirme la suppression sans ex�
   await expect(page.locator('#bo-contact-message img')).toHaveCount(0);
   expect(await page.evaluate(() => (window as unknown as { injection?: boolean }).injection)).toBeUndefined();
   await expect(page.locator('#bo-contact-delivery')).toHaveText('Échec de l’envoi');
+  await expect(page.locator('#bo-contact-article')).toHaveClass(/foyer/);
   await page.getByRole('button', { name: 'Marquer comme lue', exact: true }).click();
   await expect(page.locator('#bo-new-count')).toHaveText('0');
+  await expect(page.locator('#bo-contact-retour')).toHaveText('La demande est marquée comme lue.');
+  await expect(rubrique(page, /^Demandes/)).toHaveAccessibleName('Demandes (aucune nouvelle demande)');
   await expect(page.locator('#bo-contact-empty')).toBeVisible();
   await page.getByLabel('Afficher les demandes').selectOption('read');
   await page.locator('#bo-contact-list').getByRole('button').click();
@@ -312,6 +324,7 @@ test('la boîte réception gère les statuts et confirme la suppression sans ex�
   await page.getByRole('button', { name: 'Supprimer la demande', exact: true }).click();
   await page.getByRole('button', { name: 'Supprimer définitivement', exact: true }).click();
   await expect(page.locator('#bo-contact-empty')).toBeVisible();
+  await expect(page.locator('#bo-contact-retour')).toHaveText('La demande est supprimée.');
   expect(etat.contacts).toHaveLength(0);
   expect(etat.mutations.map(({ method, body }) => ({ method, body }))).toEqual([
     { method: 'PATCH', body: { status: 'read' } },
@@ -327,17 +340,20 @@ test('le destinataire et les outils sont modifiables et les suggestions attenden
   const etat = await apiDouble(page, { authenticated: true, smtp: false });
   await page.goto('/backoffice');
   await expect(page.locator('#bo-contact-list').getByRole('button')).toHaveCount(1);
-  const tab = page.getByRole('tab', { name: /^Demandes/ });
-  await tab.focus();
-  await page.keyboard.press('ArrowDown');
-  await expect(page.getByRole('tab', { name: 'Destinataire' })).toBeFocused();
+  await rubrique(page, 'Adresse').focus();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/\/backoffice\?rubrique=settings$/);
+  await expect(page.getByRole('heading', { name: 'Adresse de contact', level: 2 })).toBeFocused();
+  await expect(rubrique(page, 'Adresse')).toHaveAttribute('aria-current', 'page');
   await expect(page.locator('#bo-smtp-warning')).toBeVisible();
   await page.getByLabel('Adresse e-mail', { exact: true }).fill('nouvelle-adresse@example.test');
   await page.getByRole('button', { name: 'Enregistrer l’adresse' }).click();
-  await expect(page.locator('#bo-notice')).toHaveText('L’adresse de contact est enregistrée.');
+  await expect(page.locator('#bo-settings-retour')).toHaveText('L’adresse de contact est enregistrée.');
+  await expect(page.locator('#bo-notice')).toBeHidden();
   expect(etat.email).toBe('nouvelle-adresse@example.test');
   await accessibilite(page);
-  await page.getByRole('tab', { name: 'Boîte à outils' }).click();
+  await rubrique(page, 'Boîte à outils').click();
+  await expect(page.locator('#bo-settings-retour')).toBeEmpty();
   await expect(page.locator('#bo-links-empty')).toBeVisible();
   await expect(page.locator('#bo-link-list a')).toHaveCount(0);
   await page.getByRole('button', { name: 'Umami', exact: true }).click();
@@ -350,45 +366,180 @@ test('le destinataire et les outils sont modifiables et les suggestions attenden
   const outil = page.locator('#bo-link-list li');
   await expect(outil.getByRole('link')).toHaveAttribute('href', 'https://umami.example.test/');
   await expect(outil.getByRole('link')).toHaveAttribute('rel', 'noopener noreferrer');
-  await outil.getByRole('button', { name: 'Modifier', exact: true }).click();
+  await expect(page.locator('#bo-links-retour')).toHaveText('L’outil est ajouté.');
+  await outil.getByRole('button', { name: 'Modifier Umami', exact: true }).click();
   await page.getByLabel('Nom de l’outil').fill('Mon Umami');
   await page.getByRole('button', { name: 'Enregistrer l’outil', exact: true }).click();
-  await expect(outil.getByRole('link')).toHaveText('Mon Umami');
+  await expect(outil.getByRole('link', { name: 'Mon Umami, ouvrir dans un nouvel onglet' })).toContainText('Mon Umami');
   await accessibilite(page);
-  await outil.getByRole('button', { name: 'Supprimer', exact: true }).click();
+  await outil.getByRole('button', { name: 'Supprimer Mon Umami', exact: true }).click();
   await page.getByRole('button', { name: 'Supprimer le raccourci', exact: true }).click();
   await expect(page.locator('#bo-links-empty')).toBeVisible();
+  await expect(page.locator('#bo-links-list-retour')).toHaveText('Le raccourci vers Mon Umami est supprimé.');
   expect(etat.links).toEqual([]);
   verifierMutations(etat.mutations);
 });
 
-test('le jeton MCP ne reste affiché qu’une fois puis son accès peut être révoqué', async ({ page }) => {
+test('nouvel accès MCP en un geste : Rédaction sans les demandes, commande prête, vérification puis révocation', async ({ page, context }) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   const etat = await apiDouble(page, { authenticated: true });
+  const appelsMcp: { methode: string; autorisation?: string; cookie?: string; origine?: string }[] = [];
+  await page.route('**/mcp', async (route) => {
+    const requete = route.request();
+    const corps = requete.postDataJSON() as { id: number; method: string };
+    const enTetes = requete.headers();
+    appelsMcp.push({ methode: corps.method, autorisation: enTetes.authorization, cookie: enTetes.cookie, origine: enTetes.origin });
+    const resultat = corps.method === 'initialize'
+      ? { protocolVersion: '2025-11-25', capabilities: { tools: {} }, serverInfo: { name: 'portfolio-backoffice', version: '1' } }
+      : { tools: [{ name: 'blog_list_posts', title: 'Lister les articles' }, { name: 'blog_create_post', title: 'Créer un brouillon' }] };
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ jsonrpc: '2.0', id: corps.id, result: resultat }) });
+  });
   await page.goto('/backoffice');
   await expect(page.locator('#bo-contact-list').getByRole('button')).toHaveCount(1);
-  await page.getByRole('tab', { name: 'Accès MCP', exact: true }).click();
-  await expect(page.locator('#bo-mcp-url')).toHaveText(new URL('/mcp', page.url()).href);
-  await expect(page.getByRole('heading', { name: 'Connexion MCP' })).toBeVisible();
-  await page.getByLabel('Nom de la connexion').fill('Mon assistant');
-  await page.getByRole('button', { name: 'Créer le jeton', exact: true }).click();
-  await expect(page.getByLabel('Jeton de connexion')).toHaveValue(SECRET);
-  await expect(page.locator('#bo-token-list')).toContainText('Mon assistant');
+  await rubrique(page, 'Accès MCP').click();
+  await expect(page).toHaveURL(/\/backoffice\?rubrique=tokens$/);
+  await expect(page.getByRole('heading', { name: 'Accès MCP', level: 2 })).toBeFocused();
+  await expect(page.locator('#bo-tokens-empty')).toBeVisible();
+  const origine = new URL(page.url()).origin;
+  await expect(page.locator('#bo-mcp-url')).toHaveText(`${origine}/mcp`);
+
+  // Un geste : le nom est proposé, Rédaction est choisie, les demandes ne le sont pas.
+  await expect(page.getByLabel('Nom de l’accès')).toHaveValue('Claude Code');
+  await expect(page.getByRole('radio', { name: 'Rédaction', exact: true })).toBeChecked();
+  await expect(page.getByRole('checkbox', { name: 'Lire aussi les demandes de contact' })).not.toBeChecked();
   await accessibilite(page);
-  await page.getByRole('tab', { name: 'Boîte à outils', exact: true }).click();
-  await page.getByRole('tab', { name: 'Accès MCP', exact: true }).click();
-  await expect(page.locator('#bo-secret')).toBeHidden();
-  await expect(page.locator('#bo-token-secret')).toHaveValue('');
-  await page.getByRole('button', { name: 'Révoquer', exact: true }).click();
+  await page.getByRole('button', { name: 'Créer l’accès', exact: true }).click();
+  expect(etat.mutations.find(({ path }) => path === '/tokens')?.body).toEqual({ name: 'Claude Code', scopes: ['blog:read', 'blog:write'] });
+
+  // Une seule zone éclairée : la commande, avec l’origine du site et le secret.
+  const commande = `claude mcp add --transport http --scope user portfolio-local ${origine}/mcp --header "Authorization: Bearer ${SECRET}"`;
+  const carte = page.locator('#bo-secret');
+  await expect(carte).toBeVisible();
+  await expect(carte).toHaveClass(/foyer/);
+  await expect(page.locator('.foyer:visible')).toHaveCount(1);
+  await expect(page.locator('#bo-token-form')).toBeHidden();
+  await expect(page.getByRole('heading', { name: 'L’accès « Claude Code » est prêt' })).toBeFocused();
+  await expect(page.locator('#bo-token-command')).toHaveText(commande);
+  await expect(page.locator('#bo-secret-retour')).toHaveText('Accès créé avec la permission Rédaction.');
+  await expect(page.locator('#bo-token-remove')).toHaveText('claude mcp remove portfolio-local');
+  await page.getByRole('button', { name: 'Copier la commande', exact: true }).click();
+  await expect(page.locator('#bo-secret-retour')).toHaveText('Commande copiée. Collez-la dans un terminal.');
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(commande);
+  await accessibilite(page);
+
+  // La vérification passe par /mcp, avec le secret et sans cookie.
+  await page.getByRole('button', { name: 'Vérifier l’accès', exact: true }).click();
+  await expect(page.locator('#bo-token-tools-list li')).toHaveText(['Lister les articles', 'Créer un brouillon']);
+  await expect(page.locator('#bo-secret-retour')).toHaveText('L’accès répond : le serveur MCP accepte ce secret.');
+  expect(appelsMcp.map(({ methode }) => methode)).toEqual(['initialize', 'tools/list']);
+  for (const appel of appelsMcp) {
+    expect(appel.autorisation).toBe(`Bearer ${SECRET}`);
+    expect(appel.cookie).toBeUndefined();
+  }
+
+  // La liste dit les permissions en mots ; la révocation rappelle de retirer le serveur.
+  const ligne = page.locator('#bo-token-list tr');
+  await expect(ligne).toHaveCount(1);
+  await expect(ligne.getByRole('rowheader')).toHaveText('Claude Code');
+  await expect(ligne.locator('.bo-etiquette')).toHaveText(['Rédaction']);
+  await expect(ligne).toContainText('Jamais');
+  await ligne.getByRole('button', { name: 'Révoquer Claude Code', exact: true }).click();
+  await expect(page.getByRole('dialog')).toContainText('ne pourra plus rien faire sur le portfolio');
+  await expect(page.getByRole('dialog')).toContainText('claude mcp remove portfolio-local');
   await page.getByRole('button', { name: 'Révoquer l’accès', exact: true }).click();
   await expect(page.locator('#bo-tokens-empty')).toBeVisible();
+  await expect(page.locator('#bo-tokens-retour')).toHaveText('L’accès « Claude Code » est révoqué.');
+  await expect(carte).toBeHidden();
+  await expect(page.locator('#bo-token-command')).toBeEmpty();
+  await expect(page.locator('#bo-token-secret')).toHaveValue('');
   expect(etat.tokens).toEqual([]);
+  verifierMutations(etat.mutations);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+});
+
+test('le secret ne s’affiche qu’une fois et les demandes de contact se demandent exprès', async ({ page }) => {
+  const etat = await apiDouble(page, { authenticated: true });
+  await page.goto('/backoffice?rubrique=tokens');
+  await expect(page.getByLabel('Nom de l’accès')).toHaveValue('Claude Code');
+  await page.getByLabel('Nom de l’accès').fill('Claude Code — MacBook');
+  await page.getByRole('radio', { name: 'Publication', exact: true }).check();
+  await page.getByRole('checkbox', { name: 'Lire aussi les demandes de contact' }).check();
+  await page.getByRole('button', { name: 'Créer l’accès', exact: true }).click();
+  expect(etat.mutations.at(-1)?.body).toEqual({ name: 'Claude Code — MacBook', scopes: ['contacts:read', 'blog:read', 'blog:write', 'blog:publish'] });
+  await expect(page.locator('#bo-token-secret')).toHaveValue(SECRET);
+  await expect(page.locator('#bo-secret-retour')).toHaveText('Accès créé avec les permissions Publication et Demandes de contact.');
+  await expect(page.locator('#bo-token-list .bo-etiquette')).toHaveText(['Publication', 'Demandes de contact']);
+
+  // Quitter la rubrique efface le secret ; au retour, le formulaire est prêt, avec un nom libre.
+  await rubrique(page, 'Boîte à outils').click();
+  await rubrique(page, 'Accès MCP').click();
+  await expect(page.locator('#bo-secret')).toBeHidden();
+  await expect(page.locator('#bo-token-secret')).toHaveValue('');
+  await expect(page.locator('#bo-token-command')).toBeEmpty();
+  await expect(page.getByRole('radio', { name: 'Rédaction', exact: true })).toBeChecked();
+  await expect(page.getByRole('checkbox', { name: 'Lire aussi les demandes de contact' })).not.toBeChecked();
+
+  // « Terminé » efface aussi le secret et le dit là où était la carte.
+  await page.getByRole('button', { name: 'Créer l’accès', exact: true }).click();
+  expect(etat.mutations.at(-1)?.body).toEqual({ name: 'Claude Code', scopes: ['blog:read', 'blog:write'] });
+  await page.getByRole('button', { name: 'Terminé', exact: true }).click();
+  await expect(page.locator('#bo-token-secret')).toHaveValue('');
+  await expect(page.locator('#bo-token-form-retour')).toHaveText('L’accès « Claude Code » reste actif. Son secret n’est plus affiché.');
+  await expect(page.getByLabel('Nom de l’accès')).toHaveValue('Claude Code 2');
   await page.getByRole('button', { name: 'Se déconnecter', exact: true }).click();
   await expect(page.locator('#bo-login')).toBeVisible();
   await expect(page.locator('#bo-workspace')).toBeHidden();
+  await expect(page.locator('#bo-navigation')).toBeHidden();
   await expect(page.locator('#bo-contact-list')).toBeEmpty();
+  await expect(page.locator('#bo-token-list')).toBeEmpty();
   await expect(page.locator('#bo-email')).toHaveValue('');
   verifierMutations(etat.mutations);
 });
+
+test('le plafond des accès MCP s’explique à côté du formulaire', async ({ page }) => {
+  await apiDouble(page, { authenticated: true, tokenLimit: true });
+  await page.goto('/backoffice?rubrique=tokens');
+  await page.getByRole('button', { name: 'Créer l’accès', exact: true }).click();
+  await expect(page.locator('#bo-token-form-retour')).toHaveText('Le portfolio compte déjà 64 accès MCP, le maximum. Révoquez un accès inutilisé pour en créer un autre.');
+  await expect(page.locator('#bo-token-form-retour')).toHaveAttribute('data-state', 'error');
+  await expect(page.locator('#bo-secret')).toBeHidden();
+  await expect(page.locator('#bo-notice')).toBeHidden();
+});
+
+for (const theme of ['jour', 'nuit'] as const) {
+  test.describe(`thème ${theme}`, () => {
+    test.use({ colorScheme: theme === 'nuit' ? 'dark' : 'light' });
+
+    test(`axe : la connexion (${theme})`, async ({ page }) => {
+      await apiDouble(page);
+      await page.goto('/backoffice');
+      await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+      await expect(page.getByRole('button', { name: 'Se connecter', exact: true })).toBeEnabled();
+      await expect(page.locator('#bo-login')).toHaveClass(/foyer/);
+      await accessibilite(page);
+    });
+
+    test(`axe : chaque rubrique du backoffice et la carte du secret (${theme})`, async ({ page }) => {
+      await apiDouble(page, { authenticated: true });
+      await page.goto('/backoffice');
+      await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+      await expect(page.locator('#bo-contact-list').getByRole('button')).toHaveCount(1);
+      await page.locator('#bo-contact-list').getByRole('button').click();
+      await accessibilite(page);
+      for (const nom of ['Adresse', 'Boîte à outils', 'Accès MCP']) {
+        await rubrique(page, nom).click();
+        await expect(rubrique(page, nom)).toHaveAttribute('aria-current', 'page');
+        await accessibilite(page);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+      }
+      await page.getByRole('button', { name: 'Créer l’accès', exact: true }).click();
+      await expect(page.locator('#bo-secret')).toBeVisible();
+      await page.locator('#bo-secret summary').click();
+      await accessibilite(page);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    });
+  });
+}
 
 test('une session expirée efface les données privées et revient à la connexion', async ({ page }) => {
   const etat = await apiDouble(page, { authenticated: true });

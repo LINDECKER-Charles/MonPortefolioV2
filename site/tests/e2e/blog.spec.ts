@@ -73,10 +73,14 @@ async function mockApi(page: Page, posts: Post[] = []) {
   });
   return state;
 }
+/** Une rubrique du backoffice, par la navigation de l’en-tête. */
+function rubrique(page: Page, nom: string) {
+  return page.getByRole('navigation', { name: 'Rubriques du backoffice' }).getByRole('link', { name: nom, exact: true });
+}
 async function openBlog(page: Page) {
   await page.goto('/backoffice');
   await expect(page.locator('#bo-workspace')).toBeVisible();
-  await page.getByRole('tab', { name: 'Blog', exact: true }).click();
+  await rubrique(page, 'Blog').click();
   await expect(page).toHaveURL(/\/backoffice\/blog$/);
   await expect(page.getByRole('button', { name: 'Nouvel article', exact: true })).toBeEnabled();
 }
@@ -237,15 +241,18 @@ test('un conflit conserve le travail, les sorties le protègent et la suppressio
   expect(state.mutations.find((mutation) => mutation.method === 'DELETE')?.body).toEqual({ revision: 1 });
 });
 
-test('les autorisations MCP sont explicites et une expiration efface l’article privé', async ({ page }) => {
+test('un accès MCP de rédaction ne lit pas les demandes par défaut et une expiration efface l’article privé', async ({ page }) => {
   const state = await mockApi(page, [post()]);
   await openBlog(page);
-  await page.getByRole('tab', { name: 'Accès MCP', exact: true }).click();
-  await page.getByLabel('Nom de la connexion').fill('Rédacteur');
-  await page.getByLabel('Autorisations du blog').selectOption('write');
-  await page.getByRole('button', { name: 'Créer le jeton', exact: true }).click();
-  expect(state.mutations.find((mutation) => mutation.path === '/tokens')?.body.scopes).toEqual(['contacts:read', 'blog:read', 'blog:write']);
-  await page.getByRole('tab', { name: 'Blog', exact: true }).click();
+  await rubrique(page, 'Accès MCP').click();
+  await page.getByLabel('Nom de l’accès').fill('Rédacteur');
+  await expect(page.getByRole('radio', { name: 'Rédaction', exact: true })).toBeChecked();
+  await expect(page.getByRole('checkbox', { name: 'Lire aussi les demandes de contact' })).not.toBeChecked();
+  await page.getByRole('button', { name: 'Créer l’accès', exact: true }).click();
+  await expect(page.locator('#bo-token-command')).toContainText('Authorization: Bearer test-token');
+  expect(state.mutations.find((mutation) => mutation.path === '/tokens')?.body).toEqual({ name: 'Rédacteur', scopes: ['blog:read', 'blog:write'] });
+  await rubrique(page, 'Blog').click();
+  await expect(page.locator('#bo-token-command')).toBeEmpty();
   await page.locator('#blog-post-list').getByRole('link').click();
   await page.getByLabel('Titre de l’article', { exact: true }).fill('Titre privé de la session');
   state.authenticated = false;
