@@ -140,8 +140,9 @@ article. Quatre pages distinctes partagent la version de travail : **Rédaction*
 `/backoffice/blog/medias?id=…`, `/backoffice/blog/seo?id=…` et
 `/backoffice/blog/publication?id=…` se rechargent directement. Changer de page dans l’article
 conserve les retouches ; quitter l’article demande confirmation si elles ne sont pas enregistrées.
-Les commandes **Enregistrer** et **Aperçu** restent accessibles pendant la rédaction.
-L’éditeur propose titres, listes, liens,
+Les commandes **Enregistrer** et **Aperçu** restent dans une barre collante en haut de l’article,
+avec le retour de chaque action. La Rédaction reprend la typographie de l’article publié (titre,
+chapeau, texte à la même mesure), jour et nuit. L’éditeur propose titres, listes, liens,
 citations, code, tableaux, alignements, images avec légendes et descriptions, couverture et image
 de partage. Les réglages SEO comprennent titre, description, slug, canonical, indexation et aperçu
 du résultat de recherche. Les images JPEG, PNG, WebP et GIF (4 Mio maximum) sont conservées dans
