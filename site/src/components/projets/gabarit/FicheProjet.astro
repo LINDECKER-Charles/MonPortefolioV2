@@ -14,6 +14,10 @@
  * mobile : deux colonnes, les longues cases sur toute la largeur.
  * Les liens publics sont des sorties du site, mesurées en `lien-sortant`
  * (emplacement `preuves` par défaut). Le statut a une forme et un mot (C9).
+ * Un projet privé (`prive`, tiré de VITRINE par EnTeteProjet) le dit dans la
+ * case des liens : « Aucun : le code est dans un dépôt privé. », ou, sous ses
+ * liens publics (un site en ligne), « Le code est dans un dépôt privé. ». Un
+ * projet public sans aucun lien fait échouer le build.
  * Juste sous la case des liens, hors du tableau (qui ne porte que des
  * sorties), « Discutons de ce projet → » mène à /contact dès la fiche, sans
  * attendre la sortie de page (`contact-page`, emplacement `fiche-projet`).
@@ -26,11 +30,14 @@ import type { ChampFiche, DonneesFiche } from './types';
 
 interface Props {
   fiche: DonneesFiche;
+  /** Dépôt privé : la case des liens le dit (VITRINE, `prive`). */
+  prive?: boolean;
   emplacement?: Emplacement;
   class?: string;
 }
 
-const { fiche, emplacement = 'preuves', class: classe } = Astro.props;
+const { fiche, prive = false, emplacement = 'preuves', class: classe } = Astro.props;
+if (!prive && fiche.liens.length === 0) throw new Error('<FicheProjet> : aucun lien public ; un projet sans lien public est marqué `prive` dans VITRINE (config/projets.ts).');
 const cases: { champ: ChampFiche; titre: string; large?: boolean }[] = [
   { champ: 'besoin', titre: 'Besoin', large: true },
   { champ: 'part', titre: 'Ma part', large: true },
@@ -61,20 +68,24 @@ const cases: { champ: ChampFiche; titre: string; large?: boolean }[] = [
     <div class="fiche-projet__case fiche-projet__case--liens">
       <dt>Liens publics</dt>
       <dd>
-        <ul>
-          {
-            fiche.liens.map((lien) => {
-              const sorte = sorteDeLien(lien.href);
-              return (
-                <li>
-                  <a href={lien.href} rel={sorte === 'externe' ? 'external' : undefined} {...attributsMesure(lien.href, { emplacement })}>
-                    {typo(lien.libelle)}<span class="fleche" aria-hidden="true">{` ${FLECHES[sorte]}`}</span>
-                  </a>
-                </li>
-              );
-            })
-          }
-        </ul>
+        {fiche.liens.length === 0 && <p class="fiche-projet__prive">Aucun&nbsp;: le code est dans un dépôt privé.</p>}
+        {
+          fiche.liens.length > 0 && (
+            <ul>
+              {fiche.liens.map((lien) => {
+                const sorte = sorteDeLien(lien.href);
+                return (
+                  <li>
+                    <a href={lien.href} rel={sorte === 'externe' ? 'external' : undefined} {...attributsMesure(lien.href, { emplacement })}>
+                      {typo(lien.libelle)}<span class="fleche" aria-hidden="true">{` ${FLECHES[sorte]}`}</span>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          )
+        }
+        {prive && fiche.liens.length > 0 && <p class="fiche-projet__prive">Le code est dans un dépôt privé.</p>}
       </dd>
     </div>
   </dl>
@@ -148,6 +159,15 @@ const cases: { champ: ChampFiche; titre: string; large?: boolean }[] = [
     padding-block: 2px;
     line-height: 1.5;
     overflow-wrap: anywhere;
+  }
+
+  .fiche-projet__prive {
+    color: var(--eteint);
+  }
+
+  ul + .fiche-projet__prive {
+    margin-top: var(--s1);
+    font-size: var(--t-xs);
   }
 
   /* L’appel, sous la colonne des liens : à droite sur ordinateur. */

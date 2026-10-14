@@ -6,7 +6,7 @@
  * la vitrine (config/projets.ts) et le retour à la vitrine. La flèche dit le
  * sens de lecture : « Projet suivant → », « ← Projet précédent ». Le dernier
  * projet de la vitrine n’a pas de suivant : sa sortie mène aux projets
- * publics de la rangée « Aussi » (/projets#aussi).
+ * archivés (/projets#projets-archives), s’il y en a, puis à la vitrine.
  *
  *   <SortieProjet projet="pvz" liens={LIENS_SORTIE}>
  *     <p>Ce dont je suis le plus fier : …</p>
@@ -17,7 +17,7 @@
  * `discutons`. Les liens publics sont des sorties mesurées (`preuves`).
  */
 import Bouton from '../../ui/Bouton.astro';
-import { projetDeLaVitrine, type ProjetVitrine } from '../../../config/projets';
+import { PROJETS_ARCHIVES, projetDeLaVitrine, type ProjetVitrine } from '../../../config/projets';
 import { attributsMesure, FLECHES, sorteDeLien, type Emplacement } from '../../../lib/liens';
 import { typo } from '../../../lib/typo';
 import type { LienProjet } from './types';
@@ -39,9 +39,9 @@ interface Voisin {
   preuve: string;
   retour?: boolean;
 }
-const voisins: Voisin[] = [
-  suivant ? { sens: 'Projet suivant', nom: suivant.nom, href: suivant.href, preuve: suivant.preuve } : { sens: 'Aussi', nom: 'Les autres projets publics', href: '/projets#aussi', preuve: 'Des projets publics, sans page dédiée' },
-];
+const voisins: Voisin[] = [];
+if (suivant) voisins.push({ sens: 'Projet suivant', nom: suivant.nom, href: suivant.href, preuve: suivant.preuve });
+else if (PROJETS_ARCHIVES.length > 0) voisins.push({ sens: 'Projets archivés', nom: 'Les autres projets publics', href: '/projets#projets-archives', preuve: 'Des projets publics, sans page dédiée' });
 if (precedent) voisins.push({ sens: 'Projet précédent', nom: precedent.nom, href: precedent.href, preuve: precedent.preuve, retour: true });
 ---
 

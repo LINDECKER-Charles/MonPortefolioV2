@@ -10,6 +10,7 @@ import { FICHE as FICHE_GUP } from '../config/gup';
 import { FICHE as FICHE_LEAGUE } from '../config/league-of-database';
 import { FICHE as FICHE_OMNICARD } from '../config/omnicard';
 import { FICHE as FICHE_PVZ } from '../config/pvz-fusion';
+import type { SchemaProjet } from '../components/projets/gabarit/types';
 
 /** Adresse absolue sur l'hôte canonique : '/x' -> 'https://charles-lindecker.com/x'. */
 export function absolue(chemin: string): string {
@@ -95,13 +96,17 @@ export function noeudAriane(chemin: string, titre: string) {
   };
 }
 
-/** Ce que schema.org dit de chaque projet, et son adresse publique (premier lien de sa fiche). */
-const PROJETS_SCHEMA: Readonly<Record<ProjetVitrine['id'], { type: string; url: string; categorie?: string; systemes?: string }>> = {
-  pvz: { type: 'CreativeWork', url: FICHE_PVZ.liens[0].href },
-  league: { type: 'SoftwareApplication', url: FICHE_LEAGUE.liens[0].href, categorie: 'ReferenceApplication', systemes: 'Web' },
-  omnicard: { type: 'CreativeWork', url: FICHE_OMNICARD.liens[0].href },
-  bloodborne: { type: 'SoftwareApplication', url: FICHE_BLOODBORNE.liens[0].href, categorie: 'GameApplication', systemes: 'Web, Android' },
-  gup: { type: 'SoftwareApplication', url: FICHE_GUP.liens[0].href, categorie: 'DeveloperApplication', systemes: 'Windows, macOS, Linux' },
+/**
+ * Ce que schema.org dit de chaque projet, et son adresse publique : le premier
+ * lien de sa fiche, ou rien pour un projet sans lien public (dépôt privé), que
+ * le nœud nomme alors par sa page.
+ */
+const PROJETS_SCHEMA: Readonly<Record<ProjetVitrine['id'], SchemaProjet & { url?: string }>> = {
+  pvz: { type: 'CreativeWork', url: FICHE_PVZ.liens[0]?.href },
+  league: { type: 'SoftwareApplication', url: FICHE_LEAGUE.liens[0]?.href, categorie: 'ReferenceApplication', systemes: 'Web' },
+  omnicard: { type: 'CreativeWork', url: FICHE_OMNICARD.liens[0]?.href },
+  bloodborne: { type: 'SoftwareApplication', url: FICHE_BLOODBORNE.liens[0]?.href, categorie: 'GameApplication', systemes: 'Web, Android' },
+  gup: { type: 'SoftwareApplication', url: FICHE_GUP.liens[0]?.href, categorie: 'DeveloperApplication', systemes: 'Windows, macOS, Linux' },
 };
 
 /** Le projet d’une page de projet de la vitrine (CreativeWork ou SoftwareApplication), dont Charles est l’auteur. */
@@ -114,7 +119,7 @@ export function noeudProjet(chemin: string, description: string) {
     '@id': `${absolue(chemin)}#projet`,
     name: projet.nom,
     description,
-    url: schema.url,
+    url: schema.url ?? absolue(chemin),
     author: { '@id': PERSONNE_ID },
     inLanguage: SITE.langue,
     ...(schema.categorie && { applicationCategory: schema.categorie }),

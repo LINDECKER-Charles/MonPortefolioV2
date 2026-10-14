@@ -90,6 +90,19 @@ describe('FicheProjet', () => {
     expect(html).toMatch(/<a href="\/contact"[^>]*data-umami-event="contact-page"[^>]*data-umami-event-emplacement="fiche-projet"[^>]*>\s*Discutons de ce projet<span class="fleche" aria-hidden="true"[^>]*>\s→<\/span>/);
   });
 
+  it('dit qu’un projet privé n’a pas de lien vers son code, au lieu d’une liste vide', async () => {
+    const seul = await rendre(FicheProjet, { fiche: { ...FICHE, liens: [] }, prive: true });
+    expect([...seul.matchAll(/<dt[^>]*>([^<]+)<\/dt>/g)].map((m) => m[1])).toEqual(['Besoin', 'Ma part', 'Rôle', 'Période', 'Équipe', 'Statut', 'Liens publics']);
+    expect(seul).toMatch(/<p class="fiche-projet__prive"[^>]*>Aucun\s: le code est dans un dépôt privé\.<\/p>/);
+    expect(seul).not.toMatch(/<ul[\s>]/);
+    expect(seul).not.toMatch(/href="https?:/);
+    // Un site en ligne, mais un code privé : les deux se disent.
+    const site = await rendre(FicheProjet, { fiche: FICHE, prive: true });
+    expect(site).toMatch(/<\/ul>\s*<p class="fiche-projet__prive"[^>]*>Le code est dans un dépôt privé\.<\/p>/);
+    // Un projet public sans lien : une fiche incomplète, refusée.
+    await expect(rendre(FicheProjet, { fiche: { ...FICHE, liens: [] } })).rejects.toThrow(/prive/);
+  });
+
   it('marque ce qui reste à confirmer, case par case', async () => {
     const html = await rendre(FicheProjet, { fiche: { ...FICHE, aConfirmer: { periode: 'Date du lancement (Q8)' } } });
     expect(html).toMatch(/class="a-confirmer" title="Date du lancement \(Q8\)">à confirmer</);
@@ -111,6 +124,13 @@ describe('EnTeteProjet', () => {
   it('accepte aussi un titre d’un seul tenant', async () => {
     const html = await rendre(EnTeteProjet, { ...props, titre: 'Un titre en une phrase.' });
     expect(html).toMatch(/<h1[^>]*data-pli="titre"[^>]*><span class="projet-tete__ligne"[^>]*>Un titre en une phrase\.<\/span><\/h1>/);
+  });
+
+  it('donne toute la largeur au texte d’un en-tête sans visuel', async () => {
+    expect(await rendre(EnTeteProjet, props)).toMatch(/class="projet-tete__grille projet-tete__grille--sans-visuel/);
+    const avec = await rendre(EnTeteProjet, props, { visuel: '<figure>x</figure>' });
+    expect(avec).not.toContain('projet-tete__grille--sans-visuel');
+    expect(avec).toContain('class="projet-tete__visuel');
   });
 
   it('reprend le nom canonique et l’étiquette de la vitrine, et mène d’abord à « Comment je l’ai construit »', async () => {
@@ -161,11 +181,13 @@ describe('SortieProjet', () => {
     expect(html).toMatch(/League Of Data Base<span class="fleche" aria-hidden="true"[^>]*>\s→<\/span>/);
   });
 
-  it('mène le dernier projet de la vitrine aux autres projets publics (« Aussi »)', async () => {
+  it('mène le dernier projet de la vitrine aux projets archivés, puis à la vitrine', async () => {
     const html = await rendre(SortieProjet, { projet: VITRINE[VITRINE.length - 1].id });
     expect(html).not.toContain('Projet suivant');
-    expect(html).toMatch(/<a class="voisin[^"]*" href="\/projets#aussi"/);
+    expect(html).toMatch(/<a class="voisin[^"]*" href="\/projets#projets-archives"/);
     expect(html).toContain('Les autres projets publics');
+    expect(html).not.toContain('#aussi');
+    expect(html).toMatch(/href="\/projets"/);
   });
 });
 
