@@ -114,3 +114,31 @@ test('la ligne d’en-tête passe en thead et chaque en-tête déclare sa porté
   assert.match(html, /<table><thead><tr><th scope="col"><p>Ligne<\/p><\/th><th class="blog-align-right" scope="col"><p>Montant<\/p><\/th><\/tr><\/thead><tbody><tr><th scope="row"><p>Total<\/p><\/th><td class="blog-align-right"><p>12<\/p><\/td><\/tr><\/tbody><\/table>/);
   assert.match(html, /<table><tbody><tr><th scope="row"><p>Seule<\/p><\/th><td><p>ligne<\/p><\/td><\/tr><\/tbody><\/table>/, 'une ligne mixte reste dans tbody');
 });
+
+test('le texte d’auteur reçoit la typographie du site, sauf le code et les adresses', () => {
+  const html = renderArticle(GABARIT, article({
+    title: "Titre : l'essai !",
+    excerpt: "L'extrait ; « court » ?",
+    tags: ["l'été"],
+    content: { type: 'doc', content: [
+      { type: 'paragraph', content: [
+        texte("L'article : ici ; là ! vraiment ? « citation » "),
+        texte("a ? b : c'est", [{ type: 'code' }]),
+        texte(" et un lien : ", []),
+        texte("aujourd'hui", [{ type: 'link', attrs: { href: '/blog?page=2' } }]),
+      ] },
+      { type: 'codeBlock', attrs: { language: null }, content: [texte("x ? y : 'z' ; « a »")] },
+      { type: 'image', attrs: { src: '/api/blog/media/1', alt: "L'image : un test", title: "Légende : l'image !" } },
+    ] },
+  }));
+  const nb = ' ';
+  assert.match(html, new RegExp(`<h1>Titre${nb}: l’essai${nb}!</h1>`));
+  assert.match(html, new RegExp(`<title>Titre${nb}: l’essai${nb}!</title>`));
+  assert.match(html, new RegExp(`<p class="blog-article__intro">L’extrait${nb}; «${nb}court${nb}»${nb}\\?</p>`));
+  assert.match(html, /<li>l’été<\/li>/);
+  assert.match(html, new RegExp(`<p>L’article${nb}: ici${nb}; là${nb}! vraiment${nb}\\? «${nb}citation${nb}» <code>a \\? b : c&#39;est</code> et un lien${nb}: <a href="/blog\\?page=2"[^>]*>aujourd’hui</a></p>`));
+  assert.match(html, /<code>x \? y : &#39;z&#39; ; « a »<\/code>/, 'un bloc de code reste tel quel');
+  assert.match(html, new RegExp(`alt="L’image${nb}: un test"`));
+  assert.match(html, new RegExp(`<figcaption>Légende${nb}: l’image${nb}!</figcaption>`));
+  assert.match(html, new RegExp(`1${nb}min de lecture`));
+});

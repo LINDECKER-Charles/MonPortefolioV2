@@ -6,6 +6,16 @@ const ORIGIN = 'https://charles-lindecker.com';
 const AUTHOR = 'Charles Lindecker';
 const MAX_RESPONSE = 8 * 1024 * 1024;
 export const escapeHtml = (value = '') => String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+/**
+ * Typographie française du texte d’auteur, la règle de src/lib/typo.ts : espace
+ * insécable avant « : ; ! ? » et dans les guillemets, apostrophe courbe entre
+ * deux lettres. Jamais sur le code (marque code, bloc de code) ni sur une
+ * adresse, qui n’est qu’un attribut.
+ */
+export function typoAuteur(texte) {
+  return String(texte ?? '').replace(/(\p{L})'(?=\p{L})/gu, '$1’').replace(/[ \t]+([:;!?»])/g, '\u00a0$1').replace(/«[ \t]+/g, '«\u00a0');
+}
+const texteAuteur = (valeur) => escapeHtml(typoAuteur(valeur));
 const jsonScript = (value) => JSON.stringify(value).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
 
 /** Liens et images suivent la règle du backend (blog-regles.mjs) ; l’aperçu lit les images par la session. */
@@ -48,8 +58,9 @@ export function renderDocument(doc, { preview = false, reserved = [] } = {}) {
     switch (node.type) {
       case 'doc': return children();
       case 'text': {
-        let text = escapeHtml(node.text);
-        for (const mark of Array.isArray(node.marks) ? node.marks : []) {
+        const marks = Array.isArray(node.marks) ? node.marks : [];
+        let text = marks.some((mark) => mark?.type === 'code') ? escapeHtml(node.text) : texteAuteur(node.text);
+        for (const mark of marks) {
           const tag = { bold: 'strong', italic: 'em', strike: 's', underline: 'u', code: 'code' }[mark.type];
           if (tag) text = `<${tag}>${text}</${tag}>`;
           if (mark.type === 'link') { const href = safeUrl(mark.attrs?.href); if (href) text = `<a href="${escapeHtml(href)}"${mark.attrs?.title ? ` title="${escapeHtml(mark.attrs.title)}"` : ''} rel="noopener noreferrer">${text}</a>`; }
@@ -63,10 +74,10 @@ export function renderDocument(doc, { preview = false, reserved = [] } = {}) {
       case 'listItem': return `<li>${children()}</li>`;
       case 'blockquote': return `<blockquote>${children()}</blockquote>`;
       // Tableaux et code défilent en largeur : la région prend le focus pour défiler au clavier (WCAG 2.1.1).
-      case 'codeBlock': { codes += 1; const langage = typeof attrs.language === 'string' && attrs.language ? ` (${escapeHtml(attrs.language)})` : ''; return `<pre tabindex="0" role="region" aria-label="Code ${codes}${langage}"><code>${children()}</code></pre>`; }
+      case 'codeBlock': { codes += 1; const langage = typeof attrs.language === 'string' && attrs.language ? ` (${escapeHtml(attrs.language)})` : ''; return `<pre tabindex="0" role="region" aria-label="Code ${codes}${langage}"><code>${contenu.map((ligne) => (ligne?.type === 'text' ? escapeHtml(ligne.text) : '')).join('')}</code></pre>`; }
       case 'hardBreak': return '<br>';
       case 'horizontalRule': return '<hr>';
-      case 'image': { const src = safeUrl(attrs.src, true, preview); if (!src) return ''; const dimension = (key) => Number.isInteger(attrs[key]) && attrs[key] > 0 && attrs[key] <= 10_000 ? ` ${key}="${attrs[key]}"` : ''; const width = dimension('width') ? ` style="width:${attrs.width}px;max-width:100%;height:auto"` : ''; return `<figure><img src="${escapeHtml(src)}" alt="${escapeHtml(attrs.alt)}"${dimension('width')}${dimension('height')}${width} loading="lazy" decoding="async">${attrs.title ? `<figcaption>${escapeHtml(attrs.title)}</figcaption>` : ''}</figure>`; }
+      case 'image': { const src = safeUrl(attrs.src, true, preview); if (!src) return ''; const dimension = (key) => Number.isInteger(attrs[key]) && attrs[key] > 0 && attrs[key] <= 10_000 ? ` ${key}="${attrs[key]}"` : ''; const width = dimension('width') ? ` style="width:${attrs.width}px;max-width:100%;height:auto"` : ''; return `<figure><img src="${escapeHtml(src)}" alt="${texteAuteur(attrs.alt)}"${dimension('width')}${dimension('height')}${width} loading="lazy" decoding="async">${attrs.title ? `<figcaption>${texteAuteur(attrs.title)}</figcaption>` : ''}</figure>`; }
       case 'table': {
         tables += 1;
         // Une première ligne faite d’en-têtes devient l’en-tête du tableau.
@@ -90,24 +101,24 @@ function textContent(node) {
 }
 const isoDate = (value) => { const date = new Date(typeof value === 'number' ? value * 1000 : value); return Number.isNaN(date.valueOf()) ? '' : date.toISOString(); };
 const frenchDate = (value) => { const date = isoDate(value); return date ? new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long', timeZone: 'Europe/Paris' }).format(new Date(date)) : ''; };
-const tagsHtml = (post) => (post.tags?.length ? `<ul class="blog-tags" aria-label="Sujets">${post.tags.map((tag) => `<li>${escapeHtml(tag)}</li>`).join('')}</ul>` : '');
+const tagsHtml = (post) => (post.tags?.length ? `<ul class="blog-tags" aria-label="Sujets">${post.tags.map((tag) => `<li>${texteAuteur(tag)}</li>`).join('')}</ul>` : '');
 
 function metadata(post, preview) {
-  const title = post.seo_title || post.title;
-  const description = post.seo_description || post.excerpt || textContent(post.content).slice(0, 160);
+  const title = typoAuteur(post.seo_title || post.title);
+  const description = typoAuteur(post.seo_description || post.excerpt || textContent(post.content).slice(0, 160));
   let canonical = `${ORIGIN}/blog/${encodeURIComponent(post.slug)}`;
   try { const url = new URL(post.canonical_url); if (url.protocol === 'https:' && !url.username && !url.password) canonical = url.href; } catch { /* Canonical propre à la publication. */ }
   const image = safeUrl(post.og_image || post.cover_image, true) || '/og/accueil.png';
   const published = isoDate(post.published_at);
   const modified = isoDate(post.updated_at) || published;
-  const article = { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: post.title, description, url: canonical, mainEntityOfPage: canonical, inLanguage: 'fr', author: { '@type': 'Person', name: AUTHOR, url: `${ORIGIN}/parcours` }, image: [`${ORIGIN}${image}`], ...(published ? { datePublished: published } : {}), ...(modified ? { dateModified: modified } : {}), keywords: post.tags ?? [] };
-  return `<title>${escapeHtml(title)}</title><meta name="description" content="${escapeHtml(description)}"><meta name="robots" content="${preview || post.noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'}">${preview ? '' : `<link rel="canonical" href="${escapeHtml(canonical)}">`}<meta property="og:type" content="article"><meta property="og:site_name" content="${AUTHOR}"><meta property="og:locale" content="fr_FR"><meta property="og:title" content="${escapeHtml(title)}"><meta property="og:description" content="${escapeHtml(description)}"><meta property="og:url" content="${escapeHtml(canonical)}"><meta property="og:image" content="${escapeHtml(ORIGIN + image)}"><meta property="og:image:alt" content="${escapeHtml(post.cover_alt || post.title)}"><meta name="twitter:card" content="summary_large_image">${published ? `<meta property="article:published_time" content="${published}">` : ''}${modified ? `<meta property="article:modified_time" content="${modified}">` : ''}${preview ? '' : `<script type="application/ld+json">${jsonScript(article)}</script>`}`;
+  const article = { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: typoAuteur(post.title), description, url: canonical, mainEntityOfPage: canonical, inLanguage: 'fr', author: { '@type': 'Person', name: AUTHOR, url: `${ORIGIN}/parcours` }, image: [`${ORIGIN}${image}`], ...(published ? { datePublished: published } : {}), ...(modified ? { dateModified: modified } : {}), keywords: post.tags ?? [] };
+  return `<title>${escapeHtml(title)}</title><meta name="description" content="${escapeHtml(description)}"><meta name="robots" content="${preview || post.noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'}">${preview ? '' : `<link rel="canonical" href="${escapeHtml(canonical)}">`}<meta property="og:type" content="article"><meta property="og:site_name" content="${AUTHOR}"><meta property="og:locale" content="fr_FR"><meta property="og:title" content="${escapeHtml(title)}"><meta property="og:description" content="${escapeHtml(description)}"><meta property="og:url" content="${escapeHtml(canonical)}"><meta property="og:image" content="${escapeHtml(ORIGIN + image)}"><meta property="og:image:alt" content="${texteAuteur(post.cover_alt || post.title)}"><meta name="twitter:card" content="summary_large_image">${published ? `<meta property="article:published_time" content="${published}">` : ''}${modified ? `<meta property="article:modified_time" content="${modified}">` : ''}${preview ? '' : `<script type="application/ld+json">${jsonScript(article)}</script>`}`;
 }
 
 export function renderArticle(template, post, { preview = false } = {}) {
   const reading = Math.max(1, Math.ceil(textContent(post.content).trim().split(/\s+/).length / 220));
   const image = safeUrl(post.cover_image, true, preview);
-  const content = `<article class="wrap blog-article">${preview ? '<aside class="blog-preview-notice" role="status">Aperçu privé de la version de travail. Cet article n’est pas publié par cette action.</aside>' : ''}<nav class="blog-article__nav" aria-label="Fil d’Ariane"><a href="/">Accueil</a><a href="/blog">Blog</a><span aria-current="page">${escapeHtml(post.title)}</span></nav><header class="blog-article__header"><p class="blog-meta">${AUTHOR}${post.published_at ? ` — <time datetime="${isoDate(post.published_at)}">${escapeHtml(frenchDate(post.published_at))}</time>` : ''} — ${reading} min de lecture</p><h1>${escapeHtml(post.title)}</h1><p class="blog-article__intro">${escapeHtml(post.excerpt)}</p>${tagsHtml(post)}</header>${image ? `<img class="blog-article__cover" src="${escapeHtml(image)}" alt="${escapeHtml(post.cover_alt)}" decoding="async">` : ''}<div class="blog-prose">${renderDocument(post.content, { preview, reserved: [...template.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]) })}</div></article>`;
+  const content = `<article class="wrap blog-article">${preview ? '<aside class="blog-preview-notice" role="status">Aperçu privé de la version de travail. Cet article n’est pas publié par cette action.</aside>' : ''}<nav class="blog-article__nav" aria-label="Fil d’Ariane"><a href="/">Accueil</a><a href="/blog">Blog</a><span aria-current="page">${texteAuteur(post.title)}</span></nav><header class="blog-article__header"><p class="blog-meta">${AUTHOR}${post.published_at ? ` — <time datetime="${isoDate(post.published_at)}">${escapeHtml(frenchDate(post.published_at))}</time>` : ''} — ${reading} min de lecture</p><h1>${texteAuteur(post.title)}</h1><p class="blog-article__intro">${texteAuteur(post.excerpt)}</p>${tagsHtml(post)}</header>${image ? `<img class="blog-article__cover" src="${escapeHtml(image)}" alt="${texteAuteur(post.cover_alt)}" decoding="async">` : ''}<div class="blog-prose">${renderDocument(post.content, { preview, reserved: [...template.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]) })}</div></article>`;
   // Remplacement par fonction : un texte d’auteur qui porte $&, $' ou $$ serait sinon lu comme un motif de String.replace.
   let html = template.replace(/<title>[\s\S]*?<\/title>/, '').replace(/<meta\s+(?:name="(?:description|robots|twitter:[^"]*)"|property="(?:og:|article:)[^"]*")[^>]*>/g, '').replace(/<link rel="canonical"[^>]*>/g, '').replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '').replace('</head>', () => metadata(post, preview) + '</head>').replace(/<div id="blog-article-slot"[^>]*><\/div>/, () => content).replace(/<noscript>[\s\S]*?<\/noscript>/g, '');
   if (preview) html = html.replace(/<script[^>]*src="\/mesure.js"[^>]*><\/script>/g, '');
@@ -116,7 +127,7 @@ export function renderArticle(template, post, { preview = false } = {}) {
 
 export function renderIndex(template, page, number = 1) {
   if (!page.posts.length && number === 1) return template;
-  const list = page.posts.map((post) => { const image = safeUrl(post.cover_image, true); return `<article class="blog-list__article"><div><p class="blog-meta"><time datetime="${isoDate(post.published_at)}">${escapeHtml(frenchDate(post.published_at))}</time></p><h2><a href="/blog/${escapeHtml(post.slug)}">${escapeHtml(post.title)}</a></h2><p>${escapeHtml(post.excerpt)}</p>${tagsHtml(post)}</div>${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(post.cover_alt)}" loading="lazy" decoding="async">` : ''}</article>`; }).join('');
+  const list = page.posts.map((post) => { const image = safeUrl(post.cover_image, true); return `<article class="blog-list__article"><div><p class="blog-meta"><time datetime="${isoDate(post.published_at)}">${escapeHtml(frenchDate(post.published_at))}</time></p><h2><a href="/blog/${escapeHtml(post.slug)}">${texteAuteur(post.title)}</a></h2><p>${texteAuteur(post.excerpt)}</p>${tagsHtml(post)}</div>${image ? `<img src="${escapeHtml(image)}" alt="${texteAuteur(post.cover_alt)}" loading="lazy" decoding="async">` : ''}</article>`; }).join('');
   const pagination = `<nav class="blog-pagination" aria-label="Pages du blog">${number > 1 ? `<a rel="prev" href="/blog${number === 2 ? '' : `?page=${number - 1}`}">Articles précédents</a>` : '<span></span>'}${number * 20 < page.total ? `<a rel="next" href="/blog?page=${number + 1}">Articles suivants</a>` : ''}</nav>`;
   let html = template.replace(/<div id="blog-publications"[^>]*>[\s\S]*?<\/section>\s*<\/div>/, () => `<div id="blog-publications"><section class="blog-list" aria-label="Articles publiés">${list}</section>${pagination}</div>`);
   if (number > 1) html = html.replaceAll(`href="${ORIGIN}/blog"`, `href="${ORIGIN}/blog?page=${number}"`).replaceAll(`content="${ORIGIN}/blog"`, `content="${ORIGIN}/blog?page=${number}"`);
