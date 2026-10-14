@@ -145,6 +145,27 @@ test('un tableau large défile au lieu de couper ses mots lettre à lettre', asy
     return plage.getClientRects().length;
   });
   expect(lignes, '« Montant » tient sur une ligne').toBe(1);
+  // Une région qui défile le montre sans JavaScript : ombres fixes, voiles qui défilent.
+  for (const region of [page.locator('.blog-table').first(), page.locator('.blog-prose pre').first()]) {
+    expect(await region.evaluate((el) => getComputedStyle(el).backgroundAttachment)).toMatch(/local.*scroll/);
+  }
+});
+
+test('un tableau aux colonnes inégales garde des rangées de quelques lignes', async ({ page }) => {
+  await ouvrir(page);
+  const rangees = await page.locator('.blog-table').nth(1).evaluate((region) => [...region.querySelectorAll('tr')].map((rangee) => {
+    const cellule = rangee.querySelector('td, th')!;
+    const style = getComputedStyle(cellule);
+    const interieur = rangee.getBoundingClientRect().height - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+    return Math.round(interieur / parseFloat(style.lineHeight));
+  }));
+  expect(rangees.length).toBe(2);
+  for (const lignes of rangees) expect(lignes, 'lignes de la rangée la plus haute').toBeLessThanOrEqual(4);
+  // Sur écran étroit, le tableau prend sa largeur naturelle : une colonne courte reste étroite.
+  if ((page.viewportSize()?.width ?? 0) <= 860) {
+    const courte = await page.locator('.blog-table').nth(1).locator('td', { hasText: 'oui' }).evaluate((cellule) => cellule.getBoundingClientRect().width);
+    expect(courte, 'une colonne courte reste étroite').toBeLessThan(112);
+  }
 });
 
 test('les cellules et les paragraphes gardent l’alignement choisi par l’auteur', async ({ page }) => {
