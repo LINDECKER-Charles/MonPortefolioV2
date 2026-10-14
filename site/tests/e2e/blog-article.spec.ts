@@ -117,6 +117,13 @@ test('un tableau large défile au lieu de couper ses mots lettre à lettre', asy
   expect(lignes, '« Montant » tient sur une ligne').toBe(1);
 });
 
+test('les cellules gardent l’alignement choisi par l’auteur', async ({ page }) => {
+  await ouvrir(page);
+  const alignements = await page.locator('.blog-table').nth(1).evaluate((region) => [...region.querySelectorAll('[class*="blog-align-"]')].map((cellule) => [cellule.className, getComputedStyle(cellule).textAlign]));
+  expect(alignements.length).toBe(6);
+  for (const [classe, valeur] of alignements) expect(valeur, classe).toBe(classe.replace('blog-align-', ''));
+});
+
 test('tableaux et blocs de code défilent au clavier', async ({ page }) => {
   await ouvrir(page);
   for (const selecteur of ['.blog-table', '.blog-prose pre']) {

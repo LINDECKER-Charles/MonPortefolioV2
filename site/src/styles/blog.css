@@ -436,15 +436,17 @@
   border-top: 1px solid var(--trait);
 }
 
-.blog-align-center {
+/* Préfixées par .blog-prose : l’alignement d’une cellule l’emporte sur le
+   text-align: start des cellules (même spécificité sinon). */
+.blog-prose .blog-align-center {
   text-align: center;
 }
 
-.blog-align-right {
+.blog-prose .blog-align-right {
   text-align: right;
 }
 
-.blog-align-justify {
+.blog-prose .blog-align-justify {
   text-align: justify;
 }
 
