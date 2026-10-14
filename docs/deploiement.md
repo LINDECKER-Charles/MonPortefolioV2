@@ -405,14 +405,21 @@ CADDY_DOMAINS=exemple.test BACKEND_PROXY_TOKEN=exemple-token-local-de-trente-deu
   `max_over_time(container_memory_working_set_bytes{stack=~"portfolio-.*"}[7d])`.
 
 - **Le backend a 256 Mio pour importer les images du blog.** Son pic n'est pas le trafic mais
-  l'import d'une image, borné par le code (`backend/src/blog_media.rs`) : 25 Mpx et 100 Mo de
-  décodage au plus, une image à la fois. Mesuré sous Linux (`memory.peak` du cgroup, environ
-  32 Mio au repos compris) : 125 Mio pour un PNG RGBA de 25 Mpx tourné par son orientation EXIF,
-  154 Mio pour le pire cas (PNG RGBA 10 000 × 1 600, réencodé entier), 73 Mio pour une photo JPEG
-  de 12 Mpx. À 128 Mio, une grande image tuait le conteneur en pleine requête, et le formulaire
-  de contact avec lui jusqu'au redémarrage. 256 Mio laissent 1,6× au pire cas mesuré. Le pic réel
-  reste à relever en production : `docker stats` au premier gros import. Pour baisser la limite,
-  baisser d'abord `MAX_PIXELS` et `MAX_ALLOC`, et aligner `backend/README.md`. La rubrique
+  l'import d'une image, borné par le code (`backend/src/blog_media.rs`) : 25 Mpx, 150 Mo au plus
+  tenus par le décodage, tampons propres à chaque décodeur compris (au-delà, l'image est gardée
+  sans variante), une image à la fois. Mesuré sous Linux (`memory.peak` du cgroup d'un conteneur
+  limité à 256 Mio sans swap, comme en production, environ 32 Mio au repos compris) : 74 Mio pour
+  une photo JPEG de 12 Mpx, 124 Mio pour un PNG RGBA de 25 Mpx tourné par son orientation EXIF,
+  164 Mio pour un PNG RGBA de 2 500 × 10 000 ou un JPEG progressif de 24 Mpx, et 183 Mio au pire,
+  pour un JPEG progressif en 4:4:4 de 16,6 Mpx, au seuil du décodage. Avant ce seuil, un WebP de
+  24 Mpx avec transparence montait à 287 Mio et tuait le conteneur. À 128 Mio, une grande image
+  tuait le conteneur en pleine requête, et le formulaire de contact avec lui jusqu'au redémarrage.
+  256 Mio laissent 1,4× au pire cas mesuré. Les imports simultanés attendent leur tour, mais
+  leurs fichiers reçus s'additionnent : quatre gros imports à la fois touchent la limite, huit
+  la dépassent. Le pic réel reste à relever en production : `docker stats` au premier gros
+  import. Pour baisser la limite, baisser d'abord `MAX_DECODING`, et aligner `backend/README.md`.
+  Les mesures sont à refaire à chaque nouvelle version d'`image`, `image-webp` ou `zune-jpeg`,
+  dont les tampons fondent le calcul du coût. La rubrique
   Stockage du backoffice montre ce qui prend de la place sur le disque et dans la base.
 
 - **Un conteneur `unhealthy` n'est jamais redémarré.** `restart: unless-stopped` réagit à la sortie
