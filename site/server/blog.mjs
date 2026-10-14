@@ -101,6 +101,15 @@ function textContent(node) {
 }
 const isoDate = (value) => { const date = new Date(typeof value === 'number' ? value * 1000 : value); return Number.isNaN(date.valueOf()) ? '' : date.toISOString(); };
 const frenchDate = (value) => { const date = isoDate(value); return date ? new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long', timeZone: 'Europe/Paris' }).format(new Date(date)) : ''; };
+const frenchDateTime = (value) => { const date = isoDate(value); return date ? new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long', timeStyle: 'short', timeZone: 'Europe/Paris' }).format(new Date(date)) : ''; };
+/** Ce que montre l’aperçu, et ce que lisent les visiteurs pendant ce temps. */
+function noticeApercu(post) {
+  const ecart = (version) => post.has_unpublished_changes ? `Cette version de travail diffère de la version ${version}\u00a0: ${version === 'publique' ? 'publiez-la' : 'reprogrammez-la'} pour l’inclure.` : `La version ${version} est celle-ci.`;
+  const etat = post.status === 'scheduled' && post.scheduled_at
+    ? `La publication est programmée le ${escapeHtml(frenchDateTime(post.scheduled_at))} (heure de Paris). ${ecart('programmée')}`
+    : post.status === 'published' ? `L’article est publié. ${ecart('publique')}` : 'Cet article n’est pas publié.';
+  return `<div class="blog-preview-notice" role="status">Aperçu privé de la version de travail. ${etat}</div>`;
+}
 const tagsHtml = (post) => (post.tags?.length ? `<ul class="blog-tags" aria-label="Sujets">${post.tags.map((tag) => `<li>${texteAuteur(tag)}</li>`).join('')}</ul>` : '');
 
 function metadata(post, preview) {
@@ -118,7 +127,7 @@ function metadata(post, preview) {
 export function renderArticle(template, post, { preview = false } = {}) {
   const reading = Math.max(1, Math.ceil(textContent(post.content).trim().split(/\s+/).length / 220));
   const image = safeUrl(post.cover_image, true, preview);
-  const content = `<article class="wrap blog-article">${preview ? '<aside class="blog-preview-notice" role="status">Aperçu privé de la version de travail. Cet article n’est pas publié par cette action.</aside>' : ''}<nav class="blog-article__nav" aria-label="Fil d’Ariane"><a href="/">Accueil</a><a href="/blog">Blog</a><span aria-current="page">${texteAuteur(post.title)}</span></nav><header class="blog-article__header"><p class="blog-meta">${AUTHOR}${post.published_at ? ` — <time datetime="${isoDate(post.published_at)}">${escapeHtml(frenchDate(post.published_at))}</time>` : ''} — ${reading} min de lecture</p><h1>${texteAuteur(post.title)}</h1><p class="blog-article__intro">${texteAuteur(post.excerpt)}</p>${tagsHtml(post)}</header>${image ? `<img class="blog-article__cover" src="${escapeHtml(image)}" alt="${texteAuteur(post.cover_alt)}" decoding="async">` : ''}<div class="blog-prose">${renderDocument(post.content, { preview, reserved: [...template.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]) })}</div></article>`;
+  const content = `<article class="wrap blog-article">${preview ? noticeApercu(post) : ''}<nav class="blog-article__nav" aria-label="Fil d’Ariane"><a href="/">Accueil</a><a href="/blog">Blog</a><span aria-current="page">${texteAuteur(post.title)}</span></nav><header class="blog-article__header"><p class="blog-meta">${AUTHOR}${post.published_at ? ` — <time datetime="${isoDate(post.published_at)}">${escapeHtml(frenchDate(post.published_at))}</time>` : ''} — ${reading} min de lecture</p><h1>${texteAuteur(post.title)}</h1><p class="blog-article__intro">${texteAuteur(post.excerpt)}</p>${tagsHtml(post)}</header>${image ? `<img class="blog-article__cover" src="${escapeHtml(image)}" alt="${texteAuteur(post.cover_alt)}" decoding="async">` : ''}<div class="blog-prose">${renderDocument(post.content, { preview, reserved: [...template.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]) })}</div></article>`;
   // Remplacement par fonction : un texte d’auteur qui porte $&, $' ou $$ serait sinon lu comme un motif de String.replace.
   let html = template.replace(/<title>[\s\S]*?<\/title>/, '').replace(/<meta\s+(?:name="(?:description|robots|twitter:[^"]*)"|property="(?:og:|article:)[^"]*")[^>]*>/g, '').replace(/<link rel="canonical"[^>]*>/g, '').replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '').replace('</head>', () => metadata(post, preview) + '</head>').replace(/<div id="blog-article-slot"[^>]*><\/div>/, () => content).replace(/<noscript>[\s\S]*?<\/noscript>/g, '');
   if (preview) html = html.replace(/<script[^>]*src="\/mesure.js"[^>]*><\/script>/g, '');

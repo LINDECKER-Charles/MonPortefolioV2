@@ -142,3 +142,18 @@ test('le texte d’auteur reçoit la typographie du site, sauf le code et les ad
   assert.match(html, new RegExp(`<figcaption>Légende${nb}: l’image${nb}!</figcaption>`));
   assert.match(html, new RegExp(`1${nb}min de lecture`));
 });
+
+test('l’aperçu dit ce qui est publié, programmé ou en attente, dans un bloc d’état sans aside', () => {
+  const apercu = (champs) => renderArticle(GABARIT, article(champs), { preview: true });
+  const brouillon = apercu({ status: 'draft', published_at: null });
+  assert.match(brouillon, /<div class="blog-preview-notice" role="status">Aperçu privé de la version de travail\. Cet article n’est pas publié\.<\/div>/);
+  assert.doesNotMatch(brouillon, /<aside/);
+  const programme = apercu({ status: 'scheduled', scheduled_at: 1791468000, published_at: null, has_unpublished_changes: true });
+  assert.match(programme, /programmée le 8 octobre 2026 à \d\d:00 \(heure de Paris\)/);
+  assert.match(programme, /Cette version de travail diffère de la version programmée/);
+  const programmeAJour = apercu({ status: 'scheduled', scheduled_at: 1791468000, published_at: null, has_unpublished_changes: false });
+  assert.match(programmeAJour, /La version programmée est celle-ci\./);
+  const publie = apercu({ status: 'published', has_unpublished_changes: true });
+  assert.match(publie, /Cette version de travail diffère de la version publique/);
+  assert.match(apercu({ status: 'published', has_unpublished_changes: false }), /La version publique est celle-ci\./);
+});
