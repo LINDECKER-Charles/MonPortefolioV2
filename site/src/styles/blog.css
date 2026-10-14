@@ -294,9 +294,12 @@
   line-height: 1.5;
 }
 
+/* Le serveur pose width et height à la taille d’affichage (au plus 1 000 × 650,
+   jamais agrandie) : la boîte est réservée avant le chargement. */
 .blog-article__cover {
   display: block;
-  width: min(100%, 1000px);
+  max-width: min(100%, 1000px);
+  height: auto;
   max-height: 650px;
   margin: var(--s7) auto;
   object-fit: contain;
@@ -373,9 +376,11 @@
   background: var(--surface);
 }
 
+/* Même principe dans le texte : la taille d’affichage vient des attributs
+   (au plus la colonne et 800 px de haut), une petite image reste petite. */
 .blog-prose figure img,
 .blog-prose > img {
-  width: 100%;
+  height: auto;
   max-height: 800px;
   object-fit: contain;
   border-radius: var(--r2);

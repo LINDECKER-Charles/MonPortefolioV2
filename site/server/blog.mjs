@@ -25,6 +25,59 @@ function safeUrl(value, image = false, preview = false) {
   return src && preview ? src.replace('/api/blog/media/', '/api/backoffice/blog/media/') : src;
 }
 
+/*
+ * Images : le backend décrit chaque image d’un article sous `media` (dimensions
+ * réelles et largeurs des variantes, backend/src/blog_media.rs). Le rendu en
+ * tire la taille d’affichage, posée en width/height (aucun décalage de mise en
+ * page, jamais d’agrandissement), et un srcset qui ne sert jamais un original
+ * plus large que 1 600 px. Les boîtes reprennent styles/blog.css.
+ */
+const PROSE = { largeur: 672, hauteur: 800 };          // .blog-prose (42rem) ; plafond des images du texte
+const COUVERTURE = { largeur: 1000, hauteur: 650 };    // .blog-article__cover
+const GOUTTIERES = 32;                                 // 2 × --gouttiere à 390 px
+const VARIANTE_MAX = 1600;
+const dimension = (valeur) => (Number.isInteger(valeur) && valeur > 0 && valeur <= 10_000 ? valeur : 0);
+
+/** Les dimensions et variantes connues d’une image importée, ou null. */
+function infoImage(media, src) {
+  const info = media && typeof media === 'object' && Object.hasOwn(media, src) ? media[src] : null;
+  const width = dimension(info?.width); const height = dimension(info?.height);
+  if (!width || !height) return null;
+  const variants = (Array.isArray(info.variants) ? info.variants : []).filter((largeur) => dimension(largeur) && largeur <= width).sort((a, b) => a - b);
+  return { width, height, variants };
+}
+/** Réduit sans jamais agrandir, en gardant les proportions, pour tenir dans la boîte. */
+function ajuster({ width, height }, boite) {
+  const echelle = Math.min(1, boite.largeur / width, boite.hauteur / height);
+  return { width: Math.max(1, Math.round(width * echelle)), height: Math.max(1, Math.round(height * echelle)) };
+}
+/** src, srcset et sizes d’une image importée ; `adresse` passe à l’aperçu privé. */
+function sources(src, info, affichee, adresse, sizes) {
+  const candidats = info ? info.variants.map((largeur) => [`${src}/${largeur}`, largeur]) : [];
+  if (info && info.width <= VARIANTE_MAX && !info.variants.includes(info.width)) candidats.push([src, info.width]);
+  // Sans variante, l’original seul n’a pas besoin de srcset.
+  if (!candidats.length || (candidats.length === 1 && candidats[0][0] === src)) return `src="${escapeHtml(adresse(src))}"`;
+  const repli = candidats.find(([, largeur]) => largeur >= (affichee?.width ?? 0)) ?? candidats.at(-1);
+  const taille = sizes ?? `(max-width: ${affichee.width + GOUTTIERES}px) calc(100vw - ${GOUTTIERES}px), ${affichee.width}px`;
+  return `src="${escapeHtml(adresse(repli[0]))}" srcset="${candidats.map(([url, largeur]) => `${escapeHtml(adresse(url))} ${largeur}w`).join(', ')}" sizes="${taille}"`;
+}
+const versApercu = (preview) => (url) => (preview ? url.replace('/api/blog/media/', '/api/backoffice/blog/media/') : url);
+const attributsTaille = (taille) => (taille ? ` width="${taille.width}"${taille.height ? ` height="${taille.height}"` : ''}` : '');
+
+/** Taille d’affichage d’une image du texte, selon ses dimensions et celles choisies par l’auteur. */
+function tailleImage(attrs, info) {
+  const largeur = dimension(attrs.width); const hauteur = dimension(attrs.height);
+  if (info) {
+    const base = largeur ? { width: largeur, height: Math.round((largeur * info.height) / info.width) }
+      : hauteur ? { width: Math.round((hauteur * info.width) / info.height), height: hauteur }
+        : info;
+    return ajuster({ width: base.width, height: Math.max(1, base.height) }, PROSE);
+  }
+  // Sans dimensions connues, une hauteur seule déformerait l’image : seule la largeur passe.
+  if (largeur && hauteur) return ajuster({ width: largeur, height: hauteur }, PROSE);
+  return largeur ? { width: Math.min(largeur, PROSE.largeur), height: 0 } : null;
+}
+
 /** Identifiant d’ancre d’un titre : ASCII, minuscules et tirets, comme les slugs (« Œuvre & cœur » → oeuvre-coeur). */
 export function slugTitre(texte) {
   const slug = String(texte).replace(/œ/gi, 'oe').replace(/æ/gi, 'ae').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+/, '').slice(0, 80).replace(/-+$/, '');
@@ -37,7 +90,7 @@ const texteDe = (node) => (node?.type === 'text' ? String(node.text ?? '') : nod
  * Chaque titre porte un identifiant tiré de son texte, unique dans la page
  * (`reserved` : ceux du gabarit), pour les ancres `#…` de l’auteur.
  */
-export function renderDocument(doc, { preview = false, reserved = [] } = {}) {
+export function renderDocument(doc, { preview = false, reserved = [], media = {} } = {}) {
   let count = 0;
   const used = new Set(reserved);
   const identifiant = (node) => {
@@ -102,7 +155,13 @@ export function renderDocument(doc, { preview = false, reserved = [] } = {}) {
       case 'codeBlock': { codes += 1; const langage = typeof attrs.language === 'string' && attrs.language ? ` (${escapeHtml(attrs.language)})` : ''; return `<pre tabindex="0" role="region" aria-label="Code ${codes}${langage}"><code>${contenu.map((ligne) => (ligne?.type === 'text' ? escapeHtml(ligne.text) : '')).join('')}</code></pre>`; }
       case 'hardBreak': return '<br>';
       case 'horizontalRule': return '<hr>';
-      case 'image': { const src = safeUrl(attrs.src, true, preview); if (!src) return ''; const dimension = (key) => Number.isInteger(attrs[key]) && attrs[key] > 0 && attrs[key] <= 10_000 ? ` ${key}="${attrs[key]}"` : ''; const width = dimension('width') ? ` style="width:${attrs.width}px;max-width:100%;height:auto"` : ''; return `<figure><img src="${escapeHtml(src)}" alt="${texteAuteur(attrs.alt)}"${dimension('width')}${dimension('height')}${width} loading="lazy" decoding="async">${attrs.title ? `<figcaption>${texteAuteur(attrs.title)}</figcaption>` : ''}</figure>`; }
+      case 'image': {
+        const src = safeUrl(attrs.src, true);
+        if (!src) return '';
+        const info = infoImage(media, src);
+        const taille = tailleImage(attrs, info);
+        return `<figure><img ${sources(src, info, taille?.height ? taille : null, versApercu(preview))} alt="${texteAuteur(attrs.alt)}"${attributsTaille(taille)} loading="lazy" decoding="async">${attrs.title ? `<figcaption>${texteAuteur(attrs.title)}</figcaption>` : ''}</figure>`;
+      }
       case 'table': {
         tables += 1;
         // Une première ligne faite d’en-têtes devient l’en-tête du tableau.
@@ -151,8 +210,11 @@ function metadata(post, preview) {
 
 export function renderArticle(template, post, { preview = false } = {}) {
   const reading = Math.max(1, Math.ceil(textContent(post.content).trim().split(/\s+/).length / 220));
-  const image = safeUrl(post.cover_image, true, preview);
-  const content = `<article class="wrap blog-article">${preview ? noticeApercu(post) : ''}<nav class="blog-article__nav" aria-label="Fil d’Ariane"><a href="/">Accueil</a><a href="/blog">Blog</a><span aria-current="page">${texteAuteur(post.title)}</span></nav><header class="blog-article__header"><p class="blog-meta">${AUTHOR}${post.published_at ? ` — <time datetime="${isoDate(post.published_at)}">${escapeHtml(frenchDate(post.published_at))}</time>` : ''} — ${reading} min de lecture</p><h1>${texteAuteur(post.title)}</h1><p class="blog-article__intro">${texteAuteur(post.excerpt)}</p>${tagsHtml(post)}</header>${image ? `<img class="blog-article__cover" src="${escapeHtml(image)}" alt="${texteAuteur(post.cover_alt)}" decoding="async">` : ''}<div class="blog-prose">${renderDocument(post.content, { preview, reserved: [...template.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]) })}</div></article>`;
+  const image = safeUrl(post.cover_image, true);
+  // La couverture est le plus grand élément du premier écran : dimensionnée, chargée en priorité.
+  const couverture = infoImage(post.media, image);
+  const tailleCouverture = couverture && ajuster(couverture, COUVERTURE);
+  const content = `<article class="wrap blog-article">${preview ? noticeApercu(post) : ''}<nav class="blog-article__nav" aria-label="Fil d’Ariane"><a href="/">Accueil</a><a href="/blog">Blog</a><span aria-current="page">${texteAuteur(post.title)}</span></nav><header class="blog-article__header"><p class="blog-meta">${AUTHOR}${post.published_at ? ` — <time datetime="${isoDate(post.published_at)}">${escapeHtml(frenchDate(post.published_at))}</time>` : ''} — ${reading} min de lecture</p><h1>${texteAuteur(post.title)}</h1><p class="blog-article__intro">${texteAuteur(post.excerpt)}</p>${tagsHtml(post)}</header>${image ? `<img class="blog-article__cover" ${sources(image, couverture, tailleCouverture, versApercu(preview))} alt="${texteAuteur(post.cover_alt)}"${attributsTaille(tailleCouverture)} fetchpriority="high" decoding="async">` : ''}<div class="blog-prose">${renderDocument(post.content, { preview, media: post.media, reserved: [...template.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]) })}</div></article>`;
   // Remplacement par fonction : un texte d’auteur qui porte $&, $' ou $$ serait sinon lu comme un motif de String.replace.
   let html = template.replace(/<title>[\s\S]*?<\/title>/, '').replace(/<meta\s+(?:name="(?:description|robots|twitter:[^"]*)"|property="(?:og:|article:)[^"]*")[^>]*>/g, '').replace(/<link rel="canonical"[^>]*>/g, '').replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '').replace('</head>', () => metadata(post, preview) + '</head>').replace(/<div id="blog-article-slot"[^>]*><\/div>/, () => content).replace(/<noscript>[\s\S]*?<\/noscript>/g, '');
   if (preview) html = html.replace(/<script[^>]*src="\/mesure.js"[^>]*><\/script>/g, '');
@@ -161,7 +223,8 @@ export function renderArticle(template, post, { preview = false } = {}) {
 
 export function renderIndex(template, page, number = 1) {
   if (!page.posts.length && number === 1) return template;
-  const list = page.posts.map((post) => { const image = safeUrl(post.cover_image, true); return `<article class="blog-list__article"><div><p class="blog-meta"><time datetime="${isoDate(post.published_at)}">${escapeHtml(frenchDate(post.published_at))}</time></p><h2><a href="/blog/${escapeHtml(post.slug)}">${texteAuteur(post.title)}</a></h2><p>${texteAuteur(post.excerpt)}</p>${tagsHtml(post)}</div>${image ? `<img src="${escapeHtml(image)}" alt="${texteAuteur(post.cover_alt)}" loading="lazy" decoding="async">` : ''}</article>`; }).join('');
+  // Vignettes recadrées en 16:9 par blog.css : la vedette prend 7/12 de 1 344 px, les autres la moitié.
+  const list = page.posts.map((post, rang) => { const image = safeUrl(post.cover_image, true); const info = infoImage(post.media, image); const vignette = image ? `<img ${sources(image, info, info, (url) => url, `(max-width: 860px) calc(100vw - ${GOUTTIERES}px), ${rang ? 660 : 760}px`)} alt="${texteAuteur(post.cover_alt)}"${attributsTaille(info)}${rang ? ' loading="lazy"' : ''} decoding="async">` : ''; return `<article class="blog-list__article"><div><p class="blog-meta"><time datetime="${isoDate(post.published_at)}">${escapeHtml(frenchDate(post.published_at))}</time></p><h2><a href="/blog/${escapeHtml(post.slug)}">${texteAuteur(post.title)}</a></h2><p>${texteAuteur(post.excerpt)}</p>${tagsHtml(post)}</div>${vignette}</article>`; }).join('');
   const pagination = `<nav class="blog-pagination" aria-label="Pages du blog">${number > 1 ? `<a rel="prev" href="/blog${number === 2 ? '' : `?page=${number - 1}`}">Articles précédents</a>` : '<span></span>'}${number * 20 < page.total ? `<a rel="next" href="/blog?page=${number + 1}">Articles suivants</a>` : ''}</nav>`;
   let html = template.replace(/<div id="blog-publications"[^>]*>[\s\S]*?<\/section>\s*<\/div>/, () => `<div id="blog-publications"><section class="blog-list" aria-label="Articles publiés">${list}</section>${pagination}</div>`);
   if (number > 1) html = html.replaceAll(`href="${ORIGIN}/blog"`, `href="${ORIGIN}/blog?page=${number}"`).replaceAll(`content="${ORIGIN}/blog"`, `content="${ORIGIN}/blog?page=${number}"`);

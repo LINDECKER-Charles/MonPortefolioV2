@@ -176,3 +176,69 @@ test('un lien sortant suit la grammaire du site (↗, rel external) et la mesure
   assert.match(html, /<a href="\/projets">les projets<\/a>/, 'un lien interne reste une navigation ordinaire');
   assert.doesNotMatch(html, /target=|class="x"|nofollow/);
 });
+
+const MEDIA = {
+  '/api/blog/media/1': { width: 1600, height: 1000, variants: [480, 960, 1600] },
+  '/api/blog/media/2': { width: 800, height: 2800, variants: [480] },
+  '/api/blog/media/3': { width: 320, height: 200, variants: [] },
+  '/api/blog/media/4': { width: 3200, height: 600, variants: [480, 960, 1600] },
+  '/api/blog/media/5': { width: 800, height: 1400, variants: [480, 800] },
+};
+const image = (src, attrs = {}) => ({ type: 'image', attrs: { src, alt: 'Une image', ...attrs } });
+const balise = (html, src) => html.match(new RegExp(`<img src="${src.replace(/\//g, '\\/')}(?:\\/\\d+)?"[^>]*>`))?.[0] ?? '';
+
+test('une image d’article porte sa taille d’affichage, ses variantes et un chargement différé', () => {
+  const html = renderDocument({ type: 'doc', content: [
+    image('/api/blog/media/1'),
+    image('/api/blog/media/2'),
+    image('/api/blog/media/3'),
+    image('/api/blog/media/4'),
+  ] }, { media: MEDIA });
+  const paysage = balise(html, '/api/blog/media/1');
+  assert.match(paysage, / width="672" height="420"/);
+  assert.match(paysage, / srcset="\/api\/blog\/media\/1\/480 480w, \/api\/blog\/media\/1\/960 960w, \/api\/blog\/media\/1\/1600 1600w"/);
+  assert.match(paysage, / sizes="\(max-width: 704px\) calc\(100vw - 32px\), 672px"/);
+  assert.match(paysage, /^<img src="\/api\/blog\/media\/1\/960"/, 'la source de repli est la plus petite qui couvre l’affichage');
+  assert.match(paysage, / loading="lazy" decoding="async"/);
+  assert.doesNotMatch(html, /style=/, 'plus de largeur en ligne : les attributs suffisent');
+  const haute = balise(html, '/api/blog/media/2');
+  assert.match(haute, / width="229" height="800"/, 'une image très haute garde ses proportions sous 800 px');
+  assert.match(haute, / srcset="\/api\/blog\/media\/2\/480 480w, \/api\/blog\/media\/2 800w"/, 'l’original complète les variantes à sa largeur');
+  const petite = balise(html, '/api/blog/media/3');
+  assert.match(petite, /^<img src="\/api\/blog\/media\/3" alt="Une image" width="320" height="200" loading/, 'une petite image n’est jamais agrandie');
+  assert.doesNotMatch(petite, /srcset/);
+  const large = balise(html, '/api/blog/media/4');
+  assert.match(large, / width="672" height="126"/);
+  assert.doesNotMatch(large, /\/api\/blog\/media\/4 3200w/, 'un original plus large que 1 600 px n’est jamais servi');
+});
+
+test('largeur ou hauteur choisie par l’auteur, image inconnue et aperçu', () => {
+  const html = renderDocument({ type: 'doc', content: [
+    image('/api/blog/media/3', { width: 160 }),
+    image('/api/blog/media/1', { height: 300 }),
+    image('/api/blog/media/9', { width: 500 }),
+    image('/api/blog/media/8', { height: 300 }),
+  ] }, { media: MEDIA });
+  assert.match(balise(html, '/api/blog/media/3'), / width="160" height="100"/);
+  assert.match(balise(html, '/api/blog/media/1'), / width="480" height="300"/, 'une hauteur seule garde le rapport de l’image');
+  assert.match(balise(html, '/api/blog/media/9'), /^<img src="\/api\/blog\/media\/9" alt="Une image" width="500" loading/);
+  assert.match(balise(html, '/api/blog/media/8'), /^<img src="\/api\/blog\/media\/8" alt="Une image" loading/, 'une hauteur seule, sans dimensions connues, est ignorée');
+  const apercu = renderDocument({ type: 'doc', content: [image('/api/blog/media/1')] }, { media: MEDIA, preview: true });
+  assert.match(apercu, /srcset="\/api\/backoffice\/blog\/media\/1\/480 480w, \/api\/backoffice\/blog\/media\/1\/960 960w/);
+  assert.doesNotMatch(renderDocument({ type: 'doc', content: [image('/api/blog/media/1')] }, { media: { '/api/blog/media/1': { width: 'x', height: -1, variants: ['../'] } } }), /srcset|width=/, 'des dimensions invalides sont ignorées');
+});
+
+test('la couverture est dimensionnée et chargée en priorité, la liste dimensionne ses vignettes', () => {
+  const html = renderArticle(GABARIT, article({ cover_image: '/api/blog/media/5', cover_alt: 'Un portrait', media: MEDIA }));
+  const couverture = html.match(/<img class="blog-article__cover"[^>]*>/)[0];
+  assert.match(couverture, / width="371" height="650"/);
+  assert.match(couverture, / fetchpriority="high"/);
+  assert.doesNotMatch(couverture, /loading=/);
+  assert.match(couverture, / srcset="\/api\/blog\/media\/5\/480 480w, \/api\/blog\/media\/5\/800 800w"/);
+  const liste = renderIndex(LISTE, { posts: [article({ cover_image: '/api/blog/media/1', cover_alt: 'Un paysage', media: MEDIA }), article({ slug: 'deux', cover_image: '/api/blog/media/5', cover_alt: 'Un portrait', media: MEDIA })], total: 2 });
+  const [vedette, suivante] = [...liste.matchAll(/<img [^>]*>/g)].map((m) => m[0]);
+  assert.match(vedette, / width="1600" height="1000"/);
+  assert.match(vedette, / sizes="\(max-width: 860px\) calc\(100vw - 32px\), 760px"/);
+  assert.match(suivante, / sizes="\(max-width: 860px\) calc\(100vw - 32px\), 660px"/);
+  assert.match(suivante, / loading="lazy"/);
+});
