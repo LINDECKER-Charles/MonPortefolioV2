@@ -261,10 +261,14 @@ avec vérification de leur signature et une limite de 4 Mio. L’import prend
 `{"filename":"…", "content_type":"image/png", "data_base64":"…"}`, sans préfixe `data:`.
 
 À l’import, le backend lit l’en-tête de l’image (10 000 px de côté et 25 millions de pixels
-au plus, sinon `422 IMAGE_TOO_LARGE`), puis la décode (100 Mo d’allocation au plus, tous formats, une image
-à la fois, quelle que soit la voie : backoffice, MCP ou démarrage ; le pic d’un import de
-25 Mpx atteint 154 Mio au pire mesuré, d’où les 256 Mio du service dans `compose.deploy.yaml`, détaillés dans
-[`docs/deploiement.md`](../docs/deploiement.md)), en mesure les dimensions,
+au plus, sinon `422 IMAGE_TOO_LARGE`), puis la décode : 150 Mo au plus tenus par le décodage,
+tampons propres au décodeur compris, une image à la fois, quelle que soit la voie (backoffice,
+MCP ou démarrage). Une image dont le décodage demanderait plus (WebP de plus de 13 Mpx avec
+transparence, JPEG progressif de plus de 16 Mpx en 4:4:4, PNG de 16 bits par canal de plus de
+12,5 Mpx…) est admise sans variante. Un PNG RGBA de 25 Mpx monte à 124 Mio ; le pire pic mesuré,
+183 Mio, est un JPEG progressif en 4:4:4 de 16,6 Mpx, borné par ce seuil de décodage et non par
+celui des 25 Mpx, d’où les 256 Mio du service dans `compose.deploy.yaml`, détaillés dans
+[`docs/deploiement.md`](../docs/deploiement.md). Le backend en mesure les dimensions,
 orientation EXIF comprise, et prépare des variantes réduites aux largeurs 480, 960 et 1 600 px
 (et à sa propre largeur si elle ne dépasse pas 1 600 px) : JPEG de qualité 80, ou WebP sans
 perte si l’image a de la transparence. Une variante qui ne pèse pas moins que l’original n’est
