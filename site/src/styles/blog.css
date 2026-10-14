@@ -493,6 +493,32 @@
   text-align: justify;
 }
 
+/* À l’impression, rien ne défile : le code passe à la ligne et les tableaux
+   tiennent dans la page, largeurs fixées comprises. */
+@media print {
+  .blog-prose pre {
+    overflow: visible;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .blog-prose .blog-table {
+    overflow: visible;
+  }
+
+  .blog-prose table {
+    table-layout: fixed;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .blog-prose :is(th, td) {
+    width: auto !important;
+    min-width: 0 !important;
+    overflow-wrap: anywhere;
+  }
+}
+
 .blog-preview-notice {
   margin-bottom: var(--s6);
   padding: var(--s4) var(--s5);

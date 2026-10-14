@@ -196,6 +196,13 @@ test('les images réservent leur place, ne s’agrandissent pas et chargent la v
   await expect(page.locator('.blog-article__cover')).toHaveAttribute('fetchpriority', 'high');
 });
 
+test('à l’impression, le code et les tableaux ne sont pas rognés', async ({ page }) => {
+  await ouvrir(page);
+  await page.emulateMedia({ media: 'print' });
+  const rognes = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('.blog-prose pre, .blog-table')].filter((el) => el.scrollWidth > el.clientWidth + 1).map((el) => el.getAttribute('aria-label') ?? el.className));
+  expect(rognes).toEqual([]);
+});
+
 test('sans JavaScript, l’article est complet', async ({ browser }) => {
   const contexte = await browser.newContext({ javaScriptEnabled: false });
   const page = await contexte.newPage();
