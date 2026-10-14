@@ -151,7 +151,9 @@ chapeau, texte à la même mesure), jour et nuit. L’éditeur propose titres, l
 citations, code, tableaux, alignements, images avec légendes et descriptions, couverture et image
 de partage. Les réglages SEO comprennent titre, description, slug, canonical, indexation et aperçu
 du résultat de recherche. Les images JPEG, PNG, WebP et GIF (4 Mio maximum) sont conservées dans
-la même base SQLite que les articles ; ses sauvegardes incluent donc les médias.
+la même base SQLite que les articles ; ses sauvegardes incluent donc les médias. À l’import, le
+backend les mesure, retire leurs métadonnées et prépare leurs variantes réduites, et une image
+fixe pour une image animée ([`backend/README.md`](backend/README.md)).
 
 Un article commence en brouillon. **Enregistrer** conserve la version de travail ; **Aperçu**
 ouvre la mise en page réelle dans une page privée, sans mesure ni indexation. **Publier** copie
@@ -162,8 +164,8 @@ La date est saisie dans le fuseau affiché par l’interface puis enregistrée e
 rattrape les échéances au démarrage et les traite chaque minute ainsi qu’à la lecture publique.
 Il doit rester démarré pour assurer les publications à l’heure prévue.
 
-Les douze outils MCP du blog permettent les mêmes opérations, y compris les images, l’aperçu et
-l’audit SEO. Les révisions empêchent une IA et l’éditeur d’écraser leurs changements respectifs.
+Les treize outils MCP du blog permettent les mêmes opérations, y compris les images, l’aperçu et
+l’audit SEO, plus la suppression d’une image qu’aucun article ne cite (`blog:publish`). Les révisions empêchent une IA et l’éditeur d’écraser leurs changements respectifs.
 Les articles publics contiennent leur texte et leurs métadonnées dans le HTML, avec balisage
 `BlogPosting` et sitemap actualisé. Aucun article fictif n’est publié. Contrat complet et exemple
 de document structuré : [`backend/README.md`](backend/README.md).
