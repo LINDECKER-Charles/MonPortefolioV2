@@ -5,9 +5,10 @@
 //! GPS, appareil, date), XMP, IPTC, commentaires et textes. Seule son
 //! orientation survit, réécrite dans un EXIF minimal, pour qu’il s’affiche comme
 //! avant. Les variantes ne servent qu’à alléger la page : une variante qui ne
-//! pèse pas moins que l’original n’est pas gardée, et une image animée (GIF,
-//! PNG ou WebP animés) n’en a aucune, pour ne pas perdre son mouvement. Une
-//! image que le décodeur refuse entière
+//! pèse pas moins que l’original n’est pas gardée. Une image animée (GIF, PNG
+//! ou WebP animés) n’a pas de variante réduite, pour ne pas perdre son
+//! mouvement, mais une image fixe (sa première image), que le rendu sert sous
+//! `prefers-reduced-motion: reduce`. Une image que le décodeur refuse entière
 //! (somme de contrôle fausse, fichier tronqué) mais que les navigateurs
 //! affichent reste admise : ses dimensions viennent alors de son en-tête, sans
 //! variante.
@@ -54,6 +55,8 @@ pub struct Processed {
     /// L’original sans ses métadonnées : ce que la base garde et sert.
     pub original: Vec<u8>,
     pub variants: Vec<Variant>,
+    /// Image fixe d’une image animée, à sa largeur (1 600 px au plus).
+    pub still: Option<Variant>,
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -87,19 +90,21 @@ pub fn process(bytes: &[u8], content_type: &str) -> Result<Processed, Rejected> 
             height,
             original,
             variants: Vec::new(),
+            still: None,
         });
     };
     let (width, height) = image.dimensions();
-    let variants = if animated(bytes, format) {
-        Vec::new()
+    let (variants, still) = if animated(bytes, format) {
+        (Vec::new(), still(&image))
     } else {
-        variants(&image, original.len())
+        (variants(&image, original.len()), None)
     };
     Ok(Processed {
         width,
         height,
         original,
         variants,
+        still,
     })
 }
 
@@ -201,6 +206,25 @@ fn variants(image: &DynamicImage, original: usize) -> Vec<Variant> {
             })
         })
         .collect()
+}
+
+/// La première image d’une image animée, à 1 600 px au plus, sans condition de poids.
+fn still(image: &DynamicImage) -> Option<Variant> {
+    let largest = VARIANT_WIDTHS[VARIANT_WIDTHS.len() - 1];
+    let width = image.width().min(largest);
+    let reduced;
+    let source = if width == image.width() {
+        image
+    } else {
+        reduced = resized(image, width);
+        &reduced
+    };
+    let (content_type, bytes) = encode(source, has_transparency(image))?;
+    Some(Variant {
+        width,
+        content_type,
+        bytes,
+    })
 }
 
 fn has_transparency(image: &DynamicImage) -> bool {
@@ -639,7 +663,7 @@ mod tests {
     }
 
     #[test]
-    fn a_gif_loses_its_comments_but_keeps_its_frames() {
+    fn a_gif_loses_its_comments_and_gets_a_still_image() {
         let plain = encoded(12, 6, ImageFormat::Gif);
         let comment = [&[0x21, 0xfe, 7][..], b"Charles", &[0]].concat();
         let at = plain.len() - 1;
@@ -648,6 +672,9 @@ mod tests {
         let processed = process(&bytes, "image/gif").unwrap();
         assert_eq!(processed.original, plain);
         assert!(processed.variants.is_empty());
+        let still = processed.still.expect("une image animée a une image fixe");
+        assert_eq!(still.width, 12);
+        assert!(image::load_from_memory(&still.bytes).is_ok());
     }
 
     #[test]

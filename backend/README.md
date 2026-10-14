@@ -241,18 +241,21 @@ au plus, sinon `422 IMAGE_TOO_LARGE`), puis la décode (160 Mio d’allocation a
 orientation EXIF comprise, et prépare des variantes réduites aux largeurs 480, 960 et 1 600 px
 (et à sa propre largeur si elle ne dépasse pas 1 600 px) : JPEG de qualité 80, ou WebP sans
 perte si l’image a de la transparence. Une variante qui ne pèse pas moins que l’original n’est
-pas gardée ; une image animée (GIF, PNG ou WebP) n’en a aucune. L’original est gardé sans ses
-métadonnées : EXIF (position GPS, appareil, date), XMP, IPTC, commentaires et textes PNG,
-vignettes et images secondaires JPEG partent ; seule l’orientation est réécrite, seule, pour
-qu’il s’affiche comme avant. Une image dont même l’en-tête ne se lit pas est refusée ; celle que le décodeur ne lit qu’en partie
+pas gardée. Une image animée (GIF, PNG ou WebP) n’a pas de variante réduite, mais une image
+fixe, sa première image (`still`, 1 600 px de large au plus), que le rendu sert sous
+`prefers-reduced-motion: reduce`. L’original est gardé sans ses métadonnées : EXIF (position
+GPS, appareil, date), XMP, IPTC, commentaires et textes PNG, vignettes et images secondaires
+JPEG partent ; seule l’orientation est réécrite, seule, pour qu’il s’affiche comme avant. Une
+image dont même l’en-tête ne se lit pas est refusée ; celle que le décodeur ne lit qu’en partie
 reste admise, mesurée par son en-tête et sans variante. Les images importées avant cette mesure
 sont traitées une fois, au démarrage : chacune est d’abord marquée 0 × 0, pour qu’une image qui
-ferait tomber le service ne soit jamais relue. Chaque image de la bibliothèque porte `width`, `height` et
-`variants` (largeurs servies sous `/api/blog/media/{id}/{largeur}`, avec la même règle de
-visibilité que l’original). `GET /api/blog/posts/{slug}`, l’aperçu
-`GET /api/backoffice/blog/posts/{id}/preview` et, pour les couvertures, la liste publique ajoutent
-`media` : pour chaque URL d’image de l’article, `{"width":…, "height":…, "variants":[…]}`. Le
-rendu Node en tire `width`, `height`, `srcset` et `sizes`.
+ferait tomber le service ne soit jamais relue. Chaque image de la bibliothèque porte `width`,
+`height`, `variants` (largeurs servies sous `/api/blog/media/{id}/{largeur}`, avec la même
+règle de visibilité que l’original) et, pour une image animée, `still`.
+`GET /api/blog/posts/{slug}`, l’aperçu `GET /api/backoffice/blog/posts/{id}/preview` et, pour
+les couvertures, la liste publique ajoutent `media` : pour chaque URL d’image de l’article,
+`{"width":…, "height":…, "variants":[…]}`, avec `"still":…` pour une image animée. Le rendu
+Node en tire `width`, `height`, `srcset`, `sizes` et la source fixe des images animées.
 
 Le SEO se règle séparément du titre et de l’extrait : titre/description pour les moteurs,
 adresse canonique, image de partage et exclusion de l’index. En leur absence, les métadonnées

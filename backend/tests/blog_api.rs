@@ -560,6 +560,20 @@ async fn imported_images_are_measured_and_get_lighter_variants_once_published() 
     );
     assert_eq!((gif.width, gif.height), (Some(600), Some(300)));
     assert!(gif.variants.is_empty());
+    // Mais une image fixe, pour qui demande moins de mouvement.
+    assert_eq!(gif.still, Some(600));
+    let still = store.get_blog_media_variant(gif.id, 600).unwrap();
+    assert!(image::load_from_memory(&still.bytes).is_ok());
+    assert_eq!(
+        serde_json::to_value(&gif).unwrap()["still"],
+        json!(600),
+        "la bibliothèque annonce l’image fixe"
+    );
+    assert!(serde_json::to_value(&large).unwrap().get("still").is_none());
+    assert_eq!(
+        store.blog_media_details([gif.url.clone()]).unwrap()[&gif.url],
+        json!({"width":600,"height":300,"variants":[],"still":600})
+    );
 
     // Plus de 40 millions de pixels : refusée avant tout décodage, avec sa raison.
     let mut huge = Vec::new();

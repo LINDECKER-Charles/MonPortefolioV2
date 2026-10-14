@@ -166,6 +166,10 @@ pub struct MediaRecord {
     pub height: Option<u32>,
     /// Largeurs servies sous `{url}/{largeur}`, de la plus petite à la plus grande.
     pub variants: Vec<u32>,
+    /// Image animée : largeur de son image fixe, servie sous `{url}/{largeur}`
+    /// à qui demande moins de mouvement.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub still: Option<u32>,
 }
 pub struct MediaData {
     pub content_type: String,
@@ -188,7 +192,18 @@ pub(crate) fn initialize(connection: &Connection) -> Result<(), StoreError> {
         CREATE TABLE IF NOT EXISTS blog_media_variants (
         media_id INTEGER NOT NULL REFERENCES blog_media(id) ON DELETE CASCADE,
         width INTEGER NOT NULL,content_type TEXT NOT NULL,data BLOB NOT NULL,
+        still INTEGER NOT NULL DEFAULT 0,
         PRIMARY KEY(media_id,width));")?;
+    let variant_columns = connection
+        .prepare("PRAGMA table_info(blog_media_variants)")?
+        .query_map([], |row| row.get::<_, String>(1))?
+        .collect::<Result<Vec<_>, _>>()?;
+    if !variant_columns.iter().any(|name| name == "still") {
+        connection.execute(
+            "ALTER TABLE blog_media_variants ADD COLUMN still INTEGER NOT NULL DEFAULT 0",
+            [],
+        )?;
+    }
     let columns = connection
         .prepare("PRAGMA table_info(blog_media)")?
         .query_map([], |row| row.get::<_, String>(1))?
@@ -235,10 +250,11 @@ fn store_processed(
         "UPDATE blog_media SET width=?2,height=?3 WHERE id=?1",
         params![id, processed.width, processed.height],
     )?;
-    for variant in &processed.variants {
+    let variants = processed.variants.iter().map(|variant| (variant, false));
+    for (variant, still) in variants.chain(processed.still.iter().map(|variant| (variant, true))) {
         connection.execute(
-            "INSERT OR REPLACE INTO blog_media_variants(media_id,width,content_type,data) VALUES(?1,?2,?3,?4)",
-            params![id, variant.width, variant.content_type, variant.bytes],
+            "INSERT OR REPLACE INTO blog_media_variants(media_id,width,content_type,data,still) VALUES(?1,?2,?3,?4,?5)",
+            params![id, variant.width, variant.content_type, variant.bytes, still],
         )?;
     }
     Ok(())
@@ -923,7 +939,7 @@ impl Store {
             .query_map(params![limit, offset], media_row)?
             .collect::<Result<Vec<_>, _>>()?;
         for record in &mut media {
-            record.variants = media_variants(&connection, record.id)?;
+            (record.variants, record.still) = media_variants(&connection, record.id)?;
         }
         Ok(media)
     }
@@ -1001,10 +1017,12 @@ impl Store {
                 )
                 .optional()?;
             if let Some((Some(width @ 1..), Some(height @ 1..))) = dimensions {
-                details.insert(
-                    path,
-                    json!({"width":width,"height":height,"variants":media_variants(&connection,id)?}),
-                );
+                let (variants, still) = media_variants(&connection, id)?;
+                let mut detail = json!({"width":width,"height":height,"variants":variants});
+                if let Some(still) = still {
+                    detail["still"] = json!(still);
+                }
+                details.insert(path, detail);
             }
         }
         Ok(Value::Object(details))
@@ -1038,11 +1056,22 @@ impl Store {
     }
 }
 const MEDIA_COLUMNS: &str = "id,filename,content_type,length(data),created_at,width,height";
-fn media_variants(connection: &Connection, id: i64) -> rusqlite::Result<Vec<u32>> {
-    connection
-        .prepare("SELECT width FROM blog_media_variants WHERE media_id=?1 ORDER BY width")?
-        .query_map([id], |r| r.get(0))?
-        .collect()
+/// Les largeurs des variantes, puis celle de l’image fixe d’une image animée.
+fn media_variants(connection: &Connection, id: i64) -> rusqlite::Result<(Vec<u32>, Option<u32>)> {
+    let rows = connection
+        .prepare("SELECT width,still FROM blog_media_variants WHERE media_id=?1 ORDER BY width")?
+        .query_map([id], |r| Ok((r.get::<_, u32>(0)?, r.get::<_, bool>(1)?)))?
+        .collect::<rusqlite::Result<Vec<_>>>()?;
+    let still = rows
+        .iter()
+        .find(|(_, still)| *still)
+        .map(|(width, _)| *width);
+    let variants = rows
+        .into_iter()
+        .filter(|(_, still)| !still)
+        .map(|(width, _)| width)
+        .collect();
+    Ok((variants, still))
 }
 fn media_row(r: &rusqlite::Row<'_>) -> rusqlite::Result<MediaRecord> {
     let id = r.get(0)?;
@@ -1057,6 +1086,7 @@ fn media_row(r: &rusqlite::Row<'_>) -> rusqlite::Result<MediaRecord> {
         width: measured(r.get(5)?),
         height: measured(r.get(6)?),
         variants: Vec::new(),
+        still: None,
     })
 }
 fn media_record(connection: &Connection, id: i64) -> Result<MediaRecord, BlogError> {
@@ -1065,7 +1095,7 @@ fn media_record(connection: &Connection, id: i64) -> Result<MediaRecord, BlogErr
         [id],
         media_row,
     )?;
-    record.variants = media_variants(connection, id)?;
+    (record.variants, record.still) = media_variants(connection, id)?;
     Ok(record)
 }
 fn sniff_image(bytes: &[u8]) -> Option<&'static str> {
