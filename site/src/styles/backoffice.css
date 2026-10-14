@@ -22,10 +22,13 @@
  *   .bo-table, .bo-etiquette       tableau à filets, étiquette de permission
  *   .bo-state[data-state]          statut : une forme et un mot
  *   .bo-details, .bo-dialog        repli et dialogue
+ *   .bo-fiches, .bo-fiche          liste à filets en fiches (Stockage)
+ *   .bo-barre-stock, .bo-legende   jauge, barre empilée et sa légende
  *
  * Mise en page : en-tête non collant (la barre d’enregistrement de l’atelier
  * du blog l’est), navigation sous l’identité sous 1 100 px, tableau en
- * fiches sous 860 px. L’atelier du blog : styles/blog-editor.css.
+ * fiches sous 860 px, fiches d’images empilées sous 600 px. L’atelier du
+ * blog : styles/blog-editor.css.
  */
 
 /* ===== Base ===== */
@@ -1142,6 +1145,311 @@
   color: var(--eteint);
 }
 
+/* ===== Stockage =====
+   Une page de consultation : deux cartes (le disque, la base), puis des
+   fiches empilées (images, articles). Les barres sont décoratives : les
+   chiffres et la légende disent tout. Les parts de la base se distinguent par
+   la valeur et par la trame, pas par une couleur seule. */
+.bo-stockage {
+  display: grid;
+  gap: var(--s7);
+}
+
+.bo-stockage__retour:not(:empty) {
+  margin: 0 0 var(--s5);
+}
+
+.bo-stockage__resume {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s5);
+  align-items: start;
+}
+
+.bo-jauge,
+.bo-jauge__corps {
+  display: grid;
+  gap: var(--s3);
+  align-content: start;
+}
+
+.bo-jauge .bo-help {
+  margin-top: 0;
+}
+
+.bo-jauge__chiffre {
+  font-size: var(--t-m);
+}
+
+.bo-jauge__chiffre strong {
+  font-size: var(--t-xl);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.bo-barre-stock {
+  display: flex;
+  gap: 2px;
+  height: 12px;
+  overflow: hidden;
+  background: var(--fond);
+  border-radius: var(--r1);
+  box-shadow: inset 0 0 0 1px var(--trait);
+}
+
+.bo-barre-stock__occupe {
+  display: block;
+  background: var(--encre);
+}
+
+[data-plein='true'] .bo-barre-stock__occupe {
+  background: var(--erreur);
+}
+
+.bo-barre-stock--empilee {
+  box-shadow: none;
+}
+
+.bo-barre-stock__part {
+  flex: 0 1 0;
+  min-width: 3px;
+}
+
+/* Les parts : la même trame dans la barre et dans la légende. */
+:is(.bo-barre-stock__part, .bo-legende li)[data-part='media_originals'] {
+  --part: var(--encre);
+}
+
+:is(.bo-barre-stock__part, .bo-legende li)[data-part='media_variants'] {
+  --part: var(--laiton);
+}
+
+:is(.bo-barre-stock__part, .bo-legende li)[data-part='posts'] {
+  --part: var(--eteint);
+}
+
+:is(.bo-barre-stock__part, .bo-legende li)[data-part='contacts'] {
+  --part: repeating-linear-gradient(135deg, var(--encre) 0 2px, transparent 2px 5px);
+}
+
+:is(.bo-barre-stock__part, .bo-legende li)[data-part='system'] {
+  --part: var(--trait);
+}
+
+:is(.bo-barre-stock__part, .bo-legende li)[data-part='free'] {
+  --part: repeating-linear-gradient(90deg, var(--trait) 0 1px, transparent 1px 4px);
+}
+
+.bo-barre-stock__part {
+  background: var(--part);
+}
+
+.bo-legende {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--filet);
+}
+
+.bo-legende li {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) auto 3.5rem;
+  align-items: center;
+  gap: var(--s3);
+  padding-block: var(--s2);
+  border-bottom: 1px solid var(--filet);
+}
+
+.bo-legende li::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  background: var(--part);
+  border-radius: var(--r1);
+  box-shadow: inset 0 0 0 1px var(--trait);
+}
+
+.bo-legende__valeur {
+  font-weight: 600;
+  text-align: right;
+}
+
+.bo-legende__part {
+  color: var(--eteint);
+  font-size: var(--t-xs);
+  text-align: right;
+}
+
+.bo-alerte:empty {
+  display: none;
+}
+
+.bo-alerte {
+  padding: var(--s2) var(--s3);
+  border-left: 2px solid var(--erreur);
+  background: var(--fond);
+  border-radius: 0 var(--r1) var(--r1) 0;
+  color: var(--erreur);
+  font-weight: 600;
+}
+
+.bo-stockage__bloc {
+  min-width: 0;
+}
+
+.bo-stockage__entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s2) var(--s4);
+  margin-bottom: var(--s3);
+}
+
+.bo-stockage__suite {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: var(--s6);
+  align-items: start;
+}
+
+.bo-stockage__ligne {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--s2) var(--s4);
+  max-width: none;
+  padding-block: var(--s3);
+  border-top: 1px solid var(--encre);
+  border-bottom: 1px solid var(--filet);
+}
+
+/* Des fiches à filets : une ligne par image ou par article, du plus lourd au
+   plus léger ; le poids s’aligne à droite, l’action après lui. */
+.bo-fiches {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--encre);
+}
+
+.bo-fiche {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 6rem;
+  grid-template-areas: 'corps poids';
+  align-items: center;
+  gap: var(--s2) var(--s4);
+  padding-block: var(--s3);
+  border-bottom: 1px solid var(--filet);
+}
+
+.bo-fiche--image {
+  grid-template-columns: 96px minmax(0, 1fr) 6rem 7.5rem;
+  grid-template-areas: 'vignette corps poids action';
+}
+
+.bo-fiche__vignette {
+  grid-area: vignette;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+  background: var(--papier-logo);
+  border: 1px solid var(--filet);
+  border-radius: var(--r1);
+}
+
+.bo-fiche__corps {
+  grid-area: corps;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s1) var(--s3);
+  min-width: 0;
+}
+
+.bo-fiche--image .bo-fiche__corps {
+  display: grid;
+  gap: var(--s1);
+}
+
+.bo-fiche__nom {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.bo-fiche__details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--s2);
+  color: var(--eteint);
+  font-size: var(--t-xs);
+}
+
+.bo-fiche__details > span + span::before {
+  content: '·';
+  margin-right: var(--s2);
+}
+
+.bo-fiche__usage {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--s1) var(--s2);
+  margin-top: var(--s1);
+  font-size: var(--t-xs);
+}
+
+.bo-fiche__intitule {
+  color: var(--eteint);
+  font-weight: 600;
+}
+
+.bo-fiche__intitule::after {
+  content: '\00a0:';
+}
+
+.bo-fiche__articles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s1) var(--s4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bo-fiche__articles li {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--s2);
+}
+
+.bo-fiche__inutilisee {
+  padding: 0 var(--s2);
+  border: 1px dashed var(--trait);
+  border-radius: var(--r1);
+  color: var(--eteint);
+  font-weight: 500;
+}
+
+.bo-stockage__article {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.bo-fiche__poids {
+  grid-area: poids;
+  font-weight: 600;
+  text-align: right;
+}
+
+.bo-fiche__action {
+  grid-area: action;
+  justify-self: end;
+}
+
 /* ===== Repli « Autres clients » ===== */
 .bo-details {
   border-top: 1px solid var(--filet);
@@ -1247,13 +1555,18 @@
 
   .bo-inbox,
   .bo-colonnes,
-  .bo-mcp {
+  .bo-mcp,
+  .bo-stockage__suite {
     grid-template-columns: minmax(0, 1fr);
   }
 }
 
 /* Sous 860 px, une fiche par accès : nom et révocation, puis les détails. */
 @media (max-width: 860px) {
+  .bo-stockage__resume {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .bo-table,
   .bo-table :is(tbody, tr, th, td) {
     display: block;
@@ -1325,6 +1638,31 @@
 
   .bo-recovery-codes {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Une image : la vignette à gauche, puis le nom, l’usage, le poids et l’action empilés. */
+  .bo-fiche--image {
+    grid-template-columns: 72px minmax(0, 1fr);
+    grid-template-areas:
+      'vignette corps'
+      'vignette poids'
+      'vignette action';
+    align-items: start;
+  }
+
+  .bo-fiche--image .bo-fiche__poids,
+  .bo-fiche--image .bo-fiche__action {
+    justify-self: start;
+    text-align: left;
+  }
+
+  /* Dimensions, puis le détail du poids : une ligne chacun, sans séparateur orphelin. */
+  .bo-fiche__details {
+    display: grid;
+  }
+
+  .bo-fiche__details > span + span::before {
+    content: none;
   }
 }
 

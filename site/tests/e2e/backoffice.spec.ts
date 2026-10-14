@@ -15,9 +15,18 @@ const DEMANDE = {
   status: 'new', delivery_status: 'failed', created_at: '2026-10-08T08:30:00Z',
 };
 const REGLES_AXE = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'];
+const ARTICLE = { id: 1, slug: 'preparer-une-mise-en-ligne', title: 'Préparer une mise en ligne', status: 'draft' };
+/** La bibliothèque du stockage : une image citée par un brouillon, une autre inutilisée. */
+const IMAGES = [
+  { id: 1, filename: 'capture-atelier.jpg', content_type: 'image/jpeg', width: 2000, height: 1250, size: 1_108_935, variants: { count: 3, size: 1_003_325, widths: [960, 480, 1600] }, total: 2_112_260, created_at: '2026-10-14T14:05:34.594Z', url: '/api/blog/media/1', admin_url: '/api/backoffice/blog/media/1', posts: [ARTICLE] },
+  { id: 2, filename: 'schema.png', content_type: 'image/png', width: 640, height: 400, size: 592_856, variants: { count: 0, size: 0, widths: [] as number[] }, total: 592_856, created_at: '2026-10-14T14:05:35.031Z', url: '/api/blog/media/2', admin_url: '/api/backoffice/blog/media/2', posts: [] as typeof ARTICLE[] },
+];
+const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aXioAAAAASUVORK5CYII=', 'base64');
+const NBSP = '\u00a0';
+const NNBSP = '\u202f';
 
 /** Doubles de l’API, sans stockage réel ni envoi de courriel. */
-async function apiDouble(page: Page, options: { authenticated?: boolean; smtp?: boolean; twoFactor?: boolean; enrollment?: boolean; setupFailures?: number; tokenLimit?: boolean } = {}) {
+async function apiDouble(page: Page, options: { authenticated?: boolean; smtp?: boolean; twoFactor?: boolean; enrollment?: boolean; setupFailures?: number; tokenLimit?: boolean; disque?: { total: number; available: number } | null; imagePriseEntreTemps?: number } = {}) {
   const etat = {
     authenticated: options.authenticated ?? false,
     smtp: options.smtp ?? true,
@@ -28,6 +37,7 @@ async function apiDouble(page: Page, options: { authenticated?: boolean; smtp?: 
     contacts: [{ ...DEMANDE }],
     links: [] as { id: number; label: string; url: string; description: string }[],
     tokens: [] as { id: number; name: string; created_at: string; last_used_at: string | null; scopes: string[] }[],
+    images: structuredClone(IMAGES),
     mutations: [] as { path: string; method: string; body: unknown; header: string | undefined }[],
     consultations: [] as string[],
   };
@@ -105,6 +115,30 @@ async function apiDouble(page: Page, options: { authenticated?: boolean; smtp?: 
         await repondre({ ...jeton, token: SECRET }, 201); return;
       }
       await repondre({ tokens: etat.tokens }); return;
+    }
+    if (path === '/storage') {
+      const enMemoire = options.disque === null;
+      const somme = (cle: 'size' | 'total') => etat.images.reduce((total, image) => total + image[cle], 0);
+      await repondre({
+        disk: enMemoire ? null : options.disque ?? { total: 994_662_584_320, available: 247_984_865_280 },
+        database: { file: enMemoire ? null : 4096, wal: enMemoire ? null : 3_695_672, size: 3_399_680, free: 397_312, page_size: 4096 },
+        categories: { media_originals: somme('size'), media_variants: somme('total') - somme('size'), posts: 16_384, contacts: 8192, system: 57_344 },
+        media: [...etat.images].sort((a, b) => b.total - a.total),
+        posts: [{ ...ARTICLE, size: 377 }],
+        contacts: { count: etat.contacts.length, size: 8192 },
+      });
+      return;
+    }
+    if (path.startsWith('/blog/media/')) {
+      const id = Number(path.split('/')[3]);
+      if (method === 'GET') { await route.fulfill({ status: 200, contentType: 'image/png', body: PNG }); return; }
+      const image = etat.images.find((item) => item.id === id);
+      if (!image) { await repondre({ code: 'NOT_FOUND', message: 'Image introuvable.' }, 404); return; }
+      // Un article s’en est servi entre l’affichage et la suppression.
+      if (id === options.imagePriseEntreTemps) image.posts = [ARTICLE];
+      if (image.posts.length) { await repondre({ code: 'MEDIA_IN_USE', message: 'Cette image est utilisée par un article.' }, 409); return; }
+      etat.images = etat.images.filter((item) => item.id !== id);
+      await repondre({ deleted: true, id }); return;
     }
     if (path.startsWith('/tokens/')) {
       etat.tokens = etat.tokens.filter((jeton) => jeton.id !== Number(path.split('/').at(-1)));
@@ -586,6 +620,118 @@ test('révoquer un accès efface « reste actif » sous le formulaire', async ({
   await expect(page.locator('#bo-token-form-retour')).toBeEmpty();
 });
 
+test('Stockage : le disque, la base, les images et les articles, du plus lourd au plus léger', async ({ page }) => {
+  const etat = await apiDouble(page, { authenticated: true });
+  await page.goto('/backoffice');
+  await expect(page.locator('#bo-contact-list').getByRole('button')).toHaveCount(1);
+  // Dernière rubrique de l’en-tête, après Blog.
+  await expect(page.getByRole('navigation', { name: 'Rubriques du backoffice' }).getByRole('link')).toHaveText([/^Demandes/, 'Adresse', 'Boîte à outils', 'Accès MCP', 'Blog', 'Stockage']);
+  await rubrique(page, 'Stockage').click();
+  await expect(page).toHaveURL(/\/backoffice\?rubrique=storage$/);
+  await expect(page.getByRole('heading', { name: 'Stockage', level: 2 })).toBeFocused();
+  await expect(rubrique(page, 'Stockage')).toHaveAttribute('aria-current', 'page');
+  await expect(page).toHaveTitle('Stockage — Backoffice');
+  const panneau = page.locator('#bo-panel-storage');
+  await expect(panneau.locator('#bo-storage')).toBeVisible();
+
+  // Le disque : l’espace libre sur l’espace total, sans alerte quand il reste de la place.
+  await expect(panneau.locator('#bo-storage-disk-free')).toHaveText(`248${NBSP}Go`);
+  await expect(panneau.locator('#bo-storage-disk-total')).toHaveText(`994,7${NBSP}Go`);
+  await expect(panneau.locator('#bo-storage-disk-used')).toHaveText(`Occupé${NBSP}: 746,7${NBSP}Go, 75${NBSP}%`);
+  await expect(panneau.locator('#bo-storage-disk-alert')).toBeEmpty();
+  // La base : fichier et journal, puis sa répartition chiffrée.
+  await expect(panneau.locator('#bo-storage-db-total')).toHaveText(`3,7${NBSP}Mo`);
+  await expect(panneau.locator('#bo-storage-db-files')).toContainText('journal');
+  await expect(panneau.locator('#bo-storage-db-legend .bo-legende__libelle')).toHaveText(['Originaux des images', 'Variantes des images', 'Articles', 'Demandes de contact', 'Fonctionnement', 'Espace libéré']);
+  await expect(panneau.getByText('Espace libéré : réutilisé par les prochains imports, le fichier ne rétrécit pas.')).toBeVisible();
+
+  // Les images : la plus lourde d’abord ; l’image citée mène à son article et ne se supprime pas.
+  const fiches = panneau.locator('#bo-storage-media > li');
+  await expect(fiches).toHaveCount(2);
+  await expect(panneau.locator('#bo-storage-media-count')).toHaveText(`2${NBSP}images, 2,7${NBSP}Mo`);
+  const citee = fiches.nth(0);
+  await expect(citee.locator('.bo-fiche__nom')).toHaveText('capture-atelier.jpg');
+  await expect(citee).toContainText(`2000${NNBSP}×${NNBSP}1250${NBSP}px`);
+  await expect(citee.locator('.bo-fiche__poids')).toHaveText(`2,1${NBSP}Mo`);
+  await expect(citee).toContainText(`original 1,1${NBSP}Mo et 3${NBSP}variantes 1${NBSP}Mo`);
+  // La vignette : la plus petite variante, privée, chargée à la demande, à taille fixe.
+  const vignette = citee.getByRole('img', { name: 'capture-atelier.jpg' });
+  await expect(vignette).toHaveAttribute('src', '/api/backoffice/blog/media/1/480');
+  await expect(vignette).toHaveAttribute('loading', 'lazy');
+  await expect(vignette).toHaveAttribute('width', '96');
+  await expect(vignette).toHaveAttribute('height', '72');
+  await expect(citee.getByRole('link', { name: 'Préparer une mise en ligne' })).toHaveAttribute('href', '/backoffice/blog/redaction?id=1');
+  await expect(citee.locator('.bo-state')).toHaveText('Brouillon');
+  await expect(citee.getByRole('button')).toHaveCount(0);
+  const inutilisee = fiches.nth(1);
+  await expect(inutilisee).toContainText('Inutilisée');
+  await expect(inutilisee.getByRole('img', { name: 'schema.png' })).toHaveAttribute('src', '/api/backoffice/blog/media/2');
+  // Les articles et les demandes.
+  await expect(panneau.locator('#bo-storage-posts > li')).toHaveCount(1);
+  await expect(panneau.locator('#bo-storage-posts').getByRole('link', { name: 'Préparer une mise en ligne' })).toBeVisible();
+  await expect(panneau.locator('#bo-storage-posts .bo-fiche__poids')).toHaveText(`377${NBSP}o`);
+  await expect(panneau.locator('#bo-storage-contacts-count')).toHaveText(`1${NBSP}demande`);
+  await expect(page.locator('.foyer:visible')).toHaveCount(0);
+  await accessibilite(page);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+
+  // Supprimer une image inutilisée : confirmée, puis elle disparaît et les chiffres suivent.
+  await inutilisee.getByRole('button', { name: 'Supprimer schema.png', exact: true }).click();
+  await expect(page.getByRole('dialog')).toContainText('« schema.png » et ses variantes seront supprimées définitivement');
+  await accessibilite(page);
+  await page.getByRole('button', { name: 'Annuler', exact: true }).click();
+  expect(etat.images).toHaveLength(2);
+  await inutilisee.getByRole('button', { name: 'Supprimer schema.png', exact: true }).click();
+  await page.getByRole('button', { name: 'Supprimer l’image', exact: true }).click();
+  await expect(fiches).toHaveCount(1);
+  await expect(panneau.locator('#bo-storage-media-retour')).toHaveText('« schema.png » est supprimée. Sa place sera réutilisée par les prochains imports.');
+  await expect(panneau.locator('#bo-storage-media-count')).toHaveText(`1${NBSP}image, 2,1${NBSP}Mo`);
+  await expect(page.getByRole('heading', { name: 'Images', level: 3 })).toBeFocused();
+  expect(etat.images.map(({ id }) => id)).toEqual([1]);
+  // Un corps JSON vide : le relais refuse une mutation du blog sans Content-Type JSON.
+  expect(etat.mutations.map(({ method, path, body }) => ({ method, path, body }))).toEqual([{ method: 'DELETE', path: '/blog/media/2', body: {} }]);
+  verifierMutations(etat.mutations);
+
+  // « Actualiser » relit les chiffres et le dit à côté.
+  await page.getByRole('button', { name: 'Actualiser', exact: true }).click();
+  await expect(panneau.locator('#bo-storage-retour')).toHaveText('Les chiffres sont à jour.');
+  // Quitter puis revenir relit le stockage.
+  const lectures = etat.consultations.filter((chemin) => chemin === '/storage').length;
+  await rubrique(page, 'Adresse').click();
+  await rubrique(page, 'Stockage').click();
+  await expect.poll(() => etat.consultations.filter((chemin) => chemin === '/storage').length).toBe(lectures + 1);
+});
+
+test('Stockage par son adresse : le disque qui se remplit, et une image prise entre-temps', async ({ page }) => {
+  const etat = await apiDouble(page, { authenticated: true, disque: { total: 100_000_000_000, available: 5_000_000_000 }, imagePriseEntreTemps: 2 });
+  await page.goto('/backoffice?rubrique=storage');
+  await expect(page.getByRole('heading', { name: 'Stockage', level: 2 })).toBeVisible();
+  const alerte = page.locator('#bo-storage-disk-alert');
+  await expect(alerte).toHaveRole('status');
+  await expect(alerte).toHaveText(`Le disque se remplit${NBSP}: il reste 5${NBSP}Go, 5${NBSP}% du disque.`);
+  await expect(page.locator('#bo-storage-disk')).toHaveAttribute('data-plein', 'true');
+  await accessibilite(page);
+  // Un article s’en sert depuis l’affichage : la suppression est refusée, la liste suit.
+  await page.getByRole('button', { name: 'Supprimer schema.png', exact: true }).click();
+  await page.getByRole('button', { name: 'Supprimer l’image', exact: true }).click();
+  const retour = page.locator('#bo-storage-media-retour');
+  await expect(retour).toHaveText('« schema.png » vient d’être utilisée dans un article : elle reste. La liste est à jour.');
+  await expect(retour).toHaveAttribute('data-state', 'error');
+  await expect(page.locator('#bo-storage-media .bo-fiche__action')).toHaveCount(0);
+  await expect(page.locator('#bo-storage-media > li').nth(1)).toContainText('Utilisée dans');
+  expect(etat.images).toHaveLength(2);
+  await expect(page.locator('#bo-notice')).toBeHidden();
+});
+
+test('Stockage d’une base en mémoire : le disque est inconnu', async ({ page }) => {
+  await apiDouble(page, { authenticated: true, disque: null });
+  await page.goto('/backoffice?rubrique=storage');
+  await expect(page.getByText('Disque inconnu : la base est en mémoire.')).toBeVisible();
+  await expect(page.locator('#bo-storage-disk')).toBeHidden();
+  await expect(page.locator('#bo-storage-db-total')).toHaveText(`3,4${NBSP}Mo`);
+  await expect(page.locator('#bo-storage-db-files')).toHaveText(`Base en mémoire, 3,4${NBSP}Mo de pages.`);
+});
+
 test('la lanterne du backoffice passe à la nuit sans rien mettre en file de mesure', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'light' });
   await apiDouble(page, { authenticated: true });
@@ -638,6 +784,16 @@ for (const theme of ['jour', 'nuit'] as const) {
       await page.getByRole('button', { name: 'Créer l’accès', exact: true }).click();
       await expect(page.locator('#bo-secret')).toBeVisible();
       await page.locator('#bo-secret summary').click();
+      await accessibilite(page);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    });
+
+    test(`axe : la rubrique Stockage, disque plein compris (${theme})`, async ({ page }) => {
+      await apiDouble(page, { authenticated: true, disque: { total: 100_000_000_000, available: 1_500_000_000 } });
+      await page.goto('/backoffice?rubrique=storage');
+      await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+      await expect(page.locator('#bo-storage-media > li')).toHaveCount(2);
+      await expect(page.locator('#bo-storage-disk-alert')).not.toBeEmpty();
       await accessibilite(page);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
     });

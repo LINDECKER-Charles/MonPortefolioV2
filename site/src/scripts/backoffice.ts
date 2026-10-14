@@ -5,6 +5,9 @@
  * demande) ; sa barre, ses retours et ses aides d’erreur dans
  * backoffice-atelier.ts.
  *
+ * La rubrique Stockage vit dans backoffice-stockage.ts, chargé à sa première
+ * visite.
+ *
  * Les textes reçus de l’API sont toujours insérés comme texte.
  *
  * Retours : chaque action dit ce qui se passe à côté d’elle. Une commande
@@ -17,6 +20,7 @@
  * la rubrique.
  */
 import type { BlogWorkspace } from './blog-editor';
+import type { RubriqueStockage } from './backoffice-stockage';
 import { brancherAccesMcp } from './backoffice-acces';
 import { brancherAtelier } from './backoffice-atelier';
 import { ErreurApi, messageDe, type Dire, type Etat } from './backoffice-commun';
@@ -40,7 +44,7 @@ interface Session { authenticated: boolean; smtp_configured: boolean }
 interface Connexion extends Partial<Session> { two_factor_required?: boolean; enrollment_required?: boolean; recovery_codes?: string[] }
 interface ConfigurationDeuxFacteurs { secret: string; otpauth_url: string; qr_code_data_url: string }
 
-const RUBRIQUES_CONNUES: readonly Rubrique[] = ['contacts', 'settings', 'links', 'tokens', 'blog'];
+const RUBRIQUES_CONNUES: readonly Rubrique[] = ['contacts', 'settings', 'links', 'tokens', 'blog', 'storage'];
 const NBSP = ' ';
 
 export function brancherBackoffice(): void {
@@ -89,6 +93,8 @@ export function brancherBackoffice(): void {
   let blog: BlogWorkspace | undefined;
   const atelier = brancherAtelier();
   let chargementBlog: Promise<void> | undefined;
+  let stockage: RubriqueStockage | undefined;
+  let chargementStockage: Promise<RubriqueStockage> | undefined;
   let navigationQueue = Promise.resolve();
   let visibleURL = `${window.location.pathname}${window.location.search}`;
   let historyPosition = typeof history.state?.backofficeIndex === 'number' ? history.state.backofficeIndex : 0;
@@ -172,6 +178,22 @@ export function brancherBackoffice(): void {
     }
     await chargementBlog;
   }
+  /** La rubrique Stockage, chargée à sa première visite. */
+  function chargerStockage(): Promise<RubriqueStockage> {
+    if (stockage) return Promise.resolve(stockage);
+    chargementStockage ??= import('./backoffice-stockage').then(({ brancherStockage }) => {
+      stockage = brancherStockage({
+        api,
+        action: (cible, operation, attente) => action(cible, operation, attente),
+        afficher,
+        confirmer: demanderConfirmation,
+        estConnecte: () => authenticated,
+        naviguer: (adresse) => naviguer(adresse),
+      });
+      return stockage;
+    }).finally(() => { chargementStockage = undefined; });
+    return chargementStockage;
+  }
   function restaurerHistorique(targetPosition?: number): void {
     if (targetPosition !== undefined && targetPosition !== historyPosition) {
       restoringHistory = true;
@@ -202,6 +224,10 @@ export function brancherBackoffice(): void {
     choisirRubrique(rubrique);
     // La dernière utilisation des accès change sans nous : relue à chaque visite.
     if (rubrique === 'tokens' && arrivee && authenticated) void acces.charger().catch((cause: unknown) => erreur(cause, element('bo-tokens-retour')));
+    // La place prise change à chaque import : relue à chaque visite.
+    if (rubrique === 'storage' && arrivee && authenticated) {
+      void chargerStockage().then((rubriqueStockage) => rubriqueStockage.charger()).catch((cause: unknown) => erreur(cause, element('bo-storage-retour')));
+    }
     if (rubrique === 'blog' && authenticated) {
       // La vue demandée est déjà affichée (une validation qui y ramène, un
       // enregistrement sans changement d’adresse) : la rouvrir déplacerait le
@@ -265,6 +291,7 @@ export function brancherBackoffice(): void {
     element<HTMLFormElement>('bo-settings-form').reset();
     resetLinkForm();
     acces.reinitialiser();
+    stockage?.reinitialiser();
     effacerRetours();
     choisirRubrique('contacts');
     workspace.hidden = true;
