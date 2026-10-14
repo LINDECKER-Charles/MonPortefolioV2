@@ -157,6 +157,8 @@ test('les paragraphes restent séparés dans les listes, les citations et les ce
     return [selecteur, el ? parseFloat(getComputedStyle(el).marginTop) : -1] as const;
   }));
   for (const [selecteur, ecart] of ecarts) expect(ecart, selecteur).toBeGreaterThan(0);
+  const debut = await page.locator('.blog-prose td > ul:first-child').evaluate((liste) => parseFloat(getComputedStyle(liste).marginTop));
+  expect(debut, 'une liste en tête de cellule commence avec la cellule').toBe(0);
   const titre = await page.locator('.blog-prose blockquote h3').evaluate((el) => [getComputedStyle(el).fontStyle, getComputedStyle(el.nextElementSibling!).fontStyle]);
   expect(titre[0], 'un titre cité se distingue du texte cité').not.toBe(titre[1]);
 });

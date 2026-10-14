@@ -360,6 +360,16 @@
   margin-top: var(--s3);
 }
 
+/* Le premier et le dernier bloc collent à leur conteneur : une liste garde
+   sinon la marge de 1em du navigateur. */
+.blog-prose :is(li, blockquote, td, th) > :first-child {
+  margin-top: 0;
+}
+
+.blog-prose :is(li, blockquote, td, th) > :last-child {
+  margin-bottom: 0;
+}
+
 .blog-prose blockquote {
   padding: var(--s2) 0 var(--s2) var(--s5);
   border-inline-start: 2px solid var(--trait);
@@ -379,10 +389,6 @@
   font-size: var(--t-s);
   letter-spacing: var(--ls-petit);
   line-height: 1.4;
-}
-
-.blog-prose blockquote > :first-child {
-  margin-top: 0;
 }
 
 .blog-prose pre {
