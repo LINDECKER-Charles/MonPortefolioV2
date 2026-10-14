@@ -2790,6 +2790,46 @@ export const VISUELS: readonly EntreeVisuel[] = [
   // ↑ fin des entrées SIL
 
   // REL — Relais (série « relais », /projets/relais) : ses entrées, sous ce repère.
+  {
+    id: 'REL-F1',
+    serie: 'relais',
+    page: '/projets/relais',
+    emplacement: '§ 1, le point d’accès : à côté du texte, en colonne',
+    sujet: 'Qui passe par Relais',
+    composition: 'De haut en bas : les outils de la machine en étiquettes, une flèche vers Relais et ce qu’il tient (comptes, périmètre, capacité, frein, conversations), une flèche vers les deux agents et leurs versions épinglées',
+    format: '—',
+    ratio: null,
+    methode: 'FIG',
+    priorite: 'socle',
+    pose: ['pages/projets/relais.astro'],
+    alt: 'Les outils de la machine passent par Relais, qui tient comptes, permissions et conversations, et lance ses propres versions des deux agents.',
+    fichier: 'src/components/projets/relais/FigurePointAcces.astro',
+    note: 'Codée en HTML, données POINT_ACCES de config/relais.ts ; se lit de haut en bas à toutes les largeurs.',
+  },
+  {
+    id: 'REL-C1',
+    serie: 'relais',
+    page: '/projets/relais',
+    emplacement: 'En-tête, § le périmètre, § la capacité, § l’analyse ; carte de la vitrine (/projets)',
+    sujet: 'Les écrans de Relais, sur des données de démonstration',
+    composition: 'Écrans réels de Relais 0.2.0 lancé en local (abonnements, projets et conversations inventés, un agent de démonstration à la place du CLI, aucun compte réel), fenêtre de 1 440 × 900 en densité 2, sans retouche ni recomposition ; la vignette de la carte est un recadrage du panneau de pilotage de la conversation',
+    format: 'format natif des écrans, 2880 × 1800 ; vignette 610 × 490',
+    ratio: null,
+    methode: 'CAP',
+    priorite: 'socle',
+    pose: ['pages/projets/relais.astro', 'config/relais.ts'],
+    alt: '',
+    fichier: null,
+    declinaisons: [
+      { nom: 'dashboard', fichier: 'src/assets/projets/relais/dashboard.webp', alt: '' },
+      { nom: 'conversation-perimetre', fichier: 'src/assets/projets/relais/conversation-perimetre.webp', alt: '' },
+      { nom: 'capacite', fichier: 'src/assets/projets/relais/capacite.webp', alt: '' },
+      { nom: 'garde-fous', fichier: 'src/assets/projets/relais/garde-fous.webp', alt: '' },
+      { nom: 'analyse', fichier: 'src/assets/projets/relais/analyse.webp', alt: '' },
+      { nom: 'carte-perimetre', fichier: 'src/assets/projets/relais/carte-perimetre.webp', alt: '' },
+    ],
+    note: 'Livrés le 14/10/2026, provenance dans src/assets/projets/relais/README.md ; leurs alts sont dans config/relais.ts. La vignette carte-perimetre est posée sur la carte de la vitrine par config/relais.ts (CARTE.visuel) ; les autres par la page.',
+  },
 
   // ↑ fin des entrées REL
 
