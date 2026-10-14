@@ -160,7 +160,12 @@ const dessous = Boolean(loupe?.dessous);
     display: contents;
   }
 
-  .loupe > picture > img {
+  /* Préfixé par la vue : plus spécifique que les recadrages de CadreCapture
+     (`.capture--recadree .capture__vue picture img`, `.capture--region …`),
+     qui visent la capture et que la loupe, enveloppée elle aussi dans un
+     <picture>, égalait. À égalité, l’ordre des feuilles décidait : l’image
+     de la loupe prenait la hauteur de la loupe et n’en montrait que le haut. */
+  :global(.capture__vue) .loupe > picture > img {
     position: absolute;
     left: 50%;
     top: 50%;

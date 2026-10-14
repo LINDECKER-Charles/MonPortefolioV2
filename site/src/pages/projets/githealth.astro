@@ -1,12 +1,17 @@
 ---
 /**
- * ÉBAUCHE du socle : remplacée par la page du projet.
+ * GitHealth : la preuve d’« une application de bureau ». Page bâtie sur le
+ * gabarit commun des pages de projet (components/projets/gabarit, règle E5) :
+ * en-tête et fiche, corps libre (les verdicts, la politique, l’analyse en
+ * direct, les visualisations), « Comment je l’ai construit », sortie et note
+ * de sources. Données, liens figés et textes des captures : config/githealth.ts,
+ * que cette page tient seule (sa carte de la vitrine comprise).
  *
- * GitHealth : la preuve de « Une application de bureau ». Page bâtie sur le gabarit
- * commun des pages de projet (components/projets/gabarit, règle E5) : en-tête
- * et fiche, une section, « Comment je l’ai construit », sortie et note de
- * sources. Données et sources : config/githealth.ts, que cette page tient
- * seule (sa carte de la vitrine comprise).
+ * Les captures sont de vraies vues de l’application, lancée en local sur des
+ * dépôts Git de démonstration aux auteurs fictifs, sans retouche
+ * (src/assets/projets/githealth/README.md). L’interface est en anglais : les
+ * légendes disent en français ce qu’on y lit. PRJ-06, dessiné pour l’ancienne
+ * rangée « Aussi », accompagne la liste des verdicts.
  */
 import Base from '../../layouts/Base.astro';
 import CorpsProjet from '../../components/projets/gabarit/CorpsProjet.astro';
@@ -15,38 +20,215 @@ import EnTeteProjet from '../../components/projets/gabarit/EnTeteProjet.astro';
 import SectionProjet from '../../components/projets/gabarit/SectionProjet.astro';
 import SortieProjet from '../../components/projets/gabarit/SortieProjet.astro';
 import SourcesProjet from '../../components/projets/gabarit/SourcesProjet.astro';
+import CadreCapture from '../../components/ui/CadreCapture.astro';
+import CaptureAnnotee from '../../components/ui/CaptureAnnotee.astro';
+import Visionneuse from '../../components/ui/Visionneuse.astro';
+import Visuel from '../../components/ui/Visuel.astro';
+import analyse from '../../assets/projets/githealth/analyse-en-cours.webp';
+import topologie from '../../assets/projets/githealth/carte-topologie.webp';
+import diagnostic from '../../assets/projets/githealth/diagnostic.webp';
+import ficheBranche from '../../assets/projets/githealth/fiche-branche.webp';
+import politique from '../../assets/projets/githealth/politique.webp';
+import activite from '../../assets/projets/githealth/registre-activite.webp';
 import { SITE } from '../../config/site';
-import { DECISIONS, EN_TETE, FICHE, LIENS, LIENS_SORTIE, PREUVES, SECTIONS } from '../../config/githealth';
+import { CAPTURES, DECISIONS, EN_TETE, FICHE, LIENS, LIENS_SORTIE, PREUVES, SECTIONS, VERDICTS } from '../../config/githealth';
 import { attributsMesure } from '../../lib/liens';
+import { typo } from '../../lib/typo';
 
 // ≤ 45 caractères avant « — Charles Lindecker » (titre ≤ 65 au total).
 const titre = `GitHealth, l’état des branches Git — ${SITE.nom}`;
 // 110 à 165 caractères.
-const description = 'GitHealth : une application de bureau open source qui lit un dépôt Git sans jamais l’écrire et dit, branche par branche, ce qu’on peut en faire.';
+const description = 'GitHealth, application de bureau open source : elle lit un dépôt Git sans jamais l’écrire et dit, branche par branche, ce qu’on peut en faire, et pourquoi.';
 // Toute sortie du site, mesurée (lien-sortant, emplacement « preuves »).
 const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(href, { emplacement: 'preuves' }) });
+/** Une capture de section : la moitié de la colonne au-delà de 1 100 px, toute la largeur en dessous. */
+const TAILLES_SECTION = '(max-width: 1100px) 100vw, 560px';
+/** Les rendus d’une capture recadrée sur mobile : jusqu’à l’original, que le recadrage agrandit. */
+const LARGEURS_RECADREES = [640, 1200, 1600, 2400];
+/** Sous 860 px, l’image entière est affichée à 100 / l fois la largeur de la vue (CadreCapture, `regionMobile`). */
+const taillesRecadrees = (largeurMobile: number) => `(max-width: 860px) ${Math.round(10000 / largeurMobile)}vw, ${TAILLES_SECTION}`;
 ---
 
 <Base titre={titre} description={description} chemin="/projets/githealth" sommaire={SECTIONS}>
-  <EnTeteProjet projet="githealth" titre={EN_TETE.titre} chapeau={EN_TETE.chapeau} liens={EN_TETE.liens} preuves={PREUVES} fiche={FICHE} />
+  <EnTeteProjet projet="githealth" titre={EN_TETE.titre} chapeau={EN_TETE.chapeau} liens={EN_TETE.liens} preuves={PREUVES} fiche={FICHE}>
+    <CadreCapture
+      slot="visuel"
+      type="navigateur"
+      src={diagnostic}
+      alt={CAPTURES.entete.alt}
+      legende={CAPTURES.entete.legende}
+      class="gh-entete-capture"
+      sizes="(max-width: 860px) 100vw, (max-width: 1100px) 640px, 560px"
+      widths={[640, 1200, 1600, 2400]}
+      loading="eager"
+      agrandir
+    />
+  </EnTeteProjet>
 
   <CorpsProjet sections={SECTIONS}>
-    <SectionProjet id="apercu" titre="En bref">
+    <SectionProjet id="verdicts" etiquette="Les verdicts" titre="Un verdict par branche, et la règle qui l’a donné">
       <Fragment slot="texte">
-        <p>GitHealth lit un dépôt et classe chaque branche&nbsp;: à garder, terminée, à revoir ou à nettoyer. Chaque verdict dit la règle qui l’a donné, et la commande de suppression reste à copier&nbsp;: GitHealth ne la lance jamais.</p>
-        <p>Tout se passe en local, en lecture seule. Seul l’assistant, facultatif, sort sur le réseau, et seulement après un accord donné pour chaque dépôt.</p>
+        <p>L’application compare chaque branche à une base, ici <code>main</code>&nbsp;: les commits qu’elle a en plus et ceux qui lui manquent, ce qu’on appelle sa topologie, puis la date de son dernier commit. Elle en tire un verdict, et la fiche de la branche dit, règle par règle, comment elle l’a obtenu.</p>
+        <p>Pas de note globale&nbsp;: les faits d’un côté, leur lecture de l’autre. Et aucun verdict ne lance de commande Git&nbsp;: la suppression reste à copier, à la main.</p>
+        <dl class="gh-verdicts">
+          {
+            VERDICTS.map((verdict) => (
+              <div class="gh-verdicts__ligne">
+                <dt lang="en">{verdict.libelle}</dt>
+                <dd>{typo(verdict.sens)}</dd>
+              </div>
+            ))
+          }
+        </dl>
+        <Visuel id="PRJ-06" class="gh-verdicts__visuel" largeur="280px" sizes="280px" />
       </Fragment>
+      <CaptureAnnotee
+        slot="figure"
+        type="navigateur"
+        src={ficheBranche}
+        alt={CAPTURES.verdicts.alt}
+        legende={CAPTURES.verdicts.legende}
+        cible={CAPTURES.verdicts.cible}
+        loupe={CAPTURES.verdicts.loupe}
+        sizes={TAILLES_SECTION}
+        agrandir
+      />
     </SectionProjet>
 
-    <DecisionsProjet decisions={DECISIONS} />
+    <SectionProjet id="politique" etiquette="La politique" titre="Régler la politique, voir l’effet avant d’enregistrer" alignement="centre">
+      <Fragment slot="texte">
+        <p>Chaque dépôt a sa politique&nbsp;: deux seuils d’activité, 30 et 90&nbsp;jours par défaut, des motifs de branches protégées ou exclues, et jusqu’à huit bases de comparaison.</p>
+        <p>Avant d’enregistrer, un panneau projette la politique sur la dernière analyse, sans relancer Git. Enregistrer change la lecture, jamais les faits relevés.</p>
+      </Fragment>
+      <CadreCapture
+        slot="figure"
+        type="navigateur"
+        src={politique}
+        alt={CAPTURES.politique.alt}
+        legende={CAPTURES.politique.legende}
+        region={CAPTURES.politique.region}
+        regionMobile={CAPTURES.politique.regionMobile}
+        widths={LARGEURS_RECADREES}
+        sizes={taillesRecadrees(CAPTURES.politique.regionMobile.l)}
+        agrandir
+      />
+    </SectionProjet>
 
-    <SortieProjet projet="githealth" liens={LIENS_SORTIE}>
-      <p>GitHealth observe&nbsp;; la décision reste à celui qui lit.</p>
+    <SectionProjet id="analyse" etiquette="L’analyse en direct" titre="Regarder l’analyse lire le dépôt">
+      <Fragment slot="texte">
+        <p>Pendant l’analyse, l’écran montre chaque commande Git qu’elle lance, au moment où elle la lance.</p>
+        <p>Toutes sont des lectures&nbsp;: six commandes Git différentes suffisent à l’analyse entière, quel que soit le nombre d’appels, et aucune ne récupère ni n’écrit quoi que ce soit. C’est le but de cet écran&nbsp;: la lecture seule se vérifie, au lieu de se croire.</p>
+      </Fragment>
+      <CaptureAnnotee
+        slot="figure"
+        type="navigateur"
+        src={analyse}
+        alt={CAPTURES.analyse.alt}
+        legende={CAPTURES.analyse.legende}
+        cible={CAPTURES.analyse.cible}
+        loupe={CAPTURES.analyse.loupe}
+        sizes={TAILLES_SECTION}
+        agrandir
+      />
+    </SectionProjet>
+
+    <SectionProjet
+      id="visualisation"
+      etiquette="Les visualisations"
+      titre="Tout le dépôt d’un coup d’œil"
+      chapeau="L’onglet Visualisation lit une analyse de trois façons : une carte, un registre d’activité, et la dérive entre deux analyses."
+    >
+      <div class="gh-vues">
+        <CadreCapture
+          type="navigateur"
+          src={topologie}
+          alt={CAPTURES.topologie.alt}
+          legende={CAPTURES.topologie.legende}
+          region={CAPTURES.topologie.region}
+          regionMobile={CAPTURES.topologie.regionMobile}
+          widths={LARGEURS_RECADREES}
+          sizes={taillesRecadrees(CAPTURES.topologie.regionMobile.l)}
+          agrandir
+        />
+        <CadreCapture
+          type="navigateur"
+          src={activite}
+          alt={CAPTURES.activite.alt}
+          legende={CAPTURES.activite.legende}
+          region={CAPTURES.activite.region}
+          regionMobile={CAPTURES.activite.regionMobile}
+          widths={LARGEURS_RECADREES}
+          sizes={taillesRecadrees(CAPTURES.activite.regionMobile.l)}
+          agrandir
+        />
+      </div>
+    </SectionProjet>
+
+    <DecisionsProjet decisions={DECISIONS} chapeau="Quatre choix qui ne se voient pas à l’écran, et ce qu’ils garantissent." />
+
+    <SortieProjet projet="githealth" titre="Aujourd’hui" liens={LIENS_SORTIE}>
+      <p>La version&nbsp;0.2.0, publiée le 14/09/2026, est livrée pour quatre cibles natives&nbsp;: Windows, macOS Intel et Apple Silicon, et Linux. Elle s’installe sous Windows et macOS, et tourne aussi sous Linux. La suite avance sur la branche de développement&nbsp;: l’analyse planifiée et une API locale y attendent leur version.</p>
     </SortieProjet>
 
     <SourcesProjet>
-      <p><b>Chiffres.</b> Le banc de la version&nbsp;0.2.0, sur un serveur d’intégration Windows hébergé&nbsp;: 1&nbsp;000&nbsp;branches, topologie lue en 231&nbsp;ms au 95<sup>e</sup>&nbsp;centile, pour un budget de 850&nbsp;ms (<a {...sortant(LIENS.rapport)}>rapport de la version&nbsp;0.2.0<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>). Les six commandes Git de l’analyse viennent des <a {...sortant(LIENS.limites)}>limites connues du dépôt<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>, relues le 14/10/2026 à la révision bd2e5c9.</p>
-      <p><b>Le projet.</b> Dépôt public sous licence MIT, version&nbsp;0.2.0 publiée le 14/09/2026&nbsp;; l’interface de l’application est en anglais.</p>
+      <p><b>Chiffres.</b> Le banc de la version&nbsp;0.2.0, sur un serveur d’intégration Windows hébergé&nbsp;: 1&nbsp;000&nbsp;branches, topologie lue en 231&nbsp;ms au 95<sup>e</sup>&nbsp;centile, pour un budget de 850&nbsp;ms, et relevé des auteurs en 25,8&nbsp;s, soit environ 26&nbsp;ms par branche (<a {...sortant(LIENS.rapport)}>rapport de la version&nbsp;0.2.0<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>). Les six commandes Git différentes de l’analyse (<code>for-each-ref</code>, <code>rev-list</code>, <code>merge-base</code>, <code>log</code>, <code>cat-file</code> et <code>rev-parse</code>) viennent des <a {...sortant(LIENS.limites)}>limites connues du dépôt<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>, et les options de chaque appel, de <a {...sortant(LIENS.appelsGit)}>son lanceur de processus<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. Les quatre cibles sont celles de la <a {...sortant(LIENS.cibles)}>publication des versions<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. Relevés le 14/10/2026, aux révisions 4cd740d (version&nbsp;0.2.0) et bd2e5c9.</p>
+      <p><b>Écrans.</b> Six vues réelles de l’application, lancée en local le 14/10/2026 sur des dépôts Git de démonstration fabriqués pour l’occasion&nbsp;: auteurs fictifs, aucune donnée réelle, interface ni retouchée ni recomposée. L’application capturée vient de la branche de développement (révision bd2e5c9 du 16/09/2026)&nbsp;: le numéro de version affiché est 0.2.0, mais l’engrenage de la barre du haut et l’analyse planifiée, en bas de l’écran de politique, ne sont pas encore publiés. Tout le reste existe dans la 0.2.0.</p>
+      <p><b>Verdicts et politique.</b> L’échelle des verdicts, dont l’échelle courte des branches fusionnées, vient du <a {...sortant(LIENS.verdicts)}>guide de l’utilisateur<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>&nbsp;; l’effet projeté de la politique, du <a {...sortant(LIENS.politique)}>même guide<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>&nbsp;; la séparation des faits et de leur lecture, de <a {...sortant(LIENS.etats)}>l’architecture<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. La console de l’analyse et l’onglet Visualisation sont décrits dans les notes de la 0.2.0&nbsp;: <a {...sortant(LIENS.console)}>la console<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>, <a {...sortant(LIENS.visualisation)}>les visualisations<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. La topologie en un seul appel est <a {...sortant(LIENS.topologie)}>dans le code<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>.</p>
+      <p><b>Le projet.</b> Dépôt public sous licence MIT, commencé le 28/08/2026&nbsp;: 159&nbsp;commits de ma main et 11 de Dependabot à la révision bd2e5c9. Versions 0.1.0 (31/08/2026) et 0.2.0 (14/09/2026). L’interface de l’application est en anglais.</p>
     </SourcesProjet>
   </CorpsProjet>
+
+  <Visionneuse />
 </Base>
+
+<style>
+  .gh-verdicts {
+    display: grid;
+    gap: 0;
+    margin: var(--s5) 0 0;
+    border-top: 1px solid var(--trait);
+  }
+
+  .gh-verdicts__ligne {
+    display: grid;
+    grid-template-columns: minmax(8.5rem, auto) minmax(0, 1fr);
+    gap: var(--s1) var(--s4);
+    padding-block: var(--s2);
+    border-bottom: 1px solid var(--filet);
+    font-size: var(--t-s);
+    line-height: 1.5;
+  }
+
+  .gh-verdicts dt {
+    font-weight: 600;
+  }
+
+  .gh-verdicts dd {
+    margin: 0;
+    color: var(--eteint);
+  }
+
+  :global(.gh-verdicts__visuel) {
+    margin-top: var(--s5);
+  }
+
+  .gh-vues {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s6);
+    align-items: start;
+    margin-top: var(--s5);
+  }
+
+  @media (max-width: 860px) {
+    .gh-vues {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .gh-verdicts__ligne {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>
