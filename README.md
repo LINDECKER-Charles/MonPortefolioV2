@@ -36,6 +36,7 @@ npm run preview      # build + serveur de production, http://127.0.0.1:4000
 | `npm run visuels` | liste les visuels « socle » manquants du registre `src/config/visuels.ts`, rendus et masters de nuit compris (`-- --tout` pour tous, `-- --verifier` pour contrôler les fichiers livrés, `-- --strict` pour échouer s'il en manque) ; le build en affiche le décompte sans échouer |
 | `npm run visuels:doc` | régénère `docs/visuels-a-generer.md`, la commande de production des images, depuis le registre |
 | `npm run visuels:rendre <ID>` | rend les deux masters d’une image générée (`design/assets/visuels/<série>/<ID>.png` et `<ID>.nuit.png`) aux couleurs des jetons : `<ID>_<l>x<h>.webp` (jour) et `.nuit.webp` (nuit), sous le plafond de poids du registre ; `-- --tout` pour tous les masters déposés |
+| `npm run blog:demo` | crée ou met à jour, sur un backend local seulement, les articles de démonstration `demo-*` du blog et leurs images (voir « Articles de démonstration ») ; `-- --nettoyer` les retire |
 | `npm run test:e2e` | build + tests navigateur (Playwright, Chromium à 390 et 1440 px, axe ; favicons aussi dans Firefox et WebKit) |
 
 Première exécution des tests navigateur : `npx playwright install chromium firefox webkit`.
@@ -157,6 +158,22 @@ l’audit SEO. Les révisions empêchent une IA et l’éditeur d’écraser leu
 Les articles publics contiennent leur texte et leurs métadonnées dans le HTML, avec balisage
 `BlogPosting` et sitemap actualisé. Aucun article fictif n’est publié. Contrat complet et exemple
 de document structuré : [`backend/README.md`](backend/README.md).
+
+**Articles de démonstration (local).** Pour juger le rendu réel des articles, `npm run blog:demo`
+(dans `site/`, avec le `.env` racine) se connecte au backoffice et crée ou met à jour huit
+articles `demo-*` : texte long et typographie, titres et ancres, listes et citations (laissé en
+brouillon), code, tableaux, images aux formats extrêmes, bords (titre de 160 caractères, article
+très court en `noindex`) et un article programmé dans sept jours puis retouché
+(`-- --programmer-dans=<minutes>` pour voir l’échéance passer). Les images sont dessinées par
+l’outil avec sharp. Chaque nœud, marque et attribut admis par la validation y figure ; l’outil
+essaie aussi des documents que le backend doit refuser et affiche leur résultat. Il refuse toute
+cible hors de la boucle locale (`BACKEND_URL` sur 127.0.0.1, localhost ou ::1), tout
+`APP_ENV` autre que `development` et tout backend qui exige la 2FA : ces articles ne vont jamais
+en production. Il est idempotent ; `-- --nettoyer` supprime les articles `demo-*`, puis leurs
+images directement dans la base SQLite locale (`DATABASE_PATH`), faute de route de suppression.
+Pour les voir : backend lancé depuis la racine, `npm run build`, puis `npm run serve` (qui lit
+`BACKEND_URL` dans le `.env`) et `/blog` ; l’aperçu du brouillon demande une connexion au
+backoffice sur la même origine.
 
 Les illustrations de l’accueil jouent une scène propre à leur sujet à leur
 première arrivée dans l’écran, puis la rejouent au clic sur le dessin ou au clavier. Le système
