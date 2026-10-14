@@ -575,10 +575,10 @@ async fn imported_images_are_measured_and_get_lighter_variants_once_published() 
         json!({"width":600,"height":300,"variants":[],"still":600})
     );
 
-    // Plus de 40 millions de pixels : refusée avant tout décodage, avec sa raison.
+    // Plus de 25 millions de pixels : refusée avant tout décodage, avec sa raison.
     let mut huge = Vec::new();
     {
-        let mut encoder = png::Encoder::new(&mut huge, 8000, 6000);
+        let mut encoder = png::Encoder::new(&mut huge, 6000, 4200);
         encoder.set_color(png::ColorType::Rgba);
         encoder.set_depth(png::BitDepth::Eight);
         let mut writer = encoder.write_header().unwrap();

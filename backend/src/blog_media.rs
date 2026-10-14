@@ -13,17 +13,33 @@
 //! affichent reste admise : ses dimensions viennent alors de son en-tête, sans
 //! variante.
 //!
-//! Le coût est borné : 40 millions de pixels au plus, lus dans l’en-tête avant
-//! tout décodage, 160 Mio d’allocation pour le décodeur, et une seule image
-//! traitée à la fois, quelle que soit la voie (backoffice, MCP, démarrage).
+//! Le coût est borné : 25 millions de pixels au plus, lus dans l’en-tête avant
+//! tout décodage, un tampon décodé de 100 Mo au plus (`MAX_ALLOC`), et une
+//! seule image traitée à la fois, quelle que soit la voie (backoffice, MCP,
+//! démarrage). 25 Mpx laissent passer les photos de 24 Mpx des iPhone récents
+//! (5712 × 4284, 24,5 Mpx) et des reflex (6000 × 4000), et une capture d’écran
+//! 6K (6016 × 3384, 20,4 Mpx) ; le VPS est partagé par une quarantaine de
+//! conteneurs, chaque mégaoctet de plafond compte, et la plus grande variante
+//! servie ne fait que 1 600 px.
 //!
 //! Les variantes se calculent sur l’image décodée telle quelle, sans la
 //! tourner : chacune est réduite dans l’orientation affichée, puis tournée une
 //! fois réduite. Le pic d’un import tient donc dans l’image décodée et la
 //! variante en cours, sans copie tournée de l’image entière. Seule une image
 //! affichée sur 1 600 px de large au plus est tournée entière, pour être
-//! réencodée à sa taille. La limite mémoire du service (`compose.deploy.yaml`)
-//! en dépend : baisser `MAX_PIXELS` et `MAX_ALLOC` avant de la baisser.
+//! réencodée à sa taille.
+//!
+//! Pics mesurés sous Linux (`memory.peak` du cgroup d’un conteneur neuf, par
+//! import ; 32 Mio de service au repos et de connexion au backoffice compris),
+//! avant ce découpage puis après :
+//! - PNG RGBA de 25 Mpx (5 000 × 5 000) tourné par EXIF : 220, puis 125 Mio ;
+//! - JPEG de 24 Mpx (6 000 × 4 000) tourné de 90° : 177, puis 120 Mio ;
+//! - photo JPEG de 12 Mpx (4 000 × 3 000) : 76, puis 73 Mio ;
+//! - le pire cas, un PNG RGBA de 10 000 × 1 600 tourné, affiché sur 1 600 px
+//!   et donc réencodé entier : 212, puis 154 Mio.
+//!
+//! La limite mémoire du service (`compose.deploy.yaml`, 256 Mio) en dépend :
+//! baisser `MAX_PIXELS` et `MAX_ALLOC` avant de la baisser.
 use std::{
     io::Cursor,
     sync::{Mutex, PoisonError},
@@ -41,9 +57,13 @@ use image::{
 pub const VARIANT_WIDTHS: [u32; 3] = [480, 960, 1600];
 /// Même plafond que les attributs `width`/`height` du document.
 const MAX_DIMENSION: u32 = 10_000;
-/// 40 Mpx : 160 Mo une fois décodés en RGBA, sous la limite d’allocation du décodeur.
-const MAX_PIXELS: u64 = 40_000_000;
-const MAX_ALLOC: u64 = 160 * 1024 * 1024;
+/// 25 Mpx : une photo de 24 Mpx (5712 × 4284, 6000 × 4000) ou une capture 6K passe.
+const MAX_PIXELS: u64 = 25_000_000;
+/// Le tampon de la plus grande image admise en RGBA 8 bits (100 Mo) : un PNG
+/// transparent ou un JPEG (RGB, 75 Mo) de 25 Mpx se décodent ; une image à 16
+/// bits par canal qui dépasserait est admise sans variante, comme une image que
+/// le décodeur refuse.
+const MAX_ALLOC: u64 = MAX_PIXELS * 4;
 const JPEG_QUALITY: u8 = 80;
 
 /// Un seul traitement à la fois : quelques imports simultanés suffiraient sinon
@@ -70,7 +90,7 @@ pub struct Processed {
 pub enum Rejected {
     /// Même l’en-tête (ou la structure) ne se lit pas : aucun navigateur ne l’afficherait.
     Unreadable,
-    /// Plus de 40 millions de pixels : la réduire avant de l’importer.
+    /// Plus de 25 millions de pixels : la réduire avant de l’importer.
     TooLarge,
 }
 
@@ -136,8 +156,13 @@ fn orientation(bytes: &[u8], format: ImageFormat) -> Orientation {
 }
 
 /// L’image entière telle que stockée, sans la tourner, et son orientation EXIF.
+/// `into_decoder` ne compte pas le tampon de sortie dans `max_alloc` (seul
+/// `ImageReader::decode` le fait) : il est vérifié ici, pour tous les formats.
 fn decode(bytes: &[u8], format: ImageFormat) -> Option<(DynamicImage, Orientation)> {
     let mut decoder = reader(bytes, format, Some(MAX_ALLOC)).into_decoder().ok()?;
+    if decoder.total_bytes() > MAX_ALLOC {
+        return None;
+    }
     let orientation = decoder.orientation().ok()?;
     let image = DynamicImage::from_decoder(decoder).ok()?;
     Some((image, orientation))
@@ -743,11 +768,11 @@ mod tests {
     }
 
     #[test]
-    fn an_image_over_forty_megapixels_is_refused_before_decoding() {
-        // En-tête PNG de 8 000 × 6 000 px (48 Mpx), avec des données vides.
+    fn an_image_over_twenty_five_megapixels_is_refused_before_decoding() {
+        // En-tête PNG de 5 001 × 5 000 px (25,005 Mpx), avec des données vides.
         let mut bytes = Vec::new();
         {
-            let mut encoder = png::Encoder::new(&mut bytes, 8000, 6000);
+            let mut encoder = png::Encoder::new(&mut bytes, 5001, 5000);
             encoder.set_color(png::ColorType::Rgba);
             encoder.set_depth(png::BitDepth::Eight);
             let mut writer = encoder.write_header().unwrap();
@@ -841,5 +866,51 @@ mod tests {
         assert_eq!((full.width(), full.height()), (800, 1200));
         assert!(red(*full.get_pixel(400, 100)));
         assert!(!red(*full.get_pixel(400, 1100)));
+    }
+
+    #[test]
+    fn the_largest_admitted_png_and_jpeg_decode_within_the_allocation_limit() {
+        // 5 000 × 5 000 px : 25 Mpx tout juste, le plus grand import admis.
+        let side = 5000;
+        assert_eq!(u64::from(side) * u64::from(side), MAX_PIXELS);
+        let mut png = Vec::new();
+        {
+            let mut encoder = png::Encoder::new(&mut png, side, side);
+            encoder.set_color(png::ColorType::Rgba);
+            encoder.set_depth(png::BitDepth::Eight);
+            encoder.set_compression(png::Compression::Fast);
+            let mut writer = encoder.write_header().unwrap();
+            let row = [200u8, 40, 40, 128].repeat(side as usize);
+            let mut stream = writer.stream_writer().unwrap();
+            for _ in 0..side {
+                std::io::Write::write_all(&mut stream, &row).unwrap();
+            }
+            stream.finish().unwrap();
+        }
+        let (image, _) = decode(&png, ImageFormat::Png).expect("PNG RGBA de 25 Mpx décodé");
+        assert_eq!(image.color(), image::ColorType::Rgba8);
+        assert_eq!(image.as_bytes().len() as u64, MAX_ALLOC);
+        drop(image);
+        let mut jpeg = Cursor::new(Vec::new());
+        DynamicImage::ImageRgb8(image::RgbImage::from_pixel(
+            side,
+            side,
+            image::Rgb([200, 40, 40]),
+        ))
+        .write_to(&mut jpeg, ImageFormat::Jpeg)
+        .unwrap();
+        let (image, _) =
+            decode(&jpeg.into_inner(), ImageFormat::Jpeg).expect("JPEG de 25 Mpx décodé");
+        assert_eq!(image.dimensions(), (side, side));
+        // Un tampon plus grand que la limite (RGBA 16 bits) n’est pas décodé.
+        let mut wide = Vec::new();
+        {
+            let mut encoder = png::Encoder::new(&mut wide, 4000, 4000);
+            encoder.set_color(png::ColorType::Rgba);
+            encoder.set_depth(png::BitDepth::Sixteen);
+            let mut writer = encoder.write_header().unwrap();
+            writer.write_chunk(png::chunk::IDAT, &[]).unwrap();
+        }
+        assert!(decode(&wide, ImageFormat::Png).is_none());
     }
 }

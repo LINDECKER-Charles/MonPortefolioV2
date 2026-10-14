@@ -63,7 +63,7 @@ impl BlogError {
                 "Cette image est utilisée par un article. Retirez-la de ses versions avant de la supprimer."
             }
             Self::ImageTooLarge => {
-                "Cette image dépasse 40 millions de pixels. Réduisez-la avant de l’importer."
+                "Cette image dépasse 25 millions de pixels. Réduisez-la avant de l’importer."
             }
             Self::Storage => "Le service est temporairement indisponible.",
         }
