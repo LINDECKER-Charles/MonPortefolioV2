@@ -158,8 +158,11 @@
   line-height: 1.5;
 }
 
+/* height: auto : l’attribut height posé par le serveur (dimensions réelles)
+   l’emporterait sinon sur le recadrage 16:9. */
 .blog-list__article img {
   width: 100%;
+  height: auto;
   aspect-ratio: 16 / 9;
   object-fit: cover;
   border-radius: var(--r2);

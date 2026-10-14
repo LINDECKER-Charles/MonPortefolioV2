@@ -196,6 +196,14 @@ test('les images réservent leur place, ne s’agrandissent pas et chargent la v
   await expect(page.locator('.blog-article__cover')).toHaveAttribute('fetchpriority', 'high');
 });
 
+test('la vignette de la liste reste recadrée en 16:9, quelles que soient les dimensions de l’image', async ({ page }) => {
+  await ouvrir(page, '/blog');
+  const vignette = page.locator('.blog-list__article img').first();
+  await expect(vignette).toHaveAttribute('height', '1400');
+  const [largeur, hauteur] = await vignette.evaluate((img) => [img.getBoundingClientRect().width, img.getBoundingClientRect().height]);
+  expect(largeur / hauteur).toBeCloseTo(16 / 9, 1);
+});
+
 test('à l’impression, le code et les tableaux ne sont pas rognés', async ({ page }) => {
   await ouvrir(page);
   await page.emulateMedia({ media: 'print' });
