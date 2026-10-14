@@ -140,7 +140,10 @@ test('le texte d’auteur reçoit la typographie du site, sauf le code et les ad
   assert.match(html, /<code>x \? y : &#39;z&#39; ; « a »<\/code>/, 'un bloc de code reste tel quel');
   assert.match(html, new RegExp(`alt="L’image${nb}: un test"`));
   assert.match(html, new RegExp(`<figcaption>Légende${nb}: l’image${nb}!</figcaption>`));
-  assert.match(html, new RegExp(`1${nb}min de lecture`));
+  assert.match(html, new RegExp(`1${nb}min${nb}de${nb}lecture`), 'la durée ne se coupe jamais');
+  assert.match(html, new RegExp(`<time datetime="[^"]+">\\d+${nb}octobre 2026</time>`), 'le jour reste avec son mois');
+  const liste = renderIndex(LISTE, { posts: [article()], total: 1 });
+  assert.match(liste, new RegExp(`<time datetime="[^"]+">\\d+${nb}octobre 2026</time>`));
 });
 
 test('l’aperçu dit ce qui est publié, programmé ou en attente, dans un bloc d’état sans aside', () => {
