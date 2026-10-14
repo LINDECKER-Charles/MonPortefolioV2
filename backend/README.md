@@ -160,10 +160,33 @@ Les routes suivantes nécessitent une session valide, à l’exception de `login
 | `/blog/posts/{id}/schedule` | POST | programmer avec `{"revision":…, "scheduled_at":…}` |
 | `/blog/media`, `/blog/media/{id}`, `/blog/media/{id}/{largeur}` | GET/POST, GET/DELETE, GET | lister/importer les images, lire leurs octets ou ceux d’une variante avec la session ; supprimer une image qu’aucune version d’article ne cite (sinon `409 MEDIA_IN_USE`) |
 
+| `/storage` | GET | mesurer la place prise (session seulement, refusé à un accès MCP) |
+
 Toutes les mutations, y compris la connexion, exigent `X-Backoffice-Request: 1`. Les requêtes
 POST, PUT et PATCH utilisent `Content-Type: application/json`, même sans corps ; DELETE peut
 omettre cet en-tête. Les liens acceptent uniquement HTTP/HTTPS sans identifiants.
 Leur ouverture est une navigation normale vers le service, avec sa propre authentification.
+
+### Stockage
+
+`GET /api/backoffice/storage` répond, pour la session seulement (un Bearer MCP reçoit 401) :
+
+- `disk` : `total` et `available` en octets, `null` pour une base en mémoire ;
+- `database` : `file`, `wal` (`null` en mémoire), `size` (pages × `page_size`), `free` (espace
+  libre interne, réutilisé aux prochaines écritures) et `page_size`. La place réelle sur le
+  disque est `file` + `wal` ;
+- `categories` : `media_originals`, `media_variants`, `posts`, `contacts`, `system`, en octets de
+  pages (index compris, via `dbstat`) ; leur somme plus `free` vaut `size` ;
+- `media` : par poids total décroissant, avec `id`, `filename`, `content_type`, `width`,
+  `height` (`null` si non mesurée), `size`, `variants` (`count`, `size`, `widths`), `total`,
+  `created_at`, `url`, `admin_url` et `posts` (les articles qui la citent, avec `status`
+  `draft`, `scheduled` ou `published`) ;
+- `posts` : par poids décroissant (`id`, `slug`, `title`, `status`, `size` des versions JSON) ;
+- `contacts` : `count` et `size`.
+
+Le calcul se fait dans une transaction de lecture sur une connexion à part. Les vignettes se
+lisent par `admin_url` (original) ou `admin_url/{largeur}` (variante). Supprimer une image :
+`DELETE /api/backoffice/blog/media/{id}` (200, 409 `MEDIA_IN_USE`, 404).
 
 ## Rédiger et publier le blog
 
@@ -235,10 +258,10 @@ via sa route privée. Les octets des images PNG, JPEG, GIF et WebP sont enregist
 avec vérification de leur signature et une limite de 4 Mio. L’import prend
 `{"filename":"…", "content_type":"image/png", "data_base64":"…"}`, sans préfixe `data:`.
 
-À l’import, le backend lit l’en-tête de l’image (10 000 px de côté et 40 millions de pixels
-au plus, sinon `422 IMAGE_TOO_LARGE`), puis la décode (160 Mio d’allocation au plus, une image
+À l’import, le backend lit l’en-tête de l’image (10 000 px de côté et 25 millions de pixels
+au plus, sinon `422 IMAGE_TOO_LARGE`), puis la décode (100 Mo d’allocation au plus, tous formats, une image
 à la fois, quelle que soit la voie : backoffice, MCP ou démarrage ; le pic d’un import de
-40 Mpx atteint 314 Mio, d’où les 512 Mio du service dans `compose.deploy.yaml`, détaillés dans
+25 Mpx atteint 154 Mio au pire mesuré, d’où les 256 Mio du service dans `compose.deploy.yaml`, détaillés dans
 [`docs/deploiement.md`](../docs/deploiement.md)), en mesure les dimensions,
 orientation EXIF comprise, et prépare des variantes réduites aux largeurs 480, 960 et 1 600 px
 (et à sa propre largeur si elle ne dépasse pas 1 600 px) : JPEG de qualité 80, ou WebP sans
@@ -340,8 +363,8 @@ qui demande d’en révoquer un.
 | `blog:publish` | publier, programmer, retirer et supprimer les articles et les images ; exige `blog:write` |
 
 Par l’API, `POST /api/backoffice/tokens` accepte des permissions explicites, par exemple
-`{"name":"Rédaction", "scopes":["blog:read", "blog:write"]}`. Une création sans `scopes` garde,
-pour compatibilité, `contacts:read` et `blog:read` ; l’interface envoie toujours des
+`{"name":"Rédaction", "scopes":["blog:read", "blog:write"]}`. Une création sans `scopes` reçoit
+seulement `blog:read` (`contacts:read` doit être demandé) ; l’interface envoie toujours des
 permissions explicites. La liste des accès expose leurs permissions, jamais leurs secrets. Le
 catalogue MCP ne montre que les outils autorisés, et chaque appel vérifie à nouveau la
 permission.
