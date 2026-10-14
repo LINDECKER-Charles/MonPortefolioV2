@@ -250,21 +250,28 @@ et les aperçus restent hors de ces sorties.
    production :
 
    ```bash
+   claude mcp remove --scope user portfolio 2>/dev/null
    claude mcp add --transport http --scope user portfolio https://charles-lindecker.com/mcp --header "Authorization: Bearer <secret>"
    ```
+
+   La première ligne retire un serveur du même nom s’il existe (un accès précédent, révoqué ou
+   perdu) : `claude mcp add` refuse un nom déjà connu, et sort quand même avec le code 0. Sans
+   elle, recréer un accès échouerait sans qu’on le voie.
 
    L’adresse vient de l’origine de la page ; le nom du serveur, de l’hôte : `portfolio` en
    production, `portfolio-test` sur `test.v2…`, `portfolio-local` sur le poste. `--scope user`
    rend le serveur disponible dans tous les projets. `--header` vient en dernier : l’option
    accepte plusieurs valeurs.
 3. « Copier la commande », la coller dans un terminal, puis `claude mcp list` doit afficher
-   `✔ Connected`. « Vérifier l’accès » fait la même preuve depuis le backoffice : `initialize`
-   puis `tools/list` avec le nouveau secret, et la liste des outils réellement ouverts (cet
-   appel compte comme une utilisation).
+   `✔ Connected`. « Vérifier l’accès » fait la même preuve depuis le backoffice, par le chemin de
+   Claude Code (révision 2026-07-28) : `server/discover` puis `tools/list` avec le nouveau
+   secret, en exigeant les indications de cache (`resultType`, `ttlMs`, `cacheScope`) sans
+   lesquelles Claude Code rejette le catalogue ; puis la liste des outils réellement ouverts (cet
+   appel compte comme une utilisation). « Terminé » pendant la vérification l’annule sans
+   message ; au-delà de 15 s, l’écran dit que le serveur ne répond pas.
 4. « Terminé » : le secret n’est plus affiché. Il disparaît aussi en quittant la rubrique, à la
    déconnexion et à l’expiration de la session ; il n’est jamais conservé dans le navigateur.
-   Perdu : révoquer l’accès et en créer un autre. Si Claude Code connaît déjà ce serveur, le
-   retirer d’abord avec `claude mcp remove portfolio`.
+   Perdu : révoquer l’accès et en créer un autre ; sa commande remplace l’ancien serveur.
 
 La commande contient le secret : Claude Code l’enregistre de toute façon dans sa configuration
 (`~/.claude.json`), et l’historique du shell le garde aussi. La coller dans son propre terminal
@@ -272,9 +279,9 @@ seulement ; une commande précédée d’une espace reste hors de l’historique
 lignes (`setopt HIST_IGNORE_SPACE` pour zsh).
 
 La liste « Accès actifs » montre pour chaque accès son nom, ses permissions en clair, sa date de
-création et sa dernière utilisation (« à l’instant », « il y a 3 heures »…). « Révoquer »
-demande confirmation, rend le secret inutilisable immédiatement et rappelle la commande
-`claude mcp remove …` à lancer côté client.
+création et sa dernière utilisation (« À l’instant », « Il y a 3 heures »…). « Révoquer »
+demande confirmation, rend le secret inutilisable immédiatement et rappelle, seule sur sa
+ligne, la commande `claude mcp remove --scope user …` à lancer côté client.
 
 ### Préréglages et permissions
 
