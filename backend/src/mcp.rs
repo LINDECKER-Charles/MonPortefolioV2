@@ -618,12 +618,13 @@ fn required_scope(name: &str) -> Option<&'static str> {
         | "list_toolbox_links" => Some("contacts:read"),
         "blog_list_posts" | "blog_get_post" | "blog_preview_post" | "blog_seo_audit"
         | "blog_list_media" => Some("blog:read"),
-        "blog_create_post" | "blog_update_post" | "blog_upload_media" | "blog_delete_media" => {
-            Some("blog:write")
-        }
-        "blog_publish_post" | "blog_schedule_post" | "blog_unpublish_post" | "blog_delete_post" => {
-            Some("blog:publish")
-        }
+        "blog_create_post" | "blog_update_post" | "blog_upload_media" => Some("blog:write"),
+        // Supprimer est définitif : article ou image, il faut la permission de publier.
+        "blog_publish_post"
+        | "blog_schedule_post"
+        | "blog_unpublish_post"
+        | "blog_delete_post"
+        | "blog_delete_media" => Some("blog:publish"),
         _ => None,
     }
 }
@@ -1031,7 +1032,7 @@ fn blog_tools() -> Vec<Value> {
         tool(
             "blog_delete_media",
             "Supprimer une image",
-            "Supprimer définitivement une image importée et ses variantes. Refusé (MEDIA_IN_USE) tant qu’une version de travail, programmée ou publiée d’un article la cite. Permission blog:write.",
+            "Supprimer définitivement une image importée et ses variantes. Refusé (MEDIA_IN_USE) tant qu’une version de travail, programmée ou publiée d’un article la cite. Exige blog:publish.",
             identity,
             false,
             true,

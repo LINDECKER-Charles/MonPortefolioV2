@@ -269,8 +269,8 @@ les réglages ou les autres jetons.
 |---|---|
 | `contacts:read` | demandes de contact et liens ; contient des coordonnées et des messages privés |
 | `blog:read` | articles, brouillons, aperçus, audit SEO et liste des images |
-| `blog:write` | créer/modifier les brouillons, importer et supprimer des images ; exige `blog:read` |
-| `blog:publish` | publier, programmer, retirer et supprimer les articles ; exige `blog:write` |
+| `blog:write` | créer/modifier les brouillons et importer des images ; exige `blog:read` |
+| `blog:publish` | publier, programmer, retirer et supprimer les articles et les images ; exige `blog:write` |
 
 Les jetons existants et les créations sans `scopes` gardent uniquement `contacts:read` et
 `blog:read`. Il faut créer un nouvel accès avec les permissions d’écriture voulues ; aucune
@@ -303,7 +303,7 @@ les limites du document et de l’image restent contrôlées séparément.
 | `blog_create_post` | `blog:write` | créer un brouillon avec contenu et métadonnées |
 | `blog_update_post` | `blog:write` | remplacer les champs éditables avec `id` et `revision` |
 | `blog_upload_media` | `blog:write` | importer une image en base64 ; le résultat donne ses dimensions et ses variantes |
-| `blog_delete_media` | `blog:write` | supprimer une image et ses variantes, refusé (`MEDIA_IN_USE`) tant qu’une version d’article la cite |
+| `blog_delete_media` | `blog:publish` | supprimer une image et ses variantes, refusé (`MEDIA_IN_USE`) tant qu’une version d’article la cite |
 | `blog_publish_post` | `blog:publish` | publier la version courante avec `id` et `revision` |
 | `blog_schedule_post` | `blog:publish` | figer/programmer avec `id`, `revision`, `scheduled_at` |
 | `blog_unpublish_post` | `blog:publish` | retirer et annuler la programmation |

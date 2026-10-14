@@ -937,9 +937,10 @@ async fn only_admin_sessions_can_create_tokens_with_explicit_consistent_permissi
 }
 
 #[tokio::test]
-async fn writers_delete_only_images_that_no_article_cites() {
+async fn publishers_delete_only_images_that_no_article_cites() {
     let fixture = fixture();
     let writer = blog_token(&fixture, &["blog:read", "blog:write"]);
+    let publisher = blog_token(&fixture, &["blog:read", "blog:write", "blog:publish"]);
     let png = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aXioAAAAASUVORK5CYII=";
     let mut ids = Vec::new();
     for filename in ["libre.png", "citee.png"] {
@@ -961,9 +962,20 @@ async fn writers_delete_only_images_that_no_article_cites() {
         invoke(&fixture, &writer, "blog_create_post", cited).await["isError"],
         false
     );
+    // Une suppression est définitive : un jeton d’écriture importe, mais ne détruit rien.
+    for token in [&writer, &blog_token(&fixture, &["blog:read"])] {
+        let denied = invoke(
+            &fixture,
+            token,
+            "blog_delete_media",
+            json!({ "id": ids[0] }),
+        )
+        .await;
+        assert_eq!(denied["structuredContent"]["code"], "PERMISSION_DENIED");
+    }
     let deleted = invoke(
         &fixture,
-        &writer,
+        &publisher,
         "blog_delete_media",
         json!({ "id": ids[0] }),
     )
@@ -974,20 +986,11 @@ async fn writers_delete_only_images_that_no_article_cites() {
     );
     let refused = invoke(
         &fixture,
-        &writer,
+        &publisher,
         "blog_delete_media",
         json!({ "id": ids[1] }),
     )
     .await;
     assert_eq!(refused["isError"], true);
     assert_eq!(refused["structuredContent"]["code"], "MEDIA_IN_USE");
-    let reader = blog_token(&fixture, &["blog:read"]);
-    let denied = invoke(
-        &fixture,
-        &reader,
-        "blog_delete_media",
-        json!({ "id": ids[1] }),
-    )
-    .await;
-    assert_eq!(denied["structuredContent"]["code"], "PERMISSION_DENIED");
 }
