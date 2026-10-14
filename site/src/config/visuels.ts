@@ -2762,6 +2762,30 @@ export const VISUELS: readonly EntreeVisuel[] = [
   // ↑ fin des entrées KSC
 
   // SIL — Sillage (série « sillage », /projets/sillage) : ses entrées, sous ce repère.
+  {
+    id: 'SIL-C1',
+    serie: 'sillage',
+    page: '/projets/sillage',
+    emplacement: 'En-tête, § Un projet, § Composer la tâche, § Reprendre, § Le résultat, et la carte de la vitrine',
+    sujet: 'Les écrans de Sillage, sur des projets de démonstration',
+    composition: 'Écrans réels de l’application lancée en local (révision c256e76) contre le faux fournisseur des tests du dépôt : projets, tâches et résultats de démonstration, sans recomposition',
+    format: 'format natif des écrans',
+    ratio: null,
+    methode: 'CAP',
+    priorite: 'socle',
+    pose: ['pages/projets/sillage.astro', 'config/sillage.ts'],
+    alt: '',
+    fichier: null,
+    declinaisons: [
+      { nom: 'graphe-en-direct', fichier: 'src/assets/projets/sillage/graphe-en-direct.webp', alt: '' },
+      { nom: 'page-projet', fichier: 'src/assets/projets/sillage/page-projet.webp', alt: '' },
+      { nom: 'page-projet-mobile', fichier: 'src/assets/projets/sillage/page-projet-mobile.webp', alt: '' },
+      { nom: 'creer-avec-un-agent', fichier: 'src/assets/projets/sillage/creer-avec-un-agent.webp', alt: '' },
+      { nom: 'reprendre-execution', fichier: 'src/assets/projets/sillage/reprendre-execution.webp', alt: '' },
+      { nom: 'recapitulatif', fichier: 'src/assets/projets/sillage/recapitulatif.webp', alt: '' },
+    ],
+    note: 'Livrés le 14 octobre 2026, provenance dans src/assets/projets/sillage/README.md ; leurs alts sont dans config/sillage.ts. Dépôt privé : aucune donnée réelle, aucun lien. La page projet passe de la vue de bureau à la vue de téléphone sous 861 px ; la carte de la vitrine recadre la vue du graphe en CSS (CadreCapture, ratio et position).',
+  },
 
   // ↑ fin des entrées SIL
 
