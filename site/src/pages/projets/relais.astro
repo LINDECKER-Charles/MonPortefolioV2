@@ -1,0 +1,49 @@
+---
+/**
+ * ÉBAUCHE du socle : remplacée par la page du projet.
+ *
+ * Relais : la preuve de « Encadrer des agents IA ». Page bâtie sur le gabarit
+ * commun des pages de projet (components/projets/gabarit, règle E5) : en-tête
+ * et fiche, une section, « Comment je l’ai construit », sortie et note de
+ * sources. Données et sources : config/relais.ts, que cette page tient
+ * seule (sa carte de la vitrine comprise).
+ */
+import Base from '../../layouts/Base.astro';
+import CorpsProjet from '../../components/projets/gabarit/CorpsProjet.astro';
+import DecisionsProjet from '../../components/projets/gabarit/DecisionsProjet.astro';
+import EnTeteProjet from '../../components/projets/gabarit/EnTeteProjet.astro';
+import SectionProjet from '../../components/projets/gabarit/SectionProjet.astro';
+import SortieProjet from '../../components/projets/gabarit/SortieProjet.astro';
+import SourcesProjet from '../../components/projets/gabarit/SourcesProjet.astro';
+import { SITE } from '../../config/site';
+import { DECISIONS, EN_TETE, FICHE, LIENS_SORTIE, PREUVES, SECTIONS } from '../../config/relais';
+
+// ≤ 45 caractères avant « — Charles Lindecker » (titre ≤ 65 au total).
+const titre = `Relais, encadrer des agents IA — ${SITE.nom}`;
+// 110 à 165 caractères.
+const description = 'Relais : un seul point d’accès local à Claude Code et à Codex pour tous les outils de ma machine, avec des abonnements isolés, leurs quotas et leurs permissions.';
+---
+
+<Base titre={titre} description={description} chemin="/projets/relais" sommaire={SECTIONS}>
+  <EnTeteProjet projet="relais" titre={EN_TETE.titre} chapeau={EN_TETE.chapeau} liens={EN_TETE.liens} preuves={PREUVES} fiche={FICHE} />
+
+  <CorpsProjet sections={SECTIONS}>
+    <SectionProjet id="apercu" titre="En bref">
+      <Fragment slot="texte">
+        <p>Un tableau de bord montre les agents actifs, la consommation et la capacité de chaque abonnement&nbsp;; chaque conversation se relit en entier, outils compris. <a href="/projets/sillage">Sillage</a> et d’autres outils de la machine lui confient leurs agents par une API locale.</p>
+        <p>Relais n’écoute que la machine elle-même, derrière une clé d’accès.</p>
+      </Fragment>
+    </SectionProjet>
+
+    <DecisionsProjet decisions={DECISIONS} />
+
+    <SortieProjet projet="relais" liens={LIENS_SORTIE}>
+      <p>Les agents au même endroit&nbsp;: leurs comptes, leurs permissions et ce qu’ils ont dit.</p>
+    </SortieProjet>
+
+    <SourcesProjet>
+      <p><b>Le projet.</b> Dépôt privé, présenté sans lien, relu le 14/10/2026 à la révision bdf041f. Les 1&nbsp;011&nbsp;décisions de permission viennent de son registre des correctifs, après trois jours de service (du 21 au 23/09/2026)&nbsp;; les 52&nbsp;cas, de l’audit des permissions du 20/09/2026.</p>
+      <p><b>Données.</b> Aucune conversation réelle n’est montrée sur cette page.</p>
+    </SourcesProjet>
+  </CorpsProjet>
+</Base>

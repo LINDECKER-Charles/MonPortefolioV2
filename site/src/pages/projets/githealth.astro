@@ -1,0 +1,52 @@
+---
+/**
+ * ÉBAUCHE du socle : remplacée par la page du projet.
+ *
+ * GitHealth : la preuve de « Une application de bureau ». Page bâtie sur le gabarit
+ * commun des pages de projet (components/projets/gabarit, règle E5) : en-tête
+ * et fiche, une section, « Comment je l’ai construit », sortie et note de
+ * sources. Données et sources : config/githealth.ts, que cette page tient
+ * seule (sa carte de la vitrine comprise).
+ */
+import Base from '../../layouts/Base.astro';
+import CorpsProjet from '../../components/projets/gabarit/CorpsProjet.astro';
+import DecisionsProjet from '../../components/projets/gabarit/DecisionsProjet.astro';
+import EnTeteProjet from '../../components/projets/gabarit/EnTeteProjet.astro';
+import SectionProjet from '../../components/projets/gabarit/SectionProjet.astro';
+import SortieProjet from '../../components/projets/gabarit/SortieProjet.astro';
+import SourcesProjet from '../../components/projets/gabarit/SourcesProjet.astro';
+import { SITE } from '../../config/site';
+import { DECISIONS, EN_TETE, FICHE, LIENS, LIENS_SORTIE, PREUVES, SECTIONS } from '../../config/githealth';
+import { attributsMesure } from '../../lib/liens';
+
+// ≤ 45 caractères avant « — Charles Lindecker » (titre ≤ 65 au total).
+const titre = `GitHealth, l’état des branches Git — ${SITE.nom}`;
+// 110 à 165 caractères.
+const description = 'GitHealth : une application de bureau open source qui lit un dépôt Git sans jamais l’écrire et dit, branche par branche, ce qu’on peut en faire.';
+// Toute sortie du site, mesurée (lien-sortant, emplacement « preuves »).
+const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(href, { emplacement: 'preuves' }) });
+---
+
+<Base titre={titre} description={description} chemin="/projets/githealth" sommaire={SECTIONS}>
+  <EnTeteProjet projet="githealth" titre={EN_TETE.titre} chapeau={EN_TETE.chapeau} liens={EN_TETE.liens} preuves={PREUVES} fiche={FICHE} />
+
+  <CorpsProjet sections={SECTIONS}>
+    <SectionProjet id="apercu" titre="En bref">
+      <Fragment slot="texte">
+        <p>GitHealth lit un dépôt et classe chaque branche&nbsp;: à garder, terminée, à revoir ou à nettoyer. Chaque verdict dit la règle qui l’a donné, et la commande de suppression reste à copier&nbsp;: GitHealth ne la lance jamais.</p>
+        <p>Tout se passe en local, en lecture seule. Seul l’assistant, facultatif, sort sur le réseau, et seulement après un accord donné pour chaque dépôt.</p>
+      </Fragment>
+    </SectionProjet>
+
+    <DecisionsProjet decisions={DECISIONS} />
+
+    <SortieProjet projet="githealth" liens={LIENS_SORTIE}>
+      <p>GitHealth observe&nbsp;; la décision reste à celui qui lit.</p>
+    </SortieProjet>
+
+    <SourcesProjet>
+      <p><b>Chiffres.</b> Le banc de la version&nbsp;0.2.0, sur un serveur d’intégration Windows hébergé&nbsp;: 1&nbsp;000&nbsp;branches, topologie lue en 231&nbsp;ms au 95<sup>e</sup>&nbsp;centile, pour un budget de 850&nbsp;ms (<a {...sortant(LIENS.rapport)}>rapport de la version&nbsp;0.2.0<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>). Les six commandes Git de l’analyse viennent des <a {...sortant(LIENS.limites)}>limites connues du dépôt<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>, relues le 14/10/2026 à la révision bd2e5c9.</p>
+      <p><b>Le projet.</b> Dépôt public sous licence MIT, version&nbsp;0.2.0 publiée le 14/09/2026&nbsp;; l’interface de l’application est en anglais.</p>
+    </SourcesProjet>
+  </CorpsProjet>
+</Base>

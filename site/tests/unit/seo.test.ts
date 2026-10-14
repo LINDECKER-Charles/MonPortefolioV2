@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { VITRINE } from '../../src/config/projets';
 import { jsonLd, noeudAriane, noeudPersonne, noeudProjet, titreCourt, titreDePage } from '../../src/lib/seo';
 
 /**
@@ -35,6 +36,10 @@ describe('JSON-LD', () => {
   it('ajoute le projet sur sa page, dont Charles est l’auteur', () => {
     expect(noeudProjet('/projets/gup', 'd')).toMatchObject({ '@type': 'SoftwareApplication', name: 'gup', author: { '@id': 'https://charles-lindecker.com/#charles-lindecker' } });
     expect(noeudProjet('/projets/pvz-fusion', 'd')).toMatchObject({ '@type': 'CreativeWork', url: 'https://github.com/Teyliu/PVZF-Translation' });
+    // Un projet privé, sans lien public : le nœud prend l’adresse de sa page.
+    for (const projet of VITRINE.filter((p) => p.prive)) {
+      expect(noeudProjet(projet.href, 'd'), projet.id).toMatchObject({ name: projet.nom, url: `https://charles-lindecker.com${projet.href}` });
+    }
     expect(noeudProjet('/contact', 'd')).toBeUndefined();
   });
 

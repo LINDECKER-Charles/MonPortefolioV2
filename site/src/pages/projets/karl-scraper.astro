@@ -1,0 +1,49 @@
+---
+/**
+ * ÉBAUCHE du socle : remplacée par la page du projet.
+ *
+ * Karl Scraper : la preuve de « Automatiser des tâches ». Page bâtie sur le gabarit
+ * commun des pages de projet (components/projets/gabarit, règle E5) : en-tête
+ * et fiche, une section, « Comment je l’ai construit », sortie et note de
+ * sources. Données et sources : config/karl-scraper.ts, que cette page tient
+ * seule (sa carte de la vitrine comprise).
+ */
+import Base from '../../layouts/Base.astro';
+import CorpsProjet from '../../components/projets/gabarit/CorpsProjet.astro';
+import DecisionsProjet from '../../components/projets/gabarit/DecisionsProjet.astro';
+import EnTeteProjet from '../../components/projets/gabarit/EnTeteProjet.astro';
+import SectionProjet from '../../components/projets/gabarit/SectionProjet.astro';
+import SortieProjet from '../../components/projets/gabarit/SortieProjet.astro';
+import SourcesProjet from '../../components/projets/gabarit/SourcesProjet.astro';
+import { SITE } from '../../config/site';
+import { DECISIONS, EN_TETE, FICHE, LIENS_SORTIE, PREUVES, SECTIONS } from '../../config/karl-scraper';
+
+// ≤ 45 caractères avant « — Charles Lindecker » (titre ≤ 65 au total).
+const titre = `Karl Scraper, automatiser ses tâches — ${SITE.nom}`;
+// 110 à 165 caractères.
+const description = 'Karl Scraper : un outil personnel qui garde une copie locale de mes tâches, la donne à lire à des agents IA et enchaîne les gestes d’un ticket.';
+---
+
+<Base titre={titre} description={description} chemin="/projets/karl-scraper" sommaire={SECTIONS}>
+  <EnTeteProjet projet="karl-scraper" titre={EN_TETE.titre} chapeau={EN_TETE.chapeau} liens={EN_TETE.liens} preuves={PREUVES} fiche={FICHE} />
+
+  <CorpsProjet sections={SECTIONS}>
+    <SectionProjet id="apercu" titre="En bref">
+      <Fragment slot="texte">
+        <p>Karl Scraper lit l’outil de gestion de tâches en ligne dans un navigateur dont il garde la session, et en tient une copie locale, scellée à chaque passage. Des agents IA lisent cette copie par un serveur MCP&nbsp;; je retiens ou j’écarte leur lecture&nbsp;; puis un agent travaille le ticket dans un worktree et ouvre la pull request.</p>
+        <p>Les enchaînements font à ma place les gestes que j’aurais faits d’un clic. Aucune règle n’est livrée&nbsp;: c’est moi qui les écris et qui les active.</p>
+      </Fragment>
+    </SectionProjet>
+
+    <DecisionsProjet decisions={DECISIONS} />
+
+    <SortieProjet projet="karl-scraper" liens={LIENS_SORTIE}>
+      <p>Automatiser sans perdre la main&nbsp;: une règle a les mêmes gardes qu’un clic, et cède au geste qui la contredit.</p>
+    </SortieProjet>
+
+    <SourcesProjet>
+      <p><b>Le projet.</b> Dépôt privé, présenté sans lien, relu le 14/10/2026 à la révision 6615950 du 09/10/2026. Les chiffres viennent de son code&nbsp;: le catalogue des enchaînements, les outils du serveur MCP et la garde des appels réseau.</p>
+      <p><b>Données.</b> Aucune donnée réelle n’est montrée sur cette page.</p>
+    </SourcesProjet>
+  </CorpsProjet>
+</Base>
