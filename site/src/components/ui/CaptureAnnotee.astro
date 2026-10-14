@@ -170,6 +170,15 @@ const dessous = Boolean(loupe?.dessous);
     translate: calc(-1 * var(--lx)) calc(-1 * var(--ly));
   }
 
+  /* Le recadrage de CadreCapture (`ratio`, toujours posé ici) vise toute image
+     de la vue : sans cette règle plus précise, l’image de la loupe prendrait la
+     hauteur de la loupe en `object-fit: cover` et montrerait le haut de
+     l’écran au lieu du détail visé. */
+  :global(.capture--recadree .capture__vue) .loupe > picture > img {
+    height: auto;
+    object-fit: fill;
+  }
+
   /* Fondu de bord : aucun glyphe n’est tranché net par le bord de la loupe. */
   .loupe::after {
     content: '';
