@@ -48,6 +48,31 @@ export function renderDocument(doc, { preview = false, reserved = [] } = {}) {
     return id;
   };
   let tables = 0; let codes = 0;
+  /**
+   * Un lien coupé en plusieurs textes (« le **projet** Omnicard ») reste un seul
+   * lien. Un lien sortant suit la grammaire du site (lib/liens.ts : ↗, rel
+   * external, ni nouvel onglet ni classe d’auteur) et la mesure des liens
+   * sortants, à l’emplacement `article` (docs/mesure-audience.md).
+   */
+  const lienDe = (node) => (Array.isArray(node?.marks) ? node.marks : []).find((mark) => mark?.type === 'link');
+  const ancre = (href, attrs, interieur) => {
+    const titre = attrs?.title ? ` title="${texteAuteur(attrs.title)}"` : '';
+    if (!/^https?:\/\//.test(href)) return `<a href="${escapeHtml(href)}"${titre}>${interieur}</a>`;
+    return `<a href="${escapeHtml(href)}"${titre} rel="external" data-umami-event="lien-sortant" data-umami-event-domaine="${escapeHtml(new URL(href).hostname)}" data-umami-event-emplacement="article">${interieur}<span class="fleche" aria-hidden="true">\u00a0↗</span></a>`;
+  };
+  const enLigne = (contenu, depth) => {
+    let html = '';
+    for (let i = 0; i < contenu.length;) {
+      const lien = lienDe(contenu[i]);
+      const href = lien ? safeUrl(lien.attrs?.href) : '';
+      let j = i + 1;
+      if (href) while (j < contenu.length && safeUrl(lienDe(contenu[j])?.attrs?.href) === href) j += 1;
+      const morceau = contenu.slice(i, j).map((child) => render(child, depth + 1)).join('');
+      html += href ? ancre(href, lien.attrs, morceau) : morceau;
+      i = j;
+    }
+    return html;
+  };
   // `portee` : portée des en-têtes de la ligne en cours (col en thead, row ailleurs).
   const render = (node, depth = 0, portee = 'row') => {
     if (!node || typeof node !== 'object' || depth > 30 || ++count > 20_000) return '';
@@ -60,15 +85,15 @@ export function renderDocument(doc, { preview = false, reserved = [] } = {}) {
       case 'text': {
         const marks = Array.isArray(node.marks) ? node.marks : [];
         let text = marks.some((mark) => mark?.type === 'code') ? escapeHtml(node.text) : texteAuteur(node.text);
+        // Le lien se pose autour de ses textes (enLigne) : ici, les seules marques de forme.
         for (const mark of marks) {
-          const tag = { bold: 'strong', italic: 'em', strike: 's', underline: 'u', code: 'code' }[mark.type];
+          const tag = { bold: 'strong', italic: 'em', strike: 's', underline: 'u', code: 'code' }[mark?.type];
           if (tag) text = `<${tag}>${text}</${tag}>`;
-          if (mark.type === 'link') { const href = safeUrl(mark.attrs?.href); if (href) text = `<a href="${escapeHtml(href)}"${mark.attrs?.title ? ` title="${escapeHtml(mark.attrs.title)}"` : ''} rel="noopener noreferrer">${text}</a>`; }
         }
         return text;
       }
-      case 'paragraph': return `<p${align}>${children()}</p>`;
-      case 'heading': { const level = [2, 3, 4].includes(attrs.level) ? attrs.level : 2; return `<h${level}${align} id="${identifiant(node)}">${children()}</h${level}>`; }
+      case 'paragraph': return `<p${align}>${enLigne(contenu, depth)}</p>`;
+      case 'heading': { const level = [2, 3, 4].includes(attrs.level) ? attrs.level : 2; return `<h${level}${align} id="${identifiant(node)}">${enLigne(contenu, depth)}</h${level}>`; }
       case 'bulletList': return `<ul>${children()}</ul>`;
       case 'orderedList': return `<ol${Number.isSafeInteger(attrs.start) && attrs.start > 0 ? ` start="${attrs.start}"` : ''}${['1', 'a', 'A', 'i', 'I'].includes(attrs.type) ? ` type="${attrs.type}"` : ''}>${children()}</ol>`;
       case 'listItem': return `<li>${children()}</li>`;

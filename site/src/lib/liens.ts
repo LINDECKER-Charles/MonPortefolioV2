@@ -22,7 +22,8 @@ export type Emplacement =
   | 'contact'
   | 'pied-de-page'
   | 'page-404'
-  | 'mentions';
+  | 'mentions'
+  | 'article';
 
 export type SorteDeLien = 'interne' | 'ancre' | 'externe' | 'courriel';
 

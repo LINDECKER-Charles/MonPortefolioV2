@@ -164,3 +164,15 @@ test('og:image:alt décrit l’image de partage réellement choisie', () => {
   assert.equal(alt(renderArticle(GABARIT, article({ title: 'Le titre', cover_image: '/api/blog/media/1', cover_alt: 'La couverture', og_image: '/api/blog/media/2' }))), 'Le titre');
   assert.equal(alt(renderArticle(GABARIT, article({ title: 'Le titre' }))), 'Le titre');
 });
+
+test('un lien sortant suit la grammaire du site (↗, rel external) et la mesure, une seule fois par lien', () => {
+  const lien = { type: 'link', attrs: { href: 'https://www.example.org/page', title: "L'exemple", target: '_blank', rel: 'noopener noreferrer nofollow', class: 'x' } };
+  const html = renderDocument({ type: 'doc', content: [{ type: 'paragraph', content: [
+    texte('Voir '), texte('le site', [{ type: 'bold' }, lien]), texte(' officiel', [lien]), texte(', puis '),
+    texte('les projets', [{ type: 'link', attrs: { href: '/projets', target: '_blank' } }]), texte('.'),
+  ] }] });
+  assert.equal(compter(html, /<a /g), 2, 'un lien coupé en plusieurs textes reste un seul lien');
+  assert.match(html, /<a href="https:\/\/www\.example\.org\/page" title="L’exemple" rel="external" data-umami-event="lien-sortant" data-umami-event-domaine="www\.example\.org" data-umami-event-emplacement="article"><strong>le site<\/strong> officiel<span class="fleche" aria-hidden="true"> ↗<\/span><\/a>/);
+  assert.match(html, /<a href="\/projets">les projets<\/a>/, 'un lien interne reste une navigation ordinaire');
+  assert.doesNotMatch(html, /target=|class="x"|nofollow/);
+});
