@@ -45,7 +45,7 @@ async function fichiers() {
   const sortie = new Map<string, { type: string; octets: Buffer }>();
   for (const [id, image] of Object.entries(IMAGES)) {
     const source = sharp(dessin(image.width, image.height, image.transparent));
-    const encoder = (s: sharp.Sharp) => (image.type === 'image/jpeg' ? s.jpeg({ quality: 80 }) : s.png());
+    const encoder = (s: ReturnType<typeof sharp>) => (image.type === 'image/jpeg' ? s.jpeg({ quality: 80 }) : s.png());
     sortie.set(id, { type: image.type, octets: await encoder(source.clone()).toBuffer() });
     for (const largeur of image.variants) {
       sortie.set(`${id}/${largeur}`, { type: image.type, octets: await encoder(source.clone().resize({ width: largeur })).toBuffer() });
@@ -80,7 +80,9 @@ test.beforeAll(async () => {
     res.end('{}');
   });
   await new Promise<void>((resolve) => backend.listen(0, '127.0.0.1', resolve));
-  site = creerServeur({ dossier: DIST, env: { HOST: '127.0.0.1', CONTACT_EMAIL: 'e2e-contact@example.test', BACKEND_URL: `http://127.0.0.1:${(backend.address() as AddressInfo).port}` } });
+  // Options passées par variable : le type que TypeScript déduit de server.mjs omet `dossier`.
+  const options = { dossier: DIST, env: { HOST: '127.0.0.1', CONTACT_EMAIL: 'e2e-contact@example.test', BACKEND_URL: `http://127.0.0.1:${(backend.address() as AddressInfo).port}` } };
+  site = creerServeur(options);
   await new Promise<void>((resolve) => site.listen(0, '127.0.0.1', resolve));
   base = `http://127.0.0.1:${(site.address() as AddressInfo).port}`;
 });
