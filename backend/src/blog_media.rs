@@ -16,11 +16,14 @@
 //! Le coût est borné : 40 millions de pixels au plus, lus dans l’en-tête avant
 //! tout décodage, 160 Mio d’allocation pour le décodeur, et une seule image
 //! traitée à la fois, quelle que soit la voie (backoffice, MCP, démarrage).
-//! Le pic d’un import tient donc dans l’image décodée, sa copie tournée (une
-//! orientation de 90° ne se fait pas en place) et la variante en cours : 314 Mio
-//! mesurés sous Linux pour un PNG RGBA de 40 Mpx tourné, 54 Mio pour une photo
-//! JPEG de 12 Mpx. La limite mémoire du service (`compose.deploy.yaml`) en
-//! dépend : baisser `MAX_PIXELS` et `MAX_ALLOC` avant de la baisser.
+//!
+//! Les variantes se calculent sur l’image décodée telle quelle, sans la
+//! tourner : chacune est réduite dans l’orientation affichée, puis tournée une
+//! fois réduite. Le pic d’un import tient donc dans l’image décodée et la
+//! variante en cours, sans copie tournée de l’image entière. Seule une image
+//! affichée sur 1 600 px de large au plus est tournée entière, pour être
+//! réencodée à sa taille. La limite mémoire du service (`compose.deploy.yaml`)
+//! en dépend : baisser `MAX_PIXELS` et `MAX_ALLOC` avant de la baisser.
 use std::{
     io::Cursor,
     sync::{Mutex, PoisonError},
@@ -88,7 +91,7 @@ pub fn process(bytes: &[u8], content_type: &str) -> Result<Processed, Rejected> 
     }
     let original =
         strip_metadata(bytes, format, orientation(bytes, format)).ok_or(Rejected::Unreadable)?;
-    let Some(image) = decode(bytes, format) else {
+    let Some((image, orientation)) = decode(bytes, format) else {
         return Ok(Processed {
             width,
             height,
@@ -97,11 +100,11 @@ pub fn process(bytes: &[u8], content_type: &str) -> Result<Processed, Rejected> 
             still: None,
         });
     };
-    let (width, height) = image.dimensions();
+    let (width, height) = displayed(&image, orientation);
     let (variants, still) = if animated(bytes, format) {
-        (Vec::new(), still(&image))
+        (Vec::new(), still(image, orientation))
     } else {
-        (variants(&image, original.len()), None)
+        (variants(image, orientation, original.len()), None)
     };
     Ok(Processed {
         width,
@@ -132,13 +135,33 @@ fn orientation(bytes: &[u8], format: ImageFormat) -> Orientation {
         .unwrap_or(Orientation::NoTransforms)
 }
 
-/// L’image entière, tournée selon son orientation EXIF, dans les limites de taille.
-fn decode(bytes: &[u8], format: ImageFormat) -> Option<DynamicImage> {
+/// L’image entière telle que stockée, sans la tourner, et son orientation EXIF.
+fn decode(bytes: &[u8], format: ImageFormat) -> Option<(DynamicImage, Orientation)> {
     let mut decoder = reader(bytes, format, Some(MAX_ALLOC)).into_decoder().ok()?;
     let orientation = decoder.orientation().ok()?;
-    let mut image = DynamicImage::from_decoder(decoder).ok()?;
-    image.apply_orientation(orientation);
-    Some(image)
+    let image = DynamicImage::from_decoder(decoder).ok()?;
+    Some((image, orientation))
+}
+
+/// Une orientation de 90° ou 270° échange largeur et hauteur.
+fn swaps_axes(orientation: Orientation) -> bool {
+    matches!(
+        orientation,
+        Orientation::Rotate90
+            | Orientation::Rotate270
+            | Orientation::Rotate90FlipH
+            | Orientation::Rotate270FlipH
+    )
+}
+
+/// Les dimensions affichées, orientation comprise.
+fn displayed(image: &DynamicImage, orientation: Orientation) -> (u32, u32) {
+    let (width, height) = image.dimensions();
+    if swaps_axes(orientation) {
+        (height, width)
+    } else {
+        (width, height)
+    }
 }
 
 /// GIF, APNG (chunk `acTL` avant les données) ou WebP animé (drapeau du chunk `VP8X`).
@@ -169,66 +192,84 @@ fn animated(bytes: &[u8], format: ImageFormat) -> bool {
 
 /// Réduction par moyenne des surfaces (`thumbnail_exact`) : directe, sans
 /// l’image intermédiaire en flottants de `resize_exact` (16 octets par pixel,
-/// sur toute la largeur de l’original). Mesuré sous Linux, le pic d’une photo
-/// JPEG de 12 Mpx passe ainsi de 120 à 54 Mio, celui d’un PNG de 16 Mpx de 215
-/// à 154 Mio. On ne fait que réduire : ce filtre suffit.
-fn resized(image: &DynamicImage, target: u32) -> DynamicImage {
-    let (width, height) = image.dimensions();
-    let target_height =
-        ((u64::from(height) * u64::from(target) + u64::from(width) / 2) / u64::from(width)).max(1);
-    image.thumbnail_exact(target, target_height as u32)
+/// sur toute la largeur de l’original). Mesuré sous Linux au processus seul,
+/// le pic d’une photo JPEG de 12 Mpx passait ainsi de 120 à 54 Mio, celui d’un
+/// PNG de 16 Mpx de 215 à 154 Mio. On ne fait que réduire : ce filtre suffit.
+///
+/// `target` est une largeur affichée : l’image stockée est réduite aux
+/// dimensions qui, une fois tournées, la donnent, puis la réduction seule est
+/// tournée.
+fn resized(image: &DynamicImage, orientation: Orientation, target: u32) -> DynamicImage {
+    let (width, height) = displayed(image, orientation);
+    let target_height = ((u64::from(height) * u64::from(target) + u64::from(width) / 2)
+        / u64::from(width))
+    .max(1) as u32;
+    let mut reduced = if swaps_axes(orientation) {
+        image.thumbnail_exact(target_height, target)
+    } else {
+        image.thumbnail_exact(target, target_height)
+    };
+    reduced.apply_orientation(orientation);
+    reduced
 }
 
-fn variants(image: &DynamicImage, original: usize) -> Vec<Variant> {
-    let width = image.width();
-    let transparent = has_transparency(image);
+/// À sa taille, l’image n’est tournée qu’en dernier, quand plus rien ne la lit :
+/// sa copie tournée remplace l’image stockée au lieu de s’y ajouter longtemps.
+fn full_size(mut image: DynamicImage, orientation: Orientation) -> DynamicImage {
+    image.apply_orientation(orientation);
+    image
+}
+
+fn variants(image: DynamicImage, orientation: Orientation, original: usize) -> Vec<Variant> {
+    let (width, _) = displayed(&image, orientation);
+    let transparent = has_transparency(&image);
     let largest = VARIANT_WIDTHS[VARIANT_WIDTHS.len() - 1];
-    let mut targets: Vec<u32> = VARIANT_WIDTHS
+    let useful = |target: u32, bytes: &[u8]| {
+        // À sa taille, la variante doit gagner au moins 10 % ; réduite, peser moins.
+        if target == width {
+            bytes.len() * 10 < original * 9
+        } else {
+            bytes.len() < original
+        }
+    };
+    let mut variants: Vec<Variant> = VARIANT_WIDTHS
         .into_iter()
         .filter(|&target| target < width)
-        .collect();
-    // Réencodée à sa taille, une image lourde s’allège sans changer de largeur.
-    if width <= largest {
-        targets.push(width);
-    }
-    targets
-        .into_iter()
         .filter_map(|target| {
-            let reduced;
-            let source = if target == width {
-                image
-            } else {
-                reduced = resized(image, target);
-                &reduced
-            };
-            let (content_type, bytes) = encode(source, transparent)?;
-            // À sa taille, la variante doit gagner au moins 10 % ; réduite, peser moins.
-            let useful = if target == width {
-                bytes.len() * 10 < original * 9
-            } else {
-                bytes.len() < original
-            };
-            useful.then_some(Variant {
+            let (content_type, bytes) = encode(&resized(&image, orientation, target), transparent)?;
+            useful(target, &bytes).then_some(Variant {
                 width: target,
                 content_type,
                 bytes,
             })
         })
-        .collect()
+        .collect();
+    // Réencodée à sa taille, une image lourde s’allège sans changer de largeur.
+    if width <= largest
+        && let Some((content_type, bytes)) = encode(&full_size(image, orientation), transparent)
+        && useful(width, &bytes)
+    {
+        variants.push(Variant {
+            width,
+            content_type,
+            bytes,
+        });
+    }
+    variants
 }
 
 /// La première image d’une image animée, à 1 600 px au plus, sans condition de poids.
-fn still(image: &DynamicImage) -> Option<Variant> {
+fn still(image: DynamicImage, orientation: Orientation) -> Option<Variant> {
     let largest = VARIANT_WIDTHS[VARIANT_WIDTHS.len() - 1];
-    let width = image.width().min(largest);
-    let reduced;
-    let source = if width == image.width() {
-        image
+    let (displayed_width, _) = displayed(&image, orientation);
+    let width = displayed_width.min(largest);
+    let transparent = has_transparency(&image);
+    let source = if width == displayed_width {
+        full_size(image, orientation)
     } else {
-        reduced = resized(image, width);
-        &reduced
+        resized(&image, orientation, width)
     };
-    let (content_type, bytes) = encode(source, has_transparency(image))?;
+    let (content_type, bytes) = encode(&source, transparent)?;
     Some(Variant {
         width,
         content_type,
@@ -247,10 +288,18 @@ fn has_transparency(image: &DynamicImage) -> bool {
 }
 
 /// JPEG pour une image opaque ; WebP sans perte quand la transparence compte.
+/// Une image déjà en RGB ou RGBA 8 bits s’encode sans copie.
 fn encode(image: &DynamicImage, transparent: bool) -> Option<(&'static str, Vec<u8>)> {
     let mut bytes = Vec::new();
     if transparent {
-        let rgba = image.to_rgba8();
+        let converted;
+        let rgba = match image.as_rgba8() {
+            Some(buffer) => buffer,
+            None => {
+                converted = image.to_rgba8();
+                &converted
+            }
+        };
         WebPEncoder::new_lossless(&mut bytes)
             .write_image(
                 rgba.as_raw(),
@@ -261,7 +310,14 @@ fn encode(image: &DynamicImage, transparent: bool) -> Option<(&'static str, Vec<
             .ok()?;
         Some(("image/webp", bytes))
     } else {
-        let rgb = image.to_rgb8();
+        let converted;
+        let rgb = match image.as_rgb8() {
+            Some(buffer) => buffer,
+            None => {
+                converted = image.to_rgb8();
+                &converted
+            }
+        };
         JpegEncoder::new_with_quality(&mut bytes, JPEG_QUALITY)
             .write_image(
                 rgb.as_raw(),
@@ -698,5 +754,92 @@ mod tests {
             writer.write_chunk(png::chunk::IDAT, &[]).unwrap();
         }
         assert_eq!(process(&bytes, "image/png").err(), Some(Rejected::TooLarge));
+    }
+
+    /// Une moitié gauche rouge et une moitié droite bleue, pour suivre la rotation.
+    fn halves(width: u32, height: u32) -> DynamicImage {
+        DynamicImage::ImageRgb8(image::RgbImage::from_fn(width, height, |x, _| {
+            if x < width / 2 {
+                image::Rgb([220, 20, 20])
+            } else {
+                image::Rgb([20, 20, 220])
+            }
+        }))
+    }
+
+    fn with_orientation(jpeg: &[u8], orientation: Orientation) -> Vec<u8> {
+        let tiff = exif_orientation(orientation);
+        let app1 = [
+            &[0xff, 0xe1][..],
+            &((tiff.len() + 8) as u16).to_be_bytes(),
+            b"Exif\0\0",
+            &tiff,
+        ]
+        .concat();
+        [&jpeg[..2], &app1, &jpeg[2..]].concat()
+    }
+
+    fn red(pixel: image::Rgb<u8>) -> bool {
+        pixel.0[0] > 150 && pixel.0[2] < 100
+    }
+
+    #[test]
+    fn variants_of_an_oriented_jpeg_are_turned_and_sized_as_displayed() {
+        let mut plain = Cursor::new(Vec::new());
+        halves(3000, 2000)
+            .write_to(&mut plain, ImageFormat::Jpeg)
+            .unwrap();
+        let plain = plain.into_inner();
+        // EXIF 6 tourne de 90° vers la droite : la gauche passe en haut ;
+        // EXIF 8 tourne de 90° vers la gauche : la gauche passe en bas.
+        for (orientation, left_on_top) in [
+            (Orientation::Rotate90, true),
+            (Orientation::Rotate270, false),
+        ] {
+            let processed = process(&with_orientation(&plain, orientation), "image/jpeg").unwrap();
+            assert_eq!((processed.width, processed.height), (2000, 3000));
+            let widths: Vec<u32> = processed.variants.iter().map(|v| v.width).collect();
+            assert_eq!(widths, vec![480, 960, 1600]);
+            for variant in &processed.variants {
+                assert_eq!(variant.content_type, "image/jpeg");
+                let decoded = image::load_from_memory(&variant.bytes).unwrap().to_rgb8();
+                assert_eq!(
+                    (decoded.width(), decoded.height()),
+                    (variant.width, variant.width * 3 / 2)
+                );
+                let middle = decoded.width() / 2;
+                let top = *decoded.get_pixel(middle, decoded.height() / 10);
+                let bottom = *decoded.get_pixel(middle, decoded.height() * 9 / 10);
+                assert_eq!(red(top), left_on_top, "{orientation:?} {}", variant.width);
+                assert_eq!(
+                    red(bottom),
+                    !left_on_top,
+                    "{orientation:?} {}",
+                    variant.width
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn a_full_size_variant_of_an_oriented_image_is_turned_too() {
+        let mut plain = Cursor::new(Vec::new());
+        halves(1200, 800)
+            .write_to(&mut plain, ImageFormat::Jpeg)
+            .unwrap();
+        let bytes = with_orientation(&plain.into_inner(), Orientation::Rotate90);
+        let (image, orientation) = decode(&bytes, ImageFormat::Jpeg).unwrap();
+        assert_eq!(orientation, Orientation::Rotate90);
+        assert_eq!(displayed(&image, orientation), (800, 1200));
+        // Sans seuil de poids, la variante à sa taille est toujours gardée.
+        let variants = variants(image, orientation, usize::MAX / 10);
+        let widths: Vec<u32> = variants.iter().map(|v| v.width).collect();
+        assert_eq!(widths, vec![480, 800]);
+        let full = image::load_from_memory(&variants[1].bytes)
+            .unwrap()
+            .to_rgb8();
+        assert_eq!((full.width(), full.height()), (800, 1200));
+        assert!(red(*full.get_pixel(400, 100)));
+        assert!(!red(*full.get_pixel(400, 1100)));
     }
 }
