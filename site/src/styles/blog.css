@@ -574,8 +574,15 @@
   text-align: right;
 }
 
+/* Justifié, le texte se coupe (la page est en français) pour éviter les
+   rivières ; un titre ne se justifie pas et reste au début. */
 .blog-prose .blog-align-justify {
   text-align: justify;
+  hyphens: auto;
+}
+
+.blog-prose :is(h2, h3, h4).blog-align-justify {
+  text-align: start;
 }
 
 /* À l’impression, rien ne défile : le code passe à la ligne et les tableaux

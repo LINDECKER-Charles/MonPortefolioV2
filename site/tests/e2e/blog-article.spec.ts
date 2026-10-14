@@ -173,9 +173,10 @@ test('les cellules et les paragraphes gardent l’alignement choisi par l’aute
   const alignements = await page.locator('.blog-table').nth(1).evaluate((region) => [...region.querySelectorAll('[class*="blog-align-"]')].map((cellule) => [cellule.className, getComputedStyle(cellule).textAlign]));
   expect(alignements.length).toBe(6);
   for (const [classe, valeur] of alignements) expect(valeur, classe).toBe(classe.replace('blog-align-', ''));
-  const blocs = await page.locator('.blog-prose > :is(p, h2, h3, h4)[class*="blog-align-"]').evaluateAll((liste) => liste.map((el) => [el.className, getComputedStyle(el).textAlign]));
+  const blocs = await page.locator('.blog-prose > :is(p, h2, h3, h4)[class*="blog-align-"]').evaluateAll((liste) => liste.map((el) => [el.className, getComputedStyle(el).textAlign, el.tagName]));
   expect(blocs.length).toBeGreaterThanOrEqual(5);
-  for (const [classe, valeur] of blocs) expect(valeur, classe).toBe(classe.replace('blog-align-', ''));
+  // Un titre ne se justifie pas : le justifié y revient au début de ligne.
+  for (const [classe, valeur, balise] of blocs) expect(valeur, classe).toBe(/^H/.test(balise) && classe === 'blog-align-justify' ? 'start' : classe.replace('blog-align-', ''));
 });
 
 test('chaque ancre de l’article mène à son titre', async ({ page }) => {
