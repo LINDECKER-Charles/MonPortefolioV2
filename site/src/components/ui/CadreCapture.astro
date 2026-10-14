@@ -6,6 +6,8 @@
  *   navigateur  barre à trois points et adresse (`adresse`)
  *   telephone   cadre arrondi qui dessine l’appareil, capture entière (9:19,5)
  *   terminal    capture déjà fenêtrée, sans cadre ajouté
+ *   panneau     dialogue ou panneau capturé seul : filet, coins et ombre du
+ *               cadre, sans barre de navigateur
  *
  * Le jour, un cadre sombre au trait ; la nuit et dans les actes sombres, le
  * cadre s’efface derrière un halo de lanterne : les interfaces sombres s’y
@@ -62,7 +64,7 @@ export interface Region {
 }
 
 interface Props {
-  type?: 'navigateur' | 'telephone' | 'terminal';
+  type?: 'navigateur' | 'telephone' | 'terminal' | 'panneau';
   /** Adresse affichée dans la barre du navigateur (sans https://). */
   adresse?: string;
   src?: ImageMetadata;
