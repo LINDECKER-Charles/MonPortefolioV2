@@ -56,6 +56,7 @@ before(async () => {
     if (req.url === '/api/blog/posts/comprendre-les-decisions') { res.end(JSON.stringify(post)); return; }
     if (req.url === '/api/backoffice/blog/posts/1/preview') { if (!req.headers.cookie?.includes('session=test')) { res.writeHead(401); res.end('{}'); return; } res.end(JSON.stringify({ ...post, title: 'Brouillon privé' })); return; }
     if (req.method === 'GET' && /^\/api\/(backoffice\/)?blog\/media\/1(\/480)?$/.test(req.url)) { res.setHeader('Content-Type', req.url.endsWith('/480') ? 'image/jpeg' : 'image/png'); res.end(Buffer.from(req.url.endsWith('/480') ? [255, 216, 255, 217] : [137, 80, 78, 71, 13, 10, 26, 10])); return; }
+    if (req.method === 'DELETE' && req.url === '/api/backoffice/blog/media/1') { res.end('{"deleted":true,"id":1}'); return; }
     if (req.url === '/api/backoffice/blog/posts/1') { res.end(JSON.stringify(post)); return; }
     res.writeHead(404); res.end('{}');
   });
@@ -102,7 +103,7 @@ test('le relais transmet médias binaires et révision de suppression, avec limi
   assert.equal((await fetch(`${base}/api/blog/not-a-route`)).status, 404);
 });
 
-test('le relais sert les variantes et revalide les images publiques par ETag', async () => {
+test('le relais sert les variantes, revalide les images publiques par ETag et transmet la suppression', async () => {
   const variante = await fetch(`${base}/api/blog/media/1/480`);
   assert.equal(variante.status, 200);
   assert.equal(variante.headers.get('content-type'), 'image/jpeg');
@@ -119,6 +120,9 @@ test('le relais sert les variantes et revalide les images publiques par ETag', a
   assert.equal(privee.status, 200);
   assert.equal(privee.headers.get('cache-control'), 'no-store');
   assert.equal(privee.headers.get('etag'), null);
+  const suppression = await fetch(`${base}/api/backoffice/blog/media/1`, { method: 'DELETE', headers: { 'Content-Type': 'application/json', 'X-Backoffice-Request': '1' }, body: '{}' });
+  assert.equal(suppression.status, 200);
+  assert.deepEqual(await suppression.json(), { deleted: true, id: 1 });
   assert.equal((await fetch(`${base}/api/blog/media/1`, { method: 'DELETE' })).status, 405, 'la route publique reste en lecture');
   assert.equal((await fetch(`${base}/api/blog/media/1/480/2`)).status, 404);
 });

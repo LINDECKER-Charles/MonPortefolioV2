@@ -178,6 +178,7 @@ export async function relayerApi(req, res, chemin, config, communs, recherche = 
   if (/^\/api\/backoffice\/blog\/posts\/[1-9]\d*\/(?:publish|schedule|unpublish)$/.test(chemin)) methodes = ['POST'];
   if (/^\/api\/backoffice\/blog\/posts\/[1-9]\d*\/(?:preview|seo)$/.test(chemin)) methodes = ['GET', 'HEAD'];
   if (/^\/api\/blog\/posts\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(chemin) || media) methodes = ['GET', 'HEAD'];
+  if (/^\/api\/backoffice\/blog\/media\/[1-9]\d*$/.test(chemin)) methodes = ['GET', 'HEAD', 'DELETE'];
   const mutation = !['GET', 'HEAD'].includes(req.method) && (req.method !== 'DELETE' || blog);
   const erreur = (statut, code, message, supplement = {}) => repondreJson(req, res, statut, { code, message }, communs, supplement);
   if (!methodes) {
@@ -256,7 +257,7 @@ export async function relayerApi(req, res, chemin, config, communs, recherche = 
       res.end();
       return;
     }
-    if (media && reponse.ok) {
+    if (media && reponse.ok && req.method !== 'DELETE') {
       const type = reponse.headers.get('content-type') ?? '';
       if (!/^image\/(png|jpeg|gif|webp)$/.test(type)) throw new Error('format image invalide');
       const parts = []; let size = 0;
