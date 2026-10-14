@@ -72,10 +72,11 @@ Sans identifiants, l’administration est désactivée. Configuration et récup�
 [`backend/README.md`](backend/README.md).
 
 Brancher Claude Code sur le MCP distant `https://<domaine>/mcp` se fait en un geste : rubrique
-« Accès MCP », « Créer l’accès », puis coller la commande `claude mcp add …` affichée une seule
-fois avec son secret. Trois préréglages disent ce que l’assistant pourra faire : lecture du blog,
+« Accès MCP », « Créer l’accès », puis coller la commande affichée une seule fois avec son
+secret (`claude mcp remove` du serveur du même nom, puis `claude mcp add …` : un nouvel accès
+remplace l’ancien). Trois préréglages disent ce que l’assistant pourra faire : lecture du blog,
 **rédaction** (par défaut) ou publication ; lire les demandes de contact est une case à part,
-décochée par défaut. « Vérifier l’accès » montre les outils réellement ouverts. Chaque accès se
+décochée par défaut. « Vérifier l’accès » montre les outils réellement ouverts, par le chemin de Claude Code. Chaque accès se
 révoque individuellement, avec effet immédiat. Les accès existants gardent leurs permissions, et
 la lecture des contacts ne marque aucune demande comme lue. Parcours complet, autres clients
 (Codex), contrat de l’API et sauvegarde de la base : [`backend/README.md`](backend/README.md).
