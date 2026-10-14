@@ -108,6 +108,10 @@ async function section(page: Page, target: Section, id?: number) {
   await onlySection(page, target);
 }
 async function accessible(page: Page) {
+  // La barre de l’article colle en haut pendant l’édition : selon le défilement,
+  // axe la compte comme un obstacle posé sur les commandes qu’elle survole
+  // (target-size, color-contrast). L’analyse part donc du haut de la page.
+  await page.evaluate(() => window.scrollTo(0, 0));
   const result = await new AxeBuilder({ page }).withTags(REGLES_AXE).analyze();
   expect(result.violations.map((entry) => ({ rule: entry.id, nodes: entry.nodes.map((node) => node.target) }))).toEqual([]);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
@@ -392,3 +396,41 @@ test('un accès direct privé demande la connexion et reprend l’écran demand�
   await onlySection(page, 'seo');
   await expect(page.locator('#blog-title')).toHaveValue('Préparer une publication avec soin');
 });
+
+for (const theme of ['jour', 'nuit'] as const) {
+  test.describe(`atelier du blog, thème ${theme}`, () => {
+    test.use({ colorScheme: theme === 'nuit' ? 'dark' : 'light' });
+
+    test(`axe : la liste, chaque page de l’article et la bibliothèque (${theme})`, async ({ page }) => {
+      const scheduled = { ...post(2), title: 'Une publication programmée', slug: 'programmee', status: 'scheduled' as const, scheduled_at: 1_900_000_000, has_unpublished_changes: true, cover_image: '/api/blog/media/1', cover_alt: 'Une couverture' };
+      await mockApi(page, [post(), scheduled]);
+      await page.goto('/backoffice/blog');
+      await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+      await expect(page.locator('#blog-post-list').getByRole('link')).toHaveCount(2);
+      await accessible(page);
+      await page.locator('#blog-filter').selectOption('published');
+      await expect(page.locator('#blog-empty')).toBeVisible();
+      await accessible(page);
+      for (const target of SECTIONS) {
+        await page.goto(`/backoffice/blog/${target}?id=2`);
+        await onlySection(page, target);
+        await expect(page.locator('#blog-title')).toHaveValue('Une publication programmée');
+        await accessible(page);
+      }
+      // Une seule zone éclairée par écran : la feuille, l’aperçu de recherche, la version à publier.
+      for (const [target, foyer] of [['redaction', '.blog-feuille'], ['seo', '.blog-serp'], ['publication', '.blog-publication-review']] as const) {
+        await page.locator(`[data-blog-section-link="${target}"]`).click();
+        await onlySection(page, target);
+        await expect(page.locator('#bo-panel-blog .foyer:visible')).toHaveCount(1);
+        await expect(page.locator(foyer)).toHaveClass(/foyer/);
+      }
+      await page.locator('[data-blog-section-link="redaction"]').click();
+      await page.locator('.blog-toolbar-more summary').first().click();
+      await expect(page.getByRole('button', { name: 'Citation', exact: true })).toBeVisible();
+      await accessible(page);
+      await page.getByRole('button', { name: 'Image', exact: true }).click();
+      await expect(page.getByRole('dialog', { name: 'Insérer une image' })).toBeVisible();
+      await accessible(page);
+    });
+  });
+}
