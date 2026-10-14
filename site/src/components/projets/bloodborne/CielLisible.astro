@@ -1,0 +1,88 @@
+---
+/**
+ * Le pas suivant, lisible : avant et après l’étape du 8 septembre 2026 du
+ * journal public (version 12), côte à côte, comme dans le journal. Deux
+ * captures authentiques du journal, copiées sans retouche
+ * (assets/projets/README.md). Chaque capture s’agrandit dans la visionneuse.
+ */
+import CadreCapture from '../../ui/CadreCapture.astro';
+import avant from '../../../assets/projets/bloodborne/ciel-lisible-avant.webp';
+import apres from '../../../assets/projets/bloodborne/ciel-lisible-apres.webp';
+
+interface Props {
+  class?: string;
+}
+
+const { class: classe } = Astro.props;
+const etats = [
+  {
+    etiquette: 'Avant',
+    src: avant,
+    alt: 'Avant : la constellation La Nuit de la chasse, où étoiles allumées et étoiles en attente se ressemblent ; rien ne montre le pas suivant.',
+    legende: 'Allumées ou en attente, les étoiles se ressemblent.',
+  },
+  {
+    etiquette: 'Après',
+    src: apres,
+    alt: 'Après : la même constellation, les étoiles allumées en clair et les prochaines étapes en braise, jusqu’au boss Ludwig.',
+    legende: 'Les prochaines étapes passent en braise.',
+  },
+];
+---
+
+<figure class:list={['blr-avant-apres', classe]}>
+  <div class="blr-avant-apres__paire">
+    {
+      etats.map((etat) => (
+        <div class="blr-avant-apres__etat">
+          <p class="blr-avant-apres__etiquette">{etat.etiquette}</p>
+          <CadreCapture type="telephone" src={etat.src} alt={etat.alt} legende={etat.legende} widths={[390, 780]} sizes="(max-width: 860px) 44vw, 230px" agrandir />
+        </div>
+      ))
+    }
+  </div>
+  <figcaption class="blr-avant-apres__legende">Journal public du projet, étape du 08/09/2026 (version 12).</figcaption>
+</figure>
+
+<style>
+  .blr-avant-apres {
+    margin: 0;
+  }
+
+  .blr-avant-apres__paire {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 230px));
+    justify-content: start;
+    gap: var(--s5);
+  }
+
+  .blr-avant-apres__etat {
+    min-width: 0;
+  }
+
+  .blr-avant-apres__etiquette {
+    margin-bottom: var(--s2);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: var(--ls-petit);
+    color: var(--eteint);
+  }
+
+  .blr-avant-apres__etat:last-child .blr-avant-apres__etiquette {
+    color: var(--encre);
+  }
+
+  .blr-avant-apres__legende {
+    margin-top: var(--s4);
+    font-size: var(--t-xs);
+    line-height: 1.5;
+    color: var(--eteint);
+  }
+
+  @media (max-width: 860px) {
+    .blr-avant-apres__paire {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--s3);
+    }
+  }
+</style>

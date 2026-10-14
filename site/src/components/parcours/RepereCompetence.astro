@@ -1,4 +1,14 @@
 ---
+/**
+ * Pictos de repère de la page Compétences, au trait sur une grille de 48 :
+ * le schéma « Interface ↔ API ↔ Données » (interface, backend, donnees), les
+ * trois capacités de l’intégration IA (agents, mcp, voix ; CMP-09, lues dans
+ * src/assets/visuels/parcours/CMP-09.svg), et les
+ * repères historiques des compétences humaines, remplacés dans la page par
+ * les illustrations CMP-02 à CMP-08. Décoratifs, à la couleur du texte.
+ */
+import sprite from '../../assets/visuels/parcours/CMP-09.svg?raw';
+
 interface Props {
   categorie:
     | 'interface'
@@ -10,10 +20,19 @@ interface Props {
     | 'ecoute'
     | 'communication'
     | 'creativite'
-    | 'adaptation';
+    | 'adaptation'
+    | 'agents'
+    | 'mcp'
+    | 'voix';
 }
 
 const { categorie } = Astro.props;
+
+/** Les trois capacités de l’intégration IA viennent du fichier livré du registre (CMP-09). */
+const ia = ['agents', 'mcp', 'voix'].includes(categorie)
+  ? sprite.match(new RegExp(`<symbol\\b[^>]*\\bdata-categorie="${categorie}"[^>]*>([\\s\\S]*?)</symbol>`))?.[1]
+  : undefined;
+if (['agents', 'mcp', 'voix'].includes(categorie) && !ia) throw new Error(`Picto « ${categorie} » absent de src/assets/visuels/parcours/CMP-09.svg.`);
 ---
 
 <svg
@@ -123,6 +142,9 @@ const { categorie } = Astro.props;
       <path d="M24 19c-3-2-6-3-10-2v14c4-1 7 0 10 2 3-2 6-3 10-2V17c-4-1-7 0-10 2Zm0 0v14" />
     </>
   )}
+
+
+  {ia && <Fragment set:html={ia} />}
 </svg>
 
 <style>
@@ -132,18 +154,19 @@ const { categorie } = Astro.props;
     height: 100%;
   }
 
-  .plein {
+  /* :global : les dessins de CMP-09 sont injectés sans l’attribut de portée. */
+  .repere-competence :global(.plein) {
     fill: currentColor;
     stroke: none;
   }
 
-  .teinte {
+  .repere-competence :global(.teinte) {
     fill: currentColor;
     fill-opacity: 0.08;
     stroke: none;
   }
 
   @media (forced-colors: active) {
-    .teinte { fill-opacity: 0.15; }
+    .repere-competence :global(.teinte) { fill-opacity: 0.15; }
   }
 </style>

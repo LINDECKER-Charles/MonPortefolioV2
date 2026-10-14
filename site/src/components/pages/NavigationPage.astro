@@ -1,0 +1,138 @@
+---
+/**
+ * La navigation de page unique (règle E4) : « Dans cette page », en colonne
+ * collante à gauche du contenu au-delà de 1 100 px, la section lue marquée
+ * (aria-current="location", point de lanterne). En dessous, la colonne
+ * s’efface : la page passe les mêmes entrées au sommaire de l’en-tête
+ * (`<Base sommaire={…}>`), complet sans JavaScript.
+ *
+ *   <Base … sommaire={SECTIONS}>
+ *     <NavigationPage entrees={SECTIONS}>
+ *       <section id="besoin">…</section>
+ *       …
+ *     </NavigationPage>
+ *   </Base>
+ *
+ * Un seul `nav[aria-label="Dans cette page"]` par page. Réservée aux pages
+ * de plus de trois écrans.
+ */
+import type { EntreeSommaire } from '../../config/navigation';
+
+interface Props {
+  entrees: readonly EntreeSommaire[];
+  class?: string;
+}
+
+const { entrees, class: classe } = Astro.props;
+---
+
+<div class:list={['avec-nav-page', classe]}>
+  <nav class="nav-page" aria-label="Dans cette page" data-sommaire>
+    <p class="nav-page__titre" aria-hidden="true">Dans cette page</p>
+    <ol>
+      {entrees.map(({ id, titre }) => <li><a href={`#${id}`}>{titre}</a></li>)}
+    </ol>
+  </nav>
+  <div class="avec-nav-page__contenu">
+    <slot />
+  </div>
+</div>
+
+<script>
+  import { brancherSommaire } from '../../scripts/sommaire';
+  brancherSommaire();
+</script>
+
+<style>
+  .avec-nav-page {
+    display: grid;
+    grid-template-columns: 170px minmax(0, 1fr);
+    gap: var(--s6);
+    align-items: start;
+  }
+
+  .nav-page {
+    position: sticky;
+    top: calc(var(--entete) + var(--s6));
+    padding-top: var(--s2);
+  }
+
+  .nav-page__titre {
+    margin-bottom: var(--s2);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    color: var(--eteint);
+  }
+
+  ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-left: 1px solid var(--filet);
+  }
+
+  a {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding-left: var(--s4);
+    font-size: var(--t-xs);
+    line-height: 1.3;
+    color: var(--eteint);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--encre);
+  }
+
+  a::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    margin-top: -3.5px;
+    border-radius: 50%;
+    background: var(--fond);
+    border: 1px solid var(--trait);
+    transition: background-color var(--d-ui) var(--courbe), box-shadow var(--d-ui) var(--courbe);
+  }
+
+  a[aria-current='location'] {
+    color: var(--encre);
+    font-weight: 600;
+  }
+
+  a[aria-current='location']::before {
+    background: var(--laiton);
+    border-color: var(--laiton);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--laiton) 22%, transparent);
+  }
+
+  :global(:root[data-theme='nuit']) a[aria-current='location']::before {
+    box-shadow: 0 0 12px 3px var(--lanterne-eclat);
+  }
+
+  @media (max-width: 1100px) {
+    .avec-nav-page {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .nav-page {
+      display: none;
+    }
+  }
+
+  @media print {
+    .avec-nav-page {
+      display: block;
+    }
+
+    .nav-page {
+      display: none;
+    }
+  }
+</style>

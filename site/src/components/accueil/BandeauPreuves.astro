@@ -1,0 +1,196 @@
+---
+/**
+ * Le bandeau des trois preuves, au pli de l’accueil : un verbe, un fait
+ * surligné, un lien vers l’endroit qui le raconte (cahier, § 5.1). Dans
+ * l’ordre de la méthode, Maîtriser, Réinventer, Emmener ; « Emmener » est la
+ * preuve la plus rare pour un lead (décision du 13/10/2026) : c’est la case
+ * la plus forte, la seule éclairée de l’écran, son chiffre en grand.
+ *
+ * Pictos au trait des trois verbes : GLO-04 (ui/PictoVerbe.astro, registre
+ * ACC-02). Un seul surlignage par preuve, sur ce qui reste vrai quand on
+ * clique : Omnicard est hors ligne, c’est son moteur de règles qui prouve la
+ * réinvention, pas le « jeu en ligne ». La preuve d’Emmener porte la formule
+ * de la page PvZ Fusion, « personnes formées au pôle francophone ».
+ */
+import PictoVerbe from '../ui/PictoVerbe.astro';
+import Surligneur from '../ui/Surligneur.astro';
+---
+
+<nav class="preuves" aria-label="Trois preuves" data-pli="preuve">
+  <ul>
+    <li class="preuve">
+      <a class="preuve__lien" href="#voie">
+        <PictoVerbe verbe="maitriser" class="preuve__picto" />
+        <span class="preuve__verbe">Maîtriser</span>
+        <span class="preuve__texte">Le programme de développeur web bouclé en <Surligneur source="docs/questions.md, C5">un mois</Surligneur><span class="fleche" aria-hidden="true">&nbsp;↓</span></span>
+      </a>
+    </li>
+    <li class="preuve">
+      <a class="preuve__lien" href="/projets/omnicard">
+        <PictoVerbe verbe="reinventer" class="preuve__picto" />
+        <span class="preuve__verbe">Réinventer</span>
+        <span class="preuve__texte">Mon jeu de cartes papier devenu un jeu en ligne, arbitré par mon <Surligneur source="docs/matiere-premiere.md, Omnicard, complément du 13/10/2026">moteur de règles</Surligneur><span class="fleche" aria-hidden="true">&nbsp;→</span></span>
+      </a>
+    </li>
+    <li class="preuve preuve--forte foyer">
+      <a class="preuve__lien" href="/projets/pvz-fusion">
+        <PictoVerbe verbe="emmener" class="preuve__picto" />
+        <span class="preuve__verbe">Emmener</span>
+        <span class="preuve__texte"><span class="preuve__chiffre"><Surligneur source="docs/matiere-premiere.md, PvZ Fusion, confirmé le 13/10/2026">20</Surligneur></span> personnes formées au pôle francophone de PvZ&nbsp;Fusion<span class="fleche" aria-hidden="true">&nbsp;→</span></span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<style>
+  .preuves ul {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.32fr);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--trait);
+  }
+
+  .preuve + .preuve {
+    border-left: 1px solid var(--filet);
+  }
+
+  .preuve__lien {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    column-gap: var(--s3);
+    row-gap: var(--s1);
+    height: 100%;
+    padding: var(--s4) var(--s5) var(--s4) var(--s1);
+    color: var(--eteint);
+    text-decoration: none;
+  }
+
+  .preuve + .preuve .preuve__lien {
+    padding-left: var(--s5);
+  }
+
+  /* La grille de 48 garde une marge de 4 autour du dessin de 40. */
+  .preuve__lien :global(.preuve__picto) {
+    grid-row: 1 / span 2;
+    width: 40px;
+    height: 40px;
+    margin-top: 1px;
+  }
+
+  .preuve__verbe {
+    font-family: var(--police-titre);
+    font-style: italic;
+    font-size: var(--t-xl);
+    line-height: 1.05;
+    color: var(--encre);
+  }
+
+  .preuve__texte {
+    font-size: var(--t-s);
+    line-height: 1.45;
+  }
+
+  .preuve__lien:hover .preuve__texte {
+    color: var(--encre);
+  }
+
+  .preuve__lien:hover .preuve__verbe {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.12em;
+  }
+
+  .fleche {
+    color: var(--accent);
+  }
+
+  .preuve__texte :global(mark) {
+    white-space: nowrap;
+  }
+
+  /* Emmener : la preuve la plus rare, la case la plus forte. Un filet laiton,
+     la seule lumière de l’écran, le chiffre en grand. */
+  .preuve--forte {
+    border-top: 3px solid var(--laiton);
+    margin-top: -2px;
+  }
+
+  .preuve--forte::before {
+    inset: -10% -6% -30%;
+  }
+
+  .preuve--forte .preuve__verbe {
+    font-size: var(--t-2xl);
+  }
+
+  .preuve--forte .preuve__texte {
+    font-size: var(--t-m);
+    color: var(--encre);
+  }
+
+  .preuve__chiffre {
+    font-family: var(--police-texte);
+    font-weight: 600;
+    font-size: var(--t-2xl);
+    line-height: 1;
+    letter-spacing: var(--ls-titre);
+    font-variant-numeric: tabular-nums lining-nums;
+    vertical-align: -0.08em;
+  }
+
+  .preuve__chiffre :global(mark) {
+    padding-inline: 0.12em;
+  }
+
+  @media (max-width: 860px) {
+    .preuves ul {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .preuve + .preuve {
+      border-left: 0;
+      border-top: 1px solid var(--filet);
+    }
+
+    .preuve__lien,
+    .preuve + .preuve .preuve__lien {
+      grid-template-columns: 30px minmax(0, 1fr);
+      column-gap: var(--s3);
+      row-gap: 0;
+      padding: var(--s2) 0;
+    }
+
+    .preuve__lien :global(.preuve__picto) {
+      width: 30px;
+      height: 30px;
+      margin-top: 0;
+    }
+
+    .preuve__verbe {
+      font-size: var(--t-l);
+    }
+
+    .preuve__texte {
+      font-size: var(--t-xs);
+    }
+
+    .preuve--forte {
+      margin-top: 0;
+      border-top-width: 2px;
+    }
+
+    .preuve--forte .preuve__verbe {
+      font-size: var(--t-xl);
+    }
+
+    .preuve--forte .preuve__texte {
+      font-size: var(--t-s);
+    }
+
+    .preuve__chiffre {
+      font-size: var(--t-xl);
+    }
+  }
+</style>

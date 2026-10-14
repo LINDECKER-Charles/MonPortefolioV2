@@ -1,0 +1,222 @@
+---
+/**
+ * BLR-F1, figure codée : la planche des 22 constellations réelles, dessinées
+ * depuis le catalogue du projet (config/bloodborne-constellations.ts, généré
+ * par tools/extraire-constellations.mjs). Un point par étoile, un trait par
+ * prérequis, l’étoile d’entrée de chaque arbre dans la lumière de la
+ * lanterne ; le nom et le nombre d’étoiles en texte.
+ *
+ * Une scène : les constellations s’allument l’une après l’autre à leur
+ * arrivée dans l’écran, puis au clic sur la planche
+ * (scripts/figure-animations.ts). Mouvement réduit, impression et sans
+ * JavaScript : la planche entière, d’emblée.
+ */
+import { CONSTELLATIONS, OBJECTIFS_UNIQUES } from '../../../config/bloodborne-constellations';
+
+const MARGE = 8;
+const milliers = (n: number) => n.toLocaleString('fr-FR').replace(/\s/g, ' ');
+---
+
+<figure class="blr-planche acte-veille">
+  <figcaption class="blr-planche__tete">
+    <p class="blr-planche__titre"><span class="chiffres">{CONSTELLATIONS.length}</span> constellations, <span class="chiffres">{milliers(OBJECTIFS_UNIQUES)}</span> objectifs</p>
+    <p class="blr-planche__note">Dessinées depuis le catalogue du projet&nbsp;: un point par étoile, un trait par étape, l’étoile d’entrée en lumière.</p>
+  </figcaption>
+  <div class="blr-planche__ciel" data-figure-animation data-scene="blr-constellations">
+    <ol class="blr-planche__liste">
+      {
+        CONSTELLATIONS.map((constellation, rang) => (
+          <li style={`--rang:${rang}`}>
+            <svg viewBox={`${-MARGE} ${-MARGE} ${constellation.largeur + 2 * MARGE} ${constellation.hauteur + 2 * MARGE}`} aria-hidden="true" focusable="false">
+              <path class="blr-planche__traits" d={constellation.traits} />
+              <path class="blr-planche__points" d={constellation.points} />
+              {constellation.entree && <path class="blr-planche__entree" d={constellation.entree} />}
+            </svg>
+            <p class="blr-planche__nom">{constellation.nom}</p>
+            <p class="blr-planche__nombre"><span class="chiffres">{constellation.etoiles}</span> étoiles</p>
+          </li>
+        ))
+      }
+    </ol>
+    <button class="blr-planche__rejouer" type="button" data-rejouer data-js-seulement aria-label="Rejouer l’allumage des constellations"></button>
+  </div>
+  <p class="blr-planche__pied petit">Une étoile partagée entre plusieurs constellations ne compte qu’une fois dans les {milliers(OBJECTIFS_UNIQUES)}&nbsp;objectifs.</p>
+</figure>
+
+<style>
+  .blr-planche {
+    margin: var(--s7) 0 0;
+    padding: clamp(20px, 3vw, 40px);
+    border-radius: var(--r2);
+  }
+
+  .blr-planche__tete {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s2) var(--s6);
+  }
+
+  /* Un titre de section comme les autres (Instrument Serif) ; les deux
+     chiffres-preuves en Sans 600, chiffres tabulaires. */
+  .blr-planche__titre {
+    font-family: var(--police-titre);
+    font-size: var(--t-2xl);
+    font-weight: 400;
+    line-height: 1.05;
+  }
+
+  .blr-planche__titre .chiffres {
+    font-family: var(--police-texte);
+    font-size: var(--t-xl);
+    font-weight: 600;
+    letter-spacing: var(--ls-0);
+  }
+
+  .blr-planche__note {
+    max-width: 34rem;
+    font-size: var(--t-xs);
+    line-height: 1.5;
+    color: var(--eteint);
+  }
+
+  .blr-planche__ciel {
+    position: relative;
+    margin-top: var(--s5);
+  }
+
+  .blr-planche__liste {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: var(--s5) var(--s4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .blr-planche__liste li {
+    min-width: 0;
+    padding-top: var(--s2);
+    border-top: 1px solid var(--filet);
+  }
+
+  .blr-planche__liste svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    overflow: visible;
+  }
+
+  .blr-planche__traits {
+    fill: none;
+    stroke: var(--trait);
+    stroke-width: 1px;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .blr-planche__points,
+  .blr-planche__entree {
+    fill: none;
+    stroke: var(--encre);
+    stroke-width: 3px;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .blr-planche__entree {
+    stroke: var(--lanterne);
+    stroke-width: 7px;
+    filter: drop-shadow(0 0 4px var(--lanterne-eclat));
+  }
+
+  .blr-planche__nom {
+    margin-top: var(--s2);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  .blr-planche__nombre {
+    font-size: var(--t-xs);
+    line-height: 1.4;
+    color: var(--eteint);
+  }
+
+  .blr-planche__pied {
+    margin-top: var(--s5);
+  }
+
+  /* La planche entière est la commande : elle se rejoue au clic. */
+  .blr-planche__rejouer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: var(--r2);
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .blr-planche__rejouer:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 6px;
+  }
+
+  .animation-en-cours .blr-planche__liste svg {
+    animation: blr-poindre var(--d-scene) var(--courbe) both;
+    animation-delay: calc(var(--rang) * var(--d-scene) * 0.175);
+  }
+
+  .animation-en-cours .blr-planche__entree {
+    animation: blr-luire calc(var(--d-scene) * 2) var(--courbe) both;
+    animation-delay: calc(var(--rang) * var(--d-scene) * 0.175 + var(--d-scene));
+  }
+
+  @keyframes blr-poindre {
+    from {
+      opacity: 0;
+      transform: scale(0.94);
+    }
+  }
+
+  @keyframes blr-luire {
+    from {
+      stroke-width: 0;
+      opacity: 0;
+    }
+  }
+
+  /* Sous 860 px, des vignettes plus basses : la planche entière tient en
+     moins d’écrans, quatre colonnes tant que les noms y tiennent, trois en
+     dessous de 520 px. */
+  @media (max-width: 860px) {
+    .blr-planche__liste {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--s3) var(--s3);
+    }
+
+    .blr-planche__liste svg {
+      aspect-ratio: 2 / 1;
+    }
+
+    .blr-planche__nom {
+      margin-top: var(--s1);
+    }
+  }
+
+  @media (max-width: 520px) {
+    .blr-planche__liste {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animation-en-cours .blr-planche__liste svg,
+    .animation-en-cours .blr-planche__entree {
+      animation: none;
+    }
+  }
+</style>

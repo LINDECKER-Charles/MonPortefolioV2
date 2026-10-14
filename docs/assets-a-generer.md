@@ -1,5 +1,7 @@
 # Assets à générer — liste 1, le socle (direction D « Mode d'emploi »)
 
+> **Remplacé le 13/10/2026 par [`docs/visuels-a-generer.md`](visuels-a-generer.md) ; ne pas utiliser pour produire.** Ce brief de la direction précédente (D « Mode d’emploi ») reste pour mémoire : ses règles (masque alpha monochrome, prompts propres) sont contraires à la commande actuelle.
+
 > Brief de production des visuels de la direction retenue le 2026-10-07. Référence visuelle : la
 > [maquette D](../design/propositions/d-mode-d-emploi.html), qui marque chaque visuel provisoire
 > d'une étiquette « À générer : <ID> ». Les prompts d'image sont en anglais.

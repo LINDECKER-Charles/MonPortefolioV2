@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" width="320" height="240" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <title>Un petit système en plan, éclairé par une lanterne</title>
+  <g class="sys-doux" stroke-width="1.1">
+    <path d="M22 203h276M32 198v10m64-10v10m64-10v10m64-10v10m64-10v10"/>
+    <path d="M20 166h52" stroke-width="1"/>
+  </g>
+  <g class="sys-liaisons" stroke-width="1.3">
+    <path d="M66 142h40v-32h37M176 110h33v32h30M169 80V50h62M267 68v24h-91"/>
+  </g>
+  <path class="sys-retour" d="M239 156h-41v-31h-22M143 125h-25v32H66" stroke-width="1.1" stroke-dasharray="3 5"/>
+  <g class="sys-source" transform="translate(26 79.5) scale(.42)" stroke-width="3.6">
+    <circle cx="40" cy="58" r="7"/>
+    <path d="M40 65v11"/>
+    <path class="sys-aplat" d="M19 96 40 76l21 20z" fill="#ffffff"/>
+    <path class="sys-aplat" d="M15 96h50v7H15zM20 103h40v85H20zM15 188h50v8H15zM22 196l5 10h26l5-10z" fill="#ffffff"/>
+    <path d="M31 103v85m18-85v85" stroke-width="2.4"/>
+    <path d="M33 188v-8h14v8M40 180v-8"/>
+  </g>
+  <g class="sys-service">
+    <path class="sys-aplat" d="M143 80h33v88h-33z" fill="#ffffff"/>
+    <path d="M146 83h27v82h-27z" stroke-width="1"/>
+    <path d="M146 102h10m7 0h10M146 124h4m7 0h16M146 146h16m7 0h4"/>
+    <path class="sys-hachure" d="m147 115 8-8m-8 15 15-15m-6 15 15-15m-6 15 7-7m-25 37 8-8m-8 15 15-15m-6 15 15-15m-6 15 7-7" stroke-width="0.8"/>
+  </g>
+  <g class="sys-stockage">
+    <path class="sys-aplat" d="M239 128h49v42h-49z" fill="#ffffff"/>
+    <path d="M242 131h43v36h-43z" stroke-width="1"/>
+    <path d="M256 131v14m0 8v14m15-36v22m0 8v6"/>
+    <path class="sys-hachure" d="m257 141 10-10m-10 18 13-13m-13 21 13-13m-13 21 13-13m-10 18 10-10m-21-16 8-8m-8 16 8-8m-8 16 8-8m-8 13 8-8" stroke-width="0.8"/>
+  </g>
+  <g class="sys-livraison">
+    <path class="sys-aplat" d="M231 28h56v40h-56z" fill="#ffffff"/>
+    <path d="M231 28h56v40h-56V56m0-12V28" stroke-width="1"/>
+    <path d="M234 44h-3m3 12h-3m3-12v12"/>
+    <path class="sys-doux" d="M234 44a12 12 0 0 1 12 12" stroke-width="1" stroke-dasharray="2 3"/>
+    <path class="sys-hachure" d="m262 66 22-22m-15 22 15-15m-8 15 8-8M262 58l22-22m-22 13 14-14" stroke-width="0.8"/>
+  </g>
+  <g class="sys-lumiere" fill="#f0b24a" stroke="none">
+    <path class="sys-flamme" d="M42.8 133.3c2.94 4.2 5.46 7.56 5.46 11.34a5.46 5.46 0 0 1-10.92 0c0-3.78 2.52-7.14 5.46-11.34z"/>
+    <circle class="sys-signal" cx="160" cy="135" r="3"/>
+    <circle class="sys-temoin" cx="280" cy="40" r="1.6"/>
+    <circle class="sys-paquet sys-paquet--requete" r="3.5" opacity="0"/>
+    <circle class="sys-paquet sys-paquet--donnees" r="3.5" opacity="0"/>
+    <circle class="sys-paquet sys-paquet--reponse" r="3.5" opacity="0"/>
+    <circle class="sys-paquet sys-paquet--livraison" r="3.5" opacity="0"/>
+  </g>
+</svg>

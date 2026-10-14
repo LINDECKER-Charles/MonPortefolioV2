@@ -1,0 +1,56 @@
+---
+/**
+ * Statut honnête d’un projet (règle C9) : une forme et un mot, jamais la
+ * couleur seule. « En ligne », « En cours, bénévole », « Open source, sur
+ * npm », « Hors ligne, en refonte »…
+ *
+ *   <Statut>En ligne</Statut>                      disque plein : actif
+ *   <Statut etat="ouvert">Open source</Statut>     losange : ouvert, publié
+ *   <Statut etat="eteint">Hors ligne, en refonte</Statut>  cercle vide, texte éteint
+ */
+interface Props {
+  etat?: 'actif' | 'ouvert' | 'eteint';
+  class?: string;
+}
+
+const { etat = 'actif', class: classe } = Astro.props;
+---
+
+<span class:list={['statut', `statut--${etat}`, classe]}><slot /></span>
+
+<style>
+  .statut {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s2);
+    font-size: var(--t-xs);
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--encre);
+  }
+
+  .statut::before {
+    content: '';
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--encre);
+  }
+
+  .statut--ouvert::before {
+    width: 7px;
+    height: 7px;
+    border-radius: 1px;
+    rotate: 45deg;
+  }
+
+  .statut--eteint {
+    color: var(--eteint);
+  }
+
+  .statut--eteint::before {
+    background: transparent;
+    border: 1.5px solid var(--eteint);
+  }
+</style>

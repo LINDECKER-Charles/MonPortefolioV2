@@ -1,0 +1,216 @@
+---
+/**
+ * Capture annotée : la preuve dans l’écran réel. Un cadre au ratio commun
+ * (16:10 par défaut), une cible numérotée sur ce qui prouve,
+ * une loupe éclairée par la lanterne qui agrandit le détail (le texte y
+ * redevient lisible à 390 px), une légende au même numéro.
+ *
+ *   <CaptureAnnotee src={capture} type="navigateur" adresse="league-of-data-base.com/fr"
+ *     alt="Ahri au patch 3.6.14, en français : 380 points de vie de base."
+ *     cible={{ x: 31, y: 42 }}
+ *     loupe={{ x: 28, y: 38, zoom: 2.4, coin: 'bas-droite' }}
+ *     legende="Le patch 3.6.14, en français : les valeurs d’origine." />
+ *
+ * Coordonnées en pourcentages :
+ *   - `cible` : dans le cadre visible (la vue, après recadrage) ;
+ *   - `loupe.x/y` : le point de l’image entière à centrer dans la loupe ;
+ *   - `loupe.largeur` : la largeur de la loupe en % du cadre (50 par défaut,
+ *     + 6 sur mobile) ;
+ *   - `loupe.zoom` : la largeur de l’image dans la loupe, en largeurs de loupe.
+ *     Le grossissement réel, par rapport à l’image entière à la largeur du
+ *     cadre, vaut donc zoom × largeur / 100 (zoom 4, largeur 50 : × 2).
+ * `loupe.dessous` : sous 560 px, la loupe sort de l’écran et se pose dessous,
+ * en pleine largeur, où son texte redevient lisible (la place est réservée).
+ * La loupe est décorative (le détail est dit par l’alt et la légende). Le
+ * recadrage de CadreCapture (ratio) ne touche jamais l’image de la loupe.
+ * Accepte aussi les props de CadreCapture (agrandir, position, widths, sizes…).
+ */
+import type { ImageMetadata } from 'astro';
+import { getImage } from 'astro:assets';
+import CadreCapture from './CadreCapture.astro';
+import { typo } from '../../lib/typo';
+
+interface Loupe {
+  x: number;
+  y: number;
+  zoom: number;
+  largeur?: number;
+  /** Ratio de la loupe (« 4 / 3 » par défaut). */
+  ratio?: string;
+  coin?: 'bas-droite' | 'bas-gauche' | 'haut-droite' | 'haut-gauche';
+  /** Sous 560 px, sous la capture en pleine largeur. */
+  dessous?: boolean;
+}
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  legende: string;
+  type?: 'navigateur' | 'telephone' | 'terminal';
+  adresse?: string;
+  ratio?: string;
+  position?: string;
+  /** La cible numérotée « 1 », reprise par la loupe et la légende. */
+  cible?: { x: number; y: number };
+  loupe?: Loupe;
+  agrandir?: boolean;
+  widths?: number[];
+  sizes?: string;
+  loading?: 'lazy' | 'eager';
+  /** Requête média sous laquelle ni la capture ni sa loupe ne téléchargent rien (CadreCapture). */
+  neutre?: string;
+  class?: string;
+}
+
+const { src, alt, legende, type = 'navigateur', adresse, ratio = '16 / 10', position, cible, loupe, agrandir = false, widths, sizes, loading, neutre, class: classe } = Astro.props;
+const detail = loupe ? await getImage({ src, format: 'webp', width: Math.min(src.width, 2000) }) : undefined;
+const styleLoupe = loupe
+  ? [`--lx:${loupe.x}%`, `--ly:${loupe.y}%`, `--lz:${loupe.zoom}`, `--lw:${loupe.largeur ?? 50}%`, `--lr:${loupe.ratio ?? '4 / 3'}`].join(';')
+  : '';
+/** Hauteur de la loupe en % de sa largeur (« 3 / 1 » → 33,33 %) : la place réservée dessous. */
+const hauteurLoupe = (ratioLoupe = '4 / 3') => {
+  const [largeur, hauteur] = ratioLoupe.split('/').map(Number);
+  return `${((hauteur / largeur) * 100).toFixed(2)}%`;
+};
+const dessous = Boolean(loupe?.dessous);
+---
+
+<CadreCapture
+  class:list={['capture-annotee', { 'capture--loupe-dessous': dessous }, classe]}
+  style={dessous ? `--loupe-h:${hauteurLoupe(loupe?.ratio)}` : undefined}
+  type={type}
+  adresse={adresse}
+  src={src}
+  alt={alt}
+  ratio={ratio}
+  position={position}
+  agrandir={agrandir}
+  widths={widths}
+  sizes={sizes}
+  loading={loading}
+  neutre={neutre}
+>
+  {cible && <span class="cible" style={`--cx:${cible.x}%;--cy:${cible.y}%`} aria-hidden="true"><span class="cible__num">1</span></span>}
+  {
+    loupe && detail && (
+      <span class:list={['loupe', `loupe--${loupe.coin ?? 'bas-droite'}`, { 'loupe--dessous': dessous }]} style={styleLoupe} aria-hidden="true">
+        <picture>
+          {neutre && <source media={neutre} srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />}
+          <img src={detail.src} alt="" loading="lazy" decoding="async" />
+        </picture>
+        {cible && <span class="cible__num loupe__num">1</span>}
+      </span>
+    )
+  }
+  <Fragment slot="legende">
+    {cible && <span class="cible__num legende__num" aria-hidden="true">1</span>}
+    <span class="capture-annotee__texte">{typo(legende)}</span>
+  </Fragment>
+</CadreCapture>
+
+<style>
+  .cible {
+    position: absolute;
+    left: var(--cx);
+    top: var(--cy);
+    translate: -50% -50%;
+    width: 34px;
+    height: 34px;
+    border: 2px solid var(--lanterne);
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px var(--voile-cible), 0 0 18px 2px var(--lanterne-eclat);
+    pointer-events: none;
+  }
+
+  .cible__num {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--lanterne);
+    color: var(--suie);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cible > .cible__num {
+    position: absolute;
+    left: -14px;
+    top: -14px;
+  }
+
+  .loupe {
+    position: absolute;
+    width: var(--lw);
+    aspect-ratio: var(--lr);
+    overflow: hidden;
+    border: 1.5px solid var(--lanterne);
+    border-radius: var(--r2);
+    background: var(--cadre);
+    box-shadow: 0 0 0 4px var(--voile-cible), 0 0 44px -2px var(--lanterne-eclat);
+    pointer-events: none;
+  }
+
+  /* La source neutre (sans JavaScript, sous `neutre`) : <picture> ne fait pas de boîte. */
+  .loupe > picture {
+    display: contents;
+  }
+
+  .loupe > picture > img {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: calc(var(--lz) * 100%);
+    max-width: none;
+    height: auto;
+    translate: calc(-1 * var(--lx)) calc(-1 * var(--ly));
+  }
+
+  /* Fondu de bord : aucun glyphe n’est tranché net par le bord de la loupe. */
+  .loupe::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 12px 5px var(--cadre);
+  }
+
+  .loupe__num {
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    z-index: 1;
+  }
+
+  .loupe--bas-droite { right: 4%; bottom: 5%; }
+  .loupe--bas-gauche { left: 4%; bottom: 5%; }
+  .loupe--haut-droite { right: 3%; top: 6%; }
+  .loupe--haut-gauche { left: 3%; top: 6%; }
+
+  .legende__num {
+    margin-top: -1px;
+  }
+
+  .capture-annotee__texte {
+    color: var(--encre);
+  }
+
+  @media (max-width: 860px) {
+    .loupe {
+      width: calc(var(--lw) + 6%);
+    }
+  }
+
+  /* La loupe sort de l’écran qu’elle annote et se pose dessous, en pleine
+     largeur (CadreCapture réserve sa hauteur sous la vue). */
+  @media (max-width: 560px) {
+    .loupe--dessous {
+      inset: calc(100% + var(--s3)) auto auto 0;
+      width: 100%;
+    }
+  }
+</style>

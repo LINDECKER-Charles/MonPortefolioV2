@@ -1,0 +1,63 @@
+---
+/**
+ * La coque de l’accueil : la couverture, puis le récit dans la navigation de
+ * page (« Dans cette page », colonne collante au-delà de 1 100 px, section
+ * lue marquée), puis « Pour aller plus loin ».
+ *
+ * Les chapitres sont rendus d’abord, en texte, pour compter leurs mots : la
+ * durée de lecture annoncée sur la couverture suit le texte réel, sans
+ * chiffre à tenir à jour à la main. Les emplacements de visuels encore vides
+ * (leurs consignes) ne sont pas comptés.
+ *
+ * Scripts : la mesure de lecture des chapitres (scripts/lecture.ts) et les
+ * scènes qui se jouent à leur arrivée puis se rejouent au clic
+ * (scripts/figure-animations.ts).
+ */
+import Couverture from './Couverture.astro';
+import PourAllerPlusLoin from './PourAllerPlusLoin.astro';
+import NavigationPage from '../pages/NavigationPage.astro';
+import type { EntreeSommaire } from '../../config/navigation';
+import { minutesDeLecture } from '../../lib/lecture';
+
+interface Props {
+  /** Les entrées de « Dans cette page » (bureau). */
+  entrees: readonly EntreeSommaire[];
+}
+
+const { entrees } = Astro.props;
+const recit = await Astro.slots.render('default');
+const minutes = minutesDeLecture(recit.replace(/<figure\b[^>]*\bdata-manquant\b[^>]*>[\s\S]*?<\/figure>/g, ' '));
+---
+
+<Couverture minutes={minutes} />
+<div class="conteneur recit">
+  <NavigationPage entrees={entrees}>
+    <Fragment set:html={recit} />
+  </NavigationPage>
+</div>
+<PourAllerPlusLoin />
+
+<script>
+  import { brancherLecture } from '../../scripts/lecture';
+  import { brancherAnimationsFigures } from '../../scripts/figure-animations';
+  brancherLecture();
+  brancherAnimationsFigures();
+</script>
+
+<style>
+  .recit {
+    padding-top: var(--s7);
+  }
+
+  @media (max-width: 860px) {
+    .recit {
+      padding-top: var(--s5);
+    }
+  }
+
+  @media print {
+    .recit {
+      padding-top: 0;
+    }
+  }
+</style>

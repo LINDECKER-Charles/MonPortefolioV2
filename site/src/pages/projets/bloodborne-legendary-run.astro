@@ -1,167 +1,412 @@
 ---
-import { Picture } from 'astro:assets';
+/**
+ * Bloodborne Legendary Run : la preuve « un produit de bout en bout », sur
+ * le gabarit commun des pages de projet (components/projets/gabarit, règle
+ * E5) : en-tête et fiche, corps libre (ranger 1 289 objectifs, savoir où
+ * reprendre, allumer une étoile, le guide, entre amis, la boutique,
+ * l’essayer), « Comment je l’ai construit », sortie et note de sources.
+ * Données : config/bloodborne.ts ; planche des constellations :
+ * config/bloodborne-constellations.ts.
+ *
+ * Le dépôt du projet est privé : la page en parle (seule exception de
+ * confidentialité) mais n’y renvoie jamais.
+ */
+import { getImage, Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
-import FilAriane from '../../components/pages/FilAriane.astro';
-import ContinuerLecture from '../../components/pages/ContinuerLecture.astro';
-import RituelsBloodborne from '../../components/projets/RituelsBloodborne.astro';
-import FabricationBloodborne from '../../components/projets/FabricationBloodborne.astro';
-import BoutiqueBloodborne from '../../components/projets/BoutiqueBloodborne.astro';
-import AccesBloodborne from '../../components/projets/AccesBloodborne.astro';
-import { SITE } from '../../config/site';
-import parcours from '../../assets/projets/bloodborne/parcours-desktop.webp';
+import CorpsProjet from '../../components/projets/gabarit/CorpsProjet.astro';
+import DecisionsProjet from '../../components/projets/gabarit/DecisionsProjet.astro';
+import EnTeteProjet from '../../components/projets/gabarit/EnTeteProjet.astro';
+import SectionProjet from '../../components/projets/gabarit/SectionProjet.astro';
+import SortieProjet from '../../components/projets/gabarit/SortieProjet.astro';
+import SourcesProjet from '../../components/projets/gabarit/SourcesProjet.astro';
+import Acces from '../../components/projets/bloodborne/Acces.astro';
+import Boutique from '../../components/projets/bloodborne/Boutique.astro';
+import CielLisible from '../../components/projets/bloodborne/CielLisible.astro';
+import Constellations from '../../components/projets/bloodborne/Constellations.astro';
+import Fabrication from '../../components/projets/bloodborne/Fabrication.astro';
+import Rituels from '../../components/projets/bloodborne/Rituels.astro';
+import VisuelEnTete from '../../components/projets/bloodborne/VisuelEnTete.astro';
+import CadreCapture from '../../components/ui/CadreCapture.astro';
+import Picto from '../../components/ui/Picto.astro';
+import Visionneuse from '../../components/ui/Visionneuse.astro';
+import Visuel from '../../components/ui/Visuel.astro';
 import atlas from '../../assets/projets/bloodborne/atlas.webp';
 import fiche from '../../assets/projets/bloodborne/fiche-objectif.webp';
-import personnages from '../../assets/projets/bloodborne/personnages.webp';
 import guide from '../../assets/projets/bloodborne/guide.webp';
-import yharnam from '../../assets/projets/bloodborne/yharnam.webp';
+import personnages from '../../assets/projets/bloodborne/personnages.webp';
 import amis from '../../assets/projets/bloodborne/social-amis.webp';
 import comparaison from '../../assets/projets/bloodborne/social-comparaison.webp';
-import objectifCompare from '../../assets/projets/bloodborne/social-objectif.webp';
-import boutiqueFonds from '../../assets/projets/bloodborne/boutique-fonds.webp';
-import boutiqueBannieres from '../../assets/projets/bloodborne/boutique-bannieres.webp';
-import boutiquePortraits from '../../assets/projets/bloodborne/boutique-portraits.webp';
-import ajoutAmi from '../../assets/projets/bloodborne/social-ajout.webp';
-import '../../styles/profondeur.css';
-import '../../styles/bloodborne.css';
+import objectif from '../../assets/projets/bloodborne/social-objectif.webp';
+import ajout from '../../assets/projets/bloodborne/social-ajout.webp';
+import { SITE } from '../../config/site';
+import { DECISIONS, EN_TETE, FICHE, LIENS, PREUVES, REPERES_GUIDE, REPRISE, SECTIONS, SOCIAL } from '../../config/bloodborne';
+import { attributsMesure } from '../../lib/liens';
+import { typo } from '../../lib/typo';
 
 const titre = `Bloodborne Legendary Run — ${SITE.nom}`;
-const description = 'Un compagnon de Bloodborne où chaque objectif devient une étoile. Découvrez les constellations, le guide et les choix derrière ce projet web et Android.';
-const captures = [
-  { id: '0', image: parcours, titre: 'La carte des parcours', alt: 'La carte des parcours de Bloodborne Legendary Run, avec la progression du personnage Gehrman et une invitation à reprendre l’Arsenal de Yharnam.' },
-  { id: '1', image: atlas, titre: 'Retrouver sa progression sur mobile', alt: 'La carte des parcours sur téléphone, avec les objectifs accomplis et le parcours à reprendre.' },
-  { id: '2', image: fiche, titre: 'Un objectif dans la constellation', alt: 'Une étoile de la constellation avec la fiche de Rom, l’Araignée stupide, son objectif et le bouton pour l’éveiller.' },
-  { id: '3', image: guide, titre: 'Préparer le combat contre le Père Gascoigne', alt: 'La fiche du Père Gascoigne avec le choix du cycle de la partie, sa faiblesse au feu et les conseils de combat.' },
-  { id: '4', image: personnages, titre: 'Une progression pour chaque personnage', alt: 'Le profil avec les personnages Gehrman, Lady Maria et Eileen, leurs progressions et les emplacements pour créer un personnage.' },
-  { id: '5', image: amis, titre: 'Retrouver ses amis et leurs dernières chasses', alt: 'La liste des amis avec une demande reçue, le personnage actif de chaque ami et sa dernière chasse.' },
-  { id: '6', image: comparaison, titre: 'Comparer deux constellations', alt: 'La constellation comparée avec Eileen, ses étoiles signalées en turquoise et les progressions des deux personnages.' },
-  { id: '7', image: objectifCompare, titre: 'Un même objectif, deux parcours', alt: 'La fiche d’un objectif comparé, éteint pour son propre personnage et allumé pour Eileen.' },
-  { id: '8', image: ajoutAmi, titre: 'Partager son code et trouver un ami', alt: 'Le volet d’ajout d’un ami avec son code partageable, un champ de recherche par code et l’annuaire des chasseurs.' },
-  { id: 'boutique-fonds', image: boutiqueFonds, titre: 'Les fonds de constellation', alt: 'Le rayon des fonds de constellation dans la boutique, avec ses paysages et leurs prix en échos de sang.' },
-  { id: 'boutique-bannieres', image: boutiqueBannieres, titre: 'Les bannières de profil', alt: 'Le rayon des bannières dans la boutique, avec les décors de profil et leurs prix en échos de sang.' },
-  { id: 'boutique-portraits', image: boutiquePortraits, titre: 'Les portraits de chasseur', alt: 'Le rayon des portraits dans la boutique, avec les visages de chasseurs et leurs prix en échos de sang.' },
+const description = 'Une application web et Android pour Bloodborne qui range 1 289 objectifs en 22 constellations, avec un guide de 864 fiches en français.';
+const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(href, { emplacement: 'preuves' }) });
+
+const capturesReprise = [
+  { src: personnages, alt: 'Le profil et ses cinq emplacements de personnage : Gehrman actif, Lady Maria, Eileen et un emplacement pour en créer un nouveau.' },
+  { src: atlas, alt: 'La carte des constellations sur téléphone, avec la constellation à reprendre en tête et la progression de chacune.' },
+  { src: fiche, alt: 'La fiche de Rom, l’Araignée stupide, ouverte sous son étoile : l’objectif à accomplir et le bouton pour éveiller l’étoile.' },
 ];
-const reprise = [
-  { index: 4, titre: 'Votre personnage', detail: 'Chaque partie garde sa progression.' },
-  { index: 1, titre: 'Votre parcours', detail: 'La carte retrouve la chasse à poursuivre.' },
-  { index: 2, titre: 'Votre prochaine étape', detail: 'L’objectif à atteindre, à portée de main.' },
+const capturesAmis = [
+  { src: amis, alt: 'La liste des amis, avec une demande reçue, le personnage actif de chaque ami et sa dernière chasse.' },
+  { src: comparaison, alt: 'Une constellation comparée avec Eileen : ses étoiles allumées sont signalées en turquoise.' },
+  { src: objectif, alt: 'La fiche d’un objectif comparé, éteint pour son propre personnage et allumé pour Eileen.' },
 ];
-const social = [
-  { index: 5, titre: 'Retrouver ses amis', detail: 'Un code ou l’annuaire, une invitation acceptée. Les dernières chasses donnent des nouvelles.', classe: 'amis' },
-  { index: 6, titre: 'Croiser les constellations', detail: 'Choisissez un personnage de chaque côté. Les étoiles de votre ami apparaissent en turquoise.', classe: 'comparaison' },
-  { index: 7, titre: 'Comparer une réussite', detail: 'Un même objectif peut être éteint chez vous et allumé chez votre ami. Chacun suit son chemin.', classe: 'objectif' },
+const ajoutPleineTaille = await getImage({ src: ajout, format: 'webp', width: ajout.width });
+const LIENS_SORTIE = [
+  { href: LIENS.application, libelle: 'L’application' },
+  { href: LIENS.journal, libelle: 'Le journal du projet' },
 ];
 ---
 
-<Base titre={titre} description={description} chemin="/projets/bloodborne-legendary-run">
-  <article class="profondeur cas-bloodborne" data-bloodborne-page>
-    <div class="wrap"><FilAriane courant="Bloodborne Legendary Run" projet /></div>
-    <header class="blr-hero wrap">
-      <div class="blr-hero__titre">
-        <p class="blr-nom">Bloodborne Legendary Run</p>
-        <h1>Chaque chasse mérite sa constellation.</h1>
-      </div>
-      <figure class="blr-hero__visuel">
-        <div class="blr-paysage" aria-hidden="true">
-          <Picture src={yharnam} formats={['avif']} fallbackFormat="webp" widths={[640, 1000, 1400]} sizes="(min-width: 900px) 700px, 100vw" alt="" loading="eager" />
-        </div>
-        <div class="blr-fenetre">
-          <div class="blr-fenetre__barre" aria-hidden="true"><span></span><span></span><span></span><p>La carte de votre chasse</p></div>
-          <a href={parcours.src} data-blr-capture="0" aria-label="Agrandir la carte des parcours">
-            <Picture src={parcours} formats={['avif']} fallbackFormat="webp" widths={[640, 1000, 1400, 2200]} sizes="(min-width: 900px) 630px, 90vw" alt={captures[0].alt} loading="eager" fetchpriority="high" />
-          </a>
-        </div>
-        <div class="blr-telephone">
-          <a href={atlas.src} data-blr-capture="1" aria-label="Agrandir la carte sur mobile">
-            <Picture src={atlas} formats={['avif']} fallbackFormat="webp" widths={[240, 390, 780]} sizes="(min-width: 900px) 180px, 120px" alt={captures[1].alt} loading="eager" />
-          </a>
-        </div>
-        <figcaption>Le jeu sur console. Le compagnon à côté.</figcaption>
-      </figure>
-      <div class="blr-hero__texte">
-        <p class="blr-intro">Vos objectifs deviennent des étoiles. Retrouvez votre partie, préparez vos combats et comparez votre ciel à celui de vos amis. Un compagnon pour Bloodborne, à côté de la manette.</p>
-        <div class="blr-actions">
-          <a class="btn btn--plein" href="#le-compagnon">Découvrir le compagnon</a>
-          <a class="blr-lien" href="https://bloodborne-legendary-run.com" data-umami-event="lien-sortant" data-umami-event-domaine="bloodborne-legendary-run.com" data-umami-event-emplacement="hero">Ouvrir l’application <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10" /></svg></a>
-        </div>
-        <dl class="blr-identite">
-          <div><dt>Un projet personnel</dt><dd>Conception et développement</dd></div>
-          <div><dt>À portée de main</dt><dd>Web et Android</dd></div>
-        </dl>
-      </div>
-    </header>
-    <nav class="blr-sommaire" aria-label="Dans cette page">
-      <div class="wrap"><a href="#le-compagnon">Reprendre</a><a href="#la-constellation">Les rituels</a><a href="#le-guide">Le guide</a><a href="#entre-amis">Entre amis</a><a href="#acces-compagnon">Essayer</a><a href="#la-fabrication">La fabrication</a></div>
-    </nav>
-    <div class="wrap">
-      <section class="blr-section blr-reprise" id="le-compagnon" aria-labelledby="compagnon-titre">
-        <div class="blr-tete-section"><div><p class="blr-repere">01 · Retrouver le fil</p><h2 id="compagnon-titre">Où en étais-je,<br />déjà&nbsp;?</h2></div><p>J’ai créé ce compagnon pour retrouver mes repères entre deux sessions. Un personnage, un parcours, une prochaine étoile&nbsp;: la chasse peut reprendre.</p></div>
-        <ol class="blr-reprise__parcours">
-          {reprise.map((etape, position) => <li>
-            <div class="blr-reprise__legende"><span aria-hidden="true">0{position + 1}</span><div><h3>{etape.titre}</h3><p>{etape.detail}</p></div></div>
-            <a class="blr-reprise__capture" href={captures[etape.index].image.src} data-blr-capture={etape.index} aria-label={`Agrandir : ${etape.titre}`}>
-              <Picture src={captures[etape.index].image} formats={['avif']} fallbackFormat="webp" widths={[390, 780]} sizes="(min-width: 1101px) 375px, (min-width: 468px) 420px, calc(100vw - 48px)" alt={captures[etape.index].alt} loading="lazy" />
-            </a>
-          </li>)}
+<Base titre={titre} description={description} chemin="/projets/bloodborne-legendary-run" sommaire={SECTIONS}>
+  <EnTeteProjet projet="bloodborne" titre={EN_TETE.titre} chapeau={EN_TETE.chapeau} liens={EN_TETE.liens} preuves={PREUVES} fiche={FICHE}>
+    <VisuelEnTete slot="visuel" />
+  </EnTeteProjet>
+
+  <CorpsProjet sections={SECTIONS}>
+    <SectionProjet id="ciel" titre="Ranger 1 289 objectifs">
+      <Fragment slot="texte">
+        <p>Le premier ciel comptait 84&nbsp;étoiles&nbsp;: les 40&nbsp;trophées PlayStation du jeu et 44&nbsp;succès encore voilés. Puis le ciel a compté près de mille succès, et il est devenu un buisson où personne ne retrouvait rien.</p>
+        <p>Je l’ai découpé en constellations à thème, chacune un arbre qui part d’une seule étoile d’entrée. Une étoile, c’est un objectif&nbsp;; le joueur l’allume quand il l’a accompli. Il fallait encore voir où était le pas suivant.</p>
+        <Visuel id="BLR-01" alt="" class="blr-probleme" sizes="(max-width: 1100px) 100vw, 540px" />
+      </Fragment>
+      <CielLisible slot="figure" />
+      <Constellations />
+    </SectionProjet>
+
+    <SectionProjet id="reprendre" titre="Savoir où reprendre" chapeau="La carte, l’atlas sur téléphone et le profil proposent la même reprise : la dernière constellation parcourue, avec le personnage qui la mène.">
+      <ol class="blr-serie" aria-label="Reprendre une partie, en trois écrans">
+        {
+          REPRISE.map((etape, index) => (
+            <li>
+              <p class="blr-serie__tete">
+                <span class="blr-serie__rang" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+                <strong>{etape.titre}</strong>
+                <span class="blr-serie__compte chiffres" aria-hidden="true">{index + 1} / {REPRISE.length}</span>
+              </p>
+              <p class="blr-serie__detail">{typo(etape.detail)}</p>
+              <CadreCapture type="telephone" src={capturesReprise[index].src} alt={capturesReprise[index].alt} widths={[390, 780]} sizes="(max-width: 860px) 64vw, 220px" agrandir />
+            </li>
+          ))
+        }
+      </ol>
+      <p class="blr-precision">Le joueur indique ses réussites dans l’application&nbsp;; la sauvegarde du jeu reste sur la console.</p>
+    </SectionProjet>
+
+    <SectionProjet id="geste" titre="Une réussite, une étoile qui s’allume" chapeau="Un appui maintenu enregistre la réussite, puis lance sa cérémonie : chaque type d’objectif a sa propre mise en scène. Quatre allumages, enregistrés dans l’application.">
+      <Rituels />
+    </SectionProjet>
+
+    <SectionProjet id="guide" titre="Un guide de 864 fiches, en français" alignement="centre">
+      <Fragment slot="texte">
+        <p>Chaque objectif renvoie aux fiches qui en parlent. Le guide rassemble 864&nbsp;fiches en 12&nbsp;familles, lisibles sans compte&nbsp;; chacune cite son article d’origine du Bloodborne Wiki. Le cycle choisi, de la première partie aux suivantes, adapte les données du combat.</p>
+        <p>J’ai confronté les noms français aux sources de référence&nbsp;: 143&nbsp;appellations corrigées, pour que chacun retrouve les termes de sa propre partie.</p>
+        <ol class="blr-reperes" aria-label="Sur la fiche du Père Gascoigne">
+          {
+            REPERES_GUIDE.map((repere, index) => (
+              <li>
+                <span class="blr-reperes__rang" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+                <span><strong>{repere.titre}</strong> <span class="blr-reperes__detail">{typo(repere.detail)}</span></span>
+              </li>
+            ))
+          }
         </ol>
-        <p class="blr-precision">Le joueur indique ses réussites dans le compagnon. La sauvegarde du jeu reste sur la console.</p>
-      </section>
-      <RituelsBloodborne><BoutiqueBloodborne /></RituelsBloodborne>
-      <section class="blr-section blr-guide" id="le-guide" aria-labelledby="guide-titre">
-        <div class="blr-guide__texte">
-          <p class="blr-repere">03 · Préparer la suite</p><h2 id="guide-titre">Ce boss vous arrête&nbsp;?<br />Ouvrez sa fiche.</h2>
-          <p>Avant le Père Gascoigne, le guide rassemble les repères utiles. Le cycle choisi adapte les données à votre partie.</p>
-          <ul class="blr-guide__repères">
-            <li><span aria-hidden="true">01</span><div><h3>Repérer sa faiblesse</h3><p>Ici, le feu.</p></div></li>
-            <li><span aria-hidden="true">02</span><div><h3>Préparer le combat</h3><p>Stratégie, parades et déroulé des phases.</p></div></li>
-            <li><span aria-hidden="true">03</span><div><h3>Voir ce qu’il rapporte</h3><p>Récompenses et suite de la chasse.</p></div></li>
-          </ul>
-          <p class="blr-guide__volume"><span class="surligne">864 fiches</span> dans 12 familles, sans compte.</p>
-          <p class="blr-guide__familles">Boss · armes · runes · objets · lieux · quêtes…</p>
-        </div>
-        <figure class="blr-ecran-mobile blr-guide__capture">
-          <a href={guide.src} data-blr-capture="3" aria-label="Agrandir la fiche du Père Gascoigne">
-            <Picture src={guide} formats={['avif']} fallbackFormat="webp" widths={[320, 480, 780]} sizes="(min-width: 800px) 310px, 280px" alt={captures[3].alt} loading="lazy" />
+        <p class="petit">Boss · armes · runes · objets · lieux · quêtes…</p>
+      </Fragment>
+      <CadreCapture
+        slot="figure"
+        class="blr-guide"
+        type="telephone"
+        src={guide}
+        alt="La fiche du Père Gascoigne : le cycle de la partie à choisir, sa défense la plus basse au feu, ses points de vie, ses échos de sang et les conseils pour préparer le combat."
+        legende="La fiche du Père Gascoigne, sur une première partie."
+        widths={[390, 780]}
+        sizes="(max-width: 860px) 70vw, 260px"
+        agrandir
+      />
+    </SectionProjet>
 
-          </a><figcaption>Le guide du compagnon, sur une première partie.</figcaption>
-        </figure>
-      </section>
-      <section class="blr-section blr-social" id="entre-amis" aria-labelledby="social-titre">
-        <div class="blr-tete-section"><div><p class="blr-repere">04 · Entre amis</p><h2 id="social-titre">Deux chasseurs.<br />Deux chemins à croiser.</h2></div><p>La progression devient une conversation. Retrouvez la dernière chasse d’un ami et regardez ce qu’il a découvert dans son ciel.</p></div>
-        <div class="blr-social__legende"><span class="blr-social__etoile" aria-hidden="true">✦</span> Turquoise&nbsp;: les réussites de votre ami.</div>
-        <div class="blr-social__ecrans">
-          {social.map((etape, position) => <figure>
-            <a href={captures[etape.index].image.src} data-blr-capture={etape.index} aria-label={`Agrandir : ${etape.titre}`}>
-              <Picture src={captures[etape.index].image} formats={['avif']} fallbackFormat="webp" widths={[390, 780]} sizes="(min-width: 800px) 280px, 260px" alt={captures[etape.index].alt} loading="lazy" />
+    <SectionProjet id="amis" titre="Comparer son ciel à celui d’un ami" chapeau="On devient amis par un code ou par l’annuaire, après acceptation : personne ne voit la chasse d’un autre sans son accord.">
+      <p class="blr-turquoise"><span class="blr-turquoise__pastille" aria-hidden="true"></span>En turquoise sur les captures&nbsp;: les réussites de l’ami.</p>
+      <ol class="blr-serie" aria-label="Entre amis, en trois écrans">
+        {
+          SOCIAL.map((etape, index) => (
+            <li>
+              <p class="blr-serie__tete">
+                <span class="blr-serie__rang" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+                <strong>{etape.titre}</strong>
+                <span class="blr-serie__compte chiffres" aria-hidden="true">{index + 1} / {SOCIAL.length}</span>
+              </p>
+              <p class="blr-serie__detail">{typo(etape.detail)}</p>
+              <CadreCapture type="telephone" src={capturesAmis[index].src} alt={capturesAmis[index].alt} widths={[390, 780]} sizes="(max-width: 860px) 64vw, 220px" agrandir />
+            </li>
+          ))
+        }
+      </ol>
+      <div class="blr-amis__suite">
+        <a class="blr-ajout" href={ajoutPleineTaille.src} data-agrandir data-legende="Le volet d’ajout d’un ami : son code à partager, la recherche par code et l’annuaire des chasseurs.">
+          <Picture src={ajout} formats={['avif']} fallbackFormat="webp" widths={[120]} sizes="56px" alt="Le volet d’ajout d’un ami : son code à partager, la recherche par code et l’annuaire des chasseurs." loading="lazy" />
+          <span>L’ajout d’un ami&nbsp;: un code à partager ou l’annuaire</span>
+          <Picto nom="interface/agrandir" class="blr-ajout__picto" />
+        </a>
+        <p class="blr-precision">On partage sa progression&nbsp;; les notes, les morts et les captures restent personnels. La comparaison se met à jour à la demande, ou en direct quand l’ami a l’application ouverte.</p>
+      </div>
+    </SectionProjet>
 
-            </a>
-            <figcaption><span class="blr-social__numero" aria-hidden="true">0{position + 1}</span><h3>{etape.titre}</h3><p>{etape.detail}</p>{position === 0 && <a class="blr-lien-detail" href={ajoutAmi.src} data-blr-capture="8">Voir l’ajout d’un ami <span aria-hidden="true">↗</span></a>}</figcaption>
-          </figure>)}
-        </div>
-        <p class="blr-defiler">Sur téléphone, faites défiler les trois écrans →</p>
-        <p class="blr-precision">On partage sa progression. Les notes, les morts et les captures restent personnels. La comparaison peut se mettre à jour en direct lorsque les deux amis ont l’application ouverte.</p>
-      </section>
-      <AccesBloodborne />
-      <FabricationBloodborne />
+    <SectionProjet id="boutique" titre="Des échos à dépenser" alignement="centre">
+      <Fragment slot="texte">
+        <p>Chaque réussite rapporte des échos de sang. La boutique les échange contre des fonds de constellation, des bannières de profil et des portraits&nbsp;; les titres, eux, se gagnent par les réussites et ne se vendent pas.</p>
+        <p>L’achat se confirme d’un appui maintenu, comme on allume une étoile.</p>
+      </Fragment>
+      <Boutique slot="figure" />
+    </SectionProjet>
 
-      <aside class="blr-credits" aria-label="À propos des captures et des visuels"><p>Écrans et vidéos de la véritable application, avec des personnages et des progressions d’exemple. Les rituels sont enregistrés sur mobile, sans piste audio. Les chiffres visibles ne mesurent pas l’adoption du projet.</p><p>Projet de fan indépendant, sans affiliation à Sony Interactive Entertainment ni à FromSoftware. Vue de Yharnam&nbsp;: capture de MoonlightGhost, Bloodborne Wiki. Visuels du jeu © Sony Interactive Entertainment / FromSoftware.</p><p><a href="https://angular.dev/press-kit" data-umami-event="lien-sortant" data-umami-event-domaine="angular.dev" data-umami-event-emplacement="preuves">Logo Angular</a> © Google / Angular team, utilisé sous <a href="https://creativecommons.org/licenses/by/4.0/" data-umami-event="lien-sortant" data-umami-event-domaine="creativecommons.org" data-umami-event-emplacement="preuves">CC BY 4.0</a>.</p></aside>
-      <ContinuerLecture liens={[
-        { href: '/projets/gup', titre: 'gup', detail: 'Retrouver un point d’entrée pour ses mises à jour.' },
-        { href: '/projets/pvz-fusion', titre: 'PVZF Translation', detail: 'Rendre un jeu accessible dans une autre langue.' },
-        { href: '/projets', titre: 'Les projets', detail: 'Revenir à la sélection.' },
-        { href: '/contact', titre: 'Discutons', detail: 'Parlons de ce que nous pourrions construire.' },
-      ]} />
-    </div>
-    <dialog class="blr-visionneuse" data-blr-dialog aria-labelledby="blr-capture-titre" aria-describedby="blr-capture-aide">
-      <h2 class="sr" id="blr-capture-titre" data-blr-caption>Les écrans du compagnon</h2>
-      <div class="blr-visionneuse__images">{captures.map((capture) => <div data-blr-full={capture.id} hidden>
-        <button class="blr-visionneuse__image" type="button" data-blr-close aria-label={`Fermer la capture : ${capture.titre}`}>
-          <Picture src={capture.image} formats={['avif']} fallbackFormat="webp" widths={[780, 1400, 2200]} sizes="(orientation: portrait) 95vw, 90vh" alt={capture.alt} loading="lazy" />
-        </button><p data-blr-image-title hidden>{capture.titre}</p>
-      </div>)}</div>
-      <p class="blr-visionneuse__aide" id="blr-capture-aide">Cliquez sur l’image ou appuyez sur Échap pour revenir.</p>
-    </dialog>
-  </article>
+    <SectionProjet id="essayer" titre="L’essayer" chapeau="L’application s’ouvre dans un navigateur ; une version de test s’installe sur Android.">
+      <Acces />
+    </SectionProjet>
+
+    <DecisionsProjet decisions={DECISIONS} chapeau="Trois décisions, chacune datée dans le journal public du projet, étape par étape.">
+      <Fabrication />
+    </DecisionsProjet>
+
+    <SortieProjet projet="bloodborne" titre="En une phrase" liens={LIENS_SORTIE}>
+      <p>Un produit que j’ai fait grandir étape par étape&nbsp;: d’un premier ciel de 84&nbsp;étoiles à 1&nbsp;289&nbsp;objectifs, avec un guide, des amis et une boutique, sur le web et Android.</p>
+    </SortieProjet>
+
+    <SourcesProjet>
+      <p><b>Chiffres.</b> 1&nbsp;289&nbsp;objectifs uniques et 22&nbsp;constellations&nbsp;: catalogue du projet, relevé le 08/10/2026. Une étoile partagée entre plusieurs constellations ne compte qu’une fois&nbsp;; la source compte aussi 112&nbsp;enregistrements posés dans aucune constellation, qui ne sont pas affichés. La planche des constellations est dessinée depuis ce même catalogue. 864&nbsp;fiches en 12&nbsp;familles&nbsp;: catalogue du guide, même date. Jusqu’à cinq personnages par compte&nbsp;: documentation du projet.</p>
+      <p><b>Journal.</b> Le premier ciel de 84&nbsp;étoiles, le découpage en constellations et les 143&nbsp;noms corrigés (06/09/2026), les arbres et le décompte des croisements (07/09, version&nbsp;6), l’appui maintenu (08/09, version&nbsp;11), le pas suivant en braise (08/09, version&nbsp;12), la même reprise partout (25/09), les renvois du ciel vers le guide (13/09), la bannière vue des amis (03/10), l’achat d’un appui maintenu (04/10), les versions vérifiées par des tests (05/09) et l’application Android à chaque mise à jour (06/09) viennent du <a {...sortant(LIENS.journal)}>journal public du projet<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>, relu le 13/10/2026. La livraison construite une fois puis promue telle quelle vient de la chaîne d’intégration du dépôt, relue le même jour&nbsp;; le dépôt du code est privé&nbsp;: aucun lien n’y mène.</p>
+      <p><b>Captures et vidéos.</b> Écrans et vidéos de l’application réelle, avec des personnages et des progressions d’exemple, sans compte réel&nbsp;; l’avant et l’après du 08/09/2026 sont des captures d’époque du journal. Les allumages sont enregistrés sur téléphone, sans son. Les chiffres visibles sur les captures ne mesurent pas l’adoption du projet.</p>
+      <p><b>Crédits.</b> Projet de fan indépendant, sans affiliation à Sony Interactive Entertainment ni à FromSoftware. Vue de Yharnam&nbsp;: capture de MoonlightGhost, Bloodborne Wiki. Visuels du jeu © Sony Interactive Entertainment / FromSoftware. <a {...sortant(LIENS.angularPresse)}>Logo Angular<span class="fleche" aria-hidden="true">&nbsp;↗</span></a> © Google / Angular team, utilisé sous <a {...sortant(LIENS.licenceCcBy)}>CC BY 4.0<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>.</p>
+    </SourcesProjet>
+  </CorpsProjet>
+
+  <Visionneuse />
 </Base>
+
 <script>
-  import '../../scripts/bloodborne-captures';
+  import { brancherAnimationsFigures } from '../../scripts/figure-animations';
+  brancherAnimationsFigures();
 </script>
+
+<style>
+  /* BLR-01 sous le texte du problème : le visuel, pas une preuve. */
+  :global(.blr-probleme) {
+    margin-top: var(--s6);
+    width: min(100%, 440px);
+  }
+
+  /* Trois écrans de téléphone en rang ; une galerie à crans sur mobile. */
+  .blr-serie {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 220px));
+    justify-content: space-between;
+    gap: var(--s6);
+    margin: var(--s6) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .blr-serie li {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .blr-serie__tete {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s2);
+    font-size: var(--t-s);
+  }
+
+  .blr-serie__tete strong {
+    font-weight: 600;
+  }
+
+  .blr-serie__compte {
+    display: none;
+    margin-left: auto;
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  .blr-serie__rang,
+  .blr-reperes__rang {
+    font-size: var(--t-xs);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--eteint);
+  }
+
+  .blr-serie__detail {
+    margin-top: var(--s1);
+    margin-bottom: var(--s4);
+    min-height: 3em;
+    font-size: var(--t-xs);
+    line-height: 1.5;
+    color: var(--eteint);
+  }
+
+  .blr-serie li > :global(.capture) {
+    margin-top: auto;
+  }
+
+  .blr-precision {
+    margin-top: var(--s5);
+    max-width: var(--mesure);
+    padding-left: var(--s4);
+    border-left: 2px solid var(--trait);
+    font-size: var(--t-s);
+    color: var(--eteint);
+  }
+
+  .blr-reperes {
+    display: grid;
+    gap: var(--s3);
+    margin: var(--s5) 0 var(--s4);
+    padding: var(--s4) 0 0;
+    list-style: none;
+    border-top: 1px solid var(--filet);
+  }
+
+  .blr-reperes li {
+    display: grid;
+    grid-template-columns: 2.2em minmax(0, 1fr);
+    align-items: baseline;
+  }
+
+  .blr-reperes strong {
+    font-weight: 600;
+  }
+
+  .blr-reperes__detail {
+    color: var(--eteint);
+  }
+
+  :global(.capture.blr-guide) {
+    width: min(100%, 260px);
+    margin-inline: auto;
+  }
+
+  /* La couleur des étoiles de l’ami, relevée sur la capture de comparaison. */
+  .blr-turquoise {
+    display: flex;
+    align-items: center;
+    gap: var(--s2);
+    margin-top: var(--s4);
+    font-size: var(--t-s);
+  }
+
+  .blr-turquoise__pastille {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--capture-turquoise);
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--capture-turquoise) 25%, transparent);
+  }
+
+  .blr-amis__suite {
+    display: grid;
+    grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+    gap: var(--s4) var(--s7);
+    align-items: center;
+    margin-top: var(--s5);
+  }
+
+  .blr-amis__suite .blr-precision {
+    margin-top: 0;
+  }
+
+  .blr-ajout {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s3);
+    min-height: 48px;
+    padding: var(--s2) var(--s4) var(--s2) var(--s2);
+    border: 1px solid var(--trait);
+    border-radius: var(--r2);
+    font-size: var(--t-s);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: zoom-in;
+  }
+
+  .blr-ajout:hover {
+    border-color: var(--accent);
+  }
+
+  .blr-ajout :global(img) {
+    display: block;
+    width: 40px;
+    height: 64px;
+    border-radius: var(--r1);
+    object-fit: cover;
+    object-position: 50% 0;
+  }
+
+  .blr-ajout :global(.blr-ajout__picto) {
+    flex: none;
+    width: 18px;
+    height: 18px;
+  }
+
+  @media (max-width: 1100px) {
+    .blr-amis__suite {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .blr-ajout {
+      justify-self: start;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .blr-serie {
+      display: flex;
+      gap: var(--s4);
+      overflow-x: auto;
+      margin-inline: calc(-1 * var(--gouttiere));
+      padding: 0 var(--gouttiere) var(--s3);
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--gouttiere);
+      overscroll-behavior-x: contain;
+      scrollbar-width: thin;
+    }
+
+    /* Un écran presque entier, le bord du suivant en vue ; le compteur
+       « 1 / 3 » de la boutique remplace le rang. La liste ordonnée dit déjà la
+       position aux lecteurs d’écran : le compteur est aria-hidden. */
+    .blr-serie li {
+      flex: 0 0 calc(100% - 3rem);
+      scroll-snap-align: start;
+    }
+
+    .blr-serie__rang {
+      display: none;
+    }
+
+    .blr-serie__compte {
+      display: inline;
+    }
+
+    .blr-serie li > :global(.capture) {
+      width: min(100%, 230px);
+    }
+  }
+
+  @media print {
+    .blr-serie {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      overflow: visible;
+    }
+  }
+</style>

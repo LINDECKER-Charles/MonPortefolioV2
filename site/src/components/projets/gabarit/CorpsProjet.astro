@@ -1,0 +1,34 @@
+---
+/**
+ * Le corps d’une page de projet : le conteneur et la navigation de page
+ * unique (colonne collante « Dans cette page » au-delà de 1 100 px). Les
+ * mêmes entrées vont au sommaire de l’en-tête (`<Base sommaire={…}>`).
+ *
+ *   <CorpsProjet sections={SECTIONS}>
+ *     <SectionProjet id="…" …>…</SectionProjet>
+ *     <DecisionsProjet decisions={…} />
+ *     <SortieProjet projet="…" liens={…}>…</SortieProjet>
+ *     <SourcesProjet>…</SourcesProjet>
+ *   </CorpsProjet>
+ */
+import NavigationPage from '../../pages/NavigationPage.astro';
+import type { EntreeSommaire } from '../../../config/navigation';
+
+interface Props {
+  sections: readonly EntreeSommaire[];
+}
+
+const { sections } = Astro.props;
+---
+
+<div class="conteneur corps-projet">
+  <NavigationPage entrees={sections}>
+    <slot />
+  </NavigationPage>
+</div>
+
+<style>
+  .corps-projet {
+    padding-bottom: var(--section);
+  }
+</style>

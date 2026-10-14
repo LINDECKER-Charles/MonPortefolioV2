@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Charles Lindecker — architecte logiciel</title>
+  <meta name="description" content="Architecte logiciel, je code depuis mes 13 ans. Je maîtrise d’abord les règles du jeu, ensuite je les réinvente : mon histoire, mes projets et une équipe de 20 contributeurs formés.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&amp;family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,400..500&amp;display=swap">
+  <link rel="stylesheet" href="style.css">
+  <script src="theme.js"></script>
+</head>
+<body>
+  <a class="evitement" href="#contenu">Aller au contenu</a>
+
+  <!-- Bichromies des photos secondaires : encre et bleu roi le jour ; encre et ivoire la nuit (toutes les photos) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <filter id="bichromie-jour" color-interpolation-filters="sRGB">
+      <feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0 0 0 1 0"/>
+      <feComponentTransfer>
+        <feFuncR type="table" tableValues="0.102 0.120 0.330 0.700 0.961"/>
+        <feFuncG type="table" tableValues="0.090 0.160 0.380 0.720 0.945"/>
+        <feFuncB type="table" tableValues="0.071 0.330 0.620 0.830 0.910"/>
+      </feComponentTransfer>
+    </filter>
+    <filter id="bichromie-nuit" color-interpolation-filters="sRGB">
+      <feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0 0 0 1 0"/>
+      <feComponentTransfer>
+        <feFuncR type="table" tableValues="0.050 0.170 0.470 0.925"/>
+        <feFuncG type="table" tableValues="0.044 0.155 0.445 0.894"/>
+        <feFuncB type="table" tableValues="0.035 0.135 0.400 0.831"/>
+      </feComponentTransfer>
+    </filter>
+    <pattern id="hachures-fig" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-38)">
+      <line x1="0" y1="0" x2="0" y2="6" class="fig-hachure-trait"/>
+    </pattern>
+  </svg>
+
+  <header class="site-entete">
+    <div class="site-entete__in">
+      <a class="marque" href="accueil.html" aria-label="Charles Lindecker, accueil">
+        <span class="marque__embleme" aria-hidden="true"><span class="marque__encre"></span><span class="marque__lumiere"></span></span>
+        <span class="marque__nom" aria-hidden="true"></span>
+      </a>
+      <nav class="nav-principale" aria-label="Navigation principale">
+        <ul>
+          <li><a href="projets.html">Projets</a></li>
+          <li><a href="competences.html">Parcours</a></li>
+          <li><a href="contact.html" data-hors-maquette="Contact">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="entete-actions">
+        <button class="bouton-sommaire" type="button" aria-expanded="false" aria-controls="signet">Sommaire</button>
+        <a class="entete-lien entete-contact" href="contact.html" data-hors-maquette="Contact">Contact</a>
+        <details class="menu-mobile">
+          <summary aria-label="Menu"><span class="menu-mobile__libelle">Menu</span></summary>
+          <div class="menu-mobile__panneau">
+            <nav aria-label="Navigation principale (mobile)">
+              <a href="accueil.html" aria-current="page">Accueil</a>
+              <a href="projets.html">Projets</a>
+              <a href="competences.html">Parcours</a>
+              <a href="contact.html" data-hors-maquette="Contact">Contact</a>
+            </nav>
+            <div class="menu-mobile__theme">
+              <span>Mode nuit</span>
+              <button class="bascule" type="button" data-theme-bascule aria-pressed="false" aria-label="Mode nuit">
+                <svg class="lanterne" viewBox="0 0 24 24" aria-hidden="true"><circle class="lanterne__halo" cx="12" cy="14.5" r="10"/><path class="lanterne__trait" d="M12 2.3a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8M12 5.1v1.4M7 9.6 12 6.5l5 3.1M7.6 9.6h8.8M8.3 9.6v9.2M15.7 9.6v9.2M6.6 18.8h10.8M8.2 21.3h7.6"/><path class="lanterne__flamme" d="M12 11.2c1.5 1.7 2.1 2.8 2.1 3.9a2.1 2.1 0 0 1-4.2 0c0-1.1.6-2.2 2.1-3.9z"/></svg>
+              </button>
+            </div>
+          </div>
+        </details>
+        <button class="bascule entete-bascule" type="button" data-theme-bascule aria-pressed="false" aria-label="Mode nuit">
+          <svg class="lanterne" viewBox="0 0 24 24" aria-hidden="true"><circle class="lanterne__halo" cx="12" cy="14.5" r="10"/><path class="lanterne__trait" d="M12 2.3a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8M12 5.1v1.4M7 9.6 12 6.5l5 3.1M7.6 9.6h8.8M8.3 9.6v9.2M15.7 9.6v9.2M6.6 18.8h10.8M8.2 21.3h7.6"/><path class="lanterne__flamme" d="M12 11.2c1.5 1.7 2.1 2.8 2.1 3.9a2.1 2.1 0 0 1-4.2 0c0-1.1.6-2.2 2.1-3.9z"/></svg>
+        </button>
+      </div>
+      <span class="fil-signet" aria-hidden="true"></span>
+    </div>
+  </header>
+
+  <main id="contenu" tabindex="-1">
+
+    <!-- 0 · Couverture -->
+    <section class="couverture conteneur" aria-labelledby="titre">
+      <div class="couverture__grille">
+        <div class="couverture__texte">
+          <h1 id="titre" data-pli="titre">
+            <span class="couverture__auteur">Charles Lindecker</span>
+            <span class="couverture__accroche"><span>Je maîtrise d’abord les règles du jeu.</span> <span>Ensuite, je&nbsp;les&nbsp;réinvente.</span></span>
+          </h1>
+          <p class="couverture__identite" data-pli="identite">
+            <span>Architecte logiciel chez B-Hive, à Mulhouse.</span>
+            <span>Lead du pôle francophone de PvZ Fusion et mainteneur de sa traduction multilingue.</span>
+          </p>
+          <p class="couverture__chapeau">
+            Je code depuis mes 13&nbsp;ans. Sur Gwent, j’ai appris qu’il n’y a pas d’excuse en cas de défaite&nbsp;: juste
+            moi et mes propres décisions. Depuis, j’ai formé des développeurs jusqu’à leur titre et je mène une équipe de
+            bénévoles sur un projet open source.
+          </p>
+          <div class="actions">
+            <a class="btn fl fl--int" href="contact.html" data-hors-maquette="Contact" data-pli="action">Discutons</a>
+            <a class="lien-action fl fl--ancre" href="#origine">Lire mon histoire</a>
+          </div>
+        </div>
+
+
+        <div class="preuves" data-pli="preuve">
+        <a class="preuve" href="#voie">
+          <svg class="preuve__picto" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 15.5c6.3-2.4 12.6-2.2 19 1 6.4-3.2 12.7-3.4 19-1v22c-6.3-2.4-12.6-2.2-19 1-6.4-3.2-12.7-3.4-19-1z"/>
+            <path d="M24 16.5v22M9 21c3.4-.9 6.8-.7 10.5.6M9 26c3.4-.9 6.8-.7 10.5.6M9 31c3.4-.9 6.8-.7 10.5.6"/>
+            <path d="M28.6 33.5v-6.2a1.4 1.4 0 0 1 2.8 0v-3.6a1.4 1.4 0 0 1 2.8 0v-.8a1.4 1.4 0 0 1 2.8 0v1a1.4 1.4 0 0 1 2.8 0v8.2c0 2.6-1.8 4.3-4.4 4.3h-2.6c-1.6 0-2.6-.6-3.4-1.6l-2.4-3.3a1.3 1.3 0 0 1 2-1.7z" fill="var(--papier)"/>
+          </svg>
+          <span class="preuve__texte"><span class="preuve__verbe">Maîtriser</span> <span class="preuve__phrase">Le programme de développeur web bouclé en <span class="insecable"><span class="surligne">un mois</span><span class="fl fl--ancre"></span></span></span></span>
+        </a>
+        <a class="preuve" href="projets.html#omnicard">
+          <svg class="preuve__picto" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+            <g fill="var(--papier)">
+              <rect x="19.5" y="9" width="9" height="15" rx="1.2" transform="rotate(-40 24 40)"/>
+              <rect x="19.5" y="9" width="9" height="15" rx="1.2" transform="rotate(40 24 40)"/>
+              <rect x="19.5" y="9" width="9" height="15" rx="1.2" transform="rotate(-20 24 40)"/>
+              <rect x="19.5" y="9" width="9" height="15" rx="1.2" transform="rotate(20 24 40)"/>
+            </g>
+            <rect x="19.5" y="8" width="9" height="15" rx="1.2" fill="currentColor"/>
+            <path d="M22 12.5h4M22 15.5h4" stroke="var(--papier)"/>
+            <circle cx="24" cy="40" r="1.4" fill="currentColor"/>
+          </svg>
+          <span class="preuve__texte"><span class="preuve__verbe">Réinventer</span> <span class="preuve__phrase">Mon jeu de cartes papier devenu un <span class="surligne">jeu en ligne</span>, avec son moteur de <span class="insecable">règles<span class="fl fl--int"></span></span></span></span>
+        </a>
+        <a class="preuve" href="pvz-fusion.html">
+          <svg class="preuve__picto" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 7.5v2.5M8.5 15 14 10.5l5.5 4.5M9 15h10M9.8 15v17M18.2 15v17M7.5 32h13M9 36h10"/>
+            <path d="M14 19.5c2 2.3 2.9 3.8 2.9 5.3a2.9 2.9 0 0 1-5.8 0c0-1.5.9-3 2.9-5.3z" fill="currentColor"/>
+            <path d="M35 15.5v2M30.8 21.5l4.2-3.5 4.2 3.5M31.2 21.5h7.6M31.8 21.5v12.5M38.2 21.5v12.5M30 34h10M31.2 37.5h7.6"/>
+            <path d="M35 24.5c1.5 1.7 2.1 2.8 2.1 3.9a2.1 2.1 0 0 1-4.2 0c0-1.1.6-2.2 2.1-3.9z" fill="currentColor"/>
+            <path d="M18.5 21.5c4-3.5 9-4.2 13.2-1.6" stroke-dasharray="1.5 2.5"/>
+          </svg>
+          <span class="preuve__texte"><span class="preuve__verbe">Emmener</span> <span class="preuve__phrase"><span class="surligne">20 contributeurs</span> formés sur PvZ <span class="insecable">Fusion<span class="fl fl--int"></span></span></span></span>
+        </a>
+        </div>
+        <figure class="couverture__photo">
+          <img src="../commun/photos/charles-4.webp" width="1280" height="1920" alt="Charles Lindecker dans un champ de colza, en chemise et bretelles, le regard tourné vers l’horizon." fetchpriority="high">
+        </figure>
+      </div>
+    </section>
+
+    <div class="livre conteneur">
+
+      <nav class="signet" id="signet" aria-label="Dans cette page">
+        <div class="signet__ruban" aria-hidden="true"></div>
+        <span class="signet__lanterne" aria-hidden="true"><svg class="lanterne lanterne--allumee" viewBox="0 0 24 24"><circle class="lanterne__halo" cx="12" cy="14.5" r="10"/><path class="lanterne__trait" d="M12 2.3a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8M12 5.1v1.4M7 9.6 12 6.5l5 3.1M7.6 9.6h8.8M8.3 9.6v9.2M15.7 9.6v9.2M6.6 18.8h10.8M8.2 21.3h7.6"/><path class="lanterne__flamme" d="M12 11.2c1.5 1.7 2.1 2.8 2.1 3.9a2.1 2.1 0 0 1-4.2 0c0-1.1.6-2.2 2.1-3.9z"/></svg></span>
+        <ol class="signet__liste">
+          <li>
+            <a href="#origine"><span class="signet__num">01</span>L’origine</a>
+            <ol class="signet__sous">
+              <li><a href="#terrain">Le terrain de jeu</a></li>
+              <li><a href="#gwent">Gwent, la méthode</a></li>
+              <li><a href="#portes">Les portes qui ne s’ouvrent pas</a></li>
+              <li><a href="#voie">La voie qui marche</a></li>
+              <li><a href="#bureau">De l’autre côté du bureau</a></li>
+            </ol>
+          </li>
+          <li>
+            <a href="#aujourdhui"><span class="signet__num">02</span>Aujourd’hui</a>
+            <ol class="signet__sous">
+              <li><a href="#construis">Ce que je construis</a></li>
+              <li><a href="#plusieurs">À plusieurs</a></li>
+            </ol>
+          </li>
+          <li><a href="#discutons"><span class="signet__num">03</span>La suite</a></li>
+        </ol>
+        <p class="signet__action"><a class="lien-suite fl fl--int" href="contact.html" data-hors-maquette="Contact">Discutons</a></p>
+      </nav>
+
+      <div class="contenu">
+
+        <!-- 01 · L’origine -->
+        <section class="chapitre" id="origine" data-chapitre="origine" aria-labelledby="t-origine">
+          <header class="ouverture">
+            <p class="ouverture__num" aria-hidden="true">01</p>
+            <h2 class="ouverture__titre" id="t-origine">L’origine</h2>
+          </header>
+
+          <section class="recit" id="terrain" aria-labelledby="t-terrain">
+            <div class="recit__texte">
+              <p class="recit__quand">Vers 10 ans, puis 13 ans</p>
+              <h3 class="recit__titre recit__titre--h3" id="t-terrain">Le terrain de jeu</h3>
+              <div class="recit-texte">
+                <p>Avec mon père, informaticien, je démonte de vieux PC hors service. Vers 13&nbsp;ans, j’apprends le C sur OpenClassrooms avec une idée fixe&nbsp;: coder mes propres jeux sur Unreal Engine.</p>
+                <p>Avec mon cousin, on invente un jeu de cartes sur papier, dont on sort des éditions sans fin. On passe des après-midi entiers à imprimer les cartes et à les plastifier à la main.</p>
+              </div>
+              <article class="carte-omnicard">
+                <div class="carte-omnicard__texte">
+                  <h4><a href="projets.html#omnicard" class="fl fl--int">Omnicard</a></h4>
+                  <p>Ce jeu papier est devenu un jeu en ligne, avec son moteur de règles côté serveur.</p>
+                  <blockquote class="voix voix--petite"><p>Un moment j’en ai eu marre, j’ai repris le projet.</p></blockquote>
+                  <p class="carte-omnicard__statut"><span class="statut statut--pause">Hors ligne, en attente de refonte</span> <span class="a-confirmer" title="La citation vise-t-elle bien Omnicard ?">à confirmer</span></p>
+                </div>
+              </article>
+            </div>
+            <aside class="recit__marge" aria-label="Illustration">
+              <figure class="planche">
+                <div class="emplacement" style="--ratio: 3 / 2" role="img" aria-label="Emplacement ACC-03, illustration à générer : démonter de vieux PC avec son père.">
+                  <div class="emplacement__fiche">
+                    <p class="emplacement__id">ACC-03 <small>gravure à générer, 3:2</small></p>
+                    <p class="emplacement__sujet">Démonter de vieux PC avec mon père</p>
+                    <p class="emplacement__compo">Établi de trois quarts, tour ouverte, composants posés en vue éclatée, deux paires de mains (adulte, enfant), aucune inscription.</p>
+                  </div>
+                </div>
+              </figure>
+              <figure class="planche">
+                <div class="emplacement" style="--ratio: 3 / 2" role="img" aria-label="Emplacement ACC-04, illustration à générer : le jeu de cartes papier inventé avec son cousin.">
+                  <div class="emplacement__fiche">
+                    <p class="emplacement__id">ACC-04 <small>gravure à générer, 3:2</small></p>
+                    <p class="emplacement__sujet">Le jeu de cartes papier, inventé avec mon cousin</p>
+                    <p class="emplacement__compo">Table d’été vue de dessus&nbsp;: piles de cartes imprimées, plastifieuse, ciseaux, pochettes aux coins cornés, règles griffonnées illisibles, deux paires de mains d’adolescents.</p>
+                  </div>
+                </div>
+              </figure>
+            </aside>
+          </section>
+
+          <section class="recit" id="gwent" aria-labelledby="t-gwent">
+            <div class="recit__texte">
+              <p class="recit__quand">Vers 17 ans</p>
+              <h3 class="recit__titre recit__titre--h3" id="t-gwent">Gwent, la méthode</h3>
+              <div class="recit-texte">
+                <p>Je découvre Gwent, un jeu de cartes en ligne. Pas d’excuse en cas de défaite pour jeter la faute sur un autre&nbsp;: juste moi et mes propres décisions. Je teste un <button type="button" class="terme" popovertarget="def-deck">deck</button>, puis un deuxième, puis un troisième. Parfois je roule sur la <button type="button" class="terme" popovertarget="def-meta">méta</button> en la prenant à contre-courant, parfois c’est un flop, mais j’apprends de ce flop et je comprends où mon instinct m’a trompé, ce qui l’aiguise.</p>
+                <p>En un an, j’approche du <button type="button" class="terme" popovertarget="def-classement">classement mondial</button>, puis je plafonne pendant quatre mois. Copier ce que jouent les meilleurs ne suffit plus. Alors je fais l’inverse&nbsp;: je construis un deck à contre-courant, et c’est lui qui me fait entrer dans le classement mondial.</p>
+                <p>Au sommet, je trouve des joueurs qui jouent ce qu’ils veulent, font preuve de créativité et viennent essayer de nouvelles choses plutôt que seulement gagner.</p>
+                <p>Depuis, à chaque mise à jour, je passe deux jours à jouer la méta, puis je la réinvente. J’aborde tout ce qui est nouveau de la même façon&nbsp;: d’abord maîtriser ce qui se fait, ensuite le réinventer.</p>
+              </div>
+            </div>
+            <figure class="recit__marge recit__marge--figure planche figure-plaque plafond">
+              <button type="button" class="figure-plafond" aria-label="Rejouer le tracé du plafond">
+                <svg class="fig-svg fig-large" viewBox="0 0 1000 340" role="img" aria-labelledby="pl-t pl-d">
+                  <title id="pl-t">Le plafond, puis le saut</title>
+                  <desc id="pl-d">Schéma de ma progression sur Gwent : une montée irrégulière pendant environ un an, un plafond de quatre mois, puis un saut jusqu’au classement mondial grâce à un deck à contre-courant.</desc>
+                  <rect x="606" y="40" width="170" height="262" fill="url(#hachures-fig)" opacity="0.7"/>
+                  <path class="fig-axe" d="M84 302V22M84 302H960M606 302v7M776 302v7"/>
+                  <line class="fig-seuil" x1="84" y1="58" x2="960" y2="58"/>
+                  <text class="t-fort" x="96" y="48">Classement mondial</text>
+                  <text x="56" y="164" transform="rotate(-90 56 164)" text-anchor="middle">Plus près du classement mondial</text>
+                  <text x="84" y="328">Vers 17 ans</text>
+                  <text x="606" y="328" text-anchor="middle">≈ 1 an</text>
+                  <text x="776" y="328" text-anchor="middle">+ 4 mois</text>
+                  <text x="960" y="328" text-anchor="end">Temps</text>
+                  <polyline class="fig-courbe" points="84,284 119,268 143,276 181,246 208,254 246,224 273,233 311,202 338,210 376,180 403,188 441,160 468,167 506,140 533,147 565,126 606,122 630,113 652,125 676,112 700,124 725,113 749,125 776,116 798,50 825,44 852,50 884,43 917,48 948,45"/>
+                  <g class="annot annot--1">
+                    <path class="fig-accolade" d="M606 140v8h170v-8"/>
+                    <text class="t-note" x="691" y="172" text-anchor="middle">4 mois de plafond</text>
+                  </g>
+                  <g class="annot annot--2">
+                    <path class="fig-accolade" d="M766 84h16"/>
+                    <circle class="fig-point" cx="787" cy="84" r="3.5"/>
+                    <text class="t-note" x="758" y="89" text-anchor="end">Deck à contre-courant</text>
+                  </g>
+                  <g class="annot annot--3">
+                    <circle class="fig-point" cx="798" cy="50" r="6"/>
+                  </g>
+                </svg>
+                <svg class="fig-svg fig-compacte" viewBox="0 0 360 300" role="img" aria-labelledby="plc-t plc-d">
+                  <title id="plc-t">Le plafond, puis le saut</title>
+                  <desc id="plc-d">Schéma de ma progression sur Gwent : une montée irrégulière pendant environ un an, un plafond de quatre mois, puis un saut jusqu’au classement mondial grâce à un deck à contre-courant.</desc>
+                  <rect x="223" y="40" width="59" height="222" fill="url(#hachures-fig)" opacity="0.7"/>
+                  <path class="fig-axe" d="M40 262V24M40 262H350M223 262v6M282 262v6"/>
+                  <line class="fig-seuil" x1="40" y1="62" x2="344" y2="62"/>
+                  <text class="t-fort" x="48" y="52">Classement mondial</text>
+                  <text x="40" y="288">Vers 17 ans</text>
+                  <text x="223" y="288" text-anchor="middle">≈ 1 an</text>
+                  <text x="290" y="288" text-anchor="middle">+ 4 mois</text>
+                  <polyline class="fig-courbe" points="40,240 52,228 60,234 73,211 82,217 95,194 104,201 117,177 126,183 139,160 148,166 161,145 170,150 183,130 192,135 203,119 223,116 231,109 239,118 247,108 255,117 264,109 272,118 281,111 289,58 298,54 307,58 318,53 330,56"/>
+                  <g class="annot annot--1">
+                    <path class="fig-accolade" d="M223 130v6h59v-6"/>
+                    <text class="t-note" x="252" y="158" text-anchor="middle">4 mois de plafond</text>
+                  </g>
+                  <g class="annot annot--2">
+                    <circle class="fig-point" cx="285" cy="86" r="3"/>
+                    <text class="t-note" x="276" y="91" text-anchor="end">Deck à contre-courant</text>
+                  </g>
+                  <g class="annot annot--3"><circle class="fig-point" cx="289" cy="58" r="5"/></g>
+                </svg>
+              </button>
+              <figcaption class="legende"><b>Le plafond, puis le saut.</b> Ma progression sur Gwent&nbsp;; schéma, pas à l’échelle.</figcaption>
+            </figure>
+            <div class="definitions">
+              <span id="def-deck" class="definition" popover><b>Deck</b>Le paquet de cartes qu’un joueur compose avant la partie. Le choisir, c’est déjà choisir sa stratégie.</span>
+              <span id="def-meta" class="definition" popover><b>Méta</b>Les stratégies que presque tout le monde joue à un moment donné, parce qu’elles gagnent le plus. Chaque mise à jour du jeu la rebat.</span>
+              <span id="def-classement" class="definition" popover><b>Classement mondial</b>Le dernier palier de Gwent&nbsp;: on n’y monte plus de palier en palier, on y est classé parmi les meilleurs joueurs du monde.</span>
+            </div>
+          </section>
+
+          <section class="recit" id="portes" aria-labelledby="t-portes">
+            <div class="recit__texte">
+              <p class="recit__quand">Avant 2025</p>
+              <h3 class="recit__titre recit__titre--h3" id="t-portes">Les portes qui ne s’ouvrent pas</h3>
+              <div class="recit-texte">
+                <p>BUT Informatique, fac de physique-chimie, BUT Réseaux &amp; Télécoms&nbsp;: trois années de filières classiques, une chacune. Puis la piscine de 42, sans admission. Ça n’a pas vraiment marché. Mais je n’ai pas abandonné&nbsp;: j’ai recommencé jusqu’à réussir et je me suis réorienté autant que nécessaire.</p>
+              </div>
+            </div>
+            <aside class="recit__marge" aria-label="Illustration">
+              <figure class="planche">
+                <div class="emplacement" style="--ratio: 21 / 9" role="img" aria-label="Emplacement ACC-08, illustration à générer : les portes qui ne s’ouvrent pas.">
+                  <div class="emplacement__fiche">
+                    <p class="emplacement__id">ACC-08 <small>gravure à générer, 21:9</small></p>
+                    <p class="emplacement__sujet">Quatre portes fermées, une cinquième entrouverte</p>
+                  </div>
+                </div>
+                <ol class="portes">
+                  <li>BUT Informatique</li>
+                  <li>Physique-chimie</li>
+                  <li>BUT Réseaux &amp; Télécoms, 2023-2024</li>
+                  <li>Piscine de 42</li>
+                  <li class="portes__ouverte">La voie qui marche</li>
+                </ol>
+              </figure>
+            </aside>
+          </section>
+
+          <section class="recit" id="voie" aria-labelledby="t-voie">
+            <div class="recit__texte">
+              <p class="recit__quand">2025</p>
+              <h3 class="recit__titre recit__titre--h3" id="t-voie">La voie qui marche</h3>
+              <div class="recit-texte">
+                <p>Je passe le titre de développeur web et web mobile chez Elan Formation. Je boucle le programme en <span class="surligne">un mois</span>, je mène des projets en parallèle et je couvre en bonus l’essentiel du niveau supérieur, concepteur développeur d’applications. En stage chez ATIS Solutions, mes modules réduisent de 30&nbsp;% le temps de traitement administratif.</p>
+              </div>
+              <p class="recit__suite"><a class="lien-suite fl fl--int" href="formation.html" data-hors-maquette="Formation et certifications">Formation et certifications</a></p>
+            </div>
+            <aside class="recit__marge" aria-label="Illustration">
+              <div class="emplacement" style="--ratio: 4 / 3" role="img" aria-label="Emplacement ACC-09, illustration à générer : le programme bouclé en un mois.">
+                <div class="emplacement__fiche">
+                  <p class="emplacement__id">ACC-09 <small>gravure à générer, 4:3</small></p>
+                  <p class="emplacement__sujet">Le programme bouclé en un mois</p>
+                  <p class="emplacement__compo">Composition validée le 8 octobre&nbsp;: chronomètre, grands dossiers en perspective, rouleau de diplôme noué.</p>
+                </div>
+              </div>
+            </aside>
+          </section>
+
+          <section class="recit" id="bureau" aria-labelledby="t-bureau">
+            <div class="recit__texte">
+              <p class="recit__quand">Fin 2025</p>
+              <h3 class="recit__titre recit__titre--h3" id="t-bureau">De l’autre côté du bureau</h3>
+              <div class="recit-texte">
+                <p>Deux mois après mon titre, l’école perd son formateur en fin de promotion. Des étudiants croisés pendant mon cursus donnent mon nom. Je reprends en urgence une dizaine d’apprenants, dont la moitié prépare le titre de concepteur développeur d’applications, un niveau au-dessus du mien. Un début intimidant, puis une expérience très formatrice&nbsp;: tous obtiennent leur titre.</p>
+              </div>
+              <p class="recit__suite"><a class="lien-suite fl fl--int" href="professionnel.html" data-hors-maquette="Parcours professionnel">Parcours professionnel</a></p>
+            </div>
+            <aside class="recit__marge" aria-label="Illustration">
+              <div class="emplacement" style="--ratio: 4 / 3" role="img" aria-label="Emplacement ACC-11, illustration à générer : la classe vue depuis le pupitre du formateur.">
+                <div class="emplacement__fiche">
+                  <p class="emplacement__id">ACC-11 <small>gravure à générer, 4:3</small></p>
+                  <p class="emplacement__sujet">La classe, vue depuis le pupitre</p>
+                  <p class="emplacement__compo">Une dizaine de postes, silhouettes de dos, tableau couvert d’un schéma interface, API et base de données.</p>
+                </div>
+              </div>
+            </aside>
+          </section>
+          <p class="cul-de-lampe" aria-hidden="true"><svg class="lanterne" viewBox="0 0 24 24"><path class="lanterne__trait" d="M12 2.3a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8M12 5.1v1.4M7 9.6 12 6.5l5 3.1M7.6 9.6h8.8M8.3 9.6v9.2M15.7 9.6v9.2M6.6 18.8h10.8M8.2 21.3h7.6"/><path class="lanterne__flamme" d="M12 11.2c1.5 1.7 2.1 2.8 2.1 3.9a2.1 2.1 0 0 1-4.2 0c0-1.1.6-2.2 2.1-3.9z"/></svg></p>
+        </section>
+
+        <!-- 02 · Aujourd’hui -->
+        <section class="chapitre chapitre--acte" id="aujourdhui" data-chapitre="aujourdhui" aria-labelledby="t-aujourdhui">
+          <div class="acte acte--sombre" id="construis">
+            <header class="ouverture">
+              <p class="ouverture__num" aria-hidden="true">02</p>
+              <h2 class="ouverture__titre" id="t-aujourdhui">Aujourd’hui</h2>
+            </header>
+            <div class="recit-texte construis__intro">
+              <p>Je suis architecte logiciel chez B-Hive, à Mulhouse, depuis août 2026&nbsp;: développement web et DevOps. À côté, je construis mes propres outils.</p>
+            </div>
+            <div class="ouvrages ouvrages--defile" data-galerie="compteur-ouvrages">
+              <article class="ouvrage">
+                <div class="ouvrage__visuel avec-medaillon">
+                  <div class="cadre cadre--nav"><img src="../../../site/public/images/league-of-database/histoire-version.webp" width="2880" height="2000" loading="lazy" alt="League Of Data Base au patch 3.6.14 : le sélecteur « Patch et langue » ouvert au-dessus du catalogue de 113 champions."></div>
+                  <span class="medaillon" aria-hidden="true" style="--image: url('../../../site/public/images/league-of-database/histoire-version.webp'); --zoom: 520%; --x: 96%; --y: 0%"></span>
+                </div>
+                <h3 class="ouvrage__nom"><a href="league-of-database.html" data-hors-maquette="League Of Data Base">League Of Data Base</a></h3>
+                <p class="ouvrage__besoin">Retrouver les valeurs exactes d’un ancien patch de League of Legends, dans sa langue.</p>
+                <p class="ouvrage__chiffre"><span class="surligne">403 patchs</span> depuis 2012, en 21 langues</p>
+              </article>
+              <article class="ouvrage">
+                <div class="ouvrage__visuel">
+                  <div class="cadre cadre--nav"><img src="../../../site/src/assets/projets/bloodborne/parcours-desktop.webp" width="2200" height="1400" loading="lazy" alt="Bloodborne Legendary Run sur ordinateur : la constellation d’un personnage, avec la progression de chaque galaxie."></div>
+                </div>
+                <h3 class="ouvrage__nom"><a href="bloodborne-legendary-run.html" data-hors-maquette="Bloodborne Legendary Run">Bloodborne Legendary Run</a></h3>
+                <p class="ouvrage__besoin">Ranger tous les objectifs d’une partie complète de Bloodborne, sur le web et sur Android.</p>
+                <p class="ouvrage__chiffre"><span class="surligne">1&nbsp;289 objectifs</span> en 22 constellations</p>
+              </article>
+              <article class="ouvrage">
+                <div class="ouvrage__visuel avec-medaillon">
+                  <div class="cadre cadre--term"><img src="../../../site/src/assets/projets/gup-selection.webp" width="1624" height="1052" loading="lazy" alt="gup dans un terminal : 14 sources détectées, 12 mises à jour à choisir ; Scoop est en échec et les autres sources continuent."></div>
+                  <span class="medaillon" aria-hidden="true" style="--image: url('../../../site/src/assets/projets/gup-selection.webp'); --zoom: 406%; --x: 41%; --y: 63%"></span>
+                </div>
+                <h3 class="ouvrage__nom"><a href="gup.html" data-hors-maquette="gup">gup</a></h3>
+                <p class="ouvrage__besoin">Mettre à jour en une commande tout ce qui est installé sur un poste de développeur.</p>
+                <p class="ouvrage__chiffre"><span class="surligne">153 sources</span> sur Windows, macOS et Linux</p>
+              </article>
+            </div>
+            <p class="compteur" id="compteur-ouvrages" aria-live="polite">1 / 3</p>
+          </div>
+
+          <section class="recit plusieurs" id="plusieurs" aria-labelledby="t-plusieurs">
+            <div class="recit__texte">
+              <p class="recit__quand">Depuis l’automne 2025</p>
+              <h3 class="recit__titre recit__titre--h3" id="t-plusieurs">À plusieurs</h3>
+              <div class="recit-texte">
+                <p>Je rejoins comme traducteur le pôle francophone de PvZ Fusion, la traduction bénévole d’un jeu amateur. J’accueille les nouveaux, je les forme, j’organise le travail. Quand le titre de lead arrive, je tenais déjà le rôle&nbsp;: la seule chose qui a changé, c’est le titre. Je suis ensuite nommé mainteneur du projet multilingue.</p>
+                <p>Certains, arrivés sans compétences, sont devenus des piliers de la communauté.</p>
+              </div>
+              <blockquote class="citation-close voix">
+                <p>Seul on va vite, à plusieurs on va loin&nbsp;: la qualité et la sincérité des échanges démultiplient les résultats.</p>
+              </blockquote>
+              <p class="recit__suite"><a class="lien-suite fl fl--int" href="pvz-fusion.html">Le pôle francophone de PvZ Fusion</a></p>
+            </div>
+            <aside class="recit__marge reperes-marge" aria-label="Le pôle en chiffres">
+              <div class="repere">
+                <p class="repere__valeur"><span class="surligne">20</span></p>
+                <p class="repere__libelle">contributeurs formés</p>
+              </div>
+              <div class="repere">
+                <p class="repere__valeur"><span class="surligne">10</span></p>
+                <p class="repere__libelle">en même temps, au plus fort</p>
+              </div>
+              <div class="repere">
+                <p class="repere__valeur"><span class="surligne">35</span></p>
+                <p class="repere__libelle">de mes pull requests fusionnées dans le projet officiel</p>
+              </div>
+            </aside>
+            <ul class="recit__large gestes" aria-label="Les quatre gestes du pôle">
+              <li>
+                <div class="emplacement emplacement--compact" style="--ratio: 1 / 1" role="img" aria-label="Emplacement ACC-15, reprend PVZ-05 : un tableau pour centraliser le travail.">
+                  <div class="emplacement__fiche"><p class="emplacement__id">ACC-15 <small>reprend PVZ-05</small></p><p class="emplacement__sujet">Des mains prennent chacune une carte</p></div>
+                </div>
+                <p>Un Trello pour centraliser le travail</p>
+              </li>
+              <li>
+                <div class="emplacement emplacement--compact" style="--ratio: 1 / 1" role="img" aria-label="Emplacement ACC-15, reprend PVZ-08 : le classement de la semaine.">
+                  <div class="emplacement__fiche"><p class="emplacement__id">ACC-15 <small>reprend PVZ-08</small></p><p class="emplacement__sujet">Le podium de la semaine</p></div>
+                </div>
+                <p>Un classement chaque semaine, pour encourager chacun à se dépasser</p>
+              </li>
+              <li>
+                <div class="emplacement emplacement--compact" style="--ratio: 1 / 1" role="img" aria-label="Emplacement ACC-15, reprend PVZ-08 : la lettre personnelle.">
+                  <div class="emplacement__fiche"><p class="emplacement__id">ACC-15 <small>reprend PVZ-08</small></p><p class="emplacement__sujet">La lettre nouée d’un ruban</p></div>
+                </div>
+                <p>Un récapitulatif individuel, pour féliciter et remercier</p>
+              </li>
+              <li>
+                <div class="emplacement emplacement--compact" style="--ratio: 1 / 1" role="img" aria-label="Emplacement ACC-15, reprend PVZ-07 : une livraison par semaine.">
+                  <div class="emplacement__fiche"><p class="emplacement__id">ACC-15 <small>reprend PVZ-07</small></p><p class="emplacement__sujet">Un colis scellé par semaine</p></div>
+                </div>
+                <p>Une pull request par semaine, pour garder le rythme</p>
+              </li>
+            </ul>
+          </section>
+        </section>
+
+        <!-- 03 · La suite -->
+        <section class="chapitre chapitre--acte" id="discutons" data-chapitre="discutons" aria-labelledby="t-discutons">
+          <div class="acte acte--teinte">
+            <header class="ouverture">
+              <p class="ouverture__num" aria-hidden="true">03</p>
+              <h2 class="ouverture__titre" id="t-discutons">La suite</h2>
+            </header>
+            <div class="verbes">
+              <div class="verbe">
+                <h3>Maîtriser</h3>
+                <p>S’approprier vite ce qui se fait&nbsp;: deux jours pour une méta, un mois pour un programme.</p>
+                <a href="#voie">Relire «&nbsp;La voie qui marche&nbsp;»</a>
+              </div>
+              <div class="verbe">
+                <h3>Réinventer</h3>
+                <p>Sortir des sentiers battus&nbsp;: un deck à contre-courant, un jeu papier devenu jeu en ligne.</p>
+                <a href="#gwent">Relire «&nbsp;Gwent, la méthode&nbsp;»</a>
+              </div>
+              <div class="verbe">
+                <h3>Emmener</h3>
+                <p>Faire progresser les autres&nbsp;: une promotion reprise en urgence, tous titrés&nbsp;; 20&nbsp;contributeurs formés.</p>
+                <a href="#plusieurs">Relire «&nbsp;À plusieurs&nbsp;»</a>
+              </div>
+            </div>
+            <div class="envoi">
+              <figure class="envoi__photo">
+                <img class="tirage" src="../commun/photos/charles-2.webp" width="1280" height="1920" loading="lazy" alt="">
+              </figure>
+              <div class="envoi__texte">
+                <p>Une idée à confronter, une équipe à faire grandir, un sujet technique à creuser&nbsp;: la discussion commence ici. <span class="a-confirmer" title="Ton de la phrase (Q11)">à confirmer</span></p>
+                <div class="actions">
+                  <a class="btn fl fl--int" href="contact.html" data-hors-maquette="Contact">Discutons</a>
+                  <a class="lien-action fl fl--int" href="projets.html#contribuer">Contribuer à mes projets open source</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="colophon">
+    <div class="conteneur">
+      <div class="colophon__grille">
+        <div>
+          <span class="colophon__marque" role="img" aria-label="Logo : un livre ouvert et une lanterne, Charles Lindecker"><span class="colophon__encre"></span><span class="colophon__lumiere"></span></span>
+        </div>
+        <nav aria-label="Pages">
+          <h2>Pages</h2>
+          <ul>
+            <li><a href="accueil.html" aria-current="page">Accueil</a></li>
+            <li><a href="projets.html">Projets</a></li>
+            <li><a href="pvz-fusion.html">PvZ Fusion</a></li>
+            <li><a href="competences.html">Compétences</a></li>
+            <li><a href="contact.html" data-hors-maquette="Contact">Contact</a></li>
+          </ul>
+        </nav>
+        <div>
+          <h2>Me joindre</h2>
+          <ul>
+            <li><a href="mailto:charles.lindecker@outlook.fr">charles.lindecker@outlook.fr</a><button class="copier" type="button" data-copier="charles.lindecker@outlook.fr" hidden>Copier</button></li>
+            <li><a class="fl fl--ext" href="https://www.linkedin.com/in/charles-lindecker/">LinkedIn</a></li>
+            <li><a class="fl fl--ext" href="https://github.com/LINDECKER-Charles">GitHub</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Colophon</h2>
+          <p>Composé en Newsreader et Instrument Sans. Le logo réunit un livre ouvert et une lanterne.</p>
+          <ul><li><a href="mentions-legales.html" data-hors-maquette="Mentions légales">Mentions légales</a></li></ul>
+        </div>
+      </div>
+      <p class="colophon__acheve">Maquette de la direction A, «&nbsp;Édition reliée&nbsp;», octobre 2026.</p>
+    </div>
+  </footer>
+</body>
+</html>

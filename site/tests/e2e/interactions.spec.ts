@@ -3,10 +3,11 @@ import { fileDeMesure } from './support/navigateur';
 import { CONTACT_EMAIL } from './support/serveurs.mjs';
 
 /**
- * Les interactions qui portent du sens : le mode nuit, le glossaire, la copie
- * de l'adresse, le sommaire à portée de pouce, le repère de lecture, le tracé
- * de la figure 1. Chacune répond à un geste et le dit ; chacune envoie
- * l'événement prévu par le plan de marquage, et rien de plus.
+ * Les interactions qui portent du sens : le mode nuit et son allumage, le
+ * glossaire, la copie de l'adresse, le menu et le sommaire à portée de pouce,
+ * le tracé de la figure 1. Chacune répond à un geste et le dit ; chacune
+ * envoie l'événement prévu par le plan de marquage, et rien de plus. La
+ * navigation de page de l’accueil est vérifiée dans accueil.spec.ts.
  */
 
 test.describe('mode nuit', () => {
@@ -20,8 +21,8 @@ test.describe('mode nuit', () => {
     await bouton.click();
     await expect(racine).toHaveAttribute('data-theme', 'nuit');
     await expect(bouton).toHaveAttribute('aria-pressed', 'true');
-    // La touche Bloodborne du pied de page n'existe que la nuit.
-    await expect(page.getByText('La nuit, la chasse aux bugs commence.')).toBeVisible();
+    // La lanterne de la bascule s'allume : sa flamme prend la lumière de la lanterne.
+    await expect(bouton.locator('.lt-flamme')).toHaveCSS('fill', 'rgb(240, 178, 74)');
     expect(await fileDeMesure(page)).toContainEqual(['theme', { choix: 'nuit' }]);
 
     await page.reload();
@@ -37,6 +38,31 @@ test.describe('mode nuit', () => {
       await expect(page.locator('html')).toHaveAttribute('data-theme', 'nuit');
       expect((await fileDeMesure(page)).filter(([nom]) => nom === 'theme')).toEqual([]);
     });
+  });
+
+  test('l’allumage part de la lanterne : la nuit tombe sur elle, le jour en repart', async ({ page }) => {
+    await page.goto('/');
+    await page.evaluate(() => {
+      const etats: [string | null, string][] = [];
+      (window as unknown as { __allumage: typeof etats }).__allumage = etats;
+      const racine = document.documentElement;
+      new MutationObserver(() => etats.push([racine.getAttribute('data-transition-theme'), racine.style.getPropertyValue('--vt-x')])).observe(
+        racine,
+        { attributes: true, attributeFilter: ['data-transition-theme'] },
+      );
+    });
+    const lanterne = page.locator('[data-theme-bascule]');
+    const boite = await lanterne.boundingBox();
+    await lanterne.click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'nuit');
+    await expect(page.locator('html')).not.toHaveAttribute('data-transition-theme', /.+/, { timeout: 2_000 });
+    await lanterne.click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'jour');
+    await expect(page.locator('html')).not.toHaveAttribute('data-transition-theme', /.+/, { timeout: 2_000 });
+    const etats = await page.evaluate(() => (window as unknown as { __allumage: [string | null, string][] }).__allumage);
+    expect(etats.map(([etat]) => etat)).toEqual(['vers-nuit', null, 'vers-jour', null]);
+    // Le masque est centré sur la lanterne touchée.
+    expect(Number.parseFloat(etats[0][1])).toBeCloseTo((boite?.x ?? 0) + (boite?.width ?? 0) / 2, -1);
   });
 
   test('le fondu ne se prépare que sur un changement de thème', async ({ page }) => {
@@ -117,11 +143,12 @@ test('« Copier l’adresse » copie, le dit, puis revient', async ({ page, cont
   test.skip(browserName !== 'chromium', 'permissions du presse-papiers propres à Chromium');
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.goto('/contact');
-  const bouton = page.locator('button[data-copier]');
+  // Le bouton de la page ; celui du pied de page a sa propre mesure.
+  const bouton = page.locator('main button[data-copier]');
   await bouton.scrollIntoViewIfNeeded();
   await bouton.click();
   await expect(bouton).toHaveText(/Adresse copiée/);
-  await expect(page.locator('[data-copier-statut]')).toHaveText('Adresse copiée');
+  await expect(page.locator('main [data-copier-statut]')).toHaveText('Adresse copiée');
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(CONTACT_EMAIL);
   expect(await fileDeMesure(page)).toContainEqual(['contact-copie', { emplacement: 'contact' }]);
   await expect(bouton).toHaveText(/Copier l’adresse/, { timeout: 4_000 });
@@ -143,25 +170,12 @@ test('chaque chapitre atteint est mesuré une fois, dans l’ordre de lecture', 
   expect(lectures).toEqual(['origine', 'aujourdhui', 'discutons']);
 });
 
-test.describe('bureau', () => {
-  test.skip(({ viewport }) => (viewport?.width ?? 0) < 1100, 'repère de lecture : bureau seulement');
-
-  test('le repère de lecture marque le chapitre en cours', async ({ page }) => {
-    await page.goto('/');
-    const reperes = page.getByRole('navigation', { name: 'Repère de lecture' });
-    await expect(reperes).toBeVisible();
-    await expect(reperes.locator('[aria-current]')).toHaveCount(0);
-    await page.evaluate(() => document.getElementById('discutons')?.scrollIntoView({ behavior: 'instant' }));
-    await expect(reperes.locator('[aria-current]')).toHaveText(/La suite, à plusieurs/);
-  });
-});
-
 test.describe('mobile', () => {
   test.skip(({ viewport }) => (viewport?.width ?? 0) >= 1100, 'sommaire de l’en-tête : sous 1100 px');
 
   test('le menu donne accès aux pages au clavier', async ({ page }) => {
     await page.goto('/');
-    const menu = page.getByRole('banner').locator('details');
+    const menu = page.getByRole('banner').locator('details[data-menu-mobile]');
     await menu.locator('summary').focus();
     await page.keyboard.press('Enter');
     await expect(menu).toHaveAttribute('open', '');
@@ -175,6 +189,35 @@ test.describe('mobile', () => {
     await menu.getByRole('link', { name: 'Projets', exact: true }).click();
     await expect(page).toHaveURL(/\/projets$/);
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  });
+
+  test('le sommaire de l’en-tête mène aux chapitres, et se referme comme le menu', async ({ page }) => {
+    await page.goto('/');
+    const sommaire = page.getByRole('banner').locator('details', { has: page.getByText('Sommaire', { exact: true }) });
+    const menu = page.getByRole('banner').locator('details[data-menu-mobile]');
+    await sommaire.locator('summary').click();
+    await expect(sommaire).toHaveAttribute('open', '');
+    const liens = sommaire.getByRole('navigation', { name: 'Sommaire de la page' }).getByRole('link');
+    await expect(liens).toHaveCount(3);
+    await expect(liens.first()).toHaveAttribute('href', '#origine');
+    // Ouvrir le menu referme le sommaire ; Échap referme le menu et rend le focus.
+    await menu.locator('summary').click();
+    await expect(sommaire).not.toHaveAttribute('open', '');
+    await page.keyboard.press('Escape');
+    await expect(menu).not.toHaveAttribute('open', '');
+    await expect(menu.locator('summary')).toBeFocused();
+    await sommaire.locator('summary').click();
+    await liens.nth(2).click();
+    await expect(sommaire).not.toHaveAttribute('open', '');
+    await expect(page.locator('#discutons')).toBeInViewport();
+  });
+
+  test('la barre de 2 px suit la lecture', async ({ page }) => {
+    await page.goto('/contact');
+    const barre = page.locator('[data-progression]');
+    await expect(barre).toBeAttached();
+    await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }));
+    await expect.poll(() => barre.evaluate((element) => Number.parseFloat(element.style.getPropertyValue('--progression')))).toBeGreaterThan(0.99);
   });
 });
 

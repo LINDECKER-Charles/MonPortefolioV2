@@ -1,109 +1,16 @@
 /*
- * Socle du site « Mode d'emploi » : jetons, base typographique et composants
- * partagés. Source : le design system de la maquette retenue
- * (design/propositions/d-mode-d-emploi.html). Les styles propres à un bloc
- * vivent dans son composant.
+ * Socle du site, direction « Lanterne » : base typographique, mise en page,
+ * actes, zone éclairée et les primitives employées partout (bouton, lien
+ * d’action, flèches, surligneur, marque « à confirmer »). Les jetons vivent
+ * dans jetons.css ; un composant garde ses propres styles (src/components/ui,
+ * src/components/pages), payés seulement par les pages qui l’emploient.
  *
- * Trois principes à garder en tête en modifiant ce fichier :
- *   - le bleu, c'est la voix de l'auteur (liens, tracés, notes au stylo) ;
- *   - le jaune, c'est la preuve : il ne surligne que des chiffres sourcés ;
- *   - lisible d'abord : contrastes AA au minimum, de jour comme de nuit.
+ * Trois principes :
+ *   - une seule lumière par écran : la zone éclairée (.foyer) ;
+ *   - le bleu roi (la lune, la nuit) ne porte que ce qui se clique ;
+ *   - le colza ne surligne qu’un chiffre sourcé, un seul par preuve.
  */
-
-/* ===== Jetons — jour ===== */
-:root {
-  --papier: #f3f5f7;
-  --blanc: #ffffff;
-  --encre: #14161b;
-  --graphite: #59606d;
-  --bleu: #1f4fd1;
-  --bleu-survol: #173ca6;
-  --sur-bleu: #ffffff;
-  --colza: #f5d33f;
-  --sur-colza: #14161b;
-  --filet: #d8dde5;
-  --trait: #59606d;
-  --trait-doux: #aab2bf;
-  --pointille: #b9c0cb;
-  --voile: rgb(245 246 248 / 0.92);
-
-  /* Trace de surligneur à main levée (design/assets/annotations/surligneur-3.svg),
-     étirée sous le texte ; une variante par thème, la couleur étant dans le fichier. */
-  --trace: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 208 24' preserveAspectRatio='none'%3E%3Cpath fill='%23F5D33F' d='M1.5 6.7 22 5.4 43 6.1 63 4.8 84 5.5 105 4.2 127 4.8 149 3.9 174 4.4 206 3.9 205 18.3 186 19 164 18.6 140 19.8 116 19.1 92 20.2 66 19.5 43 20.3 19 19.7 2.5 20.5Z'/%3E%3C/svg%3E");
-
-  --font-texte: var(--police-texte, 'Atkinson Hyperlegible Next', system-ui, sans-serif);
-  --font-note: var(--police-note, 'Newsreader', Georgia, serif);
-
-  --t-display: clamp(2.75rem, 1.15rem + 4.6vw, 5.25rem);
-  --t-h2: clamp(2.5rem, 1.2rem + 4vw, 4.5rem);
-  --t-h3: 1.5rem;
-  --t-chapeau: 1.3125rem;
-  --t-corps: 1.125rem;
-  --t-petit: 1rem;
-  --t-etiquette: 0.875rem;
-  --t-note: 1.0625rem;
-
-  --s1: 4px;
-  --s2: 8px;
-  --s3: 12px;
-  --s4: 16px;
-  --s5: 24px;
-  --s6: 32px;
-  --s7: 48px;
-  --s8: 64px;
-  --s9: 96px;
-  --s10: 128px;
-
-  --rayon: 4px;
-  --gouttiere: clamp(24px, 4vw, 56px);
-  --hauteur-entete: 72px;
-
-  color-scheme: light;
-}
-
-/* ===== Jetons — nuit =====
-   Deux portes d'entrée, mêmes valeurs : le choix du lecteur (data-theme, posé
-   par /theme.js avant le premier rendu), sinon la préférence du système quand
-   le script n'a pas tourné. */
-:root[data-theme='nuit'] {
-  --papier: #0e1424;
-  --blanc: #151e33;
-  --encre: #e6eaf2;
-  --graphite: #a3adbf;
-  --bleu: #8fb0ff;
-  --bleu-survol: #b5cbff;
-  --sur-bleu: #0e1424;
-  --colza: #e2c044;
-  --sur-colza: #14161b;
-  --filet: #26304a;
-  --trait: #a3adbf;
-  --trait-doux: #4a5672;
-  --pointille: #3a4664;
-  --voile: rgb(14 20 36 / 0.92);
-  --trace: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 208 24' preserveAspectRatio='none'%3E%3Cpath fill='%23E2C044' d='M1.5 6.7 22 5.4 43 6.1 63 4.8 84 5.5 105 4.2 127 4.8 149 3.9 174 4.4 206 3.9 205 18.3 186 19 164 18.6 140 19.8 116 19.1 92 20.2 66 19.5 43 20.3 19 19.7 2.5 20.5Z'/%3E%3C/svg%3E");
-  color-scheme: dark;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    --papier: #0e1424;
-    --blanc: #151e33;
-    --encre: #e6eaf2;
-    --graphite: #a3adbf;
-    --bleu: #8fb0ff;
-    --bleu-survol: #b5cbff;
-    --sur-bleu: #0e1424;
-    --colza: #e2c044;
-    --sur-colza: #14161b;
-    --filet: #26304a;
-    --trait: #a3adbf;
-    --trait-doux: #4a5672;
-    --pointille: #3a4664;
-    --voile: rgb(14 20 36 / 0.92);
-    --trace: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 208 24' preserveAspectRatio='none'%3E%3Cpath fill='%23E2C044' d='M1.5 6.7 22 5.4 43 6.1 63 4.8 84 5.5 105 4.2 127 4.8 149 3.9 174 4.4 206 3.9 205 18.3 186 19 164 18.6 140 19.8 116 19.1 92 20.2 66 19.5 43 20.3 19 19.7 2.5 20.5Z'/%3E%3C/svg%3E");
-    color-scheme: dark;
-  }
-}
+@import './jetons.css';
 
 /* ===== Base ===== */
 *,
@@ -115,29 +22,39 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  /* Une ancre ne disparaît jamais sous l'en-tête collant. */
-  scroll-padding-top: calc(var(--hauteur-entete) + var(--s5));
+  /* Une ancre ne disparaît jamais sous l’en-tête collant. */
+  scroll-padding-top: calc(var(--entete) + var(--s5));
   scroll-behavior: smooth;
-  background: var(--papier);
+  background: var(--fond);
+  /* La Serif n’a qu’une graisse : jamais de faux gras. */
+  font-synthesis: style small-caps;
 }
 
 body {
   margin: 0;
-  background: var(--papier);
+  background: var(--fond);
   color: var(--encre);
-  font-family: var(--font-texte);
-  font-size: var(--t-corps);
+  font-family: var(--police-texte);
+  font-size: var(--t-m);
   line-height: 1.6;
+  font-weight: 400;
+  font-variant-numeric: lining-nums proportional-nums;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
   font-kerning: normal;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 img,
-svg {
+svg,
+video {
   display: block;
   max-width: 100%;
+}
+
+/* Les halos (foyer, captures) débordent de leur bloc : jamais de la page. */
+main,
+footer {
+  overflow-x: clip;
 }
 
 h1,
@@ -145,9 +62,10 @@ h2,
 h3,
 h4 {
   margin: 0;
-  font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: -0.01em;
+  font-family: var(--police-titre);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: var(--ls-titre);
   text-wrap: balance;
 }
 
@@ -164,25 +82,32 @@ p {
 }
 
 a {
-  color: var(--bleu);
+  color: var(--accent);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.22em;
 }
 
 a:hover {
+  color: var(--accent-survol);
   text-decoration-thickness: 2px;
 }
 
 :focus-visible {
-  outline: 2px solid var(--bleu);
+  outline: 2px solid var(--focus);
   outline-offset: 3px;
-  border-radius: 2px;
+  border-radius: var(--r1);
+}
+
+/* Un titre atteint par le sommaire reçoit le focus pour les lecteurs d’écran
+   (scripts/entete.ts) : il n’est pas une commande, pas de contour. */
+.cible-sommaire:focus {
+  outline: none;
 }
 
 ::selection {
-  background: var(--colza);
-  color: var(--sur-colza);
+  background: var(--surligneur);
+  color: var(--sur-surligneur);
 }
 
 button {
@@ -203,276 +128,263 @@ button {
   border: 0;
 }
 
-.wrap {
-  max-width: 1360px;
-  margin-inline: auto;
-  padding-inline: var(--gouttiere);
-}
-
 .evitement {
   position: absolute;
-  left: 12px;
-  top: -80px;
+  left: var(--s4);
+  top: -100px;
   z-index: 100;
-  padding: 12px 16px;
-  border-radius: var(--rayon);
-  background: var(--bleu);
-  color: var(--sur-bleu);
-  font-weight: 700;
+  padding: var(--s3) var(--s4);
+  border-radius: var(--r1);
+  background: var(--bouton);
+  color: var(--bouton-texte);
+  font-weight: 600;
   text-decoration: none;
 }
 
 .evitement:focus {
-  top: 12px;
+  top: var(--s3);
 }
 
-/* Ce qui n'existe que la nuit : une lune dans l'en-tête, une ligne au pied de page. */
-.nuit-seul {
-  display: none !important;
+.insecable {
+  white-space: nowrap;
 }
 
-:root[data-theme='nuit'] .nuit-seul {
-  display: revert !important;
+/* Chiffres tabulaires : tableaux, identifiants, compteurs. */
+.chiffres {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.petit {
+  font-size: var(--t-xs);
+  line-height: 1.5;
+  color: var(--eteint);
+}
+
+.chapeau {
+  font-size: var(--t-l);
+  line-height: 1.5;
+}
+
+/* La voix de Charles : l’italique d’Instrument Serif. */
+.citation {
+  font-family: var(--police-titre);
+  font-style: italic;
+  font-size: var(--t-xl);
+  line-height: 1.22;
+  letter-spacing: var(--ls-0);
+  color: var(--encre);
+}
+
+.citation:where(blockquote) {
+  margin: var(--s6) 0 0;
+  max-width: 24ch;
+}
+
+.citation cite {
+  display: block;
+  margin-top: var(--s3);
+  font-family: var(--police-texte);
+  font-style: normal;
+  font-size: var(--t-xs);
+  color: var(--eteint);
+}
+
+/* ===== Mise en page ===== */
+.conteneur {
+  width: min(100% - 2 * var(--gouttiere), var(--largeur));
+  margin-inline: auto;
+}
+
+.mesure {
+  max-width: var(--mesure);
+}
+
+/* Actes : un changement de partie, un changement de lumière (règle B6). Les
+   jetons des actes sombres sont dans jetons.css ; leur contenu en hérite. */
+.acte-teinte {
+  background: var(--acte);
+  color: var(--encre);
+}
+
+.acte-veille {
+  background: var(--veille);
+  color: var(--encre);
+}
+
+.acte-bleu,
+.aplat-roi {
+  background: var(--fond);
+  color: var(--encre);
+}
+
+/* La nuit, les actes restent une rupture : proches de la suie, chacun est
+   cerné du filet porteur (--trait, 3,9:1 contre la suie, règle B6). L’acte de
+   veille passe au bleu nuit franc, et la lanterne l’éclaire de l’intérieur,
+   côté visuel (--veille-foyer, à droite par défaut). */
+:root[data-theme='nuit'] :is(.acte-teinte, .acte-bleu, .acte-veille) {
+  box-shadow: inset 0 0 0 1px var(--trait);
+}
+
+:root[data-theme='nuit'] .acte-veille {
+  background:
+    radial-gradient(40% 60% at var(--veille-foyer, 85% 40%), var(--veille-lueur), transparent),
+    var(--veille-nuit);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .nuit-seul {
-    display: revert !important;
+  :root:not([data-theme]) :is(.acte-teinte, .acte-bleu, .acte-veille) {
+    box-shadow: inset 0 0 0 1px var(--trait);
+  }
+
+  :root:not([data-theme]) .acte-veille {
+    background:
+      radial-gradient(40% 60% at var(--veille-foyer, 85% 40%), var(--veille-lueur), transparent),
+      var(--veille-nuit);
   }
 }
 
-/* ===== Boutons ===== */
-.btn {
+/* La zone éclairée : une par écran. Le jour, une flaque de lumière douce ;
+   la nuit, le halo chaud de la lanterne. */
+.foyer {
+  position: relative;
+  isolation: isolate;
+}
+
+.foyer::before {
+  content: '';
+  position: absolute;
+  inset: -18% -14%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(closest-side, var(--lumiere), transparent);
+}
+
+/* ===== Actions : une action principale, un libellé, une destination =====
+   Grammaire des flèches (règle E2) : → page interne, ↓ ancre, ↗ sortie du
+   site. Composants : ui/Bouton.astro et ui/LienAction.astro. */
+.bouton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5em;
+  gap: var(--s2);
   min-height: 48px;
-  padding: 11px 22px;
-  border: 1px solid var(--bleu);
-  border-radius: var(--rayon);
-  font: 700 1rem/1.2 var(--font-texte);
+  padding: 0 var(--s5);
+  border: 0;
+  border-radius: var(--r3);
+  background: var(--bouton);
+  color: var(--bouton-texte);
+  font-size: var(--t-s);
+  font-weight: 600;
+  letter-spacing: var(--ls-petit);
+  line-height: 1.2;
   text-decoration: none;
   cursor: pointer;
-  transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease;
+  transition: background-color var(--d-ui) var(--courbe), box-shadow var(--d-ui) var(--courbe);
 }
 
-.btn--plein {
-  background: var(--bleu);
-  color: var(--sur-bleu);
+.bouton:hover {
+  background: var(--bouton-survol);
+  color: var(--bouton-texte);
+  text-decoration: none;
 }
 
-.btn--plein:hover {
-  background: var(--bleu-survol);
-  border-color: var(--bleu-survol);
-  color: var(--sur-bleu);
+:root[data-theme='nuit'] .bouton,
+.acte-veille .bouton,
+.acte-bleu .bouton {
+  box-shadow: 0 0 32px -6px var(--lanterne-eclat);
 }
 
-.btn--contour {
+.bouton--contour {
   background: transparent;
-  color: var(--bleu);
+  color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--trait);
 }
 
-.btn--contour:hover {
-  background: color-mix(in srgb, var(--bleu) 9%, transparent);
+.bouton--contour:hover {
+  background: transparent;
+  color: var(--accent-survol);
+  box-shadow: inset 0 0 0 1px var(--accent);
 }
 
-.btn--petit {
-  min-height: 44px;
-  padding: 8px 16px;
-  font-size: 0.9375rem;
+:root[data-theme='nuit'] .bouton--contour,
+.acte-veille .bouton--contour,
+.acte-bleu .bouton--contour {
+  box-shadow: inset 0 0 0 1px var(--trait);
 }
 
-.btn svg {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
+/* En ligne, pas en flex : sur deux lignes, la flèche reste collée au dernier
+   mot (espace insécable) au lieu de partir au bord du bloc. Cible de 48 px. */
+.lien-action {
+  display: inline-block;
+  padding-block: var(--s3);
+  font-size: var(--t-s);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* Liens de preuve empilés sous un bloc : 36 px de haut sur ordinateur, la
+   cible de 44 px sous 860 px (règle E7). */
+.lien-action--compact {
+  padding-block: 6px;
+}
+
+@media (max-width: 860px) {
+  .lien-action--compact {
+    padding-block: 10px;
+  }
+}
+
+.fleche {
+  font-family: var(--police-texte);
+  font-weight: 400;
+  font-style: normal;
 }
 
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--s3);
+  align-items: center;
+  gap: var(--s3) var(--s5);
 }
 
-/* Bouton carré à pictogramme (sommaire, mode nuit). */
-.bouton-icone {
-  display: inline-grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  border: 1px solid var(--filet);
-  border-radius: var(--rayon);
-  background: transparent;
-  color: var(--encre);
-  cursor: pointer;
-  transition:
-    border-color 0.15s ease,
-    color 0.15s ease;
-}
-
-.bouton-icone:hover {
-  border-color: var(--bleu);
-  color: var(--bleu);
-}
-
-.bouton-icone svg {
-  width: 22px;
-  height: 22px;
-}
-
-/* Les scènes sont leurs propres commandes ; le contour n’apparaît qu’au clavier. */
-.js [data-rejouer] { cursor: pointer; }
-[data-rejouer]:focus-visible { outline: 2px solid var(--bleu); outline-offset: 5px; border-radius: var(--rayon); }
-@media print {
-  [data-figure-animation] * { animation: none !important; transition: none !important; }
-}
-
-/* ===== La voix de l'auteur : le stylo bleu ===== */
-.note {
-  font-family: var(--font-note);
-  font-style: italic;
-  font-weight: 400;
-  font-size: var(--t-note);
-  line-height: 1.45;
-  color: var(--bleu);
-}
-
-.citation {
-  margin: var(--s6) 0 0;
-  font-family: var(--font-note);
-  font-style: italic;
-  font-weight: 400;
-  font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem);
-  line-height: 1.2;
-  color: var(--bleu);
-  max-width: 22ch;
-  /* Le guillemet ouvrant déborde dans la marge : le texte reste aligné. */
-  text-indent: -0.42em;
-}
-
-/* ===== La preuve : le surligneur =====
-   Uniquement sous des chiffres sourcés, un seul par preuve. Le chiffre reste
-   écrit en clair : le surligneur souligne, il ne remplace pas. */
-.surligne {
-  color: var(--sur-colza);
-  background: var(--trace) no-repeat 0 var(--surligne-y, 62%) / 100% var(--surligne-h, 78%);
-  padding: 0 0.2em;
-  margin: 0 -0.08em;
+/* Le surligneur colza : un seul chiffre sourcé par preuve (règle C1). */
+mark,
+.surligneur {
+  background: var(--surligneur);
+  color: var(--sur-surligneur);
+  padding: 0.02em 0.18em;
+  border-radius: var(--r1);
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
 
-/* La nuit, le texte sombre du surligneur ne doit jamais déborder sur le fond
-   sombre : le trait couvre toute la hauteur des lettres. */
-:root[data-theme='nuit'] .surligne {
-  --surligne-y: 50%;
-  --surligne-h: 150%;
+/* Marque « à confirmer » : jamais une couleur seule, toujours un mot. Une
+   espace la sépare du texte (ui/AConfirmer.astro). */
+.a-confirmer {
+  display: inline-block;
+  padding: 0 0.4em;
+  border: 1px dashed var(--trait);
+  border-radius: var(--r1);
+  font-family: var(--police-texte);
+  font-size: var(--t-xs);
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: var(--ls-petit);
+  color: var(--eteint);
+  vertical-align: 0.3em;
+  white-space: nowrap;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .surligne {
-    --surligne-y: 50%;
-    --surligne-h: 150%;
-  }
+/* Sans JavaScript, une commande qui ne ferait rien ne s’affiche pas. */
+html:not(.js) [data-js-seulement] {
+  display: none !important;
 }
 
-/* ===== Légendes de figures ===== */
-.legende {
-  margin-top: var(--s3);
-  font-size: 0.9375rem;
-  line-height: 1.45;
-  color: var(--graphite);
-}
-
-.legende b {
-  color: var(--encre);
-  font-weight: 700;
-  margin-right: 0.3em;
-}
-
-/* ===== Figures dessinées (SVG codés, figures 1 et 2) =====
-   Une planche blanche, un filet ; des étiquettes en Atkinson, des annotations
-   en italique bleu. Deux versions par figure, bureau et mobile, pour garder
-   des étiquettes lisibles à 14 px. */
-.figure {
-  position: relative;
-}
-
-.figure__plan {
-  background: var(--blanc);
-  border: 1px solid var(--filet);
-  border-radius: var(--rayon);
-  padding: clamp(10px, 2.4vw, 28px);
-}
-
-.figure__plan svg {
-  width: 100%;
-  height: auto;
-}
-
-.figure--compacte {
-  display: none;
-}
-
-@media (max-width: 640px) {
-  .figure--large {
-    display: none;
-  }
-
-  .figure--compacte {
-    display: block;
-  }
-}
-
-.f-t {
-  font: 500 14px var(--font-texte);
-  fill: var(--graphite);
-}
-
-.figure--compacte .f-t {
-  font-size: 15px;
-}
-
-.f-t--fort {
-  font-weight: 700;
-  fill: var(--encre);
-}
-
-.f-note {
-  font: italic 400 16px var(--font-note);
-  fill: var(--bleu);
-}
-
-.f-axes {
-  fill: none;
-  stroke: var(--trait);
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.f-seuil {
-  stroke: var(--trait);
-  stroke-width: 1;
-  stroke-dasharray: 4 5;
-}
-
-.f-plein {
-  fill: var(--bleu);
-}
-
-/* ===== Pictogrammes au trait (SVG en ligne, currentColor) ===== */
-.picto {
-  display: block;
-  flex-shrink: 0;
-}
-
-/* ===== Mouvement réduit : scènes, tracé et révélations restent complets ===== */
+/* ===== Mouvement réduit : tout arrive à l’état final =====
+   Aucune transition (0 s, pas 0,01 ms : la propriété par défaut vaut `all`,
+   et un élément qui change de taille serait mesuré dans son ancien état
+   pendant une image). Les animations, elles, finissent tout de suite. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -481,37 +393,33 @@ button {
   *,
   *::before,
   *::after {
-    transition-duration: 0.01ms !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
     animation-duration: 0.01ms !important;
   }
 }
 
-/* ===== Impression : un mode d'emploi se lit aussi sur papier ===== */
+/* ===== Impression : encre sur papier ===== */
 @media print {
-  :root,
-  :root[data-theme],
-  :root:not([data-theme]) {
-    --papier: #ffffff;
-    --blanc: #ffffff;
-    --encre: #000000;
-    --graphite: #333a45;
-    --bleu: #1f4fd1;
-  }
-
   html,
   body {
-    background: #ffffff;
-    font-size: 11pt;
+    background: var(--fond);
+    font-size: var(--t-impression);
   }
 
-  .ne-pas-imprimer {
+  .ne-pas-imprimer,
+  [data-js-seulement] {
     display: none !important;
+  }
+
+  .foyer::before {
+    display: none;
   }
 
   a[href^='http']::after {
     content: ' (' attr(href) ')';
-    font-size: 0.85em;
-    color: var(--graphite);
+    font-size: var(--t-xs);
+    color: var(--eteint);
     word-break: break-all;
   }
 
@@ -527,8 +435,33 @@ button {
     break-after: avoid;
   }
 
-  .surligne {
+  mark,
+  .surligneur {
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
+  }
+}
+
+/* ===== Scènes et figures ===== */
+/* Les scènes sont leurs propres commandes ; le contour n’apparaît qu’au clavier. */
+.js [data-rejouer] {
+  cursor: pointer;
+}
+
+[data-rejouer]:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 5px;
+  border-radius: var(--r2);
+}
+
+.picto {
+  display: block;
+  flex-shrink: 0;
+}
+
+@media print {
+  [data-figure-animation] * {
+    animation: none !important;
+    transition: none !important;
   }
 }

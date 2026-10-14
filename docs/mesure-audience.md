@@ -69,12 +69,12 @@ hors exemption), `data-distinct-id` (identifiant durable, hors exemption),
 
   <a href="/contact"
      data-umami-event="contact-page"
-     data-umami-event-emplacement="discutons">Parlons de votre projet</a>
+     data-umami-event-emplacement="discutons">Discutons</a>
 
-  <a href="https://github.com/LINDECKER-Charles"
+  <a href="https://github.com/LINDECKER-Charles?tab=repositories"
      data-umami-event="lien-sortant"
      data-umami-event-domaine="github.com"
-     data-umami-event-emplacement="discutons">Contribuer à mes projets open source</a>
+     data-umami-event-emplacement="discutons">Tous mes dépôts publics</a>
   ```
 
   Pour un lien ouvert dans le même onglet (`mailto:`, lien interne), le traceur **retient la
@@ -127,7 +127,7 @@ Précisions :
 
 | Propriété | Valeurs |
 |---|---|
-| `emplacement` | `en-tete`, `sommaire`, `hero`, `preuves`, `competences`, `discutons`, `contact`, `pied-de-page`, `page-404`, `mentions` |
+| `emplacement` | `en-tete`, `sommaire`, `hero`, `preuves`, `fiche-projet`, `competences`, `discutons`, `contact`, `pied-de-page`, `page-404`, `mentions` |
 | `chapitre` | `origine`, `aujourdhui`, `discutons` |
 | `choix` | `nuit`, `jour` |
 | `origine` | `interne`, `externe`, `directe` |
@@ -144,18 +144,36 @@ d’adresse et les liens vers les profils publics. Les autres liens internes du 
 des navigations ordinaires : les pages vues permettent de lire ce parcours. Les ouvertures de
 détail des illustrations ne créent aucun événement supplémentaire.
 
-L’essai de conclusion de l’accueil du 2026-10-08 conserve l’ancre et la valeur `discutons` pour
-le chapitre 03 « La suite, à plusieurs ». Son action principale « Parlons de votre projet »
-utilise l’événement `contact-page`, avec `emplacement` = `discutons`. L’invitation
-« Contribuer à mes projets open source » utilise `lien-sortant`, `domaine` = `github.com` et
-`emplacement` = `discutons`. Les liens de « Pour aller plus loin » vers Projets, Parcours et Blog
+La conclusion de l’accueil conserve l’ancre et la valeur `discutons` pour le chapitre 03 « La
+suite, à plusieurs ». Son action principale « Discutons » utilise l’événement `contact-page`, avec
+`emplacement` = `discutons` ; le « Discutons » de la couverture utilise le même événement, avec
+`emplacement` = `hero`. Depuis le 2026-10-13, l’invitation « Contribuer à mes projets open source »
+mène au bloc « Contribuer » de la vitrine (`/projets#contribuer`) au lieu du profil GitHub entier :
+c’est une navigation ordinaire, sans événement, et l’objectif O3 se mesure sur les liens de ce
+bloc (voir ci-dessous). Les liens de « Pour aller plus loin » vers Projets, Parcours et Blog
 restent des navigations ordinaires.
 
 L’emplacement `preuves` reste actif sur les pages de projets qui utilisent le composant `Fiche`.
 
+Depuis le 2026-10-13, la vitrine `/projets` n’ajoute aucune valeur : les liens publics des cartes
+de projet et de la rangée « Aussi » utilisent `lien-sortant` avec l’emplacement `preuves` ; les
+guides de contribution et « Tous mes dépôts publics » du bloc « Contribuer » sont l’invitation
+open source de l’objectif O3 (`lien-sortant`, emplacement `discutons`, domaine `github.com`) ;
+« Discutons » utilise `contact-page` avec l’emplacement `discutons`.
+
+Depuis le 2026-10-13, la fiche technique en tête de chaque page de projet porte, sous ses liens
+publics, un appel « Discutons de ce projet » vers `/contact` : l’événement `contact-page` avec
+l’emplacement `fiche-projet`. Il sépare les prises de contact décidées dès la fiche, au premier
+écran, de celles de la sortie de page (`discutons`). Les liens publics de la même fiche gardent
+`lien-sortant` avec l’emplacement `preuves`.
+
 Depuis le 2026-10-09, les liens officiels des technologies et de Trello sur `/parcours/competences`
 utilisent `lien-sortant` avec l’emplacement `competences` et le seul nom d’hôte de leur cible.
 Ces clics indiquent une consultation technique, sans constituer un objectif de prise de contact.
+
+Depuis le 2026-10-13, les liens réglementaires des mentions légales (hébergeur `www.hostinger.fr`,
+plaintes à la CNIL `www.cnil.fr`) utilisent `lien-sortant` avec l’emplacement `mentions`, comme
+tout lien externe : le plan de marquage n’admet plus d’exception.
 
 **Historique avant cet essai** : les valeurs de `chapitre` `preuves` et `dehors`, ainsi que
 l’emplacement `dehors`, ne font plus partie du plan courant. Les données déjà collectées sous
@@ -183,7 +201,7 @@ les chemins comme sur les noms d'événements.
 |---|---|---|---|
 | O1 | Contacts | événement `contact-*` | page Contact ouverte depuis un CTA, e-mail ouvert ou adresse copiée : les intentions de contact |
 | O2 | Récit lu jusqu'au bout | `lecture` avec `chapitre` = `discutons` | le visiteur a atteint l'appel à l'action |
-| O3 | Invitation open source suivie | `lien-sortant` avec `emplacement` = `discutons` et `domaine` = `github.com` | l’invitation finale donne envie de découvrir les projets publics |
+| O3 | Invitation open source suivie | `lien-sortant` avec `emplacement` = `discutons` et `domaine` = `github.com` | l’invitation à contribuer (bloc « Contribuer » de la vitrine, où mène celle de l’accueil) donne envie de découvrir les projets publics |
 | O4 | Pages introuvables | événement `erreur-404` | qualité : liens cassés, anciennes adresses à rediriger |
 
 O2 et O3 portent sur des valeurs de propriété. Si l'écran des objectifs ne filtre pas sur les

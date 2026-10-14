@@ -1,0 +1,121 @@
+---
+/**
+ * Une section du corps libre d’une page de projet (gabarit E5 · 3) : un titre
+ * en Instrument Serif, une phrase d’entrée facultative, puis le contenu.
+ *
+ *   <SectionProjet id="depart" titre="Un jeu qui ne s’arrête jamais">
+ *     <p slot="texte">…</p>
+ *     <figure slot="figure">…</figure>
+ *     … (suite, pleine largeur)
+ *   </SectionProjet>
+ *
+ * Avec un slot « figure », le texte (titre, chapeau, slot « texte ») et la
+ * figure se partagent la ligne au-delà de 1 100 px ; en dessous, ils
+ * s’empilent. Le slot par défaut suit, sur toute la largeur. L’identifiant
+ * est celui du sommaire (config de la page, Base `sommaire`).
+ *
+ * `etiquette` : l’intitulé de la section dans le sommaire et la navigation
+ * de page, posé en sur-titre gris au-dessus du titre, quand le titre raconte
+ * autre chose (« Le point de départ », puis « Un jeu qui ne s’arrête
+ * jamais ») : après un clic, le lecteur retrouve le mot qu’il a choisi.
+ */
+import { typo } from '../../../lib/typo';
+
+interface Props {
+  id: string;
+  titre: string;
+  /** L’intitulé du sommaire, en sur-titre (s’il diffère du titre). */
+  etiquette?: string;
+  /** Une phrase d’entrée sous le titre. */
+  chapeau?: string;
+  /** Alignement vertical du texte et de la figure. */
+  alignement?: 'haut' | 'centre' | 'bas';
+  class?: string;
+}
+
+const { id, titre, etiquette, chapeau, alignement = 'haut', class: classe } = Astro.props;
+const avecFigure = Astro.slots.has('figure');
+---
+
+<section id={id} class:list={['section-projet', { 'section-projet--figure': avecFigure }, `section-projet--${alignement}`, classe]} aria-labelledby={`${id}-titre`}>
+  <div class="section-projet__tete">
+    <div class="section-projet__texte">
+      {etiquette && etiquette !== titre && <p class="section-projet__etiquette">{typo(etiquette)}</p>}
+      <h2 class="section-projet__titre" id={`${id}-titre`}>{typo(titre)}</h2>
+      {chapeau && <p class="section-projet__chapeau">{typo(chapeau)}</p>}
+      <slot name="texte" />
+    </div>
+    {avecFigure && <div class="section-projet__figure"><slot name="figure" /></div>}
+  </div>
+  <slot />
+</section>
+
+<style>
+  .section-projet {
+    padding-block: var(--entre-sections) 0;
+  }
+
+  .section-projet__tete {
+    display: grid;
+    gap: var(--s5) var(--s7);
+  }
+
+  .section-projet--figure .section-projet__tete {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .section-projet--haut .section-projet__tete {
+    align-items: start;
+  }
+
+  .section-projet--centre .section-projet__tete {
+    align-items: center;
+  }
+
+  .section-projet--bas .section-projet__tete {
+    align-items: end;
+  }
+
+  .section-projet__texte {
+    max-width: var(--mesure);
+  }
+
+  /* Sans figure, le titre prend sa ligne ; le texte garde sa mesure. */
+  .section-projet:not(.section-projet--figure) .section-projet__texte {
+    max-width: 52rem;
+  }
+
+  .section-projet:not(.section-projet--figure) .section-projet__texte > :global(:not(h2)) {
+    max-width: var(--mesure);
+  }
+
+  .section-projet__etiquette {
+    margin-bottom: var(--s2);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: var(--ls-petit);
+    line-height: 1.4;
+    color: var(--eteint);
+  }
+
+  .section-projet__titre {
+    font-size: var(--t-2xl);
+    line-height: 1.02;
+  }
+
+  .section-projet__chapeau,
+  .section-projet__texte > :global(p:not(.section-projet__etiquette)) {
+    margin-top: var(--s4);
+  }
+
+  .section-projet__figure {
+    min-width: 0;
+  }
+
+  @media (max-width: 1100px) {
+    .section-projet--figure .section-projet__tete {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+</style>

@@ -1,0 +1,242 @@
+---
+/**
+ * En-tête commun des pages de projet (gabarit E5 · 1 et 2) : fil d’Ariane,
+ * nom canonique et étiquette de preuve, titre, chapeau (le besoin et ce que
+ * j’ai fait, racontés), actions, visuel, un à trois repères chiffrés sourcés
+ * et datés, puis la fiche technique en tableau à filets.
+ *
+ *   <EnTeteProjet projet="pvz" titre="Traduire un jeu. Faire grandir une équipe."
+ *     chapeau="…" liens={[{ href: 'https://github.com/Teyliu/PVZF-Translation', libelle: 'Le projet multilingue' }]}
+ *     preuves={PREUVES} fiche={FICHE}>
+ *     <Visuel slot="visuel" id="PVZ-01" loading="eager" sizes="…" />
+ *   </EnTeteProjet>
+ *
+ * Le nom, l’étiquette et le rang viennent de VITRINE (config/projets.ts) :
+ * une seule graphie par projet (règle E6). La première action mène toujours
+ * à « Comment je l’ai construit » (`construit`, l’identifiant de la section
+ * DecisionsProjet). Tout tient dans le premier écran à 1 440 × 900 ; les
+ * éléments `[data-pli]` (titre, identité, preuve, action) y sont visibles à
+ * 1 440 et à 390 px de large (règle E1). Sur mobile, les repères passent
+ * avant le visuel, et le fil d’Ariane s’arrête à « Projets » : le nom suit
+ * aussitôt (la page courante reste lue par les lecteurs d’écran).
+ */
+import FilAriane from '../../pages/FilAriane.astro';
+import LienAction from '../../ui/LienAction.astro';
+import PreuveChiffree from '../../ui/PreuveChiffree.astro';
+import PreuvesChiffrees from '../../ui/PreuvesChiffrees.astro';
+import FicheProjet from './FicheProjet.astro';
+import { projetDeLaVitrine, type ProjetVitrine } from '../../../config/projets';
+import type { Emplacement } from '../../../lib/liens';
+import { typo } from '../../../lib/typo';
+import type { DonneesFiche, LienProjet, PreuveEnTete } from './types';
+
+interface Props {
+  projet: ProjetVitrine['id'];
+  /** Le titre ; en tableau, une ligne par phrase (« Traduire un jeu. », « Faire grandir une équipe. »). */
+  titre: string | readonly string[];
+  chapeau: string;
+  /** Actions après « Comment je l’ai construit » : application, dépôt public… */
+  liens?: readonly LienProjet[];
+  /** Un à trois repères chiffrés. */
+  preuves: readonly PreuveEnTete[];
+  fiche: DonneesFiche;
+  /** Identifiant de la section « Comment je l’ai construit ». */
+  construit?: string;
+  emplacement?: Emplacement;
+}
+
+const { projet: id, titre, chapeau, liens = [], preuves, fiche, construit = 'construit', emplacement = 'preuves' } = Astro.props;
+if (preuves.length < 1 || preuves.length > 3) throw new Error(`<EnTeteProjet projet="${id}"> : un à trois repères chiffrés (règle E5).`);
+if (preuves.filter((preuve) => preuve.surligne).length > 1) throw new Error(`<EnTeteProjet projet="${id}"> : un seul chiffre surligné dans l’en-tête.`);
+const { projet } = projetDeLaVitrine(id);
+const lignes = typeof titre === 'string' ? [titre] : titre;
+---
+
+<header class="projet-tete" data-projet={id}>
+  <div class="conteneur">
+    <FilAriane courant={projet.nom} projet class="projet-tete__ariane" />
+    <div class="projet-tete__grille">
+      <div class="projet-tete__texte foyer">
+        <p class="projet-tete__nom">
+          <span>{projet.nom}</span>
+          <span class="projet-tete__preuve">{typo(projet.preuve)}</span>
+        </p>
+        <h1 class="projet-tete__titre" data-pli="titre">{lignes.map((ligne, index) => <>{index > 0 && ' '}<span class="projet-tete__ligne">{typo(ligne)}</span></>)}</h1>
+        <p class="chapeau projet-tete__chapeau" data-pli="identite">{typo(chapeau)}</p>
+        <div class="actions projet-tete__actions" data-pli="action">
+          <LienAction href={`#${construit}`}>Comment je l’ai construit</LienAction>
+          {liens.map((lien) => <LienAction href={lien.href} emplacement={emplacement}>{typo(lien.libelle)}</LienAction>)}
+        </div>
+      </div>
+      <div class="projet-tete__preuves" data-pli="preuve">
+        <PreuvesChiffrees label="Repères chiffrés du projet">
+          {preuves.map((preuve) => <PreuveChiffree {...preuve} />)}
+        </PreuvesChiffrees>
+      </div>
+      <div class="projet-tete__visuel">
+        <slot name="visuel" />
+      </div>
+      <FicheProjet class="projet-tete__fiche" fiche={fiche} emplacement={emplacement} />
+    </div>
+  </div>
+</header>
+
+<style>
+  .projet-tete {
+    padding-bottom: var(--s6);
+  }
+
+  .projet-tete :global(.projet-tete__ariane) {
+    padding-block: var(--s2) 0;
+  }
+
+  .projet-tete__grille {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-areas:
+      'texte visuel'
+      'preuves preuves'
+      'fiche fiche';
+    gap: var(--s4) var(--s7);
+    align-items: center;
+  }
+
+  .projet-tete__texte {
+    grid-area: texte;
+  }
+
+  .projet-tete__preuves {
+    grid-area: preuves;
+  }
+
+  .projet-tete__visuel {
+    grid-area: visuel;
+    min-width: 0;
+  }
+
+  /* La nuit, une image générée du visuel porte sa lanterne allumée : c’est
+     la lumière de l’écran. Le halo du foyer derrière le titre la doublerait
+     (une seule lumière par écran) ; une capture, elle, le garde. */
+  :global(:root[data-theme='nuit']) .projet-tete__grille:has(:global(.visuel--jour-nuit)) .projet-tete__texte::before {
+    content: none;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme])) .projet-tete__grille:has(:global(.visuel--jour-nuit)) .projet-tete__texte::before {
+      content: none;
+    }
+  }
+
+  .projet-tete :global(.projet-tete__fiche) {
+    grid-area: fiche;
+  }
+
+  .projet-tete__nom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--s2) var(--s3);
+    font-size: var(--t-s);
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--encre);
+  }
+
+  .projet-tete__preuve {
+    display: inline-block;
+    padding: 0 var(--s2);
+    border: 1px solid var(--trait);
+    border-radius: var(--r1);
+    font-size: var(--t-xs);
+    font-weight: 500;
+    letter-spacing: var(--ls-petit);
+    color: var(--eteint);
+  }
+
+  .projet-tete__titre {
+    margin-top: var(--s2);
+    max-width: 15em;
+    font-size: var(--t-3xl);
+    line-height: 0.98;
+    letter-spacing: var(--ls-affiche);
+  }
+
+  /* Une phrase par ligne : le parallèle des deux phrases ne se casse pas. */
+  .projet-tete__ligne {
+    display: block;
+  }
+
+  .projet-tete__chapeau {
+    margin-top: var(--s4);
+    max-width: 38em;
+  }
+
+  .projet-tete__actions {
+    margin-top: var(--s3);
+  }
+
+  /* Les repères en bandeau : trois cases à filets, chiffres en Sans 600. Le
+     filet d’encre de la fiche ferme le bandeau : pas de second trait. */
+  .projet-tete__preuves :global(.preuves-chiffrees--bandeau) {
+    border-bottom: 0;
+  }
+
+  .projet-tete__preuves :global(.preuves-chiffrees--bandeau > *) {
+    padding-block: var(--s3);
+  }
+
+  /* Le chiffre (interligne 1) centré sur la première ligne du libellé
+     (interligne 1,45) : les trois chiffres sur la même ligne. Sous 860 px,
+     PreuvesChiffrees les pose en colonne commune. */
+  @media (min-width: 861px) {
+    .projet-tete__preuves :global(.preuve-chiffree) {
+      grid-template-columns: max-content minmax(0, 1fr);
+      column-gap: var(--s4);
+      row-gap: 2px;
+    }
+
+    .projet-tete__preuves :global(.preuve-chiffree__valeur) {
+      grid-row: span 2;
+      align-self: start;
+      min-width: 1.4em;
+      margin-top: calc((var(--t-s) * 1.45 - var(--t-2xl)) / 2);
+    }
+  }
+
+  @media (max-width: 1100px) {
+    .projet-tete__grille {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        'texte'
+        'preuves'
+        'visuel'
+        'fiche';
+      gap: var(--s5);
+    }
+
+    .projet-tete__visuel {
+      justify-self: center;
+      width: 100%;
+      max-width: 40rem;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .projet-tete__titre {
+      max-width: none;
+    }
+
+    .projet-tete :global(.projet-tete__ariane li[aria-current]) {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .projet-tete__actions {
+      gap: 0 var(--s5);
+    }
+  }
+</style>

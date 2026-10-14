@@ -1,0 +1,293 @@
+/*
+ * Jetons de la direction « Lanterne » (design/refonte/c-lanterne, retenue le
+ * 13 octobre 2026) : le seul endroit du site où une couleur, une taille de
+ * texte, un rayon, une ombre ou une durée s’écrit en dur (règle B1).
+ *
+ * Une seule source de lumière : ce qui compte est éclairé, le reste se tait.
+ * Le jour est une aube sur pierre claire ; la nuit, un clair de lune bleuté où
+ * la lanterne pose sa lumière chaude sur la zone active.
+ *
+ * Trois portes d’entrée pour la nuit, mêmes valeurs :
+ *   - `:root[data-theme='nuit']`, posé par /theme.js avant le premier rendu ;
+ *   - `prefers-color-scheme: dark` quand le script n’a pas tourné ;
+ *   - les actes sombres (`.acte-veille`, `.acte-bleu`), la nuit dans le jour.
+ * L’impression repasse en encre sur papier, quel que soit le thème.
+ *
+ * Contrastes (WCAG 2.x) calculés : design/refonte/c-lanterne/README.md, plus
+ * l’acte bleu nuit et l’aplat bleu roi ci-dessous. La nuit, les trois actes
+ * restent proches de la suie (veille #141a2b 1,12:1, teinté #12151c 1,06:1,
+ * bleu #101b3e) : chacun est cerné du filet porteur (--trait, 3,9:1 contre la
+ * suie ; global.css), l’autre voie de la règle B6. Dans l’acte de veille :
+ * encre 14,0:1, éteint 6,8:1, lien 9,3:1 (tests/unit/contrastes.test.ts).
+ * Le texte éteint garde 4,5:1 sous la lumière d’un foyer (--lumiere à pleine
+ * opacité), sur le fond comme sur la surface, le jour comme la nuit.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Couleurs, jour « aube » */
+  --fond: #ece9e3;            /* pierre */
+  --surface: #fbfaf7;         /* 1,16:1 sur le fond */
+  --acte: #dcd6cb;            /* acte teinté, 1,19:1 */
+  --encre: #141312;           /* 15,3:1 sur le fond */
+  --eteint: #59544c;          /* texte secondaire, 6,2:1 ; 5,2:1 sur l’acte */
+  --trait: #7b7368;           /* filet porteur, 3,9:1 ; 3,2:1 sur l’acte */
+  --filet: #d2ccc1;           /* filet décoratif, jamais porteur d’état */
+  --accent: #1f4fd1;          /* bleu roi : liens, commandes, focus (5,6:1) */
+  --accent-texte: #ffffff;    /* 6,8:1 sur le bleu */
+  --accent-survol: #173fae;
+  --laiton: #7a4f10;          /* marques secondaires des figures, 5,9:1 */
+  --erreur: #a4271a;          /* erreurs de saisie, 6,0:1 ; 7,0:1 sur la surface */
+  --surligneur: #f2cf3a;      /* colza, un seul par preuve */
+  --sur-surligneur: #141312;  /* 12,2:1 */
+  --focus: #1f4fd1;
+  --emplacement: #e3ded4;     /* fond des emplacements de visuel */
+  --hachure: rgb(20 19 18 / 0.07);
+  --lumiere: rgb(255 253 246 / 0.95);  /* flaque de jour du foyer */
+  --lueur: rgb(255 253 246 / 0.7);     /* lueur neutre des emplacements */
+  --veille: #15171d;          /* acte sombre du jour */
+
+  /* Élévations : aucune, carte, panneau (trois niveaux). La nuit, un filet et
+     un halo de lanterne remplacent les ombres. */
+  --ombre-0: none;
+  --ombre-1: 0 1px 0 rgb(20 19 18 / 0.04), 0 10px 28px -16px rgb(20 19 18 / 0.28);
+  --ombre-2: 0 30px 70px -30px rgb(20 19 18 / 0.45);
+
+  /* Constantes de lumière et de cadre, identiques jour et nuit */
+  --lanterne: #f0b24a;        /* la lumière de la lanterne */
+  --lanterne-survol: #f6c670;
+  --lanterne-halo: rgb(240 178 74 / 0.22);
+  --lanterne-eclat: rgb(240 178 74 / 0.55);
+  --suie: #0b0d12;
+  --lune: #e4e7ee;
+  --papier-lune: #6f7ca3;     /* nuit de repli d’une image générée (tools/rendre-visuels.mjs) : 4,7:1 sous l’encre de suie, 2,2:1 contre la lanterne */
+  --veille-nuit: #141a2b;     /* acte sombre, la nuit : bleu nuit franc, 1,12:1 sur la suie */
+  --veille-lueur: rgb(240 178 74 / 0.1);      /* la lanterne dans l’acte, la nuit */
+  --bleu-nuit: #101b3e;       /* acte « La suite » */
+  --bleu-roi: #1f4fd1;        /* l’identité : la chemise des quatre photos */
+  --cadre: #0e1016;           /* cadres d’appareil des captures */
+  --cadre-barre: #14161d;
+  --cadre-filet: #262b37;
+  --cadre-point: #3a4152;
+  --cadre-texte: #9499a3;
+  --papier-logo: #ffffff;     /* fond des logos qui l’exigent */
+  --capture-turquoise: #6aaa9a;  /* les étoiles de l’ami, relevées sur une capture de Bloodborne */
+  --voile-portrait: rgb(11 13 18 / 0.72);
+  --voile-lune: rgb(26 38 78 / 0.38);         /* clair de lune sur la photo */
+  --lueur-portrait: rgb(240 178 74 / 0.36);   /* la lanterne sur le visage */
+  --voile-cible: rgb(11 13 18 / 0.55);        /* anneau des cibles */
+  --voile-visionneuse: rgb(11 13 18 / 0.88);
+
+  /* Typographie : deux familles (règle B2), --police-titre (Instrument Serif)
+     et --police-texte (Instrument Sans), posées par <Font> (astro.config.mjs). */
+
+  /* Échelle : huit tailles, pas plus (règle B1) */
+  --t-xs: 0.875rem;                                      /* 14 */
+  --t-s: 1rem;                                           /* 16 */
+  --t-m: clamp(1.0625rem, 1rem + 0.2vw, 1.125rem);       /* 17 → 18, texte courant */
+  --t-l: clamp(1.1875rem, 1.05rem + 0.5vw, 1.375rem);    /* 19 → 22, chapeau */
+  --t-xl: clamp(1.625rem, 1.3rem + 0.9vw, 2.125rem);     /* 26 → 34 */
+  --t-2xl: clamp(2rem, 1.4rem + 1.6vw, 2.875rem);        /* 32 → 46, titres de section */
+  --t-3xl: clamp(2.5rem, 1.6rem + 2.8vw, 4.25rem);       /* 40 → 68, titres de page */
+  --t-4xl: clamp(2.875rem, 1.1rem + 5.4vw, 5.75rem);     /* 46 → 92, l’accroche seule */
+  --t-impression: 11pt;                                  /* corps de base à l’impression */
+
+  /* Crénage : quatre valeurs */
+  --ls-0: 0;
+  --ls-titre: -0.01em;
+  --ls-affiche: -0.018em;
+  --ls-petit: 0.01em;
+
+  /* Espaces */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+  --s7: 48px;
+  --s8: 64px;
+  --s9: 96px;
+  --gouttiere: clamp(16px, 3.6vw, 48px);
+  --section: clamp(64px, 7vw, 112px);   /* marges d’un acte bord à bord */
+  --entre-sections: var(--s8);          /* d’une section de page à la suivante (48 px sous 860 px) */
+  --largeur: 1344px;
+  --mesure: 35rem;            /* ≈ 62 caractères */
+
+  /* Rayons : trois (règle B1), de 4 à 6 px pour tout ce qui n’est pas une
+     pilule (décision du 13/10/2026). Seuls les boutons et la bascule sont en
+     pilule ; seuls les cadres de téléphone dessinent leur propre courbure. */
+  --r1: 4px;                  /* étiquettes, champs, surligneur */
+  --r2: 6px;                  /* cartes, cadres, captures, emplacements */
+  --r3: 999px;                /* boutons, bascule */
+
+  /* Mouvement : une courbe, deux durées (règle M2). Une durée plus longue
+     s’écrit en multiple de --d-scene (`calc(var(--d-scene) * 4)`), jamais en
+     dur (tests/unit/styles.test.ts) ; --d-recit nomme le multiple des scènes
+     racontées de l’accueil (une lanterne qui s’allume, une carte qui se
+     lève). */
+  --courbe: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --d-ui: 200ms;
+  --d-scene: 400ms;
+  --d-recit: calc(var(--d-scene) * 4.75);   /* 1,9 s */
+
+  --entete: 64px;
+
+  /* Le bouton principal : bleu roi le jour, lumière de lanterne la nuit. */
+  --bouton: var(--accent);
+  --bouton-texte: var(--accent-texte);
+  --bouton-survol: var(--accent-survol);
+}
+
+@media (max-width: 860px) {
+  :root {
+    --entete: 60px;
+    --entre-sections: var(--s7);
+  }
+}
+
+/* Nuit « clair de lune ». Les mêmes jetons servent aux actes sombres du jour :
+   la nuit entre dans le jour là où les captures l’attendent. */
+:root[data-theme='nuit'],
+.acte-veille,
+.acte-bleu {
+  color-scheme: dark;
+  --fond: #0b0d12;
+  --surface: #1a1e29;         /* 1,17:1 sur le fond */
+  --acte: #12151c;
+  --encre: #e4e7ee;           /* clair de lune, 15,7:1 */
+  --eteint: #9ea3ad;          /* 7,7:1 ; 6,6:1 sur la surface ; 4,7:1 sous le halo d’un foyer */
+  --trait: #687083;           /* 3,9:1 ; 3,4:1 sur la surface */
+  --filet: #262b37;
+  --accent: #a9bbff;          /* lune : les liens, 10,4:1 */
+  --accent-texte: #0b0d12;
+  --accent-survol: #c7d2ff;
+  --laiton: #f0b24a;
+  --erreur: #ff9d8a;          /* 9,7:1 ; 8,3:1 sur la surface */
+  --surligneur: #e8c75a;
+  --sur-surligneur: #0b0d12;  /* 11,8:1 */
+  --focus: #f0b24a;           /* la lanterne éclaire ce qu’on touche */
+  --emplacement: #12151c;
+  --hachure: rgb(228 231 238 / 0.055);
+  --lumiere: rgb(240 178 74 / 0.16);
+  --lueur: rgb(169 187 255 / 0.06);
+  --ombre-1: 0 0 0 1px #262b37;
+  --ombre-2: 0 0 90px -20px rgb(240 178 74 / 0.28);
+  --bouton: var(--lanterne);
+  --bouton-texte: var(--suie);  /* 10,3:1 */
+  --bouton-survol: var(--lanterne-survol);
+}
+
+/* Sans JavaScript, la préférence du système décide. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --fond: #0b0d12;
+    --surface: #1a1e29;
+    --acte: #12151c;
+    --encre: #e4e7ee;
+    --eteint: #9ea3ad;
+    --trait: #687083;
+    --filet: #262b37;
+    --accent: #a9bbff;
+    --accent-texte: #0b0d12;
+    --accent-survol: #c7d2ff;
+    --laiton: #f0b24a;
+    --erreur: #ff9d8a;
+    --surligneur: #e8c75a;
+    --sur-surligneur: #0b0d12;
+    --focus: #f0b24a;
+    --emplacement: #12151c;
+    --hachure: rgb(228 231 238 / 0.055);
+    --lumiere: rgb(240 178 74 / 0.16);
+    --lueur: rgb(169 187 255 / 0.06);
+    --ombre-1: 0 0 0 1px #262b37;
+    --ombre-2: 0 0 90px -20px rgb(240 178 74 / 0.28);
+    --bouton: var(--lanterne);
+    --bouton-texte: var(--suie);
+    --bouton-survol: var(--lanterne-survol);
+  }
+}
+
+/* Acte bleu nuit (« La suite ») : les jetons de nuit, sur un bleu profond.
+   Encre 14,9:1 · éteint 8,5:1 · trait 4,2:1 · lien 9,0:1 · lanterne 9,0:1. */
+.acte-bleu {
+  --fond: var(--bleu-nuit);
+  --surface: #182752;         /* 1,16:1 */
+  --acte: #0c1531;
+  --encre: #eef1f8;
+  --eteint: #aeb8d6;
+  --trait: #6e7dad;
+  --filet: #2a3a6b;
+  --emplacement: #0c1531;
+}
+
+/* Aplat bleu roi, derrière l’appel « Discutons » : blanc 6,8:1, texte doux
+   5,3:1, focus colza 4,4:1 ; bouton blanc à texte bleu roi (6,8:1) le jour,
+   lanterne la nuit (3,6:1 contre l’aplat, suie dessus 10,3:1). */
+.aplat-roi {
+  color-scheme: dark;
+  --fond: var(--bleu-roi);
+  --surface: #2a5ae0;
+  --encre: #ffffff;
+  --eteint: #dce3fa;
+  --trait: #c3d0f6;
+  --filet: rgb(255 255 255 / 0.28);
+  --accent: #ffffff;
+  --accent-texte: var(--bleu-roi);
+  --accent-survol: #e8edff;
+  --focus: #f2cf3a;
+  --bouton: #ffffff;
+  --bouton-texte: var(--bleu-roi);
+  --bouton-survol: #e8edff;
+}
+
+:root[data-theme='nuit'] .aplat-roi {
+  --bouton: var(--lanterne);
+  --bouton-texte: var(--suie);
+  --bouton-survol: var(--lanterne-survol);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .aplat-roi {
+    --bouton: var(--lanterne);
+    --bouton-texte: var(--suie);
+    --bouton-survol: var(--lanterne-survol);
+  }
+}
+
+/* Impression : encre sur papier, quel que soit le thème. */
+@media print {
+  :root,
+  :root[data-theme],
+  .acte-veille,
+  .acte-bleu,
+  .aplat-roi {
+    color-scheme: light;
+    --fond: #ffffff;
+    --surface: #ffffff;
+    --acte: #ffffff;
+    --veille: #ffffff;
+    --veille-nuit: #ffffff;
+    --bleu-nuit: #ffffff;
+    --encre: #000000;
+    --eteint: #333333;
+    --trait: #777777;
+    --filet: #bbbbbb;
+    --accent: #1f4fd1;
+    --accent-texte: #ffffff;
+    --erreur: #a4271a;
+    --surligneur: #f2cf3a;
+    --sur-surligneur: #000000;
+    --lumiere: transparent;
+    --lueur: transparent;
+    --veille-lueur: transparent;
+    --emplacement: #ffffff;
+    --hachure: rgb(0 0 0 / 0.06);
+    --ombre-1: none;
+    --ombre-2: none;
+    --bouton: #ffffff;
+    --bouton-texte: #000000;
+  }
+}

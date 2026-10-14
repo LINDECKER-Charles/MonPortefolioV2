@@ -22,6 +22,8 @@ const { source, seed } = require(path.join(project, 'front/e2e/mobile-fixtures.c
 const capturedOn = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Paris' }).format(new Date());
 const buildModifiedAt = fs.statSync(path.join(build, 'index.html')).mtime;
 const output = path.resolve(__dirname, '../public/demos/bloodborne');
+// Le relevé des captures reste hors de public/ : il documente, il n’est pas servi.
+const report = path.resolve(__dirname, '../src/assets/projets/bloodborne/allumages/captures.json');
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'portfolio-bloodborne-videos-'));
 const selected = [
   { file: 'boss', kind: 'Boss', code: 'bos-001', label: 'Une victoire contre un boss' },
@@ -200,7 +202,7 @@ async function main() {
   try {
     const reports = [];
     for (const sample of selected) reports.push(await capture(browser, base, sample));
-    fs.writeFileSync(path.join(output, 'captures.json'), JSON.stringify({
+    fs.writeFileSync(report, JSON.stringify({
       capturedOn, source: 'Bloodborne-Legendary-Run',
       buildAvailableSince: new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Paris' }).format(buildModifiedAt),
       buildLastModifiedAt: buildModifiedAt.toISOString(),

@@ -1,3 +1,10 @@
+/**
+ * Les quatre allumages de Bloodborne Legendary Run
+ * (components/projets/bloodborne/Rituels.astro) : une seule vidéo à la fois,
+ * arrêtée quand on en choisit une autre, quand le lecteur quitte l’écran ou
+ * quand l’onglet est masqué. Sur téléphone, choisir un rituel amène son
+ * lecteur dans la vue s’il est sous le pli, sans jamais faire remonter la page.
+ */
 const rituels = document.querySelector<HTMLElement>('[data-blr-rituels]');
 if (rituels) {
   const videos = [...rituels.querySelectorAll<HTMLVideoElement>('video')];
@@ -5,10 +12,10 @@ if (rituels) {
   rituels.addEventListener('change', (event) => {
     pause();
     const choix = event.target;
-    if (!(choix instanceof HTMLInputElement) || !choix.checked || !window.matchMedia('(max-width: 580px)').matches) return;
-    const video = videos.find((element) => element.closest('figure')?.id === choix.getAttribute('aria-controls'));
+    if (!(choix instanceof HTMLInputElement) || !choix.checked || !window.matchMedia('(max-width: 860px)').matches) return;
+    const video = videos.find((element) => element.closest('[data-blr-rituel]')?.id === choix.getAttribute('aria-controls'));
     if (!video) return;
-    const hautVisible = Math.max(0, ...['.entete', '.blr-sommaire'].map((selector) => document.querySelector(selector)?.getBoundingClientRect().bottom ?? 0)) + 16;
+    const hautVisible = (document.querySelector('.entete')?.getBoundingClientRect().bottom ?? 0) + 16;
     const cadre = video.getBoundingClientRect();
     if (cadre.top <= hautVisible || cadre.bottom <= window.innerHeight - 16) return;
     window.scrollTo({

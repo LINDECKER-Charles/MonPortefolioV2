@@ -1,0 +1,394 @@
+---
+/**
+ * Une capture réelle dans son cadre d’appareil (règle B7) : un cadre par
+ * type, sans marque, coins selon les jetons.
+ *
+ *   navigateur  barre à trois points et adresse (`adresse`)
+ *   telephone   cadre arrondi qui dessine l’appareil, capture entière (9:19,5)
+ *   terminal    capture déjà fenêtrée, sans cadre ajouté
+ *
+ * Le jour, un cadre sombre au trait ; la nuit et dans les actes sombres, le
+ * cadre s’efface derrière un halo de lanterne : les interfaces sombres s’y
+ * fondent.
+ *
+ *   <CadreCapture type="navigateur" adresse="league-of-data-base.com/fr"
+ *     src={capture} alt="…ce que la capture prouve…" legende="…" agrandir />
+ *
+ * `ratio` recadre la vue (object-fit: cover, `position` en object-position) ;
+ * sans lui, la capture est montrée entière ; `ratioMobile` recadre sous
+ * 860 px seulement. `region` recadre sur les deux axes à la fois, en
+ * pourcentages de l’image (x, y : coin haut-gauche ; l, h : largeur et
+ * hauteur), pour montrer un seul volet d’un écran ; le ratio s’en déduit
+ * (`regionMobile` sous 860 px). Le recadrage ne touche que la capture, jamais
+ * ce qui la survole (loupe de CaptureAnnotee). `agrandir` fait de l’image un
+ * lien vers sa version pleine taille, ouverte dans la visionneuse de la page
+ * (<Visionneuse />, à poser une fois) ; sans JavaScript, le lien ouvre
+ * l’image. Le slot par défaut se superpose à la vue (cibles, loupe :
+ * CaptureAnnotee) ; le slot « legende » remplace la légende texte ; le slot
+ * « media » remplace l’image (vidéo).
+ *
+ *   <CadreCapture type="terminal" src={ecran} alt="…" region={{ x: 27, y: 11.3, l: 71, h: 83.7 }} agrandir />
+ *
+ * Les cadres suivent le dessin GLO-05 du registre
+ * (src/assets/visuels/global/GLO-05.svg) : le composant en reprend les trois
+ * points de la barre et le haut-parleur du téléphone, insérés en ligne dans
+ * les teintes de cadre. Le contour, lui, reste en CSS pour suivre la taille de
+ * la capture (coins selon les jetons). Sans le fichier, les points se
+ * dessinent en CSS.
+ */
+import type { ImageMetadata } from 'astro';
+import { getImage } from 'astro:assets';
+import ImageAdaptative from './ImageAdaptative.astro';
+import Picto from './Picto.astro';
+import { typo } from '../../lib/typo';
+
+/** Les pièces du dessin des cadres (GLO-05), quand il est livré. */
+const cadres = import.meta.glob<string>('/src/assets/visuels/global/GLO-05.svg', { eager: true, query: '?raw', import: 'default' });
+const dessinCadres = cadres['/src/assets/visuels/global/GLO-05.svg'];
+const piece = (id: string) => {
+  const trouve = dessinCadres && new RegExp(`<symbol id="${id}" viewBox="([^"]+)">([\\s\\S]*?)</symbol>`).exec(dessinCadres);
+  return trouve ? { viewBox: trouve[1], corps: trouve[2].trim() } : undefined;
+};
+const POINTS = piece('GLO-05-points');
+/** Le haut-parleur : le seul trait plein du téléphone de GLO-05. */
+const HAUT_PARLEUR = piece('GLO-05-telephone')?.corps.match(/<rect\b[^>]*fill="currentColor"[^>]*\/>/)?.[0];
+
+/** Une région de l’image, en pourcentages de sa largeur et de sa hauteur. */
+export interface Region {
+  x: number;
+  y: number;
+  l: number;
+  h: number;
+}
+
+interface Props {
+  type?: 'navigateur' | 'telephone' | 'terminal';
+  /** Adresse affichée dans la barre du navigateur (sans https://). */
+  adresse?: string;
+  src?: ImageMetadata;
+  /** Ce que la capture prouve (règle A5), pas ce qu’elle montre en vrac. */
+  alt?: string;
+  legende?: string;
+  /** Recadrage de la vue, au format aspect-ratio (« 16 / 10 »). */
+  ratio?: string;
+  /** Recadrage sous 860 px, s’il diffère (« 5 / 7 » pour un téléphone coupé). */
+  ratioMobile?: string;
+  /** Recadrage sur les deux axes (le ratio s’en déduit). */
+  region?: Region;
+  /** Recadrage sur les deux axes sous 860 px. */
+  regionMobile?: Region;
+  position?: string;
+  widths?: number[];
+  sizes?: string;
+  loading?: 'lazy' | 'eager';
+  /** Requête média sous laquelle la capture ne télécharge rien : la page la masque (ImageAdaptative). */
+  neutre?: string;
+  agrandir?: boolean;
+  class?: string;
+  /** Variables CSS posées sur la figure (`--nom:valeur;…`), pour un composant qui l’enveloppe. */
+  style?: string;
+}
+
+const {
+  type = 'navigateur',
+  adresse,
+  src,
+  alt = '',
+  legende,
+  ratio: ratioDonne,
+  ratioMobile: ratioMobileDonne,
+  region,
+  regionMobile,
+  position = '50% 0',
+  widths,
+  sizes = '(max-width: 860px) 100vw, 50vw',
+  loading = 'lazy',
+  neutre,
+  agrandir = false,
+  class: classe,
+  style: styleFigure,
+} = Astro.props;
+
+/** Ratio de la vue qui montre exactement la région. */
+const ratioDe = (r: Region | undefined) => (r && src ? `${Math.round(r.l * src.width)} / ${Math.round(r.h * src.height)}` : undefined);
+const varsRegion = (r: Region | undefined, suffixe: string) =>
+  r ? [`--rx${suffixe}:${r.x}`, `--ry${suffixe}:${r.y}`, `--rl${suffixe}:${r.l}`, `--rh${suffixe}:${r.h}`] : [];
+const ratio = ratioDonne ?? ratioDe(region);
+const ratioMobile = ratioMobileDonne ?? ratioDe(regionMobile);
+
+const largeurs = src ? widths ?? [...new Set([Math.min(640, src.width), Math.min(1280, src.width)])] : [];
+const pleineTaille = src && agrandir ? await getImage({ src, format: 'webp', width: Math.min(src.width, 2400) }) : undefined;
+const style = [ratio && `--ratio:${ratio}`, ratioMobile && `--ratio-mobile:${ratioMobile}`, `--position:${position}`, ...varsRegion(region, ''), ...varsRegion(regionMobile ?? region, '-m')]
+  .filter(Boolean)
+  .join(';');
+const aLegende = Boolean(legende) || Astro.slots.has('legende');
+---
+
+<figure
+  class:list={['capture', `capture--${type}`, { 'capture--recadree': ratio, 'capture--recadree-mobile': ratioMobile, 'capture--region': region || regionMobile }, classe]}
+  style={styleFigure}
+>
+  <div class="capture__cadre">
+    {type === 'navigateur' && (
+      <div class="capture__barre" aria-hidden="true">
+        {POINTS ? <svg class="capture__points capture__points--dessin" viewBox={POINTS.viewBox} focusable="false" set:html={POINTS.corps} /> : <span class="capture__points"></span>}
+        {adresse && <span class="capture__adresse">{adresse}</span>}
+      </div>
+    )}
+    {type === 'telephone' && HAUT_PARLEUR && <svg class="capture__haut-parleur" viewBox="21 6 12 2.5" aria-hidden="true" focusable="false" set:html={HAUT_PARLEUR} />}
+    <div class="capture__vue" style={style}>
+      {
+        Astro.slots.has('media') ? (
+          <slot name="media" />
+        ) : src && pleineTaille ? (
+          <a class="capture__agrandir" href={pleineTaille.src} data-agrandir data-legende={legende ? typo(legende) : alt}>
+            <ImageAdaptative src={src} widths={largeurs} sizes={sizes} alt={alt} loading={loading} neutre={neutre} />
+            <span class="capture__loupe-picto" aria-hidden="true"><Picto nom="interface/agrandir" /></span>
+          </a>
+        ) : (
+          src && <ImageAdaptative src={src} widths={largeurs} sizes={sizes} alt={alt} loading={loading} neutre={neutre} />
+        )
+      }
+      <slot />
+    </div>
+  </div>
+  {
+    aLegende && (
+      <figcaption class="capture__legende">
+        <slot name="legende">{legende && typo(legende)}</slot>
+      </figcaption>
+    )
+  }
+</figure>
+
+<style>
+  .capture {
+    position: relative;
+    isolation: isolate;
+    margin: 0;
+  }
+
+  /* La nuit, un halo de lanterne derrière la capture. */
+  .capture::before {
+    content: '';
+    position: absolute;
+    inset: -10% -8%;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(closest-side, var(--lanterne-halo), transparent);
+    opacity: 0;
+    transition: opacity var(--d-scene) var(--courbe);
+  }
+
+  :global(:root[data-theme='nuit']) .capture::before,
+  :global(.acte-veille) .capture::before,
+  :global(.acte-bleu) .capture::before {
+    opacity: 1;
+  }
+
+  .capture__cadre {
+    overflow: hidden;
+    border: 1px solid var(--trait);
+    border-radius: var(--r2);
+    background: var(--cadre);
+    box-shadow: var(--ombre-1);
+  }
+
+  :global(:root[data-theme='nuit']) .capture__cadre,
+  :global(.acte-veille) .capture__cadre,
+  :global(.acte-bleu) .capture__cadre {
+    border-color: var(--cadre-point);
+  }
+
+  /* Le cadre rogne ce qui dépasse : l’anneau de focus d’une vidéo posée
+     dans la vue se porte sur lui (critère 2.4.7), sur toutes les pages. */
+  .capture__cadre:has(video:focus-visible) {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+  }
+
+  .capture__barre {
+    display: flex;
+    align-items: center;
+    gap: var(--s3);
+    height: 28px;
+    padding-inline: var(--s3);
+    overflow: hidden;
+    border-bottom: 1px solid var(--cadre-filet);
+    background: var(--cadre-barre);
+    color: var(--cadre-texte);
+    font-size: var(--t-xs);
+    white-space: nowrap;
+  }
+
+  .capture__points {
+    flex: none;
+    width: 34px;
+    height: 8px;
+    background: radial-gradient(circle 4px at 4px 4px, var(--cadre-point) 98%, transparent) 0 0 / 13px 8px repeat-x;
+  }
+
+  .capture__points--dessin {
+    height: 8px;
+    background: none;
+    color: var(--cadre-point);
+  }
+
+  .capture__adresse {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .capture__vue {
+    position: relative;
+  }
+
+  .capture--recadree .capture__vue {
+    aspect-ratio: var(--ratio);
+    overflow: hidden;
+  }
+
+  .capture__vue :global(picture) {
+    display: contents;
+  }
+
+  /* La capture elle-même (image ou vidéo), jamais ce qui la survole. */
+  .capture__vue :global(picture img),
+  .capture__vue > :global(video) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .capture--recadree .capture__vue :global(picture img),
+  .capture--recadree .capture__vue > :global(video) {
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--position);
+  }
+
+  /* Recadrage sur les deux axes : l’image déborde la vue de chaque côté. */
+  .capture--region .capture__vue :global(picture img) {
+    position: absolute;
+    left: calc(-100% * var(--rx) / var(--rl));
+    top: calc(-100% * var(--ry) / var(--rh));
+    width: calc(100% * 100 / var(--rl));
+    max-width: none;
+    height: calc(100% * 100 / var(--rh));
+    object-fit: fill;
+  }
+
+  @media (max-width: 860px) {
+    .capture--recadree-mobile .capture__vue {
+      aspect-ratio: var(--ratio-mobile);
+      overflow: hidden;
+    }
+
+    .capture--recadree-mobile .capture__vue :global(picture img),
+    .capture--recadree-mobile .capture__vue > :global(video) {
+      height: 100%;
+      object-fit: cover;
+      object-position: var(--position);
+    }
+
+    .capture--region .capture__vue :global(picture img) {
+      left: calc(-100% * var(--rx-m) / var(--rl-m));
+      top: calc(-100% * var(--ry-m) / var(--rh-m));
+      width: calc(100% * 100 / var(--rl-m));
+      height: calc(100% * 100 / var(--rh-m));
+      object-fit: fill;
+    }
+  }
+
+  /* Sous 560 px, la loupe de CaptureAnnotee peut sortir de la vue et se poser
+     dessous, en pleine largeur (`--loupe-h` : sa hauteur, en % de la largeur). */
+  @media (max-width: 560px) {
+    .capture--loupe-dessous .capture__cadre,
+    .capture--loupe-dessous .capture__vue {
+      overflow: visible;
+    }
+
+    .capture--loupe-dessous .capture__vue {
+      margin-bottom: calc(var(--loupe-h) + var(--s5));
+    }
+  }
+
+  .capture__agrandir {
+    display: block;
+    height: 100%;
+    cursor: zoom-in;
+  }
+
+  .capture__agrandir:focus-visible {
+    outline-offset: -3px;
+  }
+
+  .capture__loupe-picto {
+    position: absolute;
+    right: var(--s2);
+    bottom: var(--s2);
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--r3);
+    background: var(--voile-cible);
+    color: var(--lune);
+    opacity: 0;
+    transition: opacity var(--d-ui) var(--courbe);
+  }
+
+  .capture__loupe-picto :global(svg) {
+    width: 18px;
+    height: 18px;
+  }
+
+  .capture__agrandir:hover .capture__loupe-picto,
+  .capture__agrandir:focus-visible .capture__loupe-picto {
+    opacity: 1;
+  }
+
+  .capture--telephone .capture__cadre {
+    position: relative;
+    padding: 6px;
+    border-radius: 26px;
+  }
+
+  .capture__haut-parleur {
+    position: absolute;
+    top: 1.5px;
+    left: 50%;
+    width: 22px;
+    height: 3px;
+    translate: -50% 0;
+    color: var(--cadre-point);
+  }
+
+  .capture--telephone .capture__vue {
+    overflow: hidden;
+    border-radius: 20px;
+  }
+
+  .capture--terminal .capture__cadre {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .capture__legende {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--s2);
+    margin-top: var(--s3);
+    font-size: var(--t-xs);
+    line-height: 1.5;
+    color: var(--eteint);
+  }
+
+  @media print {
+    .capture::before,
+    .capture__loupe-picto {
+      display: none;
+    }
+  }
+</style>

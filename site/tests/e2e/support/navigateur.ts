@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import { PAGES_SITEMAP } from '../../../src/config/pages';
 
 /**
  * Relève ce qu'une page signale dans la console pendant le test : erreurs de
@@ -23,11 +24,9 @@ export function fileDeMesure(page: Page): Promise<[string, Record<string, unknow
   });
 }
 
-/** Les pages du site, telles que le build les produit. */
-export const PAGES = [
-  '/', '/projets', '/projets/pvz-fusion', '/projets/omnicard', '/projets/gup',
-  '/projets/bloodborne-legendary-run',
-  '/projets/league-of-database',
-  '/parcours', '/parcours/professionnel', '/parcours/competences', '/parcours/formation',
-  '/contact', '/blog', '/mentions-legales',
-] as const;
+/**
+ * Les pages du site, telles que le sitemap les liste : la même source que
+ * `pages/sitemap.xml.ts` (`config/pages.ts`), donc jamais une liste de plus à
+ * tenir à jour. Le vérificateur du build garantit que le sitemap est exact.
+ */
+export const PAGES: readonly string[] = PAGES_SITEMAP.map((page) => page.chemin);

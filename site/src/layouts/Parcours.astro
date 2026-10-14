@@ -1,10 +1,29 @@
 ---
+/**
+ * Gabarit des pages du parcours (Professionnel, Compétences, Formation) :
+ * fil d’Ariane, onglets du parcours, titre et une ligne, le contenu, l’appel
+ * « Discutons », puis la suite de lecture vers les autres pages. Le même
+ * ordre que la sortie des pages de projet : l’action principale ferme le
+ * contenu, la navigation vient ensuite.
+ *
+ *   <Parcours titre description chemin courant introduction sommaire={SECTIONS}>
+ *     …
+ *     <AppelDiscutons slot="fin" emplacement="discutons">Une phrase.</AppelDiscutons>
+ *   </Parcours>
+ *
+ * `sommaire` (facultatif) : les sections de la page pour le bouton
+ * « Sommaire » de l’en-tête sous 1 100 px (la même liste que NavigationPage).
+ * Slots : `tete` sous le titre (raccourcis, preuve), défaut pour le contenu,
+ * `fin` entre le contenu et « Pour continuer » (l’appel « Discutons »).
+ * `compact` est gardé pour compatibilité : l’en-tête est toujours compact.
+ */
 import Base from './Base.astro';
 import FilAriane from '../components/pages/FilAriane.astro';
 import ContinuerLecture from '../components/pages/ContinuerLecture.astro';
 import NavigationParcours from '../components/parcours/NavigationParcours.astro';
 import { PAGES_PARCOURS } from '../config/parcours';
-import '../styles/profondeur.css';
+import type { EntreeSommaire } from '../config/navigation';
+import { typo } from '../lib/typo';
 
 interface Props {
   titre: string;
@@ -13,50 +32,57 @@ interface Props {
   courant: string;
   introduction: string;
   compact?: boolean;
+  /** Sections de la page, transmises au sommaire de l’en-tête (sous 1 100 px). */
+  sommaire?: readonly EntreeSommaire[];
 }
-const { titre, description, chemin, courant, introduction, compact = false } = Astro.props;
+
+const { titre, description, chemin, courant, introduction, sommaire } = Astro.props;
 const suite = [
-  { href: '/parcours', titre: 'Vue d’ensemble', detail: 'Revenir au parcours.' },
+  { href: '/parcours', titre: 'Vue d’ensemble', detail: 'Le parcours en bref, avec sa frise.' },
   ...PAGES_PARCOURS.filter((page) => page.href !== chemin).map((page) => ({
     href: page.href, titre: page.titre, detail: page.description,
   })),
 ];
 ---
 
-<Base titre={titre} description={description} chemin={chemin}>
-  <div class:list={['wrap profondeur parcours-page', { 'parcours-page--compact': compact }]}>
+<Base titre={titre} description={description} chemin={chemin} sommaire={sommaire}>
+  <div class="conteneur parcours-page">
     <FilAriane courant={courant} parents={[{ href: '/parcours', titre: 'Parcours' }]} />
-    <header class="page-hero">
-      <h1>{courant}</h1>
-      <p class="page-hero__intro">{introduction}</p>
-    </header>
     <NavigationParcours chemin={chemin} />
+    <header class="parcours-tete">
+      <h1 data-pli="titre">{courant}</h1>
+      <p class="chapeau" data-pli="identite">{typo(introduction)}</p>
+      <slot name="tete" />
+    </header>
     <slot />
+    <slot name="fin" />
     <ContinuerLecture liens={suite} />
   </div>
 </Base>
 
 <style>
-  .parcours-page > :global(section:first-of-type) { border-top: 0; padding-top: 0; }
-  .parcours-page .page-hero { padding-block: var(--s5) var(--s6); }
-  .parcours-page .page-hero h1 { max-width: 24ch; font-size: clamp(2.25rem, 1.6rem + 2.5vw, 4rem); }
-  .parcours-page .page-hero__intro { margin-top: var(--s4); max-width: 65ch; font-size: var(--t-corps); }
-  .parcours-page--compact .page-hero { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: center; gap: var(--s6); padding-block: var(--s3) var(--s5); }
-  .parcours-page--compact .page-hero h1 { font-size: clamp(2rem, 1.6rem + 1.7vw, 3.25rem); }
-  .parcours-page--compact .page-hero__intro { margin: 0; font-size: var(--t-petit); color: var(--graphite); max-width: 43ch; }
-  .parcours-page--compact :global(.navigation-parcours) { margin-bottom: var(--s6); }
-  @media (max-width: 900px) {
-    .parcours-page--compact .page-hero { display: block; }
-    .parcours-page--compact .page-hero__intro { margin-top: var(--s3); }
+  .parcours-page {
+    padding-bottom: var(--s7);
   }
-  @media (max-width: 760px) {
-    .parcours-page--compact :global(.navigation-parcours) { margin-bottom: var(--s5); }
-    .parcours-page--compact :global(.navigation-parcours ul) { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: var(--s2); padding: var(--s1); }
-    .parcours-page--compact :global(.navigation-parcours li) { flex-shrink: 0; }
-    .parcours-page--compact :global(.navigation-parcours a) { min-height: 44px; font-size: .9375rem; white-space: nowrap; }
+
+  .parcours-tete {
+    padding-block: clamp(24px, 4vw, 48px) clamp(24px, 3.5vw, 48px);
   }
-  @media (max-width: 700px) {
-    .parcours-page--compact :global(.fil-ariane) { padding-block: var(--s4); font-size: var(--t-etiquette); }
-    .parcours-page--compact .page-hero { padding-block: var(--s2) var(--s5); }
+
+  .parcours-tete h1 {
+    font-size: var(--t-3xl);
+    line-height: 1;
+  }
+
+  .parcours-tete .chapeau {
+    max-width: 38rem;
+    margin-top: var(--s4);
+    color: var(--eteint);
+  }
+
+  @media print {
+    .parcours-tete h1 {
+      font-size: var(--t-2xl);
+    }
   }
 </style>

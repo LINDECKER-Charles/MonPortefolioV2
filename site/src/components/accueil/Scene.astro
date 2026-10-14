@@ -1,0 +1,292 @@
+---
+/**
+ * Une scène illustrée du récit : l’image du registre (<Visuel>, une gravure à
+ * générer) et sa lumière. La lanterne de l’image est la seule source de
+ * lumière de la scène : à son arrivée dans l’écran, puis à chaque clic sur le
+ * dessin ou au clavier, la scène s’allume depuis elle — la lanterne s’allume,
+ * puis sa lumière gagne l’image (scripts/figure-animations.ts). Mouvement
+ * réduit, impression et sans JavaScript : l’état final, l’image entière.
+ * Le bouton de rejeu est rendu `disabled` : sans JavaScript, rien ne le
+ * rejouerait, il reste hors de la tabulation ; le script le réactive.
+ *
+ *   <Scene id="ACC-03" nom="pc" lumiere={[28, 58]} legende="Un vieux PC, en vue éclatée." />
+ *
+ * `lumiere` : la place de la lanterne dans l’image, en % du cadre ; la même
+ * que celle que la consigne du registre impose au générateur. La lumière se
+ * dessine dans un SVG au ratio du registre, posé sur l’image : le bouton de
+ * rejeu couvre tout le dessin, c’est le dessin qu’on touche.
+ *
+ * `legende` nomme la scène (bouton et légende) ; `muette` retire la légende
+ * visible quand la scène a déjà son titre à côté (FigureCollectif) ;
+ * `recadrage` affiche l’image à un autre ratio, centrée (« 2 / 1 » pour la
+ * voie et le bureau, comme la maquette), sur ordinateur seulement : sous
+ * 861 px, l’image garde le ratio du registre, plus haut et plus lisible, sauf
+ * si `recadragePetit` en donne un autre (« 1 / 1 » pour une vignette). La
+ * lumière suit le même recadrage.
+ *
+ * `ancrage` cale verticalement un recadrage plus large que l’image (en % : 0
+ * garde le haut, 50 le centre, 100 le bas), quand la lanterne dessinée se
+ * tient trop haut ou trop bas pour la bande centrale (ACC-21, ancrage 25).
+ * Il exige le même recadrage à toutes les largeurs (`recadrage` et
+ * `recadragePetit` égaux) : la lumière se dessine alors dans la seule bande
+ * visible de l’image, aux mêmes coordonnées que la lanterne.
+ *
+ * Une scène très large (21:9) est basse sur mobile : la commande d’un
+ * emplacement vide n’y garde que son identifiant, son sujet et son format.
+ *
+ * Une seule zone éclairée par écran : la nuit, au repos, une scène garde sa
+ * lanterne allumée. Quand deux scènes partagent un écran, la seconde passe
+ * `foyer={false}` : elle s’allume à son arrivée, puis sa lanterne s’éteint.
+ */
+import Visuel from '../ui/Visuel.astro';
+import { visuelParId } from '../../config/visuels';
+import { typo } from '../../lib/typo';
+
+interface Props {
+  id: string;
+  nom: string;
+  legende: string;
+  lumiere: readonly [number, number];
+  sizes?: string;
+  muette?: boolean;
+  recadrage?: string;
+  recadragePetit?: string;
+  /** La scène éclairée de son écran (par défaut) ; `false` : lanterne éteinte au repos. */
+  foyer?: boolean;
+  /** Calage vertical du recadrage, en % (50 : centré). */
+  ancrage?: number;
+  class?: string;
+}
+
+const { id, nom, legende, lumiere, sizes = '(max-width: 860px) 100vw, 480px', muette = false, recadrage, recadragePetit, foyer = true, ancrage, class: classe } = Astro.props;
+if (ancrage !== undefined && (!recadrage || recadrage !== recadragePetit)) throw new Error(`<Scene id="${id}"> : un ancrage exige le même recadrage à toutes les largeurs (recadrage et recadragePetit)`);
+const style = [recadrage && `--scene-recadrage:${recadrage}`, recadragePetit && `--scene-recadrage-petit:${recadragePetit}`, ancrage !== undefined && `--scene-ancrage:${ancrage}%`].filter(Boolean).join(';') || undefined;
+const visuel = visuelParId(id);
+if (!visuel) throw new Error(`<Scene id="${id}"> : identifiant absent de src/config/visuels.ts`);
+// La lumière part de la lanterne dessinée : la position que le registre impose à l’image, jour et nuit.
+if (visuel.lumiere?.join() !== lumiere.join()) throw new Error(`<Scene id="${id}"> : lumière en ${lumiere.join(' × ')} %, le registre place la lanterne en ${visuel.lumiere?.join(' × ') ?? '(rien)'} %`);
+const [a, b] = (visuel.ratio ?? '4 / 3').split(' / ').map(Number);
+const largeur = Math.round((100 * a) / b);
+const cx = Math.round(lumiere[0] * largeur) / 100;
+const cy = lumiere[1];
+/**
+ * La boîte du dessin de lumière : toute l’image, recadrée au centre par
+ * `slice` comme l’image par object-fit ; avec un ancrage, la seule bande
+ * visible du recadrage, calée comme l’image par object-position.
+ */
+const viewBox = (() => {
+  if (ancrage === undefined || !recadrage) return `0 0 ${largeur} 100`;
+  const [ra, rb] = recadrage.split('/').map(Number);
+  const visible = Math.min(100, (largeur * rb) / ra);
+  const haut = Math.round(((100 - visible) * ancrage) / 100 * 100) / 100;
+  return `0 ${haut} ${largeur} ${Math.round(visible * 100) / 100}`;
+})();
+const texte = typo(legende);
+const gid = `scene-${nom}`;
+---
+
+<figure class:list={['scene', { 'scene--recadree': recadrage, 'scene--recadree-petit': recadragePetit, 'scene--eteinte': !foyer }, classe]} data-scene={nom} data-figure-animation style={style}>
+  <div class="scene__plan">
+    <Visuel id={id} alt="" sizes={sizes} />
+    <button type="button" class="scene__rejouer" data-rejouer disabled aria-label={`Rejouer l’animation : ${texte}`}>
+      <svg class="scene__lumiere" viewBox={viewBox} preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+        <defs>
+          <radialGradient id={`${gid}-nuit`} gradientUnits="userSpaceOnUse" cx={cx} cy={cy} r="64">
+            <stop offset="0" class="scene__trou" />
+            <stop offset="0.2" class="scene__trou" />
+            <stop offset="1" class="scene__ombre" />
+          </radialGradient>
+          <radialGradient id={`${gid}-halo`} gradientUnits="userSpaceOnUse" cx={cx} cy={cy} r="24">
+            <stop offset="0" class="scene__eclat" />
+            <stop offset="1" class="scene__eteint" />
+          </radialGradient>
+        </defs>
+        <g class="scene__voile" style={`transform-origin:${cx}px ${cy}px`}>
+          <rect x={-4 * largeur} y="-400" width={9 * largeur} height="900" fill={`url(#${gid}-nuit)`} />
+        </g>
+        <circle class="scene__halo" cx={cx} cy={cy} r="24" fill={`url(#${gid}-halo)`} style={`transform-origin:${cx}px ${cy}px`} />
+      </svg>
+    </button>
+  </div>
+  {!muette && <figcaption class="scene__legende">{texte}</figcaption>}
+</figure>
+
+<style>
+  .scene {
+    margin: 0;
+    /* Lumière au repos : aucune le jour ; la nuit, la lanterne du foyer
+       reste allumée, celle d’une scène voisine s’éteint. */
+    --scene-halo: 0;
+    --scene-ombre: 0.62;
+  }
+
+  :global(:root[data-theme='nuit']) .scene,
+  :global(.acte-veille) .scene,
+  :global(.acte-bleu) .scene {
+    --scene-ombre: 0.82;
+  }
+
+  :global(:root[data-theme='nuit']) .scene:not(.scene--eteinte),
+  :global(.acte-veille) .scene:not(.scene--eteinte),
+  :global(.acte-bleu) .scene:not(.scene--eteinte) {
+    --scene-halo: 0.55;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme])) .scene {
+      --scene-ombre: 0.82;
+    }
+
+    :global(:root:not([data-theme])) .scene:not(.scene--eteinte) {
+      --scene-halo: 0.55;
+    }
+  }
+
+  .scene__plan {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: var(--r2);
+  }
+
+  .scene__plan :global(.visuel) {
+    border-radius: 0;
+  }
+
+  .scene__plan :global(.visuel img) {
+    object-position: 50% var(--scene-ancrage, 50%);
+  }
+
+  @media (min-width: 861px) {
+    .scene--recadree .scene__plan :global(.visuel) {
+      aspect-ratio: var(--scene-recadrage);
+    }
+  }
+
+  @media (max-width: 860px) {
+    .scene--recadree-petit .scene__plan :global(.visuel) {
+      aspect-ratio: var(--scene-recadrage-petit);
+    }
+  }
+
+  .scene__rejouer {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: var(--r2);
+    background: transparent;
+    color: inherit;
+  }
+
+  .scene__lumiere {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .scene__voile {
+    opacity: 0;
+    transform-box: view-box;
+  }
+
+  .scene__trou {
+    stop-color: var(--suie);
+    stop-opacity: 0;
+  }
+
+  .scene__ombre {
+    stop-color: var(--suie);
+    stop-opacity: var(--scene-ombre);
+  }
+
+  .scene__halo {
+    opacity: var(--scene-halo);
+    transform-box: view-box;
+  }
+
+  .scene__eclat {
+    stop-color: var(--lanterne);
+    stop-opacity: 0.7;
+  }
+
+  .scene__eteint {
+    stop-color: var(--lanterne);
+    stop-opacity: 0;
+  }
+
+  .scene__legende {
+    margin-top: var(--s2);
+    font-family: var(--police-titre);
+    font-style: italic;
+    font-size: var(--t-m);
+    line-height: 1.3;
+    color: var(--eteint);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .scene:global(.animation-en-cours) .scene__voile {
+      animation: scene-voile var(--d-recit) var(--courbe) both;
+    }
+
+    .scene:global(.animation-en-cours) .scene__halo {
+      animation: scene-halo var(--d-recit) ease both;
+    }
+
+    .scene:global(.animation-en-cours) .scene__plan :global(.visuel) {
+      animation: scene-image var(--d-recit) var(--courbe) both;
+    }
+
+    /* La lanterne s’allume, vacille, puis sa lumière gagne toute l’image. */
+    @keyframes scene-voile {
+      0%,
+      16% {
+        opacity: 1;
+        transform: scale(0.3);
+      }
+      74% {
+        opacity: 0.5;
+        transform: scale(2.6);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(2.6);
+      }
+    }
+
+    @keyframes scene-halo {
+      0% {
+        opacity: 0;
+        transform: scale(0.3);
+      }
+      10% {
+        opacity: 1;
+        transform: scale(1.15);
+      }
+      18% {
+        opacity: 0.55;
+      }
+      26% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      100% {
+        opacity: var(--scene-halo);
+        transform: scale(1);
+      }
+    }
+
+    @keyframes scene-image {
+      from {
+        transform: scale(1.04);
+      }
+      to {
+        transform: scale(1);
+      }
+    }
+  }
+</style>

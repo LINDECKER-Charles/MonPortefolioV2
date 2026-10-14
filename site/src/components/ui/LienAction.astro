@@ -1,0 +1,33 @@
+---
+/**
+ * Lien d’action : une action secondaire à côté d’un bouton, ou seule en fin
+ * de bloc (« Lire mon histoire ↓ », « Voir le projet → », « Le code ↗ »).
+ * Souligné, en bleu roi (la lune, la nuit), cible de 48 px de haut.
+ *
+ *   <LienAction href="#origine">Lire mon histoire</LienAction>
+ *   <LienAction href="/projets/pvz-fusion">Voir le projet</LienAction>
+ *   <LienAction href="https://github.com/Teyliu/PVZF-Translation" emplacement="preuves">Le projet multilingue</LienAction>
+ *
+ * Même grammaire et même contrat de mesure que Bouton (lib/liens.ts).
+ * Classe : `.lien-action` (global.css).
+ */
+import { attributsMesure, FLECHES, sorteDeLien, type Emplacement } from '../../lib/liens';
+
+interface Props {
+  href: string;
+  fleche?: boolean;
+  emplacement?: Emplacement;
+  evenement?: 'contact-page';
+  class?: string;
+  /** Attributs supplémentaires (data-*, aria-*), passés tels quels. */
+  attributs?: Record<`data-${string}` | `aria-${string}`, string | boolean | undefined>;
+}
+
+const { href, fleche = true, emplacement, evenement, class: classe, attributs = {} } = Astro.props;
+const sorte = sorteDeLien(href);
+const mesure = attributsMesure(href, { emplacement, evenement });
+---
+
+<a class:list={['lien-action', classe]} href={href} rel={sorte === 'externe' ? 'external' : undefined} {...mesure} {...attributs}>
+  <slot />{fleche && <span class="fleche" aria-hidden="true">{` ${FLECHES[sorte]}`}</span>}
+</a>

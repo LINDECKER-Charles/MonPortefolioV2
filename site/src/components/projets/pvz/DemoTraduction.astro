@@ -1,0 +1,157 @@
+---
+/**
+ * « Ce que ça change pour un joueur » (conservée) : cinq commandes des menus,
+ * dans le texte chinois d’origine ou en français, d’une pression. Les extraits
+ * viennent de translation_strings.json, lignes 40 à 51, à la révision du
+ * 26/09/2026 (COMMANDES, config/pvz-fusion.ts) ; leur mise en page est une
+ * démonstration, pas une capture du jeu.
+ *
+ * Sans JavaScript : le français s’affiche, les boutons restent masqués. Les
+ * extraits sont du texte, pas de faux boutons.
+ */
+import { COMMANDES } from '../../../config/pvz-fusion';
+---
+
+<div class="demo" data-pvz-traduction>
+  <div class="demo__entete">
+    <h4 class="demo__titre">Ce que ça change pour un joueur</h4>
+    <div class="demo__langues" role="group" aria-label="Langue des extraits" hidden data-langues>
+      <button type="button" data-langue="origine" aria-pressed="false" aria-controls="extraits-origine">Texte d’origine</button>
+      <button type="button" data-langue="francais" aria-pressed="true" aria-controls="extraits-francais">Français</button>
+    </div>
+  </div>
+  <div class="demo__contenu" aria-live="polite" aria-atomic="true">
+    <ul class="demo__extraits" id="extraits-origine" data-extraits="origine" lang="zh-CN" aria-label="Commandes dans le texte chinois d’origine" hidden>
+      {COMMANDES.map((commande) => <li>{commande.origine}</li>)}
+    </ul>
+    <ul class="demo__extraits" id="extraits-francais" data-extraits="francais" lang="fr" aria-label="Commandes traduites en français">
+      {COMMANDES.map((commande) => <li>{commande.francais}</li>)}
+    </ul>
+    <p class="demo__note" data-langue-affichee>Les commandes en français.</p>
+  </div>
+  <p class="demo__legende">
+    Extraits des menus, mis en page pour cette démonstration&nbsp;: <a href="#sources">leur source<span class="fleche" aria-hidden="true">&nbsp;↓</span></a>
+  </p>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-pvz-traduction]').forEach((demo) => {
+    const choix = demo.querySelector<HTMLElement>('[data-langues]');
+    const boutons = demo.querySelectorAll<HTMLButtonElement>('[data-langue]');
+    const extraits = demo.querySelectorAll<HTMLElement>('[data-extraits]');
+    const note = demo.querySelector<HTMLElement>('[data-langue-affichee]');
+    boutons.forEach((bouton) => {
+      bouton.addEventListener('click', () => {
+        const langue = bouton.dataset.langue;
+        boutons.forEach((autre) => autre.setAttribute('aria-pressed', String(autre === bouton)));
+        extraits.forEach((extrait) => {
+          extrait.hidden = extrait.dataset.extraits !== langue;
+        });
+        if (note) note.textContent = langue === 'francais' ? 'Les commandes en français.' : 'Les commandes dans le texte chinois d’origine.';
+      });
+    });
+    if (choix) choix.hidden = false;
+  });
+</script>
+
+<style>
+  .demo {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--filet);
+    border-radius: var(--r2);
+    background: var(--surface);
+    box-shadow: var(--ombre-1);
+  }
+
+  .demo__entete {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s3) var(--s4);
+    padding: var(--s4) var(--s5);
+    border-bottom: 1px solid var(--filet);
+  }
+
+  .demo__titre {
+    font-family: var(--police-texte);
+    font-size: var(--t-s);
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0;
+  }
+
+  .demo__langues {
+    display: inline-flex;
+    padding: 3px;
+    border: 1px solid var(--trait);
+    border-radius: var(--r3);
+  }
+
+  .demo__langues[hidden],
+  .demo__extraits[hidden] {
+    display: none;
+  }
+
+  .demo__langues button {
+    min-height: 40px;
+    padding: 0 var(--s4);
+    border: 0;
+    border-radius: var(--r3);
+    background: transparent;
+    color: var(--encre);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color var(--d-ui) var(--courbe), color var(--d-ui) var(--courbe);
+  }
+
+  .demo__langues button[aria-pressed='true'] {
+    background: var(--bouton);
+    color: var(--bouton-texte);
+  }
+
+  .demo__contenu {
+    padding: var(--s3) var(--s5) var(--s4);
+  }
+
+  .demo__extraits {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .demo__extraits li {
+    padding: var(--s2) 0;
+    border-bottom: 1px solid var(--filet);
+    font-size: var(--t-m);
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+
+  .demo__note {
+    margin-top: var(--s3);
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  .demo__legende {
+    margin-top: auto;
+    padding: var(--s3) var(--s5);
+    border-top: 1px solid var(--filet);
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  @media (max-width: 480px) {
+    .demo__langues {
+      width: 100%;
+    }
+
+    .demo__langues button {
+      flex: 1;
+      min-height: 44px;
+    }
+  }
+</style>

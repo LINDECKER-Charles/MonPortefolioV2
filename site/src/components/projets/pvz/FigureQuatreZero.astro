@@ -1,0 +1,118 @@
+---
+/**
+ * PVZ-F2 · La version 4.0 en six jours : trois jalons datés, du dépôt des
+ * textes d’origine à la sortie multilingue, depuis QUATRE_ZERO
+ * (config/pvz-fusion.ts). Figure codée en HTML : une liste ordonnée, lisible
+ * sans styles ; la dernière étape, l’état atteint, à la lanterne.
+ */
+import { QUATRE_ZERO } from '../../../config/pvz-fusion';
+import { typo } from '../../../lib/typo';
+---
+
+<figure class="quatre-zero">
+  <figcaption class="quatre-zero__titre">La version 4.0 en six jours</figcaption>
+  <ol>
+    {
+      QUATRE_ZERO.map((jalon) => (
+        <li>
+          <time datetime={jalon.date}>{jalon.libelle}</time>
+          <span>{typo(jalon.texte)}</span>
+        </li>
+      ))
+    }
+  </ol>
+</figure>
+
+<style>
+  .quatre-zero__titre {
+    margin-bottom: var(--s4);
+    font-size: var(--t-s);
+    font-weight: 600;
+  }
+
+  ol {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: var(--s1);
+    padding-top: var(--s5);
+  }
+
+  /* Le fil qui relie les jalons, et le jalon lui-même. */
+  li::before {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 0;
+    right: calc(-1 * var(--s4));
+    height: 1px;
+    background: var(--trait);
+  }
+
+  li:last-child::before {
+    right: 0;
+  }
+
+  li::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 13px;
+    height: 13px;
+    border: 1.5px solid var(--encre);
+    border-radius: 50%;
+    background: var(--fond);
+  }
+
+  li:last-child::after {
+    border-color: var(--laiton);
+    background: var(--laiton);
+  }
+
+  time {
+    font-family: var(--police-titre);
+    font-size: var(--t-xl);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  span {
+    font-size: var(--t-xs);
+    line-height: 1.45;
+    color: var(--eteint);
+  }
+
+  @media (max-width: 480px) {
+    ol {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s3);
+    }
+
+    li {
+      padding: 0 0 0 var(--s6);
+    }
+
+    li::before {
+      top: 13px;
+      bottom: calc(-1 * var(--s3));
+      left: 6px;
+      right: auto;
+      width: 1px;
+      height: auto;
+    }
+
+    li:last-child::before {
+      display: none;
+    }
+  }
+</style>

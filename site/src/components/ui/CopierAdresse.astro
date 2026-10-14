@@ -1,25 +1,33 @@
 ---
 /**
- * « Copier l'adresse » : pour le lecteur dont le navigateur n'a pas de
+ * « Copier l’adresse » : pour le lecteur dont le navigateur n’a pas de
  * messagerie configurée — le cas courant au bureau, où un lien mailto ne fait
- * rien. Le bouton confirme ce qui s'est passé (pictogramme et libellé), et le
- * dit aussi aux lecteurs d'écran. Sans JavaScript, il n'apparaît pas :
- * l'adresse reste affichée en clair à côté.
+ * rien. Le bouton confirme ce qui s’est passé (pictogramme et libellé), et le
+ * dit aussi aux lecteurs d’écran. Sans JavaScript, il n’apparaît pas :
+ * l’adresse reste affichée en clair à côté.
+ *
+ *   <CopierAdresse adresse={CONTACT.email} emplacement="contact" />
+ *   <CopierAdresse adresse={CONTACT.email} emplacement="pied-de-page" compact />
+ *
+ * `emplacement` : une valeur fermée du plan de marquage (événement
+ * `contact-copie`, docs/mesure-audience.md).
  */
 import Picto from './Picto.astro';
 
 interface Props {
   adresse: string;
   emplacement: string;
+  /** Petite pilule « Copier », pour une ligne d’adresse (pied de page). */
+  compact?: boolean;
 }
 
-const { adresse, emplacement } = Astro.props;
+const { adresse, emplacement, compact = false } = Astro.props;
 ---
 
-<button class="btn btn--contour copier" type="button" data-copier={adresse} data-emplacement={emplacement}>
+<button class:list={['bouton', 'bouton--contour', 'copier', { 'copier--compact': compact }]} type="button" data-copier={adresse} data-emplacement={emplacement} data-js-seulement>
   <span class="copier__icone copier__icone--repos"><Picto nom="interface/copier" /></span>
   <span class="copier__icone copier__icone--fait"><Picto nom="interface/copie" /></span>
-  <span class="copier__libelle">Copier l’adresse</span>
+  <span class="copier__libelle">{compact ? 'Copier' : 'Copier l’adresse'}</span>
 </button>
 <span class="sr" role="status" data-copier-statut></span>
 
@@ -29,14 +37,6 @@ const { adresse, emplacement } = Astro.props;
 </script>
 
 <style>
-  .copier {
-    display: none;
-  }
-
-  :global(.js) .copier {
-    display: inline-flex;
-  }
-
   .copier__icone {
     display: inline-flex;
   }
@@ -53,5 +53,19 @@ const { adresse, emplacement } = Astro.props;
 
   .copier:global(.est-copie) .copier__icone--fait {
     display: inline-flex;
+  }
+
+  .copier--compact {
+    min-height: 32px;
+    margin-block: 6px;
+    padding-inline: var(--s3);
+    font-size: var(--t-xs);
+    font-weight: 500;
+    color: var(--encre);
+  }
+
+  .copier--compact .copier__icone :global(svg) {
+    width: 16px;
+    height: 16px;
   }
 </style>

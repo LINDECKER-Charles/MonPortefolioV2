@@ -1,304 +1,704 @@
 ---
+/**
+ * Formation et certifications (cahier, § 5.11) : « ce que j’ai dans mon
+ * sac », en diagonale. Le titre obtenu domine, le programme CDA reste
+ * distinct, le chemin d’avant tient en cinq stations, puis les douze
+ * certifications (versions réunies, chacune avec son certificat) et la
+ * pratique sur Frontend Mentor. Données : config/formation.ts.
+ */
 import Parcours from '../../layouts/Parcours.astro';
-import VisuelFormation from '../../components/parcours/VisuelFormation.astro';
-import { DOMAINES_CERTIFICATIONS, NOMBRE_CERTIFICATIONS } from '../../config/formation';
+import AppelDiscutons from '../../components/pages/AppelDiscutons.astro';
+import NavigationPage from '../../components/pages/NavigationPage.astro';
+import LienAction from '../../components/ui/LienAction.astro';
+import Picto from '../../components/ui/Picto.astro';
+import PreuveChiffree from '../../components/ui/PreuveChiffree.astro';
+import PreuvesChiffrees from '../../components/ui/PreuvesChiffrees.astro';
+import Statut from '../../components/ui/Statut.astro';
+import Visuel from '../../components/ui/Visuel.astro';
+import javascript from '../../assets/stacks/javascript.svg?url';
+import python from '../../assets/stacks/python.svg?url';
+import postgresql from '../../assets/stacks/postgresql.svg?url';
+import csharp from '../../assets/stacks/csharp.svg?url';
+import {
+  ANNEES_CERTIFICATIONS, certificationsGroupees, COMPLEMENT_CDA, DIPLOME, DOMAINES_CERTIFICATIONS, ETUDES_AVANT,
+  FRONTEND_MENTOR, NOMBRE_CERTIFICATIONS, PROFIL_FREECODECAMP,
+} from '../../config/formation';
+import { attributsMesure } from '../../lib/liens';
+
+const LOGOS: Record<string, string> = { javascript, python, postgresql, csharp };
+const SECTIONS = [
+  { id: 'formation', titre: 'Formations' },
+  { id: 'certifications', titre: 'Certifications' },
+  { id: 'frontend-mentor', titre: 'Frontend Mentor' },
+];
+const preuve = (href: string) => attributsMesure(href, { emplacement: 'preuves' });
 ---
 
 <Parcours
   titre="Formation et certifications · Charles Lindecker"
-  description="Mon parcours de formation, du titre DWWM aux premiers apprentissages, mes douze certifications et ma pratique sur Frontend Mentor."
+  description={`La formation de Charles Lindecker : le titre DWWM, les études d’avant, ${NOMBRE_CERTIFICATIONS} certifications et la pratique sur Frontend Mentor.`}
   chemin="/parcours/formation"
   courant="Formation et certifications"
   introduction="Études, certifications et pratique."
+  sommaire={SECTIONS}
   compact
 >
-  <nav class="reperes-formation" aria-label="Repères de formation">
-    <a href="#formation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M5 4v16m0-13h14M5 12h10M5 17h14"/><circle cx="5" cy="7" r="2" fill="currentColor" stroke="none"/><circle cx="5" cy="12" r="2" fill="currentColor" stroke="none"/><circle cx="5" cy="17" r="2" fill="currentColor" stroke="none"/></svg>Formations</a>
-    <a href="#certifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h4m0 5 2 2 4-4"/></svg>Certifications</a>
-    <a href="#frontend-mentor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18m-14 5 3 3 3-3m4-1v5"/></svg>Frontend Mentor</a>
-  </nav>
-
-  <section class="formation-section" id="formation" tabindex="-1" aria-labelledby="formation-titre">
-    <header class="section-tete formation-tete">
-      <div><h2 id="formation-titre">Parcours de formation</h2></div>
-    </header>
-
-    <ol class="formation-timeline" role="list">
-      <li class="formation-etape formation-etape--diplome">
-        <div class="timeline-date"><time datetime="2025">2025</time></div>
-        <div class="timeline-contenu">
-          <article class="diplome" aria-labelledby="dwwm-titre">
-            <div class="diplome-contenu">
-              <p class="diplome-statut"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/></svg>Titre professionnel obtenu</p>
-              <h3 id="dwwm-titre">Développeur Web<br />et Web Mobile</h3>
-              <p class="diplome-organisme">Elan Formation, Mulhouse</p>
-              <dl class="diplome-reperes">
-                <div><dt class="sr">Période de formation</dt><dd class="formation-date"><time datetime="2025-04">Avril</time>–<time datetime="2025-10">octobre 2025</time></dd></div>
-                <div><dt class="sr">Niveau du titre</dt><dd>RNCP niveau 5 <span>(bac + 2)</span></dd></div>
+  <NavigationPage entrees={SECTIONS}>
+    <section class="formation" id="formation" tabindex="-1" aria-labelledby="formation-titre">
+      <h2 id="formation-titre" class="section-titre">Parcours de formation</h2>
+      <ol class="formation-timeline" role="list">
+        <li class="etape etape--titre">
+          <article class="dwwm foyer" id="dwwm" aria-labelledby="dwwm-titre">
+            <div class="dwwm__texte">
+              <Statut class="dwwm__statut">{DIPLOME.statut}</Statut>
+              <h3 id="dwwm-titre">{DIPLOME.titre}</h3>
+              <p class="dwwm__organisme">{DIPLOME.organisme}</p>
+              <dl class="dwwm__reperes">
+                <div>
+                  <dt>Période</dt>
+                  <dd class="formation-date"><time datetime={DIPLOME.debut}>Avril</time><span aria-hidden="true"> – </span><span class="sr"> à </span><time datetime={DIPLOME.fin}>octobre 2025</time></dd>
+                </div>
+                <div>
+                  <dt>Niveau</dt>
+                  <dd>{DIPLOME.niveau} <span>({DIPLOME.equivalence})</span></dd>
+                </div>
               </dl>
+              <PreuveChiffree as="div" class="dwwm__preuve" valeur={DIPLOME.preuve.valeur} libelle={DIPLOME.preuve.libelle} source={DIPLOME.preuve.source} surligne />
             </div>
-            <div class="diplome-figure"><VisuelFormation type="diplome" /></div>
+            <Visuel id={DIPLOME.visuel} alt="" class="dwwm__visuel" sizes="(max-width: 760px) 100vw, 520px" loading="eager" />
           </article>
-          <aside class="complement-cda" id="complement-cda" aria-labelledby="cda-titre">
-            <div><p class="complement-statut">Programme étudié en complément</p><h3 id="cda-titre">Concepteur Développeur d’Applications</h3><p class="complement-contexte">Pendant le DWWM</p></div>
-            <div class="complement-reperes"><p><strong>≈&nbsp;80&nbsp;%</strong> du programme</p><div class="complement-jauge" aria-hidden="true"></div><p class="complement-statut">Titre non passé</p></div>
+          <aside class="cda" id="complement-cda" aria-labelledby="cda-titre">
+            <Visuel id={COMPLEMENT_CDA.visuel} alt="" class="cda__visuel" sizes="(max-width: 760px) 100vw, 180px" />
+            <div class="cda__texte">
+              <p class="cda__statut">{COMPLEMENT_CDA.statut}</p>
+              <h3 id="cda-titre">{COMPLEMENT_CDA.titre}</h3>
+              <p class="cda__contexte">{COMPLEMENT_CDA.contexte} · {COMPLEMENT_CDA.niveau}</p>
+            </div>
+            <div class="cda__part">
+              <p><strong>≈&nbsp;{COMPLEMENT_CDA.part}&nbsp;%</strong> du programme</p>
+              <div class="cda__jauge" style={`--part:${COMPLEMENT_CDA.part}%`} aria-hidden="true"></div>
+              <p class="cda__statut">{COMPLEMENT_CDA.titreNonPasse}</p>
+            </div>
           </aside>
-        </div>
-      </li>
-      <li class="formation-etape formation-etape--secondaire">
-        <div class="timeline-date timeline-date--relative"><span>Avant<br /> le DWWM</span></div>
-        <article class="timeline-contenu carte-etude carte-etude--piscine" aria-labelledby="piscine-titre">
-          <div class="cursus-contenu"><p class="etudes-organisme">Sélection d’entrée</p><h3 id="piscine-titre">Piscine de 42</h3><p class="etudes-statut">Candidature non retenue</p></div>
-          <div class="cursus-visuel"><VisuelFormation type="piscine" /></div>
-        </article>
-      </li>
-      <li class="formation-etape">
-        <div class="timeline-date"><span class="timeline-periode"><time datetime="2023">2023</time><span aria-hidden="true">–</span><time datetime="2024">2024</time></span></div>
-        <article class="timeline-contenu carte-etude carte-etude--reseaux" aria-labelledby="reseaux-titre">
-          <div class="cursus-contenu"><p class="etudes-organisme">IUT Nancy-Brabois</p><h3 id="reseaux-titre">BUT Réseaux<br />&amp; Télécoms</h3><p class="cursus-annee">Première année suivie</p><p class="etudes-statut">Cursus non poursuivi</p></div>
-          <div class="cursus-visuel"><VisuelFormation type="reseaux" /></div>
-        </article>
-      </li>
-      <li class="formation-etape formation-etape--secondaire">
-        <div class="timeline-date timeline-date--relative"><span>Université</span></div>
-        <article class="timeline-contenu carte-etude carte-etude--sciences" aria-labelledby="physique-titre">
-          <div class="cursus-contenu"><h3 id="physique-titre">Physique-chimie</h3><p class="cursus-annee">Première année suivie</p><p class="etudes-statut">Cursus non poursuivi</p></div>
-          <div class="cursus-visuel"><VisuelFormation type="sciences" /></div>
-        </article>
-      </li>
-      <li class="formation-etape formation-etape--secondaire">
-        <div class="timeline-date timeline-date--relative"><span>IUT</span></div>
-        <article class="timeline-contenu carte-etude carte-etude--informatique" aria-labelledby="informatique-titre">
-          <div class="cursus-contenu"><h3 id="informatique-titre">BUT Informatique</h3><p class="cursus-annee">Première année suivie</p><p class="etudes-statut">Cursus non poursuivi</p></div>
-          <div class="cursus-visuel"><VisuelFormation type="informatique" /></div>
-        </article>
-      </li>
-      <li class="formation-etape formation-etape--origine">
-        <div class="timeline-date timeline-date--relative"><span>Vers 13&nbsp;ans</span></div>
-        <article class="timeline-contenu carte-etude carte-etude--origine" aria-labelledby="autodidacte-titre">
-          <div class="cursus-contenu"><h3 id="autodidacte-titre">Programmation en autodidacte</h3><p class="etudes-organisme">C avec OpenClassrooms</p></div>
-          <div class="cursus-visuel"><VisuelFormation type="autodidacte" /></div>
-        </article>
-      </li>
-    </ol>
-  </section>
+        </li>
+        {
+          ETUDES_AVANT.map((etude) => (
+            <li class="etape etape--station" id={etude.id}>
+              <article class="station" aria-labelledby={`${etude.id}-titre`}>
+                <Visuel id={etude.visuel} alt="" class="station__visuel" sizes="72px" />
+                <div class="station__texte">
+                  <p class="station__quand">
+                    {etude.quand?.debut ? (
+                      <>
+                        <time datetime={etude.quand.debut}>{etude.quand.debut}</time>–<time datetime={etude.quand.fin}>{etude.quand.fin}</time>
+                      </>
+                    ) : (
+                      etude.quand?.texte
+                    )}
+                  </p>
+                  <h3 id={`${etude.id}-titre`}>{etude.titre}</h3>
+                  <p class="station__organisme">{etude.organisme}</p>
+                  {etude.suivi && <p class="station__suivi">{etude.suivi}</p>}
+                  {etude.statut && <Statut etat="eteint" class="station__statut">{etude.statut}</Statut>}
+                  {etude.lien && <LienAction href={etude.lien.href} emplacement="preuves" class="station__lien">{etude.lien.libelle}</LienAction>}
+                </div>
+              </article>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
 
-  <section class="formation-section certifications-section" id="certifications" tabindex="-1" aria-labelledby="certifications-titre">
-    <header class="section-tete certifications-tete">
-      <div><h2 id="certifications-titre">Certifications</h2></div>
-      <p class="certifications-repere"><strong>{NOMBRE_CERTIFICATIONS}</strong><span>certifications<br /> 2024–2026</span></p>
-    </header>
-    <div class="certifications-intro"><a class="profil-certifications" href="https://www.freecodecamp.org/hexanti" data-umami-event="lien-sortant" data-umami-event-domaine="www.freecodecamp.org" data-umami-event-emplacement="preuves">Mon profil freeCodeCamp<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false"><path d="M14 4h6v6m0-6L10 14m0-10H4v16h16v-6"/></svg></a></div>
-    <div class="certifications-catalogue">
-      {DOMAINES_CERTIFICATIONS.map((domaine) => <article class="certification-domaine" aria-labelledby={`certification-${domaine.id}`}>
-        <header class="domaine-tete">
-          <div class="domaine-visuel"><VisuelFormation type={domaine.id} /></div>
-          <h3 id={`certification-${domaine.id}`}>{domaine.titre}</h3>
-          <p class="domaine-organisme">{domaine.id === 'csharp' ? 'Microsoft et freeCodeCamp' : 'freeCodeCamp'}</p>
-        </header>
-        <ul class="certification-liste" role="list">
-          {domaine.certifications.map((certification) => <li class="certification-ligne">
-            <a class="certification-intitule" href={certification.url} data-umami-event="lien-sortant" data-umami-event-domaine="www.freecodecamp.org" data-umami-event-emplacement="preuves"><span lang="en">{certification.titre}</span><span class="certification-suffixe">{'version' in certification && <span class="certification-version">{certification.version}</span>}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false"><path d="M14 4h6v6m0-6L10 14m0-10H4v16h16v-6"/></svg></span></a>
-            <time datetime={certification.date}>{certification.periode}</time>
-          </li>)}
-        </ul>
-      </article>)}
-    </div>
-  </section>
+    <section class="certifications acte-teinte" id="certifications" tabindex="-1" aria-labelledby="certifications-titre">
+      <header class="certifications__tete">
+        <h2 id="certifications-titre" class="section-titre">Certifications</h2>
+        <p class="certifications__repere">
+          <span>{NOMBRE_CERTIFICATIONS} certifications, {ANNEES_CERTIFICATIONS}</span>
+          <LienAction href={PROFIL_FREECODECAMP} emplacement="preuves">Mon profil freeCodeCamp</LienAction>
+        </p>
+      </header>
+      <div class="certifications__catalogue">
+        {
+          DOMAINES_CERTIFICATIONS.map((domaine) => (
+            <article class="domaine" aria-labelledby={`certification-${domaine.id}`}>
+              <header class="domaine__tete">
+                <span class="domaine__logo" aria-hidden="true">
+                  {domaine.logo ? <img src={LOGOS[domaine.logo]} alt="" width="28" height="28" loading="lazy" decoding="async" /> : <Picto nom="interface/langue" taille={24} />}
+                </span>
+                <h3 id={`certification-${domaine.id}`}>{domaine.titre}</h3>
+                <p class="domaine__organisme">{domaine.organisme}</p>
+              </header>
+              <ul class="certification-liste" role="list">
+                {certificationsGroupees(domaine).map((groupe) => (
+                  <li class="certification-ligne">
+                    <span class="certification-intitule" lang="en">{groupe.titre}</span>
+                    <span class="certification-versions">
+                      {groupe.versions.map((version) => (
+                        <a class="certification-preuve" href={version.url} rel="external" {...preuve(version.url)}>
+                          <span class="sr" lang="en">{groupe.titre} </span>
+                          {'version' in version && <span class="certification-version">{version.version}</span>}
+                          <time datetime={version.date}>{version.periode}</time>
+                          <span class="fleche" aria-hidden="true">&nbsp;↗</span>
+                        </a>
+                      ))}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))
+        }
+      </div>
+    </section>
 
-  <section class="frontend-mentor-section" id="frontend-mentor" tabindex="-1" aria-labelledby="frontend-mentor-titre">
-    <div class="frontend-mentor-contenu">
-      <p class="frontend-mentor-repere">Pratique du développement web</p>
-      <h2 id="frontend-mentor-titre">Frontend Mentor</h2>
-      <p>Interfaces réalisées à partir de maquettes.</p>
-      <dl class="frontend-mentor-chiffres"><div><dt>Projets réalisés</dt><dd><strong>20</strong> projets</dd></div><div><dt>Points du profil</dt><dd><strong>385</strong> points</dd></div></dl>
-      <p class="frontend-mentor-date">Repères relevés en octobre 2026.</p>
-      <a class="btn btn--contour" href="https://www.frontendmentor.io/profile/LINDECKER-Charles" data-umami-event="lien-sortant" data-umami-event-domaine="www.frontendmentor.io" data-umami-event-emplacement="preuves">Voir mon profil Frontend Mentor</a>
-    </div>
-    <div class="frontend-mentor-visuel"><VisuelFormation type="web" /></div>
-  </section>
+    <section class="frontend-mentor" id="frontend-mentor" tabindex="-1" aria-labelledby="frontend-mentor-titre">
+      <div class="frontend-mentor__texte">
+        <p class="frontend-mentor__repere">Pratique du développement web</p>
+        <h2 id="frontend-mentor-titre" class="section-titre">Frontend Mentor</h2>
+        <p>Interfaces réalisées à partir de maquettes.</p>
+        <PreuvesChiffrees label="Mon profil Frontend Mentor en chiffres" class="frontend-mentor__chiffres">
+          <PreuveChiffree valeur={FRONTEND_MENTOR.projets} libelle="solutions publiées" source="Profil public" />
+          <PreuveChiffree valeur={FRONTEND_MENTOR.points} libelle="points" source="Profil public" />
+        </PreuvesChiffrees>
+        <p class="frontend-mentor__date">{FRONTEND_MENTOR.releve}</p>
+        <LienAction href={FRONTEND_MENTOR.profil} emplacement="preuves">Voir mon profil Frontend Mentor</LienAction>
+      </div>
+      <Visuel id={FRONTEND_MENTOR.visuel} class="frontend-mentor__visuel" sizes="(max-width: 760px) 100vw, 520px" />
+    </section>
+  </NavigationPage>
+
+  <AppelDiscutons slot="fin" emplacement="discutons">Une question sur mon parcours, un sujet à creuser&nbsp;?</AppelDiscutons>
 </Parcours>
 
 <style>
-  .reperes-formation { display: flex; flex-wrap: wrap; gap: var(--s2); padding-bottom: var(--s5); margin-bottom: var(--s5); border-bottom: 1px solid var(--filet); }
-  .reperes-formation a { display: inline-flex; align-items: center; gap: var(--s2); min-height: 44px; padding: var(--s2) var(--s4); border-radius: var(--rayon); color: var(--bleu); background: color-mix(in srgb, var(--bleu) 8%, var(--papier)); text-decoration: none; font-size: var(--t-petit); font-weight: 700; }
-  .reperes-formation svg { width: 20px; height: 20px; flex-shrink: 0; }
-  .reperes-formation a:hover { background: var(--bleu); color: var(--sur-bleu); }
-  .formation-section { padding-block: var(--s7) var(--s8); }
-  .section-tete { display: flex; align-items: end; justify-content: space-between; gap: var(--s5); margin-bottom: var(--s7); }
-  .section-tete h2 { font-size: clamp(2rem, 1.5rem + 2vw, 3.25rem); letter-spacing: -0.035em; }
-  .formation-timeline { --colonne-date: 8.5rem; position: relative; display: grid; gap: var(--s5); padding: 0; margin: 0; list-style: none; }
-  .formation-timeline::before { content: ''; position: absolute; top: 16px; bottom: 0; left: var(--colonne-date); border-left: 2px solid var(--bleu); }
-  .formation-etape { position: relative; display: grid; grid-template-columns: var(--colonne-date) minmax(0, 1fr); gap: var(--s7); }
-  .formation-etape::before { content: ''; position: absolute; top: 9px; left: calc(var(--colonne-date) - 7px); width: 16px; height: 16px; border: 3px solid var(--bleu); border-radius: 50%; background: var(--papier); }
-  .formation-etape--diplome::before { width: 22px; height: 22px; top: 6px; left: calc(var(--colonne-date) - 10px); background: var(--bleu); box-shadow: 0 0 0 6px var(--papier); }
-  .timeline-date { display: flex; flex-direction: column; align-items: start; gap: var(--s2); padding-right: var(--s4); }
-  .timeline-date > time, .timeline-periode { color: var(--bleu); font-size: 2rem; line-height: 1; letter-spacing: -0.04em; font-weight: 800; }
-  .timeline-periode { display: flex; align-items: baseline; gap: 0; font-size: 1.35rem; line-height: 1.4; white-space: nowrap; }
-  .timeline-periode > span { font-size: inherit; }
-  .timeline-date > span:last-child:not(.timeline-periode) { font-size: var(--t-etiquette); color: var(--graphite); }
-  .timeline-date--relative { padding-top: var(--s1); }
-  .timeline-date--relative > span:last-child { color: var(--encre); font-size: var(--t-petit); line-height: 1.4; font-weight: 700; }
-  .timeline-contenu { min-width: 0; }
-  .diplome { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); border: 1px solid var(--bleu); border-radius: var(--rayon); overflow: hidden; background: var(--bleu); color: var(--sur-bleu); }
-  .diplome-contenu { align-self: center; padding: var(--s6) 0 var(--s6) var(--s6); }
-  .diplome-statut { display: flex; align-items: center; gap: var(--s2); margin-bottom: var(--s5); font-weight: 700; font-size: var(--t-petit); }
-  .diplome-statut svg { width: 22px; height: 22px; flex-shrink: 0; }
-  .diplome h3 { font-size: clamp(2rem, 1.4rem + 1.65vw, 3rem); line-height: 1.08; letter-spacing: -0.03em; }
-  .diplome-organisme { margin-top: var(--s4); font-size: var(--t-chapeau); }
-  .diplome-reperes { display: grid; gap: var(--s2); margin-top: var(--s5); font-size: var(--t-petit); }
-  .diplome-reperes dd { font-weight: 700; }
-  .diplome-reperes dd span { font-weight: 400; }
-  .diplome-figure { --formation-visuel-encre: var(--sur-bleu); --formation-visuel-papier: var(--bleu); display: grid; align-content: center; padding: var(--s4); }
-  .complement-cda { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--s6); padding: var(--s5); margin-top: var(--s3); border: 1px solid var(--filet); border-radius: var(--rayon); background: var(--blanc); }
-  .complement-statut { font-size: var(--t-etiquette); color: var(--graphite); margin-bottom: var(--s2); }
-  .complement-cda h3 { font-size: 1.25rem; line-height: 1.3; }
-  .complement-contexte { margin-top: var(--s2); font-size: var(--t-etiquette); color: var(--graphite); }
-  .complement-reperes { min-width: 10rem; font-size: var(--t-etiquette); }
-  .complement-reperes strong { color: var(--bleu); font-size: 1.65rem; font-weight: 800; }
-  .complement-jauge { height: 5px; margin-block: var(--s2); background: var(--filet); }
-  .complement-jauge::before { content: ''; display: block; width: 80%; height: 100%; background: var(--bleu); }
-  .complement-reperes .complement-statut { margin-bottom: 0; }
-  .carte-etude { display: grid; grid-template-columns: minmax(0, 1fr) 220px; overflow: hidden; border: 1px solid var(--filet); border-radius: var(--rayon); background: var(--blanc); }
-  .cursus-contenu { align-self: center; padding: var(--s5) var(--s6); }
-  .cursus-contenu h3 { max-width: 24ch; font-size: 1.55rem; line-height: 1.15; }
-  .cursus-visuel { --formation-visuel-papier: var(--blanc); display: grid; align-items: center; padding: var(--s3); background: color-mix(in srgb, var(--bleu) 7%, var(--papier)); }
-  .cursus-visuel :global(svg) { width: 100%; max-height: 190px; }
-  .carte-etude--reseaux { grid-template-columns: minmax(0, 1fr) minmax(260px, 0.9fr); border-color: var(--trait-doux); }
-  .carte-etude--reseaux h3 { font-size: 2rem; }
-  .carte-etude--reseaux .cursus-visuel { padding: var(--s5); background-image: radial-gradient(color-mix(in srgb, var(--bleu) 15%, transparent) 1px, transparent 1px); background-size: 18px 18px; }
-  .carte-etude--piscine .cursus-visuel { --formation-visuel-encre: var(--papier); --formation-visuel-papier: var(--encre); background: var(--encre); }
-  .carte-etude--sciences .cursus-visuel { --formation-visuel-encre: var(--sur-bleu); --formation-visuel-papier: var(--bleu); background: var(--bleu); }
-  .carte-etude--origine { grid-template-columns: minmax(0, 1fr) 180px; border-style: dashed; background: transparent; }
-  .carte-etude--origine .cursus-visuel { --formation-visuel-papier: var(--papier); padding: var(--s2); background: transparent; }
-  .carte-etude--origine .etudes-organisme { margin-block: var(--s3) 0; }
-  .etudes-organisme { font-size: var(--t-petit); color: var(--graphite); margin-bottom: var(--s3); }
-  .cursus-annee { margin-top: var(--s4); font-size: var(--t-petit); }
-  .etudes-statut { margin-top: var(--s2); font-size: var(--t-etiquette); color: var(--graphite); }
-  .carte-etude--piscine .etudes-statut { margin-top: var(--s4); }
-  .formation-etape--secondaire::before, .formation-etape--origine::before { width: 12px; height: 12px; left: calc(var(--colonne-date) - 5px); top: 12px; border-width: 2px; }
-  .certifications-section { margin-top: var(--s6); border-top: 4px solid var(--bleu); }
-  .certifications-tete { padding: var(--s6); margin-bottom: 0; background: color-mix(in srgb, var(--bleu) 10%, var(--blanc)); }
-  .certifications-repere { display: flex; align-items: center; gap: var(--s4); color: var(--bleu); flex-shrink: 0; }
-  .certifications-repere strong { font-size: 3.5rem; line-height: 1; font-weight: 800; letter-spacing: -0.05em; }
-  .certifications-repere span { font-size: var(--t-etiquette); line-height: 1.4; }
-  .certifications-intro { display: flex; justify-content: end; margin-block: var(--s3) var(--s5); }
-  .profil-certifications { display: inline-flex; align-items: center; gap: var(--s3); min-height: 44px; font-size: var(--t-petit); }
-  .profil-certifications svg { width: 18px; height: 18px; flex-shrink: 0; }
-  .certifications-catalogue { display: grid; gap: var(--s5); }
-  .certification-domaine { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 2fr); border: 1px solid var(--trait-doux); border-radius: var(--rayon); background: var(--blanc); overflow: hidden; }
-  .domaine-tete { display: grid; align-content: center; padding: var(--s5) var(--s6); border-right: 1px solid var(--filet); background: var(--papier); }
-  .domaine-visuel { width: 88px; margin-bottom: var(--s3); }
-  .domaine-tete h3 { font-size: 1.5rem; line-height: 1.2; }
-  .domaine-organisme { margin-top: var(--s2); color: var(--graphite); font-size: var(--t-etiquette); }
-  .certification-liste { display: grid; align-content: center; list-style: none; padding: var(--s4) var(--s6); margin: 0; }
-  .certification-ligne { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: var(--s4); padding-block: var(--s4); font-size: var(--t-petit); line-height: 1.45; }
-  .certification-ligne + .certification-ligne { border-top: 1px solid var(--filet); }
-  .certification-intitule { padding-block: var(--s1); font-weight: 700; overflow-wrap: anywhere; text-decoration-thickness: 1px; text-underline-offset: 4px; }
-  .certification-intitule svg { display: inline-block; vertical-align: -2px; width: 15px; height: 15px; margin-left: var(--s2); }
-  .certification-intitule:hover { text-decoration-thickness: 2px; }
-  .certification-suffixe { white-space: nowrap; }
-  .certification-version { display: inline-block; padding-inline: var(--s2); margin-left: var(--s2); border: 1px solid var(--trait-doux); border-radius: var(--rayon); color: var(--graphite); font-size: var(--t-etiquette); font-weight: 400; white-space: nowrap; }
-  .certification-ligne time { font-size: var(--t-etiquette); color: var(--graphite); white-space: nowrap; }
-  .frontend-mentor-section { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: var(--s7); align-items: center; padding: var(--s6); margin-bottom: var(--s7); border: 1px solid var(--trait-doux); border-left: 4px solid var(--bleu); border-radius: var(--rayon); background: var(--blanc); }
-  .frontend-mentor-repere { color: var(--graphite); font-size: var(--t-etiquette); margin-bottom: var(--s3); }
-  .frontend-mentor-section h2 { font-size: clamp(1.8rem, 1.4rem + 1.5vw, 2.5rem); letter-spacing: -0.03em; }
-  .frontend-mentor-section h2 + p { max-width: 55ch; margin-top: var(--s3); font-size: var(--t-petit); }
-  .frontend-mentor-chiffres { display: flex; flex-wrap: wrap; gap: var(--s5) var(--s7); margin-top: var(--s5); }
-  .frontend-mentor-chiffres dt { font-size: var(--t-etiquette); color: var(--graphite); }
-  .frontend-mentor-chiffres dd { margin-top: var(--s1); font-size: var(--t-petit); }
-  .frontend-mentor-chiffres strong { margin-right: var(--s1); font-size: 2rem; font-weight: 800; color: var(--bleu); }
-  .frontend-mentor-date { margin-block: var(--s3) var(--s5); font-size: var(--t-etiquette); color: var(--graphite); }
-  .frontend-mentor-visuel { width: min(100%, 280px); justify-self: center; }
-  @media (max-width: 1050px) {
-    .formation-timeline { --colonne-date: 6rem; }
-    .formation-etape { gap: var(--s6); }
-    .diplome { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
-    .diplome-contenu { padding: var(--s5); }
-    .diplome-figure { padding: var(--s3); }
-    .diplome h3 { font-size: 2rem; }
-    .carte-etude { grid-template-columns: minmax(0, 1fr) 180px; }
-    .cursus-contenu { padding: var(--s5); }
-    .carte-etude--reseaux { grid-template-columns: minmax(0, 1fr) 220px; }
-    .carte-etude--reseaux h3 { font-size: 1.65rem; }
-    .carte-etude--reseaux .cursus-visuel { padding: var(--s3); }
-    .carte-etude--origine { grid-template-columns: minmax(0, 1fr) 150px; }
-    .certification-domaine { grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); }
-    .domaine-tete, .certification-liste { padding-inline: var(--s5); }
-    .certification-ligne { grid-template-columns: minmax(0, 1fr); gap: var(--s2); }
+  .section-titre {
+    font-size: var(--t-2xl);
+    line-height: 1.05;
   }
-  @media (max-width: 700px) {
-    .reperes-formation { gap: var(--s2); padding-bottom: var(--s4); margin-bottom: var(--s4); }
-    .reperes-formation a { padding: var(--s2) var(--s3); font-size: var(--t-etiquette); }
-    .reperes-formation svg { width: 17px; height: 17px; }
-    .formation-section { padding-block: var(--s6) var(--s7); }
-    .section-tete { align-items: start; flex-direction: column; gap: var(--s3); margin-bottom: var(--s6); }
-    .formation-timeline { --colonne-date: 7px; gap: var(--s5); }
-    .formation-etape { display: block; padding-left: var(--s6); }
-    .formation-etape::before { top: 7px; }
-    .formation-etape--diplome::before { top: 4px; }
-    .timeline-date { flex-direction: row; align-items: baseline; gap: var(--s3); margin-bottom: var(--s4); }
-    .timeline-date > time, .timeline-periode { font-size: 1.5rem; }
-    .timeline-periode { flex-direction: row; align-items: baseline; }
-    .timeline-date--relative br { display: none; }
-    .diplome { grid-template-columns: minmax(0, 1fr); }
-    .diplome-contenu { padding: var(--s5); }
-    .diplome h3 { font-size: clamp(1.7rem, 1.2rem + 2.5vw, 2rem); }
-    .diplome-reperes { margin-top: var(--s5); }
-    .diplome-figure { grid-row: 1; padding: var(--s3) var(--s4) 0; }
-    .diplome-figure :global(svg) { max-height: 160px; }
-    .diplome-statut { margin-bottom: var(--s4); }
-    .diplome-organisme { margin-top: var(--s3); font-size: var(--t-corps); }
-    .complement-cda { grid-template-columns: minmax(0, 1fr); gap: var(--s4); padding: var(--s4) var(--s5); }
-    .complement-reperes { max-width: 220px; }
-    .carte-etude, .carte-etude--reseaux, .carte-etude--origine { grid-template-columns: minmax(0, 1fr); }
-    .cursus-visuel { grid-row: 1; justify-items: center; padding: var(--s2); }
-    .cursus-visuel :global(svg) { width: 200px; max-height: 130px; }
-    .carte-etude--reseaux .cursus-visuel { padding: var(--s3); }
-    .carte-etude--reseaux .cursus-visuel :global(svg) { width: 240px; max-height: 155px; }
-    .cursus-contenu { padding: var(--s4) var(--s5) var(--s5); }
-    .cursus-contenu h3 { font-size: 1.4rem; }
-    .carte-etude--reseaux h3 { font-size: 1.65rem; }
-    .carte-etude--origine .cursus-visuel :global(svg) { width: 170px; max-height: 110px; }
-    .cursus-annee { margin-top: var(--s3); }
-    .certifications-section { margin-top: var(--s5); }
-    .certifications-tete { padding: var(--s5); margin-bottom: 0; }
-    .certifications-repere strong { font-size: 2.5rem; }
-    .certifications-repere span br { display: none; }
-    .certifications-intro { flex-direction: column; align-items: start; gap: var(--s2); }
-    .certification-domaine { grid-template-columns: minmax(0, 1fr); }
-    .domaine-tete { grid-template-columns: 88px minmax(0, 1fr); align-items: center; column-gap: var(--s3); padding: var(--s5); border-right: 0; border-bottom: 1px solid var(--filet); }
-    .domaine-visuel { grid-row: span 2; width: 88px; margin-bottom: 0; }
-    .domaine-tete h3 { font-size: 1.5rem; }
-    .certification-liste { padding: var(--s2) var(--s5); }
-    .frontend-mentor-section { grid-template-columns: minmax(0, 1fr); gap: var(--s5); padding: var(--s5); }
-    .frontend-mentor-visuel { grid-row: 1; width: 150px; justify-self: start; }
-    .frontend-mentor-chiffres { gap: var(--s5); }
-    .frontend-mentor-section .btn { width: 100%; text-align: center; }
+
+  section {
+    scroll-margin-top: calc(var(--entete) + var(--s5));
   }
+
+  section:focus {
+    outline: none;
+  }
+
+  /* ===== La frise de formation ===== */
+  .formation-timeline {
+    --ligne: 2px;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--s6) var(--s4);
+    margin: var(--s5) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .etape--titre {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: var(--s3);
+  }
+
+  /* Le titre obtenu */
+  .dwwm {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: var(--s5) var(--s6);
+    align-items: center;
+    padding: clamp(20px, 2.6vw, 32px);
+    border-radius: var(--r2);
+    background: var(--surface);
+    box-shadow: var(--ombre-1);
+  }
+
+  .dwwm__texte {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--s3);
+  }
+
+  .dwwm h3 {
+    font-size: var(--t-3xl);
+    line-height: 0.98;
+  }
+
+  .dwwm__organisme {
+    font-size: var(--t-l);
+    color: var(--encre);
+  }
+
+  .dwwm__reperes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2) var(--s6);
+    font-size: var(--t-s);
+  }
+
+  .dwwm__reperes dt {
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  .dwwm__reperes dd {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  .dwwm__reperes dd span {
+    font-weight: 400;
+    color: var(--eteint);
+  }
+
+  .dwwm :global(.dwwm__preuve) {
+    margin-top: var(--s2);
+  }
+
+  /* Le complément CDA, accolé au titre */
+  .cda {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr) minmax(180px, 240px);
+    gap: var(--s4) var(--s5);
+    align-items: center;
+    padding: var(--s4);
+    /* Contenu réel : un filet plein (le pointillé reste aux emplacements à générer). */
+    border: 1px solid var(--filet);
+    border-radius: var(--r2);
+  }
+
+  .cda__statut {
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  .cda h3 {
+    margin-top: var(--s1);
+    font-size: var(--t-l);
+    line-height: 1.15;
+  }
+
+  .cda__contexte {
+    margin-top: var(--s1);
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  .cda__part {
+    font-size: var(--t-xs);
+  }
+
+  .cda__part strong {
+    font-family: var(--police-texte);
+    font-size: var(--t-xl);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  .cda__jauge {
+    height: 6px;
+    margin-block: var(--s2);
+    border-radius: var(--r1);
+    background: repeating-linear-gradient(-45deg, var(--trait) 0 1px, transparent 1px 5px);
+    box-shadow: inset 0 0 0 1px var(--trait);
+    overflow: hidden;
+  }
+
+  .cda__jauge::before {
+    content: '';
+    display: block;
+    width: var(--part);
+    height: 100%;
+    background: var(--encre);
+  }
+
+  /* Le chemin d’avant : cinq stations compactes sur une ligne, reliées par un
+     trait qui finit sur la dernière pastille. La vignette se tient à gauche du
+     texte ; dans une colonne étroite, elle passe au-dessus. */
+  .etape--station {
+    position: relative;
+    padding-top: var(--s5);
+    container-type: inline-size;
+  }
+
+  .etape--station::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: calc(-1 * var(--s4));
+    border-top: var(--ligne) solid var(--trait);
+  }
+
+  .etape--station:last-child::before {
+    right: calc(100% - 12px);
+  }
+
+  .etape--station::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: 0;
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--trait);
+    border-radius: 50%;
+    background: var(--fond);
+  }
+
+  /* La vignette à 72 px à gauche de l’intitulé, comme sur mobile : à 56 px,
+     la nuit n’en laissait qu’un gris sur noir et une lanterne de 5 px. */
+  .station {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: var(--s3);
+    align-items: start;
+  }
+
+  .station :global(.station__visuel) {
+    width: 72px;
+  }
+
+  /* La nuit, la mosaïque de captures Frontend Mentor, claire et saturée,
+     accrocherait l’œil plus que les lanternes : un peu baissée, cernée d’un
+     filet. L’impression la garde telle quelle. */
+  @media screen {
+    :global(:root[data-theme='nuit']) :global(.frontend-mentor__visuel) {
+      outline: 1px solid var(--filet);
+      outline-offset: -1px;
+    }
+
+    :global(:root[data-theme='nuit']) :global(.frontend-mentor__visuel img) {
+      filter: brightness(0.88);
+    }
+  }
+
+  @media screen and (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme])) :global(.frontend-mentor__visuel) {
+      outline: 1px solid var(--filet);
+      outline-offset: -1px;
+    }
+
+    :global(:root:not([data-theme])) :global(.frontend-mentor__visuel img) {
+      filter: brightness(0.88);
+    }
+  }
+
+  /* Dans une colonne étroite (tablette), la vignette passe au-dessus de
+     l’intitulé, en 56 px : la station reste compacte face au titre obtenu. */
+  @container (max-width: 180px) {
+    .station {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s2);
+    }
+
+    .station :global(.station__visuel) {
+      width: 56px;
+    }
+  }
+
+  .station__texte {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .station__quand {
+    min-height: 1.4em;
+    font-size: var(--t-xs);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums lining-nums;
+    color: var(--encre);
+  }
+
+  .station h3 {
+    font-size: var(--t-m);
+    line-height: 1.2;
+  }
+
+  .station__organisme,
+  .station__suivi {
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  .station__organisme {
+    color: var(--encre);
+  }
+
+  .station :global(.station__statut) {
+    margin-top: var(--s1);
+  }
+
+  .station :global(.station__lien) {
+    min-height: 44px;
+    font-size: var(--t-xs);
+  }
+
+  /* ===== Certifications ===== */
+  .certifications {
+    margin-top: var(--entre-sections);
+    padding: clamp(20px, 2.6vw, 32px);
+    border-radius: var(--r2);
+  }
+
+  .certifications__tete {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s2) var(--s5);
+    margin-bottom: var(--s5);
+  }
+
+  .certifications__repere {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 var(--s5);
+    font-size: var(--t-s);
+    color: var(--eteint);
+  }
+
+  .certifications__catalogue {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s4);
+    align-items: start;
+  }
+
+  .domaine {
+    padding: var(--s4) var(--s5);
+    border-radius: var(--r2);
+    background: var(--surface);
+  }
+
+  .domaine:first-child {
+    grid-row: span 2;
+  }
+
+  .domaine__tete {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    column-gap: var(--s3);
+    align-items: center;
+    padding-bottom: var(--s3);
+    border-bottom: 1px solid var(--filet);
+  }
+
+  .domaine__logo {
+    grid-row: span 2;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--r1);
+    background: var(--papier-logo);
+    box-shadow: inset 0 0 0 1px var(--filet);
+    color: var(--suie);
+  }
+
+  .domaine__logo img {
+    width: 26px;
+    height: 26px;
+  }
+
+  .domaine h3 {
+    font-size: var(--t-l);
+    line-height: 1.15;
+  }
+
+  .domaine__organisme {
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  .certification-liste {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .certification-ligne {
+    display: grid;
+    gap: 0;
+    padding-block: var(--s2) var(--s1);
+    font-size: var(--t-s);
+    line-height: 1.4;
+  }
+
+  .certification-ligne + .certification-ligne {
+    border-top: 1px solid var(--filet);
+  }
+
+  .certification-intitule {
+    font-weight: 600;
+  }
+
+  .certification-versions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--s4);
+  }
+
+  .certification-preuve {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s2);
+    min-height: 44px;
+    padding-inline: 4px;
+    margin-inline: -4px;
+    font-size: var(--t-xs);
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  .certification-version {
+    padding: 0 var(--s1);
+    border: 1px solid currentColor;
+    border-radius: var(--r1);
+    font-weight: 600;
+  }
+
+  /* ===== Frontend Mentor ===== */
+  .frontend-mentor {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: var(--s5) var(--s7);
+    align-items: center;
+    margin-top: var(--entre-sections);
+  }
+
+  .frontend-mentor__texte {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--s3);
+  }
+
+  .frontend-mentor__repere {
+    font-size: var(--t-xs);
+    font-weight: 600;
+    color: var(--eteint);
+  }
+
+  .frontend-mentor :global(.frontend-mentor__chiffres) {
+    width: 100%;
+    margin-top: var(--s2);
+  }
+
+  .frontend-mentor__date {
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  @media (max-width: 760px) {
+    .formation-timeline {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s4);
+    }
+
+    .dwwm {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .dwwm h3 {
+      font-size: var(--t-2xl);
+    }
+
+    .cda {
+      grid-template-columns: 96px minmax(0, 1fr);
+    }
+
+    .cda__part {
+      grid-column: 1 / -1;
+    }
+
+    /* Les stations en colonne, reliées par un trait vertical. */
+    .etape--station {
+      padding: 0 0 0 var(--s5);
+    }
+
+    .etape--station::before {
+      top: 0;
+      bottom: calc(-1 * var(--s4));
+      left: 5px;
+      right: auto;
+      border-top: 0;
+      border-left: var(--ligne) solid var(--trait);
+    }
+
+    .etape--station:last-child::before {
+      bottom: auto;
+      height: 12px;
+    }
+
+    .etape--station::after {
+      top: 0;
+    }
+
+    .station,
+    .etape--station {
+      container-type: normal;
+    }
+
+    .station {
+      grid-template-columns: 72px minmax(0, 1fr);
+      gap: var(--s4);
+    }
+
+    .station :global(.station__visuel) {
+      width: 72px;
+    }
+
+    .certifications {
+      margin-inline: calc(-1 * var(--s2));
+      padding: var(--s5) var(--s3);
+    }
+
+    .certifications__catalogue {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .domaine:first-child {
+      grid-row: auto;
+    }
+
+    .domaine {
+      padding: var(--s4);
+    }
+
+    .frontend-mentor {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
   @media print {
-    .reperes-formation { display: none; }
-    .formation-section { padding-block: var(--s5); }
-    .formation-timeline::before, .formation-etape::before { display: none; }
-    .formation-timeline { --colonne-date: 6rem; gap: var(--s5); }
-    .formation-etape { display: grid; padding-left: 0; gap: var(--s4); }
-    .timeline-date { flex-direction: column; }
-    .diplome { background: var(--blanc); color: var(--encre); }
-    .diplome, .carte-etude, .certification-domaine, .complement-cda, .frontend-mentor-section { break-inside: avoid; }
-    .diplome-contenu { padding: var(--s4); }
-    .diplome h3 { font-size: 1.75rem; }
-    .diplome-figure { --formation-visuel-encre: var(--bleu); --formation-visuel-papier: var(--blanc); }
-    .carte-etude, .carte-etude--reseaux, .carte-etude--origine { grid-template-columns: minmax(0, 1fr) 160px; }
-    .cursus-visuel { grid-row: auto; --formation-visuel-encre: var(--bleu); --formation-visuel-papier: var(--blanc); background: var(--blanc); }
-    .carte-etude--piscine .cursus-visuel, .carte-etude--sciences .cursus-visuel, .carte-etude--origine .cursus-visuel { --formation-visuel-encre: var(--bleu); --formation-visuel-papier: var(--blanc); background: var(--blanc); }
-    .section-tete { display: block; margin-bottom: var(--s5); }
-    .certifications-tete { background: var(--blanc); padding: 0; }
-    .certifications-repere { margin-top: var(--s4); }
-    .certification-domaine { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
-    .domaine-tete { display: block; background: var(--blanc); padding: var(--s4); border-right: 1px solid var(--filet); border-bottom: 0; }
-    .domaine-visuel { width: 70px; margin-bottom: var(--s3); }
-    .domaine-tete h3 { font-size: 1.25rem; }
-    .certification-liste { padding: var(--s3) var(--s4); }
-    .certification-ligne { padding-block: var(--s3); }
+    .formation-timeline {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .etape--station::before,
+    .etape--station::after {
+      display: none;
+    }
+
+    .dwwm,
+    .cda,
+    .domaine,
+    .station {
+      break-inside: avoid;
+      box-shadow: inset 0 0 0 1px var(--trait);
+    }
+
+    .formation :global(.visuel),
+    .frontend-mentor :global(.visuel) {
+      display: none;
+    }
+
+    .certifications__catalogue {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 </style>

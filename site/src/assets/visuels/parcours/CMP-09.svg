@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <title>Trois pictos au trait : assistants et agents, intégration aux applications, synthèse vocale</title>
+  <!-- CMP-09 : trois capacités de l’intégration IA (assistants et agents,
+       intégration aux applications, synthèse vocale). Grille de 48, trait de 1,6 ;
+       la classe « teinte » porte un remplissage très léger. Lus par
+       components/parcours/RepereCompetence.astro (data-categorie). -->
+  <symbol id="CMP-09-agents" data-categorie="agents" viewBox="0 0 48 48"><path class="teinte" d="M6 8h28v20H20l-8 7v-7H6V8Z" /> <path d="M6 8h28v20H20l-8 7v-7H6V8Z" /> <path d="m14 15-3 3 3 3m12-6 3 3-3 3m-4-8-4 10" /> <path d="M38 18h4v16h-4v5l-6-5H24v-2" /></symbol>
+  <symbol id="CMP-09-mcp" data-categorie="mcp" viewBox="0 0 48 48"><path class="teinte" d="M14 20h20v8a10 10 0 0 1-20 0v-8Z" /> <path d="M14 20h20v8a10 10 0 0 1-20 0v-8ZM19 20v-9m10 9v-9M24 38v6M10 44h28" /> <circle cx="24" cy="28" r="2.5" /></symbol>
+  <symbol id="CMP-09-voix" data-categorie="voix" viewBox="0 0 48 48"><rect class="teinte" x="17" y="5" width="14" height="24" rx="7" /> <rect x="17" y="5" width="14" height="24" rx="7" /> <path d="M11 22a13 13 0 0 0 26 0M24 35v7m-7 0h14M5 17v8m36-8v8M44 19v4M2 19v4" /></symbol>
+</svg>

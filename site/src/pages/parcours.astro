@@ -1,233 +1,454 @@
 ---
+/**
+ * Le hub du parcours (cahier, § 5.8) : qui est Charles aujourd’hui, la forme
+ * du parcours en une frise (PAR-F1), puis trois portes avec un fait chacune.
+ * La photo vient de la séance en chemise bleu roi (n° 3, PAR-PHO).
+ */
 import Base from '../layouts/Base.astro';
 import FilAriane from '../components/pages/FilAriane.astro';
-import IllustrationHub from '../components/parcours/IllustrationHub.astro';
-import { PAGES_PARCOURS } from '../config/parcours';
+import AppelDiscutons from '../components/pages/AppelDiscutons.astro';
+import Frise from '../components/parcours/Frise.astro';
+import NavigationParcours from '../components/parcours/NavigationParcours.astro';
+import AConfirmer from '../components/ui/AConfirmer.astro';
+import LienAction from '../components/ui/LienAction.astro';
+import Portrait from '../components/ui/Portrait.astro';
+import Visuel from '../components/ui/Visuel.astro';
+import photo from '../assets/visuels/parcours/PAR-PHO_960x1200.webp';
+import csharp from '../assets/stacks/csharp.svg?url';
+import dotnet from '../assets/stacks/dotnet.svg?url';
+import angular from '../assets/stacks/angular.svg?url';
+import typescript from '../assets/stacks/typescript.svg?url';
+import postgresql from '../assets/stacks/postgresql.svg?url';
+import docker from '../assets/stacks/docker.svg?url';
+import git from '../assets/stacks/git.svg?url';
+import githubActions from '../assets/stacks/github-actions.svg?url';
+import { QUOTIDIEN } from '../config/competences';
+import { EXPERIENCES, ligneDeFrise, NOMBRE_EXPERIENCES, PAGES_PARCOURS } from '../config/parcours';
+import { DIPLOME, NOMBRE_CERTIFICATIONS } from '../config/formation';
 import { SITE } from '../config/site';
-import '../styles/profondeur.css';
+
 const titre = `Parcours de ${SITE.nom}`;
-const description = 'Découvrez le parcours de Charles Lindecker à travers ses expériences professionnelles, ses compétences, sa formation et ses certifications.';
+const description = 'Le parcours de Charles Lindecker en bref : ses postes, ses compétences et sa formation, du titre DWWM à l’architecture logicielle.';
+
+const parNature = (benevole: boolean) => EXPERIENCES.filter((e) => (e.nature === 'benevolat') === benevole).map((e) => ligneDeFrise(e));
+const couloirs = [
+  {
+    nom: 'Formation',
+    lignes: [
+      { cle: 'dwwm', href: '/parcours/formation#dwwm', libelle: `Titre ${DIPLOME.sigle}, Elan Formation`, periode: 'Formation, avril – octobre 2025', nature: 'formation', debut: DIPLOME.debut, fin: DIPLOME.fin },
+      // Connu à l’année seulement (2023–2024) : placé sur l’année universitaire, sans mois affiché.
+      { cle: 'reseaux', href: '/parcours/formation#reseaux', libelle: 'BUT Réseaux & Télécoms', periode: 'Formation, 2023–2024', nature: 'formation', debut: '2023-09', fin: '2024-06' },
+    ],
+  },
+  { nom: 'Travail', lignes: parNature(false) },
+  { nom: 'Communauté', lignes: parNature(true) },
+] as const;
+
+/**
+ * Le cœur de ma stack : la même liste que « Au quotidien » sur la page
+ * Compétences (config/competences.ts, QUOTIDIEN), dans le même ordre. La
+ * hiérarchie des technologies reste à confirmer par Charles (Q9).
+ */
+const LOGOS: Record<(typeof QUOTIDIEN)[number]['nom'], string> = {
+  'C#': csharp,
+  '.NET': dotnet,
+  Angular: angular,
+  TypeScript: typescript,
+  PostgreSQL: postgresql,
+  Docker: docker,
+  Git: git,
+  'GitHub Actions': githubActions,
+};
+const coeur = QUOTIDIEN.map(({ nom }) => ({ nom, logo: LOGOS[nom] }));
+
+const faits: Record<string, string[]> = {
+  '/parcours/professionnel': [`${NOMBRE_EXPERIENCES} expériences`, 'une promotion menée jusqu’au titre', '20 personnes formées au pôle francophone'],
+  '/parcours/competences': [coeur.map((t) => t.nom).join(', ')],
+  '/parcours/formation': ['Titre DWWM, RNCP niveau 5', `${NOMBRE_CERTIFICATIONS} certifications`],
+};
 ---
 
 <Base titre={titre} description={description} chemin="/parcours">
-  <div class="wrap profondeur parcours-hub">
+  <div class="conteneur parcours-hub">
     <FilAriane courant="Parcours" />
-    <header class="page-hero">
-      <h1>Mon parcours</h1>
-      <div class="parcours-hub__introduction">
-        <p class="parcours-hub__note">Apprendre, construire, transmettre.</p>
-        <p class="page-hero__intro">Je code depuis mes 13 ans. Voici les expériences, les savoir-faire et les apprentissages qui ont suivi.</p>
+    <NavigationParcours chemin="/parcours" />
+
+    <header class="hub-tete">
+      <div class="hub-tete__texte">
+        <h1 data-pli="titre">Mon parcours</h1>
+        <dl class="hub-identite" data-pli="identite">
+          <div>
+            <dt>Aujourd’hui</dt>
+            <dd>Architecte logiciel chez <span class="insecable">B-Hive</span>, à&nbsp;Mulhouse, depuis août 2026</dd>
+          </div>
+          <div>
+            <dt>En communauté</dt>
+            <dd>Lead du pôle francophone de PvZ Fusion et mainteneur de sa traduction multilingue</dd>
+          </div>
+        </dl>
+        <p class="chapeau hub-tete__chapeau">Je code depuis mes 13&nbsp;ans. Voici les expériences, les savoir-faire et les apprentissages qui ont suivi.</p>
+        <p class="hub-tete__devise">Apprendre, construire, transmettre.</p>
+      </div>
+      <div class="hub-tete__photo foyer">
+        <Portrait
+          src={photo}
+          alt="Charles Lindecker, en chemise bleu roi, la main au menton, devant un parc."
+          widths={[320, 640, 960]}
+          sizes="(max-width: 760px) 40vw, 320px"
+          loading="eager"
+          fetchpriority="high"
+          cadrage="50% 30%"
+          lueur="44% 36%"
+          class="hub-portrait"
+        />
       </div>
     </header>
-    <nav class="entrees-parcours" aria-label="Explorer le parcours">
+
+    <section class="hub-frise" aria-label="Le parcours dans le temps">
+      <Frise id="frise-parcours" titre="De 2023 à aujourd’hui" debut="2023-09" couloirs={couloirs} />
+    </section>
+
+    <nav class="hub-portes" aria-label="Explorer le parcours">
       <ul role="list">
-        {PAGES_PARCOURS.map((page, index) => <li class:list={['entrees-parcours__entree', { 'entrees-parcours__entree--metier': index === 0 }]}>
-          <a href={page.href} aria-labelledby={`entree-parcours-${index}`} aria-describedby={`description-parcours-${index}`}>
-            <div class="entrees-parcours__texte">
-              <h2 id={`entree-parcours-${index}`}>{page.titre}</h2>
-              <p id={`description-parcours-${index}`}>{page.description}</p>
-            </div>
-            <div class="entrees-parcours__dessin" aria-hidden="true">
-              <IllustrationHub scene={page.illustration} />
-            </div>
-            <span class="entrees-parcours__action" aria-hidden="true">
-              {page.action}
-              <span class="entrees-parcours__fleche">↗</span>
-            </span>
-          </a>
-        </li>)}
+        {
+          PAGES_PARCOURS.map((page, index) => (
+            <li class="porte">
+              <a href={page.href} aria-labelledby={`porte-${index}`} aria-describedby={`porte-description-${index} porte-faits-${index}`}>
+                <Visuel id={page.visuel} alt="" class="porte__visuel" sizes="(max-width: 760px) 100vw, (max-width: 1100px) 50vw, 420px" />
+                <div class="porte__texte">
+                  <h2 id={`porte-${index}`}>{page.titre}</h2>
+                  <p class="porte__description" id={`porte-description-${index}`}>{page.description}</p>
+                  {page.href === '/parcours/competences' && (
+                    <p class="porte__logos" aria-hidden="true">
+                      {coeur.map((techno) => <img src={techno.logo} alt="" width="28" height="28" loading="lazy" decoding="async" />)}
+                    </p>
+                  )}
+                  <p class="porte__faits" id={`porte-faits-${index}`}>
+                    {page.href === '/parcours/competences' && <span class="porte__faits-titre">Au quotidien&nbsp;: </span>}
+                    {faits[page.href].map((fait) => (
+                      <span class="porte__fait">
+                        {fait}
+                        {page.href === '/parcours/competences' && <AConfirmer titre="Hiérarchie des technologies à confirmer (Q9)">niveaux à confirmer</AConfirmer>}
+                      </span>
+                    ))}
+                  </p>
+                  <p class="porte__action" aria-hidden="true">{page.action}<span class="fleche">&nbsp;→</span></p>
+                </div>
+              </a>
+            </li>
+          ))
+        }
       </ul>
     </nav>
-    <div class="parcours-hub__suite">
+
+    <div class="hub-suite">
       <p>Et pour voir ce que j’en fais…</p>
-      <a href="/projets">Mes projets <span aria-hidden="true">↗</span></a>
+      <LienAction href="/projets">Mes projets</LienAction>
     </div>
+
+    <AppelDiscutons emplacement="discutons">Une idée à confronter, une équipe à faire grandir&nbsp;?</AppelDiscutons>
   </div>
 </Base>
 
 <style>
-  .parcours-hub { padding-bottom: var(--s7); }
-  .parcours-hub .page-hero {
+  .parcours-hub {
+    padding-bottom: var(--s7);
+  }
+
+  /* L’en-tête : qui, où, depuis quand, et la photo. */
+  .hub-tete {
     display: grid;
-    grid-template-columns: 1.1fr 1fr;
-    gap: var(--s7);
-    align-items: center;
-    padding-block: var(--s4) var(--s6);
+    grid-template-columns: minmax(0, 1fr) minmax(200px, 232px);
+    gap: var(--s5) clamp(24px, 5vw, 96px);
+    align-items: end;
+    padding-block: clamp(20px, 2.5vw, 36px) var(--s5);
   }
-  .parcours-hub .page-hero h1 {
-    max-width: 8ch;
-    font-size: clamp(3rem, 2rem + 3.6vw, 5.5rem);
-    letter-spacing: -.055em;
+
+  .hub-tete h1 {
+    font-size: var(--t-3xl);
+    line-height: 1;
   }
-  .parcours-hub__note {
-    color: var(--bleu);
-    font-family: var(--font-note);
-    font-style: italic;
-    font-size: clamp(1.5rem, 1rem + 1vw, 2rem);
-    line-height: 1.25;
+
+  .hub-identite {
+    display: grid;
+    gap: var(--s3);
+    max-width: 40rem;
+    margin-top: var(--s4);
+    padding-left: var(--s4);
+    border-left: 2px solid var(--encre);
   }
-  .parcours-hub .page-hero__intro {
-    max-width: 47ch;
+
+  .hub-identite div {
+    display: grid;
+    gap: 2px;
+  }
+
+  .hub-identite dt {
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: var(--ls-petit);
+    color: var(--eteint);
+  }
+
+  .hub-identite dd {
+    font-size: var(--t-l);
+    line-height: 1.35;
+    color: var(--encre);
+  }
+
+  /* « B-Hive » ne se coupe pas sur son trait d’union. */
+  .insecable {
+    white-space: nowrap;
+  }
+
+  .hub-tete__chapeau {
+    max-width: 38rem;
+    margin-top: var(--s4);
+    font-size: var(--t-m);
+    color: var(--eteint);
+  }
+
+  .hub-tete__devise {
     margin-top: var(--s3);
-    color: var(--graphite);
-    font-size: var(--t-petit);
-    line-height: 1.5;
+    font-family: var(--police-titre);
+    font-style: italic;
+    font-size: var(--t-xl);
+    line-height: 1.2;
+    color: var(--encre);
   }
-  .entrees-parcours ul {
+
+  .hub-tete__photo {
+    justify-self: end;
+    width: 100%;
+  }
+
+  .hub-tete__photo :global(.hub-portrait) {
+    aspect-ratio: 4 / 5;
+    border-radius: var(--r2);
+    box-shadow: var(--ombre-1);
+  }
+
+  .hub-frise {
+    padding: var(--s5) clamp(16px, 2.4vw, 32px) var(--s4);
+    border-radius: var(--r2);
+    background: var(--surface);
+    box-shadow: var(--ombre-1);
+  }
+
+  /* Les trois portes. */
+  .hub-portes ul {
     display: grid;
-    grid-template-columns: 1.1fr 1fr;
-    grid-template-rows: repeat(2, minmax(0, 1fr));
-    gap: var(--s4);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s5);
+    margin: var(--s6) 0 0;
     padding: 0;
-    margin: 0;
     list-style: none;
   }
-  .entrees-parcours__entree { min-width: 0; }
-  .entrees-parcours__entree--metier { grid-row: span 2; }
-  .entrees-parcours a {
-    position: relative;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(130px, .7fr);
-    grid-template-rows: 1fr auto;
-    align-items: center;
-    gap: var(--s4) var(--s3);
-    min-height: 204px;
+
+  .porte {
+    min-width: 0;
+  }
+
+  .porte a {
+    display: flex;
+    flex-direction: column;
     height: 100%;
-    padding: var(--s5) var(--s6);
-    border: 1px solid var(--filet);
-    border-radius: var(--rayon);
-    background: var(--blanc);
-    --hub-illustration-paper: var(--blanc);
+    overflow: hidden;
+    border-radius: var(--r2);
+    background: var(--surface);
+    box-shadow: var(--ombre-1);
     color: var(--encre);
     text-decoration: none;
+    transition: box-shadow var(--d-ui) var(--courbe), transform var(--d-ui) var(--courbe);
   }
-  .entrees-parcours a:hover { border-color: var(--bleu); }
-  .entrees-parcours a:focus-visible {
-    outline: 3px solid var(--bleu);
-    outline-offset: 5px;
+
+  .porte a:hover {
+    box-shadow: var(--ombre-2);
   }
-  .entrees-parcours__texte { position: relative; z-index: 1; }
-  .entrees-parcours h2 {
-    max-width: 18ch;
-    margin-bottom: var(--s3);
-    font-size: clamp(1.5rem, 1.2rem + .6vw, 1.8rem);
-    line-height: 1.15;
-    letter-spacing: -.025em;
+
+  .porte a:focus-visible {
+    outline-offset: 4px;
   }
-  .entrees-parcours p {
-    max-width: 30ch;
-    color: var(--graphite);
-    font-size: var(--t-petit);
+
+  .porte :global(.porte__visuel) {
+    border-radius: 0;
+  }
+
+  .porte__texte {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--s2);
+    padding: var(--s4) var(--s5);
+  }
+
+  .porte h2 {
+    font-size: var(--t-xl);
+    line-height: 1.05;
+  }
+
+  .porte__description {
+    font-size: var(--t-s);
     line-height: 1.5;
+    color: var(--eteint);
   }
-  .entrees-parcours__dessin { color: var(--bleu); }
-  .entrees-parcours__dessin :global(svg) { display: block; width: 100%; height: auto; }
-  .entrees-parcours__action {
-    grid-column: 1 / -1;
+
+  .porte__logos {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--s4);
+    flex-wrap: wrap;
+    gap: var(--s2);
+  }
+
+  .porte__logos img {
+    width: 40px;
+    height: 40px;
+    padding: 6px;
+    border-radius: var(--r1);
+    background: var(--papier-logo);
+    box-shadow: inset 0 0 0 1px var(--filet);
+  }
+
+  .porte__faits {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: var(--t-s);
+    font-weight: 600;
+    line-height: 1.5;
+    font-variant-numeric: tabular-nums lining-nums;
+    color: var(--encre);
+  }
+
+  .porte__faits-titre {
+    font-weight: 400;
+    color: var(--eteint);
+  }
+
+  .porte__fait {
+    display: block;
+  }
+
+  /* La marque suit la liste sur sa ligne : la porte garde sa hauteur. */
+  .porte__faits :global(.a-confirmer) {
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .porte__action {
+    margin-top: auto;
     padding-top: var(--s3);
     border-top: 1px solid var(--filet);
-    color: var(--bleu);
-    font-size: var(--t-petit);
+    color: var(--accent);
+    font-size: var(--t-s);
     font-weight: 600;
   }
-  .entrees-parcours a:hover .entrees-parcours__action {
+
+  .porte a:hover .porte__action {
     text-decoration: underline;
-    text-underline-offset: .2em;
+    text-underline-offset: 0.22em;
   }
-  .entrees-parcours__fleche { font-size: 1.5rem; line-height: 1; }
-  .entrees-parcours__entree--metier a {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto 1fr auto;
-    gap: var(--s4);
-    background: var(--bleu);
-    --hub-illustration-paper: var(--bleu);
-    border-color: var(--bleu);
-    color: var(--sur-bleu);
-  }
-  .entrees-parcours__entree--metier h2 {
-    max-width: 17ch;
-    font-size: clamp(1.9rem, 1.3rem + 1.2vw, 2.6rem);
-  }
-  .entrees-parcours__entree--metier p,
-  .entrees-parcours__entree--metier .entrees-parcours__dessin,
-  .entrees-parcours__entree--metier .entrees-parcours__action { color: inherit; }
-  .entrees-parcours__entree--metier p { max-width: 35ch; }
-  .entrees-parcours__entree--metier .entrees-parcours__dessin {
-    width: min(100%, 390px);
-    justify-self: center;
-  }
-  .entrees-parcours__entree--metier .entrees-parcours__action { border-color: currentColor; }
-  .entrees-parcours__entree--metier a:hover { background: var(--bleu-survol); --hub-illustration-paper: var(--bleu-survol); }
-  .parcours-hub__suite {
+
+  .hub-suite {
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
     align-items: center;
-    gap: var(--s5);
+    gap: 0 var(--s4);
     margin-top: var(--s5);
-    padding-top: var(--s3);
-    border-top: 1px solid var(--filet);
-    font-size: var(--t-petit);
+    font-size: var(--t-s);
+    color: var(--eteint);
   }
-  .parcours-hub__suite p { color: var(--graphite); }
-  .parcours-hub__suite a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--s7);
-    min-height: 44px;
-    font-weight: 600;
+
+  @media (max-width: 1100px) {
+    .hub-portes ul {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .porte:first-child {
+      grid-column: 1 / -1;
+    }
+
+    .porte:first-child a {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
   }
-  @media (max-width: 1000px) {
-    .entrees-parcours a { padding: var(--s5); grid-template-columns: minmax(0, 1fr) 100px; }
-    .entrees-parcours__entree--metier a { grid-template-columns: minmax(0, 1fr); }
-  }
+
   @media (max-width: 760px) {
-    .parcours-hub .page-hero { grid-template-columns: minmax(0, 1fr); gap: var(--s5); }
-    .parcours-hub .page-hero h1 { max-width: none; font-size: clamp(3rem, 10vw, 4.5rem); }
-    .parcours-hub .page-hero__intro { max-width: 45ch; }
-    .entrees-parcours ul { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; }
-    .entrees-parcours__entree--metier { grid-row: auto; }
-    .entrees-parcours a { grid-template-columns: minmax(0, 1fr) 115px; min-height: 206px; }
-    .entrees-parcours__entree--metier a {
-      grid-template-columns: minmax(0, 1fr) 115px;
-      grid-template-rows: 1fr auto;
+    .hub-tete {
+      grid-template-columns: minmax(0, 1fr) 38%;
+      align-items: start;
+      column-gap: var(--s4);
     }
-    .entrees-parcours__entree--metier h2 { font-size: 1.75rem; }
-    .entrees-parcours__entree--metier .entrees-parcours__dessin { width: 100%; }
-    .entrees-parcours__texte { grid-column: 1; }
-    .entrees-parcours__dessin { grid-column: 2; grid-row: 1; }
-    .parcours-hub__suite { align-items: start; }
-  }
-  @media (max-width: 420px) {
-    .entrees-parcours a,
-    .entrees-parcours__entree--metier a { grid-template-columns: minmax(0, 1fr) 76px; padding: var(--s5) var(--s4); column-gap: var(--s2); }
-    .entrees-parcours h2 { font-size: 1.5rem; }
-    .entrees-parcours__entree--metier h2 { font-size: 1.6rem; }
-    .entrees-parcours__action { font-size: .9375rem; }
-    .parcours-hub__suite { flex-wrap: wrap; gap: 0; }
-  }
-  @media print {
-    .parcours-hub .page-hero { grid-template-columns: minmax(0, 1fr); gap: var(--s3); }
-    .parcours-hub .page-hero h1 { font-size: 32pt; }
-    .entrees-parcours ul { grid-template-columns: minmax(0, 1fr); }
-    .entrees-parcours__entree--metier { grid-row: auto; }
-    .entrees-parcours a,
-    .entrees-parcours__entree--metier a {
-      break-inside: avoid;
+
+    .hub-tete__texte {
+      display: contents;
+    }
+
+    .hub-tete h1 {
+      grid-column: 1;
+      align-self: end;
+    }
+
+    .hub-tete__photo {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+    }
+
+    .hub-identite {
+      grid-column: 1;
+      margin-top: 0;
+      padding-left: var(--s3);
+    }
+
+    .hub-identite dd {
+      font-size: var(--t-s);
+    }
+
+    .hub-tete__chapeau,
+    .hub-tete__devise {
+      grid-column: 1 / -1;
+      margin-top: 0;
+    }
+
+    .hub-tete__devise {
+      font-size: var(--t-l);
+    }
+
+    .hub-frise {
+      margin-inline: calc(-1 * var(--s2));
+      padding-inline: var(--s3);
+    }
+
+    .hub-portes ul {
       grid-template-columns: minmax(0, 1fr);
-      grid-template-rows: auto auto;
-      min-height: 0;
-      background: #fff;
-      color: #14161b;
-      border-color: #59606d;
+      margin-top: var(--s6);
     }
-    .entrees-parcours h2,
-    .entrees-parcours__entree--metier h2 { font-size: 18pt; }
-    .entrees-parcours__dessin { display: none; }
-    .entrees-parcours__entree--metier .entrees-parcours__action { color: #1f4fd1; }
+
+    .porte:first-child a {
+      display: flex;
+    }
+
+    .porte__texte {
+      padding: var(--s4);
+    }
+  }
+
+  @media print {
+    .hub-tete {
+      grid-template-columns: minmax(0, 1fr) 120px;
+    }
+
+    .hub-portes ul {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .porte a {
+      box-shadow: inset 0 0 0 1px var(--trait);
+      break-inside: avoid;
+    }
+
+    .porte :global(.porte__visuel) {
+      display: none;
+    }
   }
 </style>

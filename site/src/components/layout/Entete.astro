@@ -1,176 +1,375 @@
 ---
-/** Les pages restent à portée de main ; le sommaire appartient au récit de l’accueil. */
-import Picto from '../ui/Picto.astro';
+/**
+ * En-tête collant de toutes les pages : l’emblème et le nom (lien vers
+ * l’accueil), la navigation principale, la lanterne qui bascule le thème.
+ *
+ * Sous 860 px : l’emblème seul, puis du texte sans boîte, tout à 44 px de
+ * haut : « Sommaire » (si la page en a un), « Contact », « Menu », la lanterne.
+ * Menu et Sommaire sont des <details> : complets sans JavaScript ; avec lui,
+ * Échap les referme et rend le focus, un clic ailleurs aussi
+ * (scripts/entete.ts). Une barre de progression de 2 px suit la lecture.
+ *
+ * `sommaire` : les sections de la page, pour le bouton « Sommaire » de
+ * l’en-tête sous 1 100 px (au-delà, la navigation de page en colonne
+ * prend le relais : components/pages/NavigationPage.astro).
+ *
+ * Sous 860 px, les panneaux ne s’ancrent plus sur leur bouton (le Sommaire
+ * est à gauche : son panneau sortait de l’écran) mais sur l’en-tête, alignés
+ * sur sa gouttière droite : ils tiennent dans l’écran dès 320 px.
+ */
+import BasculeLanterne from './BasculeLanterne.astro';
 import Logo from '../ui/Logo.astro';
-import MenuMobile from './MenuMobile.astro';
 import { SITE } from '../../config/site';
-import '../../styles/theme-transition.css';
+import { PAGES_PRINCIPALES, pageActive, type EntreeSommaire } from '../../config/navigation';
 
 interface Props {
   accueil?: boolean;
   chemin?: string;
+  sommaire?: readonly EntreeSommaire[];
 }
 
-const { accueil = false, chemin = Astro.url.pathname } = Astro.props;
-const pages = [
-  { href: '/', titre: 'Accueil' },
-  { href: '/projets', titre: 'Projets' },
-  { href: '/parcours', titre: 'Parcours' },
-  { href: '/blog', titre: 'Blog' },
-  { href: '/contact', titre: 'Contact' },
-];
-const actif = (href: string) => href === '/' ? chemin === '/' : chemin === href || chemin.startsWith(`${href}/`);
+const { accueil = false, chemin = Astro.url.pathname, sommaire = [] } = Astro.props;
+const actif = (href: string) => pageActive(href, chemin);
 ---
 
 <header class="entete">
-  <div class="wrap entete__in">
-    <a class="marque" href={accueil ? '#top' : '/'} aria-label={`${SITE.nom}, ${SITE.sousTitre}`}>
-      <Logo sousTitre decoratif />
+  <div class="conteneur entete__barre">
+    <a class="marque" href={accueil ? '#top' : '/'} aria-label={`${SITE.nom}, accueil`}>
+      <Logo />
     </a>
+
     <nav class="entete__nav" aria-label="Navigation principale">
-      {pages.map(({ href, titre }) => <a href={href} aria-current={actif(href) ? 'page' : undefined}>{titre}</a>)}
+      <ul>
+        {PAGES_PRINCIPALES.filter((p) => p.href !== '/').map(({ href, titre }) => (
+          <li><a href={href} aria-current={actif(href) ? 'page' : undefined}>{titre}</a></li>
+        ))}
+      </ul>
     </nav>
-    <div class="entete__actions">
-      <a class="entete__contact-mobile" href="/contact" aria-current={actif('/contact') ? 'page' : undefined}>Contact</a>
-      <button class="theme" type="button" aria-label="Mode nuit" aria-pressed="false" title="Passer en mode nuit" data-theme-bascule>
-        <span class="theme__choix theme__jour" aria-hidden="true"><Picto nom="interface/soleil" /></span>
-        <span class="theme__choix theme__nuit" aria-hidden="true"><Picto nom="interface/lune" /></span>
-      </button>
-      <MenuMobile pages={pages} chemin={chemin} />
+
+    {
+      sommaire.length > 0 && (
+        <details class="deroulant entete__sommaire" data-deroulant>
+          <summary>Sommaire</summary>
+          <div class="deroulant__panneau">
+            <nav aria-label="Sommaire de la page" data-sommaire>
+              <ul>
+                {sommaire.map(({ id, titre }) => (
+                  <li><a href={`#${id}`}>{titre}<span class="fleche" aria-hidden="true">&nbsp;↓</span></a></li>
+                ))}
+              </ul>
+            </nav>
+          </div>
+        </details>
+      )
+    }
+
+    <div class="entete__mobile">
+      <a class="entete__lien" href="/contact" aria-current={actif('/contact') ? 'page' : undefined}>Contact</a>
+      <details class="deroulant" data-deroulant data-menu-mobile>
+        <summary>Menu</summary>
+        <div class="deroulant__panneau">
+          <nav aria-label="Navigation mobile">
+            <ul>
+              {PAGES_PRINCIPALES.map(({ href, titre }) => (
+                <li>
+                  <a href={href} aria-current={actif(href) ? 'page' : undefined}>
+                    {titre}{!actif(href) && <span class="fleche" aria-hidden="true">&nbsp;→</span>}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
+      </details>
     </div>
+
+    <BasculeLanterne />
   </div>
+  <div class="progression" aria-hidden="true" data-progression></div>
 </header>
 
 <script>
-  import { brancherTheme } from '../../scripts/theme';
-  brancherTheme();
+  import { brancherEntete } from '../../scripts/entete';
+  brancherEntete();
 </script>
 
 <style>
   .entete {
     position: sticky;
     top: 0;
-    z-index: 50;
-    background: var(--voile);
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
+    z-index: 40;
+    height: var(--entete);
+    background: color-mix(in srgb, var(--fond) 88%, transparent);
+    -webkit-backdrop-filter: saturate(1.2) blur(10px);
+    backdrop-filter: saturate(1.2) blur(10px);
     border-bottom: 1px solid var(--filet);
   }
 
-  .entete__in {
-    display: flex;
-    align-items: center;
-    gap: var(--s5);
-    min-height: var(--hauteur-entete);
-  }
-
-  .marque {
-    display: flex;
-    align-items: center;
-    min-width: 0;
-    color: var(--encre);
-    text-decoration: none;
-    line-height: 1.2;
-  }
-
-  .entete__nav { display: flex; align-self: stretch; margin-left: auto; gap: clamp(16px, 2vw, 28px); }
-  .entete__nav a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    padding-top: 2px;
-    border-bottom: 2px solid transparent;
-    color: var(--graphite);
-    text-decoration: none;
-    font-size: .9375rem;
-    white-space: nowrap;
-  }
-  .entete__nav a:hover { color: var(--encre); }
-  .entete__nav a[aria-current] { border-color: var(--bleu); color: var(--encre); font-weight: 700; }
-
-  .entete__actions {
+  .entete__barre {
     display: flex;
     align-items: center;
     gap: var(--s4);
+    height: 100%;
   }
-  .entete__contact-mobile { display: none; color: var(--encre); min-height: 44px; align-items: center; font-size: .9375rem; text-decoration: none; }
-  .entete__contact-mobile:hover, .entete__contact-mobile[aria-current] { text-decoration: underline; }
 
-  .theme {
+  .marque {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-right: auto;
+    color: var(--encre);
+    text-decoration: none;
+    border-radius: var(--r1);
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .entete__nav ul {
+    display: flex;
+    gap: var(--s1);
+  }
+
+  .entete__nav a,
+  .entete__lien {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: var(--s3);
+    color: var(--encre);
+    text-decoration: none;
+    font-size: var(--t-s);
+    font-weight: 500;
+    border-radius: var(--r1);
+  }
+
+  .entete__nav a:hover,
+  .entete__lien:hover {
+    color: var(--accent);
+  }
+
+  .entete__nav a[aria-current='page'],
+  .entete__lien[aria-current='page'] {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 8px;
+    text-decoration-color: var(--trait);
+  }
+
+  .entete__mobile {
+    display: none;
+  }
+
+  /* Menu et sommaire, en <details> : complets sans JavaScript. */
+  .deroulant {
     position: relative;
+  }
+
+  .deroulant > summary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s2);
+    min-height: 44px;
+    padding-inline: var(--s3);
+    list-style: none;
+    cursor: pointer;
+    font-size: var(--t-s);
+    font-weight: 500;
+    color: var(--encre);
+    border: 1px solid var(--filet);
+    border-radius: var(--r3);
+    background: var(--surface);
+  }
+
+  .deroulant > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .deroulant > summary::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    margin-top: -3px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    rotate: 45deg;
+    transition: rotate var(--d-ui) var(--courbe);
+  }
+
+  .deroulant[open] > summary {
+    border-color: var(--trait);
+  }
+
+  .deroulant[open] > summary::after {
+    rotate: 225deg;
+    margin-top: 3px;
+  }
+
+  .deroulant__panneau {
+    position: absolute;
+    right: 0;
+    top: calc(100% + var(--s2));
+    width: min(320px, calc(100vw - 2 * var(--gouttiere)));
+    padding: var(--s3);
+    background: var(--surface);
+    border: 1px solid var(--trait);
+    border-radius: var(--r2);
+    box-shadow: var(--ombre-2);
+  }
+
+  .deroulant__panneau a {
     display: flex;
     align-items: center;
-    flex-shrink: 0;
+    justify-content: space-between;
+    gap: var(--s3);
     min-height: 44px;
-    width: 64px;
-    padding: 0;
-    isolation: isolate;
-    border: 0;
-    border-radius: 18px;
-    background: transparent;
-    color: var(--graphite);
-    cursor: pointer;
+    padding-inline: var(--s3);
+    color: var(--encre);
+    text-decoration: none;
+    border-radius: var(--r1);
   }
-  .theme::before {
-    content: '';
+
+  .deroulant__panneau a:hover {
+    background: var(--fond);
+    color: var(--accent);
+  }
+
+  .deroulant__panneau a[aria-current] {
+    font-weight: 600;
+  }
+
+  .deroulant__panneau .fleche {
+    color: var(--accent);
+  }
+
+  .entete__sommaire {
+    display: none;
+  }
+
+  /* Barre de progression de lecture (mobile, règle E4) */
+  .progression {
     position: absolute;
-    z-index: -2;
-    inset: 6px 0;
-    border: 1px solid var(--filet);
-    border-radius: 16px;
-    background: var(--papier);
-  }
-  .theme::after {
-    content: '';
-    position: absolute;
-    z-index: -1;
-    top: 10px;
-    left: 4px;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: var(--bleu);
-    transform: translateX(0);
-    transition: transform .28s cubic-bezier(.2, .8, .2, 1);
-  }
-  .theme:hover::before { border-color: var(--bleu); }
-  .theme:focus-visible { border-radius: 18px; }
-  .theme__choix { display: inline-flex; align-items: center; justify-content: center; width: 50%; }
-  .theme__choix :global(svg) { width: 16px; height: 16px; }
-  .theme__jour { color: var(--sur-bleu); }
-  :global(:root[data-theme='nuit']) .theme::after { transform: translateX(32px); }
-  :global(:root[data-theme='nuit']) .theme__jour { color: var(--graphite); }
-  :global(:root[data-theme='nuit']) .theme__nuit { color: var(--sur-bleu); }
-
-  @media (prefers-color-scheme: dark) {
-    :global(:root:not([data-theme])) .theme::after { transform: translateX(32px); }
-    :global(:root:not([data-theme])) .theme__jour { color: var(--graphite); }
-    :global(:root:not([data-theme])) .theme__nuit { color: var(--sur-bleu); }
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: var(--accent);
+    transform-origin: 0 50%;
+    transform: scaleX(var(--progression, 0));
+    display: none;
   }
 
-  @media (max-width: 1099px) {
-    .entete__nav { display: none; }
-    .entete__actions { margin-left: auto; }
-    .entete__contact-mobile { display: inline-flex; }
+  @media (max-width: 1100px) {
+    .entete__sommaire {
+      display: block;
+    }
   }
 
-  @media (max-width: 760px) {
-    .entete__in { gap: var(--s2); }
-    .entete__actions { gap: var(--s2); }
-    .marque :global(.logo__symbole) { width: 34px; }
-    .marque :global(.logo__identite) { display: none; }
-    .entete__contact-mobile { font-size: .8125rem; }
+  @media (max-width: 860px) {
+    .entete__barre {
+      gap: 6px;
+    }
+
+    .entete__nav {
+      display: none;
+    }
+
+    .entete__mobile {
+      display: flex;
+      align-items: center;
+      gap: var(--s2);
+    }
+
+    .progression {
+      display: block;
+    }
+
+    /* Une seule forme de commande : du texte sans boîte, 44 px de haut. */
+    .deroulant > summary,
+    .entete__lien {
+      padding-inline: 10px;
+      border: 0;
+      border-radius: var(--r1);
+      background: none;
+    }
+
+    .deroulant[open] > summary {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 8px;
+      text-decoration-color: var(--trait);
+    }
+
+    /* Panneaux ancrés sur l’en-tête collant (bloc conteneur), pas sur leur bouton. */
+    .deroulant {
+      position: static;
+    }
+
+    .deroulant__panneau {
+      top: calc(100% + var(--s1));
+      right: var(--gouttiere);
+      left: auto;
+      width: min(360px, 100% - 2 * var(--gouttiere));
+    }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .theme::after { transition: none; }
+
+  /* Téléphone : l’emblème, Sommaire, Contact, Menu et la lanterne tiennent
+     sur une ligne dès 320 px. */
+  @media (max-width: 430px) {
+    .entete__barre,
+    .entete__mobile {
+      gap: 2px;
+    }
+
+    .deroulant > summary,
+    .entete__lien {
+      padding-inline: 8px;
+    }
+
+    .deroulant > summary {
+      gap: 6px;
+    }
   }
+
+  @media (max-width: 360px) {
+    .entete__barre,
+    .entete__mobile {
+      gap: 0;
+    }
+
+    .deroulant > summary,
+    .entete__lien {
+      padding-inline: 5px;
+    }
+  }
+
+  /* Sous 340 px (la largeur de référence de WCAG pour la redistribution est
+     320 px) : les chevrons cèdent leur place, rien ne déborde. */
+  @media (max-width: 339px) {
+    .deroulant > summary {
+      gap: 0;
+    }
+
+    .deroulant > summary::after {
+      display: none;
+    }
+  }
+
   @media print {
     .entete {
       position: static;
+      height: auto;
       backdrop-filter: none;
+      border: 0;
     }
 
-    .entete__actions, .entete__nav {
+    .entete__nav,
+    .entete__mobile,
+    .entete__sommaire,
+    .progression {
       display: none;
     }
   }

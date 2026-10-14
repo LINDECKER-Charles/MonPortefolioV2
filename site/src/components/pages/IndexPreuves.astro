@@ -1,0 +1,114 @@
+---
+/**
+ * L’index des étiquettes de preuve, en tête de la vitrine : ce que chaque
+ * projet prouve, dans l’ordre des cartes, chaque entrée menant à sa carte.
+ *
+ *   <IndexPreuves entrees={[
+ *     { id: 'pvz', preuve: 'Une équipe formée et menée' },
+ *     { id: 'lodb', preuve: 'Un système en production' },
+ *   ]} />
+ *
+ * Les numéros reprennent le `rang` des CarteProjet, sur deux chiffres.
+ * Liens d’ancre (↓), la flèche collée au dernier mot. Une colonne à filets
+ * sur ordinateur, à côté du titre ; sous 860 px, les preuves passent à la
+ * ligne, entières : les cinq restent visibles sans défiler, et le chiffre de
+ * la carte vedette reste au premier écran (E1).
+ */
+import { typo } from '../../lib/typo';
+
+interface Props {
+  entrees: readonly { id: string; preuve: string }[];
+  label?: string;
+}
+
+const { entrees, label = 'Ce que prouve chaque projet' } = Astro.props;
+---
+
+<nav class="index-preuves" aria-label={label}>
+  <ol>
+    {entrees.map(({ id, preuve }, i) => (
+      <li>
+        <a href={`#${id}`}>
+          <span class="index-preuves__rang" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+          <span>{typo(preuve)}</span><span class="fleche" aria-hidden="true">&nbsp;↓</span>
+        </a>
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<style>
+  ol {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--trait);
+  }
+
+  li + li {
+    border-top: 1px solid var(--filet);
+  }
+
+  /* En bloc, pas en flex : la flèche reste collée au dernier mot. */
+  a {
+    display: block;
+    min-height: 44px;
+    padding: var(--s2) 0;
+    color: var(--encre);
+    font-family: var(--police-titre);
+    font-style: italic;
+    font-size: var(--t-m);
+    line-height: 1.2;
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--accent);
+  }
+
+  .index-preuves__rang {
+    margin-right: var(--s2);
+    font-family: var(--police-texte);
+    font-style: normal;
+    font-size: var(--t-xs);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--eteint);
+  }
+
+  .fleche {
+    font-size: var(--t-xs);
+    color: var(--accent);
+  }
+
+  /* Sous 860 px, les cinq preuves passent à la ligne au lieu de défiler :
+     chacune reste entière (aucun nom coupé au bord), et le bloc tient en trois
+     lignes pour que le chiffre de la vedette reste au premier écran (E1). Les
+     cibles gardent au moins 24 px de haut (WCAG 2.5.8). */
+  @media (max-width: 860px) {
+    ol {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0 var(--s4);
+      padding-top: var(--s1);
+      border-bottom: 1px solid var(--filet);
+    }
+
+    li + li {
+      border-top: 0;
+    }
+
+    a {
+      min-height: var(--s5);
+      padding: var(--s1) 0;
+      font-size: var(--t-xs);
+      white-space: nowrap;
+    }
+
+    .index-preuves__rang {
+      margin-right: var(--s1);
+    }
+  }
+</style>

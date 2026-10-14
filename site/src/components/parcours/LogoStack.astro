@@ -1,4 +1,21 @@
 ---
+/**
+ * Le logo d’une technologie, décoratif (le lien qui l’entoure porte le nom).
+ * Logos réels de src/assets/stacks/ (licences : LISEZMOI.md) ; à défaut, un
+ * picto de repli dessiné de la même main (IllustrationStack, CMP-10). Un nom
+ * inconnu fait échouer le build : aucune case vide.
+ *
+ *   <LogoStack nom="Angular" taille="grand" />   en couleur, 56 px (Au quotidien)
+ *   <LogoStack nom="Sass" />                      gris, 28 px, couleur au survol du lien
+ *   <LogoStack nom="Go" taille="petit" />         gris, 18 px (étiquettes)
+ *
+ * Harmonisation (direction « Lanterne ») : hors du premier niveau, les logos
+ * passent en gris et retrouvent leur couleur au survol ou au focus du lien
+ * (`.techno`). Les logos monochromes s’inversent la nuit et dans les actes
+ * sombres ; les logos sombres en couleur s’éclaircissent sans papier blanc.
+ * Les logos réduits à un mot-symbole, illisibles à 18-28 px (Nginx, PHPUnit,
+ * API Platform, Leaflet), cèdent la place à un picto de repli (CMP-10).
+ */
 import angular from '../../assets/stacks/angular.svg?url';
 import typescript from '../../assets/stacks/typescript.svg?url';
 import csharp from '../../assets/stacks/csharp.svg?url';
@@ -17,7 +34,6 @@ import tailwindcss from '../../assets/stacks/tailwindcss.svg?url';
 import gsap from '../../assets/stacks/gsap.svg?url';
 import java from '../../assets/stacks/java.svg?url';
 import spring from '../../assets/stacks/spring.svg?url';
-import nginx from '../../assets/stacks/nginx.svg?url';
 import apache from '../../assets/stacks/apache.svg?url';
 import ionic from '../../assets/stacks/ionic.svg?url';
 import capacitor from '../../assets/stacks/capacitor.svg?url';
@@ -35,7 +51,6 @@ import eslint from '../../assets/stacks/eslint.svg?url';
 import prettier from '../../assets/stacks/prettier.png?url';
 import twig from '../../assets/stacks/twig.png?url';
 import doctrine from '../../assets/stacks/doctrine.svg?url';
-import leaflet from '../../assets/stacks/leaflet.svg?url';
 import caddy from '../../assets/stacks/caddy.png?url';
 import sass from '../../assets/stacks/sass.svg?url';
 import rxjs from '../../assets/stacks/rxjs.svg?url';
@@ -48,7 +63,6 @@ import vite from '../../assets/stacks/vite.svg?url';
 import go from '../../assets/stacks/go.svg?url';
 import vuejs from '../../assets/stacks/vuejs.svg?url';
 import xunit from '../../assets/stacks/xunit.svg?url';
-import phpunit from '../../assets/stacks/phpunit.png?url';
 import trello from '../../assets/stacks/trello.svg?url';
 import photino from '../../assets/stacks/photino.svg?url';
 import fastapi from '../../assets/stacks/fastapi.svg?url';
@@ -59,14 +73,16 @@ import prometheus from '../../assets/stacks/prometheus.svg?url';
 import karma from '../../assets/stacks/karma.svg?url';
 import jasmine from '../../assets/stacks/jasmine.svg?url';
 import pillow from '../../assets/stacks/pillow.png?url';
-import apiPlatform from '../../assets/stacks/api-platform.svg?url';
 import gcc from '../../assets/stacks/gcc.svg?url';
 import chartjs from '../../assets/stacks/chartjs.svg?url';
 import mcp from '../../assets/stacks/mcp.svg?url';
 import IllustrationStack, { type OutilIllustre } from './IllustrationStack.astro';
 
-interface Props { nom: string; }
-const { nom } = Astro.props;
+interface Props {
+  nom: string;
+  taille?: 'grand' | 'moyen' | 'petit';
+}
+const { nom, taille = 'moyen' } = Astro.props;
 const logos: Record<string, string> = {
   Angular: angular,
   TypeScript: typescript,
@@ -88,7 +104,6 @@ const logos: Record<string, string> = {
   GSAP: gsap,
   Java: java,
   Spring: spring,
-  Nginx: nginx,
   Apache: apache,
   Ionic: ionic,
   Capacitor: capacitor,
@@ -106,7 +121,6 @@ const logos: Record<string, string> = {
   Prettier: prettier,
   Twig: twig,
   Doctrine: doctrine,
-  Leaflet: leaflet,
   Caddy: caddy,
   Sass: sass,
   RxJS: rxjs,
@@ -119,7 +133,6 @@ const logos: Record<string, string> = {
   Go: go,
   'Vue.js': vuejs,
   xUnit: xunit,
-  PHPUnit: phpunit,
   Trello: trello,
   'Photino.NET': photino,
   FastAPI: fastapi,
@@ -130,47 +143,79 @@ const logos: Record<string, string> = {
   Karma: karma,
   Jasmine: jasmine,
   Pillow: pillow,
-  'API Platform': apiPlatform,
   'Spring Boot': spring,
   GCC: gcc,
   'Chart.js': chartjs,
   MCP: mcp,
 };
 const src = logos[nom];
-const outilsIllustres: OutilIllustre[] = ['SQL', 'Axum', 'SQLx', 'Stockage S3 compatible', 'Dompdf', 'OpenTUI', 'Make', 'axe-core', 'Claude', 'Codex', 'Kokoro', 'Piper'];
+const outilsIllustres: OutilIllustre[] = ['SQL', 'Axum', 'SQLx', 'Stockage S3 compatible', 'Dompdf', 'OpenTUI', 'Make', 'axe-core', 'Claude', 'Codex', 'Kokoro', 'Piper', 'Nginx', 'PHPUnit', 'API Platform', 'Leaflet'];
 const illustration = outilsIllustres.find((outil) => outil === nom);
 if (!src && !illustration) throw new Error(`Visuel de stack inconnu : ${nom}`);
 const monochrome = ['Linux', 'Symfony', 'Express', 'Rust', 'Tokio', 'xUnit', 'MCP'].includes(nom);
-const supportClair = ['Bash', 'Leaflet', 'Photino.NET', 'OpenTelemetry'].includes(nom);
+/** Logos sombres en couleur : éclaircis la nuit (inversés, teinte rétablie), sans papier blanc. */
+const sombre = ['Bash', 'Photino.NET', 'OpenTelemetry'].includes(nom);
+const pixels = { grand: 56, moyen: 28, petit: 18 }[taille];
 ---
 
-{illustration ? <IllustrationStack nom={illustration} /> : <img
-  class:list={['logo-stack', {
+{illustration ? <IllustrationStack nom={illustration} taille={taille} /> : <img
+  class:list={['logo-stack', `logo-stack--${taille}`, {
     'logo-stack--monochrome': monochrome,
     'logo-stack--clair': nom === 'GSAP',
-    'logo-stack--sur-papier': supportClair,
+    'logo-stack--sombre': sombre,
   }]}
   src={src}
   alt=""
   aria-hidden="true"
-  width="32"
-  height="32"
+  width={pixels}
+  height={pixels}
   loading="lazy"
   decoding="async"
 />}
 
 <style>
-  .logo-stack { display: block; width: 32px; height: 32px; flex: 0 0 32px; object-fit: contain; }
-  .logo-stack--clair { filter: invert(1); }
-  .logo-stack--sur-papier { box-sizing: border-box; padding: 2px; border-radius: 3px; background: #fff; }
-  :global([data-theme='nuit']) .logo-stack--monochrome { filter: invert(1); }
-  :global([data-theme='nuit']) .logo-stack--clair { filter: none; }
+  /* Un seul filtre, composé de quatre réglages : gris, inversion, teinte, éclat. */
+  .logo-stack {
+    --gris: 1;
+    --inverse: 0;
+    --teinte: 0deg;
+    --eclat: 1;
+    display: block;
+    flex: none;
+    object-fit: contain;
+    filter: grayscale(var(--gris)) invert(var(--inverse)) hue-rotate(var(--teinte)) brightness(var(--eclat));
+    transition: filter var(--d-ui) var(--courbe);
+  }
+  .logo-stack--grand { --gris: 0; width: 56px; height: 56px; }
+  .logo-stack--moyen { width: 28px; height: 28px; }
+  .logo-stack--petit { width: 18px; height: 18px; }
+  /* GSAP est blanc : inversé sur le fond clair du jour. */
+  .logo-stack--clair { --inverse: 1; }
+
+  /* Hors du premier niveau, gris ; la couleur revient au survol ou au focus du lien. */
+  :global(.techno:is(:hover, :focus-visible)) .logo-stack { --gris: 0; }
+
+  /* La nuit et dans les actes sombres : les monochromes s’inversent, GSAP redevient blanc. */
+  :global(.acte-veille) .logo-stack--monochrome { --inverse: 1; }
+  :global(.acte-veille) .logo-stack--clair { --inverse: 0; }
+  :global(.acte-veille) .logo-stack--sombre { --inverse: 1; --teinte: 180deg; }
+  :global(:root[data-theme='nuit']) .logo-stack { --eclat: 1.25; }
+  :global(:root[data-theme='nuit']) .logo-stack--grand { --eclat: 1; }
+  :global(:root[data-theme='nuit']) .logo-stack--monochrome { --inverse: 1; --eclat: 1; }
+  :global(:root[data-theme='nuit']) .logo-stack--clair { --inverse: 0; --eclat: 1; }
+  :global(:root[data-theme='nuit']) .logo-stack--sombre { --inverse: 1; --teinte: 180deg; --eclat: 1; }
   @media (prefers-color-scheme: dark) {
-    :global(:root:not([data-theme])) .logo-stack--monochrome { filter: invert(1); }
-    :global(:root:not([data-theme])) .logo-stack--clair { filter: none; }
+    :global(:root:not([data-theme])) .logo-stack { --eclat: 1.25; }
+    :global(:root:not([data-theme])) .logo-stack--grand { --eclat: 1; }
+    :global(:root:not([data-theme])) .logo-stack--monochrome { --inverse: 1; --eclat: 1; }
+    :global(:root:not([data-theme])) .logo-stack--clair { --inverse: 0; --eclat: 1; }
+    :global(:root:not([data-theme])) .logo-stack--sombre { --inverse: 1; --teinte: 180deg; --eclat: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .logo-stack { transition: none; }
   }
   @media print {
-    .logo-stack--monochrome { filter: none !important; }
-    .logo-stack--clair { filter: invert(1) !important; }
+    .logo-stack { --gris: 0 !important; --inverse: 0 !important; --eclat: 1 !important; }
+    .logo-stack--clair { --inverse: 1 !important; }
   }
 </style>

@@ -1,0 +1,109 @@
+---
+/**
+ * La bascule jour / nuit : la lanterne dessinée (GLO-03,
+ * src/assets/visuels/global/GLO-03.svg). Éteinte le jour ; sa flamme
+ * s’allume en 400 ms quand la nuit tombe, avec un halo.
+ *
+ * Contrat du thème (tests, /theme.js, scripts/theme.ts) : `data-theme-bascule`,
+ * `aria-label="Mode nuit"` et `aria-pressed` (vrai la nuit). Le passage à la
+ * nuit et le retour au jour, « l’allumage », vivent dans scripts/theme.ts et
+ * styles/theme-transition.css.
+ *
+ * Sans JavaScript, la bascule ne ferait rien : elle n’est pas affichée, et le
+ * thème suit prefers-color-scheme.
+ */
+import lanterne from '../../assets/visuels/global/GLO-03.svg?raw';
+import '../../styles/theme-transition.css';
+
+const dessin = lanterne
+  .replace(/<title>[\s\S]*?<\/title>/, '')
+  .replace(/<svg\b[^>]*>/, '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">');
+---
+
+<button class="bascule" type="button" data-theme-bascule data-js-seulement aria-pressed="false" aria-label="Mode nuit" title="Passer en mode nuit">
+  <Fragment set:html={dessin} />
+</button>
+
+<script>
+  import { brancherTheme } from '../../scripts/theme';
+  brancherTheme();
+</script>
+
+<style>
+  .bascule {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--filet);
+    border-radius: var(--r3);
+    background: var(--surface);
+    color: var(--encre);
+    cursor: pointer;
+    transition: border-color var(--d-ui) var(--courbe), background-color var(--d-ui) var(--courbe);
+  }
+
+  .bascule:hover {
+    border-color: var(--trait);
+  }
+
+  .bascule :global(svg) {
+    width: 26px;
+    height: 26px;
+    overflow: visible;
+  }
+
+  .bascule :global(.lt-flamme) {
+    fill: transparent;
+    stroke: currentColor;
+    transform-origin: 12px 15.6px;
+    transform: scale(0.7);
+    transition: fill var(--d-scene) var(--courbe), stroke var(--d-scene) var(--courbe), transform var(--d-scene) var(--courbe);
+  }
+
+  .bascule :global(.lt-halo) {
+    fill: var(--lanterne);
+    opacity: 0;
+    transform-origin: 12px 14.5px;
+    transform: scale(0.3);
+    transition: opacity var(--d-scene) var(--courbe), transform var(--d-scene) var(--courbe);
+  }
+
+  /* L’état visuel suit data-theme, posé avant le premier rendu par
+     /theme.js : la lanterne est déjà allumée quand la page s’affiche de nuit. */
+
+  :global(:root[data-theme='nuit']) .bascule {
+    border-color: var(--cadre-point);
+    background: var(--cadre-barre);
+    color: var(--lune);
+  }
+
+  :global(:root[data-theme='nuit']) .bascule :global(.lt-flamme) {
+    fill: var(--lanterne);
+    stroke: var(--lanterne);
+    transform: scale(1);
+  }
+
+  :global(:root[data-theme='nuit']) .bascule :global(.lt-halo) {
+    opacity: 0.28;
+    transform: scale(1);
+  }
+
+  /* Sur mobile, une seule forme de commande dans l’en-tête : la lanterne
+     sans cercle. */
+  @media (max-width: 860px) {
+    .bascule,
+    :global(:root[data-theme='nuit']) .bascule {
+      border-color: transparent;
+      background: none;
+    }
+  }
+
+  @media print {
+    .bascule {
+      display: none;
+    }
+  }
+</style>

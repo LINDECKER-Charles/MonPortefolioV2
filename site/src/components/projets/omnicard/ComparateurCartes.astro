@@ -1,0 +1,276 @@
+---
+/**
+ * Rééquilibrer mes propres cartes : la même carte dans la saison 1 (archive
+ * du dépôt de présentation public) et dans la version actuelle du projet
+ * (export de l’outil du projet, le 13/10/2026), côte à côte. La version en
+ * ligne de ces valeurs reste marquée « à confirmer » : le catalogue public
+ * 1.2.0 en affiche encore d’autres. Un cercle marque sur chaque carte la valeur qui a
+ * changé ; la liste dit le changement en texte.
+ *
+ *   <ComparateurCartes />
+ *
+ * Trois cartes au choix, en boutons radio natifs (clic, flèches), sans
+ * JavaScript ; l’état se lit par position. Les deux images restent toujours
+ * côte à côte. À l’impression, les trois comparaisons se suivent.
+ * Données : REEQUILIBRAGES (config/omnicard.ts).
+ */
+import type { ImageMetadata } from 'astro';
+import { Picture } from 'astro:assets';
+import archiveGehrman from '../../../assets/projets/omnicard/archive-gehrman.webp';
+import archiveGitgud from '../../../assets/projets/omnicard/archive-gitgud.webp';
+import archiveFloppa from '../../../assets/projets/omnicard/archive-floppa.webp';
+import gehrman from '../../../assets/projets/omnicard/carte-gehrman.webp';
+import gitgud from '../../../assets/projets/omnicard/carte-gitgud.webp';
+import floppa from '../../../assets/projets/omnicard/carte-floppa.webp';
+import AConfirmer from '../../ui/AConfirmer.astro';
+import { REEQUILIBRAGES, type Reequilibrage } from '../../../config/omnicard';
+import { typo } from '../../../lib/typo';
+
+const IMAGES: Record<Reequilibrage['id'], { avant: ImageMetadata; apres: ImageMetadata }> = {
+  gehrman: { avant: archiveGehrman, apres: gehrman },
+  gitgud: { avant: archiveGitgud, apres: gitgud },
+  floppa: { avant: archiveFloppa, apres: floppa },
+};
+
+const resume = (carte: Reequilibrage, cote: 'avant' | 'apres') =>
+  carte.changements.map((c) => `${c.quoi.toLowerCase()} ${cote === 'avant' ? c.avant : c.apres}`).join(', ');
+---
+
+<fieldset class="comparateur">
+  <legend class="comparateur__legende">Une carte, deux versions</legend>
+  <div class="comparateur__choix">
+    {
+      REEQUILIBRAGES.map((carte, index) => (
+        <label class="oc-pastille">
+          <input class="oc-pastille__radio" type="radio" name="reequilibrage" value={carte.id} checked={index === 0} />
+          {carte.court}
+        </label>
+      ))
+    }
+  </div>
+  <div class="comparateur__panneaux">
+    {
+      REEQUILIBRAGES.map((carte) => {
+        const zones = [...new Set(carte.changements.flatMap((c) => c.zones))];
+        return (
+          <figure class="comparaison">
+            <div class="comparaison__cartes">
+              {(['avant', 'apres'] as const).map((cote) => (
+                <div class:list={['comparaison__carte', `comparaison__carte--${cote}`]}>
+                  <p class="comparaison__etiquette">
+                    {cote === 'avant' ? 'Saison 1' : 'Version actuelle du projet'}
+                    {cote === 'apres' && <AConfirmer titre="Version en ligne à confirmer par Charles : le catalogue public 1.2.0 affiche encore d’autres valeurs" />}
+                  </p>
+                  <div class="comparaison__image">
+                    <Picture
+                      src={IMAGES[carte.id][cote]}
+                      formats={['avif']}
+                      fallbackFormat="webp"
+                      widths={[240, 400, 600]}
+                      sizes="(max-width: 860px) 42vw, 200px"
+                      alt={typo(`${carte.nom}, ${cote === 'avant' ? 'saison 1' : 'version actuelle'} : ${resume(carte, cote)}.`)}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    {zones.map((zone) => <span class:list={['marque', `marque--${zone}`]} aria-hidden="true" />)}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <figcaption class="comparaison__texte">
+              <p class="comparaison__nom">{typo(carte.nom)}</p>
+              <dl class="comparaison__changements">
+                {carte.changements.map((c) => (
+                  <div>
+                    <dt>{c.quoi}</dt>
+                    <dd><span class="comparaison__avant">{c.avant}</span><span class="comparaison__vers" aria-hidden="true">&nbsp;→&nbsp;</span><span class="sr"> devient </span><span class="comparaison__apres">{c.apres}</span></dd>
+                  </div>
+                ))}
+              </dl>
+            </figcaption>
+          </figure>
+        );
+      })
+    }
+  </div>
+</fieldset>
+
+<style>
+  .comparateur {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .comparateur__legende {
+    float: left;
+    width: 100%;
+    margin-bottom: var(--s3);
+    padding: 0;
+    font-size: var(--t-s);
+    font-weight: 600;
+    color: var(--encre);
+  }
+
+  .comparateur__choix {
+    clear: both;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2);
+  }
+
+  .comparateur__panneaux {
+    margin-top: var(--s5);
+  }
+
+  .comparaison {
+    display: none;
+    margin: 0;
+  }
+
+  .comparateur:has(.oc-pastille:nth-child(1) :checked) .comparaison:nth-child(1),
+  .comparateur:has(.oc-pastille:nth-child(2) :checked) .comparaison:nth-child(2),
+  .comparateur:has(.oc-pastille:nth-child(3) :checked) .comparaison:nth-child(3) {
+    display: block;
+  }
+
+  /* Les deux cartes s’alignent par le bas : l’étiquette de droite peut
+     passer sur deux lignes avec sa marque « à confirmer ». */
+  .comparaison__cartes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: end;
+    gap: var(--s5);
+    max-width: 26rem;
+  }
+
+  .comparaison__etiquette {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--s1) var(--s2);
+    margin-bottom: var(--s2);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: var(--ls-petit);
+    color: var(--eteint);
+  }
+
+  .comparaison__carte--apres .comparaison__etiquette {
+    color: var(--encre);
+  }
+
+  .comparaison__image {
+    position: relative;
+  }
+
+  .comparaison__image :global(picture) {
+    display: block;
+  }
+
+  .comparaison__image :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 4.5% / 2.9%;
+    box-shadow: var(--ombre-1);
+  }
+
+  /* Le cercle sur la valeur qui change : en pointillé avant, plein après. */
+  .marque {
+    position: absolute;
+    translate: -50% -50%;
+    aspect-ratio: 1;
+    border: 2px dashed var(--trait);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .comparaison__carte--apres .marque {
+    border: 2.5px solid var(--laiton);
+    box-shadow: 0 0 0 3px var(--voile-cible), 0 0 18px 2px var(--lanterne-eclat);
+  }
+
+  .marque--cout {
+    left: 85%;
+    top: 8.8%;
+    width: 22%;
+  }
+
+  .marque--gauche {
+    left: 16.3%;
+    top: 88.7%;
+    width: 25%;
+  }
+
+  .marque--droite {
+    left: 83.2%;
+    top: 88.7%;
+    width: 25%;
+  }
+
+  .comparaison__texte {
+    max-width: 26rem;
+    margin-top: var(--s4);
+    padding-top: var(--s3);
+    border-top: 1px solid var(--trait);
+  }
+
+  .comparaison__nom {
+    font-size: var(--t-xs);
+    font-weight: 600;
+    color: var(--eteint);
+  }
+
+  .comparaison__changements {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s1) var(--s6);
+    margin: var(--s1) 0 0;
+  }
+
+  .comparaison__changements > div {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s3);
+  }
+
+  .comparaison__changements dt {
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  .comparaison__changements dd {
+    margin: 0;
+    font-size: var(--t-l);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  .comparaison__avant {
+    color: var(--eteint);
+    text-decoration: line-through;
+    text-decoration-thickness: 1px;
+  }
+
+  .comparaison__vers {
+    color: var(--eteint);
+  }
+
+  @media print {
+    .comparateur__choix {
+      display: none;
+    }
+
+    .comparaison {
+      display: block;
+      margin-bottom: var(--s5);
+      break-inside: avoid;
+    }
+
+    .marque {
+      box-shadow: none !important;
+    }
+  }
+</style>

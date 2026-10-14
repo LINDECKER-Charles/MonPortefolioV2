@@ -1,20 +1,22 @@
 ---
+/**
+ * Parcours professionnel (cahier, § 5.9) : la chronologie en durées (PRO-F1),
+ * puis une fiche par rôle, du plus récent au plus ancien. Navigation de page
+ * collante sur ordinateur, sommaire de l’en-tête en dessous. Données :
+ * config/parcours.ts.
+ */
 import Parcours from '../../layouts/Parcours.astro';
-import IllustrationHub from '../../components/parcours/IllustrationHub.astro';
-import IllustrationExperience from '../../components/parcours/IllustrationExperience.astro';
-import NavigationExperiences from '../../components/parcours/NavigationExperiences.astro';
+import AppelDiscutons from '../../components/pages/AppelDiscutons.astro';
+import NavigationPage from '../../components/pages/NavigationPage.astro';
+import FicheExperience from '../../components/parcours/FicheExperience.astro';
+import Frise from '../../components/parcours/Frise.astro';
+import { EXPERIENCES, ligneDeFrise } from '../../config/parcours';
 import { SITE } from '../../config/site';
 
 const titre = `Parcours professionnel — ${SITE.nom}`;
 const description = 'Les expériences de Charles Lindecker, de son poste actuel aux premières missions, entre architecture logicielle, développement web et transmission.';
-const reperes = [
-  { id: 'architecture', date: 'Depuis août 2026', titre: 'Architecte logiciel' },
-  { id: 'mission-locale', date: 'Janvier 2026', titre: 'Mission Locale' },
-  { id: 'elan', date: 'Décembre 2025', titre: 'Elan Formation' },
-  { id: 'devmates', date: 'Novembre 2025', titre: 'Dev-Mates' },
-  { id: 'pvz', date: 'Octobre 2025', titre: 'PvZ Fusion' },
-  { id: 'atis', date: 'Août — septembre 2025', titre: 'ATIS Solutions' },
-];
+const sommaire = EXPERIENCES.map((experience) => ({ id: experience.id, titre: experience.repere }));
+const chronologie = [{ lignes: EXPERIENCES.map((experience) => ligneDeFrise(experience, '')) }];
 ---
 
 <Parcours
@@ -23,272 +25,44 @@ const reperes = [
   chemin="/parcours/professionnel"
   courant="Parcours professionnel"
   introduction="Architecture logicielle, développement web et transmission. Voici mes expériences, en commençant par les plus récentes."
+  sommaire={sommaire}
   compact
 >
-  <div class="parcours-trame">
-    <NavigationExperiences reperes={reperes} />
-    <section class="experiences" aria-labelledby="experiences-titre">
-      <header class="experiences__tete">
-        <h2 id="experiences-titre">Expériences</h2>
-        <p>Les plus récentes d’abord</p>
-      </header>
-      <p class="experiences__lecture">Les dates indiquent le début de chaque activité. Certaines se poursuivent en parallèle.</p>
-      <ol class="chronologie" role="list" aria-label="Expériences de la plus récente à la plus ancienne">
-      <li class="chronologie__etape chronologie__etape--actuelle" id="architecture" tabindex="-1">
-        <div class="chronologie__date">
-          <p><time datetime="2026-08">Août 2026</time></p>
-          <span class="chronologie__precision">Poste actuel</span>
-        </div>
-        <article class="experience experience--actuelle" aria-labelledby="architecture-titre">
-          <div class="experience__entete">
-            <div>
-              <h3 id="architecture-titre">Architecte logiciel</h3>
-              <p class="experience__structure">B-Hive <span>Mulhouse</span></p>
-              <p class="experience__statut experience__statut--actif">CDI</p>
-              <p class="experience__mission">Je travaille sur le développement web et le DevOps.</p>
-            </div>
-            <div class="experience__dessin experience__dessin--actuel"><IllustrationHub scene="professionnel" /></div>
-          </div>
-          <div class="experience__actions">
-            <a href="/parcours/competences">Mes compétences</a>
-            <a href="/projets">Mes projets</a>
-          </div>
-        </article>
-      </li>
-      <li class="chronologie__etape" id="mission-locale" tabindex="-1">
-        <div class="chronologie__date">
-          <p><time datetime="2026-01">Janvier 2026</time></p>
-          <span class="chronologie__precision">Début des ateliers</span>
-        </div>
-        <article class="experience" aria-labelledby="mission-locale-titre">
-          <div class="experience__entete">
-            <div>
-              <h3 id="mission-locale-titre">Mentor et animateur d’ateliers</h3>
-              <p class="experience__structure">Mission Locale <span>Altkirch</span></p>
-              <p class="experience__statut">Bénévolat terminé</p>
-            </div>
-            <div class="experience__dessin"><IllustrationExperience scene="mentorat" /></div>
-          </div>
-          <p>J’ai accompagné des jeunes vers les métiers du web et animé leurs premiers ateliers de code.</p>
-        </article>
-      </li>
-
-      <li class="chronologie__etape" id="elan" tabindex="-1">
-        <div class="chronologie__date">
-          <p><time datetime="2025-12">Décembre 2025</time></p>
-          <span class="chronologie__precision">Début de la mission</span>
-        </div>
-        <article class="experience" aria-labelledby="elan-titre">
-          <div class="experience__entete">
-            <div>
-              <h3 id="elan-titre">Formateur en développement web</h3>
-              <p class="experience__structure">Elan Formation <span>Mulhouse</span></p>
-              <p class="experience__statut">Mission terminée</p>
-            </div>
-            <div class="experience__dessin"><IllustrationExperience scene="formation" /></div>
-          </div>
-          <p>J’ai repris en urgence une promotion DWWM et CDA et l’ai accompagnée jusqu’à la soutenance.</p>
-          <p class="experience__preuve experience__preuve--texte">
-            <strong>Tous titrés.</strong><span>Une dizaine d’apprenants accompagnés.</span>
-          </p>
-          <details class="experience-detail">
-            <summary>Le contexte chez Elan</summary>
-            <div class="prose">
-              <p>Deux mois après mon titre, Elan perd son formateur en fin de promotion. Des étudiants que j’ai croisés pendant ma formation donnent mon nom.</p>
-              <p>Environ la moitié de mes apprenants prépare le CDA, un niveau au-dessus de mon propre titre.</p>
-            </div>
-          </details>
-        </article>
-      </li>
-
-      <li class="chronologie__etape" id="devmates" tabindex="-1">
-        <div class="chronologie__date">
-          <p><time datetime="2025-11">Novembre 2025</time></p>
-          <span class="chronologie__precision">Début de l’activité</span>
-        </div>
-        <article class="experience" aria-labelledby="devmates-titre">
-          <div class="experience__entete">
-            <div>
-              <h3 id="devmates-titre">Développeur indépendant</h3>
-              <p class="experience__structure">Dev-Mates <span>Ma société</span></p>
-              <p class="experience__statut">Société ouverte</p>
-            </div>
-            <div class="experience__dessin"><IllustrationExperience scene="independant" /></div>
-          </div>
-          <p>Des applications sur mesure, de la conception à la mise en production.</p>
-          <p class="experience__situation">Ma société reste ouverte, sans client actuellement.</p>
-          <details class="experience-detail">
-            <summary>Le travail chez Dev-Mates</summary>
-            <div class="prose"><p>J’y ai développé des sites et des applications web. Le travail comprenait aussi le conseil et la relation client.</p></div>
-          </details>
-        </article>
-      </li>
-
-      <li class="chronologie__etape" id="pvz" tabindex="-1">
-        <div class="chronologie__date">
-          <p><time datetime="2025-10">Octobre 2025</time></p>
-          <span class="chronologie__precision">Début des contributions</span>
-        </div>
-        <article class="experience experience--continue" aria-labelledby="pvz-titre">
-          <div class="experience__entete">
-            <div>
-              <h3 id="pvz-titre">Lead et mainteneur</h3>
-              <p class="experience__structure">PvZ Fusion <span>Communauté</span></p>
-              <p class="experience__statut experience__statut--actif">Bénévolat en cours</p>
-            </div>
-            <div class="experience__dessin"><IllustrationExperience scene="communaute" /></div>
-          </div>
-          <p>J’accueille les nouveaux, je documente et j’organise le travail.</p>
-          <ol class="evolution-role" aria-label="Évolution dans la communauté" role="list">
-            <li>Traducteur</li><li>Lead francophone</li><li>Mainteneur</li>
-          </ol>
-          <p class="experience__preuve">
-            <strong><mark class="surligne">20</mark></strong><span>contributeurs formés</span>
-          </p>
-          <a class="experience__lien" href="/projets/pvz-fusion">Voir le travail avec la communauté</a>
-        </article>
-      </li>
-
-      <li class="chronologie__etape" id="atis" tabindex="-1">
-        <div class="chronologie__date">
-          <p><time datetime="2025-08">Août</time> à <time datetime="2025-09">septembre 2025</time></p>
-          <span class="chronologie__precision">Stage en entreprise</span>
-        </div>
-        <article class="experience" aria-labelledby="atis-titre">
-          <div class="experience__entete">
-            <div>
-              <h3 id="atis-titre">Développeur full stack</h3>
-              <p class="experience__structure">ATIS Solutions <span>Sausheim</span></p>
-              <p class="experience__statut">Stage terminé</p>
-            </div>
-            <div class="experience__dessin"><IllustrationExperience scene="stage" /></div>
-          </div>
-          <p>J’ai développé des modules Dolibarr pour le suivi des temps et des contrats.</p>
-          <p class="experience__preuve">
-            <strong><mark class="surligne">−30&nbsp;%</mark></strong>
-            <span>de temps de traitement administratif</span>
-          </p>
-          <details class="experience-detail">
-            <summary>Le contexte du stage</summary>
-            <div class="prose"><p>Le cahier des charges est rédigé avec l’équipe. Je travaille sur des modules qui simplifient le suivi administratif.</p></div>
-          </details>
-        </article>
-      </li>
-      </ol>
-      <a class="retour-actuel" href="#architecture">Revenir au poste actuel <span aria-hidden="true">↑</span></a>
+  <NavigationPage entrees={sommaire}>
+    <section class="pro-chronologie" aria-label="Chronologie">
+      <Frise id="chronologie" titre="D’août 2025 à aujourd’hui" debut="2025-08" couloirs={chronologie} trimestres />
     </section>
-  </div>
+
+    <section class="experiences" aria-labelledby="experiences-titre">
+      <h2 id="experiences-titre" class="sr">Expériences</h2>
+      <ol class="chronologie" role="list" aria-label="Expériences de la plus récente à la plus ancienne">
+        {EXPERIENCES.map((experience, index) => <FicheExperience experience={experience} actuelle={index === 0} />)}
+      </ol>
+    </section>
+  </NavigationPage>
+
+  <AppelDiscutons slot="fin" emplacement="discutons">Une équipe à faire grandir, un sujet technique à creuser&nbsp;?</AppelDiscutons>
 </Parcours>
 
 <style>
-  .parcours-trame { display: grid; grid-template-columns: 212px minmax(0, 1fr); align-items: start; gap: var(--s7); }
-  .experiences { min-width: 0; }
-  .experiences__tete { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: var(--s2) var(--s5); }
-  .experiences__tete h2 { font-size: 1.625rem; line-height: 1.2; letter-spacing: -.02em; }
-  .experiences__tete > p { color: var(--bleu); font-size: var(--t-etiquette); }
-  .experiences__lecture { max-width: 67ch; margin-block: var(--s2) var(--s5); color: var(--graphite); font-size: var(--t-etiquette); line-height: 1.5; }
-  .chronologie { --colonne-date: 118px; --ecart: 38px; display: grid; list-style: none; padding: 0; margin: 0; }
-  .chronologie__etape { position: relative; display: grid; grid-template-columns: var(--colonne-date) minmax(0, 1fr); gap: var(--ecart); padding-bottom: var(--s3); }
-  .chronologie__etape::before { content: ''; position: absolute; top: 0; bottom: 0; left: calc(var(--colonne-date) + var(--ecart) / 2); border-left: 2px solid var(--filet); }
-  .chronologie__etape::after { content: ''; position: absolute; top: 27px; left: calc(var(--colonne-date) + var(--ecart) / 2 - 5px); width: 12px; height: 12px; border: 2px solid var(--bleu); border-radius: 50%; background: var(--papier); }
-  .chronologie__etape:first-child::before { top: 33px; }
-  .chronologie__etape:first-child::after { background: var(--bleu); }
-  .chronologie__etape:last-child { padding-bottom: 0; }
-  .chronologie__etape:last-child::before { height: 33px; bottom: auto; }
-  .chronologie__etape:focus { outline: none; }
-  .chronologie__etape:focus-visible .experience { outline: 3px solid var(--bleu); outline-offset: 4px; }
-  .chronologie__date { padding-top: var(--s5); }
-  .chronologie__date p { font-size: var(--t-petit); font-weight: 700; line-height: 1.35; }
-  .chronologie__etape--actuelle .chronologie__date p { color: var(--bleu); }
-  .chronologie__precision { display: block; margin-top: var(--s2); font-size: .8125rem; color: var(--graphite); line-height: 1.4; }
-  .experience { min-width: 0; padding: var(--s5); border-bottom: 1px solid var(--filet); }
-  .experience--actuelle { margin-bottom: var(--s3); border: 1px solid var(--filet); border-left: 3px solid var(--bleu); border-radius: var(--rayon); background: var(--blanc); }
-  .experience__entete { display: grid; grid-template-columns: minmax(0, 1fr) 116px; align-items: start; gap: var(--s5); margin-bottom: var(--s3); }
-  .experience h3 { margin: 0; font-size: clamp(1.375rem, 1.2rem + .4vw, 1.625rem); line-height: 1.2; letter-spacing: -.015em; }
-  .experience--actuelle h3 { color: var(--bleu); font-size: clamp(1.75rem, 1.5rem + .6vw, 2.125rem); }
-  .experience__structure { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s1) var(--s3); margin-top: var(--s2); font-size: var(--t-petit); font-weight: 500; }
-  .experience__structure span { color: var(--graphite); font-size: var(--t-etiquette); font-weight: 400; }
-  .experience__statut { display: inline-flex; align-items: center; gap: var(--s2); margin-top: var(--s2); color: var(--graphite); font-size: var(--t-etiquette); }
-  .experience__statut--actif { color: var(--bleu); font-weight: 700; }
-  .experience__statut--actif::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-  .experience__dessin { color: var(--bleu); opacity: .8; }
-  .experience__dessin--actuel { align-self: center; opacity: 1; --hub-illustration-paper: var(--blanc); }
-  .experience > p:not([class]), .experience__mission { max-width: 61ch; font-size: var(--t-petit); line-height: 1.5; }
-  .experience__mission { margin-top: var(--s3); }
-  .experience__preuve { display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--s2) var(--s3); margin-top: var(--s4); font-size: var(--t-petit); }
-  .experience__preuve strong { font-size: 1.625rem; line-height: 1.2; letter-spacing: -.025em; }
-  .experience__preuve span { max-width: 36ch; font-size: .9375rem; }
-  .experience__preuve--texte strong { font-size: 1.375rem; }
-  .experience__situation { margin-top: var(--s2); color: var(--graphite); font-size: var(--t-etiquette); }
-  .experience-detail { margin-top: var(--s3); }
-  .experience-detail summary { width: fit-content; min-height: 44px; padding-block: var(--s2); color: var(--bleu); font-size: .9375rem; font-weight: 600; cursor: pointer; }
-  .experience-detail .prose { max-width: 61ch; margin-top: var(--s2); padding: var(--s4); border-left: 2px solid var(--filet); background: var(--blanc); font-size: .9375rem; }
-  .experience-detail .prose p + p { margin-top: var(--s3); }
-  .experience__lien, .experience__actions a { display: inline-flex; align-items: center; min-height: 44px; font-size: .9375rem; font-weight: 600; }
-  .experience__lien { margin-top: var(--s2); }
-  .experience__actions { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s5); margin-top: var(--s2); }
-  .evolution-role { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s3); margin: var(--s3) 0 0; padding: 0; list-style: none; color: var(--graphite); font-size: var(--t-etiquette); }
-  .evolution-role li { display: inline-flex; gap: var(--s3); align-items: center; }
-  .evolution-role li:not(:last-child)::after { content: '→'; color: var(--bleu); }
-  .retour-actuel { display: inline-flex; align-items: center; gap: var(--s3); min-height: 44px; margin: var(--s5) 0 0 calc(var(--colonne-date, 118px) + 38px); font-size: var(--t-petit); font-weight: 600; }
-  @media (max-width: 1100px) {
-    .parcours-trame { grid-template-columns: 180px minmax(0, 1fr); gap: var(--s6); }
-    .chronologie { --colonne-date: 100px; --ecart: 28px; }
-    .experience { padding: var(--s4); }
-    .experience__entete { grid-template-columns: minmax(0, 1fr) 90px; gap: var(--s4); }
-    .retour-actuel { margin-left: 128px; }
+  .pro-chronologie {
+    margin-bottom: var(--entre-sections);
+    padding: var(--s5) clamp(16px, 2.4vw, 32px) var(--s4);
+    border-radius: var(--r2);
+    background: var(--surface);
+    box-shadow: var(--ombre-1);
   }
-  @media (max-width: 900px) {
-    .parcours-trame { grid-template-columns: minmax(0, 1fr); gap: var(--s5); }
-    .chronologie { --colonne-date: 110px; --ecart: 32px; }
-    .experience__entete { grid-template-columns: minmax(0, 1fr) 116px; }
-    .retour-actuel { margin-left: 142px; }
+
+  .chronologie {
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
-  @media (max-width: 600px) {
-    .experiences__tete { gap: var(--s2); }
-    .experiences__tete h2 { font-size: 1.375rem; }
-    .experiences__tete > p { font-size: .8125rem; }
-    .experiences__lecture { margin-bottom: var(--s4); font-size: .8125rem; }
-    .chronologie__etape { grid-template-columns: minmax(0, 1fr); gap: var(--s3); padding-left: var(--s5); padding-bottom: var(--s5); }
-    .chronologie__etape::before { left: 5px; }
-    .chronologie__etape::after { left: 0; top: 5px; }
-    .chronologie__etape:first-child::before { top: 11px; }
-    .chronologie__etape:last-child::before { height: 11px; }
-    .chronologie__date { padding: 0; display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--s1) var(--s3); }
-    .chronologie__date p { font-size: .9375rem; }
-    .chronologie__precision { margin: 0; }
-    .experience { position: relative; padding: 0 0 var(--s5); }
-    .experience--actuelle { padding: var(--s4); }
-    .experience h3 { max-width: 26ch; font-size: 1.375rem; }
-    .experience--actuelle h3 { font-size: 1.75rem; }
-    .experience__entete { display: block; }
-    .experience__dessin { float: right; width: 72px; margin: var(--s2) 0 var(--s2) var(--s3); }
-    .experience__dessin--actuel { display: none; }
-    .experience__structure { font-size: .9375rem; }
-    .experience__preuve { clear: both; }
-    .experience__preuve strong { font-size: 1.5rem; }
-    .experience__preuve--texte strong { font-size: 1.25rem; }
-    .retour-actuel { margin: 0 0 0 var(--s5); }
-  }
-  @media (forced-colors: active) {
-    .experience--actuelle { border: 1px solid CanvasText; }
-    .chronologie__etape::before, .chronologie__etape::after { border-color: CanvasText; }
-  }
-  @media print {
-    .parcours-trame { display: block; }
-    .experiences__lecture { margin-bottom: var(--s5); }
-    .experience__dessin, .experience__actions, .retour-actuel { display: none; }
-    .chronologie { --colonne-date: 104px; --ecart: 32px; }
-    .chronologie__etape { break-inside: avoid; grid-template-columns: var(--colonne-date) minmax(0, 1fr); gap: var(--ecart); padding: 0 0 var(--s4); }
-    .chronologie__date { display: block; padding-top: var(--s3); }
-    .chronologie__etape::before { left: 120px; }
-    .chronologie__etape::after { left: 115px; top: 15px; }
-    .chronologie__etape:first-child::before { top: 21px; }
-    .chronologie__etape:last-child::before { height: 21px; }
-    .experience { padding: var(--s3); }
-    .experience__entete { display: block; }
-    .experience-detail .prose { display: block; }
-    details::details-content { content-visibility: visible; }
-    .experience-detail summary { list-style: none; }
+
+  @media (max-width: 760px) {
+    .pro-chronologie {
+      margin-inline: calc(-1 * var(--s2));
+      padding-inline: var(--s3);
+    }
   }
 </style>

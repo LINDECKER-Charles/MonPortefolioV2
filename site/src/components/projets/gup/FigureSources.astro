@@ -1,0 +1,316 @@
+---
+/**
+ * GUP-F2 · Les 153 sources par famille et par système. Figure codée depuis le
+ * registre de gup (FAMILLES_SOURCES, config/gup-sources.ts) : un carré par
+ * source ; choisir un système grise les sources que gup n’y lance jamais
+ * (hachures et filet, jamais la couleur seule).
+ *
+ * Le choix du système passe par trois boutons radio et `:has()` : aucun
+ * JavaScript, la figure marche aussi sans script. Windows est choisi par
+ * défaut ; un navigateur sans `:has()` garde la vue Windows. Les comptes par
+ * famille sont du texte ; les carrés sont décoratifs (le nom de chaque source
+ * reste en info-bulle). Sous 560 px, seuls les comptes restent : la donnée
+ * est la même, la figure tient en dix lignes.
+ */
+import { FAMILLES_SOURCES, type SystemeSource } from '../../../config/gup-sources';
+
+interface Props {
+  class?: string;
+}
+
+const { class: classe } = Astro.props;
+
+const SYSTEMES = [
+  { id: 'windows', nom: 'Windows' },
+  { id: 'macos', nom: 'macOS' },
+  { id: 'linux', nom: 'Linux' },
+] as const;
+type Systeme = (typeof SYSTEMES)[number]['id'];
+
+/** Les systèmes où gup ne lance jamais une source (catalogue, « Platform support »). */
+const exclus: Record<SystemeSource, readonly Systeme[]> = {
+  tous: [],
+  windows: ['macos', 'linux'],
+  macos: ['windows', 'linux'],
+  'pas-windows': ['windows'],
+};
+
+const total = FAMILLES_SOURCES.reduce((somme, famille) => somme + famille.sources.length, 0);
+const possibles = (sources: readonly (readonly [string, string, SystemeSource])[], systeme: Systeme) =>
+  sources.filter(([, , s]) => !exclus[s].includes(systeme)).length;
+const bilans = SYSTEMES.map((systeme) => {
+  const ok = FAMILLES_SOURCES.reduce((somme, famille) => somme + possibles(famille.sources, systeme.id), 0);
+  return { ...systeme, ok, gris: total - ok };
+});
+---
+
+<figure class:list={['sources', classe]} data-visuel="GUP-F2" aria-labelledby="gup-figure-sources">
+  <div class="sources__tete">
+    <p id="gup-figure-sources" class="sources__titre">Les {total}&nbsp;sources de gup, par famille</p>
+    <fieldset class="sources__choix">
+      <legend class="sr">Système d’exploitation</legend>
+      {
+        SYSTEMES.map((systeme, index) => (
+          <label>
+            <input type="radio" name="gup-systeme" value={systeme.id} checked={index === 0} />
+            <span>{systeme.nom}</span>
+          </label>
+        ))
+      }
+    </fieldset>
+  </div>
+  <p class="sources__bilan">
+    {
+      bilans.map((bilan) => (
+        <span data-pour={bilan.id}>
+          Sous {bilan.nom}&nbsp;: <b class="chiffres">{bilan.ok}</b> sources possibles, <b class="chiffres">{bilan.gris}</b> grisées et jamais lancées.
+        </span>
+      ))
+    }
+  </p>
+  <ul class="sources__familles">
+    {
+      FAMILLES_SOURCES.map((famille) => (
+        <li>
+          <span class="sources__nom">{famille.nom}</span>
+          <span class="sources__carres" aria-hidden="true">
+            {famille.sources.map(([, nom, systeme]) => (
+              <span class="carre" data-gris={exclus[systeme].join(' ') || undefined} title={nom} />
+            ))}
+          </span>
+          <span class="sources__compte chiffres">
+            {SYSTEMES.map((systeme) => (
+              <span data-pour={systeme.id}>
+                {possibles(famille.sources, systeme.id)}&nbsp;/&nbsp;{famille.sources.length}
+              </span>
+            ))}
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+  <ul class="sources__legende" aria-hidden="true">
+    <li><span class="carre"></span>Lancée sur ce système</li>
+    <li><span class="carre carre--gris"></span>Grisée, jamais lancée</li>
+  </ul>
+  <p class="sources__source">Registre de gup, release 0.5.3, relevé le 13/10/2026. Famille&nbsp;: le dossier de la source dans le code.</p>
+</figure>
+
+<style>
+  .sources {
+    display: grid;
+    gap: var(--s4);
+    margin: 0;
+    padding: clamp(16px, 2.6vw, 32px);
+    border: 1px solid var(--filet);
+    border-radius: var(--r2);
+    background: var(--surface);
+    box-shadow: var(--ombre-1);
+  }
+
+  .sources__tete {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s3) var(--s5);
+  }
+
+  .sources__titre {
+    font-size: var(--t-m);
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .sources__choix {
+    display: inline-flex;
+    margin: 0;
+    padding: 3px;
+    border: 1px solid var(--trait);
+    border-radius: var(--r3);
+  }
+
+  .sources__choix label {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 var(--s4);
+    border-radius: var(--r3);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color var(--d-ui) var(--courbe), color var(--d-ui) var(--courbe);
+  }
+
+  .sources__choix input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .sources__choix label:has(input:checked) {
+    background: var(--bouton);
+    color: var(--bouton-texte);
+  }
+
+  .sources__choix label:has(input:focus-visible) {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  .sources__bilan {
+    font-size: var(--t-s);
+    line-height: 1.5;
+  }
+
+  .sources__bilan b {
+    font-weight: 600;
+  }
+
+  /* Un seul système à la fois : Windows par défaut, même sans :has(). */
+  .sources [data-pour] {
+    display: none;
+  }
+
+  .sources [data-pour='windows'],
+  .sources:has(input[value='macos']:checked) [data-pour='macos'],
+  .sources:has(input[value='linux']:checked) [data-pour='linux'] {
+    display: inline;
+  }
+
+  .sources:has(input[value='macos']:checked) [data-pour='windows'],
+  .sources:has(input[value='linux']:checked) [data-pour='windows'] {
+    display: none;
+  }
+
+  .sources__familles {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 var(--s6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .sources__familles li {
+    display: grid;
+    grid-template-columns: minmax(0, 11rem) minmax(0, 1fr) 3.4rem;
+    align-items: center;
+    gap: var(--s3);
+    min-height: 34px;
+    padding-block: 5px;
+    border-bottom: 1px solid var(--filet);
+  }
+
+  .sources__nom {
+    font-size: var(--t-xs);
+    line-height: 1.3;
+  }
+
+  .sources__carres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+  }
+
+  .carre {
+    display: inline-block;
+    flex: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    background: var(--encre);
+    transition: background-color var(--d-ui) var(--courbe), box-shadow var(--d-ui) var(--courbe);
+  }
+
+  .carre--gris,
+  .carre[data-gris~='windows'] {
+    background: repeating-linear-gradient(135deg, var(--trait) 0 1.5px, transparent 1.5px 4px);
+    box-shadow: inset 0 0 0 1px var(--trait);
+  }
+
+  .sources:has(input[value='macos']:checked) .carre[data-gris],
+  .sources:has(input[value='linux']:checked) .carre[data-gris] {
+    background: var(--encre);
+    box-shadow: none;
+  }
+
+  .sources:has(input[value='macos']:checked) .sources__carres .carre[data-gris~='macos'],
+  .sources:has(input[value='linux']:checked) .sources__carres .carre[data-gris~='linux'] {
+    background: repeating-linear-gradient(135deg, var(--trait) 0 1.5px, transparent 1.5px 4px);
+    box-shadow: inset 0 0 0 1px var(--trait);
+  }
+
+  .sources__compte {
+    font-size: var(--t-xs);
+    color: var(--eteint);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .sources__legende {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2) var(--s5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  .sources__legende li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s2);
+  }
+
+  .sources__source {
+    font-size: var(--t-xs);
+    line-height: 1.5;
+    color: var(--eteint);
+  }
+
+  @media (max-width: 1100px) {
+    .sources__familles {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .sources__choix {
+      width: 100%;
+    }
+
+    .sources__choix label {
+      flex: 1;
+      min-height: 44px;
+      padding: 0 var(--s2);
+    }
+
+    /* Les comptes seuls, sur deux colonnes : les carrés et leur légende
+       disparaissent, le bilan et les « x / y » portent la donnée. */
+    .sources__familles {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0 var(--s4);
+    }
+
+    .sources__familles li {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: var(--s2);
+      min-height: 0;
+      padding-block: 6px;
+    }
+
+    .sources__carres,
+    .sources__legende {
+      display: none;
+    }
+  }
+</style>

@@ -37,14 +37,23 @@ des captures du 8 octobre : leur date est celle conservée dans
   `back/src/BloodborneRun.Api/Features/Changelog/Source/captures/full/2026-10-06-roster-after.webp`,
   étape `2026-10-06-character-roster` : le choix du personnage devient visible en place.
 
+- `bloodborne/ciel-lisible-avant.webp` et `bloodborne/ciel-lisible-apres.webp` : 780 × 1688,
+  **8 septembre 2026**. La Nuit de la chasse avant et après l’étape `2026-09-08-readable-sky`
+  (version 12) : les prochaines étapes passent en braise. Copies de
+  `back/src/BloodborneRun.Api/Features/Changelog/Source/captures/full/2026-09-08-readable-sky-before.webp`
+  et `2026-09-08-readable-sky.webp`, ajoutées le 13 octobre 2026.
+
 Les fichiers WebP ont été vérifiés et inspectés ; ils sont copiés sans retouche. Les chiffres
 de progression illustrent une partie et ne mesurent pas l’adoption du projet.
 
 ## Autres visuels et conversion
 
 La capture de PvZ Fusion existante est conservée : aucun jeu local n’est disponible pour la
-renouveler. `bloodborne/yharnam.webp` provient du visuel déjà utilisé sur la page dédiée ;
-ses crédits figurent dans cette page.
+renouveler. `bloodborne/yharnam.webp`, fond de l’en-tête de la page Bloodborne Legendary Run,
+est une capture du jeu par MoonlightGhost, publiée sur le Bloodborne Wiki (visuels du jeu
+© Sony Interactive Entertainment / FromSoftware). Ce n’est ni une capture de l’application, ni une
+illustration de Charles : son crédit est écrit dans la note de sources de la page (« Crédits »),
+qui fait la « mention contraire » prévue par les mentions légales. Gardée le 13 octobre 2026.
 
 Les PNG originaux des nouvelles captures sont convertis en WebP ; les captures historiques
 sont déjà dans ce format. Astro produit les tailles adaptées et les AVIF.
@@ -65,7 +74,8 @@ convertis en WebP avec Sharp, sans recomposition de l’interface.
 Les quatre allumages mobiles sont dans `public/demos/bloodborne/` : boss, découverte, rune et
 gemme, avec MP4, WebM et poster WebP. Chaque vidéo dure 10,4 secondes, sans audio ; le geste,
 la cérémonie et le retour à l’étoile allumée sont conservés. Dates, objectifs et contrôles dans
-[la provenance des vidéos](../../../public/demos/bloodborne/README.md) et `captures.json`.
+[la provenance des vidéos](bloodborne/allumages/README.md) et `captures.json`, rangés hors de
+`public/` pour ne pas être servis.
 Le script `tools/capturer-bloodborne.cjs` permet de les refaire sans modifier le dépôt source.
 
 ## Logos techniques
@@ -125,7 +135,12 @@ et la note de bascule du README du projet ne reflètent plus l’interface obser
 Aucun compte connecté ni fixture, aucune mutation distante. Les données du catalogue,
 les illustrations et les vidéos de capacités proviennent de Riot Games.
 
-Les fichiers sont dans `site/public/images/league-of-database/`. Les captures de viewport
+Les fichiers sont dans `site/public/images/league-of-database/`. Depuis la refonte du
+13 octobre 2026, la page en importe des copies identiques depuis
+`site/src/assets/projets/league-of-database/` (28 fichiers, octet pour octet) : Astro en
+dérive les formats AVIF et WebP, les largeurs servies et l’original agrandi par la
+visionneuse partagée. Les originaux publics restent en place tant qu’une autre page les cite.
+Les captures de viewport
 sont converties en WebP (qualité 94), sans recomposition de l’interface ni retouche.
 Les variantes mobiles sont servies dans des éléments `picture` ; le clic agrandit l’écran
 réellement affiché. Les viewports restent 1440 × 1000 et 430 × 932, avec un DPR de 2 : la netteté vient des captures natives, sans agrandissement artificiel. La visionneuse de l’application est également montrée dans l’onglet « En grand ».

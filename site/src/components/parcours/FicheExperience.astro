@@ -1,0 +1,350 @@
+---
+/**
+ * Une expérience de la page Professionnel, toutes au même gabarit (cahier,
+ * § 5.9) : le rôle domine ; puis la structure et le lieu ; la nature, la
+ * période complète et le statut ; une ligne de mission ; une preuve ; le
+ * contexte replié ; un lien. Le visuel (PRO-0x) se tient à droite.
+ *
+ *   <FicheExperience experience={EXPERIENCES[0]} actuelle />
+ *
+ * Les dates sont des <time datetime="AAAA-MM"> ; une fin inconnue reste
+ * « à confirmer », jamais extrapolée. Un rôle pris en cours de route
+ * (`bascule`) dit depuis quand il est tenu : « Depuis octobre 2025 (lead
+ * depuis décembre 2025) ». La preuve reste sous le rôle, en taille
+ * intermédiaire : le rôle domine. Sur mobile, le visuel suit le texte.
+ */
+import AConfirmer from '../ui/AConfirmer.astro';
+import LienAction from '../ui/LienAction.astro';
+import PreuveChiffree from '../ui/PreuveChiffree.astro';
+import Statut from '../ui/Statut.astro';
+import Visuel from '../ui/Visuel.astro';
+import { majuscule, moisEnClair, NATURES, type Experience } from '../../config/parcours';
+import { typo } from '../../lib/typo';
+
+interface Props {
+  experience: Experience;
+  /** Le poste actuel : la fiche éclairée. */
+  actuelle?: boolean;
+}
+
+const { experience: e, actuelle = false } = Astro.props;
+const memeAnnee = e.fin && e.fin.slice(0, 4) === e.debut.slice(0, 4);
+const debutTexte = moisEnClair(e.debut);
+---
+
+<li class:list={['experience', { 'experience--actuelle': actuelle }]} id={e.id} tabindex="-1">
+  <article class:list={['fiche', { foyer: actuelle }]} aria-labelledby={`${e.id}-titre`}>
+    <div class="fiche__texte">
+      <h3 id={`${e.id}-titre`}>{typo(e.role)}</h3>
+      <p class="fiche__structure">{e.structure} <span>{e.lieu}</span></p>
+      <p class="fiche__reperes">
+        <span class="fiche__nature">{NATURES[e.nature]}</span>
+        <span class="fiche__periode">
+          {e.fin ? (
+            <>
+              <time datetime={e.debut}>{majuscule(memeAnnee ? debutTexte.replace(/ \d+$/, '') : debutTexte)}</time>
+              <span aria-hidden="true"> – </span><span class="sr"> à </span>
+              <time datetime={e.fin}>{moisEnClair(e.fin)}</time>
+            </>
+          ) : e.finAConfirmer ? (
+            <>
+              <time datetime={e.debut}>{majuscule(debutTexte)}</time>
+              <span aria-hidden="true"> –</span><span class="sr">, </span>
+              <AConfirmer titre="Date de fin à confirmer">fin à confirmer</AConfirmer>
+            </>
+          ) : (
+            <>Depuis <time datetime={e.debut}>{debutTexte}</time></>
+          )}
+          {e.bascule && (
+            <span class="fiche__bascule"> ({e.bascule.role} depuis <time datetime={e.bascule.mois}>{moisEnClair(e.bascule.mois)}</time>)</span>
+          )}
+        </span>
+        <Statut etat={e.statut.etat}>{e.statut.texte}</Statut>
+      </p>
+      <p class="fiche__mission">{typo(e.mission)}</p>
+      {e.situation && <p class="fiche__situation">{typo(e.situation)}</p>}
+      {
+        e.etapes && (
+          <ol class="fiche__etapes" role="list" aria-label="Évolution du rôle">
+            {e.etapes.map((etape) => (
+              <li>
+                <b>{etape.titre}</b> <span>{etape.date}</span>
+              </li>
+            ))}
+          </ol>
+        )
+      }
+      {
+        e.preuve && (
+          <PreuveChiffree as="div" class="fiche__preuve" valeur={e.preuve.valeur} libelle={e.preuve.libelle} source={e.preuve.source} date={e.preuve.date} surligne={e.preuve.surligne} />
+        )
+      }
+      {
+        e.contexte && (
+          <details class="fiche__contexte">
+            <summary>{e.contexte.resume}</summary>
+            <div class="fiche__contexte-texte">
+              {e.contexte.paragraphes.map((paragraphe) => <p>{typo(paragraphe)}</p>)}
+            </div>
+          </details>
+        )
+      }
+      {
+        e.liens && (
+          <div class="actions fiche__liens">
+            {e.liens.map((lien) => <LienAction href={lien.href}>{lien.libelle}</LienAction>)}
+          </div>
+        )
+      }
+    </div>
+    <Visuel id={e.visuel} alt="" class="fiche__visuel" sizes="(max-width: 760px) 100vw, 320px" loading={actuelle ? 'eager' : 'lazy'} />
+  </article>
+</li>
+
+<style>
+  .experience {
+    scroll-margin-top: calc(var(--entete) + var(--s5));
+  }
+
+  .experience:focus {
+    outline: none;
+  }
+
+  .experience:focus-visible .fiche {
+    outline: 2px solid var(--focus);
+    outline-offset: 4px;
+  }
+
+  .experience + .experience {
+    border-top: 1px solid var(--filet);
+  }
+
+  .fiche {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
+    gap: var(--s5) var(--s6);
+    align-items: start;
+    padding-block: var(--s6);
+  }
+
+  .experience--actuelle .fiche {
+    padding: var(--s5);
+    margin-bottom: var(--s5);
+    border-radius: var(--r2);
+    background: var(--surface);
+    box-shadow: var(--ombre-1);
+  }
+
+  .experience--actuelle + .experience {
+    border-top: 0;
+  }
+
+  .fiche__texte {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--s2);
+    min-width: 0;
+  }
+
+  h3 {
+    font-size: var(--t-xl);
+    line-height: 1.05;
+  }
+
+  .experience--actuelle h3 {
+    font-size: var(--t-2xl);
+  }
+
+  .fiche__structure {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 var(--s3);
+    font-size: var(--t-m);
+    font-weight: 600;
+  }
+
+  .fiche__structure span {
+    font-size: var(--t-s);
+    font-weight: 400;
+    color: var(--eteint);
+  }
+
+  .fiche__reperes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s2) var(--s4);
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  .fiche__nature {
+    padding: 1px var(--s2);
+    border: 1px solid var(--trait);
+    border-radius: var(--r1);
+    color: var(--encre);
+    font-weight: 600;
+    letter-spacing: var(--ls-petit);
+  }
+
+  .fiche__periode {
+    font-variant-numeric: tabular-nums lining-nums;
+    color: var(--encre);
+  }
+
+  .fiche__periode :global(.a-confirmer) {
+    vertical-align: baseline;
+  }
+
+  .fiche__mission {
+    max-width: var(--mesure);
+    margin-top: var(--s2);
+    font-size: var(--t-m);
+    line-height: 1.55;
+  }
+
+  .fiche__situation {
+    max-width: var(--mesure);
+    font-size: var(--t-s);
+    color: var(--eteint);
+  }
+
+  .fiche__etapes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2);
+    margin: var(--s2) 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--t-xs);
+  }
+
+  .fiche__etapes li {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--s2);
+  }
+
+  /* Une suite, pas un lien : un chevron décoratif (→ reste aux liens, règle E2). */
+  .fiche__etapes li:not(:last-child)::after {
+    content: '›' / '';
+    color: var(--eteint);
+  }
+
+  .fiche__etapes b {
+    font-weight: 600;
+  }
+
+  .fiche__etapes span {
+    color: var(--eteint);
+  }
+
+  .fiche :global(.fiche__preuve) {
+    margin-top: var(--s3);
+  }
+
+  /* Une preuve forte, mais sous le rôle : jamais plus grande que lui. */
+  .fiche :global(.fiche__preuve .preuve-chiffree__valeur) {
+    font-size: var(--t-l);
+  }
+
+  .fiche__bascule {
+    color: var(--eteint);
+  }
+
+  .fiche__contexte {
+    margin-top: var(--s1);
+  }
+
+  /* Un dépliant, pas un lien : texte à l’encre et chevron qui pivote à
+     l’ouverture, comme les relevés de PvZ Fusion (règle E2 : → et ↗ restent
+     aux liens). */
+  .fiche__contexte summary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s3);
+    min-height: 44px;
+    color: var(--encre);
+    font-size: var(--t-s);
+    font-weight: 600;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .fiche__contexte summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .fiche__contexte summary::after {
+    content: '';
+    width: 7px;
+    height: 7px;
+    margin-top: -4px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    rotate: 45deg;
+    transition: rotate var(--d-ui) var(--courbe), margin var(--d-ui) var(--courbe);
+  }
+
+  .fiche__contexte[open] summary::after {
+    rotate: 225deg;
+    margin-top: 4px;
+  }
+
+  .fiche__contexte summary:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+  }
+
+  .fiche__contexte-texte {
+    display: grid;
+    gap: var(--s3);
+    max-width: var(--mesure);
+    padding: var(--s1) 0 var(--s2) var(--s4);
+    border-left: 2px solid var(--filet);
+    font-size: var(--t-s);
+    line-height: 1.55;
+  }
+
+  .fiche__liens {
+    margin-top: var(--s1);
+  }
+
+  @media (max-width: 760px) {
+    .fiche {
+      grid-template-columns: minmax(0, 1fr);
+      padding-block: var(--s5);
+    }
+
+    /* Le rôle d’abord : le visuel suit le texte, en pleine largeur. */
+    .experience--actuelle .fiche {
+      padding: var(--s4);
+    }
+
+    .experience--actuelle h3 {
+      font-size: var(--t-xl);
+    }
+  }
+
+  @media print {
+    .fiche {
+      grid-template-columns: minmax(0, 1fr);
+      break-inside: avoid;
+    }
+
+    .fiche :global(.fiche__visuel) {
+      display: none;
+    }
+
+    .fiche__contexte summary {
+      list-style: none;
+    }
+
+    .fiche__contexte::details-content {
+      content-visibility: visible;
+    }
+  }
+</style>

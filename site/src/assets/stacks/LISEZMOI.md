@@ -67,8 +67,11 @@ Les fichiers sont inchangés, seul leur nom local est raccourci. Chemins dans le
 
 La variante monochrome de Linux évite les 194 ko du SVG couleur pour une icône de 32 px.
 Les logos monochromes Linux, Symfony, Express, Rust, Tokio, xUnit et MCP sont adaptés au mode
-nuit par CSS. Bash, Leaflet, Photino.NET et OpenTelemetry conservent leurs couleurs
-sur un petit support blanc. Spring Boot utilise la marque Spring.
+nuit par CSS. Bash, Photino.NET et OpenTelemetry, sombres, sont éclaircis la nuit par CSS
+(inversion puis teinte rétablie), sans support blanc. Spring Boot utilise la marque Spring.
+Les fichiers `nginx.svg`, `phpunit.png`, `api-platform.svg` et `leaflet.svg` restent dans le
+dossier mais ne sont plus affichés : ces mots-symboles sont illisibles à 18-28 px, la page
+les remplace par des pictogrammes de repli (ci-dessous).
 
 ## .NET
 
@@ -140,39 +143,49 @@ est reproduite dans `MCP-LICENSE.txt`. Le logo est utilisé pour identifier le p
 
 ## Illustrations au trait
 
-`site/src/components/parcours/IllustrationStack.astro` contient les pictogrammes propres au
-portfolio. Ils représentent la fonction de l’outil et ne prétendent pas être des logos officiels.
-Leur couleur suit le thème jour/nuit.
+`site/src/components/parcours/IllustrationStack.astro` contient les pictogrammes de repli
+propres au portfolio (emplacement CMP-10 de `site/src/config/visuels.ts`), dessinés de la
+même main que les pictos du site : trait de 1,5 sur une grille de 24, à l’encre du thème.
+Ils représentent la fonction de l’outil et ne prétendent pas être des logos officiels.
 
 | Outil | Illustration | Source officielle |
 |---|---|---|
-| SQL | Base et syntaxe de requête | [ISO/IEC 9075](https://www.iso.org/standard/76583.html) |
-| Axum | Requête répartie vers des routes | [tokio-rs/axum](https://github.com/tokio-rs/axum) |
-| SQLx | Requête validée et base de données | [transact-rs/sqlx](https://github.com/transact-rs/sqlx) |
-| Stockage S3 compatible | Objets dans un compartiment | [API S3](https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html) |
-| Dompdf | Document et conversion | [Dompdf](https://dompdf.github.io/) |
-| OpenTUI | Interface dans un terminal | [OpenTUI](https://opentui.com/) |
-| Make | Sources assemblées en un résultat | [GNU Make](https://www.gnu.org/software/make/) |
-| axe-core | Accessibilité et vérification | [dequelabs/axe-core](https://github.com/dequelabs/axe-core) |
-| Claude | Dialogue et suggestion | [Claude](https://claude.com/) |
-| Codex | Terminal et code | [Codex](https://openai.com/codex/) |
+| SQL | Cylindre de base de données | [Langage SQL, documentation PostgreSQL](https://www.postgresql.org/docs/current/sql.html) |
+| Axum | Deux blocs reliés (requête, route) | [tokio-rs/axum](https://github.com/tokio-rs/axum) |
+| SQLx | Base de données et coche de requête validée | [transact-rs/sqlx](https://github.com/transact-rs/sqlx) |
+| Stockage S3 compatible | Seau d’objets | [object_store](https://docs.rs/object_store/latest/object_store/), bibliothèque de l’adaptateur de Life Pixel |
+| Dompdf | Feuille cornée et lignes | [Dompdf](https://dompdf.github.io/) |
+| OpenTUI | Fenêtre de terminal et invite | [OpenTUI](https://opentui.com/) |
+| Make | Trois nœuds en arbre (cibles et dépendances) | [GNU Make](https://www.gnu.org/software/make/) |
+| axe-core | Silhouette d’accessibilité | [dequelabs/axe-core](https://github.com/dequelabs/axe-core) |
+| Claude | Bulle de dialogue | [Claude](https://claude.com/) |
+| Codex | Chevrons et barre oblique de code | [Codex](https://openai.com/codex/) |
 | Kokoro | Haut-parleur et ondes sonores | [hexgrad/Kokoro](https://huggingface.co/hexgrad/Kokoro-82M) |
-| Piper | Texte transformé en voix | [OHF-Voice/piper1-gpl](https://github.com/OHF-Voice/piper1-gpl) |
+| Piper | Barres d’égaliseur (voix synthétisée) | [OHF-Voice/piper1-gpl](https://github.com/OHF-Voice/piper1-gpl) |
+| Nginx | Boîte traversée par une flèche (serveur et proxy) | [nginx.org](https://nginx.org/) |
+| PHPUnit | Presse-papiers et coche (test réussi) | [PHPUnit](https://phpunit.de/) |
+| API Platform | Cube (plateforme d’API) | [API Platform](https://api-platform.com/) |
+| Leaflet | Repère de carte | [Leaflet](https://leafletjs.com/) |
 
 Les visuels Claude, Codex, Kokoro et Piper sont des illustrations créées pour le portfolio,
 pas des logos de ces produits. Ils utilisent `currentColor`, suivent les couleurs du thème
 et restent lisibles à l’impression ainsi qu’en mode de contraste forcé.
 
 Le logo AWS S3 n’est pas utilisé pour représenter la compatibilité avec son protocole.
-La référence S3 documente l’API ; elle n’ajoute pas AWS aux technologies pratiquées.
+Le lien mène à la bibliothèque `object_store` réellement employée par l’adaptateur de stockage
+de Life Pixel ; il n’ajoute pas AWS aux technologies pratiquées.
 Les liens vers les sites des éditeurs, mainteneurs et organismes de normalisation sont
 centralisés dans `site/src/config/competences.ts`, vérifiés le 2026-10-09.
 
 ## Composant
 
-`site/src/components/parcours/LogoStack.astro` s’utilise avec `<LogoStack nom="Angular" />`.
-Il affiche une icône décorative de 32 × 32 px : le parent doit toujours fournir le libellé
-visible. Un nom inconnu fait échouer le build.
+`site/src/components/parcours/LogoStack.astro` s’utilise avec `<LogoStack nom="Angular" />`
+et une taille : `grand` (56 px, en couleur, niveau « Au quotidien »), `moyen` (28 px, par
+défaut) ou `petit` (18 px, étiquettes). Hors du niveau « Au quotidien », les logos sont
+harmonisés en gris et retrouvent leur couleur au survol ou au focus du lien ; les logos
+monochromes s’inversent la nuit et dans les actes sombres. L’icône est décorative : le
+parent fournit toujours le libellé visible (`LienTechno.astro` sur la page Compétences).
+Un nom inconnu fait échouer le build.
 
 Noms pris en charge : Angular, TypeScript, C#, .NET, ASP.NET Core, SignalR, PostgreSQL,
 MySQL, Git, GitHub Actions, Docker, Linux, Python, PHP, Symfony et Node.js.

@@ -1,0 +1,237 @@
+---
+/**
+ * « Ce que je construis » : trois projets montrés par leur écran réel, dans
+ * l’ordre de la vitrine (config/projets.ts) — League Of Data Base, Bloodborne
+ * Legendary Run, gup. Chaque carte : la capture annotée (une cible, une loupe
+ * éclairée, une légende), l’étiquette de preuve (sans le rang de la vitrine,
+ * qui n’a de sens que dans l’index de /projets), le nom canonique, le besoin
+ * en une ligne, un chiffre sourcé et « Voir le projet → ». Toute la carte
+ * mène à la page du projet.
+ *
+ * Le chiffre est celui de la carte de la vitrine (config/vitrine.ts, sources
+ * notées là-bas) : une preuve ne change pas d’une page à l’autre (règle E6).
+ * Il se compose sur une ligne de base, le chiffre puis sa légende, qui seule
+ * peut passer à la ligne. Aucun chiffre d’usage.
+ */
+import type { ImageMetadata } from 'astro';
+import AConfirmer from '../ui/AConfirmer.astro';
+import CaptureAnnotee from '../ui/CaptureAnnotee.astro';
+import league from '../../assets/captures/accueil/league-histoire-version.webp';
+import bloodborne from '../../assets/projets/bloodborne/parcours-desktop.webp';
+import gup from '../../assets/projets/gup-selection.webp';
+import { projetDeLaVitrine, type ProjetVitrine } from '../../config/projets';
+import { CARTES } from '../../config/vitrine';
+import { typo } from '../../lib/typo';
+
+interface Construit {
+  id: ProjetVitrine['id'];
+  capture: {
+    src: ImageMetadata;
+    type: 'navigateur' | 'terminal';
+    adresse?: string;
+    ratio: string;
+    position?: string;
+    alt: string;
+    legende: string;
+    cible: { x: number; y: number };
+    loupe: { x: number; y: number; zoom: number; largeur?: number; ratio?: string; coin: 'bas-droite' | 'bas-gauche' | 'haut-droite' | 'haut-gauche' };
+  };
+  besoin: string;
+  aConfirmer?: string;
+}
+
+const CONSTRUITS: readonly Construit[] = [
+  {
+    id: 'league',
+    capture: {
+      src: league,
+      type: 'navigateur',
+      adresse: 'league-of-data-base.com/fr/3.6.14',
+      ratio: '16 / 10',
+      position: '50% 0',
+      alt: 'League Of Data Base ouvert sur le patch 3.6.14, en français : le choix du patch et de la langue, et la grille des 113 champions de cette version.',
+      legende: 'Le patch 3.6.14, affiché en français.',
+      cible: { x: 87, y: 14 },
+      loupe: { x: 87, y: 15.5, zoom: 4.2, largeur: 52, coin: 'bas-gauche' },
+    },
+    besoin: 'Retrouver les valeurs d’un ancien patch de League of Legends, dans sa langue.',
+  },
+  {
+    id: 'bloodborne',
+    capture: {
+      src: bloodborne,
+      type: 'navigateur',
+      adresse: 'bloodborne-legendary-run.com/fr/sky',
+      ratio: '16 / 10',
+      position: '50% 100%',
+      alt: 'Le ciel de Bloodborne Legendary Run sur ordinateur : les constellations d’objectifs et la progression de la partie.',
+      legende: 'Une constellation d’objectifs et sa progression.',
+      cible: { x: 54.8, y: 34 },
+      loupe: { x: 54.8, y: 36, zoom: 4.6, largeur: 40, ratio: '1', coin: 'bas-gauche' },
+    },
+    besoin: 'Un compagnon de Bloodborne : la progression d’une partie, objectif par objectif.',
+  },
+  {
+    id: 'gup',
+    capture: {
+      src: gup,
+      type: 'terminal',
+      ratio: '7 / 5',
+      position: '50% 50%',
+      alt: 'gup dans un terminal : la liste des paquets à mettre à jour par gestionnaire, dont une source en échec qui ne bloque pas les autres.',
+      legende: 'Une source en échec ne bloque pas les autres.',
+      cible: { x: 31.5, y: 58 },
+      loupe: { x: 49.7, y: 57.9, zoom: 2.9, largeur: 72, ratio: '3 / 1', coin: 'haut-droite' },
+    },
+    besoin: 'Mettre à jour en une commande tout ce qui est installé sur un poste de développeur.',
+  },
+];
+
+const cartes = CONSTRUITS.map((c) => ({ ...c, ...projetDeLaVitrine(c.id), chiffre: CARTES[c.id].chiffre }));
+---
+
+<ul class="construits" aria-label="Trois projets que je construis">
+  {
+    cartes.map(({ capture, besoin, chiffre, aConfirmer, projet }) => (
+      <li class="construit">
+        <CaptureAnnotee
+          class="construit__capture"
+          src={capture.src}
+          type={capture.type}
+          adresse={capture.adresse}
+          ratio={capture.ratio}
+          position={capture.position}
+          alt={capture.alt}
+          legende={capture.legende}
+          cible={capture.cible}
+          loupe={capture.loupe}
+          sizes="(max-width: 860px) calc(100vw - 64px), 380px"
+        />
+        <p class="construit__preuve">{typo(projet.preuve)}</p>
+        <h4 class="construit__nom">
+          <a href={projet.href}>{projet.nom}</a>
+          {aConfirmer && <AConfirmer titre={aConfirmer}>nom à confirmer</AConfirmer>}
+        </h4>
+        <p class="construit__besoin">{typo(besoin)}</p>
+        <p class="construit__chiffre"><b>{chiffre.valeur}</b> <span>{typo(chiffre.libelle)}</span></p>
+        <span class="construit__voir" aria-hidden="true">Voir le projet<span class="fleche">&nbsp;→</span></span>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .construits {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .construit {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .construit :global(.construit__capture) {
+    margin-bottom: var(--s4);
+  }
+
+  .construit__preuve {
+    font-family: var(--police-titre);
+    font-style: italic;
+    font-size: var(--t-m);
+    line-height: 1.2;
+    color: var(--eteint);
+  }
+
+  .construit__nom {
+    margin-top: var(--s2);
+    font-size: var(--t-xl);
+    line-height: 1.05;
+  }
+
+  .construit__nom a {
+    color: var(--encre);
+    text-decoration: none;
+  }
+
+  /* Toute la carte mène au projet. */
+  .construit__nom a::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    z-index: 2;
+    border-radius: var(--r2);
+  }
+
+  .construit__nom a:focus-visible {
+    outline: none;
+  }
+
+  .construit__nom a:focus-visible::after {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  .construit:hover .construit__nom a {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.12em;
+  }
+
+  .construit__besoin {
+    margin-top: var(--s2);
+    font-size: var(--t-s);
+    line-height: 1.5;
+    color: var(--eteint);
+  }
+
+  /* Le chiffre et sa légende sur la même ligne de base ; seule la légende
+     passe à la ligne. */
+  .construit__chiffre {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: baseline;
+    column-gap: var(--s2);
+    margin-top: var(--s3);
+  }
+
+  .construit__chiffre b {
+    font-weight: 600;
+    font-size: var(--t-2xl);
+    line-height: 1;
+    letter-spacing: var(--ls-titre);
+    font-variant-numeric: tabular-nums lining-nums;
+    color: var(--encre);
+  }
+
+  .construit__chiffre span {
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  .construit__voir {
+    margin-top: auto;
+    padding-top: var(--s3);
+    font-size: var(--t-s);
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .construit:hover .construit__voir {
+    text-decoration: underline;
+    text-underline-offset: 0.22em;
+  }
+
+  @media (max-width: 960px) {
+    .construits {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s7);
+    }
+  }
+</style>

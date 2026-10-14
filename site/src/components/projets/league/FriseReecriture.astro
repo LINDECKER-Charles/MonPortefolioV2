@@ -1,0 +1,182 @@
+---
+/**
+ * LOD-F6 · La réécriture en quatre jalons datés, d’août 2025 à la bascule
+ * du 4 octobre 2026 (config/league-of-database.ts, JALONS ; sources dans
+ * docs/matiere-premiere.md). Une liste ordonnée : frise horizontale sur
+ * ordinateur, verticale sur mobile. Le dernier jalon, l’état atteint, porte
+ * seul la marque de la lanterne, et son picto seul la lumière. Chaque jalon a
+ * son picto au trait (LOD-05, LOD-10 à LOD-12, dessinés à la main, insérés par
+ * PictoLeague) ; les logos disent les deux piles.
+ */
+import PictoLeague from './PictoLeague.astro';
+import AConfirmer from '../../ui/AConfirmer.astro';
+import { JALONS } from '../../../config/league-of-database';
+import { typo } from '../../../lib/typo';
+
+const logos = import.meta.glob<string>('/src/assets/stacks/*.svg', { eager: true, query: '?url', import: 'default' });
+const NOMS: Record<string, string> = { symfony: 'Symfony', go: 'Go', vuejs: 'Vue', dotnet: '.NET', angular: 'Angular' };
+const logo = (nom: string) => {
+  const src = logos[`/src/assets/stacks/${nom}.svg`];
+  if (!src) throw new Error(`Logo ${nom} absent de src/assets/stacks/.`);
+  return src;
+};
+const dernier = JALONS.length - 1;
+---
+
+<ol class="frise" aria-label="La réécriture en quatre jalons">
+  {
+    JALONS.map((jalon, index) => (
+      <li class:list={['jalon', { 'jalon--atteint': index === dernier }]}>
+        <span class="jalon__point" aria-hidden="true" />
+        <PictoLeague id={jalon.visuel} class="jalon__picto" />
+        <p class="jalon__date"><time datetime={jalon.date}>{jalon.libelle}</time>{'aConfirmer' in jalon && <AConfirmer titre={jalon.aConfirmer} />}</p>
+        <h3 class="jalon__titre">{typo(jalon.titre)}</h3>
+        <p class="jalon__texte">{typo(jalon.texte)}</p>
+        {jalon.logos.length > 0 && (
+          <ul class="jalon__logos" aria-label="La pile">
+            {jalon.logos.map((nom) => (
+              <li>
+                <img src={logo(nom)} width="20" height="20" alt="" loading="lazy" />
+                {NOMS[nom] ?? nom}
+              </li>
+            ))}
+          </ul>
+        )}
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .frise {
+    --picto-fond: var(--fond);
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--s5);
+    margin: var(--s6) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Le fil de la frise, à hauteur des points. */
+  .frise::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    right: 0;
+    top: 6px;
+    border-top: 1px solid var(--trait);
+  }
+
+  .jalon {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: var(--s1);
+    padding-top: var(--s5);
+  }
+
+  .jalon__point {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 13px;
+    height: 13px;
+    border: 1.5px solid var(--trait);
+    border-radius: 50%;
+    background: var(--fond);
+  }
+
+  .jalon--atteint .jalon__point {
+    border-color: var(--laiton);
+    background: var(--laiton);
+    box-shadow: 0 0 0 4px var(--lanterne-halo);
+  }
+
+  .jalon :global(.jalon__picto) {
+    width: 96px;
+    margin-bottom: var(--s2);
+  }
+
+  .jalon__date {
+    font-size: var(--t-xs);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--eteint);
+  }
+
+  .jalon--atteint .jalon__date {
+    color: var(--laiton);
+  }
+
+  .jalon__titre {
+    font-size: var(--t-l);
+    line-height: 1.15;
+  }
+
+  .jalon__texte {
+    font-size: var(--t-s);
+    line-height: 1.45;
+    color: var(--eteint);
+  }
+
+  .jalon__logos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s1) var(--s3);
+    margin: var(--s2) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .jalon__logos li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s1);
+    font-size: var(--t-xs);
+    color: var(--encre);
+  }
+
+  .jalon__logos img {
+    width: 20px;
+    height: 20px;
+    padding: 2px;
+    border-radius: 2px;
+    background: var(--papier-logo);
+    object-fit: contain;
+  }
+
+  @media (max-width: 860px) {
+    .frise {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s4);
+    }
+
+    .frise::before {
+      left: 6px;
+      right: auto;
+      top: 6px;
+      bottom: 6px;
+      border-top: 0;
+      border-left: 1px solid var(--trait);
+    }
+
+    .jalon {
+      padding: 0 0 0 var(--s6);
+    }
+
+    .jalon :global(.jalon__picto) {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 96px;
+      margin: 0;
+    }
+
+    .jalon__titre,
+    .jalon__texte {
+      padding-right: 108px;
+    }
+  }
+</style>

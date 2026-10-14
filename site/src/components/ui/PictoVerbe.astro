@@ -1,0 +1,62 @@
+---
+/**
+ * Pictogramme d’un des trois verbes du récit (GLO-04) : maîtriser,
+ * réinventer, emmener. Les trois dessins vivent dans un seul fichier,
+ * src/assets/visuels/global/GLO-04.svg (un `<symbol>` par verbe) ; le
+ * composant insère celui demandé dans la page, sans requête, recoloré par les
+ * jetons : trait à la couleur du texte, filets en --trait, lumière en
+ * --laiton (la lanterne, la nuit). Décoratif : le verbe est écrit à côté.
+ *
+ *   <PictoVerbe verbe="emmener" class="preuve__picto" />
+ */
+import brut from '../../assets/visuels/global/GLO-04.svg?raw';
+
+interface Props {
+  verbe: 'maitriser' | 'reinventer' | 'emmener';
+  class?: string;
+}
+
+const { verbe, class: classe } = Astro.props;
+const symbole = new RegExp(`<symbol id="${verbe}" viewBox="([^"]+)">([\\s\\S]*?)</symbol>`).exec(brut);
+if (!symbole) throw new Error(`GLO-04.svg : aucun symbole « ${verbe} »`);
+const [, viewBox, corps] = symbole;
+---
+
+<svg class:list={['picto-verbe', classe]} viewBox={viewBox} aria-hidden="true" focusable="false" set:html={corps.trim()} />
+
+<style>
+  .picto-verbe {
+    color: var(--encre);
+  }
+
+  .picto-verbe :global(.p-trait),
+  .picto-verbe :global(.p-doux),
+  .picto-verbe :global(.p-creux) {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .picto-verbe :global(.p-trait) {
+    stroke: currentColor;
+    stroke-width: 1.6;
+  }
+
+  .picto-verbe :global(.p-doux) {
+    stroke: var(--trait);
+    stroke-width: 1.2;
+  }
+
+  .picto-verbe :global(.p-pointille) {
+    stroke-dasharray: 1.5 3;
+  }
+
+  .picto-verbe :global(.p-plein) {
+    fill: var(--laiton);
+  }
+
+  .picto-verbe :global(.p-creux) {
+    stroke: var(--fond);
+    stroke-width: 1.4;
+  }
+</style>

@@ -1,110 +1,117 @@
 ---
-name: "MonPortefolioV2 — Mode d’emploi"
-description: "Un manuel clair, des figures et des preuves authentiques."
+name: "MonPortefolioV2 — Lanterne"
+description: "Une seule source de lumière : ce qui compte est éclairé, le reste se tait."
 colors:
-  papier: "#f3f5f7"
-  blanc: "#ffffff"
-  encre: "#14161b"
-  graphite: "#59606d"
-  bleu: "#1f4fd1"
-  bleu-survol: "#173ca6"
-  sur-bleu: "#ffffff"
-  colza: "#f5d33f"
-  sur-colza: "#14161b"
-  filet: "#d8dde5"
-  trait: "#59606d"
-  trait-doux: "#aab2bf"
-  pointille: "#b9c0cb"
-  voile: "rgb(245 246 248 / 0.92)"
-  nuit-papier: "#0e1424"
-  nuit-blanc: "#151e33"
-  nuit-encre: "#e6eaf2"
-  nuit-graphite: "#a3adbf"
-  nuit-bleu: "#8fb0ff"
-  nuit-bleu-survol: "#b5cbff"
-  nuit-sur-bleu: "#0e1424"
-  nuit-colza: "#e2c044"
-  nuit-sur-colza: "#14161b"
-  nuit-filet: "#26304a"
-  nuit-trait: "#a3adbf"
-  nuit-trait-doux: "#4a5672"
-  nuit-pointille: "#3a4664"
-  nuit-voile: "rgb(14 20 36 / 0.92)"
-  lod-accent: "#075d68"
-  lod-pale: "#dceef0"
-  lod-ecran: "#081018"
-  lod-sur-ecran: "#ffffff"
-  lod-nuit-accent: "#72d7df"
-  lod-nuit-pale: "#182e3b"
+  fond: "#ece9e3"
+  surface: "#fbfaf7"
+  acte: "#dcd6cb"
+  encre: "#141312"
+  eteint: "#59544c"
+  trait: "#7b7368"
+  filet: "#d2ccc1"
+  accent: "#1f4fd1"
+  accent-survol: "#173fae"
+  accent-texte: "#ffffff"
+  laiton: "#7a4f10"
+  erreur: "#a4271a"
+  surligneur: "#f2cf3a"
+  sur-surligneur: "#141312"
+  focus: "#1f4fd1"
+  emplacement: "#e3ded4"
+  veille: "#15171d"
+  nuit-fond: "#0b0d12"
+  nuit-surface: "#1a1e29"
+  nuit-acte: "#12151c"
+  nuit-encre: "#e4e7ee"
+  nuit-eteint: "#9499a3"
+  nuit-trait: "#687083"
+  nuit-filet: "#262b37"
+  nuit-accent: "#a9bbff"
+  nuit-accent-survol: "#c7d2ff"
+  nuit-accent-texte: "#0b0d12"
+  nuit-erreur: "#ff9d8a"
+  nuit-surligneur: "#e8c75a"
+  nuit-sur-surligneur: "#0b0d12"
+  nuit-focus: "#f0b24a"
+  veille-nuit: "#141a2b"
+  lanterne: "#f0b24a"
+  lanterne-survol: "#f6c670"
+  lanterne-halo: "rgb(240 178 74 / 0.22)"
+  suie: "#0b0d12"
+  lune: "#e4e7ee"
+  bleu-roi: "#1f4fd1"
+  bleu-nuit: "#101b3e"
+  bleu-nuit-surface: "#182752"
+  bleu-nuit-encre: "#eef1f8"
+  bleu-nuit-eteint: "#aeb8d6"
+  aplat-roi-surface: "#2a5ae0"
+  aplat-roi-eteint: "#dce3fa"
+  cadre: "#0e1016"
 typography:
-  display:
-    fontFamily: "Atkinson Hyperlegible Next, system-ui, sans-serif"
-    fontSize: "clamp(2.75rem, 1.15rem + 4.6vw, 5.25rem)"
-    fontWeight: 800
-    lineHeight: 1.1
-    letterSpacing: "-0.01em"
-  signature:
-    fontFamily: "Atkinson Hyperlegible Next, system-ui, sans-serif"
-    fontSize: "clamp(3.5rem, 10vw, 9rem)"
-    fontWeight: 800
-    lineHeight: 1.1
-    letterSpacing: "-.055em"
-  headline:
-    fontFamily: "Atkinson Hyperlegible Next, system-ui, sans-serif"
-    fontSize: "clamp(2.5rem, 1.2rem + 4vw, 4.5rem)"
-    fontWeight: 800
+  affiche:
+    fontFamily: "Instrument Serif, Georgia, serif"
+    fontSize: "clamp(2.875rem, 1.1rem + 5.4vw, 5.75rem)"
+    fontWeight: 400
+    lineHeight: 0.95
+    letterSpacing: "-0.018em"
+  titre-page:
+    fontFamily: "Instrument Serif, Georgia, serif"
+    fontSize: "clamp(2.5rem, 1.6rem + 2.8vw, 4.25rem)"
+    fontWeight: 400
     lineHeight: 1.05
-    letterSpacing: "-0.022em"
-  title:
-    fontFamily: "Atkinson Hyperlegible Next, system-ui, sans-serif"
-    fontSize: "1.5rem"
-    fontWeight: 800
+    letterSpacing: "-0.01em"
+  titre-section:
+    fontFamily: "Instrument Serif, Georgia, serif"
+    fontSize: "clamp(2rem, 1.4rem + 1.6vw, 2.875rem)"
+    fontWeight: 400
+    lineHeight: 1.05
+    letterSpacing: "-0.01em"
+  titre:
+    fontFamily: "Instrument Serif, Georgia, serif"
+    fontSize: "clamp(1.625rem, 1.3rem + 0.9vw, 2.125rem)"
+    fontWeight: 400
     lineHeight: 1.1
     letterSpacing: "-0.01em"
+  citation:
+    fontFamily: "Instrument Serif, Georgia, serif"
+    fontSize: "clamp(1.625rem, 1.3rem + 0.9vw, 2.125rem)"
+    fontStyle: "italic"
+    lineHeight: 1.22
   chapeau:
-    fontFamily: "Atkinson Hyperlegible Next, system-ui, sans-serif"
-    fontSize: "1.3125rem"
+    fontFamily: "Instrument Sans, system-ui, sans-serif"
+    fontSize: "clamp(1.1875rem, 1.05rem + 0.5vw, 1.375rem)"
+    fontWeight: 400
     lineHeight: 1.5
   body:
-    fontFamily: "Atkinson Hyperlegible Next, system-ui, sans-serif"
-    fontSize: "1.125rem"
+    fontFamily: "Instrument Sans, system-ui, sans-serif"
+    fontSize: "clamp(1.0625rem, 1rem + 0.2vw, 1.125rem)"
     fontWeight: 400
     lineHeight: 1.6
   small:
-    fontFamily: "Atkinson Hyperlegible Next, system-ui, sans-serif"
+    fontFamily: "Instrument Sans, system-ui, sans-serif"
     fontSize: "1rem"
-  caption:
-    fontFamily: "Atkinson Hyperlegible Next, system-ui, sans-serif"
-    fontSize: "0.9375rem"
-    lineHeight: 1.45
-  metadata:
-    fontFamily: "Atkinson Hyperlegible Next, system-ui, sans-serif"
-    fontSize: "1rem"
-    lineHeight: 1.4
-  note:
-    fontFamily: "Newsreader, Georgia, serif"
-    fontSize: "1.0625rem"
-    fontWeight: 400
-    lineHeight: 1.45
+    lineHeight: 1.5
+  legende:
+    fontFamily: "Instrument Sans, system-ui, sans-serif"
+    fontSize: "0.875rem"
+    lineHeight: 1.5
+    letterSpacing: "0.01em"
+  preuve:
+    fontFamily: "Instrument Sans, system-ui, sans-serif"
+    fontSize: "clamp(2rem, 1.4rem + 1.6vw, 2.875rem)"
+    fontWeight: 600
+    lineHeight: 1
+    fontFeature: "tnum, lnum"
   button:
-    fontFamily: "Atkinson Hyperlegible Next, system-ui, sans-serif"
+    fontFamily: "Instrument Sans, system-ui, sans-serif"
     fontSize: "1rem"
-    fontWeight: 700
+    fontWeight: 600
     lineHeight: 1.2
-  lod-display:
-    fontFamily: "Atkinson Hyperlegible Next, system-ui, sans-serif"
-    fontSize: "clamp(2.8rem, 4.6vw, 4.5rem)"
-    fontWeight: 800
-    lineHeight: 1.02
-    letterSpacing: "-.035em"
-  lod-headline:
-    fontFamily: "Atkinson Hyperlegible Next, system-ui, sans-serif"
-    fontSize: "clamp(2.2rem, 3.9vw, 3.5rem)"
-    fontWeight: 800
-    lineHeight: 1.08
-    letterSpacing: "-.03em"
+    letterSpacing: "0.01em"
 rounded:
-  rayon: "4px"
+  r1: "4px"
+  r2: "6px"
+  r3: "999px"
 spacing:
   s1: "4px"
   s2: "8px"
@@ -115,161 +122,255 @@ spacing:
   s7: "48px"
   s8: "64px"
   s9: "96px"
-  s10: "128px"
-  gouttiere: "clamp(24px, 4vw, 56px)"
+  gouttiere: "clamp(16px, 3.6vw, 48px)"
+  section: "clamp(64px, 7vw, 112px)"
+  largeur: "1344px"
+  mesure: "35rem"
 components:
   button-primary:
-    backgroundColor: "{colors.bleu}"
-    textColor: "{colors.sur-bleu}"
-    rounded: "{rounded.rayon}"
-    padding: "11px 22px"
+    backgroundColor: "{colors.accent}"
+    textColor: "{colors.accent-texte}"
+    rounded: "{rounded.r3}"
+    padding: "0 24px"
+    height: "48px"
     typography: "{typography.button}"
   button-primary-hover:
-    backgroundColor: "{colors.bleu-survol}"
-    textColor: "{colors.sur-bleu}"
+    backgroundColor: "{colors.accent-survol}"
+    textColor: "{colors.accent-texte}"
+  button-primary-nuit:
+    backgroundColor: "{colors.lanterne}"
+    textColor: "{colors.suie}"
   button-outline:
     backgroundColor: "transparent"
-    textColor: "{colors.bleu}"
-    rounded: "{rounded.rayon}"
-    padding: "11px 22px"
+    textColor: "{colors.accent}"
+    rounded: "{rounded.r3}"
+    padding: "0 24px"
+    height: "48px"
     typography: "{typography.button}"
-  button-small:
-    padding: "8px 16px"
-  button-icon:
-    backgroundColor: "transparent"
-    textColor: "{colors.encre}"
-    rounded: "{rounded.rayon}"
-    width: "44px"
-    height: "44px"
-    padding: "0"
-  nav-link:
-    textColor: "{colors.graphite}"
-  nav-link-current:
-    textColor: "{colors.encre}"
-  metadata:
-    textColor: "{colors.graphite}"
-    typography: "{typography.metadata}"
-  figure-panel:
-    backgroundColor: "{colors.blanc}"
-    rounded: "{rounded.rayon}"
-    padding: "clamp(10px, 2.4vw, 28px)"
-  lod-choice:
-    rounded: "{rounded.rayon}"
-    padding: "12px 22px"
-  lod-choice-selected:
-    backgroundColor: "{colors.bleu}"
-    textColor: "{colors.sur-bleu}"
+  lien-action:
+    textColor: "{colors.accent}"
+    height: "48px"
+    typography: "{typography.body}"
+  carte:
+    backgroundColor: "{colors.surface}"
+    rounded: "{rounded.r2}"
+  etiquette:
+    rounded: "{rounded.r1}"
+    typography: "{typography.legende}"
+  surligneur:
+    backgroundColor: "{colors.surligneur}"
+    textColor: "{colors.sur-surligneur}"
+    rounded: "{rounded.r1}"
+  aplat-roi:
+    backgroundColor: "{colors.bleu-roi}"
+    textColor: "#ffffff"
+  acte-bleu:
+    backgroundColor: "{colors.bleu-nuit}"
+    textColor: "{colors.bleu-nuit-encre}"
+  acte-veille:
+    backgroundColor: "{colors.veille}"
+    textColor: "{colors.lune}"
 ---
 
 # Design System: MonPortefolioV2
 
 ## Overview
 
-**Creative North Star: "Mode d’emploi"**
+**Creative North Star: « Lanterne »**
 
-Le « Mode d’emploi » validé donne au portfolio la clarté d’un manuel : papier froid, encre nette, figures légendées et annotations au stylo bleu. Atkinson porte la lecture ; Newsreader apporte la voix personnelle. Le logo livre-lanterne reste l’identité de la marque.
+Une seule source de lumière : sur chaque écran, une seule chose est éclairée (la phrase, le
+chiffre, la capture) et le reste se tait. Le jour est une aube sur pierre claire où la nuit entre
+par des « actes de veille » sombres, là où les captures attendent ; la nuit est un clair de lune
+bleuté où la lanterne pose un halo ambré sur la zone active. La lanterne du logo devient un
+principe de hiérarchie et un geste : on l’allume pour faire tomber la nuit.
 
-Les pages de projets laissent les réalisations occuper l’espace. Les captures authentiques et les figures expliquent les usages ; le texte précise ce que le visuel ne suffit pas à comprendre. Le thème nuit adapte la même hiérarchie sans transformer tout le portfolio en décor de jeu.
+Direction retenue par Charles le 13 octobre 2026, avec trois greffes de la direction « Banc
+d’essai » : la fiche technique des projets en tableau à filets ; l’index des étiquettes de preuve
+et « Voir le projet → » sur chaque carte de la vitrine ; l’acte bleu nuit de « La suite », avec un
+aplat bleu roi derrière « Discutons ». Rayons de 4 à 6 px, un seul halo de jour par écran.
 
 **Key Characteristics:**
 
-- Papier et encre, filets fins et espaces généreux.
-- Bleu des actions et annotations ; jaune réservé aux preuves.
-- Titres nets, notes en italique et médias lisibles.
-- Jour et nuit, clavier, mouvement réduit et impression.
+- Pierre claire le jour, suie bleutée la nuit ; des actes qui changent de lumière à chaque partie.
+- Instrument Serif pour la voix et les titres, Instrument Sans pour le texte et les preuves.
+- Bleu roi pour ce qui se clique, colza pour un seul chiffre sourcé, lanterne pour la zone éclairée.
+- Jour et nuit, clavier, mouvement réduit, impression et lecture sans JavaScript.
 
-Source visuelle actuelle : `site/src/styles/global.css`. Direction confirmée : `docs/brief.md` et `design/propositions/d-mode-d-emploi.html`. Le code fait autorité pour les valeurs livrées : le papier, le conteneur, la gouttière et les titres ont évolué depuis la maquette. Ce document décrit le socle public et l’extension League Of Database ; il n’impose pas un gabarit commun aux études de cas.
+**Sources.** Maquette : `design/refonte/c-lanterne/` (README = système, contrastes calculés,
+hauteurs mesurées) et les greffes de `design/refonte/b-banc-essai/`. Valeurs livrées :
+`site/src/styles/jetons.css` (le seul fichier de valeurs) et `site/src/styles/global.css`. Le code
+fait autorité : depuis la maquette, les rayons sont passés de 3 et 12 px à 4 et 6 px, l’acte de
+veille de nuit est devenu un bleu nuit franc et deux actes ont été ajoutés (bleu nuit, aplat bleu
+roi). Les directions D « Mode d’emploi » (`design/propositions/`) et A « Édition reliée » sont
+écartées.
 
 ## Colors
 
-La palette associe le papier froid et l’encre au bleu roi de l’auteur, avec un jaune colza de surligneur. Les valeurs normatives sont dans le frontmatter ; les noms préfixés `nuit-` sont les remplacements du même rôle.
+Les valeurs normatives sont dans le frontmatter ; les noms préfixés `nuit-` sont les
+remplacements du même rôle la nuit. Les mêmes jetons de nuit servent aux actes sombres du jour
+(`.acte-veille`, `.acte-bleu`) : tout ce qu’ils contiennent suit sans rien ajouter.
 
 ### Primary
 
-- **Bleu roi** (`bleu`, `bleu-survol`, `sur-bleu`) : commandes, liens, focus, dessins et annotations. En nuit, le bleu devient plus clair et son texte inverse devient sombre.
+- **Bleu roi** (`accent`, `accent-survol`, `accent-texte`) : liens, commandes, focus. Il vient de
+  la chemise des quatre photos et reste l’identité. La nuit, la lumière se partage : la lune
+  (`nuit-accent`) pour les liens, la lanterne pour l’action principale, le focus et la zone
+  éclairée.
+- **Lanterne** (`lanterne`, `lanterne-survol`, `lanterne-halo`) : la lumière chaude. Bouton
+  principal et focus la nuit, halo de la zone active, flamme de la bascule.
 
 ### Secondary
 
-- **Jaune colza** (`colza`, `sur-colza`) : preuve chiffrée et sélection de texte. Le trait SVG du surligneur s’adapte en hauteur la nuit pour conserver la lisibilité.
-- **Pétrole League Of Database** (`lod-accent`, `lod-pale`, `lod-nuit-accent`, `lod-nuit-pale`) : seconde ligne du titre, annotations de langue, dessins techniques et fond de l’atelier de captures. Override local, pas nouvelle palette globale.
+- **Colza** (`surligneur`, `sur-surligneur`) : un seul chiffre sourcé par preuve, et la sélection
+  de texte.
+- **Laiton** (`laiton`) : marques secondaires des figures le jour (lanterne la nuit).
+- **Bleu nuit** (`bleu-nuit` et ses dérivés) : l’acte « La suite » de l’accueil.
+- **Aplat bleu roi** (`bleu-roi`, `aplat-roi-*`) : derrière l’appel « Discutons » ; bouton blanc à
+  texte bleu roi le jour, lanterne la nuit, focus colza.
+- **Erreur** (`erreur`) : erreurs de saisie, toujours avec un mot.
 
 ### Neutral
 
-- **Papier froid / planche blanche** (`papier`, `blanc`) : fond de page et surfaces des figures.
-- **Encre / graphite** (`encre`, `graphite`) : lecture principale et informations secondaires.
-- **Filet / traits** (`filet`, `trait`, `trait-doux`, `pointille`) : séparations, cadres de formulaire et construction des figures.
-- **Voile** (`voile`) : en-tête translucide, avec flou local.
-- **Écran sombre** (`lod-ecran`, `lod-sur-ecran`) : visionneuse plein écran de League Of Database ; indépendant du thème.
+- **Pierre, surface, acte** (`fond`, `surface`, `acte`) : trois paliers tonals le jour (1,16:1 et
+  1,19:1).
+- **Encre et éteint** (`encre`, `eteint`) : lecture principale et texte secondaire.
+- **Trait et filet** (`trait`, `filet`) : le trait porte un état (≥ 3:1) ; le filet ne fait que
+  séparer.
+- **Veille** (`veille`, `veille-nuit`) : l’acte sombre, la nuit dans le jour.
+- **Cadres de capture** (`cadre` et ses dérivés dans `jetons.css`) : les appareils autour des
+  captures, indépendants du thème.
 
-**The Blue Ink Rule.** Le bleu porte les liens, commandes, tracés et notes de l’auteur. Le pétrole reste propre à League Of Database.
+**The Single Light Rule.** Une seule zone éclairée par écran (`.foyer`, prop `foyer`) : un seul
+halo de jour, une seule lueur de lanterne la nuit.
 
-**The Evidence Rule.** Le surligneur jaune souligne un seul chiffre sourcé par preuve ; la valeur reste écrite et lisible.
+**The Click Rule.** Le bleu roi (la lune, la nuit) ne porte que ce qui se clique. Numéros,
+sur-titres et dates restent en encre ou en éteint.
+
+**The Evidence Rule.** Le colza souligne un seul chiffre sourcé par preuve ; la valeur reste
+écrite et lisible, sa source et sa date à côté.
+
+**Contrastes.** Calculés en WCAG 2.x dans `design/refonte/c-lanterne/README.md` et vérifiés par
+`site/tests/unit/contrastes.test.ts` : texte ≥ 4,5:1 sur chaque surface et chaque acte, trait
+porteur ≥ 3:1. La nuit, les actes restent proches de la suie et sont cernés du trait porteur.
 
 ## Typography
 
-**Display / Body Font:** Atkinson Hyperlegible Next, puis system-ui et sans-serif.
-**Note Font:** Newsreader, puis Georgia et serif ; toujours en italique dans les annotations.
+**Titres et voix :** Instrument Serif, romain et italique, une seule graisse (jamais de faux gras).
+**Texte, interface et données :** Instrument Sans, variable de 400 à 700.
 
-Les deux polices sont locales, configurées dans `site/astro.config.mjs` et chargées par `site/src/layouts/Base.astro`. La sans-serif privilégie des formes différenciées et des titres épais ; la sérif intervient comme une note écrite dans la marge.
+Trois fichiers auto-hébergés (sous-ensemble latin, flèches `→ ↗ ↓` et `≈` compris) dans
+`site/src/assets/fonts/`, déclarés dans `site/astro.config.mjs` (`fonts`) et chargés par
+`site/src/layouts/Base.astro`. Atkinson Hyperlegible est écartée : son zéro est barré, sans
+variante.
 
-- **Display / signature** : le jeton display est le socle ; la grande signature de la couverture possède son rôle distinct, sans être un titre générique de toutes les pages.
-- **Headline / title** : titres de chapitres amples, titres internes plus compacts, interlignage serré. Sources : `site/src/components/accueil/Chapitre.astro` et `Couverture.astro`.
-- **Body / chapeau / small** : lecture courante, introduction et informations secondaires. Les largeurs de texte sont locales : par exemple 46ch pour la couverture et 43ch pour plusieurs textes League Of Database.
-- **Caption / metadata / note** : légende nette, métadonnée discrète et annotation personnelle. La métadonnée de `site/src/components/accueil/Fiche.astro` est aujourd’hui du texte simple, sans capsule.
-- **League Of Database** : rôles `lod-display` et `lod-headline` plus resserrés, chiffres tabulaires sur toute l’étude de cas. Les chiffres de comparaison restent de grande taille, avec leur nom de valeur.
+- **Affiche** : l’accroche seule, composée phrase par phrase.
+- **Titre de page, de section, titre** : Instrument Serif, interlignage serré, `text-wrap:
+  balance`. Un seul titre dominant par écran ; le nom est un sur-titre dans le `h1`.
+- **Citation** : l’italique d’Instrument Serif, pour les phrases de Charles recopiées mot pour mot.
+- **Chapeau, body, small, légende** : Instrument Sans, texte courant de 17 à 18 px, mesure de
+  lecture de 35 rem (≈ 62 caractères).
+- **Preuve** : les chiffres-preuves (20, 35, 403, 1 289, 153…) en Instrument Sans 600, chiffres
+  tabulaires, jamais sous la taille des titres de section. Aucun zéro barré.
 
-**The Legibility Rule.** Les figures et captures gardent leurs légendes, leurs proportions et une variante adaptée à la largeur disponible.
+Échelle de huit tailles (`--t-xs` à `--t-4xl`), quatre crénages. Aucune taille de texte en dur
+hors de `jetons.css` (`site/tests/unit/styles.test.ts`).
+
+**The Legibility Rule.** Les figures et captures gardent leurs légendes, leurs proportions et une
+variante lisible à 390 px ; un chiffre n’existe jamais seulement dans une image.
 
 ## Layout
 
-Le conteneur partagé atteint 1360px avec la gouttière fluide du frontmatter. Le rythme utilise `s1` à `s10` ; les chapitres du récit emploient `s9` en hauteur. L’en-tête collant mesure au moins 72px et les ancres compensent cette hauteur. Les compositions changent par composant, sans grille universelle imposée.
+Conteneur de 1 344 px, gouttière fluide de 16 à 48 px, espaces de 4 à 96 px. Les grandes sections
+sont des **actes** bord à bord (`<Acte ton="pierre|teinte|veille|bleu">`) : chaque changement de
+partie d’une page longue change de lumière. Sur l’accueil, chaque chapitre a son acte ; « La suite »
+est en bleu nuit. Les pages de consultation (hub, Compétences, Formation, Professionnel) restent
+claires et denses.
 
-La navigation principale passe au menu mobile à 1099px ; à 760px, l’en-tête garde le symbole du logo et compacte ses commandes. Les figures dessinées remplacent leur version bureau par une version compacte à 640px. Sources : `site/src/components/layout/Entete.astro`, `MenuMobile.astro` et `site/src/styles/global.css`.
+Navigation de page unique (`NavigationPage`) : colonne collante « Dans cette page » au-delà de
+1 100 px, section lue marquée d’un point de lanterne ; en dessous, bouton « Sommaire » dans
+l’en-tête et barre de progression de 2 px. Un seul élément collant sur mobile. Points de rupture
+principaux : 1 100 px (colonne de navigation) et 860 px (mobile, en-tête de 60 px).
 
-League Of Database conserve des écrans dominants : couverture 3.8fr / 1fr, titres et texte 1.3fr / 1fr, catalogue 2.5fr / 1fr. Les ajustements intermédiaires arrivent à 1050px, puis la composition devient une colonne à 799px. Les sections passent de 88px à 56px de hauteur interne. La capture mobile de couverture et les traductions sont limitées à 382px ; les captures restent entières. L’atelier limite sa hauteur selon le viewport avec une réserve de 260px, portée à 294px sous 399px. Les petits écrans très courts ont aussi leur adaptation. Source : `site/src/styles/league-of-database.css`.
+Pages de projet : un gabarit commun (`site/src/components/projets/gabarit/`). L’en-tête tient au
+premier écran à 1 440 × 900 (nom canonique, étiquette de preuve, titre, chapeau, actions, visuel,
+repères chiffrés, fiche technique en tableau à filets) ; puis un corps libre, « Comment je l’ai
+construit », la sortie commune et la note de sources.
 
 ## Elevation & Depth
 
-Le socle repose sur le contraste des surfaces et les filets, plutôt que sur une ombre de carte généralisée. L’en-tête utilise un voile et un flou de 8px. League Of Database ajoute une ombre diffuse sous la capture de couverture ; la visionneuse occupe tout l’écran sur un fond opaque. L’ombre exacte et les transitions sont conservées dans `.impeccable/design.json`, pas dans les tokens du frontmatter.
+Trois niveaux : aucun, carte (`--ombre-1`), panneau ou carte survolée (`--ombre-2`). La nuit, les
+ombres deviennent un filet et un halo de lanterne. La profondeur vient d’abord des actes et des
+filets porteurs, puis de la zone éclairée.
 
 ## Shapes
 
-Le petit rayon partagé est celui des boutons, champs et planches. Les traits de séparation mesurent 1px ; le focus est un contour bleu de 2px, décalé de 3px. Les formes plus rondes répondent à un usage précis : rail Jour / Nuit, pastilles de règles et points de schéma. Le logo livre-lanterne vient des assets existants dans `site/src/assets/marque/`, via `site/src/components/ui/Logo.astro`.
+Trois rayons : `r1` 4 px (étiquettes, champs, surligneur, focus), `r2` 6 px (cartes, cadres,
+captures, emplacements de visuels), `r3` pilule (boutons, bascule). Seuls les cadres de téléphone
+dessinent leur propre courbure. Focus : contour de 2 px décalé de 3 px, bleu roi le jour,
+lanterne la nuit.
+
+Illustrations : une seule famille, la **gravure en réserve** (trait clair sur fond sombre la nuit,
+inversé le jour), deux ou trois aplats séparables recolorés par les jetons, la lanterne comme
+seule source de lumière de la scène. Aucun ornement de jeu, aucun cadre doré. Chaque emplacement
+est un `<Visuel id>` du registre `site/src/config/visuels.ts`.
 
 ## Components
 
-### Buttons
+Chaque composant est documenté en tête de son fichier.
 
-Commandes nettes, pleines ou en contour. Le bouton standard a une hauteur minimale de 48px ; la variante petite et le bouton carré à icône ont une cible de 44px. Survol bleu plus profond pour le plein, mélange bleu à 9% pour le contour ; transitions de couleur à 150ms. Le focus suit le socle. Source : `site/src/styles/global.css`.
+- **Coque** (`components/layout/`) : en-tête collant (emblème, navigation, Contact, Menu et
+  Sommaire en `<details>`, bascule lanterne), pied de page (pages, e-mail copiable, profils,
+  colophon).
+- **Bouton** (`ui/Bouton.astro`) : pilule de 48 px, une seule action principale par écran ; bleu
+  roi le jour, lanterne la nuit et dans les actes sombres, blanc sur l’aplat bleu roi. Variante
+  contour pour les actions publiques.
+- **Lien d’action** (`ui/LienAction.astro`) : souligné, cible de 48 px. La flèche suit
+  `lib/liens.ts` : `→` page interne, `↓` ancre, `↗` sortie du site ou e-mail.
+- **Preuves** (`ui/PreuveChiffree.astro`, `ui/PreuvesChiffrees.astro`, `ui/Surligneur.astro`) :
+  un chiffre, ce qu’il compte, sa source et sa date.
+- **Captures** (`ui/CadreCapture.astro`, `ui/CaptureAnnotee.astro`, `ui/Visionneuse.astro`) : un
+  cadre par type (navigateur, téléphone, terminal) ; cible numérotée, loupe éclairée par la
+  lanterne et légende au même numéro ; visionneuse plein écran partagée.
+- **Statut** (`ui/Statut.astro`) : une forme et un mot, jamais la couleur seule.
+- **À confirmer** (`ui/AConfirmer.astro`) : la marque d’un fait que Charles n’a pas validé.
+- **Visuel** (`ui/Visuel.astro`) : l’image du registre, le dessin SVG inséré en ligne, ou, tant
+  que le fichier manque, un cadre neutre en ligne et un cadre hachuré qui porte sa commande en
+  développement.
+- **Vitrine** (`pages/IndexPreuves.astro`, `pages/CarteProjet.astro`, `pages/Vitrine.astro`) :
+  l’index des étiquettes de preuve, puis les cartes (vedette, ligne), chacune avec « Voir le
+  projet → ».
+- **Appel** (`pages/AppelDiscutons.astro`) : « Discutons → » vers `/contact`, après un filet ou sur
+  l’aplat bleu roi.
+- **Gabarit de projet** (`projets/gabarit/`) : `EnTeteProjet`, `FicheProjet`, `CorpsProjet`,
+  `SectionProjet`, `DecisionsProjet`, `SortieProjet`, `SourcesProjet`.
 
-### Cards / Containers
+### Motion
 
-Une planche de figure utilise une surface blanche, un filet et le petit rayon. Les fiches du récit se séparent par des règles et disposent d’une grande zone de média ; elles ne sont pas toutes des cartes encadrées. Sources : `site/src/styles/global.css`, `site/src/components/accueil/Fiche.astro` et `site/src/components/ui/Planche.astro`.
-
-### Navigation
-
-L’en-tête garde une navigation sobre : liens graphite, encre au survol, page courante en gras avec un trait bleu inférieur. Jour / Nuit reste une commande explicite à deux pictogrammes. Le menu mobile conserve la navigation clavier ; l’impression masque les commandes. Source : `site/src/components/layout/Entete.astro`.
-
-### League Of Database — écrans et choix natifs
-
-L’étude de cas montre l’historique par deux captures vérifiées, puis le catalogue, les fiches et les traductions. Les comparaisons, sous-fiches et langues utilisent des groupes de radios natifs et leurs labels, avec sélection bleue et focus reporté sur le label ; ils fonctionnent sans JavaScript. Cette composition reste décrite dans `.impeccable/surfaces/site-src-pages-projets-league-of-database-astro.md`.
-
-Chaque capture garde sa proportion et s’ouvre en grand. La visionneuse utilise `object-fit: contain`, se ferme au clic ou avec Échap et conserve des états d’attente ou d’erreur. À l’impression, toutes les variantes sont visibles. Sources : `site/src/components/projets/CaptureLeague.astro`, `site/src/scripts/league-captures.ts` et `site/src/styles/league-of-database.css`.
-
-Le changement de version apparaît en 220ms ; les labels évoluent en 180ms. Les figures du récit se jouent à leur arrivée puis au clic ou au clavier ; les boucles sont suspendues hors écran ou dans un onglet masqué. Le changement de thème dure 380ms uniquement lorsqu’il est demandé. Avec mouvement réduit, les illustrations restent complètes et les transitions de la surface sont supprimées.
+Une courbe, `cubic-bezier(.2, .7, .2, 1)`, deux durées : 200 ms pour l’interface, 400 ms pour les
+scènes. **L’allumage** est la signature : la bascule lanterne s’allume en 400 ms, l’obscurité
+tombe depuis les bords et se referme sur elle (View Transitions et masque radial, deux scènes) ;
+le retour au jour fait partir la lumière vers les bords. La figure du plafond se trace à son
+arrivée, les règles apparaissent de 1 à 3, le système fait circuler des messages en boucle tant
+qu’il est visible ; les autres scènes se jouent une fois à leur arrivée, puis se rejouent au clic
+ou au clavier. Mouvement réduit : état final complet, sans transition ni allumage ; boucle
+suspendue hors écran et dans un onglet masqué.
 
 ## Do's and Don'ts
 
 ### Do:
 
-- Do reprendre les variables du socle et leurs variantes nuit.
-- Do utiliser le logo existant et des captures authentiques, avec provenance.
-- Do garder les choix, le focus et les légendes visibles au clavier et sur petit écran.
-- Do réserver les overrides d’une étude de cas à sa propre surface.
+- Do écrire toute valeur dans `jetons.css`, jour et nuit, et vérifier ses contrastes.
+- Do garder une seule zone éclairée et une seule action principale par écran.
+- Do montrer des captures réelles, entières ou annotées, avec leur provenance.
+- Do poser chaque illustration par `<Visuel id>`, avec sa consigne complète au registre.
+- Do garder le contenu complet sans JavaScript, au clavier, à 390 px et à l’impression.
 
 ### Don't:
 
-- Don’t réintroduire les directions visuelles écartées dans le portfolio.
-- Don’t inventer une preuve chiffrée ou présenter des captures comme une application interactive.
-- Don’t faire du pétrole ou de la composition League Of Database une règle de toutes les pages.
-- Don’t recadrer une capture au point de masquer l’information qu’elle démontre.
+- Don’t réintroduire D « Mode d’emploi », A « Édition reliée » ni le reste de B ; « mode
+  d’emploi » ne reste qu’en clin d’œil (pied de page, 404).
+- Don’t ajouter d’ornement, de cadre doré ni de lexique de jeu : la nuit ne doit jamais rappeler
+  Nocturne.
+- Don’t mettre le bleu roi sur ce qui ne se clique pas, ni surligner deux chiffres d’une preuve.
+- Don’t présenter une image générée comme une capture ou une donnée.
+- Don’t recadrer une capture au point de masquer ce qu’elle prouve.

@@ -82,17 +82,18 @@ export default defineConfig({
   // Polices auto-hébergées, sous-ensembles latins préparés pour le site (voir
   // src/assets/fonts/LISEZMOI.md). Astro calcule les polices de repli ajustées
   // (taille, approche) : le texte ne saute pas quand la vraie police arrive.
+  // Le backoffice lit aussi --police-texte.
   fonts: [
     {
       provider: fontProviders.local(),
-      name: 'Atkinson Hyperlegible Next',
+      name: 'Instrument Sans',
       cssVariable: '--police-texte',
-      fallbacks: ['system-ui', 'sans-serif'],
+      fallbacks: ['Arial', 'sans-serif'],
       options: {
         variants: [
           {
-            src: ['./src/assets/fonts/atkinson-hyperlegible-next-latin-wght.woff2'],
-            weight: '400 800',
+            src: ['./src/assets/fonts/instrument-sans-latin-wght.woff2'],
+            weight: '400 700',
             style: 'normal',
           },
         ],
@@ -100,13 +101,18 @@ export default defineConfig({
     },
     {
       provider: fontProviders.local(),
-      name: 'Newsreader',
-      cssVariable: '--police-note',
+      name: 'Instrument Serif',
+      cssVariable: '--police-titre',
       fallbacks: ['Georgia', 'serif'],
       options: {
         variants: [
           {
-            src: ['./src/assets/fonts/newsreader-italic-400-latin-opsz.woff2'],
+            src: ['./src/assets/fonts/instrument-serif-latin.woff2'],
+            weight: '400',
+            style: 'normal',
+          },
+          {
+            src: ['./src/assets/fonts/instrument-serif-italic-latin.woff2'],
             weight: '400',
             style: 'italic',
           },

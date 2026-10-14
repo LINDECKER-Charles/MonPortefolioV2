@@ -1,0 +1,258 @@
+---
+/**
+ * La gestion de projet en quatre cartes (conservée, décision du 13/10/2026),
+ * disposées en boucle : organiser, livrer, motiver, remercier, puis la
+ * semaine recommence. PVZ-03 (la boucle) est ce dessin même, en HTML et
+ * CSS ; chaque carte porte son visuel du registre (PVZ-05, PVZ-07, PVZ-08,
+ * PVZ-11), qui remplace les dessins de GesteCollectif.astro.
+ *
+ * Bureau : deux cartes sur deux, dans le sens des aiguilles d’une montre,
+ * reliées par des flèches, « une semaine » au centre, au croisement des
+ * gouttières (--boucle-gouttiere, 96 px) : le cercle de 104 px n’atteint pas
+ * les coins des cartes, à 68 px du centre. Mobile et sans styles :
+ * une liste ordonnée, lue dans l’ordre de la semaine. Les vignettes prennent
+ * les jetons du thème courant, comme les autres emplacements : la nuit dans
+ * le jour reste réservée à l’acte de l’outil, juste en dessous.
+ */
+import LienAction from '../../ui/LienAction.astro';
+import Visuel from '../../ui/Visuel.astro';
+import { GESTES } from '../../../config/pvz-fusion';
+import { typo } from '../../../lib/typo';
+---
+
+<div class="boucle">
+  <ol class="boucle__gestes" aria-label="La semaine type, en quatre gestes">
+    {
+      GESTES.map((geste, index) => (
+        <li class:list={['geste', `geste--${geste.id}`]}>
+          <div class="geste__visuel">
+            <Visuel id={geste.visuel} alt="" sizes="(max-width: 760px) 112px, 136px" />
+          </div>
+          <div class="geste__texte">
+            <p class="geste__outil">
+              <span class="geste__rang" aria-hidden="true">{index + 1}</span>
+              {typo(geste.outil)}
+            </p>
+            <h3 class="geste__titre">{typo(geste.titre)}</h3>
+            <p class="geste__description">{typo(geste.texte)}</p>
+            {geste.trace && <LienAction class="geste__trace" href={geste.trace.href} emplacement="preuves">{typo(geste.trace.libelle)}</LienAction>}
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+  <p class="boucle__centre" aria-hidden="true">
+    <span>une semaine</span>
+    <small>puis on recommence</small>
+  </p>
+  {
+    ['haut', 'droite', 'bas', 'gauche'].map((cote) => (
+      <svg class:list={['boucle__fleche', `boucle__fleche--${cote}`]} viewBox="0 0 32 16" width="32" height="16" aria-hidden="true" focusable="false">
+        <path d="M2 8h26m-6-5 6 5-6 5" />
+      </svg>
+    ))
+  }
+</div>
+
+<style>
+  .boucle {
+    --boucle-gouttiere: var(--s9);
+    position: relative;
+    margin-top: var(--s6);
+  }
+
+  .boucle__gestes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 1fr;
+    gap: var(--boucle-gouttiere);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Le sens des aiguilles d’une montre : 1 et 2 en haut, 3 en bas à droite, 4 en bas à gauche. */
+  .geste:nth-child(3) {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .geste:nth-child(4) {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .geste {
+    display: grid;
+    grid-template-columns: 136px minmax(0, 1fr);
+    gap: var(--s4);
+    align-items: start;
+    padding: var(--s4);
+    border: 1px solid var(--filet);
+    border-radius: var(--r2);
+    background: var(--surface);
+    box-shadow: var(--ombre-1);
+  }
+
+  .geste__visuel {
+    border-radius: var(--r1);
+    overflow: hidden;
+  }
+
+  .geste__visuel :global(.visuel) {
+    border-radius: 0;
+  }
+
+  .geste__outil {
+    display: flex;
+    align-items: center;
+    gap: var(--s2);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: var(--ls-petit);
+    color: var(--eteint);
+  }
+
+  .geste__rang {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: 22px;
+    height: 22px;
+    border: 1px solid var(--trait);
+    border-radius: 50%;
+    font-variant-numeric: tabular-nums;
+    color: var(--encre);
+  }
+
+  .geste__titre {
+    margin-top: var(--s2);
+    font-size: var(--t-l);
+    line-height: 1.15;
+  }
+
+  .geste__description {
+    margin-top: var(--s2);
+    font-size: var(--t-s);
+    line-height: 1.5;
+    color: var(--eteint);
+  }
+
+  .geste :global(.geste__trace) {
+    margin-top: var(--s1);
+    min-height: 44px;
+  }
+
+  .boucle__centre {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    place-content: center;
+    width: 104px;
+    height: 104px;
+    translate: -50% -50%;
+    border: 1px dashed var(--trait);
+    border-radius: 50%;
+    background: var(--fond);
+    text-align: center;
+  }
+
+  .boucle__centre span {
+    font-family: var(--police-titre);
+    font-style: italic;
+    font-size: var(--t-m);
+    line-height: 1;
+  }
+
+  .boucle__centre small {
+    margin-top: 2px;
+    font-size: var(--t-xs);
+    line-height: 1.15;
+    color: var(--eteint);
+  }
+
+  .boucle__fleche {
+    position: absolute;
+    width: 32px;
+    height: 16px;
+    translate: -50% -50%;
+    fill: none;
+    stroke: var(--trait);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .boucle__fleche--haut {
+    top: calc((100% - var(--boucle-gouttiere)) / 4);
+    left: 50%;
+  }
+
+  .boucle__fleche--droite {
+    top: 50%;
+    left: calc(100% - (100% - var(--boucle-gouttiere)) / 4);
+    rotate: 90deg;
+  }
+
+  .boucle__fleche--bas {
+    top: calc(100% - (100% - var(--boucle-gouttiere)) / 4);
+    left: 50%;
+    rotate: 180deg;
+  }
+
+  .boucle__fleche--gauche {
+    top: 50%;
+    left: calc((100% - var(--boucle-gouttiere)) / 4);
+    rotate: 270deg;
+  }
+
+  @media (max-width: 1240px) and (min-width: 1101px) {
+    .geste {
+      grid-template-columns: 96px minmax(0, 1fr);
+      gap: var(--s3);
+    }
+  }
+
+  /* Sur mobile, chaque geste a la largeur de l’écran : la vignette passe à
+     112 px, où la gravure de nuit (aplats d’encre au trait fin) se lit encore. */
+  @media (max-width: 760px) {
+    .geste {
+      grid-template-columns: 112px minmax(0, 1fr);
+      gap: var(--s3);
+    }
+  }
+
+  @media (max-width: 760px) {
+    .boucle__gestes {
+      grid-template-columns: minmax(0, 1fr);
+      grid-auto-rows: auto;
+      gap: var(--s3);
+    }
+
+    .geste:nth-child(3),
+    .geste:nth-child(4) {
+      grid-column: auto;
+      grid-row: auto;
+    }
+
+    .boucle__fleche {
+      display: none;
+    }
+
+    .boucle__centre {
+      position: static;
+      display: flex;
+      align-items: baseline;
+      gap: var(--s2);
+      width: auto;
+      height: auto;
+      margin-top: var(--s3);
+      translate: none;
+      border: 0;
+      background: transparent;
+      text-align: left;
+    }
+
+  }
+</style>

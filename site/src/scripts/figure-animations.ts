@@ -1,4 +1,8 @@
-/** Chaque scène se joue à sa première arrivée, puis se rejoue sur le dessin. */
+/**
+ * Chaque scène se joue à sa première arrivée, puis se rejoue sur le dessin.
+ * Un bouton de rejeu rendu `disabled` (hors de la tabulation sans JavaScript)
+ * est réactivé ici.
+ */
 export function brancherAnimationsFigures(): void {
   const mouvementReduit = window.matchMedia('(prefers-reduced-motion: reduce)');
   const zones = [...document.querySelectorAll<HTMLElement>('[data-figure-animation]')];
@@ -72,6 +76,8 @@ export function brancherAnimationsFigures(): void {
   for (const bouton of document.querySelectorAll<HTMLButtonElement>('[data-rejouer]')) {
     const zone = bouton.closest<HTMLElement>('[data-figure-animation]');
     if (!zone) continue;
+    // Sans JavaScript, une scène peut se rendre désactivée : rien ne la rejouerait.
+    bouton.disabled = false;
     const jouer = () => {
       const version = (versions.get(zone) ?? 0) + 1;
       versions.set(zone, version);

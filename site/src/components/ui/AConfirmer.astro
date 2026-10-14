@@ -1,0 +1,22 @@
+---
+/**
+ * Marque « à confirmer » : un fait, un nom ou un ton que Charles n’a pas
+ * encore validé (AGENTS.md : « tout fait non sourcé reste marqué »). Toujours
+ * un mot, jamais une couleur seule.
+ *
+ *   League Of Data Base<AConfirmer titre="Nom officiel à confirmer (Q8)">nom à confirmer</AConfirmer>
+ *   <AConfirmer />                                    « à confirmer »
+ *
+ * Une espace la précède toujours, dans le texte et pour les lecteurs d’écran
+ * (« League Of Data Base nom à confirmer », jamais « Basenom ») : la page n’a
+ * pas à en ajouter. Classe : `.a-confirmer` (global.css).
+ */
+interface Props {
+  /** Ce qu’il faut confirmer, en info-bulle. */
+  titre?: string;
+}
+
+const { titre } = Astro.props;
+---
+
+{' '}<span class="a-confirmer" title={titre}><slot>à confirmer</slot></span>

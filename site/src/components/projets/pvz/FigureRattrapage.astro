@@ -1,0 +1,466 @@
+---
+/**
+ * PVZ-F1 · La courbe du rattrapage, codée depuis les huit relevés de
+ * RELEVES (config/pvz-fusion.ts ; docs/matiere-premiere.md) : la taille du
+ * jeu en anglais (la ligne), la part traduite en encre, le manquant en
+ * hachures, et l’état atteint en août 2026 marqué à la lanterne.
+ *
+ * Une scène : la courbe se trace de gauche à droite à son arrivée dans
+ * l’écran, puis se rejoue d’un clic sur le dessin ou au clavier
+ * (scripts/figure-animations.ts). Mouvement réduit, impression et sans
+ * JavaScript : l’état final. Les chiffres existent aussi en texte : légende,
+ * et tableau des relevés révision par révision (hors de la scène).
+ */
+import { anglaises, manquantes, RELEVE_ATTEINT, RELEVES } from '../../../config/pvz-fusion';
+
+const DEBUT = Date.parse('2025-10-01');
+const FIN = Date.parse('2026-10-31');
+const MAX = 5000;
+
+interface Gabarit {
+  nom: 'large' | 'compacte';
+  largeur: number;
+  hauteur: number;
+  gauche: number;
+  droite: number;
+  haut: number;
+  bas: number;
+  texte: number;
+  mois: { date: string; texte: string }[];
+  graduations: number[];
+}
+
+const GABARITS: Gabarit[] = [
+  {
+    nom: 'large',
+    largeur: 1000,
+    hauteur: 360,
+    gauche: 64,
+    droite: 980,
+    haut: 54,
+    bas: 316,
+    texte: 14,
+    mois: [
+      { date: '2025-10-01', texte: 'oct. 2025' },
+      { date: '2026-01-01', texte: 'janv. 2026' },
+      { date: '2026-04-01', texte: 'avr.' },
+      { date: '2026-07-01', texte: 'juil.' },
+      { date: '2026-10-01', texte: 'oct. 2026' },
+    ],
+    graduations: [0, 1000, 2000, 3000, 4000, 5000],
+  },
+  {
+    nom: 'compacte',
+    largeur: 360,
+    hauteur: 340,
+    gauche: 44,
+    droite: 348,
+    haut: 58,
+    bas: 288,
+    texte: 13,
+    mois: [
+      { date: '2025-10-01', texte: 'oct. 25' },
+      { date: '2026-04-01', texte: 'avr. 26' },
+      { date: '2026-10-01', texte: 'oct. 26' },
+    ],
+    graduations: [0, 2000, 4000],
+  },
+];
+
+const nombre = (n: number) => n.toLocaleString('fr-FR').replace(/\s/g, ' ');
+const arrondi = (n: number) => Math.round(n * 10) / 10;
+
+function dessiner(g: Gabarit) {
+  const x = (date: string) => arrondi(g.gauche + ((Date.parse(date) - DEBUT) / (FIN - DEBUT)) * (g.droite - g.gauche));
+  const y = (valeur: number) => arrondi(g.bas - (valeur / MAX) * (g.bas - g.haut));
+  const points = RELEVES.map((releve) => ({
+    date: releve.date,
+    x: x(releve.date),
+    total: y(anglaises(releve)),
+    traduit: y(anglaises(releve) - manquantes(releve)),
+  }));
+  const ligne = points.map((p) => `${p.x},${p.total}`).join(' ');
+  const traduit = points.map((p) => `${p.x},${p.traduit}`);
+  const manque = [...points.map((p) => `${p.x},${p.total}`), ...[...traduit].reverse()].join(' ');
+  const premier = points[0];
+  const dernier = points[points.length - 1];
+  const fait = [`${premier.x},${g.bas}`, ...traduit, `${dernier.x},${g.bas}`].join(' ');
+  const atteint = points.find((p) => p.date === RELEVE_ATTEINT)!;
+  return { g, x, y, points, ligne, manque, fait, atteint, premier };
+}
+
+const depart = RELEVES[0];
+const arrivee = RELEVES.find((releve) => releve.date === RELEVE_ATTEINT)!;
+const dessins = GABARITS.map(dessiner);
+const jour = (date: string) => new Date(date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' });
+
+interface Props {
+  class?: string;
+}
+
+const { class: classe } = Astro.props;
+---
+
+<figure class:list={['rattrapage', classe]}>
+<figcaption class="rattrapage__titre">Le rattrapage de la traduction française, relevé après relevé</figcaption>
+<button type="button" class="scene rattrapage__scene" data-scene="pvz-rattrapage" data-rejouer data-figure-animation disabled aria-label="Rejouer l’animation : le rattrapage de la traduction française">
+  {
+    dessins.map(({ g, x, y, points, ligne, manque, fait, atteint, premier }) => (
+      <svg class:list={['rattrapage__dessin', `version-${g.nom}`]} viewBox={`0 0 ${g.largeur} ${g.hauteur}`} aria-hidden="true" focusable="false" style={`--taille:${g.texte}px`}>
+        <defs>
+          <pattern id={`rat-hachure-${g.nom}`} width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+            <line class="rat-hachure" x1="0" y1="0" x2="0" y2="6" />
+          </pattern>
+        </defs>
+        {g.graduations.map((valeur) => (
+          <>
+            <line class="rat-grille" x1={g.gauche} y1={y(valeur)} x2={g.droite} y2={y(valeur)} />
+            <text class="rat-texte" x={g.gauche - 10} y={y(valeur) + 4} text-anchor="end">{nombre(valeur)}</text>
+          </>
+        ))}
+        {g.mois.map((m) => (
+          <text class="rat-texte" x={x(m.date)} y={g.bas + 24} text-anchor="middle">{m.texte}</text>
+        ))}
+        <g class="rat-trace">
+          <polygon class="rat-manque" fill={`url(#rat-hachure-${g.nom})`} points={manque} />
+          <polygon class="rat-fait" points={fait} />
+          <polyline class="rat-ligne" points={ligne} />
+          {points.map((p) => p !== atteint && <circle class="rat-point" cx={p.x} cy={p.total} r="3.5" />)}
+        </g>
+        <line class="rat-axe" x1={g.gauche} y1={g.bas} x2={g.droite} y2={g.bas} />
+        <g class="rat-atteint">
+          <line class="rat-attache" x1={atteint.x} y1={g.haut - 6} x2={atteint.x} y2={atteint.total - 8} />
+          <circle class="rat-point rat-point--atteint" cx={atteint.x} cy={atteint.total} r="6" />
+          {g.nom === 'large' ? (
+            <>
+              <text class="rat-note" x={atteint.x} y={g.haut - 30} text-anchor="middle">Août 2026</text>
+              <text class="rat-texte rat-texte--fort" x={atteint.x} y={g.haut - 12} text-anchor="middle">0 manquante sur {nombre(anglaises(arrivee))}</text>
+            </>
+          ) : (
+            <text class="rat-texte rat-texte--fort" x={atteint.x + 4} y={g.haut - 14} text-anchor="end">Août 2026 : 0 sur {nombre(anglaises(arrivee))}</text>
+          )}
+        </g>
+        {g.nom === 'large' ? (
+          <>
+            <text class="rat-note" x={premier.x + 8} y={premier.total - 46}>À mon arrivée</text>
+            <text class="rat-texte" x={premier.x + 8} y={premier.total - 26}>{nombre(manquantes(depart))} entrées manquantes sur {nombre(anglaises(depart))}</text>
+          </>
+        ) : (
+          <text class="rat-texte rat-texte--fort" x={premier.x - 2} y={premier.total - 30}>{nombre(manquantes(depart))} / {nombre(anglaises(depart))}</text>
+        )}
+      </svg>
+    ))
+  }
+</button>
+<ul class="rattrapage__legende" aria-hidden="true">
+  <li><span class="pastille pastille--fait" />Entrées traduites en français</li>
+  <li><span class="pastille pastille--manque" />Entrées anglaises sans équivalent français</li>
+</ul>
+<p class="rattrapage__source">Huit relevés de l’historique public, du 16/10/2025 au 12/10/2026, consultés le 13/10/2026. Méthode dans les sources, en bas de page.</p>
+<details class="rattrapage__releves">
+  <summary>Les relevés, révision par révision</summary>
+  <div class="rattrapage__table" tabindex="0" role="region" aria-label="Relevés de la couverture">
+    <table>
+      <caption class="sr">Entrées manquantes sur entrées anglaises, par catégorie et par révision</caption>
+      <thead>
+        <tr><th scope="col">Date</th><th scope="col">Révision</th><th scope="col">Plantes</th><th scope="col">Zombies</th><th scope="col">Textes</th><th scope="col">Manquant</th><th scope="col">Anglais</th></tr>
+      </thead>
+      <tbody>
+        {RELEVES.map((releve) => (
+          <tr class:list={{ 'rattrapage__atteint': releve.date === RELEVE_ATTEINT }}>
+            <th scope="row">{jour(releve.date)}</th>
+            <td><code>{releve.revision}</code></td>
+            <td>{nombre(releve.plantes[0])} / {nombre(releve.plantes[1])}</td>
+            <td>{nombre(releve.zombies[0])} / {nombre(releve.zombies[1])}</td>
+            <td>{nombre(releve.textes[0])} / {nombre(releve.textes[1])}</td>
+            <td><b>{nombre(manquantes(releve))}</b></td>
+            <td>{nombre(anglaises(releve))}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</details>
+</figure>
+
+<style>
+  /* Une colonne qui ne s’élargit jamais à son contenu : déplié, le tableau
+     des relevés défile seul (WCAG 1.4.10), la figure garde sa largeur. */
+  .rattrapage {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s4);
+  }
+
+  .rattrapage__titre {
+    font-size: var(--t-s);
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .rattrapage__legende {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2) var(--s5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  .rattrapage__legende li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s2);
+  }
+
+  .pastille {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 2px;
+  }
+
+  .pastille--fait {
+    background: var(--encre);
+  }
+
+  .pastille--manque {
+    border: 1px solid var(--trait);
+    background: repeating-linear-gradient(-45deg, var(--trait) 0 1px, transparent 1px 6px);
+  }
+
+  .rattrapage__source {
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  .rattrapage__releves {
+    margin-bottom: var(--s2);
+  }
+
+  /* Un dépliant, pas un lien : l’encre et le chevron qui pivote. */
+  .rattrapage__releves summary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s3);
+    min-height: 44px;
+    font-size: var(--t-s);
+    font-weight: 600;
+    color: var(--encre);
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .rattrapage__releves summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .rattrapage__releves summary::after {
+    content: '';
+    width: 7px;
+    height: 7px;
+    margin-top: -4px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    rotate: 45deg;
+    transition: rotate var(--d-ui) var(--courbe), margin var(--d-ui) var(--courbe);
+  }
+
+  .rattrapage__releves[open] summary::after {
+    rotate: 225deg;
+    margin-top: 4px;
+  }
+
+  .rattrapage__releves summary:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+  }
+
+  .rattrapage__table {
+    overflow-x: auto;
+    margin-top: var(--s2);
+  }
+
+  table {
+    width: 100%;
+    min-width: 34rem;
+    border-collapse: collapse;
+    font-size: var(--t-xs);
+    font-variant-numeric: tabular-nums;
+  }
+
+  th,
+  td {
+    padding: var(--s2) var(--s3);
+    border-bottom: 1px solid var(--filet);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  thead th {
+    border-bottom-color: var(--trait);
+    font-weight: 600;
+    color: var(--eteint);
+  }
+
+  th:first-child,
+  td:nth-child(2) {
+    text-align: left;
+  }
+
+  tbody th {
+    font-weight: 500;
+  }
+
+  code {
+    font-family: inherit;
+    color: var(--eteint);
+  }
+
+  .rattrapage__atteint {
+    background: color-mix(in srgb, var(--laiton) 12%, transparent);
+  }
+
+  .scene {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--encre);
+    text-align: inherit;
+  }
+
+  .rattrapage__dessin {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .version-compacte {
+    display: none;
+  }
+
+  .rat-grille {
+    stroke: var(--filet);
+    stroke-width: 1;
+  }
+
+  .rat-axe {
+    stroke: var(--trait);
+    stroke-width: 1.2;
+  }
+
+  .rat-texte {
+    fill: var(--eteint);
+    font-family: var(--police-texte);
+    font-size: var(--taille);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .rat-texte--fort {
+    fill: var(--encre);
+    font-weight: 600;
+  }
+
+  .rat-note {
+    fill: var(--encre);
+    font-family: var(--police-titre);
+    font-style: italic;
+    font-size: calc(var(--taille) * 1.6);
+  }
+
+  .rat-hachure {
+    stroke: var(--trait);
+    stroke-width: 1;
+  }
+
+  .rat-manque {
+    stroke: none;
+  }
+
+  .rat-fait {
+    fill: var(--encre);
+  }
+
+  .rat-ligne {
+    fill: none;
+    stroke: var(--encre);
+    stroke-width: 2;
+    stroke-linejoin: round;
+  }
+
+  .rat-point {
+    fill: var(--fond);
+    stroke: var(--encre);
+    stroke-width: 1.5;
+  }
+
+  .rat-point--atteint {
+    fill: var(--laiton);
+    stroke: var(--fond);
+    stroke-width: 2;
+  }
+
+  .rat-attache {
+    stroke: var(--encre);
+    stroke-width: 1;
+  }
+
+  /* La nuit, la part traduite reste un clair bleuté tiré des jetons, pas un
+     gris neutre ; la ligne garde l’encre pleine, le point d’août la lanterne. */
+  :global(:root[data-theme='nuit']) .rat-fait {
+    fill: color-mix(in oklab, var(--encre) 72%, var(--fond));
+  }
+
+  :global(:root[data-theme='nuit']) .pastille--fait {
+    background: color-mix(in oklab, var(--encre) 72%, var(--fond));
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme])) .rat-fait {
+      fill: color-mix(in oklab, var(--encre) 72%, var(--fond));
+    }
+
+    :global(:root:not([data-theme])) .pastille--fait {
+      background: color-mix(in oklab, var(--encre) 72%, var(--fond));
+    }
+  }
+
+  .animation-en-cours .rat-trace {
+    animation: rat-tracer calc(var(--d-scene) * 4) var(--courbe) both;
+  }
+
+  .animation-en-cours .rat-atteint {
+    animation: rat-allumer var(--d-scene) var(--courbe) calc(var(--d-scene) * 3) both;
+  }
+
+  @keyframes rat-tracer {
+    from {
+      clip-path: inset(-10px 100% -10px 0);
+    }
+
+    to {
+      clip-path: inset(-10px -10px -10px 0);
+    }
+  }
+
+  @keyframes rat-allumer {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .version-large {
+      display: none;
+    }
+
+    .version-compacte {
+      display: block;
+    }
+  }
+</style>

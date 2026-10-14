@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hors maquette — Charles Lindecker</title>
+<meta name="description" content="Cette page existe sur le site, mais ne fait pas partie de la maquette B « Banc d’essai » : accueil, projets, PvZ Fusion et compétences.">
+<meta name="theme-color" content="#FAFAF8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=JetBrains+Mono:wght@400..600&amp;family=Newsreader:ital,opsz,wght@1,6..72,400&amp;display=swap">
+<link rel="stylesheet" href="style.css">
+<script src="theme.js"></script>
+<script src="maquette.js" defer></script>
+</head>
+<body>
+<a class="evitement" href="#contenu">Aller au contenu</a>
+
+<header class="entete">
+  <div class="conteneur entete__barre">
+    <a class="marque" href="accueil.html" aria-label="Charles Lindecker, accueil">
+      <img class="marque__embleme marque__embleme--jour" src="../../../site/src/assets/marque/logo-symbole.webp" width="352" height="245" alt="">
+      <img class="marque__embleme marque__embleme--nuit" src="../../assets/marque/logo-symbole-nuit.png" width="352" height="245" alt="">
+      <img class="marque__nom" src="../../../site/src/assets/marque/logo-nom.webp" width="756" height="118" alt="">
+    </a>
+    <nav class="nav-principale" aria-label="Principale">
+      <a href="projets.html">Projets</a>
+      <a href="competences.html">Parcours</a>
+      <a href="hors-maquette.html?page=contact">Contact</a>
+    </nav>
+    <div class="entete__mobile">
+      
+      <a class="entete__contact" href="hors-maquette.html?page=contact">Contact</a>
+      <details class="deroulant">
+        <summary>Menu</summary>
+        <nav class="deroulant__panneau" aria-label="Principale, mobile">
+          <a href="accueil.html">Accueil</a>
+          <a href="projets.html">Projets</a>
+          <a href="competences.html">Parcours</a>
+          <a href="hors-maquette.html?page=contact">Contact</a>
+        </nav>
+      </details>
+    </div>
+    <button class="bascule" type="button" data-theme-bascule aria-label="Mode nuit" aria-pressed="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle class="lanterne__halo" cx="12" cy="14.5" r="11"/>
+        <path class="lanterne__corps" d="M12 1.6a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 4.6v1.6M6.8 9.4 12 6.2l5.2 3.2ZM8 9.4v10M16 9.4v10M6.6 19.4h10.8M8 21.6h8M7.4 19.4l.6 2.2M16.6 19.4l-.6 2.2"/>
+        <path class="lanterne__flamme" d="M12 11.2c1.6 1.7 2.1 2.9 2.1 4a2.1 2.1 0 0 1-4.2 0c0-1.1.5-2.3 2.1-4Z"/>
+      </svg>
+    </button>
+  </div>
+  <div class="progression" aria-hidden="true"><span></span></div>
+</header>
+
+<main id="contenu" tabindex="-1">
+  <div class="conteneur hors">
+    <p class="mono gris" data-url-demandee>/page</p>
+    <h1 class="titre-2"><span data-page-demandee>Cette page</span> n’est pas dans cette maquette.</h1>
+    <p class="chapo">La maquette B montre quatre planches&nbsp;: l’accueil, la vitrine des projets, la page PvZ Fusion et la page Compétences. Les autres pages reprendront les mêmes composants.</p>
+    <div class="actions">
+      <a class="bouton bouton--plein" href="accueil.html">Revenir à l’accueil<span class="fl fl--int" aria-hidden="true">→</span></a>
+      <a class="lien-fort" href="projets.html">Voir les projets<span class="fl fl--int" aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</main>
+
+<footer class="pied reperes">
+  <div class="reperes__colonnes" aria-hidden="true"><div class="conteneur"><div class="grille"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div></div>
+  <div class="conteneur">
+    <div class="cartouche">
+      <div class="cartouche__marque">
+        <img class="pied__embleme pied__embleme--jour" src="../../../site/src/assets/marque/logo-symbole.webp" width="352" height="245" alt="">
+        <img class="pied__embleme pied__embleme--nuit" src="../../assets/marque/logo-symbole-nuit.png" width="352" height="245" alt="">
+        <img class="pied__nom" src="../../../site/src/assets/marque/logo-nom.webp" width="756" height="118" alt="Charles Lindecker">
+        <p class="petit gris">Architecte logiciel, à Mulhouse.</p>
+      </div>
+      <nav aria-label="Pages">
+        <h2>Pages</h2>
+        <ul>
+          <li><a href="accueil.html">Accueil</a></li>
+          <li><a href="projets.html">Projets</a></li>
+          <li><a href="competences.html">Parcours</a></li>
+          <li><a href="hors-maquette.html?page=contact">Contact</a></li>
+        </ul>
+      </nav>
+      <div>
+        <h2>Ailleurs</h2>
+        <ul>
+          <li><a href="https://github.com/LINDECKER-Charles">GitHub<span class="fl fl--ext" aria-hidden="true">↗</span></a></li>
+          <li><a href="https://www.linkedin.com/in/charles-lindecker/">LinkedIn<span class="fl fl--ext" aria-hidden="true">↗</span></a></li>
+        </ul>
+      </div>
+      <div class="cartouche__ecrire">
+        <h2>Écrire</h2>
+        <p><a class="pied__courriel" href="mailto:charles.lindecker@outlook.fr" data-evenement="contact-email">charles.lindecker@outlook.fr</a></p>
+        <button class="copier" type="button" data-copier="charles.lindecker@outlook.fr"><span data-copier-libelle>Copier l’adresse</span></button>
+      </div>
+      <div class="cartouche__colophon colophon">
+        <span>Composé en Archivo, JetBrains Mono et Newsreader · <a href="hors-maquette.html?page=mentions-legales">Mentions légales</a></span>
+        <span class="mono note-maquette">Maquette B « Banc d’essai » · hors maquette</span>
+        <button class="notes-bascule" type="button" data-notes aria-pressed="false">Notes de maquette</button>
+      </div>
+    </div>
+  </div>
+</footer>
+<div class="balayage" aria-hidden="true"></div>
+</body>
+</html>

@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compétences — Charles Lindecker</title>
+<meta name="description" content="Les technologies que j’utilise au quotidien, celles que j’ai pratiquées ou explorées, l’IA dans mes projets, la livraison et mes compétences humaines.">
+<meta name="theme-color" content="#FAFAF8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=JetBrains+Mono:wght@400..600&amp;family=Newsreader:ital,opsz,wght@1,6..72,400&amp;display=swap">
+<link rel="stylesheet" href="style.css">
+<script src="theme.js"></script>
+<script src="maquette.js" defer></script>
+</head>
+<body>
+<a class="evitement" href="#contenu">Aller au contenu</a>
+
+<header class="entete">
+  <div class="conteneur entete__barre">
+    <a class="marque" href="accueil.html" aria-label="Charles Lindecker, accueil">
+      <img class="marque__embleme marque__embleme--jour" src="../../../site/src/assets/marque/logo-symbole.webp" width="352" height="245" alt="">
+      <img class="marque__embleme marque__embleme--nuit" src="../../assets/marque/logo-symbole-nuit.png" width="352" height="245" alt="">
+      <img class="marque__nom" src="../../../site/src/assets/marque/logo-nom.webp" width="756" height="118" alt="">
+    </a>
+    <nav class="nav-principale" aria-label="Principale">
+      <a href="projets.html">Projets</a>
+      <a href="competences.html" aria-current="true">Parcours</a>
+      <a href="hors-maquette.html?page=contact">Contact</a>
+    </nav>
+    <div class="entete__mobile">
+      <details class="deroulant" data-sommaire>
+        <summary>Sommaire</summary>
+        <div class="deroulant__panneau">
+          <a href="#quotidien"><span>Au quotidien</span><span class="mono">01</span></a>
+          <a href="#pratique"><span>Pratiqué</span><span class="mono">02</span></a>
+          <a href="#explore"><span>Exploré</span><span class="mono">03</span></a>
+          <a href="#ia"><span>Intelligence artificielle</span><span class="mono">04</span></a>
+          <a href="#livraison"><span>Tests et livraison</span><span class="mono">05</span></a>
+          <a href="#humaines"><span>Compétences humaines</span><span class="mono">06</span></a>
+        </div>
+      </details>
+      <a class="entete__contact" href="hors-maquette.html?page=contact">Contact</a>
+      <details class="deroulant">
+        <summary>Menu</summary>
+        <nav class="deroulant__panneau" aria-label="Principale, mobile">
+          <a href="accueil.html">Accueil</a>
+          <a href="projets.html">Projets</a>
+          <a href="competences.html" aria-current="true">Parcours</a>
+          <a href="hors-maquette.html?page=contact">Contact</a>
+        </nav>
+      </details>
+    </div>
+    <button class="bascule" type="button" data-theme-bascule aria-label="Mode nuit" aria-pressed="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle class="lanterne__halo" cx="12" cy="14.5" r="11"/>
+        <path class="lanterne__corps" d="M12 1.6a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 4.6v1.6M6.8 9.4 12 6.2l5.2 3.2ZM8 9.4v10M16 9.4v10M6.6 19.4h10.8M8 21.6h8M7.4 19.4l.6 2.2M16.6 19.4l-.6 2.2"/>
+        <path class="lanterne__flamme" d="M12 11.2c1.6 1.7 2.1 2.9 2.1 4a2.1 2.1 0 0 1-4.2 0c0-1.1.5-2.3 2.1-4Z"/>
+      </svg>
+    </button>
+  </div>
+  <div class="progression" aria-hidden="true"><span></span></div>
+</header>
+
+<main id="contenu" tabindex="-1">
+  <section class="page-tete page-tete--parcours reperes" aria-labelledby="titre-page" data-pli data-zone>
+    <div class="reperes__colonnes" aria-hidden="true"><div class="conteneur"><div class="grille"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div></div>
+    <div class="conteneur">
+      <nav aria-label="Fil d’Ariane"><ol class="fil"><li><a href="hors-maquette.html?page=parcours">Parcours</a></li><li><span aria-current="page">Compétences</span></li></ol></nav>
+      <div class="page-tete__texte">
+        <h1 class="titre-1" id="titre-page">Compétences</h1>
+        <p class="chapo">Les technologies, de l’usage quotidien à l’exploration, puis la façon de travailler avec les autres.</p>
+      </div>
+      <div class="onglets-cadre">
+        <nav class="onglets-parcours" aria-label="Dans le parcours">
+          <a href="hors-maquette.html?page=parcours">Vue d’ensemble</a>
+          <a href="hors-maquette.html?page=parcours/professionnel">Professionnel</a>
+          <a href="competences.html" aria-current="page">Compétences</a>
+          <a href="hors-maquette.html?page=parcours/formation">Formation</a>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <div class="conteneur grille corps">
+    <nav class="rail" aria-label="Dans cette page">
+      <p class="rail__titre">Dans cette page</p>
+      <div class="rail__regle">
+        <span class="rail__curseur" aria-hidden="true"></span>
+        <ol>
+          <li><a href="#quotidien"><span class="mono">01</span>Au quotidien</a></li>
+          <li><a href="#pratique"><span class="mono">02</span>Pratiqué</a></li>
+          <li><a href="#explore"><span class="mono">03</span>Exploré</a></li>
+          <li><a href="#ia"><span class="mono">04</span>Intelligence artificielle</a></li>
+          <li><a href="#livraison"><span class="mono">05</span>Tests et livraison</a></li>
+          <li><a href="#humaines"><span class="mono">06</span>Compétences humaines</a></li>
+        </ol>
+      </div>
+    </nav>
+
+    <div class="corps__contenu">
+      <section class="niveau" data-zone id="quotidien" aria-labelledby="t-quotidien">
+<div class="niveau__tete"><h2 class="titre-4" id="t-quotidien">Au quotidien</h2><p>Mon cœur de pratique<span class="a-confirmer" title="Hiérarchie en trois niveaux proposée depuis la stack du CV, à valider (Q9)">niveaux</span></p></div>
+<ul class="tuiles">
+<li><a class="tuile" href="https://www.typescriptlang.org/"><img class="logo" src="../../../site/src/assets/stacks/typescript.svg" alt="" width="64" height="64" loading="lazy"><span class="tuile__nom">TypeScript</span><span class="fl fl--ext" aria-hidden="true">↗</span><span class="sr"> (site officiel)</span></a></li>
+<li><a class="tuile" href="https://angular.dev/"><img class="logo" src="../../../site/src/assets/stacks/angular.svg" alt="" width="64" height="64" loading="lazy"><span class="tuile__nom">Angular</span><span class="fl fl--ext" aria-hidden="true">↗</span><span class="sr"> (site officiel)</span></a></li>
+<li><a class="tuile" href="https://learn.microsoft.com/dotnet/csharp/"><img class="logo" src="../../../site/src/assets/stacks/csharp.svg" alt="" width="64" height="64" loading="lazy"><span class="tuile__nom">C#</span><span class="fl fl--ext" aria-hidden="true">↗</span><span class="sr"> (site officiel)</span></a></li>
+<li><a class="tuile" href="https://dotnet.microsoft.com/"><img class="logo" src="../../../site/src/assets/stacks/dotnet.svg" alt="" width="64" height="64" loading="lazy"><span class="tuile__nom">.NET</span><span class="fl fl--ext" aria-hidden="true">↗</span><span class="sr"> (site officiel)</span></a></li>
+<li><a class="tuile" href="https://www.postgresql.org/"><img class="logo" src="../../../site/src/assets/stacks/postgresql.svg" alt="" width="64" height="64" loading="lazy"><span class="tuile__nom">PostgreSQL</span><span class="fl fl--ext" aria-hidden="true">↗</span><span class="sr"> (site officiel)</span></a></li>
+<li><a class="tuile" href="https://www.docker.com/"><img class="logo" src="../../../site/src/assets/stacks/docker.svg" alt="" width="64" height="64" loading="lazy"><span class="tuile__nom">Docker</span><span class="fl fl--ext" aria-hidden="true">↗</span><span class="sr"> (site officiel)</span></a></li>
+<li><a class="tuile" href="https://github.com/features/actions"><img class="logo" src="../../../site/src/assets/stacks/github-actions.svg" alt="" width="64" height="64" loading="lazy"><span class="tuile__nom">GitHub Actions</span><span class="fl fl--ext" aria-hidden="true">↗</span><span class="sr"> (site officiel)</span></a></li>
+<li><a class="tuile" href="https://git-scm.com/"><img class="logo" src="../../../site/src/assets/stacks/git.svg" alt="" width="64" height="64" loading="lazy"><span class="tuile__nom">Git</span><span class="fl fl--ext" aria-hidden="true">↗</span><span class="sr"> (site officiel)</span></a></li>
+</ul></section>
+<section class="niveau" data-zone id="pratique" aria-labelledby="t-pratique">
+<div class="niveau__tete"><h2 class="titre-4" id="t-pratique">Pratiqué</h2><p>En projet, en formation ou en production</p></div><div class="familles">
+<div class="famille"><h3 class="famille__nom">Langages</h3><ul class="pastilles">
+<li><a class="pastille" href="https://tc39.es/"><img class="logo" src="../../../site/src/assets/stacks/javascript.svg" alt="" width="64" height="64" loading="lazy">JavaScript<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://www.php.net/"><img class="logo" src="../../../site/src/assets/stacks/php.svg" alt="" width="64" height="64" loading="lazy">PHP<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://www.python.org/"><img class="logo" src="../../../site/src/assets/stacks/python.svg" alt="" width="64" height="64" loading="lazy">Python<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://dev.java/"><img class="logo" src="../../../site/src/assets/stacks/java.svg" alt="" width="64" height="64" loading="lazy">Java<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://www.iso.org/standard/76583.html"><svg class="picto" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><ellipse cx="12" cy="6" rx="7" ry="2.6"/><path d="M5 6v12c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V6M5 12c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6"/></svg>SQL<span class="sr"> (site officiel)</span></a><span class="a-confirmer note-maquette" title="Lien vers une norme ISO payante, à remplacer (§ 5.10)">lien</span></li>
+</ul></div>
+<div class="famille"><h3 class="famille__nom">Web et interfaces</h3><ul class="pastilles">
+<li><a class="pastille" href="https://html.spec.whatwg.org/multipage/"><img class="logo" src="../../../site/src/assets/stacks/html5.svg" alt="" width="64" height="64" loading="lazy">HTML<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://www.w3.org/Style/CSS/"><img class="logo" src="../../../site/src/assets/stacks/css3.svg" alt="" width="64" height="64" loading="lazy">CSS<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://tailwindcss.com/"><img class="logo" src="../../../site/src/assets/stacks/tailwindcss.svg" alt="" width="64" height="64" loading="lazy">Tailwind CSS<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://sass-lang.com/"><img class="logo" src="../../../site/src/assets/stacks/sass.svg" alt="" width="64" height="64" loading="lazy">Sass<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://rxjs.dev/"><img class="logo" src="../../../site/src/assets/stacks/rxjs.svg" alt="" width="64" height="64" loading="lazy">RxJS<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://gsap.com/"><img class="logo logo--clair" src="../../../site/src/assets/stacks/gsap.svg" alt="" width="64" height="64" loading="lazy">GSAP<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://twig.symfony.com/"><img class="logo" src="../../../site/src/assets/stacks/twig.png" alt="" width="64" height="64" loading="lazy">Twig<span class="sr"> (site officiel)</span></a></li>
+</ul></div>
+<div class="famille"><h3 class="famille__nom">Backend et API</h3><ul class="pastilles">
+<li><a class="pastille" href="https://learn.microsoft.com/aspnet/core/"><img class="logo" src="../../../site/src/assets/stacks/dotnet.svg" alt="" width="64" height="64" loading="lazy">ASP.NET Core<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://learn.microsoft.com/aspnet/core/signalr/"><img class="logo" src="../../../site/src/assets/stacks/dotnet.svg" alt="" width="64" height="64" loading="lazy">SignalR<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://nodejs.org/"><img class="logo" src="../../../site/src/assets/stacks/nodejs.svg" alt="" width="64" height="64" loading="lazy">Node.js<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://expressjs.com/"><img class="logo" src="../../../site/src/assets/stacks/express.svg" alt="" width="64" height="64" loading="lazy">Express<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://symfony.com/"><img class="logo" src="../../../site/src/assets/stacks/symfony.svg" alt="" width="64" height="64" loading="lazy">Symfony<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://api-platform.com/"><img class="logo" src="../../../site/src/assets/stacks/api-platform.svg" alt="" width="64" height="64" loading="lazy">API Platform<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://spring.io/projects/spring-boot/"><img class="logo" src="../../../site/src/assets/stacks/spring.svg" alt="" width="64" height="64" loading="lazy">Spring Boot<span class="sr"> (site officiel)</span></a></li>
+</ul></div>
+<div class="famille"><h3 class="famille__nom">Données</h3><ul class="pastilles">
+<li><a class="pastille" href="https://www.mysql.com/"><img class="logo" src="../../../site/src/assets/stacks/mysql.svg" alt="" width="64" height="64" loading="lazy">MySQL<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://sqlite.org/"><img class="logo" src="../../../site/src/assets/stacks/sqlite.svg" alt="" width="64" height="64" loading="lazy">SQLite<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://learn.microsoft.com/ef/core/"><img class="logo" src="../../../site/src/assets/stacks/entityframeworkcore.svg" alt="" width="64" height="64" loading="lazy">EF Core<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://www.doctrine-project.org/"><img class="logo" src="../../../site/src/assets/stacks/doctrine.svg" alt="" width="64" height="64" loading="lazy">Doctrine<span class="sr"> (site officiel)</span></a></li>
+</ul></div>
+<div class="famille"><h3 class="famille__nom">Mobile</h3><ul class="pastilles">
+<li><a class="pastille" href="https://ionicframework.com/"><img class="logo" src="../../../site/src/assets/stacks/ionic.svg" alt="" width="64" height="64" loading="lazy">Ionic<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://capacitorjs.com/"><img class="logo" src="../../../site/src/assets/stacks/capacitor.svg" alt="" width="64" height="64" loading="lazy">Capacitor<span class="sr"> (site officiel)</span></a></li>
+</ul></div>
+<div class="famille"><h3 class="famille__nom">Tests et qualité</h3><ul class="pastilles">
+<li><a class="pastille" href="https://xunit.net/"><img class="logo" src="../../../site/src/assets/stacks/xunit.svg" alt="" width="64" height="64" loading="lazy">xUnit<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://vitest.dev/"><img class="logo" src="../../../site/src/assets/stacks/vitest.svg" alt="" width="64" height="64" loading="lazy">Vitest<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://phpunit.de/"><img class="logo" src="../../../site/src/assets/stacks/phpunit.png" alt="" width="64" height="64" loading="lazy">PHPUnit<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://playwright.dev/"><img class="logo" src="../../../site/src/assets/stacks/playwright.svg" alt="" width="64" height="64" loading="lazy">Playwright<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://github.com/dequelabs/axe-core"><svg class="picto" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="4.5" r="1.8"/><path d="M5 8.5l7 1.5 7-1.5M12 10v4l-3 6.5M12 14l3 6.5"/></svg>axe-core<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://eslint.org/"><img class="logo" src="../../../site/src/assets/stacks/eslint.svg" alt="" width="64" height="64" loading="lazy">ESLint<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://prettier.io/"><img class="logo" src="../../../site/src/assets/stacks/prettier.png" alt="" width="64" height="64" loading="lazy">Prettier<span class="sr"> (site officiel)</span></a></li>
+</ul></div>
+<div class="famille"><h3 class="famille__nom">Livraison et systèmes</h3><ul class="pastilles">
+<li><a class="pastille" href="https://kernel.org/"><img class="logo" src="../../../site/src/assets/stacks/linux.svg" alt="" width="64" height="64" loading="lazy">Linux<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://www.gnu.org/software/bash/"><img class="logo" src="../../../site/src/assets/stacks/bash.svg" alt="" width="64" height="64" loading="lazy">Bash<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://nginx.org/"><img class="logo" src="../../../site/src/assets/stacks/nginx.svg" alt="" width="64" height="64" loading="lazy">Nginx<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://httpd.apache.org/"><img class="logo" src="../../../site/src/assets/stacks/apache.svg" alt="" width="64" height="64" loading="lazy">Apache<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://caddyserver.com/"><img class="logo" src="../../../site/src/assets/stacks/caddy.png" alt="" width="64" height="64" loading="lazy">Caddy<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille" href="https://vite.dev/"><img class="logo" src="../../../site/src/assets/stacks/vite.svg" alt="" width="64" height="64" loading="lazy">Vite<span class="sr"> (site officiel)</span></a></li>
+</ul></div>
+</div></section>
+<section class="niveau" data-zone id="explore" aria-labelledby="t-explore">
+<div class="niveau__tete"><h2 class="titre-4" id="t-explore">Exploré ou ponctuel</h2><p>Exercices, contributions ciblées, projets personnels</p></div>
+<details class="repli"><summary>Afficher les 26 technologies</summary><div class="familles familles--compactes">
+<div class="famille"><h3 class="famille__nom">Langages</h3><ul class="pastilles">
+<li><a class="pastille pastille--petite" href="https://rust-lang.org/"><img class="logo" src="../../../site/src/assets/stacks/rust.svg" alt="" width="64" height="64" loading="lazy">Rust<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille pastille--petite" href="https://go.dev/"><img class="logo" src="../../../site/src/assets/stacks/go.svg" alt="" width="64" height="64" loading="lazy">Go<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille pastille--petite" href="https://www.open-std.org/jtc1/sc22/wg14/"><img class="logo" src="../../../site/src/assets/stacks/c.svg" alt="" width="64" height="64" loading="lazy">C<span class="sr"> (site officiel)</span></a></li>
+</ul></div>
+<div class="famille"><h3 class="famille__nom">Web et interfaces</h3><ul class="pastilles">
+<li><a class="pastille pastille--petite" href="https://react.dev/"><img class="logo" src="../../../site/src/assets/stacks/react.svg" alt="" width="64" height="64" loading="lazy">React<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille pastille--petite" href="https://vuejs.org/"><img class="logo" src="../../../site/src/assets/stacks/vuejs.svg" alt="" width="64" height="64" loading="lazy">Vue.js<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille pastille--petite" href="https://leafletjs.com/"><img class="logo" src="../../../site/src/assets/stacks/leaflet.svg" alt="" width="64" height="64" loading="lazy">Leaflet<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille pastille--petite" href="https://www.chartjs.org/"><img class="logo" src="../../../site/src/assets/stacks/chartjs.svg" alt="" width="64" height="64" loading="lazy">Chart.js<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille pastille--petite" href="https://webassembly.org/"><img class="logo" src="../../../site/src/assets/stacks/wasm.svg" alt="" width="64" height="64" loading="lazy">WebAssembly<span class="sr"> (site officiel)</span></a></li>
+</ul></div>
+<div class="famille"><h3 class="famille__nom">Backend et API</h3><ul class="pastilles">
+<li><a class="pastille pastille--petite" href="https://fastapi.tiangolo.com/"><img class="logo" src="../../../site/src/assets/stacks/fastapi.svg" alt="" width="64" height="64" loading="lazy">FastAPI<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille pastille--petite" href="https://github.com/tokio-rs/axum"><svg class="picto" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="2"/><path d="M7 12h4l6-6M11 12h8M11 12l6 6M15 5h2v2M17 17v2h-2M17 10l2 2-2 2"/></svg>Axum<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille pastille--petite" href="https://tokio.rs/"><img class="logo" src="../../../site/src/assets/stacks/tokio.svg" alt="" width="64" height="64" loading="lazy">Tokio<span class="sr"> (site officiel)</span></a></li>
+</ul></div>
+<div class="famille"><h3 class="famille__nom">Données</h3><ul class="pastilles">
+<li><a class="pastille pastille--petite" href="https://github.com/transact-rs/sqlx"><svg class="picto" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><ellipse cx="10" cy="6" rx="6" ry="2.3"/><path d="M4 6v11c0 1.3 2.7 2.3 6 2.3M16 6v5M4 11.5c0 1.3 2.7 2.3 6 2.3"/><path d="M15 15l5 5M20 15l-5 5"/></svg>SQLx<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille pastille--petite" href="https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html"><svg class="picto" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><ellipse cx="12" cy="6" rx="8" ry="2.4"/><path d="M4 6l2 13c.2 1.2 2.9 2 6 2s5.8-.8 6-2l2-13"/></svg>Stockage S3 compatible<span class="sr"> (site officiel)</span></a><span class="a-confirmer note-maquette" title="Documentation AWS, alors que la matière exclut une pratique générale d’AWS (§ 5.10)">lien</span></li>
+</ul></div>
+<div class="famille"><h3 class="famille__nom">Bureau</h3><ul class="pastilles">
+<li><a class="pastille pastille--petite" href="https://tauri.app/"><img class="logo" src="../../../site/src/assets/stacks/tauri.svg" alt="" width="64" height="64" loading="lazy">Tauri<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille pastille--petite" href="https://www.tryphotino.io/"><img class="logo" src="../../../site/src/assets/stacks/photino.svg" alt="" width="64" height="64" loading="lazy">Photino.NET<span class="sr"> (site officiel)</span></a></li>
+</ul></div>
+<div class="famille"><h3 class="famille__nom">Scripts et fichiers</h3><ul class="pastilles">
+<li><a class="pastille pastille--petite" href="https://sharp.pixelplumbing.com/"><img class="logo" src="../../../site/src/assets/stacks/sharp.svg" alt="" width="64" height="64" loading="lazy">sharp<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille pastille--petite" href="https://pillow.readthedocs.io/en/stable/"><img class="logo" src="../../../site/src/assets/stacks/pillow.png" alt="" width="64" height="64" loading="lazy">Pillow<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille pastille--petite" href="https://dompdf.github.io/"><svg class="picto" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 3h8l4 4v14H6ZM14 3v4h4M9 12h6M9 15h6M9 18h4"/></svg>Dompdf<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille pastille--petite" href="https://opentui.com/"><svg class="picto" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 8h18M10 8v12M13 12h5M13 15h5"/></svg>OpenTUI<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille pastille--petite" href="https://www.gnu.org/software/make/"><svg class="picto" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>Make<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille pastille--petite" href="https://gcc.gnu.org/"><img class="logo" src="../../../site/src/assets/stacks/gcc.svg" alt="" width="64" height="64" loading="lazy">GCC<span class="sr"> (site officiel)</span></a></li>
+</ul></div>
+<div class="famille"><h3 class="famille__nom">Tests</h3><ul class="pastilles">
+<li><a class="pastille pastille--petite" href="https://docs.pytest.org/"><img class="logo" src="../../../site/src/assets/stacks/pytest.svg" alt="" width="64" height="64" loading="lazy">pytest<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille pastille--petite" href="https://karma-runner.github.io/"><img class="logo" src="../../../site/src/assets/stacks/karma.svg" alt="" width="64" height="64" loading="lazy">Karma<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille pastille--petite" href="https://jasmine.github.io/"><img class="logo" src="../../../site/src/assets/stacks/jasmine.svg" alt="" width="64" height="64" loading="lazy">Jasmine<span class="sr"> (site officiel)</span></a></li>
+</ul></div>
+<div class="famille"><h3 class="famille__nom">Observabilité</h3><ul class="pastilles">
+<li><a class="pastille pastille--petite" href="https://opentelemetry.io/"><img class="logo" src="../../../site/src/assets/stacks/opentelemetry.svg" alt="" width="64" height="64" loading="lazy">OpenTelemetry<span class="sr"> (site officiel)</span></a></li>
+<li><a class="pastille pastille--petite" href="https://prometheus.io/"><img class="logo" src="../../../site/src/assets/stacks/prometheus.svg" alt="" width="64" height="64" loading="lazy">Prometheus<span class="sr"> (site officiel)</span></a></li>
+</ul></div>
+</div></details></section>
+<section class="niveau" data-zone id="ia" aria-labelledby="t-ia"><div class="niveau__tete"><h2 class="titre-4" id="t-ia">Intelligence artificielle</h2><p>Intégrée dans mes projets publics</p></div><div class="ia">
+<div><h3>Assistants et agents</h3><ul class="pastilles"><li><a class="pastille pastille--petite" href="https://claude.com/"><svg class="picto" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5h16v11H10l-4 4v-4H4Z"/><path d="M12 7.5v6M9 10.5h6"/></svg>Claude<span class="sr"> (site officiel)</span></a></li><li><a class="pastille pastille--petite" href="https://openai.com/codex/"><svg class="picto" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10l3 2-3 2M12 15h5"/></svg>Codex<span class="sr"> (site officiel)</span></a></li></ul><ul class="ia__points"><li>Développement assisté</li><li>Intégration en ligne de commande</li><li>Prompts et contexte</li><li>Veille automatisée</li></ul></div>
+<div><h3>Intégration aux applications</h3><ul class="pastilles"><li><a class="pastille pastille--petite" href="https://modelcontextprotocol.io/"><img class="logo" src="../../../site/src/assets/stacks/mcp.svg" alt="" width="64" height="64" loading="lazy">MCP<span class="sr"> (site officiel)</span></a></li></ul><ul class="ia__points"><li>Serveurs et outils MCP</li><li>Schémas JSON</li><li>Permissions et quotas</li></ul></div>
+<div><h3>Synthèse vocale</h3><ul class="pastilles"><li><a class="pastille pastille--petite" href="https://github.com/hexgrad/kokoro"><svg class="picto" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 10v4h3l4 3V7L7 10ZM15 9.5a3.5 3.5 0 0 1 0 5M17.5 7a7 7 0 0 1 0 10"/></svg>Kokoro<span class="sr"> (site officiel)</span></a></li><li><a class="pastille pastille--petite" href="https://github.com/OHF-Voice/piper1-gpl"><svg class="picto" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 11v2M7 9v6M10 6v12M13 9v6M16 7v10M19 11v2"/></svg>Piper<span class="sr"> (site officiel)</span></a></li></ul><ul class="ia__points"><li>Modèles auto-hébergés</li><li>Streaming audio</li><li>Cache des générations</li></ul></div>
+</div></section>
+
+      <section class="niveau" data-zone id="livraison" aria-labelledby="t-livraison">
+        <div class="niveau__tete"><h2 class="titre-4" id="t-livraison">Tests et livraison</h2><p>Construire une fois, livrer la même version</p></div>
+        <figure class="fig">
+          <ol class="chaine" aria-label="La chaîne de livraison">
+            <li><span class="mono gris">1</span><b>Construire une fois</b><p>Une seule image par révision, construite par l’intégration continue.</p></li>
+            <li class="chaine__fleche" aria-hidden="true">→</li>
+            <li><span class="mono gris">2</span><b>Sceller</b><p>L’image porte son empreinte&nbsp;; elle ne sera plus reconstruite.</p><span class="empreinte">empreinte de l’image</span></li>
+            <li class="chaine__fleche" aria-hidden="true">→</li>
+            <li><span class="mono gris">3</span><b>Tester cette image</b><p>Les tests tournent sur l’image qui sera livrée, pas sur une copie.</p><span class="empreinte">même empreinte</span></li>
+            <li class="chaine__fleche" aria-hidden="true">→</li>
+            <li><span class="mono gris">4</span><b>Promouvoir</b><p>Préproduction, puis production&nbsp;: la même empreinte, promue à la main.</p><span class="empreinte">même empreinte</span></li>
+          </ol>
+          <figcaption class="fig__note"><span class="note-maquette">CMP-F1, figure codée. </span>En place sur League Of Data Base&nbsp;: <a href="https://github.com/LINDECKER-Charles/LeagueOfDataBaseFinal/blob/1c9b44703283a482fdcc6ffc5984a6777d66cfe0/.github/workflows/ci.yml#L12">l’intégration continue publique<span class="fl fl--ext" aria-hidden="true">↗</span></a></figcaption>
+        </figure>
+      </section>
+
+      <section class="niveau" data-zone id="humaines" aria-labelledby="t-humaines">
+        <div class="niveau__tete"><h2 class="titre-4" id="t-humaines">Compétences humaines</h2><p>Travailler avec les autres<span class="a-confirmer" title="Ajouter une ligne de fait par compétence, sans lien de projet ? (Q9)">à confirmer</span></p></div>
+        <div class="humaines-cadre">
+        <ul class="humaines">
+          <li class="humaine">
+            <figure class="emplacement" style="--ratio: 4 / 3"><svg class="iso" data-iso="CMP-02" viewBox="-20.4 -100.2 149.9 181.5" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false"><g><path class="i-l0" d="M-6.9 38L17.3 52L12.1 55L-12.1 41Z"/><path class="i-l1" d="M17.3 58L12.1 61L12.1 55L17.3 52Z"/><path class="i-l2" d="M-12.1 47L-12.1 41L12.1 55L12.1 61Z"/></g><g><path class="i-p0" d="M0 -92L121.2 -22L116 -19L-5.2 -89Z"/><path class="i-p1" d="M121.2 70L116 73L116 -19L121.2 -22Z"/><path class="i-p2" d="M-5.2 3L-5.2 -89L116 -19L116 73Z"/></g><path class="i-p0" d="M5 -22.9L31 -7.9L31 -31.9L5 -46.9Z"/><path class="i-p0" d="M43.1 -0.9L69.1 14.1L69.1 -9.9L43.1 -24.9Z"/><path class="i-a0" d="M81.2 21.1L107.2 36.1L107.2 12.1L81.2 -2.9Z"/><path class="i-trait" d="M30.8 -19.8L43 -12.8"/><path class="i-trait" d="M68.9 2.2L81.1 9.2"/></svg><figcaption class="emplacement__corps note-maquette"><span class="emplacement__sujet">Pédagogie</span><span class="emplacement__compo">Tableau, schéma en trois étapes, craie posée.</span></figcaption><p class="emplacement__haut note-maquette"><span class="emplacement__id">CMP-02</span><span class="emplacement__format">1:1 · 480 · IMG (16:10 dans cette direction)</span></p></figure>
+            <div><h3>Pédagogie</h3><ul><li>Expliquer</li><li>Accompagner</li><li>Rendre autonome</li></ul></div>
+          </li>
+          <li class="humaine">
+            <figure class="emplacement" style="--ratio: 4 / 3"><svg class="iso" data-iso="CMP-03" viewBox="-97 -14.4 228.6 144.8" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false"><path class="i-explose" d="M-32.9 41L4.3 30.5"/><g><path class="i-p0" d="M-0.9 7.3L23.4 21.3L7.8 30.3L-16.5 16.3Z"/><path class="i-p1" d="M23.4 23.3L7.8 32.3L7.8 30.3L23.4 21.3Z"/><path class="i-p2" d="M-16.5 18.3L-16.5 16.3L7.8 30.3L7.8 32.3Z"/></g><g><path class="i-p0" d="M-23.4 20.3L0.9 34.3L-14.7 43.3L-39 29.3Z"/><path class="i-p1" d="M0.9 36.3L-14.7 45.3L-14.7 43.3L0.9 34.3Z"/><path class="i-p2" d="M-39 31.3L-39 29.3L-14.7 43.3L-14.7 45.3Z"/></g><path class="i-p2" d="M0 3.8L32.9 22.8L-39.8 64.8L-72.7 45.8Z"/><g><path class="i-p0" d="M37.2 29.3L61.5 43.3L45.9 52.3L21.7 38.3Z"/><path class="i-p1" d="M61.5 45.3L45.9 54.3L45.9 52.3L61.5 43.3Z"/><path class="i-p2" d="M21.7 40.3L21.7 38.3L45.9 52.3L45.9 54.3Z"/></g><g><path class="i-p0" d="M-45.9 33.3L-21.7 47.3L-37.2 56.3L-61.5 42.3Z"/><path class="i-p1" d="M-21.7 49.3L-37.2 58.3L-37.2 56.3L-21.7 47.3Z"/><path class="i-p2" d="M-61.5 44.3L-61.5 42.3L-37.2 56.3L-37.2 58.3Z"/></g><g><path class="i-p0" d="M0 -4L121.2 66L34.6 116L-86.6 46Z"/><path class="i-p1" d="M121.2 70L34.6 120L34.6 116L121.2 66Z"/><path class="i-p2" d="M-86.6 50L-86.6 46L34.6 116L34.6 120Z"/></g><g><path class="i-p0" d="M14.7 42.3L39 56.3L23.4 65.3L-0.9 51.3Z"/><path class="i-p1" d="M39 58.3L23.4 67.3L23.4 65.3L39 56.3Z"/><path class="i-p2" d="M-0.9 53.3L-0.9 51.3L23.4 65.3L23.4 67.3Z"/></g><path class="i-p2" d="M38.1 25.8L71 44.8L-1.7 86.8L-34.6 67.8Z"/><g><path class="i-p0" d="M75.3 51.3L99.6 65.3L84 74.3L59.8 60.3Z"/><path class="i-p1" d="M99.6 67.3L84 76.3L84 74.3L99.6 65.3Z"/><path class="i-p2" d="M59.8 62.3L59.8 60.3L84 74.3L84 76.3Z"/></g><path class="i-p2" d="M76.2 47.8L109.1 66.8L36.4 108.8L3.5 89.8Z"/><g><path class="i-a0" d="M11.3 24.5L35.5 38.5L19.9 47.5L-4.3 33.5Z"/><path class="i-a1" d="M35.5 40.5L19.9 49.5L19.9 47.5L35.5 38.5Z"/><path class="i-a2" d="M-4.3 35.5L-4.3 33.5L19.9 47.5L19.9 49.5Z"/></g></svg><figcaption class="emplacement__corps note-maquette"><span class="emplacement__sujet">Coordination</span><span class="emplacement__compo">Tableau de tâches à colonnes, cartes déplacées par des flèches.</span></figcaption><p class="emplacement__haut note-maquette"><span class="emplacement__id">CMP-03</span><span class="emplacement__format">1:1 · 480 · IMG (16:10 dans cette direction)</span></p></figure>
+            <div><h3>Coordination</h3><ul><li>Accueillir</li><li>Organiser</li><li>Relire</li></ul></div>
+          </li>
+          <li class="humaine">
+            <figure class="emplacement" style="--ratio: 4 / 3"><svg class="iso" data-iso="CMP-04" viewBox="-113.1 -15.2 202 130.4" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false"><g><path class="i-p0" d="M0 -6L79.7 40L-24.2 100L-103.9 54Z"/><path class="i-p1" d="M79.7 46L-24.2 106L-24.2 100L79.7 40Z"/><path class="i-p2" d="M-103.9 60L-103.9 54L-24.2 100L-24.2 106Z"/></g><path class="i-p0" d="M0 1.8L62.4 37.8L-27.7 89.8L-90.1 53.8Z"/><path class="i-trait" d="M-3.5 11.6L41.6 37.6"/><path class="i-trait" d="M-15.6 18.6L12.1 34.6"/><path class="i-trait" d="M-27.7 25.6L17.3 51.6"/><path class="i-trait" d="M-39.8 32.6L-12.1 48.6"/><path class="i-trait" d="M-52 39.6L-6.9 65.6"/><path class="i-trait" d="M-64.1 46.6L-36.4 62.6"/><circle class="i-a0" cx="45" cy="50" r="4"/><circle class="i-a0" cx="20.8" cy="64" r="4"/><circle class="i-a0" cx="8.7" cy="71" r="4"/></svg><figcaption class="emplacement__corps note-maquette"><span class="emplacement__sujet">Écoute</span><span class="emplacement__compo">Cahier des charges annoté de points d’interrogation dans la marge.</span></figcaption><p class="emplacement__haut note-maquette"><span class="emplacement__id">CMP-04</span><span class="emplacement__format">1:1 · 480 · IMG (16:10 dans cette direction)</span></p></figure>
+            <div><h3>Écoute et cadrage</h3><ul><li>Comprendre le besoin</li><li>Échanger</li><li>Cadrer</li></ul></div>
+          </li>
+          <li class="humaine">
+            <figure class="emplacement" style="--ratio: 4 / 3"><svg class="iso" data-iso="CMP-05" viewBox="-35.7 -88.4 137.7 184.8" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false"><g><path class="i-p0" d="M0 -80L58.9 -46L55.4 -44L-3.5 -78Z"/><path class="i-p1" d="M58.9 -2L55.4 0L55.4 -44L58.9 -46Z"/><path class="i-p2" d="M-3.5 -34L-3.5 -78L55.4 -44L55.4 0Z"/></g><g><path class="i-l1" d="M-27.3 50L-27.3 72A13.5 7.8 0 0 0 -0.4 72L-0.4 50Z"/><ellipse class="i-l0" cx="-13.9" cy="50" rx="13.5" ry="7.8"/></g><g><path class="i-p0" d="M-13.9 40L-3.5 46L-13.9 52L-24.2 46Z"/><path class="i-p1" d="M-3.5 50L-13.9 56L-13.9 52L-3.5 46Z"/><path class="i-p2" d="M-24.2 50L-24.2 46L-13.9 52L-13.9 56Z"/></g><g><path class="i-a0" d="M34.6 8L93.5 42L90.1 44L31.2 10Z"/><path class="i-a1" d="M93.5 86L90.1 88L90.1 44L93.5 42Z"/><path class="i-a2" d="M31.2 54L31.2 10L90.1 44L90.1 88Z"/></g></svg><figcaption class="emplacement__corps note-maquette"><span class="emplacement__sujet">Communication</span><span class="emplacement__compo">Deux bulles de dialogue qui se répondent, la lanterne entre elles.</span></figcaption><p class="emplacement__haut note-maquette"><span class="emplacement__id">CMP-05</span><span class="emplacement__format">1:1 · 480 · IMG (16:10 dans cette direction)</span></p></figure>
+            <div><h3>Communication directe</h3><ul><li>Parler franchement</li><li>Échanger sincèrement</li><li>Avancer ensemble</li></ul></div>
+          </li>
+          <li class="humaine">
+            <figure class="emplacement" style="--ratio: 4 / 3"><svg class="iso" data-iso="CMP-06" viewBox="-84 7.8 120.2 97.2" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false"><path class="i-explose" d="M-52 82L-52 58"/><g><path class="i-p0" d="M-66.3 41.9L-13.1 46.7L-25.3 91.4L-78.6 86.6Z"/><path class="i-p1" d="M-13.1 47.7L-25.3 92.4L-25.3 91.4L-13.1 46.7Z"/><path class="i-p2" d="M-78.6 87.6L-78.6 86.6L-25.3 91.4L-25.3 92.4Z"/></g><g><path class="i-p0" d="M-46.1 40.1L3.5 52.2L-27.2 93.9L-76.8 81.7Z"/><path class="i-p1" d="M3.5 53.2L-27.2 94.9L-27.2 93.9L3.5 52.2Z"/><path class="i-p2" d="M-76.8 82.7L-76.8 81.7L-27.2 93.9L-27.2 94.9Z"/></g><g><path class="i-p0" d="M-26.3 41.1L16.7 59.8L-30.4 96L-73.5 77.2Z"/><path class="i-p1" d="M16.7 60.8L-30.4 97L-30.4 96L16.7 59.8Z"/><path class="i-p2" d="M-73.5 78.2L-73.5 77.2L-30.4 96L-30.4 97Z"/></g><g><path class="i-p0" d="M-5.6 45.7L26.9 70.6L-35.7 97.8L-68.2 73Z"/><path class="i-p1" d="M26.9 71.6L-35.7 98.8L-35.7 97.8L26.9 70.6Z"/><path class="i-p2" d="M-68.2 74L-68.2 73L-35.7 97.8L-35.7 98.8Z"/></g><g><path class="i-p0" d="M9.7 52.2L30.7 80.8L-41.4 98.5L-62.5 69.9Z"/><path class="i-p1" d="M30.7 81.8L-41.4 99.5L-41.4 98.5L30.7 80.8Z"/><path class="i-p2" d="M-62.5 70.9L-62.5 69.9L-41.4 98.5L-41.4 99.5Z"/></g><g><path class="i-p0" d="M21.2 60.6L29.7 91.3L-47.7 98.4L-56.2 67.6Z"/><path class="i-p1" d="M29.7 92.3L-47.7 99.4L-47.7 98.4L29.7 91.3Z"/><path class="i-p2" d="M-56.2 68.6L-56.2 67.6L-47.7 98.4L-47.7 99.4Z"/></g><g><path class="i-a0" d="M-18.2 13.3L21.2 34.5L-32.3 67.6L-71.7 46.4Z"/><path class="i-a1" d="M21.2 35.5L-32.3 68.6L-32.3 67.6L21.2 34.5Z"/><path class="i-a2" d="M-71.7 47.4L-71.7 46.4L-32.3 67.6L-32.3 68.6Z"/></g></svg><figcaption class="emplacement__corps note-maquette"><span class="emplacement__sujet">Créativité</span><span class="emplacement__compo">Une carte retournée à contre-courant au milieu d’un éventail de cartes identiques.</span></figcaption><p class="emplacement__haut note-maquette"><span class="emplacement__id">CMP-06</span><span class="emplacement__format">1:1 · 480 · IMG (16:10 dans cette direction)</span></p></figure>
+            <div><h3>Créativité</h3><ul><li>Expérimenter</li><li>Réinventer</li><li>Aller à contre-courant</li></ul></div>
+          </li>
+          <li class="humaine">
+            <figure class="emplacement" style="--ratio: 4 / 3"><svg class="iso" data-iso="CMP-07" viewBox="-96 -23.4 205.8 154.7" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false"><path class="i-trait" d="M69.3 104L60.4 108.2L50.2 111.5L38.9 113.7L26.8 114.8L14.3 114.7L1.5 113.4L-11.1 111.1L-23.2 107.7L-34.6 103.3L-45 98L-54.1 92L-61.8 85.4L-67.7 78.4L-71.8 71.1L-73.9 63.8L-74.1 56.5L-72.2 49.5L-68.4 43L-62.8 37.1L-55.4 32L-46.5 27.8L-36.3 24.5L-25 22.3L-13 21.2L-0.4 21.3L12.3 22.6L24.9 24.9L37.1 28.3L48.5 32.7L58.9 38L68 44L75.6 50.6L81.5 57.6L85.6 64.9L87.8 72.2L87.9 79.5L86.1 86.5L82.3 93L76.6 98.9L69.3 104"/><path class="i-trait-fort" d="M29.5 110.3L16.8 114.8L28.5 120.1"/><path class="i-trait-fort" d="M-15.7 25.7L-3 21.2L-14.7 15.9"/><g><path class="i-p0" d="M-55.4 -14L-24.2 4L-55.4 22L-86.6 4Z"/><path class="i-p1" d="M-24.2 32L-55.4 50L-55.4 22L-24.2 4Z"/><path class="i-p2" d="M-86.6 32L-86.6 4L-55.4 22L-55.4 50Z"/></g><circle class="i-l0" cx="-45" cy="93" r="4.4"/><g><path class="i-a0" d="M69.3 58L100.5 76L69.3 94L38.1 76Z"/><path class="i-a1" d="M100.5 104L69.3 122L69.3 94L100.5 76Z"/><path class="i-a2" d="M38.1 104L38.1 76L69.3 94L69.3 122Z"/></g></svg><figcaption class="emplacement__corps note-maquette"><span class="emplacement__sujet">Adaptation</span><span class="emplacement__compo">Boucle tester → ajuster dessinée en ruban de Möbius.</span></figcaption><p class="emplacement__haut note-maquette"><span class="emplacement__id">CMP-07</span><span class="emplacement__format">1:1 · 480 · IMG (16:10 dans cette direction)</span></p></figure>
+            <div><h3>Apprentissage et adaptation</h3><ul><li>Comprendre</li><li>Tester</li><li>Ajuster</li></ul></div>
+          </li>
+          <li class="humaine">
+            <figure class="emplacement" style="--ratio: 4 / 3"><svg class="iso" data-iso="CMP-08" viewBox="-57.7 -93.2 170.8 202.4" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false"><g><path class="i-p0" d="M0 -84L103.9 -24L98.7 -21L-5.2 -81Z"/><path class="i-p1" d="M103.9 60L98.7 63L98.7 -21L103.9 -24Z"/><path class="i-p2" d="M-5.2 3L-5.2 -81L98.7 -21L98.7 63Z"/></g><path class="i-p0" d="M1.6 -8.9L25.8 5.1L25.8 -10.9L1.6 -24.9Z"/><g><path class="i-a0" d="M-6.9 30L48.5 62L6.9 86L-48.5 54Z"/><path class="i-a1" d="M48.5 76L6.9 100L6.9 86L48.5 62Z"/><path class="i-a2" d="M-48.5 68L-48.5 54L6.9 86L6.9 100Z"/></g><path class="i-p0" d="M1.6 -30.9L25.8 -16.9L25.8 -32.9L1.6 -46.9Z"/><path class="i-p0" d="M1.6 -52.9L25.8 -38.9L25.8 -54.9L1.6 -68.9Z"/><path class="i-p0" d="M34.5 -11.9L58.7 2.1L58.7 -13.9L34.5 -27.9Z"/><path class="i-p0" d="M-6.9 33.8L41.6 61.8L6.9 81.8L-41.6 53.8Z"/><path class="i-p0" d="M34.5 -33.9L58.7 -19.9L58.7 -35.9L34.5 -49.9Z"/><path class="i-p0" d="M67.4 7.1L91.6 21.1L91.6 5.1L67.4 -8.9Z"/><path class="i-p0" d="M67.4 -14.9L91.6 -0.9L91.6 -16.9L67.4 -30.9Z"/></svg><figcaption class="emplacement__corps note-maquette"><span class="emplacement__sujet">Méthodes de travail</span><span class="emplacement__compo">Tableau Kanban et document relié.</span></figcaption><p class="emplacement__haut note-maquette"><span class="emplacement__id">CMP-08</span><span class="emplacement__format">1:1 · 480 · IMG (16:10 dans cette direction)</span></p></figure>
+            <div><h3>Méthodes de travail</h3><ul><li>Agile et Scrum</li><li>Cahiers des charges</li><li>Documentation</li></ul></div>
+          </li>
+        </ul>
+          <div class="suite-page suite-page--humaines">
+        <p>Une équipe à outiller, une pile à faire évoluer&nbsp;: parlons-en.<span class="a-confirmer" title="Ton de l’invitation (questions E2)">ton</span></p>
+        <a class="bouton bouton--plein" href="hors-maquette.html?page=contact">Discutons<span class="fl fl--int" aria-hidden="true">→</span></a>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+<footer class="pied reperes">
+  <div class="reperes__colonnes" aria-hidden="true"><div class="conteneur"><div class="grille"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div></div>
+  <div class="conteneur">
+    <div class="cartouche">
+      <div class="cartouche__marque">
+        <img class="pied__embleme pied__embleme--jour" src="../../../site/src/assets/marque/logo-symbole.webp" width="352" height="245" alt="">
+        <img class="pied__embleme pied__embleme--nuit" src="../../assets/marque/logo-symbole-nuit.png" width="352" height="245" alt="">
+        <img class="pied__nom" src="../../../site/src/assets/marque/logo-nom.webp" width="756" height="118" alt="Charles Lindecker">
+        <p class="petit gris">Architecte logiciel, à Mulhouse.</p>
+      </div>
+      <nav aria-label="Pages">
+        <h2>Pages</h2>
+        <ul>
+          <li><a href="accueil.html">Accueil</a></li>
+          <li><a href="projets.html">Projets</a></li>
+          <li><a href="competences.html">Parcours</a></li>
+          <li><a href="hors-maquette.html?page=contact">Contact</a></li>
+        </ul>
+      </nav>
+      <div>
+        <h2>Ailleurs</h2>
+        <ul>
+          <li><a href="https://github.com/LINDECKER-Charles">GitHub<span class="fl fl--ext" aria-hidden="true">↗</span></a></li>
+          <li><a href="https://www.linkedin.com/in/charles-lindecker/">LinkedIn<span class="fl fl--ext" aria-hidden="true">↗</span></a></li>
+        </ul>
+      </div>
+      <div class="cartouche__ecrire">
+        <h2>Écrire</h2>
+        <p><a class="pied__courriel" href="mailto:charles.lindecker@outlook.fr" data-evenement="contact-email">charles.lindecker@outlook.fr</a></p>
+        <button class="copier" type="button" data-copier="charles.lindecker@outlook.fr"><span data-copier-libelle>Copier l’adresse</span></button>
+      </div>
+      <div class="cartouche__colophon colophon">
+        <span>Composé en Archivo, JetBrains Mono et Newsreader · <a href="hors-maquette.html?page=mentions-legales">Mentions légales</a></span>
+        <span class="mono note-maquette">Maquette B « Banc d’essai » · planche&nbsp;4/4 · compétences</span>
+        <button class="notes-bascule" type="button" data-notes aria-pressed="false">Notes de maquette</button>
+      </div>
+    </div>
+  </div>
+</footer>
+<div class="balayage" aria-hidden="true"></div>
+</body>
+</html>

@@ -1,27 +1,27 @@
 ---
-version: 1
+version: 2
 slug: "site-src-pages-projets-league-of-database-astro"
 primary_target: "site/src/pages/projets/league-of-database.astro"
-related_targets: ["site/src/styles/league-of-database.css","site/src/scripts/league-captures.ts","site/src/components/projets/CaptureLeague.astro"]
+related_targets: ["site/src/config/league-of-database.ts","site/src/components/projets/league/ComparaisonAhri.astro","site/src/components/projets/league/CaptureLeague.astro","site/src/components/projets/league/OngletsCaptures.astro","site/src/components/projets/gabarit/EnTeteProjet.astro"]
 ---
 
-# League Of Database — page de projet
+# League Of Data Base — page de projet
 
 Surface : site/src/pages/projets/league-of-database.astro
 Mode : Experience, avec une invitation à essayer l’application.
 
-Besoin confirmé le 13 octobre 2026 : retrouver les valeurs d’un ancien patch. Construction directe dans le site, choix explicite de Charles. Identité « Mode d’emploi » fixée par le brief ; refonte limitée à cette étude de cas. Preuves : captures authentiques par patch, langues et catalogues ; aucun écran de liste de patchs mis en avant.
+Besoin confirmé le 13 octobre 2026 : retrouver les valeurs d’un ancien patch. Construction directe dans le site, choix explicite de Charles. Refaite le 13 octobre 2026 dans la direction « Lanterne » (DESIGN.md), sur le gabarit commun des pages de projet ; deuxième de la vitrine, étiquette « Un système en production ». Nom canonique « League Of Data Base », marqué « nom à confirmer » tant que Charles ne l’a pas validé. Preuves : captures authentiques par patch, langues et catalogues ; aucune liste de patchs mise en avant.
 
 ## Direction contract
 
-THESIS : rendre visible la différence entre une fiche actuelle et les valeurs d’un ancien patch. L’application est une encyclopédie multilingue conservant les versions de Data Dragon.
+THESIS : rendre visible la différence entre une fiche actuelle et les valeurs d’un ancien patch. L’application est une encyclopédie multilingue qui conserve les versions de Data Dragon, réécrite et basculée sans perte le 4 octobre 2026.
 
-OWN-WORLD : papier et encre du portfolio, bleu pour les actions, accent pétrole de cette étude de cas. Grands écrans authentiques sombres, légendes nettes, règles fines, typographie Atkinson et notes Newsreader.
+OWN-WORLD : le système « Lanterne » du site, sans palette propre : pierre et encre le jour, captures sombres posées dans un acte de veille, lanterne sur la zone éclairée la nuit. Instrument Serif pour les titres, Instrument Sans pour le texte et les chiffres-preuves. L’ancien accent pétrole de la direction « Mode d’emploi » n’existe plus.
 
-STORY : comprendre pourquoi le contexte de version compte, retrouver Ahri dans deux patchs, explorer les données disponibles, changer de langue, puis découvrir l’exploitation.
+STORY : Ahri d’un patch à l’autre, tout un état du jeu, les fiches à explorer, autour de l’encyclopédie, les pièges des données, la réécriture, la production (sauvegardes et mesure, activation « à confirmer »), comment je l’ai construit, ce que j’en retiens.
 
-FIRST VIEWPORT : titre éditorial ample et besoin explicite au-dessus d’un grand écran d’Ahri ; sa version est lisible. Action vers l’accueil de l’application. Aucun tableau de patchs, aucune miniature de téléphone qui masque un écran.
+FIRST VIEWPORT : l’en-tête commun (nom canonique, étiquette de preuve, titre, chapeau, actions, visuel, repères chiffrés, fiche technique en tableau à filets) tient au premier écran à 1 440 × 900 ; ses éléments [data-pli] sont visibles à 1 440 et 390 px.
 
-FORM : fiche d’étude de cas guidée par une question et sa preuve, adaptée à la demande précise dans le monde déjà validé. Interaction : passer entre deux patchs vérifiés dans une démonstration explicitement constituée de captures. Pas de nouvelle identité à sélectionner.
+FORM : Ahri au niveau 1 dans deux patchs, côte à côte : un tableau HTML des valeurs relevées, un seul surlignage, puis les deux panneaux capturés, agrandissables dans la visionneuse partagée. Onglets de captures en radios natives, utilisables sans JavaScript. Aucune nouvelle identité.
 
-FINISH : unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+FINISH : relu et documenté ; chaque capture porte sa provenance, chaque chiffre sa source et sa date dans « Sources et méthode ».

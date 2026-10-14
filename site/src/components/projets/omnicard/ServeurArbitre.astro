@@ -1,0 +1,76 @@
+---
+/**
+ * OMN-04 · Le serveur arbitre : deux navigateurs envoient leur action à la
+ * table d’arbitre, qui est le serveur ; elle renvoie à chacun l’état de la
+ * partie. Dessin écrit à la main (src/assets/visuels/omnicard/OMN-04.svg),
+ * inséré dans la page pour que ses calques suivent les jetons, jour et nuit :
+ * trait d’encre, un aplat de surface et la lumière de la lanterne, seule
+ * source de la scène.
+ *
+ *   <ServeurArbitre class="oc-arbitre__visuel" />
+ *
+ * Les intitulés des trois étapes restent en HTML, à côté (TrajetAction).
+ */
+import dessin from '../../../assets/visuels/omnicard/OMN-04.svg?raw';
+import { visuelParId } from '../../../config/visuels';
+
+interface Props {
+  class?: string;
+}
+
+const { class: classe } = Astro.props;
+const alt = visuelParId('OMN-04')?.alt ?? '';
+const svg = dessin
+  .replace(/<title>[\s\S]*?<\/title>/, '')
+  .replace(
+    /<svg\b[^>]*>/,
+    `<svg class="arbitre__dessin" viewBox="0 0 320 180" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="${alt}" focusable="false">`,
+  );
+---
+
+<figure class:list={['arbitre', classe]} data-visuel="OMN-04">
+  <Fragment set:html={svg} />
+</figure>
+
+<style>
+  .arbitre {
+    margin: 0;
+    color: var(--encre);
+  }
+
+  .arbitre :global(.arbitre__dessin) {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .arbitre :global(.oa-aplat) {
+    fill: var(--surface);
+  }
+
+  .arbitre :global(.oa-fin),
+  .arbitre :global(.oa-hachure) {
+    stroke: var(--trait);
+  }
+
+  .arbitre :global(.oa-halo) {
+    fill: var(--lanterne);
+    opacity: 0.22;
+    filter: blur(6px);
+  }
+
+  .arbitre :global(.oa-flamme) {
+    fill: var(--lanterne);
+    stroke: var(--laiton);
+  }
+
+  .arbitre :global(.oa-voyant) {
+    fill: var(--laiton);
+  }
+
+  /* L’état de la partie repart de l’arbitre : la couleur de sa lumière. */
+  .arbitre :global(.oa-etat) {
+    stroke: var(--laiton);
+  }
+</style>

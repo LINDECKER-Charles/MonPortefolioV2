@@ -103,6 +103,35 @@ export function decouper(html) {
 /* ------------------------------------------------------------------------ */
 
 /**
+ * Les adresses d’un attribut `srcset`, découpé comme le fait le navigateur
+ * (spécification HTML) : une adresse court jusqu’au premier blanc, virgules
+ * comprises, et ses descripteurs jusqu’à la virgule suivante. Une adresse
+ * `data:` (une source neutre) garde donc sa virgule.
+ * @param {string} srcset
+ * @returns {string[]}
+ */
+export function urlsDuSrcset(srcset) {
+  const urls = [];
+  let i = 0;
+  while (i < srcset.length) {
+    while (i < srcset.length && /[\s,]/.test(srcset[i])) i++;
+    if (i >= srcset.length) break;
+    let j = i;
+    while (j < srcset.length && !/\s/.test(srcset[j])) j++;
+    const url = srcset.slice(i, j);
+    if (url.endsWith(',')) {
+      urls.push(url.replace(/,+$/, ''));
+      i = j;
+      continue;
+    }
+    urls.push(url);
+    while (j < srcset.length && srcset[j] !== ',') j++;
+    i = j + 1;
+  }
+  return urls;
+}
+
+/**
  * Fautes typographiques d'un texte visible. Renvoie une liste d'extraits.
  * Les espaces ordinaires avant « : ; ! ? » sont refusés, comme l'apostrophe
  * droite : une heure (« 14:30 ») ou une adresse ne passent pas par ici.
@@ -212,9 +241,7 @@ export function analyser(html) {
         page.liens.push({ url: attrs.get('src') ?? '', balise: 'img' });
         break;
       case 'source':
-        for (const url of (attrs.get('srcset') ?? '').split(',').map((c) => c.trim().split(/\s+/)[0]).filter(Boolean)) {
-          page.liens.push({ url, balise: 'source' });
-        }
+        for (const url of urlsDuSrcset(attrs.get('srcset') ?? '')) page.liens.push({ url, balise: 'source' });
         break;
       case 'script':
         if (attrs.has('src')) page.scripts.push(attrs.get('src') ?? '');

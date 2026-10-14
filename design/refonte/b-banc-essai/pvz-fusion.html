@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PvZ Fusion, pôle francophone — Charles Lindecker</title>
+<meta name="description" content="Traduire un jeu, faire grandir une équipe : comment j’ai recruté, formé et outillé le pôle francophone de PvZ Fusion jusqu’à rattraper le retard.">
+<meta name="theme-color" content="#FAFAF8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=JetBrains+Mono:wght@400..600&amp;family=Newsreader:ital,opsz,wght@1,6..72,400&amp;display=swap">
+<link rel="stylesheet" href="style.css">
+<script src="theme.js"></script>
+<script src="maquette.js" defer></script>
+</head>
+<body>
+<a class="evitement" href="#contenu">Aller au contenu</a>
+<svg class="defs-svg" aria-hidden="true" focusable="false"><defs><pattern id="hachure" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><rect class="hachure__fond" width="6" height="6"/><line class="hachure__trait" x1="1" y1="0" x2="1" y2="6"/></pattern></defs></svg>
+
+<header class="entete">
+  <div class="conteneur entete__barre">
+    <a class="marque" href="accueil.html" aria-label="Charles Lindecker, accueil">
+      <img class="marque__embleme marque__embleme--jour" src="../../../site/src/assets/marque/logo-symbole.webp" width="352" height="245" alt="">
+      <img class="marque__embleme marque__embleme--nuit" src="../../assets/marque/logo-symbole-nuit.png" width="352" height="245" alt="">
+      <img class="marque__nom" src="../../../site/src/assets/marque/logo-nom.webp" width="756" height="118" alt="">
+    </a>
+    <nav class="nav-principale" aria-label="Principale">
+      <a href="projets.html" aria-current="true">Projets</a>
+      <a href="competences.html">Parcours</a>
+      <a href="hors-maquette.html?page=contact">Contact</a>
+    </nav>
+    <div class="entete__mobile">
+      <details class="deroulant" data-sommaire>
+        <summary>Sommaire</summary>
+        <div class="deroulant__panneau">
+          <a href="#depart"><span>Le point de départ</span><span class="mono">01</span></a>
+          <a href="#equipe"><span>L’équipe</span><span class="mono">02</span></a>
+          <a href="#semaine"><span>La semaine type</span><span class="mono">03</span></a>
+          <a href="#resultat"><span>Le résultat</span><span class="mono">04</span></a>
+          <a href="#construction"><span>Comment je l’ai construit</span><span class="mono">05</span></a>
+          <a href="#retenir"><span>Ce que j’en retiens</span><span class="mono">06</span></a>
+        </div>
+      </details>
+      <a class="entete__contact" href="hors-maquette.html?page=contact">Contact</a>
+      <details class="deroulant">
+        <summary>Menu</summary>
+        <nav class="deroulant__panneau" aria-label="Principale, mobile">
+          <a href="accueil.html">Accueil</a>
+          <a href="projets.html" aria-current="true">Projets</a>
+          <a href="competences.html">Parcours</a>
+          <a href="hors-maquette.html?page=contact">Contact</a>
+        </nav>
+      </details>
+    </div>
+    <button class="bascule" type="button" data-theme-bascule aria-label="Mode nuit" aria-pressed="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle class="lanterne__halo" cx="12" cy="14.5" r="11"/>
+        <path class="lanterne__corps" d="M12 1.6a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 4.6v1.6M6.8 9.4 12 6.2l5.2 3.2ZM8 9.4v10M16 9.4v10M6.6 19.4h10.8M8 21.6h8M7.4 19.4l.6 2.2M16.6 19.4l-.6 2.2"/>
+        <path class="lanterne__flamme" d="M12 11.2c1.6 1.7 2.1 2.9 2.1 4a2.1 2.1 0 0 1-4.2 0c0-1.1.5-2.3 2.1-4Z"/>
+      </svg>
+    </button>
+  </div>
+  <div class="progression" aria-hidden="true"><span></span></div>
+</header>
+
+<main id="contenu" tabindex="-1">
+
+  <!-- Gabarit commun E5 · 1 En-tête et 2 Repères -------------------------->
+  <section class="projet-tete reperes" aria-labelledby="titre-page" data-pli data-zone>
+    <div class="reperes__colonnes" aria-hidden="true"><div class="conteneur"><div class="grille"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div></div>
+    <div class="conteneur">
+      <nav aria-label="Fil d’Ariane"><ol class="fil"><li><a href="projets.html">Projets</a></li><li><span aria-current="page">PvZ Fusion, pôle francophone</span></li></ol></nav>
+      <div class="grille projet-tete__grille">
+        <div class="projet-tete__texte">
+          <p class="gabarit-marque note-maquette" aria-hidden="true">gabarit commun · 1 en-tête</p>
+          <p class="projet-tete__nom"><span>PvZ Fusion, pôle francophone</span><span class="projet__preuve">Mener une équipe</span><span class="mono projet-tete__ordre note-maquette">01 / 05</span></p>
+          <h1 class="titre-1 titre-1--projet" id="titre-page">Traduire un jeu. Faire grandir une équipe.</h1>
+          <p class="chapo">PvZ Fusion change toutes les deux ou trois semaines. Quand je suis arrivé, la traduction française avait plusieurs versions de retard. Dix mois plus tard, avec l’équipe que j’ai recrutée et formée, il ne manquait plus une seule entrée.</p>
+          <p class="projet-tete__actions"><a class="lien-fort" href="#construction">Comment je l’ai construit<span class="fl fl--ancre" aria-hidden="true">↓</span></a></p>
+        </div>
+
+        <div class="projet-tete__releves">
+          <p class="gabarit-marque note-maquette" aria-hidden="true">gabarit commun · 2 repères chiffrés</p>
+          <dl class="releves" aria-label="Trois repères">
+            <div class="releve">
+              <dt class="sr">Personnes formées</dt>
+              <dd><span class="releve__valeur"><mark class="mesure" data-source="questions C7, 2026-10-13">20</mark></span><span class="releve__libelle">personnes formées au pôle</span><span class="releve__source mono">témoignage · 13/10/2026</span></dd>
+            </div>
+            <div class="releve">
+              <dt class="sr">Entrées manquantes</dt>
+              <dd><span class="releve__valeur">0</span><span class="releve__libelle">entrée sans équivalent français en août 2026, contre 55&nbsp;% à l’arrivée</span><span class="releve__source mono">relevé · 15/08/2026<span class="a-confirmer" title="Relevé de l’audit du 13/10/2026, à consigner dans la matière première (C1)">à consigner</span></span></dd>
+            </div>
+            <div class="releve">
+              <dt class="sr">PR fusionnées</dt>
+              <dd><span class="releve__valeur">35</span><span class="releve__libelle">pull requests fusionnées dans le projet officiel</span><span class="releve__source mono">16/10/2025 → 26/09/2026 · public</span></dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="projet-tete__visuel">
+          <figure class="emplacement" style="--ratio: 4 / 3">
+            <svg class="iso" data-iso="PVZ-01" viewBox="-140.1 -35.9 415.3 272.8" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false"><g><path class="i-p0" d="M0 0L207.8 120L86.6 190L-121.2 70Z"/><path class="i-p1" d="M207.8 148L86.6 218L86.6 190L207.8 120Z"/><path class="i-p2" d="M-121.2 98L-121.2 70L86.6 190L86.6 218Z"/></g><g><path class="i-p1" d="M-8.6 2L-8.6 20A8.6 4.9 0 0 0 8.6 20L8.6 2Z"/><ellipse class="i-p0" cx="0" cy="2" rx="8.6" ry="4.9"/></g><circle class="i-p0" cx="0" cy="-7" r="10"/><g><path class="i-p1" d="M-43.2 22L-43.2 40A8.6 4.9 0 0 0 -26.1 40L-26.1 22Z"/><ellipse class="i-p0" cx="-34.6" cy="22" rx="8.6" ry="4.9"/></g><g><path class="i-p0" d="M13.9 -8L14.9 -7.4L6.2 -2.4L5.2 -3Z"/><path class="i-p1" d="M14.9 24.6L6.2 29.6L6.2 -2.4L14.9 -7.4Z"/><path class="i-p2" d="M5.2 29L5.2 -3L6.2 -2.4L6.2 29.6Z"/></g><g><path class="i-p1" d="M27.8 23L27.8 41A8.6 4.9 0 0 0 44.9 41L44.9 23Z"/><ellipse class="i-p0" cx="36.4" cy="23" rx="8.6" ry="4.9"/></g><circle class="i-p0" cx="-34.6" cy="13" r="10"/><g><path class="i-p1" d="M-77.9 42L-77.9 60A8.6 4.9 0 0 0 -60.7 60L-60.7 42Z"/><ellipse class="i-p0" cx="-69.3" cy="42" rx="8.6" ry="4.9"/></g><circle class="i-p0" cx="36.4" cy="14" r="10"/><g><path class="i-p1" d="M-6.8 43L-6.8 61A8.6 4.9 0 0 0 10.3 61L10.3 43Z"/><ellipse class="i-p0" cx="1.7" cy="43" rx="8.6" ry="4.9"/></g><g><path class="i-p1" d="M64.2 44L64.2 62A8.6 4.9 0 0 0 81.3 62L81.3 44Z"/><ellipse class="i-p0" cx="72.7" cy="44" rx="8.6" ry="4.9"/></g><circle class="i-p0" cx="-69.3" cy="33" r="10"/><circle class="i-p0" cx="1.7" cy="34" r="10"/><g><path class="i-p0" d="M-55.4 32L-54.4 32.6L-63 37.6L-64.1 37Z"/><path class="i-p1" d="M-54.4 64.6L-63 69.6L-63 37.6L-54.4 32.6Z"/><path class="i-p2" d="M-64.1 69L-64.1 37L-63 37.6L-63 69.6Z"/></g><g><path class="i-p1" d="M-41.5 63L-41.5 81A8.6 4.9 0 0 0 -24.3 81L-24.3 63Z"/><ellipse class="i-p0" cx="-32.9" cy="63" rx="8.6" ry="4.9"/></g><circle class="i-p0" cx="72.7" cy="35" r="10"/><g><path class="i-p0" d="M15.6 33L16.6 33.6L8 38.6L6.9 38Z"/><path class="i-p1" d="M16.6 65.6L8 70.6L8 38.6L16.6 33.6Z"/><path class="i-p2" d="M6.9 70L6.9 38L8 38.6L8 70.6Z"/></g><g><path class="i-p1" d="M29.5 64L29.5 82A8.6 4.9 0 0 0 46.7 82L46.7 64Z"/><ellipse class="i-p0" cx="38.1" cy="64" rx="8.6" ry="4.9"/></g><g><path class="i-a0" d="M86.6 34L87.6 34.6L79 39.6L77.9 39Z"/><path class="i-a1" d="M87.6 66.6L79 71.6L79 39.6L87.6 34.6Z"/><path class="i-a2" d="M77.9 71L77.9 39L79 39.6L79 71.6Z"/></g><g><path class="i-p1" d="M100.5 65L100.5 83A8.6 4.9 0 0 0 117.7 83L117.7 65Z"/><ellipse class="i-p0" cx="109.1" cy="65" rx="8.6" ry="4.9"/></g><circle class="i-p0" cx="-32.9" cy="54" r="10"/><g><path class="i-p1" d="M-104.8 80.2L-104.8 100A7.8 4.5 0 0 0 -89.2 100L-89.2 80.2Z"/><ellipse class="i-p0" cx="-97" cy="80.2" rx="7.8" ry="4.5"/></g><circle class="i-p0" cx="38.1" cy="55" r="10"/><g><path class="i-p1" d="M-5.1 84L-5.1 102A8.6 4.9 0 0 0 12 102L12 84Z"/><ellipse class="i-p0" cx="3.5" cy="84" rx="8.6" ry="4.9"/></g><circle class="i-p0" cx="109.1" cy="56" r="10"/><g><path class="i-p1" d="M65.9 85L65.9 103A8.6 4.9 0 0 0 83.1 103L83.1 85Z"/><ellipse class="i-p0" cx="74.5" cy="85" rx="8.6" ry="4.9"/></g><g><path class="i-p1" d="M136.9 86L136.9 104A8.6 4.9 0 0 0 154.1 104L154.1 86Z"/><ellipse class="i-p0" cx="145.5" cy="86" rx="8.6" ry="4.9"/></g><circle class="i-p0" cx="-97" cy="74.2" r="5.4"/><circle class="i-p0" cx="3.5" cy="75" r="10"/><circle class="i-p0" cx="74.5" cy="76" r="10"/><g><path class="i-a0" d="M17.3 74L18.4 74.6L9.7 79.6L8.7 79Z"/><path class="i-a1" d="M18.4 106.6L9.7 111.6L9.7 79.6L18.4 74.6Z"/><path class="i-a2" d="M8.7 111L8.7 79L9.7 79.6L9.7 111.6Z"/></g><g><path class="i-p1" d="M31.3 105L31.3 123A8.6 4.9 0 0 0 48.4 123L48.4 105Z"/><ellipse class="i-p0" cx="39.8" cy="105" rx="8.6" ry="4.9"/></g><circle class="i-p0" cx="145.5" cy="77" r="10"/><g><path class="i-a0" d="M88.3 75L89.4 75.6L80.7 80.6L79.7 80Z"/><path class="i-a1" d="M89.4 107.6L80.7 112.6L80.7 80.6L89.4 75.6Z"/><path class="i-a2" d="M79.7 112L79.7 80L80.7 80.6L80.7 112.6Z"/></g><g><path class="i-p1" d="M102.3 106L102.3 124A8.6 4.9 0 0 0 119.4 124L119.4 106Z"/><ellipse class="i-p0" cx="110.9" cy="106" rx="8.6" ry="4.9"/></g><circle class="i-p0" cx="39.8" cy="96" r="10"/><circle class="i-p0" cx="110.9" cy="97" r="10"/><g><path class="i-p1" d="M67.6 126L67.6 144A8.6 4.9 0 0 0 84.8 144L84.8 126Z"/><ellipse class="i-p0" cx="76.2" cy="126" rx="8.6" ry="4.9"/></g><circle class="i-p0" cx="76.2" cy="117" r="10"/><g><path class="i-p1" d="M6 144.2L6 164A7.8 4.5 0 0 0 21.7 164L21.7 144.2Z"/><ellipse class="i-p0" cx="13.9" cy="144.2" rx="7.8" ry="4.5"/></g><g><path class="i-p0" d="M214.8 140.4L256.3 164.4L200.9 196.4L159.3 172.4Z"/><path class="i-p1" d="M256.3 168L200.9 200L200.9 196.4L256.3 164.4Z"/><path class="i-p2" d="M159.3 176L159.3 172.4L200.9 196.4L200.9 200Z"/></g><g><path class="i-p0" d="M214.8 130.4L256.3 154.4L200.9 186.4L159.3 162.4Z"/><path class="i-p1" d="M256.3 158L200.9 190L200.9 186.4L256.3 154.4Z"/><path class="i-p2" d="M159.3 166L159.3 162.4L200.9 186.4L200.9 190Z"/></g><circle class="i-p0" cx="13.9" cy="138.2" r="5.4"/><g><path class="i-p0" d="M214.8 120.4L256.3 144.4L200.9 176.4L159.3 152.4Z"/><path class="i-p1" d="M256.3 148L200.9 180L200.9 176.4L256.3 144.4Z"/><path class="i-p2" d="M159.3 156L159.3 152.4L200.9 176.4L200.9 180Z"/></g><g><path class="i-p1" d="M16.4 158.2L16.4 178A7.8 4.5 0 0 0 32.1 178L32.1 158.2Z"/><ellipse class="i-p0" cx="24.2" cy="158.2" rx="7.8" ry="4.5"/></g><g><path class="i-p1" d="M40.7 160.2L40.7 180A7.8 4.5 0 0 0 56.3 180L56.3 160.2Z"/><ellipse class="i-p0" cx="48.5" cy="160.2" rx="7.8" ry="4.5"/></g><g><path class="i-p0" d="M214.8 110.4L256.3 134.4L200.9 166.4L159.3 142.4Z"/><path class="i-p1" d="M256.3 138L200.9 170L200.9 166.4L256.3 134.4Z"/><path class="i-p2" d="M159.3 146L159.3 142.4L200.9 166.4L200.9 170Z"/></g><g><path class="i-p0" d="M214.8 100.4L256.3 124.4L200.9 156.4L159.3 132.4Z"/><path class="i-p1" d="M256.3 128L200.9 160L200.9 156.4L256.3 124.4Z"/><path class="i-p2" d="M159.3 136L159.3 132.4L200.9 156.4L200.9 160Z"/></g><circle class="i-p0" cx="24.2" cy="152.2" r="5.4"/><g><path class="i-l0" d="M214.8 90.4L256.3 114.4L200.9 146.4L159.3 122.4Z"/><path class="i-l1" d="M256.3 118L200.9 150L200.9 146.4L256.3 114.4Z"/><path class="i-l2" d="M159.3 126L159.3 122.4L200.9 146.4L200.9 150Z"/></g><circle class="i-p0" cx="48.5" cy="154.2" r="5.4"/></svg>
+            <figcaption class="emplacement__corps"><span class="emplacement__sujet">Traduction et équipe</span><span class="emplacement__compo note-maquette">Jardin-plateau en coupe, plantes génériques stylisées ; de petites silhouettes posent des étiquettes, une seule à gauche, un groupe à droite ; derrière, une pile de fiches qui grossit.</span></figcaption>
+            <p class="emplacement__haut note-maquette"><span class="emplacement__id">PVZ-01</span><span class="emplacement__format">4:3 · 1600 × 1200 · IMG · socle</span></p>
+          </figure>
+        </div>
+      </div>
+
+      <dl class="fiche fiche--projet" aria-label="Fiche du projet">
+        <div class="fiche__large"><dt>Besoin</dt><dd>Rattraper, à plusieurs, la traduction française d’un jeu qui change toutes les deux ou trois semaines.</dd></div>
+        <div class="fiche__large"><dt>Ma part</dt><dd>J’ai recruté et formé l’équipe, construit l’outil qui transforme chaque mise à jour en liste de tâches, et livré chaque semaine au projet officiel.<span class="a-confirmer" title="L’outil peut-il figurer comme instrument de gestion de projet ? (Q7)">outil</span></dd></div>
+        <div><dt>Rôle</dt><dd>Traducteur, puis lead du pôle et mainteneur du projet multilingue</dd></div>
+        <div><dt>Période</dt><dd>Depuis octobre 2025, bénévolat&nbsp;; lead depuis le 05/12/2025<span class="a-confirmer" title="Journal public : 05/12/2025 ; entretien : « plutôt six mois » (Q7)">date</span></dd></div>
+        <div><dt>Équipe</dt><dd>Jusqu’à dix en même temps</dd></div>
+        <div><dt>Statut</dt><dd><span class="statut">En cours</span></dd></div>
+        <div class="fiche__liens"><dt>Liens publics</dt><dd><a href="https://github.com/Teyliu/PVZF-Translation">Projet multilingue<span class="fl fl--ext" aria-hidden="true">↗</span></a></dd><dd><a href="https://github.com/Teyliu/PVZF-Translation/blob/main/Docs/french-contributions.md">Bilan du pôle<span class="fl fl--ext" aria-hidden="true">↗</span></a></dd><dd><a href="https://lindecker-charles.github.io/PVZ-Fuzion-ConsolManager/">Console Manager<span class="fl fl--ext" aria-hidden="true">↗</span></a></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <div class="conteneur grille corps">
+    <nav class="rail" aria-label="Dans cette page">
+      <p class="rail__titre">Dans cette page</p>
+      <div class="rail__regle">
+        <span class="rail__curseur" aria-hidden="true"></span>
+        <ol>
+          <li><a href="#depart"><span class="mono">01</span>Le point de départ</a></li>
+          <li><a href="#equipe"><span class="mono">02</span>L’équipe</a></li>
+          <li><a href="#semaine"><span class="mono">03</span>La semaine type</a></li>
+          <li><a href="#resultat"><span class="mono">04</span>Le résultat</a></li>
+          <li><a href="#construction"><span class="mono">05</span>Comment je l’ai construit</a></li>
+          <li><a href="#retenir"><span class="mono">06</span>Ce que j’en retiens</a></li>
+        </ol>
+      </div>
+    </nav>
+
+    <div class="corps__contenu">
+      <p class="gabarit-marque gabarit-marque--corps note-maquette" aria-hidden="true">gabarit commun · 3 corps libre, propre à chaque projet</p>
+
+      <!-- 1 · Le point de départ -->
+      <section class="section-projet" data-zone id="depart" aria-labelledby="t-depart">
+        <div class="deux-col">
+          <div class="pile-s">
+            <h2 class="titre-3" id="t-depart">Le point de départ</h2>
+            <div class="texte">
+              <p>PvZ Fusion est un jeu amateur chinois, traduit par des bénévoles du monde entier. Chaque mise à jour ajoute des dizaines de plantes et réécrit des règles&nbsp;: 25&nbsp;versions multilingues sont sorties entre août 2025 et octobre 2026.</p>
+              <p>En octobre 2025, la version française datait de la 2.3.1&nbsp;; le jeu en était à la 3.0.1. Près d’une plante sur deux n’avait pas de fiche française.</p>
+            </div>
+          </div>
+          <figure class="fig fig-cadre fig-cadre--quadrille">
+            <figcaption class="fig__titre">Entrées anglaises sans équivalent français, le 16 octobre 2025</figcaption>
+            <div class="jauges">
+              <div class="jauge"><p class="jauge__tete"><b>Plantes</b><span class="mono">218 / 477 · 46&nbsp;%</span></p><div class="jauge__barre" aria-hidden="true"><span style="--part: 54.3%"></span></div></div>
+              <div class="jauge"><p class="jauge__tete"><b>Zombies</b><span class="mono">76 / 162 · 47&nbsp;%</span></p><div class="jauge__barre" aria-hidden="true"><span style="--part: 53.1%"></span></div></div>
+              <div class="jauge"><p class="jauge__tete"><b>Textes d’interface</b><span class="mono">1&nbsp;041 / 1&nbsp;776 · 59&nbsp;%</span></p><div class="jauge__barre" aria-hidden="true"><span style="--part: 41.4%"></span></div></div>
+            </div>
+            <div class="legende-fig"><span><i class="cle-traduit"></i>Traduites</span><span><i class="cle-manque"></i>Sans équivalent français</span><span class="mono">dépôt officiel · méthode en note de sources</span></div>
+          </figure>
+        </div>
+      </section>
+
+      <!-- 2 · L’équipe -->
+      <section class="section-projet" data-zone id="equipe" aria-labelledby="t-equipe">
+        <div class="deux-col">
+          <div class="pile-s">
+            <h2 class="titre-3" id="t-equipe">L’équipe</h2>
+            <div class="texte">
+              <p>Je suis arrivé pour traduire, le 21 octobre 2025. En décembre, on m’a confié le pôle&nbsp;; trois jours plus tard, les deux premières recrues arrivaient. En tout, j’ai formé 20&nbsp;personnes, jusqu’à dix en même temps.</p>
+              <p>Certaines sont arrivées sans compétences et avec du mal à travailler en groupe&nbsp;; à la fin, certaines étaient ancrées dans la communauté et brillantes sur la technique.</p>
+            </div>
+            <blockquote class="citation"><p>La seule chose qui a changé, c’est le titre.</p></blockquote>
+        <figure class="emplacement emplacement--bandeau" style="--ratio: 3 / 1">
+                  <svg class="iso" data-iso="PVZ-02" viewBox="-49.2 -26.6 624.4 208.2" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false"><g><path class="i-p0" d="M0 0L164 28.9L132.5 88.4L-31.5 59.5Z"/><path class="i-p1" d="M164 34.9L132.5 94.4L132.5 88.4L164 28.9Z"/><path class="i-p2" d="M-31.5 65.5L-31.5 59.5L132.5 88.4L132.5 94.4Z"/></g><g><path class="i-p0" d="M196.8 34.7L360.7 63.7L329.2 123.2L165.3 94.2Z"/><path class="i-p1" d="M360.7 69.7L329.2 129.2L329.2 123.2L360.7 63.7Z"/><path class="i-p2" d="M165.3 100.2L165.3 94.2L329.2 123.2L329.2 129.2Z"/></g><g><path class="i-p0" d="M393.5 69.5L557.5 98.4L526 157.9L362 129Z"/><path class="i-p1" d="M557.5 104.4L526 163.9L526 157.9L557.5 98.4Z"/><path class="i-p2" d="M362 135L362 129L526 157.9L526 163.9Z"/></g><g><path class="i-p0" d="M23.8 -8.9L131.6 10.1L121.5 29L13.8 10Z"/><path class="i-p1" d="M131.6 32.1L121.5 51L121.5 29L131.6 10.1Z"/><path class="i-p2" d="M13.8 32L13.8 10L121.5 29L121.5 51Z"/></g><path class="i-p0" d="M48.1 -1.9L90.3 5.6L83.1 19.1L41 11.7Z"/><g><path class="i-p1" d="M22.2 29.8L22.2 49.7A7.8 4.5 0 0 0 37.9 49.7L37.9 29.8Z"/><ellipse class="i-p0" cx="30" cy="29.8" rx="7.8" ry="4.5"/></g><g><path class="i-p1" d="M77 46.2L77 62.3A7.8 4.5 0 0 0 92.7 62.3L92.7 46.2Z"/><ellipse class="i-p0" cx="84.8" cy="46.2" rx="7.8" ry="4.5"/></g><circle class="i-p0" cx="30" cy="23.8" r="5.4"/><g><path class="i-p0" d="M220.6 25.8L328.3 44.8L318.3 63.8L210.6 44.7Z"/><path class="i-p1" d="M328.3 66.8L318.3 85.8L318.3 63.8L328.3 44.8Z"/><path class="i-p2" d="M210.6 66.7L210.6 44.7L318.3 63.8L318.3 85.8Z"/></g><circle class="i-p0" cx="84.8" cy="40.2" r="5.4"/><path class="i-p0" d="M244.9 32.9L287.1 40.3L279.9 53.8L237.8 46.4Z"/><g><path class="i-p1" d="M249.4 73.7L249.4 89.8A7.8 4.5 0 0 0 265.1 89.8L265.1 73.7Z"/><ellipse class="i-p0" cx="257.3" cy="73.7" rx="7.8" ry="4.5"/></g><circle class="i-p0" cx="257.3" cy="67.7" r="5.4"/><g><path class="i-p0" d="M417.3 60.5L525.1 79.6L515.1 98.5L407.3 79.5Z"/><path class="i-p1" d="M525.1 101.6L515.1 120.5L515.1 98.5L525.1 79.6Z"/><path class="i-p2" d="M407.3 101.5L407.3 79.5L515.1 98.5L515.1 120.5Z"/></g><path class="i-a0" d="M441.7 67.6L483.8 75L476.7 88.6L434.5 81.1Z"/><g><path class="i-p1" d="M425.1 104.7L425.1 120.8A7.8 4.5 0 0 0 440.8 120.8L440.8 104.7Z"/><ellipse class="i-p0" cx="433" cy="104.7" rx="7.8" ry="4.5"/></g><g><path class="i-l0" d="M481.2 124.8L514 130.5L506.9 144.1L474.1 138.3Z"/><path class="i-l1" d="M514 132.1L506.9 145.7L506.9 144.1L514 130.5Z"/><path class="i-l2" d="M474.1 139.9L474.1 138.3L506.9 144.1L506.9 145.7Z"/></g><circle class="i-p0" cx="433" cy="98.7" r="5.4"/></svg>
+                  <figcaption class="emplacement__corps"><span class="emplacement__sujet">Accueillir, former, faire confiance</span><span class="emplacement__compo note-maquette">Triptyque dans le même décor : une personne montre une fiche annotée à une nouvelle venue ; la nouvelle venue travaille ; elle relit seule la fiche d’un troisième.</span></figcaption>
+                  <p class="emplacement__haut note-maquette"><span class="emplacement__id">PVZ-02</span><span class="emplacement__format">3:1 · triptyque · 3 × 4:3 sur mobile · IMG · socle</span></p>
+                </figure>
+          </div>
+          <figure class="fig frise frise--equipe">
+            <svg viewBox="0 0 384 350" role="img" aria-labelledby="fe-t fe-d">
+<title id="fe-t">Traducteur, lead, mainteneur</title>
+<desc id="fe-d">Arrivée comme traducteur le 21 octobre 2025, lead du pôle le 5 décembre 2025 selon le journal public, mainteneur du projet multilingue à une date à confirmer. Neuf arrivées consignées entre le 8 décembre 2025 et le 23 mars 2026.</desc>
+<line class="axe-fort" x1="118" x2="118" y1="24" y2="318"/>
+<line class="axe" x1="96" x2="96" y1="24" y2="318" stroke-dasharray="2 4"/>
+<line class="axe" x1="114" x2="122" y1="24.0" y2="24.0"/><text class="txt" x="74" y="28.0" text-anchor="end">oct. 2025</text>
+<line class="axe" x1="114" x2="122" y1="92.5" y2="92.5"/><text class="txt" x="74" y="96.5" text-anchor="end">janv. 2026</text>
+<line class="axe" x1="114" x2="122" y1="159.5" y2="159.5"/><text class="txt" x="74" y="163.5" text-anchor="end">avr. 2026</text>
+<line class="axe" x1="114" x2="122" y1="227.2" y2="227.2"/><text class="txt" x="74" y="231.2" text-anchor="end">juil. 2026</text>
+<line class="axe" x1="114" x2="122" y1="295.7" y2="295.7"/><text class="txt" x="74" y="299.7" text-anchor="end">oct. 2026</text>
+<line class="periode" x1="118" x2="118" y1="72.4" y2="318"/>
+<circle class="arrivee" cx="96.0" cy="74.6" r="3.5"/>
+<circle class="arrivee" cx="88.0" cy="74.6" r="3.5"/>
+<circle class="arrivee" cx="96.0" cy="79.8" r="3.5"/>
+<circle class="arrivee" cx="96.0" cy="85.0" r="3.5"/>
+<circle class="arrivee" cx="96.0" cy="126.7" r="3.5"/>
+<circle class="arrivee" cx="96.0" cy="129.7" r="3.5"/>
+<circle class="arrivee" cx="96.0" cy="137.1" r="3.5"/>
+<circle class="arrivee" cx="96.0" cy="152.8" r="3.5"/>
+<circle class="arrivee" cx="88.0" cy="152.8" r="3.5"/>
+<circle class="jalon jalon--fort" cx="118" cy="38.9" r="6"/>
+<text class="txt-fort" x="136" y="33.9">Traducteur</text><text class="txt" x="136" y="52.9">21/10/2025</text>
+<circle class="jalon jalon--fort" cx="118" cy="72.4" r="6"/>
+<path class="cote" d="M126 72.4L132 97.4"/>
+<text class="txt-fort" x="136" y="103.4">Lead du pôle</text><text class="txt" x="136" y="122.4">05/12/2025 · à confirmer</text>
+<circle class="jalon" cx="118" cy="291.9" r="6"/>
+<text class="txt-fort" x="136" y="292.9">Mainteneur</text><text class="txt" x="136" y="311.9">date à confirmer</text>
+<text class="txt" x="136" y="160.7">arrivées des recrues</text><path class="cote" d="M132 155.7L102 136.7"/>
+</svg>
+            <figcaption class="fig__note">Rôles et arrivées datés par le journal public du pôle, sans les noms. Le journal ne recense pas toutes les personnes formées.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- 3 · La semaine type -->
+      <section class="section-projet" data-zone id="semaine" aria-labelledby="t-semaine">
+        <div class="entete-section entete-section--leger">
+          <h2 class="titre-3" id="t-semaine">La semaine type</h2>
+          <p class="chapo">Chaque semaine, la même boucle en cinq temps, chacun avec sa trace.</p>
+        </div>
+        <div class="boucle" data-onglets>
+          <div class="boucle__schema">
+            <svg viewBox="0 0 360 360" aria-hidden="true">
+              <circle cx="180" cy="180" r="118" fill="none" stroke="var(--trait)" stroke-width="1"/>
+              <circle cx="180" cy="180" r="118" fill="none" stroke="var(--encre)" stroke-width="2" stroke-dasharray="4 10" opacity=".35"/>
+              <g fill="none" stroke="var(--encre)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M244.4 79.5l5 5-5 5" transform="rotate(36 249.4 84.5)"/>
+                <path d="M287.2 211.5l5 5-5 5" transform="rotate(108 292.2 216.5)"/>
+                <path d="M175 293l5 5-5 5" transform="rotate(180 180 298)"/>
+                <path d="M62.8 211.5l5 5-5 5" transform="rotate(252 67.8 216.5)"/>
+                <path d="M105.6 79.5l5 5-5 5" transform="rotate(324 110.6 84.5)"/>
+              </g>
+              <text x="180" y="176" text-anchor="middle" class="boucle__centre">une semaine</text>
+              <text x="180" y="198" text-anchor="middle" class="boucle__centre boucle__centre--gris">une PR</text>
+            </svg>
+            <div class="boucle__onglets boucle__onglets--rond" role="tablist" aria-label="Les cinq temps de la semaine" hidden>
+              <button class="station" role="tab" type="button" id="o-1" aria-controls="p-1" aria-selected="true" style="left: 50%; top: 17.2%"><span class="mono">1</span>Repérer</button>
+              <button class="station" role="tab" type="button" id="o-2" aria-controls="p-2" aria-selected="false" tabindex="-1" style="left: 81.2%; top: 39.9%"><span class="mono">2</span>Distribuer</button>
+              <button class="station" role="tab" type="button" id="o-3" aria-controls="p-3" aria-selected="false" tabindex="-1" style="left: 69.3%; top: 76.5%"><span class="mono">3</span>Traduire</button>
+              <button class="station" role="tab" type="button" id="o-4" aria-controls="p-4" aria-selected="false" tabindex="-1" style="left: 30.7%; top: 76.5%"><span class="mono">4</span>Livrer</button>
+              <button class="station" role="tab" type="button" id="o-5" aria-controls="p-5" aria-selected="false" tabindex="-1" style="left: 18.8%; top: 39.9%"><span class="mono">5</span>Reconnaître</button>
+            </div>
+          </div>
+
+          <div class="panneaux">
+            <div class="panneau" role="tabpanel" id="p-1" aria-labelledby="o-1" tabindex="0">
+              <details class="temps" open>
+                <summary><h3 class="panneau__titre"><span class="mono">1 / 5</span>Repérer</h3></summary>
+              <p class="panneau__phrase">Une version sort&nbsp;; mon outil compare le français à l’anglais et liste chaque entrée manquante.</p>
+              <div class="panneau__traces">
+                <figure class="capture capture--a-faire" data-cadre="terminal" style="--ratio: 16 / 9">
+                  <div class="capture__cadre">
+                    <div class="capture__barre" aria-hidden="true"><span>pvzf-console — rapport</span></div>
+                    <div class="capture__ecran"><p>Le Console Manager en action<span class="note-maquette">Menu, puis rapport des entrées françaises manquantes, sur une révision ancienne du dépôt.</span></p></div>
+                  </div>
+                  <figcaption class="capture__note note-maquette"><span class="emplacement__id">CAP-PVZ-2</span> vidéo 16:9 · 10-15 s · CAP · agent</figcaption>
+                </figure>
+                <figure class="emplacement" style="--ratio: 1 / 1">
+                  <svg class="iso" data-iso="PVZ-04" viewBox="-120.7 -12.9 217.2 136.7" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false"><path class="i-p1" d="M0 6.8L62.4 42.8L57.2 45.8L-5.2 9.8Z"/><path class="i-p1" d="M-11.3 13.3L40.7 43.3L35.5 46.3L-16.5 16.3Z"/><path class="i-p2" d="M-22.5 19.8L19.1 43.8L13.9 46.8L-27.7 22.8Z"/><path class="i-p1" d="M-33.8 26.3L28.6 62.3L23.4 65.3L-39 29.3Z"/><g><path class="i-p0" d="M0 -3L86.6 47L-24.2 111L-110.9 61Z"/><path class="i-p1" d="M86.6 50L-24.2 114L-24.2 111L86.6 47Z"/><path class="i-p2" d="M-110.9 64L-110.9 61L-24.2 111L-24.2 114Z"/></g><path class="i-p1" d="M-45 32.8L6.9 62.8L1.7 65.8L-50.2 35.8Z"/><path class="i-p2" d="M-56.3 39.3L-14.7 63.3L-19.9 66.3L-61.5 42.3Z"/><path class="i-p2" d="M-67.5 45.8L-5.2 81.8L-10.4 84.8L-72.7 48.8Z"/><path class="i-p1" d="M-78.8 52.3L-26.8 82.3L-32 85.3L-84 55.3Z"/><path class="i-p1" d="M-90.1 58.8L-48.5 82.8L-53.7 85.8L-95.3 61.8Z"/><g><path class="i-a1" d="M-42.2 45L-42.2 50A31.8 18.4 0 0 0 21.5 50L21.5 45Z"/><ellipse class="i-a0" cx="-10.4" cy="45" rx="31.8" ry="18.4"/></g><g><path class="i-p0" d="M-15.6 73L-7.1 73.9L-16.5 104.5L-24.9 103.6Z"/><path class="i-p1" d="M-7.1 79.9L-16.5 110.5L-16.5 104.5L-7.1 73.9Z"/><path class="i-p2" d="M-24.9 109.6L-24.9 103.6L-16.5 104.5L-16.5 110.5Z"/></g><ellipse class="i-p0" cx="-10.4" cy="44.8" rx="24.5" ry="14.1"/></svg>
+                  <figcaption class="emplacement__corps"><span class="emplacement__sujet">Repérer</span><span class="emplacement__compo note-maquette">Loupe sur un fichier, lignes manquantes en creux.</span></figcaption>
+                  <p class="emplacement__haut note-maquette"><span class="emplacement__id">PVZ-04</span><span class="emplacement__format">1:1 · 480 · IMG</span></p>
+                </figure>
+              </div>
+              </details>
+            </div>
+            <div class="panneau" role="tabpanel" id="p-2" aria-labelledby="o-2" tabindex="0">
+              <details class="temps">
+                <summary><h3 class="panneau__titre"><span class="mono">2 / 5</span>Distribuer</h3></summary>
+              <p class="panneau__phrase">Il crée une carte Trello par entrée. Chacun prend ce qu’il peut traduire.</p>
+              <div class="panneau__traces">
+                <figure class="capture capture--a-faire" data-cadre="navigateur" style="--ratio: 16 / 10">
+                  <div class="capture__cadre">
+                    <div class="capture__barre" aria-hidden="true"><i></i><i></i><i></i><span>tableau de tâches du pôle</span></div>
+                    <div class="capture__ecran"><p>Le tableau de tâches du pôle<span class="note-maquette">Pseudonymes floutés ; seulement si Charles l’autorise.</span></p></div>
+                  </div>
+                  <figcaption class="capture__note note-maquette"><span class="emplacement__id">CAP-PVZ-6</span> 16:10 · CAP · Charles, avec accord</figcaption>
+                </figure>
+                <figure class="emplacement" style="--ratio: 1 / 1">
+                  <svg class="iso" data-iso="PVZ-05" viewBox="-14.8 -129.7 145.7 212.3" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false"><path class="i-explose" d="M44.9 -29.9L12.1 0"/><g><path class="i-p0" d="M0 -120L121.2 -50L116 -47L-5.2 -117Z"/><path class="i-p1" d="M121.2 70L116 73L116 -47L121.2 -50Z"/><path class="i-p2" d="M-5.2 3L-5.2 -117L116 -47L116 73Z"/></g><path class="i-p0" d="M6.8 -21.9L34.5 -5.9L34.5 -27.9L6.8 -43.9Z"/><path class="i-p0" d="M6.8 -51.9L34.5 -35.9L34.5 -57.9L6.8 -73.9Z"/><path class="i-p0" d="M44.9 0.1L72.6 16.1L72.6 -5.9L44.9 -21.9Z"/><path class="i-p0" d="M6.8 -81.9L34.5 -65.9L34.5 -87.9L6.8 -103.9Z"/><path class="i-p0" d="M44.9 -29.9L72.6 -13.9L72.6 -35.9L44.9 -51.9Z"/><path class="i-p0" d="M44.9 -59.9L72.6 -43.9L72.6 -65.9L44.9 -81.9Z"/><g><path class="i-a0" d="M12.1 -11L39.8 5L38.5 5.8L10.7 -10.2Z"/><path class="i-a1" d="M39.8 27L38.5 27.8L38.5 5.8L39.8 5Z"/><path class="i-a2" d="M10.7 11.8L10.7 -10.2L38.5 5.8L38.5 27.8Z"/></g><path class="i-p0" d="M83 -7.9L110.7 8.1L110.7 -13.9L83 -29.9Z"/><path class="i-p0" d="M83 -37.9L110.7 -21.9L110.7 -43.9L83 -59.9Z"/></svg>
+                  <figcaption class="emplacement__corps"><span class="emplacement__sujet">Distribuer</span><span class="emplacement__compo note-maquette">Cartes épinglées en colonnes, des mains qui en prennent une chacune.</span></figcaption>
+                  <p class="emplacement__haut note-maquette"><span class="emplacement__id">PVZ-05</span><span class="emplacement__format">1:1 · 480 · IMG</span></p>
+                </figure>
+              </div>
+              </details>
+            </div>
+            <div class="panneau" role="tabpanel" id="p-3" aria-labelledby="o-3" tabindex="0">
+              <details class="temps">
+                <summary><h3 class="panneau__titre"><span class="mono">3 / 5</span>Traduire, relire, tester</h3></summary>
+              <p class="panneau__phrase">Je relis tout&nbsp;; un testeur vérifie en jeu. Les PR gardent une rubrique «&nbsp;In-game Check&nbsp;».</p>
+              <div class="panneau__traces">
+                <figure class="capture capture--a-faire" data-cadre="terminal" style="--ratio: 16 / 9">
+                  <div class="capture__cadre">
+                    <div class="capture__barre" aria-hidden="true"><span>jeu, version 4.0.5</span></div>
+                    <div class="capture__ecran"><p>Une fiche d’almanach en français, dans le jeu 4.0.5<span class="note-maquette">Capture native, interface française.</span></p></div>
+                  </div>
+                  <figcaption class="capture__note note-maquette"><span class="emplacement__id">CAP-PVZ-4</span> 16:9 natif · CAP · Charles</figcaption>
+                </figure>
+                <figure class="emplacement" style="--ratio: 1 / 1">
+                  <svg class="iso" data-iso="PVZ-06" viewBox="-89.4 -89.7 209.9 213.4" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false"><g><path class="i-p0" d="M0 -80L110.9 -16L105.7 -13L-5.2 -77Z"/><path class="i-p1" d="M110.9 64L105.7 67L105.7 -13L110.9 -16Z"/><path class="i-p2" d="M-5.2 3L-5.2 -77L105.7 -13L105.7 67Z"/></g><path class="i-p0" d="M11.8 -6.8L46.4 13.2L46.4 -14.8L11.8 -34.8Z"/><g><path class="i-p0" d="M-34.6 49.6L27.7 85.6L-17.3 111.6L-79.7 75.6Z"/><path class="i-p1" d="M27.7 88L-17.3 114L-17.3 111.6L27.7 85.6Z"/><path class="i-p2" d="M-79.7 78L-79.7 75.6L-17.3 111.6L-17.3 114Z"/></g><path class="i-p2" d="M1.6 -0.9L98.6 55.1L98.6 -8.9L1.6 -64.9Z"/><g><path class="i-l1" d="M-5.7 -3.6L-5.7 0A19.6 11.3 0 0 0 33.5 0L33.5 -3.6Z"/><ellipse class="i-l0" cx="13.9" cy="-3.6" rx="19.6" ry="11.3"/></g><g><path class="i-a0" d="M38.1 27.6L40.4 30.4L35.5 31.7L33.2 28.9Z"/><path class="i-a1" d="M40.4 90.4L35.5 91.7L35.5 31.7L40.4 30.4Z"/><path class="i-a2" d="M33.2 88.9L33.2 28.9L35.5 31.7L35.5 91.7Z"/></g><path class="i-trait-fort" d="M-34.6 65.4L-38.1 79.4L6.9 81.4"/></svg>
+                  <figcaption class="emplacement__corps"><span class="emplacement__sujet">Traduire, relire, tester</span><span class="emplacement__compo note-maquette">Plume, coche de relecture, loupe sur un écran de jeu générique.</span></figcaption>
+                  <p class="emplacement__haut note-maquette"><span class="emplacement__id">PVZ-06</span><span class="emplacement__format">1:1 · 480 · IMG</span></p>
+                </figure>
+              </div>
+              </details>
+            </div>
+            <div class="panneau" role="tabpanel" id="p-4" aria-labelledby="o-4" tabindex="0">
+              <details class="temps">
+                <summary><h3 class="panneau__titre"><span class="mono">4 / 5</span>Livrer</h3></summary>
+              <p class="panneau__phrase">Chaque semaine, une pull request porte le travail de tous au projet officiel et cite chacun par son nom. <a href="https://github.com/Teyliu/PVZF-Translation/pull/110">La PR #110 en crédite huit<span class="fl fl--ext" aria-hidden="true">↗</span></a></p>
+              <div class="panneau__traces">
+                <figure class="capture capture--a-faire" data-cadre="navigateur" style="--ratio: 16 / 10">
+                  <div class="capture__cadre">
+                    <div class="capture__barre" aria-hidden="true"><i></i><i></i><i></i><span>github.com/Teyliu/PVZF-Translation/pull/110</span></div>
+                    <div class="capture__ecran"><p>L’en-tête de la PR #110 et ses huit crédits<span class="note-maquette">Page publique de la PR, thème clair, rognée sous « New String Entries ».</span></p></div>
+                  </div>
+                  <figcaption class="capture__note note-maquette"><span class="emplacement__id">CAP-PVZ-1</span> 16:10 · 1600 px · DPR 2 · CAP · agent</figcaption>
+                </figure>
+                <figure class="emplacement" style="--ratio: 1 / 1">
+                  <svg class="iso" data-iso="PVZ-07" viewBox="-90.3 -18.1 272.5 183.5" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false"><path class="i-explose" d="M-8.7 49L65.8 92"/><g><path class="i-p0" d="M0.9 -5.7L13 1.3L0.9 8.3L-11.3 1.3Z"/><path class="i-p1" d="M13 13.3L0.9 20.3L0.9 8.3L13 1.3Z"/><path class="i-p2" d="M-11.3 13.3L-11.3 1.3L0.9 8.3L0.9 20.3Z"/></g><path class="i-p0" d="M0 1.8L20.8 13.8L0.9 25.3L-19.9 13.3Z"/><g><path class="i-p0" d="M26 8.8L38.1 15.8L26 22.8L13.9 15.8Z"/><path class="i-p1" d="M38.1 27.8L26 34.8L26 22.8L38.1 15.8Z"/><path class="i-p2" d="M13.9 27.8L13.9 15.8L26 22.8L26 34.8Z"/></g><path class="i-p0" d="M-24.2 15.8L-3.5 27.8L-23.4 39.3L-44.2 27.3Z"/><path class="i-p0" d="M25.1 16.3L45.9 28.3L26 39.8L5.2 27.8Z"/><g><path class="i-p0" d="M-47.6 22.3L-35.5 29.3L-47.6 36.3L-59.8 29.3Z"/><path class="i-p1" d="M-35.5 41.3L-47.6 48.3L-47.6 36.3L-35.5 29.3Z"/><path class="i-p2" d="M-59.8 41.3L-59.8 29.3L-47.6 36.3L-47.6 48.3Z"/></g><path class="i-p0" d="M-48.5 29.8L-27.7 41.8L-47.6 53.3L-68.4 41.3Z"/><path class="i-p0" d="M0.9 30.3L21.7 42.3L1.7 53.8L-19.1 41.8Z"/><g><path class="i-p0" d="M0 -4L103.9 56L26 101L-77.9 41Z"/><path class="i-p1" d="M103.9 60L26 105L26 101L103.9 56Z"/><path class="i-p2" d="M-77.9 45L-77.9 41L26 101L26 105Z"/></g><path class="i-p0" d="M50.2 30.8L71 42.8L51.1 54.3L30.3 42.3Z"/><g><path class="i-a0" d="M-22.5 36.8L-10.4 43.8L-22.5 50.8L-34.6 43.8Z"/><path class="i-a1" d="M-10.4 55.8L-22.5 62.8L-22.5 50.8L-10.4 43.8Z"/><path class="i-a2" d="M-34.6 55.8L-34.6 43.8L-22.5 50.8L-22.5 62.8Z"/></g><g><path class="i-p0" d="M26.8 37.3L39 44.3L26.8 51.3L14.7 44.3Z"/><path class="i-p1" d="M39 56.3L26.8 63.3L26.8 51.3L39 44.3Z"/><path class="i-p2" d="M14.7 56.3L14.7 44.3L26.8 51.3L26.8 63.3Z"/></g><path class="i-p0" d="M-23.4 44.3L-2.6 56.3L-22.5 67.8L-43.3 55.8Z"/><path class="i-p0" d="M26 44.8L46.8 56.8L26.8 68.3L6.1 56.3Z"/><path class="i-p0" d="M75.3 45.3L96.1 57.3L76.2 68.8L55.4 56.8Z"/><g><path class="i-p0" d="M52 51.8L64.1 58.8L52 65.8L39.8 58.8Z"/><path class="i-p1" d="M64.1 70.8L52 77.8L52 65.8L64.1 58.8Z"/><path class="i-p2" d="M39.8 70.8L39.8 58.8L52 65.8L52 77.8Z"/></g><path class="i-p0" d="M1.7 58.8L22.5 70.8L2.6 82.3L-18.2 70.3Z"/><path class="i-p0" d="M51.1 59.3L71.9 71.3L52 82.8L31.2 70.8Z"/><path class="i-p0" d="M26.8 73.3L47.6 85.3L27.7 96.8L6.9 84.8Z"/><g><path class="i-p0" d="M145.5 40L169.7 54L39.8 129L15.6 115Z"/><path class="i-p1" d="M169.7 78L39.8 153L39.8 129L169.7 54Z"/><path class="i-p2" d="M15.6 139L15.6 115L39.8 129L39.8 153Z"/></g></svg>
+                  <figcaption class="emplacement__corps"><span class="emplacement__sujet">Livrer</span><span class="emplacement__compo note-maquette">Semaines cochées d’un colis scellé qui rejoint un tronc commun.</span></figcaption>
+                  <p class="emplacement__haut note-maquette"><span class="emplacement__id">PVZ-07</span><span class="emplacement__format">1:1 · 480 · IMG</span></p>
+                </figure>
+              </div>
+              </details>
+            </div>
+            <div class="panneau" role="tabpanel" id="p-5" aria-labelledby="o-5" tabindex="0">
+              <details class="temps">
+                <summary><h3 class="panneau__titre"><span class="mono">5 / 5</span>Reconnaître</h3></summary>
+              <p class="panneau__phrase">L’outil en tire le bilan de chacun&nbsp;; j’y ajoute un mot personnel et le classement de la semaine.</p>
+              <div class="panneau__traces">
+                <figure class="capture capture--a-faire" data-cadre="navigateur" style="--ratio: 4 / 3">
+                  <div class="capture__cadre">
+                    <div class="capture__barre" aria-hidden="true"><i></i><i></i><i></i><span>github.com/Teyliu/PVZF-Translation/…/journal</span></div>
+                    <div class="capture__ecran"><p>Le journal public d’un contributeur<span class="note-maquette">Extrait rendu sur GitHub, compteurs de la semaine ; avec l’accord de la personne.</span></p></div>
+                  </div>
+                  <figcaption class="capture__note note-maquette"><span class="emplacement__id">CAP-PVZ-7</span> 4:3 · CAP · avec accord</figcaption>
+                </figure>
+                <figure class="emplacement" style="--ratio: 1 / 1">
+                  <svg class="iso" data-iso="PVZ-08" viewBox="-96 -33.4 205.8 152.7" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false"><g><path class="i-p0" d="M0 -24L31.2 -6L0 12L-31.2 -6Z"/><path class="i-p1" d="M31.2 18L0 36L0 12L31.2 -6Z"/><path class="i-p2" d="M-31.2 18L-31.2 -6L0 12L0 36Z"/></g><g><path class="i-a0" d="M34.6 -20L65.8 -2L34.6 16L3.5 -2Z"/><path class="i-a1" d="M65.8 38L34.6 56L34.6 16L65.8 -2Z"/><path class="i-a2" d="M3.5 38L3.5 -2L34.6 16L34.6 56Z"/></g><g><path class="i-p0" d="M69.3 24L100.5 42L69.3 60L38.1 42Z"/><path class="i-p1" d="M100.5 58L69.3 76L69.3 60L100.5 42Z"/><path class="i-p2" d="M38.1 58L38.1 42L69.3 60L69.3 76Z"/></g><g><path class="i-p0" d="M-41.6 39L27.7 79L-17.3 105L-86.6 65Z"/><path class="i-p1" d="M27.7 84L-17.3 110L-17.3 105L27.7 79Z"/><path class="i-p2" d="M-86.6 70L-86.6 65L-17.3 105L-17.3 110Z"/></g><g><path class="i-a0" d="M-11.3 55.5L-2.6 60.5L-47.6 86.5L-56.3 81.5Z"/><path class="i-a1" d="M-2.6 61.5L-47.6 87.5L-47.6 86.5L-2.6 60.5Z"/><path class="i-a2" d="M-56.3 82.5L-56.3 81.5L-47.6 86.5L-47.6 87.5Z"/></g><circle class="i-l0" cx="-29.4" cy="68" r="5"/></svg>
+                  <figcaption class="emplacement__corps"><span class="emplacement__sujet">Reconnaître</span><span class="emplacement__compo note-maquette">Petit podium de la semaine et lettre personnelle nouée d’un ruban.</span></figcaption>
+                  <p class="emplacement__haut note-maquette"><span class="emplacement__id">PVZ-08</span><span class="emplacement__format">1:1 · 480 · IMG</span></p>
+                </figure>
+              </div>
+              </details>
+            </div>
+          </div>
+        </div>
+
+        <aside class="outil section--serre" aria-label="L’outil du pôle">
+          <p class="titre-4">Le Console Manager</p>
+          <p>J’ai construit cet outil pour le pôle français&nbsp;; il sert aujourd’hui aux 19&nbsp;langues du projet.<span class="a-confirmer" title="Présenter l’outil comme instrument de gestion de projet (Q7)">à confirmer</span></p>
+          <p class="mono gris">1&nbsp;225 téléchargements npm, du 01/10/2025 au 12/10/2026<span class="a-confirmer" title="Relevé npm de l’audit, à consigner">à consigner</span></p>
+          <p class="outil__liens"><a href="https://lindecker-charles.github.io/PVZ-Fuzion-ConsolManager/">Site de l’outil<span class="fl fl--ext" aria-hidden="true">↗</span></a><a href="https://www.npmjs.com/package/@charles_lindecker/pvzf-console">Paquet npm<span class="fl fl--ext" aria-hidden="true">↗</span></a><a href="https://github.com/LINDECKER-Charles/PVZ-Fuzion-ConsolManager">Code<span class="fl fl--ext" aria-hidden="true">↗</span></a></p>
+        </aside>
+      </section>
+
+      <!-- 4 · Le résultat -->
+      <section class="section-projet" data-zone id="resultat" aria-labelledby="t-resultat">
+        <div class="entete-section entete-section--leger">
+          <h2 class="titre-3" id="t-resultat">Le résultat</h2>
+          <p class="chapo">En dix mois, le retard a disparu, alors que le jeu avait gagné près de 200&nbsp;plantes. Aujourd’hui, une version majeure est traduite avant même sa sortie multilingue.</p>
+        </div>
+
+        <figure class="fig fig-cadre rattrapage" data-lecture aria-labelledby="ratt-titre">
+          <figcaption class="fig__titre" id="ratt-titre">Rattraper, puis ne plus décrocher&nbsp;: entrées du jeu en anglais et part sans équivalent français</figcaption>
+          <svg class="f-large" viewBox="0 0 900 312" role="img" aria-labelledby="ratt-titre ratt-desc">
+<desc id="ratt-desc">Huit relevés du 16 octobre 2025 au 12 octobre 2026. Le jeu passe de 2 415 à 4 657 entrées en anglais ; les entrées sans équivalent français passent de 1 335 à 0 le 15 août 2026, puis 29 après la version 4.0.5.</desc>
+<line class="repere-grille" x1="80" x2="870" y1="282.0" y2="282.0"/>
+<text class="txt" x="70" y="286.0" text-anchor="end">0</text>
+<line class="repere-grille" x1="80" x2="870" y1="232.4" y2="232.4"/>
+<text class="txt" x="70" y="236.4" text-anchor="end">1 000</text>
+<line class="repere-grille" x1="80" x2="870" y1="182.8" y2="182.8"/>
+<text class="txt" x="70" y="186.8" text-anchor="end">2 000</text>
+<line class="repere-grille" x1="80" x2="870" y1="133.2" y2="133.2"/>
+<text class="txt" x="70" y="137.2" text-anchor="end">3 000</text>
+<line class="repere-grille" x1="80" x2="870" y1="83.6" y2="83.6"/>
+<text class="txt" x="70" y="87.6" text-anchor="end">4 000</text>
+<line class="repere-grille" x1="80" x2="870" y1="34.0" y2="34.0"/>
+<text class="txt" x="70" y="38.0" text-anchor="end">5 000</text>
+<line class="axe-fort" x1="80" x2="870" y1="282" y2="282"/>
+<line class="axe" x1="80.0" x2="80.0" y1="282" y2="288"/>
+<text class="txt" x="80.0" y="306" text-anchor="middle">oct. 2025</text>
+<line class="axe" x1="264.0" x2="264.0" y1="282" y2="288"/>
+<text class="txt" x="264.0" y="306" text-anchor="middle">janv. 2026</text>
+<line class="axe" x1="444.0" x2="444.0" y1="282" y2="288"/>
+<text class="txt" x="444.0" y="306" text-anchor="middle">avr. 2026</text>
+<line class="axe" x1="626.0" x2="626.0" y1="282" y2="288"/>
+<text class="txt" x="626.0" y="306" text-anchor="middle">juil. 2026</text>
+<line class="axe" x1="810.0" x2="810.0" y1="282" y2="288"/>
+<text class="txt" x="810.0" y="306" text-anchor="middle">oct. 2026</text>
+<g class="col-traduit"><rect x="98.0" y="228.4" width="24" height="53.6"/></g>
+<g class="col-manque"><path d="M98.0 226.4V166.2Q98.0 162.2 102.0 162.2H118.0Q122.0 162.2 122.0 166.2V226.4Z"/></g>
+<g class="col-traduit"><rect x="218.0" y="227.1" width="24" height="54.9"/></g>
+<g class="col-manque"><path d="M218.0 225.1V169.2Q218.0 165.2 222.0 165.2H238.0Q242.0 165.2 242.0 169.2V225.1Z"/></g>
+<g class="col-traduit"><rect x="342.0" y="220.8" width="24" height="61.2"/></g>
+<g class="col-manque"><path d="M342.0 218.8V144.3Q342.0 140.3 346.0 140.3H362.0Q366.0 140.3 366.0 144.3V218.8Z"/></g>
+<g class="col-traduit"><rect x="398.0" y="216.6" width="24" height="65.4"/></g>
+<g class="col-manque"><path d="M398.0 214.6V141.1Q398.0 137.1 402.0 137.1H418.0Q422.0 137.1 422.0 141.1V214.6Z"/></g>
+<g class="col-traduit"><rect x="582.0" y="106.9" width="24" height="175.1"/></g>
+<g class="col-manque"><path d="M582.0 104.9V93.8Q582.0 89.8 586.0 89.8H602.0Q606.0 89.8 606.0 93.8V104.9Z"/></g>
+<g class="col-traduit"><rect x="642.0" y="67.3" width="24" height="214.7"/></g>
+<g class="col-manque"><rect x="642.0" y="66.7" width="24" height="0.0"/></g>
+<g class="col-atteint"><path d="M704.0 282.0V69.3Q704.0 65.3 708.0 65.3H724.0Q728.0 65.3 728.0 69.3V282.0Z"/></g>
+<g class="col-traduit"><rect x="820.0" y="52.5" width="24" height="229.5"/></g>
+<g class="col-manque"><rect x="820.0" y="51.0" width="24" height="0.0"/></g>
+<text class="txt-fort" x="96.0" y="150.2">1 335 manquantes</text>
+<text class="txt-fort" x="716.0" y="53.3" text-anchor="middle">0</text>
+<path class="cote" d="M110.0 14H716.0M110.0 9v10M716.0 9v10"/>
+<rect x="371.0" y="4" width="84" height="20" fill="var(--surface)"/><text class="txt" x="413.0" y="19" text-anchor="middle">dix mois</text>
+<g class="viseur"><line data-vx x1="0" x2="0" y1="34" y2="282"/><line data-vy x1="80" x2="870" y1="0" y2="0"/></g>
+<rect class="col-cible" x="88.0" y="34" width="44" height="248" tabindex="0" role="img" aria-label="16/10/2025 : 2 415 entrées en anglais, 1 335 sans équivalent français (plantes 218, zombies 76, interface 1 041)." data-date="16/10/2025" data-total="2 415" data-manque="1 335" data-plantes="218 / 477" data-zombies="76 / 162" data-interface="1 041 / 1 776" data-cx="110.0" data-cy="162.2"/><rect class="col-focus" x="90.0" y="156.2" width="40" height="125.8" rx="3"/>
+<rect class="col-cible" x="208.0" y="34" width="44" height="248" tabindex="0" role="img" aria-label="15/12/2025 : 2 355 entrées en anglais, 1 249 sans équivalent français (plantes 89, zombies 93, interface 1 067)." data-date="15/12/2025" data-total="2 355" data-manque="1 249" data-plantes="89 / 499" data-zombies="93 / 179" data-interface="1 067 / 1 677" data-cx="230.0" data-cy="165.2"/><rect class="col-focus" x="210.0" y="159.2" width="40" height="122.8" rx="3"/>
+<rect class="col-cible" x="332.0" y="34" width="44" height="248" tabindex="0" role="img" aria-label="15/02/2026 : 2 857 entrées en anglais, 1 623 sans équivalent français (plantes 38, zombies 78, interface 1 507)." data-date="15/02/2026" data-total="2 857" data-manque="1 623" data-plantes="38 / 552" data-zombies="78 / 191" data-interface="1 507 / 2 114" data-cx="354.0" data-cy="140.3"/><rect class="col-focus" x="334.0" y="134.3" width="40" height="147.7" rx="3"/>
+<rect class="col-cible" x="388.0" y="34" width="44" height="248" tabindex="0" role="img" aria-label="15/03/2026 : 2 922 entrées en anglais, 1 603 sans équivalent français (plantes 0, zombies 67, interface 1 536)." data-date="15/03/2026" data-total="2 922" data-manque="1 603" data-plantes="0 / 557" data-zombies="67 / 192" data-interface="1 536 / 2 173" data-cx="410.0" data-cy="137.1"/><rect class="col-focus" x="390.0" y="131.1" width="40" height="150.9" rx="3"/>
+<rect class="col-cible" x="572.0" y="34" width="44" height="248" tabindex="0" role="img" aria-label="15/06/2026 : 3 875 entrées en anglais, 344 sans équivalent français (plantes 34, zombies 10, interface 300)." data-date="15/06/2026" data-total="3 875" data-manque="344" data-plantes="34 / 631" data-zombies="10 / 214" data-interface="300 / 3 030" data-cx="594.0" data-cy="89.8"/><rect class="col-focus" x="574.0" y="83.8" width="40" height="198.2" rx="3"/>
+<rect class="col-cible" x="632.0" y="34" width="44" height="248" tabindex="0" role="img" aria-label="15/07/2026 : 4 340 entrées en anglais, 12 sans équivalent français (plantes 0, zombies 0, interface 12)." data-date="15/07/2026" data-total="4 340" data-manque="12" data-plantes="0 / 653" data-zombies="0 / 223" data-interface="12 / 3 464" data-cx="654.0" data-cy="66.7"/><rect class="col-focus" x="634.0" y="60.7" width="40" height="221.3" rx="3"/>
+<rect class="col-cible" x="694.0" y="34" width="44" height="248" tabindex="0" role="img" aria-label="15/08/2026 : 4 368 entrées en anglais, 0 sans équivalent français (plantes 0, zombies 0, interface 0)." data-date="15/08/2026" data-total="4 368" data-manque="0" data-plantes="0 / 662" data-zombies="0 / 224" data-interface="0 / 3 482" data-cx="716.0" data-cy="65.3"/><rect class="col-focus" x="696.0" y="59.3" width="40" height="222.7" rx="3"/>
+<rect class="col-cible" x="810.0" y="34" width="44" height="248" tabindex="0" role="img" aria-label="12/10/2026 : 4 657 entrées en anglais, 29 sans équivalent français (plantes 5, zombies 0, interface 24)." data-date="12/10/2026" data-total="4 657" data-manque="29" data-plantes="5 / 721" data-zombies="0 / 236" data-interface="24 / 3 700" data-cx="832.0" data-cy="51.0"/><rect class="col-focus" x="812.0" y="45.0" width="40" height="237.0" rx="3"/>
+</svg>
+<svg class="f-compacte" viewBox="0 0 360 370" role="img" aria-labelledby="ratt-titre ratt-desc-m">
+<desc id="ratt-desc-m">Mêmes données : de 1 335 entrées manquantes sur 2 415 en octobre 2025 à 0 sur 4 368 en août 2026, puis 29 sur 4 657 en octobre 2026.</desc>
+<line class="repere-grille" x1="52" x2="350" y1="330.0" y2="330.0"/><text class="txt" x="44" y="335.0" text-anchor="end">0</text>
+<line class="repere-grille" x1="52" x2="350" y1="185.0" y2="185.0"/><text class="txt" x="44" y="190.0" text-anchor="end">2 500</text>
+<line class="repere-grille" x1="52" x2="350" y1="40.0" y2="40.0"/><text class="txt" x="44" y="45.0" text-anchor="end">5 000</text>
+<line class="axe-fort" x1="52" x2="350" y1="330" y2="330"/>
+<text class="txt" x="52.0" y="356" text-anchor="start">oct. 2025</text>
+<text class="txt" x="350.0" y="356" text-anchor="end">oct. 2026</text>
+<g class="col-traduit"><rect x="56.3" y="267.4" width="14" height="62.6"/></g>
+<g class="col-manque"><path d="M56.3 265.4V192.9Q56.3 189.9 59.3 189.9H67.3Q70.3 189.9 70.3 192.9V265.4Z"/></g>
+<g class="col-traduit"><rect x="101.6" y="265.9" width="14" height="64.1"/></g>
+<g class="col-manque"><path d="M101.6 263.9V196.4Q101.6 193.4 104.6 193.4H112.6Q115.6 193.4 115.6 196.4V263.9Z"/></g>
+<g class="col-traduit"><rect x="148.4" y="258.4" width="14" height="71.6"/></g>
+<g class="col-manque"><path d="M148.4 256.4V167.3Q148.4 164.3 151.4 164.3H159.4Q162.4 164.3 162.4 167.3V256.4Z"/></g>
+<g class="col-traduit"><rect x="169.5" y="253.5" width="14" height="76.5"/></g>
+<g class="col-manque"><path d="M169.5 251.5V163.5Q169.5 160.5 172.5 160.5H180.5Q183.5 160.5 183.5 163.5V251.5Z"/></g>
+<g class="col-traduit"><rect x="238.9" y="125.2" width="14" height="204.8"/></g>
+<g class="col-manque"><path d="M238.9 123.2V108.2Q238.9 105.2 241.9 105.2H249.9Q252.9 105.2 252.9 108.2V123.2Z"/></g>
+<g class="col-traduit"><rect x="261.5" y="79.0" width="14" height="251.0"/></g>
+<g class="col-manque"><rect x="261.5" y="78.3" width="14" height="0.0"/></g>
+<g class="col-atteint"><path d="M284.9 330.0V79.7Q284.9 76.7 287.9 76.7H295.9Q298.9 76.7 298.9 79.7V330.0Z"/></g>
+<g class="col-traduit"><rect x="328.7" y="61.6" width="14" height="268.4"/></g>
+<g class="col-manque"><rect x="328.7" y="59.9" width="14" height="0.0"/></g>
+<text class="txt-fort" x="56.3" y="177.9">1 335</text><text class="txt-fort" x="291.9" y="64.7" text-anchor="middle">0</text>
+<path class="cote" d="M63.3 16H291.9M63.3 11v10M291.9 11v10"/><rect x="137.6" y="6" width="80" height="20" fill="var(--surface)"/><text class="txt" x="177.6" y="21" text-anchor="middle">dix mois</text>
+</svg>
+          <div class="lecture" aria-hidden="true"></div>
+          <div class="legende-fig">
+            <span><i class="cle-traduit"></i>Traduites</span>
+            <span><i class="cle-manque"></i>Sans équivalent français</span>
+            <span><i class="cle-atteint"></i>Plus une entrée manquante</span>
+            <span class="mono">relevé de l’audit, à consigner</span>
+          <details class="tableau-donnees">
+            <summary>Voir les données en tableau</summary>
+            <div class="tbl-defile">
+              <table>
+                <thead><tr><th scope="col">Date</th><th scope="col">Plantes</th><th scope="col">Zombies</th><th scope="col">Interface</th><th scope="col">Total manquant</th><th scope="col">Total anglais</th></tr></thead>
+                <tbody>
+                  <tr><td>16/10/2025</td><td>218 / 477</td><td>76 / 162</td><td>1&nbsp;041 / 1&nbsp;776</td><td>1&nbsp;335</td><td>2&nbsp;415</td></tr>
+                  <tr><td>15/12/2025</td><td>89 / 499</td><td>93 / 179</td><td>1&nbsp;067 / 1&nbsp;677</td><td>1&nbsp;249</td><td>2&nbsp;355</td></tr>
+                  <tr><td>15/02/2026</td><td>38 / 552</td><td>78 / 191</td><td>1&nbsp;507 / 2&nbsp;114</td><td>1&nbsp;623</td><td>2&nbsp;857</td></tr>
+                  <tr><td>15/03/2026</td><td>0 / 557</td><td>67 / 192</td><td>1&nbsp;536 / 2&nbsp;173</td><td>1&nbsp;603</td><td>2&nbsp;922</td></tr>
+                  <tr><td>15/06/2026</td><td>34 / 631</td><td>10 / 214</td><td>300 / 3&nbsp;030</td><td>344</td><td>3&nbsp;875</td></tr>
+                  <tr><td>15/07/2026</td><td>0 / 653</td><td>0 / 223</td><td>12 / 3&nbsp;464</td><td>12</td><td>4&nbsp;340</td></tr>
+                  <tr><td>15/08/2026</td><td>0 / 662</td><td>0 / 224</td><td>0 / 3&nbsp;482</td><td>0</td><td>4&nbsp;368</td></tr>
+                  <tr><td>12/10/2026</td><td>5 / 721</td><td>0 / 236</td><td>24 / 3&nbsp;700</td><td>29</td><td>4&nbsp;657</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+          </div>
+        </figure>
+
+        <div class="resultat-bas section--serre">
+          <figure class="fig frise-40" aria-labelledby="f40-t">
+            <figcaption class="fig__titre" id="f40-t">La version 4.0 en six jours</figcaption>
+            <div class="jalons-cadre">
+            <p class="jalons__duree mono" style="--de: 0%; --a: 54.5%">6 jours</p>
+            <ol class="jalons">
+              <li style="--pos: 0%"><span class="mono">20/09/2026</span>Textes chinois de la 4.0 ajoutés</li>
+              <li style="--pos: 54.5%"><span class="mono">26/09/2026</span>PR française fusionnée</li>
+              <li style="--pos: 100%"><span class="mono">01/10/2026</span>Sortie multilingue</li>
+            </ol>
+            </div>
+          </figure>
+          <dl class="chiffres-publics">
+            <div><dt class="sr">Nouvelles entrées</dt><dd><strong>5&nbsp;179</strong> nouvelles entrées traduites</dd></div>
+            <div><dt class="sr">Ajustements</dt><dd><strong>583</strong> ajustements de traductions existantes</dd></div>
+            <div class="chiffres-publics__note"><dt class="sr">Répartition</dt><dd>Dont l’essentiel traduit par moi, le reste par douze contributeurs crédités.<span class="a-confirmer" title="Dire la part personnelle : 4 862 sur 5 179 (Q7)">à confirmer</span> <span class="mono gris">bilan public figé au 26/09/2026</span></dd></div>
+          </dl>
+        </div>
+
+        <div class="diff section--serre">
+          <p class="diff__intro">Traduire, ici, c’est suivre des règles de jeu qui changent. <span class="gris">Extraits du journal public de mes contributions, semaine du 21/09/2026.</span></p>
+          <div class="diff__bloc">
+            <p class="diff__titre"><span>Règles chiffrées réalignées sur la 4.0</span><span class="mono">PR #223</span></p>
+            <p class="diff__ligne diff__ligne--avant"><span class="mono">avant</span><span>Four Polaire, recharge&nbsp;: <del>7,5&nbsp;s</del></span></p>
+            <p class="diff__ligne diff__ligne--apres"><span class="mono">après</span><span>Four Polaire, recharge&nbsp;: <ins>30&nbsp;s</ins></span></p>
+            <p class="diff__ligne diff__ligne--avant"><span class="mono">avant</span><span>Four Épicéa, retour au Four Polaire après <del>210&nbsp;s</del></span></p>
+            <p class="diff__ligne diff__ligne--apres"><span class="mono">après</span><span>Four Épicéa, retour au Four Polaire après <ins>125&nbsp;s</ins></span></p>
+          </div>
+          <div class="diff__bloc">
+            <p class="diff__titre"><span>Contresens corrigés</span><span class="mono">anglais → français</span></p>
+            <p class="diff__ligne diff__ligne--avant"><span class="mono">avant</span><span><del>«&nbsp;Ne prend pas feu … Altération Cryo&nbsp;»</del></span></p>
+            <p class="diff__ligne diff__ligne--apres"><span class="mono">après</span><span><ins>«&nbsp;Ne met pas le feu s’il est affecté par le Froid&nbsp;»</ins> <span class="gris">(Chill = Froid)</span></span></p>
+            <p class="diff__ligne diff__ligne--avant"><span class="mono">avant</span><span><del>«&nbsp;à portée infinie&nbsp;»</del></span></p>
+            <p class="diff__ligne diff__ligne--apres"><span class="mono">après</span><span><ins>«&nbsp;à perforation infinie&nbsp;»</ins> <span class="gris">(pierce infinitely)</span></span></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Gabarit commun E5 · 4 Comment je l’ai construit -->
+      <section class="section-projet" data-zone id="construction" aria-labelledby="t-construction">
+        <p class="gabarit-marque note-maquette" aria-hidden="true">gabarit commun · 4 contrainte → choix → effet</p>
+        <div class="entete-section entete-section--leger">
+          <h2 class="titre-3" id="t-construction">Comment je l’ai construit</h2>
+        </div>
+        <div class="decisions">
+          <dl class="decision">
+            <div><dt>Contrainte</dt><dd>Le jeu change toutes les deux ou trois semaines&nbsp;; une langue qui décroche ne rattrape plus.</dd></div>
+            <div><dt>Choix</dt><dd>Un outil qui compare chaque langue à l’anglais et écrit le bloc exact à traduire.</dd></div>
+            <div><dt>Effet</dt><dd>Chaque version devient une liste de tâches. L’outil est intégré au dépôt officiel depuis le 30/10/2025.</dd></div>
+          </dl>
+          <dl class="decision">
+            <div><dt>Contrainte</dt><dd>Une équipe de bénévoles à garder au même rythme.</dd></div>
+            <div><dt>Choix</dt><dd>Une pull request par semaine, qui crédite chaque contributeur par son nom.</dd></div>
+            <div><dt>Effet</dt><dd>20&nbsp;PR en 21&nbsp;semaines, de novembre 2025 à avril 2026&nbsp;; jusqu’à huit personnes créditées dans une même PR.<span class="a-confirmer" title="Relevé de l’audit, à consigner (C1)">à consigner</span></dd></div>
+          </dl>
+          <dl class="decision">
+            <div><dt>Contrainte</dt><dd>Rendre visible le travail de chacun.</dd></div>
+            <div><dt>Choix</dt><dd>L’outil tire de chaque PR le journal de chaque contributeur, compteurs compris.</dd></div>
+            <div><dt>Effet</dt><dd>Un bilan public par personne, dans le dépôt officiel.</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <!-- Gabarit commun E5 · 5 Sortie -->
+      <section class="section-projet" data-zone id="retenir" aria-labelledby="t-retenir">
+        <p class="gabarit-marque note-maquette" aria-hidden="true">gabarit commun · 5 sortie</p>
+        <div class="sortie">
+          <div class="pile">
+            <h2 class="titre-3" id="t-retenir">Ce que j’en retiens</h2>
+            <blockquote class="citation"><p>Seul on va vite, à plusieurs on va loin&nbsp;: la qualité et la sincérité des échanges démultiplient les résultats.</p></blockquote>
+            <div class="actions"><a class="bouton bouton--plein" href="hors-maquette.html?page=contact">Discutons<span class="fl fl--int" aria-hidden="true">→</span></a></div>
+          </div>
+          <div class="pile-s">
+            <a class="suivant" href="hors-maquette.html?page=projets/league-of-database">
+              <span class="etiquette">Projet suivant</span>
+              <b>League Of Data Base</b>
+              <span class="petit">Un système en production&nbsp;: 403 patchs, 21 langues.</span>
+              <span class="lien-voir">Voir le projet<span class="fl fl--int" aria-hidden="true">→</span></span>
+            </a>
+            <ul class="sortie__liens" aria-label="Liens publics">
+              <li><a href="https://github.com/Teyliu/PVZF-Translation">Projet multilingue (GitHub)<span class="fl fl--ext" aria-hidden="true">↗</span></a></li>
+              <li><a href="https://github.com/Teyliu/PVZF-Translation/blob/main/Docs/french-contributions.md">Bilan du pôle francophone<span class="fl fl--ext" aria-hidden="true">↗</span></a></li>
+              <li><a href="https://github.com/Teyliu/PVZF-Translation/pulls?q=is%3Apr+is%3Amerged+author%3ALINDECKER-Charles+created%3A2025-10-16..2026-09-26">Les 35 PR fusionnées<span class="fl fl--ext" aria-hidden="true">↗</span></a></li>
+              <li><a href="https://lindecker-charles.github.io/PVZ-Fuzion-ConsolManager/">Console Manager<span class="fl fl--ext" aria-hidden="true">↗</span></a></li>
+            </ul>
+          </div>
+        </div>
+
+        <details class="sources">
+          <summary>Sources et méthode</summary>
+          <ul>
+            <li><b>Couverture</b> : clés présentes dans la version anglaise et absentes de la française, une révision du dépôt officiel par mois disponible, de c623790 (16/10/2025) à 13d63b1 (12/10/2026). Relevé de l’audit du 13/10/2026, à consigner dans la matière première. Ne mesure pas la qualité.</li>
+            <li><b>Volumes</b> : <a href="https://github.com/LINDECKER-Charles/PVZF-Translation-fr/blob/eda0b63fbacda194465144c9ec20cb975c7a9c6a/Docs/french-contributions.md">bilan figé à la révision eda0b63 du 26/09/2026<span class="fl fl--ext" aria-hidden="true">↗</span></a>&nbsp;; nouvelles entrées, ajustements et relectures comptés séparément.</li>
+            <li><b>PR</b> : ouvertes par LINDECKER-Charles du 16/10/2025 au 26/09/2026, toutes fusionnées dans le dépôt officiel.</li>
+            <li><b>Dates de rôle</b> : journal public du contributeur&nbsp;; date du titre de lead à confirmer.</li>
+          </ul>
+        </details>
+      </section>
+    </div>
+  </div>
+</main>
+
+<footer class="pied reperes">
+  <div class="reperes__colonnes" aria-hidden="true"><div class="conteneur"><div class="grille"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div></div>
+  <div class="conteneur">
+    <div class="cartouche">
+      <div class="cartouche__marque">
+        <img class="pied__embleme pied__embleme--jour" src="../../../site/src/assets/marque/logo-symbole.webp" width="352" height="245" alt="">
+        <img class="pied__embleme pied__embleme--nuit" src="../../assets/marque/logo-symbole-nuit.png" width="352" height="245" alt="">
+        <img class="pied__nom" src="../../../site/src/assets/marque/logo-nom.webp" width="756" height="118" alt="Charles Lindecker">
+        <p class="petit gris">Architecte logiciel, à Mulhouse.</p>
+      </div>
+      <nav aria-label="Pages">
+        <h2>Pages</h2>
+        <ul>
+          <li><a href="accueil.html">Accueil</a></li>
+          <li><a href="projets.html">Projets</a></li>
+          <li><a href="competences.html">Parcours</a></li>
+          <li><a href="hors-maquette.html?page=contact">Contact</a></li>
+        </ul>
+      </nav>
+      <div>
+        <h2>Ailleurs</h2>
+        <ul>
+          <li><a href="https://github.com/LINDECKER-Charles">GitHub<span class="fl fl--ext" aria-hidden="true">↗</span></a></li>
+          <li><a href="https://www.linkedin.com/in/charles-lindecker/">LinkedIn<span class="fl fl--ext" aria-hidden="true">↗</span></a></li>
+        </ul>
+      </div>
+      <div class="cartouche__ecrire">
+        <h2>Écrire</h2>
+        <p><a class="pied__courriel" href="mailto:charles.lindecker@outlook.fr" data-evenement="contact-email">charles.lindecker@outlook.fr</a></p>
+        <button class="copier" type="button" data-copier="charles.lindecker@outlook.fr"><span data-copier-libelle>Copier l’adresse</span></button>
+      </div>
+      <div class="cartouche__colophon colophon">
+        <span>Composé en Archivo, JetBrains Mono et Newsreader · <a href="hors-maquette.html?page=mentions-legales">Mentions légales</a></span>
+        <span class="mono note-maquette">Maquette B « Banc d’essai » · planche&nbsp;3/4 · PvZ Fusion</span>
+        <button class="notes-bascule" type="button" data-notes aria-pressed="false">Notes de maquette</button>
+      </div>
+    </div>
+  </div>
+</footer>
+<div class="balayage" aria-hidden="true"></div>
+</body>
+</html>
