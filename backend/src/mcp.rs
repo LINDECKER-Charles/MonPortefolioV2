@@ -34,7 +34,8 @@ const CACHE_TTL_MS: u64 = 300_000;
 
 /// À fusionner au routeur principal avant son `with_state`. Un appel passe par
 /// le jeton (`authorize`), puis, s’il porte un gros corps (`blog_upload_media`),
-/// par la file des imports d’images (`upload_queue`) avant que son corps soit lu.
+/// par la file des imports d’images (`upload_queue`) avant que son corps soit lu ;
+/// un petit import y prend sa place après la lecture de son corps.
 pub fn routes(state: AppState) -> Router<AppState> {
     Router::new()
         .route(
@@ -243,7 +244,7 @@ async fn handle(
             "Accept doit inclure application/json et text/event-stream.",
         );
     }
-    // La place d’un gros import (`upload_queue`), que son traitement garde jusqu’au bout.
+    // La place d’un gros envoi (`upload_queue`), que son traitement garde jusqu’au bout.
     let turn = request
         .extensions()
         .get::<crate::upload_queue::UploadTurn>()
@@ -418,6 +419,14 @@ async fn handle(
         "tools/call" => {
             // SQLite et le traitement des images importées bloquent : hors des fils d’Axum.
             // Un import y garde sa place jusqu’au bout, même si le client part.
+            let turn = if params.get("name").and_then(Value::as_str) == Some("blog_upload_media") {
+                match crate::upload_queue::turn(&state, turn).await {
+                    Ok(turn) => Some(turn),
+                    Err(error) => return error.into_response(),
+                }
+            } else {
+                turn
+            };
             let (params, id) = (params.clone(), id.cloned());
             tokio::task::spawn_blocking(move || {
                 let _turn = turn;

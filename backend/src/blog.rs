@@ -1441,7 +1441,8 @@ async fn upload_media(
     Json(p): Json<MediaUpload>,
 ) -> Result<(StatusCode, Json<MediaRecord>), ApiError> {
     // Le décodage et les réductions prennent du calcul : hors des fils d’Axum.
-    // Ils gardent la place de l’envoi jusqu’au bout, même si le client part.
+    // Ils gardent la place de l’import jusqu’au bout, même si le client part.
+    let turn = crate::upload_queue::turn(&s, turn.map(|axum::Extension(turn)| turn)).await?;
     let store = s.store.clone();
     let media = tokio::task::spawn_blocking(move || {
         let _turn = turn;

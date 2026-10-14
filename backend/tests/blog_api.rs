@@ -1209,7 +1209,7 @@ fn mcp_upload(token: &str, payload: &Value) -> Request<Body> {
 }
 
 #[tokio::test]
-async fn large_imports_share_two_places_between_the_backoffice_and_mcp() {
+async fn imports_share_two_places_between_the_backoffice_and_mcp() {
     let store = Arc::new(Store::in_memory("owner@example.org").unwrap());
     let state = AppState::with_store(
         None,
@@ -1268,15 +1268,16 @@ async fn large_imports_share_two_places_between_the_backoffice_and_mcp() {
             "D’autres images sont en cours d’import. Réessayez dans quelques secondes."
         );
     }
-    // Les petites requêtes ne passent jamais par la file.
-    let response = app.clone().oneshot(backoffice(&small)).await.unwrap();
-    assert_eq!(response.status(), StatusCode::CREATED);
-    let response = app
-        .clone()
-        .oneshot(mcp_upload(&token, &small))
-        .await
-        .unwrap();
-    assert_eq!(body(response).await["result"]["isError"], false);
+    // Un petit import attend lui aussi une place, après la lecture de son corps :
+    // un petit fichier peut coûter autant à décoder qu’un gros.
+    for small_import in [backoffice(&small), mcp_upload(&token, &small)] {
+        let started = std::time::Instant::now();
+        let response = app.clone().oneshot(small_import).await.unwrap();
+        assert!(started.elapsed() >= Duration::from_millis(300));
+        assert_eq!(response.status(), StatusCode::SERVICE_UNAVAILABLE);
+        assert_eq!(body(response).await["code"], "UPLOAD_BUSY");
+    }
+    // Les autres petites requêtes ne passent jamais par la file.
     let response = app
         .clone()
         .oneshot(request(
@@ -1288,13 +1289,36 @@ async fn large_imports_share_two_places_between_the_backoffice_and_mcp() {
         .await
         .unwrap();
     assert_eq!(response.status(), StatusCode::OK);
+    let mut list = mcp_upload(&token, &small);
+    *list.body_mut() = Body::from(
+        json!({"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"blog_list_media","arguments":{}}})
+            .to_string(),
+    );
+    let started = std::time::Instant::now();
+    let response = app.clone().oneshot(list).await.unwrap();
+    assert!(started.elapsed() < Duration::from_millis(300));
+    assert_eq!(body(response).await["result"]["isError"], false);
 
-    // Les deux imports en cours finissent (corps vide, refusé) : les places reviennent.
-    drop((backoffice_sender, mcp_sender));
+    // Un petit import en attente passe dès qu’une place se libère.
+    let mut waiting = tokio::spawn(app.clone().oneshot(backoffice(&small)));
+    assert!(
+        tokio::time::timeout(Duration::from_millis(100), &mut waiting)
+            .await
+            .is_err(),
+        "le petit import attend sa place"
+    );
+    drop(backoffice_sender);
     assert_eq!(
         held_backoffice.await.unwrap().unwrap().status(),
         StatusCode::BAD_REQUEST
     );
+    assert_eq!(
+        waiting.await.unwrap().unwrap().status(),
+        StatusCode::CREATED
+    );
+
+    // Le second import en cours finit (corps vide, refusé) : les places reviennent.
+    drop(mcp_sender);
     held_mcp.await.unwrap().unwrap();
     let response = app.clone().oneshot(backoffice(&large)).await.unwrap();
     assert_eq!(response.status(), StatusCode::CREATED);

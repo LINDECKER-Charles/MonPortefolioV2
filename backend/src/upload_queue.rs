@@ -9,9 +9,11 @@
 //!
 //! Une requête en attente ne lit pas son corps : il reste chez le client, que
 //! TCP freine (contre-pression). Seul un corps qui peut dépasser
-//! `LARGE_BODY_BYTES` passe par la file : `Content-Length` au-dessus du seuil,
-//! ou absent avec un corps en flux. Les petites requêtes (appels MCP ordinaires,
-//! formulaire de contact, atelier) ne l’attendent jamais.
+//! `LARGE_BODY_BYTES` attend avant sa lecture : `Content-Length` au-dessus du seuil,
+//! ou absent avec un corps en flux. Un petit import, lui, prend sa place une fois
+//! son corps lu, avant son traitement (`turn`) : un petit fichier peut coûter
+//! autant à décoder qu’un gros. Les autres petites requêtes (appels MCP
+//! ordinaires, formulaire de contact, atelier) ne l’attendent jamais.
 use std::{future::poll_fn, pin::Pin, sync::Arc, time::Duration};
 
 use axum::{
@@ -83,18 +85,49 @@ pub(crate) async fn wait_turn(
     if !is_large(&request) {
         return next.run(request).await;
     }
-    let queue = &state.upload_queue;
-    let permit = match tokio::time::timeout(queue.wait, queue.slots.clone().acquire_owned()).await {
-        Ok(Ok(permit)) => permit,
-        _ => return refuse(request).await,
-    };
-    let turn = UploadTurn {
-        _permit: Arc::new(permit),
+    let Some(turn) = acquire(&state.upload_queue).await else {
+        return refuse(request).await;
     };
     request.extensions_mut().insert(turn.clone());
     let response = next.run(request).await;
     drop(turn);
     response
+}
+
+/// La place d’un import pour son traitement : celle que `wait_turn` a prise
+/// avant de lire un gros corps, sinon une place prise maintenant, son petit
+/// corps déjà lu. Un petit fichier peut coûter autant à décoder qu’un gros (un
+/// GIF de 15 Kio et de 18,7 Mpx) : sans place, une rafale de petits imports
+/// occupait autant de fils de traitement, qui gardent chacun la mémoire qu’ils
+/// ont libérée, et le service mourait faute de mémoire. Après `UPLOAD_WAIT`,
+/// la réponse est la même que pour un gros envoi (`503 UPLOAD_BUSY`).
+pub(crate) async fn turn(
+    state: &AppState,
+    taken: Option<UploadTurn>,
+) -> Result<UploadTurn, ApiError> {
+    match taken {
+        Some(turn) => Ok(turn),
+        None => acquire(&state.upload_queue).await.ok_or_else(busy),
+    }
+}
+
+async fn acquire(queue: &UploadQueue) -> Option<UploadTurn> {
+    let permit = tokio::time::timeout(queue.wait, queue.slots.clone().acquire_owned())
+        .await
+        .ok()?
+        .ok()?;
+    Some(UploadTurn {
+        _permit: Arc::new(permit),
+    })
+}
+
+fn busy() -> ApiError {
+    ApiError::new(
+        StatusCode::SERVICE_UNAVAILABLE,
+        "UPLOAD_BUSY",
+        "D’autres images sont en cours d’import. Réessayez dans quelques secondes.",
+    )
+    .with_retry_after(RETRY_AFTER_SECONDS)
 }
 
 /// `Content-Length` au-dessus du seuil, ou absent avec un corps en flux.
@@ -112,13 +145,7 @@ async fn refuse(request: Request) -> Response {
         tokio::time::timeout(DRAIN_WAIT, drain(&mut body)).await,
         Ok(true)
     );
-    let mut response = ApiError::new(
-        StatusCode::SERVICE_UNAVAILABLE,
-        "UPLOAD_BUSY",
-        "D’autres images sont en cours d’import. Réessayez dans quelques secondes.",
-    )
-    .with_retry_after(RETRY_AFTER_SECONDS)
-    .into_response();
+    let mut response = busy().into_response();
     if drained {
         return response;
     }
