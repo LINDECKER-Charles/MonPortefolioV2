@@ -73,10 +73,14 @@ async function mockApi(page: Page, posts: Post[] = []) {
   });
   return state;
 }
+/** Une rubrique du backoffice, par la navigation de l’en-tête. */
+function rubrique(page: Page, nom: string) {
+  return page.getByRole('navigation', { name: 'Rubriques du backoffice' }).getByRole('link', { name: nom, exact: true });
+}
 async function openBlog(page: Page) {
   await page.goto('/backoffice');
   await expect(page.locator('#bo-workspace')).toBeVisible();
-  await page.getByRole('tab', { name: 'Blog', exact: true }).click();
+  await rubrique(page, 'Blog').click();
   await expect(page).toHaveURL(/\/backoffice\/blog$/);
   await expect(page.getByRole('button', { name: 'Nouvel article', exact: true })).toBeEnabled();
 }
@@ -104,6 +108,12 @@ async function section(page: Page, target: Section, id?: number) {
   await onlySection(page, target);
 }
 async function accessible(page: Page) {
+  // La barre de l’article colle en haut pendant l’édition : selon le défilement,
+  // axe la compte comme un obstacle posé sur les commandes qu’elle survole
+  // (target-size, color-contrast). L’analyse part donc du haut de la page ;
+  // l’état défilé, lui, est couvert par « la barre collante ne masque jamais
+  // le champ qui reçoit le focus », au clavier, sur chaque page de l’article.
+  await page.evaluate(() => window.scrollTo(0, 0));
   const result = await new AxeBuilder({ page }).withTags(REGLES_AXE).analyze();
   expect(result.violations.map((entry) => ({ rule: entry.id, nodes: entry.nodes.map((node) => node.target) }))).toEqual([]);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
@@ -237,15 +247,18 @@ test('un conflit conserve le travail, les sorties le protègent et la suppressio
   expect(state.mutations.find((mutation) => mutation.method === 'DELETE')?.body).toEqual({ revision: 1 });
 });
 
-test('les autorisations MCP sont explicites et une expiration efface l’article privé', async ({ page }) => {
+test('un accès MCP de rédaction ne lit pas les demandes par défaut et une expiration efface l’article privé', async ({ page }) => {
   const state = await mockApi(page, [post()]);
   await openBlog(page);
-  await page.getByRole('tab', { name: 'Accès MCP', exact: true }).click();
-  await page.getByLabel('Nom de la connexion').fill('Rédacteur');
-  await page.getByLabel('Autorisations du blog').selectOption('write');
-  await page.getByRole('button', { name: 'Créer le jeton', exact: true }).click();
-  expect(state.mutations.find((mutation) => mutation.path === '/tokens')?.body.scopes).toEqual(['contacts:read', 'blog:read', 'blog:write']);
-  await page.getByRole('tab', { name: 'Blog', exact: true }).click();
+  await rubrique(page, 'Accès MCP').click();
+  await page.getByLabel('Nom de l’accès').fill('Rédacteur');
+  await expect(page.getByRole('radio', { name: 'Rédaction', exact: true })).toBeChecked();
+  await expect(page.getByRole('checkbox', { name: 'Lire aussi les demandes de contact' })).not.toBeChecked();
+  await page.getByRole('button', { name: 'Créer l’accès', exact: true }).click();
+  await expect(page.locator('#bo-token-command')).toContainText('Authorization: Bearer test-token');
+  expect(state.mutations.find((mutation) => mutation.path === '/tokens')?.body).toEqual({ name: 'Rédacteur', scopes: ['blog:read', 'blog:write'] });
+  await rubrique(page, 'Blog').click();
+  await expect(page.locator('#bo-token-command')).toBeEmpty();
   await page.locator('#blog-post-list').getByRole('link').click();
   await page.getByLabel('Titre de l’article', { exact: true }).fill('Titre privé de la session');
   state.authenticated = false;
@@ -384,4 +397,106 @@ test('un accès direct privé demande la connexion et reprend l’écran demand�
   await expect(page).toHaveURL(/\/backoffice\/blog\/seo\?id=1$/);
   await onlySection(page, 'seo');
   await expect(page.locator('#blog-title')).toHaveValue('Préparer une publication avec soin');
+});
+
+for (const theme of ['jour', 'nuit'] as const) {
+  test.describe(`atelier du blog, thème ${theme}`, () => {
+    test.use({ colorScheme: theme === 'nuit' ? 'dark' : 'light' });
+
+    test(`axe : la liste, chaque page de l’article et la bibliothèque (${theme})`, async ({ page }) => {
+      const scheduled = { ...post(2), title: 'Une publication programmée', slug: 'programmee', status: 'scheduled' as const, scheduled_at: 1_900_000_000, has_unpublished_changes: true, cover_image: '/api/blog/media/1', cover_alt: 'Une couverture' };
+      await mockApi(page, [post(), scheduled]);
+      await page.goto('/backoffice/blog');
+      await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+      await expect(page.locator('#blog-post-list').getByRole('link')).toHaveCount(2);
+      await accessible(page);
+      await page.locator('#blog-filter').selectOption('published');
+      await expect(page.locator('#blog-empty')).toBeVisible();
+      await accessible(page);
+      for (const target of SECTIONS) {
+        await page.goto(`/backoffice/blog/${target}?id=2`);
+        await onlySection(page, target);
+        await expect(page.locator('#blog-title')).toHaveValue('Une publication programmée');
+        await accessible(page);
+      }
+      // Une seule zone éclairée par écran : la feuille, l’aperçu de recherche, la version à publier.
+      for (const [target, foyer] of [['redaction', '.blog-feuille'], ['seo', '.blog-serp'], ['publication', '.blog-publication-review']] as const) {
+        await page.locator(`[data-blog-section-link="${target}"]`).click();
+        await onlySection(page, target);
+        await expect(page.locator('#bo-panel-blog .foyer:visible')).toHaveCount(1);
+        await expect(page.locator(foyer)).toHaveClass(/foyer/);
+      }
+      await page.locator('[data-blog-section-link="redaction"]').click();
+      await page.locator('.blog-toolbar-more summary').first().click();
+      await expect(page.getByRole('button', { name: 'Citation', exact: true })).toBeVisible();
+      await accessible(page);
+      await page.getByRole('button', { name: 'Image', exact: true }).click();
+      await expect(page.getByRole('dialog', { name: 'Insérer une image' })).toBeVisible();
+      await accessible(page);
+    });
+  });
+}
+
+test('la barre collante ne masque jamais le champ qui reçoit le focus, sur chaque page de l’article', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await mockApi(page, [post()]);
+  // Un retour sur plusieurs lignes fait grandir la barre : le défilement doit suivre.
+  for (const target of SECTIONS) {
+    await page.goto(`/backoffice/blog/${target}?id=1`);
+    await onlySection(page, target);
+    await page.evaluate(() => {
+      const retour = document.getElementById('blog-notice')!;
+      retour.textContent = 'Un retour assez long pour passer sur plusieurs lignes à 390 px : la barre grandit, et le défilement lui réserve sa nouvelle hauteur.';
+      retour.hidden = false;
+    });
+    // Du bas de la page, en remontant au clavier jusqu’à la barre.
+    await page.locator('.bo-pied a').first().focus();
+    const masques: string[] = [];
+    for (let pas = 0; pas < 120; pas += 1) {
+      await page.keyboard.press('Shift+Tab');
+      // Ce que voit la personne : après le défilement du focus, deux images plus tard.
+      await page.evaluate(() => new Promise((fin) => requestAnimationFrame(() => requestAnimationFrame(fin))));
+      const mesure = await page.evaluate(() => {
+        const actif = document.activeElement as HTMLElement | null;
+        const barre = document.querySelector('.blog-barre')!;
+        if (!actif || actif === document.body) return { fin: true };
+        if (barre.contains(actif) || actif.closest('.bo-entete, .bo-rubrique__entete, .blog-article-nav')) return { fin: true };
+        const boite = actif.getBoundingClientRect();
+        const bas = barre.getBoundingClientRect().bottom;
+        const visible = boite.height <= window.innerHeight - bas ? boite.top >= bas - 1 : boite.bottom > bas + 1;
+        return { fin: false, visible, nom: `${actif.tagName.toLowerCase()}${actif.id ? `#${actif.id}` : ''} (haut ${Math.round(boite.top)}, barre ${Math.round(bas)}` };
+      });
+      if (mesure.fin) break;
+      if (!mesure.visible) masques.push(`${target} : ${mesure.nom}`);
+    }
+    expect(masques).toEqual([]);
+  }
+});
+
+test('une adresse refusée le dit sous le champ et garde le focus ; le retour d’enregistrement ne survit ni à une page ni à une retouche', async ({ page }) => {
+  await mockApi(page, [post()]);
+  await page.goto('/backoffice/blog/seo?id=1');
+  await onlySection(page, 'seo');
+  await page.locator('#blog-save').click();
+  await expect(page.locator('#blog-notice')).toContainText('Le brouillon est enregistré');
+
+  // Une retouche efface « enregistré » : l’état dit seul ce qui reste à faire.
+  await page.locator('#blog-slug').fill('Slug Invalide !!');
+  await expect(page.locator('#blog-notice')).toBeHidden();
+  await page.locator('#blog-save').click();
+  await expect(page.locator('#blog-slug')).toBeFocused();
+  await expect(page.locator('#blog-slug')).toHaveAttribute('aria-invalid', 'true');
+  await expect(page.locator('#blog-slug-erreur')).toBeVisible();
+  await expect(page.locator('#blog-slug')).toHaveAttribute('aria-describedby', 'blog-slug-help blog-slug-erreur');
+  await accessible(page);
+  await page.locator('#blog-slug').fill('slug-valide');
+  await expect(page.locator('#blog-slug-erreur')).toBeHidden();
+  await expect(page.locator('#blog-slug')).not.toHaveAttribute('aria-invalid', 'true');
+  await expect(page.locator('#blog-slug')).toHaveAttribute('aria-describedby', 'blog-slug-help');
+
+  // Changer de page de l’article efface aussi le retour.
+  await page.locator('#blog-save').click();
+  await expect(page.locator('#blog-notice')).toContainText('Le brouillon est enregistré');
+  await section(page, 'publication', 1);
+  await expect(page.locator('#blog-notice')).toBeHidden();
 });

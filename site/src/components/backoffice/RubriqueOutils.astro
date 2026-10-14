@@ -1,0 +1,51 @@
+---
+/**
+ * Boîte à outils : les raccourcis vers les services du portfolio (Umami,
+ * Grafana…), en liste à filets, et le formulaire qui en ajoute ou en modifie
+ * un. Les suggestions préparent seulement le nom : l’adresse reste à saisir.
+ */
+import EnTeteRubrique from './EnTeteRubrique.astro';
+import Retour from './Retour.astro';
+---
+
+<section class="bo-rubrique" id="bo-panel-links" aria-labelledby="bo-titre-links" hidden>
+  <EnTeteRubrique id="bo-titre-links" titre="Boîte à outils" description="Les raccourcis vers les services que vous utilisez pour le portfolio." />
+  <div class="bo-colonnes">
+    <div class="bo-colonnes__principale" data-retour="bo-links-list-retour">
+      <ul class="bo-tools" id="bo-link-list" aria-label="Liens enregistrés"></ul>
+      <p class="bo-empty" id="bo-links-empty" hidden>Aucun lien enregistré. Ajoutez l’adresse de votre premier outil.</p>
+      <Retour id="bo-links-list-retour" />
+    </div>
+    <form class="bo-carte bo-formulaire" id="bo-link-form" data-retour="bo-links-retour">
+      <h3 id="bo-link-form-title">Ajouter un outil</h3>
+      <div class="bo-suggestions">
+        <p id="bo-suggestions-label">Préparer un raccourci</p>
+        <div class="bo-suggestions__choix" role="group" aria-labelledby="bo-suggestions-label">
+          <button class="bo-button bo-button--petit" type="button" data-suggest="Umami">Umami</button>
+          <button class="bo-button bo-button--petit" type="button" data-suggest="Grafana">Grafana</button>
+          <button class="bo-button bo-button--petit" type="button" data-suggest="Google Search Console">Google Search Console</button>
+        </div>
+      </div>
+      <fieldset><legend class="sr">Raccourci vers un outil</legend>
+        <div class="bo-champ">
+          <label for="bo-link-label">Nom de l’outil</label>
+          <input id="bo-link-label" name="label" maxlength="100" required />
+        </div>
+        <div class="bo-champ">
+          <label for="bo-link-url">Adresse du service</label>
+          <input id="bo-link-url" name="url" type="url" maxlength="2048" placeholder="https://" required aria-describedby="bo-link-url-help" />
+          <p class="bo-help" id="bo-link-url-help">Une adresse complète commençant par https:// ou http://.</p>
+        </div>
+        <div class="bo-champ">
+          <label for="bo-link-description">Description <span class="bo-muted">(facultative)</span></label>
+          <input id="bo-link-description" name="description" maxlength="300" />
+        </div>
+        <div class="bo-actions">
+          <button class="bo-button bo-button--primary" id="bo-link-submit" type="submit">Ajouter l’outil</button>
+          <button class="bo-button bo-button--quiet" id="bo-link-cancel" type="button" hidden>Annuler la modification</button>
+        </div>
+      </fieldset>
+      <Retour id="bo-links-retour" />
+    </form>
+  </div>
+</section>

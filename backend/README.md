@@ -152,7 +152,7 @@ Les routes suivantes nécessitent une session valide, à l’exception de `login
 | `/contacts/{id}` | PATCH, DELETE | changer le statut ou supprimer définitivement |
 | `/settings` | GET, PUT | consulter ou changer `{"email":"…"}` |
 | `/links`, `/links/{id}` | GET/POST, PUT/DELETE | gérer les raccourcis `label`, `url`, `description` |
-| `/tokens`, `/tokens/{id}` | GET/POST, DELETE | créer et révoquer les accès MCP |
+| `/tokens`, `/tokens/{id}` | GET/POST, DELETE | lister, créer (`{"name":"…","scopes":[…]}`, 201 avec le secret ; 409 `TOKEN_LIMIT_REACHED` au-delà de 64 accès) et révoquer les accès MCP |
 | `/blog/posts` | GET/POST | lister avec `status=draft\|scheduled\|published\|all`, `limit=1..100`, `offset` ; créer un brouillon |
 | `/blog/posts/{id}` | GET/PUT/DELETE | lire, remplacer les champs éditables avec `revision`, supprimer avec `{"revision":…}` |
 | `/blog/posts/{id}/preview`, `/blog/posts/{id}/seo` | GET | lire le brouillon ou son audit SEO |
@@ -240,11 +240,68 @@ et les aperçus restent hors de ces sorties.
 
 ## Connecter un client MCP
 
-Dans la rubrique « Accès MCP », créer un jeton nommé par appareil ou client. Le secret est
-affiché une seule fois ; seule son empreinte SHA-256 est conservée. Révoquer un accès le rend
-inutilisable immédiatement. Le mot de passe et le cookie du backoffice ne donnent pas accès au
-MCP. Choisir les permissions à la création ; le secret ne permet jamais de modifier les contacts,
-les réglages ou les autres jetons.
+### Claude Code, en un geste
+
+1. Dans le backoffice, rubrique « Accès MCP », le formulaire « Nouvel accès » est déjà rempli :
+   nom « Claude Code » (« Claude Code 2 »… si le nom existe ; nommer plutôt l’appareil,
+   « Claude Code — MacBook »), préréglage **Rédaction**, case « Lire aussi les demandes de
+   contact » **décochée**.
+2. « Créer l’accès » : la carte éclairée montre la commande prête à copier, par exemple en
+   production :
+
+   ```bash
+   claude mcp remove --scope user portfolio 2>/dev/null
+   claude mcp add --transport http --scope user portfolio https://charles-lindecker.com/mcp --header "Authorization: Bearer <secret>"
+   ```
+
+   La première ligne retire un serveur du même nom s’il existe (un accès précédent, révoqué ou
+   perdu) : `claude mcp add` refuse un nom déjà connu, et sort quand même avec le code 0. Sans
+   elle, recréer un accès échouerait sans qu’on le voie.
+
+   L’adresse vient de l’origine de la page ; le nom du serveur, de l’hôte : `portfolio` en
+   production, `portfolio-test` sur `test.v2…`, `portfolio-local` sur le poste. `--scope user`
+   rend le serveur disponible dans tous les projets. `--header` vient en dernier : l’option
+   accepte plusieurs valeurs.
+3. « Copier la commande », la coller dans un terminal, puis `claude mcp list` doit afficher
+   `✔ Connected`. « Vérifier l’accès » fait la même preuve depuis le backoffice, par le chemin de
+   Claude Code (révision 2026-07-28) : `server/discover` puis `tools/list` avec le nouveau
+   secret, en exigeant les indications de cache (`resultType`, `ttlMs`, `cacheScope`) sans
+   lesquelles Claude Code rejette le catalogue ; puis la liste des outils réellement ouverts (cet
+   appel compte comme une utilisation). « Terminé » pendant la vérification l’annule sans
+   message ; au-delà de 15 s, l’écran dit que le serveur ne répond pas.
+4. « Terminé » : le secret n’est plus affiché. Il disparaît aussi en quittant la rubrique, à la
+   déconnexion et à l’expiration de la session ; il n’est jamais conservé dans le navigateur.
+   Perdu : révoquer l’accès et en créer un autre ; sa commande remplace l’ancien serveur.
+
+La commande contient le secret : Claude Code l’enregistre de toute façon dans sa configuration
+(`~/.claude.json`), et l’historique du shell le garde aussi. La coller dans son propre terminal
+seulement ; une commande précédée d’une espace reste hors de l’historique si le shell ignore ces
+lignes (`setopt HIST_IGNORE_SPACE` pour zsh).
+
+La liste « Accès actifs » montre pour chaque accès son nom, ses permissions en clair, sa date de
+création et sa dernière utilisation (« À l’instant », « Il y a 3 heures »…). « Révoquer »
+demande confirmation, rend le secret inutilisable immédiatement et rappelle, seule sur sa
+ligne, la commande `claude mcp remove --scope user …` à lancer côté client.
+
+### Préréglages et permissions
+
+| Préréglage | Permissions envoyées | Ce que l’assistant peut faire |
+|---|---|---|
+| Lecture du blog | `blog:read` | lire les articles, les brouillons, leurs aperçus, l’audit SEO et les images |
+| **Rédaction** (par défaut) | `blog:read`, `blog:write` | tout lire, créer et modifier des brouillons, importer des images ; rien n’est publié |
+| Publication | `blog:read`, `blog:write`, `blog:publish` | la rédaction, plus publier, programmer, retirer ou supprimer un article |
+| case « Lire aussi les demandes de contact » | ajoute `contacts:read` | lire les demandes (noms, e-mails, messages) et la boîte à outils, en lecture seule |
+
+Les demandes de contact contiennent des données personnelles : elles ne sont jamais accordées par
+défaut. Les accès déjà créés gardent leurs permissions ; avant le 14 octobre 2026, l’interface
+ajoutait `contacts:read` à chaque accès, sans le dire. La liste l’affiche désormais en clair
+(« Demandes de contact ») : révoquer et recréer un accès pour retirer cette permission.
+
+Le secret est montré une seule fois ; seule son empreinte SHA-256 est conservée. Le mot de
+passe et le cookie du backoffice ne donnent pas accès au MCP, et un secret MCP n’ouvre jamais
+`/api/backoffice`. Aucun accès ne modifie les contacts, les réglages ou les accès. Le backoffice
+compte au plus 64 accès : au-delà, la création répond 409 `TOKEN_LIMIT_REACHED` avec un message
+qui demande d’en révoquer un.
 
 | Permission | Accès |
 |---|---|
@@ -253,22 +310,25 @@ les réglages ou les autres jetons.
 | `blog:write` | créer/modifier les brouillons et importer des images ; exige `blog:read` |
 | `blog:publish` | publier, programmer, retirer et supprimer les articles ; exige `blog:write` |
 
-Les jetons existants et les créations sans `scopes` gardent uniquement `contacts:read` et
-`blog:read`. Il faut créer un nouvel accès avec les permissions d’écriture voulues ; aucune
-migration ne leur donne le droit de publier. Les accès « Rédaction » ajoutent `blog:write`,
-et « Publication » ajoute aussi `blog:publish`. L’API autorise également des jetons limités au
-blog : `POST /api/backoffice/tokens` accepte par exemple
-`{"name":"Rédaction", "scopes":["blog:read", "blog:write"]}`. La liste des jetons expose leurs
-permissions, jamais leurs secrets. Le catalogue MCP ne montre que les outils autorisés, et
-chaque appel vérifie à nouveau la permission.
+Par l’API, `POST /api/backoffice/tokens` accepte des permissions explicites, par exemple
+`{"name":"Rédaction", "scopes":["blog:read", "blog:write"]}`. Une création sans `scopes` garde,
+pour compatibilité, `contacts:read` et `blog:read` ; l’interface envoie toujours des
+permissions explicites. La liste des accès expose leurs permissions, jamais leurs secrets. Le
+catalogue MCP ne montre que les outils autorisés, et chaque appel vérifie à nouveau la
+permission.
+
+### Le serveur
 
 Le serveur utilise Streamable HTTP à `https://<domaine>/mcp`, avec
-`Authorization: Bearer <jeton>` sur **chaque** requête. Il prend en charge la version MCP
+`Authorization: Bearer <secret>` sur **chaque** requête. Il prend en charge la version MCP
 2026-07-28 et les handshakes 2025-11-25, 2025-06-18 et 2025-03-26. Les requêtes POST utilisent
 `Content-Type: application/json` et `Accept: application/json, text/event-stream`. Il répond en
-JSON, sans flux SSE ; GET et DELETE ne sont pas utilisés. Les appels sont limités à 120 par IP
-et par minute. Un corps MCP accepte au plus 8 Mio pour permettre l’import d’images en base64 ;
-les limites du document et de l’image restent contrôlées séparément.
+JSON, sans flux SSE ; GET et DELETE ne sont pas utilisés. En 2026-07-28, `server/discover` et
+`tools/list` portent les indications de cache exigées (`ttlMs` de cinq minutes, `cacheScope`
+privé : le catalogue dépend des permissions de l’accès) ; sans elles, Claude Code refuse le
+catalogue. Les appels sont limités à 120 par IP et par minute. Un corps MCP accepte au plus
+8 Mio pour permettre l’import d’images en base64 ; les limites du document et de l’image restent
+contrôlées séparément.
 
 | Outil | Permission | Rôle |
 |---|---|---|
@@ -312,24 +372,17 @@ url = "https://<domaine>/mcp"
 bearer_token_env_var = "PORTFOLIO_MCP_TOKEN"
 ```
 
-Le processus du client doit recevoir `PORTFOLIO_MCP_TOKEN` contenant le secret. Éviter de le
-versionner dans un dépôt. [Configuration MCP officielle](https://learn.chatgpt.com/docs/extend/mcp?surface=cli).
+Le processus du client doit recevoir `PORTFOLIO_MCP_TOKEN` contenant le secret, copié depuis
+« Autres clients : le secret seul » sur la carte de l’accès. Éviter de le versionner dans un
+dépôt. [Configuration MCP officielle](https://learn.chatgpt.com/docs/extend/mcp?surface=cli).
 
 ### Claude
 
-Claude Code peut utiliser un transport HTTP et l’en-tête Bearer :
-
-```bash
-claude mcp add --transport http portfolio https://<domaine>/mcp \
-  --header "Authorization: Bearer <jeton>"
-```
-
-La commande ci-dessus est un exemple : éviter de coller un vrai secret dans l’historique ;
-préférer une configuration protégée ou une variable d’environnement prise en charge par le
-client. [Documentation Claude Code](https://code.claude.com/docs/en/mcp).
+Pour Claude Code, la commande complète vient du backoffice (voir « Claude Code, en un geste »
+ci-dessus). [Documentation Claude Code](https://code.claude.com/docs/en/mcp).
 
 Dans Claude web/mobile, ajouter un connecteur personnalisé avec cette URL, choisir « No
-sign-in » et renseigner l’en-tête `Authorization` avec la valeur `Bearer <jeton>` **si la section
+sign-in » et renseigner l’en-tête `Authorization` avec la valeur `Bearer <secret>` **si la section
 Request headers est disponible**. Cette fonction est en bêta à déploiement limité ; ce serveur
 ne fournit pas d’OAuth. Si le compte ne propose pas ces en-têtes, il faudra un frontal OAuth
 pour ce client. L’URL doit être accessible en HTTPS depuis le service Claude.

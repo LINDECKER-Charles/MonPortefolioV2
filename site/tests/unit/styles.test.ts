@@ -9,9 +9,11 @@ import { describe, expect, it } from 'vitest';
  * les captures et les logos tiers passent par des jetons (--capture-*,
  * --papier-logo).
  *
- * Exceptions assumées : le backoffice (hors refonte), et les tailles des
- * textes internes aux figures SVG, en unités de leur viewBox (une coordonnée,
- * pas une taille d’interface) : les fichiers de FIGURES_SVG.
+ * Exception assumée : les tailles des textes internes aux figures SVG, en
+ * unités de leur viewBox (une coordonnée, pas une taille d’interface) : les
+ * fichiers de FIGURES_SVG. Le backoffice entier (styles/backoffice.css,
+ * styles/blog-editor.css, components/backoffice) suit la règle depuis sa
+ * refonte « Lanterne », le 14 octobre 2026.
  *
  * Même règle pour le mouvement (M2) : une durée ou un délai d’animation et de
  * transition s’écrit avec --d-ui, --d-scene ou --d-recit (au besoin en
@@ -21,7 +23,7 @@ import { describe, expect, it } from 'vitest';
  */
 
 const SRC = new URL('../../src/', import.meta.url).pathname;
-const EXCLUS = new Set(['styles/jetons.css', 'styles/backoffice.css', 'styles/blog-editor.css']);
+const EXCLUS = new Set(['styles/jetons.css']);
 const FIGURES_SVG = new Set([
   'components/accueil/FigureGwent.astro',
   'components/accueil/FigurePlafond.astro',
@@ -39,7 +41,7 @@ const TAILLE = /font-size\s*:(?!\s*(?:var\(|inherit|100%))|(?<![\w-])font\s*:[^;
 function fichiers(dossier: string): string[] {
   return readdirSync(dossier).flatMap((nom) => {
     const chemin = join(dossier, nom);
-    if (statSync(chemin).isDirectory()) return nom === 'backoffice' ? [] : fichiers(chemin);
+    if (statSync(chemin).isDirectory()) return fichiers(chemin);
     return /\.(css|astro)$/.test(nom) ? [chemin] : [];
   });
 }

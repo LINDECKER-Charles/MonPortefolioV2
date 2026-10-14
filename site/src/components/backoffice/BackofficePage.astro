@@ -1,15 +1,46 @@
 ---
+/**
+ * La coque du backoffice : toutes les pages /backoffice et /backoffice/blog/*.
+ *
+ * Page autonome, pas Base.astro : ni /mesure.js, ni en-tête ni pied du site
+ * public, hors index (`noindex`, aucun canonical ; le serveur ajoute
+ * `X-Robots-Tag` et `Cache-Control: no-store`). Même système que le site :
+ * styles/global.css (jetons jour et nuit), Instrument Serif et Sans, thème
+ * posé avant le rendu par /theme.js (un fichier : la CSP refuse tout script
+ * en ligne), bascule lanterne sans mesure.
+ *
+ * Structure : en-tête (EnteteBackoffice), sur-titre `h1` « Backoffice », retour
+ * de session (#bo-notice : vérification, expiration, déconnexion), entrée
+ * (ConnexionBackoffice), puis #bo-workspace : une <section class="bo-rubrique">
+ * par rubrique (rubriques.ts), chacune avec son EnTeteRubrique et ses retours
+ * locaux (Retour). Styles : styles/backoffice.css, et styles/blog-editor.css
+ * pour l’atelier du blog (BlogWorkspace, blog/*), sur les mêmes primitives.
+ *
+ * Une nouvelle rubrique : l’ajouter à rubriques.ts, poser sa section
+ * `id="bo-panel-<id>"` ici, et son chargement dans scripts/backoffice.ts.
+ */
 import { Font } from 'astro:assets';
 import Favicons from '../layout/Favicons.astro';
+import { SITE } from '../../config/site';
+import '../../styles/global.css';
 import '../../styles/backoffice.css';
-import BlogWorkspace from './BlogWorkspace.astro';
 import '../../styles/blog-editor.css';
+import EnteteBackoffice from './EnteteBackoffice.astro';
+import ConnexionBackoffice from './ConnexionBackoffice.astro';
+import RubriqueDemandes from './RubriqueDemandes.astro';
+import RubriqueAdresse from './RubriqueAdresse.astro';
+import RubriqueOutils from './RubriqueOutils.astro';
+import RubriqueAccesMcp from './RubriqueAccesMcp.astro';
+import BlogWorkspace from './BlogWorkspace.astro';
+import DialoguesBlog from './blog/DialoguesBlog.astro';
 
 interface Props { blogSection?: 'list' | 'redaction' | 'medias' | 'seo' | 'publication' }
 const { blogSection } = Astro.props;
 const titres = { list: 'Articles', redaction: 'Rédaction', medias: 'Images', seo: 'Référencement', publication: 'Publication' };
 const titre = `${blogSection ? titres[blogSection] + ' du blog' : 'Backoffice'} — Charles Lindecker`;
 const description = 'L’espace privé du portfolio de Charles Lindecker pour consulter les demandes de contact, régler leur destinataire et retrouver ses outils.';
+/** La barre du navigateur mobile, comme Base.astro : bleu roi le jour, suie la nuit. */
+const COULEUR_NUIT = '#0b0d12';
 ---
 
 <!doctype html>
@@ -26,108 +57,34 @@ const description = 'L’espace privé du portfolio de Charles Lindecker pour co
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://charles-lindecker.com/og/accueil.png" />
     <meta name="twitter:card" content="summary" />
-    <meta name="theme-color" content="#1f4fd1" />
+    <meta name="theme-color" content={SITE.couleurTheme} media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content={COULEUR_NUIT} media="(prefers-color-scheme: dark)" />
     <Favicons />
+    {/* Synchrone, avant les styles : le thème est posé avant le premier rendu. */}
+    <script is:inline src="/theme.js"></script>
     <Font cssVariable="--police-texte" preload />
+    <Font cssVariable="--police-titre" preload={[{ style: 'normal' }]} />
   </head>
-  <body data-backoffice-page={blogSection ? 'blog' : 'home'} data-blog-section={blogSection ?? 'list'}>
-    <a class="bo-skip" href="#contenu">Aller au contenu</a>
-    <header class="bo-header">
-      <a class="bo-brand" href="/" aria-label="Charles Lindecker, revenir au portfolio"><img src="/favicon.png" alt="" width="40" height="40" /><span>Charles Lindecker<small>Le portfolio, côté atelier</small></span></a>
-      <button class="bo-button bo-button--quiet" id="bo-logout" type="button" hidden>Se déconnecter</button>
-    </header>
-    <main class="bo-main" id="contenu" tabindex="-1">
-      <div class="bo-title"><h1>Backoffice</h1><p>Les conversations et les outils du portfolio, au même endroit.</p></div>
+  <body class="bo" data-backoffice-page={blogSection ? 'blog' : 'home'} data-blog-section={blogSection ?? 'list'}>
+    <a class="evitement bo-skip" href="#contenu">Aller au contenu</a>
+    <EnteteBackoffice />
+    <main class="bo-main bo-cadre" id="contenu" tabindex="-1">
+      <h1 class="bo-surtitre">Backoffice</h1>
       <p class="bo-notice" id="bo-notice" role="status" aria-live="polite">Vérification de la session…</p>
-      <section class="bo-login" id="bo-login" aria-labelledby="bo-login-title">
-        <h2 id="bo-login-title">Entrer dans l’atelier</h2>
-        <p>Cet espace est réservé à l’administration du portfolio.</p>
-        <form id="bo-login-form">
-          <fieldset disabled><legend class="bo-sr">Connexion</legend>
-            <label for="bo-login-email">Adresse e-mail de connexion</label>
-            <input id="bo-login-email" name="email" type="email" autocomplete="username" maxlength="254" required />
-            <label for="bo-password">Mot de passe</label>
-            <input id="bo-password" name="password" type="password" autocomplete="current-password" required />
-            <button class="bo-button bo-button--primary" type="submit">Se connecter</button>
-          </fieldset>
-        </form>
-      </section>
-      <section class="bo-login bo-two-factor" id="bo-two-factor" aria-labelledby="bo-two-factor-title" hidden>
-        <h2 id="bo-two-factor-title" tabindex="-1">Vérifier la connexion</h2>
-        <p id="bo-two-factor-help">Saisissez le code de votre application d’authentification ou un code de secours.</p>
-        <div class="bo-enrollment" id="bo-enrollment" hidden>
-          <ol><li>Ajoutez un compte dans votre application d’authentification en scannant ce QR code.</li><li>Saisissez ensuite le code à six chiffres pour confirmer l’activation.</li></ol>
-          <div id="bo-enrollment-details" hidden><img id="bo-two-factor-qr" width="240" height="240" alt="QR code à scanner dans l’application d’authentification" hidden />
-            <label for="bo-two-factor-secret">Clé à saisir manuellement</label>
-            <input id="bo-two-factor-secret" readonly autocomplete="off" spellcheck="false" aria-describedby="bo-two-factor-secret-help" />
-            <p class="bo-help" id="bo-two-factor-secret-help">Si vous ne pouvez pas scanner le QR code, ajoutez cette clé dans l’application, avec un code renouvelé toutes les 30 secondes.</p>
-          </div>
-          <button class="bo-button" id="bo-two-factor-retry" type="button" hidden>Réessayer la configuration</button>
-        </div>
-        <form id="bo-two-factor-form"><fieldset><legend class="bo-sr">Vérification en deux étapes</legend><label for="bo-two-factor-code">Code de vérification</label><input id="bo-two-factor-code" name="code" type="text" autocomplete="one-time-code" maxlength="64" spellcheck="false" required aria-describedby="bo-two-factor-help" /><div class="bo-actions"><button class="bo-button bo-button--primary" id="bo-two-factor-submit" type="submit">Vérifier le code</button><button class="bo-button bo-button--quiet" id="bo-two-factor-back" type="button">Revenir à la connexion</button></div></fieldset></form>
-      </section>
-      <section class="bo-login bo-recovery" id="bo-recovery" aria-labelledby="bo-recovery-title" hidden>
-        <h2 id="bo-recovery-title" tabindex="-1">Conservez vos codes de secours</h2>
-        <p>La vérification en deux étapes est activée. Chaque code permet une seule connexion si vous perdez l’accès à votre application. Gardez-les dans un endroit sûr : ils ne seront plus affichés après avoir quitté cet écran.</p>
-        <ul class="bo-recovery-codes" id="bo-recovery-codes" aria-label="Codes de secours"></ul>
-        <div class="bo-actions"><button class="bo-button" id="bo-recovery-copy" type="button">Copier les codes</button><button class="bo-button bo-button--primary" id="bo-recovery-continue" type="button">J’ai conservé mes codes</button></div>
-      </section>
+      <ConnexionBackoffice />
       <noscript><p class="bo-notice">Activez JavaScript pour ouvrir et utiliser le backoffice.</p></noscript>
 
       <div class="bo-workspace" id="bo-workspace" hidden>
-        <div class="bo-navigation" role="tablist" aria-label="Rubriques du backoffice" aria-orientation="vertical">
-          <button id="bo-tab-contacts" role="tab" aria-selected="true" aria-controls="bo-panel-contacts" tabindex="0" data-panel="contacts">Demandes<span class="bo-count" id="bo-new-count" aria-label="0 nouvelle demande">0</span></button>
-          <button id="bo-tab-settings" role="tab" aria-selected="false" aria-controls="bo-panel-settings" tabindex="-1" data-panel="settings">Destinataire</button>
-          <button id="bo-tab-links" role="tab" aria-selected="false" aria-controls="bo-panel-links" tabindex="-1" data-panel="links">Boîte à outils</button>
-          <button id="bo-tab-tokens" role="tab" aria-selected="false" aria-controls="bo-panel-tokens" tabindex="-1" data-panel="tokens">Accès MCP</button>
-          <button id="bo-tab-blog" role="tab" aria-selected="false" aria-controls="bo-panel-blog" tabindex="-1" data-panel="blog">Blog</button>
-        </div>
-
-        <section class="bo-panel" id="bo-panel-contacts" role="tabpanel" aria-labelledby="bo-tab-contacts" tabindex="0">
-          <header class="bo-panel-header"><div><h2>Demandes de contact</h2><p>Un message reste ici, même si sa notification par e-mail échoue.</p></div><button class="bo-button" id="bo-refresh" type="button">Actualiser</button></header>
-          <div class="bo-inbox-toolbar"><div><label for="bo-filter">Afficher les demandes</label><select id="bo-filter"><option value="new">Nouvelles</option><option value="read">Lues</option><option value="archived">Archivées</option><option value="all">Toutes</option></select></div><p id="bo-total" class="bo-muted"></p></div>
-          <div class="bo-inbox">
-            <div class="bo-list-column"><ul class="bo-contact-list" id="bo-contact-list" aria-label="Demandes de contact"></ul><p class="bo-empty" id="bo-contact-empty" hidden>Aucune nouvelle demande. Les autres messages restent accessibles dans les filtres.</p><div class="bo-pagination" id="bo-pagination" hidden><button class="bo-button" id="bo-previous" type="button">Précédentes</button><span class="bo-muted" id="bo-page"></span><button class="bo-button" id="bo-next" type="button">Suivantes</button></div></div>
-            <article class="bo-detail" aria-labelledby="bo-contact-title">
-              <h3 id="bo-contact-title">Choisissez une demande</h3>
-              <p id="bo-detail-placeholder" class="bo-muted">Son message et ses coordonnées s’afficheront ici.</p>
-              <div id="bo-contact-detail" hidden>
-                <p class="bo-contact-byline"><strong id="bo-contact-name"></strong><a id="bo-contact-email"></a></p>
-                <dl class="bo-metadata"><div><dt>Reçue le</dt><dd id="bo-contact-date"></dd></div><div><dt>Statut</dt><dd id="bo-contact-state"></dd></div><div><dt>Notification e-mail</dt><dd id="bo-contact-delivery"></dd></div></dl>
-                <p class="bo-message" id="bo-contact-message"></p>
-                <div class="bo-actions"><button class="bo-button" id="bo-contact-read" type="button">Marquer comme lue</button><button class="bo-button" id="bo-contact-new" type="button">Marquer comme nouvelle</button><button class="bo-button" id="bo-contact-archive" type="button">Archiver</button><button class="bo-button bo-button--danger" id="bo-contact-delete" type="button">Supprimer la demande</button></div>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section class="bo-panel" id="bo-panel-settings" role="tabpanel" aria-labelledby="bo-tab-settings" tabindex="0" hidden>
-          <header class="bo-panel-header"><div><h2>Adresse de contact</h2><p>Le formulaire et l’adresse publique du portfolio utilisent ce destinataire.</p></div></header>
-          <p class="bo-notice" id="bo-smtp-warning" hidden>La notification par e-mail est désactivée. Les demandes sont conservées ici. Configurez le serveur SMTP pour recevoir aussi les courriels.</p>
-          <form class="bo-form" id="bo-settings-form"><fieldset><legend class="bo-sr">Destinataire des messages</legend><label for="bo-email">Adresse e-mail</label><input id="bo-email" name="email" type="email" maxlength="254" autocomplete="email" required aria-describedby="bo-email-help" /><p class="bo-help" id="bo-email-help">La prochaine demande sera envoyée à cette adresse. Le changement s’applique sans redéploiement.</p><button class="bo-button bo-button--primary" type="submit">Enregistrer l’adresse</button></fieldset></form>
-        </section>
-
-        <section class="bo-panel" id="bo-panel-links" role="tabpanel" aria-labelledby="bo-tab-links" tabindex="0" hidden>
-          <header class="bo-panel-header"><div><h2>Boîte à outils</h2><p>Les raccourcis vers les services que vous utilisez pour le portfolio.</p></div></header>
-          <ul class="bo-tools" id="bo-link-list" aria-label="Liens enregistrés"></ul><p class="bo-empty" id="bo-links-empty" hidden>Aucun lien enregistré. Ajoutez l’adresse de votre premier outil ci-dessous.</p>
-          <div class="bo-suggestions"><p>Préparer un raccourci</p><button class="bo-button bo-button--quiet" type="button" data-suggest="Umami">Umami</button><button class="bo-button bo-button--quiet" type="button" data-suggest="Grafana">Grafana</button><button class="bo-button bo-button--quiet" type="button" data-suggest="Google Search Console">Google Search Console</button></div>
-          <form class="bo-form bo-form--separated" id="bo-link-form"><h3 id="bo-link-form-title">Ajouter un outil</h3><fieldset><legend class="bo-sr">Raccourci vers un outil</legend><label for="bo-link-label">Nom de l’outil</label><input id="bo-link-label" name="label" maxlength="100" required /><label for="bo-link-url">Adresse du service</label><input id="bo-link-url" name="url" type="url" maxlength="2048" placeholder="https://" required aria-describedby="bo-link-url-help" /><p class="bo-help" id="bo-link-url-help">Une adresse complète commençant par https:// ou http://.</p><label for="bo-link-description">Description <span class="bo-muted">(facultative)</span></label><input id="bo-link-description" name="description" maxlength="300" /><div class="bo-actions"><button class="bo-button bo-button--primary" id="bo-link-submit" type="submit">Ajouter l’outil</button><button class="bo-button" id="bo-link-cancel" type="button" hidden>Annuler la modification</button></div></fieldset></form>
-        </section>
-
-        <section class="bo-panel" id="bo-panel-tokens" role="tabpanel" aria-labelledby="bo-tab-tokens" tabindex="0" hidden>
-          <header class="bo-panel-header"><div><h2>Connecter un assistant</h2><p>Consultez les demandes et préparez les articles avec un assistant compatible MCP.</p></div></header>
-          <div class="bo-mcp-help"><h3>Connexion MCP</h3><p>Adresse du serveur MCP</p><code id="bo-mcp-url"></code><p>Créez un jeton par connexion, puis renseignez l’adresse du serveur et le jeton dans votre client MCP. L’authentification utilise l’en-tête <code>Authorization: Bearer &lt;jeton&gt;</code>.</p><p>La lecture seule permet de consulter les demandes, les outils et le blog. Autorisez séparément la rédaction ou la publication pour gérer les articles, leurs images et leur référencement. Les réglages et les demandes restent en lecture seule.</p></div>
-          <ul class="bo-tokens" id="bo-token-list" aria-label="Accès MCP actifs"></ul><p class="bo-empty" id="bo-tokens-empty" hidden>Aucun accès MCP actif.</p>
-          <form class="bo-form bo-form--separated" id="bo-token-form"><h3>Créer un accès</h3><fieldset><legend class="bo-sr">Nouveau jeton MCP</legend><label for="bo-token-name">Nom de la connexion</label><input id="bo-token-name" name="name" maxlength="100" placeholder="Mon assistant personnel" required /><label for="bo-token-permissions">Autorisations du blog</label><select id="bo-token-permissions" aria-describedby="bo-token-permissions-help"><option value="read">Lecture seule</option><option value="write">Rédaction et images</option><option value="publish">Rédaction, publication et programmation</option></select><p class="bo-help" id="bo-token-permissions-help">La rédaction prépare des brouillons et des aperçus. La publication autorise aussi la mise en ligne, la programmation et le retrait des articles.</p><button class="bo-button bo-button--primary" type="submit">Créer le jeton</button></fieldset></form>
-          <div class="bo-secret" id="bo-secret" hidden><h3>Conservez votre jeton maintenant</h3><p>Il ne sera plus affiché après avoir quitté cette rubrique. Il donne accès aux coordonnées et aux messages reçus.</p><label for="bo-token-secret">Jeton de connexion</label><input id="bo-token-secret" readonly autocomplete="off" spellcheck="false" /><div class="bo-actions"><button class="bo-button" id="bo-token-copy" type="button">Copier le jeton</button><button class="bo-button" id="bo-token-hide" type="button">J’ai conservé le jeton</button></div></div>
-        </section>
+        <RubriqueDemandes />
+        <RubriqueAdresse />
+        <RubriqueOutils />
+        <RubriqueAccesMcp />
         <BlogWorkspace />
       </div>
     </main>
-    <footer class="bo-footer"><a href="/">Revenir au portfolio</a><span>Espace privé</span></footer>
-    <dialog class="bo-dialog" id="bo-confirm" aria-labelledby="bo-confirm-title" aria-describedby="bo-confirm-message"><form method="dialog"><h2 id="bo-confirm-title">Confirmer la suppression</h2><p id="bo-confirm-message"></p><div class="bo-actions"><button class="bo-button" value="cancel" autofocus>Annuler</button><button class="bo-button bo-button--danger" id="bo-confirm-submit" value="confirm">Supprimer</button></div></form></dialog>
-    <dialog class="bo-dialog blog-media-dialog" id="blog-media-dialog" aria-labelledby="blog-media-title"><header><h2 id="blog-media-title">Insérer une image</h2><button class="bo-button" id="blog-media-close" type="button">Fermer</button></header><p class="bo-help">Choisissez une image existante ou téléversez un fichier JPEG, PNG, WebP ou GIF (4 Mo maximum).</p><form id="blog-upload-form"><fieldset><legend class="bo-sr">Téléverser une image</legend><label for="blog-upload">Fichier image</label><input id="blog-upload" type="file" accept="image/jpeg,image/png,image/webp,image/gif" /><button class="bo-button" type="submit">Téléverser l’image</button></fieldset></form><p class="bo-notice" id="blog-media-notice" role="status" aria-live="polite" hidden></p><ul id="blog-media-list" class="blog-media-list" aria-label="Bibliothèque d’images"></ul><button class="bo-button" id="blog-media-more" type="button" hidden>Charger plus d’images</button><form id="blog-image-form"><fieldset><legend class="bo-sr">Image sélectionnée</legend><label for="blog-image-src">Adresse de l’image</label><input id="blog-image-src" readonly required /><label for="blog-image-alt">Description de l’image</label><input id="blog-image-alt" maxlength="300" required aria-describedby="blog-image-alt-help" /><p class="bo-help" id="blog-image-alt-help">Décrivez ce que montre l’image pour les lecteurs qui ne la voient pas.</p><label for="blog-image-title">Légende <span class="bo-muted">(facultative)</span></label><input id="blog-image-title" maxlength="300" /><button class="bo-button bo-button--primary" type="submit">Utiliser cette image</button></fieldset></form></dialog>
-    <dialog class="bo-dialog" id="blog-link-dialog" aria-labelledby="blog-link-title"><form id="blog-link-form"><h2 id="blog-link-title">Ajouter un lien</h2><label for="blog-link-url">Adresse du lien</label><input id="blog-link-url" type="text" required placeholder="https:// ou /blog/article" /><div class="bo-actions"><button class="bo-button" id="blog-link-close" type="button">Annuler</button><button class="bo-button bo-button--primary" type="submit">Appliquer le lien</button></div></form></dialog>
+    <footer class="bo-pied bo-cadre"><a href="/">Revenir au portfolio</a><span>Espace privé, hors index</span></footer>
+    <dialog class="bo-dialog" id="bo-confirm" aria-labelledby="bo-confirm-title" aria-describedby="bo-confirm-message bo-confirm-code"><form method="dialog"><h2 id="bo-confirm-title">Confirmer la suppression</h2><p id="bo-confirm-message"></p><pre class="bo-commande bo-dialog__commande" hidden><code id="bo-confirm-code"></code></pre><div class="bo-actions"><button class="bo-button" value="cancel" autofocus>Annuler</button><button class="bo-button bo-button--danger" id="bo-confirm-submit" value="confirm">Supprimer</button></div></form></dialog>
+    <DialoguesBlog />
     <script>
       import { brancherBackoffice } from '../../scripts/backoffice';
       brancherBackoffice();

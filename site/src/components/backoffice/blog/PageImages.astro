@@ -1,0 +1,45 @@
+---
+/**
+ * Images : la couverture (aperçu au ratio du blog, adresse, description) et
+ * les sujets de l’article. Les images du corps se placent depuis la
+ * Rédaction. Choisir une image ouvre la bibliothèque (DialoguesBlog).
+ */
+---
+
+<section class="blog-page blog-media-page" data-blog-page="medias" aria-label="Images et sujets de l’article" hidden>
+  <div class="bo-carte blog-carte">
+    <h3>La couverture</h3>
+    <p class="blog-section-intro">Elle accompagne le titre dans la liste du blog et ouvre l’article.</p>
+    <div class="blog-cover-layout">
+      <div class="blog-cover-stage">
+        <img id="blog-cover-preview" alt="Aperçu de la couverture" hidden />
+        <p class="blog-cover-placeholder">Pas encore de couverture.</p>
+      </div>
+      <div class="blog-image-fields">
+        <div class="blog-field">
+          <label for="blog-cover">Image de couverture</label>
+          <div class="blog-input-action">
+            <input id="blog-cover" aria-describedby="blog-cover-help" />
+            <button class="bo-button" id="blog-cover-choose" type="button">Choisir une couverture</button>
+          </div>
+          <p class="bo-help" id="blog-cover-help">Choisissez une image dans la bibliothèque ou téléversez un fichier.</p>
+        </div>
+        <div class="blog-field">
+          <label for="blog-cover-alt">Description de la couverture</label>
+          <input id="blog-cover-alt" maxlength="300" placeholder="Ce que montre l’image" aria-describedby="blog-cover-alt-help" />
+          <p class="bo-help" id="blog-cover-alt-help">Décrivez les éléments utiles pour une personne qui ne voit pas l’image.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bo-carte blog-carte blog-subjects">
+    <h3>Les sujets</h3>
+    <div class="blog-field">
+      <label for="blog-tags">Étiquettes</label>
+      <input id="blog-tags" maxlength="500" placeholder="Architecture, retour d’expérience" aria-describedby="blog-tags-help" />
+      <p class="bo-help" id="blog-tags-help">Séparez les sujets par des virgules. Ils apparaissent avec l’article.</p>
+    </div>
+    <p class="blog-side-note">Les images du corps de l’article se placent depuis la Rédaction, avec l’outil «&nbsp;Image&nbsp;» de la barre de mise en forme.</p>
+  </div>
+</section>

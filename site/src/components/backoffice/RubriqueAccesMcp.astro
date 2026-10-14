@@ -1,0 +1,118 @@
+---
+/**
+ * Accès MCP : brancher Claude Code sur le portfolio en un geste.
+ *
+ * À gauche, « Nouvel accès » : un nom proposé, trois préréglages qui disent
+ * ce que l’assistant pourra faire (Rédaction par défaut) et une case séparée,
+ * décochée, pour lire aussi les demandes de contact (lib/acces-mcp.ts).
+ * Options en lignes serrées (intitulé puis description dans la même phrase)
+ * et garde-fou sous le bouton : « Créer l’accès » se voit dès l’arrivée, à
+ * 1440 × 900 comme à 390 px, sans défiler. À la
+ * création, la carte du secret prend sa place : la seule zone éclairée de
+ * l’écran, avec la commande prête à copier (`claude mcp remove` du serveur
+ * du même nom, puis `claude mcp add`, pour qu’un nouvel accès remplace
+ * l’ancien) et la vérification de l’accès (server/discover puis tools/list,
+ * comme Claude Code, depuis cette page).
+ * Le secret n’existe que là : il disparaît à « Terminé », en quittant la
+ * rubrique, à la déconnexion ou quand la session expire.
+ *
+ * À droite, les accès actifs en tableau à filets : nom, permissions en mots,
+ * création, dernière utilisation, révocation confirmée.
+ *
+ * Le script : scripts/backoffice-acces.ts.
+ */
+import { SITE } from '../../config/site';
+import { ORDRE_PREREGLAGES, PREREGLAGE_PAR_DEFAUT, PREREGLAGES, NOM_PAR_DEFAUT } from '../../lib/acces-mcp';
+import EnTeteRubrique from './EnTeteRubrique.astro';
+import Retour from './Retour.astro';
+
+const hoteCanonique = new URL(SITE.url).hostname;
+---
+
+<section class="bo-rubrique" id="bo-panel-tokens" aria-labelledby="bo-titre-tokens" data-hote-canonique={hoteCanonique} hidden>
+  <EnTeteRubrique id="bo-titre-tokens" titre="Accès MCP" description="Un accès relie un assistant comme Claude Code au portfolio, avec ses propres permissions. Il se révoque à tout moment." />
+  <div class="bo-mcp">
+    <div class="bo-mcp__creation">
+      <form class="bo-carte bo-formulaire" id="bo-token-form" aria-labelledby="bo-token-form-title" data-retour="bo-token-form-retour">
+        <h3 id="bo-token-form-title" tabindex="-1">Nouvel accès</h3>
+        <fieldset><legend class="sr">Nouvel accès MCP</legend>
+          <div class="bo-champ">
+            <label for="bo-token-name">Nom de l’accès</label>
+            <input id="bo-token-name" name="name" maxlength="100" required value={NOM_PAR_DEFAUT} autocomplete="off" spellcheck="false" aria-describedby="bo-token-name-help" />
+            <p class="bo-help" id="bo-token-name-help">Nommez l’appareil pour reconnaître l’accès dans la liste, par exemple «&nbsp;Claude Code — MacBook&nbsp;».</p>
+          </div>
+          <fieldset class="bo-choix">
+            <legend>Ce que l’assistant pourra faire</legend>
+            {ORDRE_PREREGLAGES.map((id) => (
+              <div class="bo-choix__option bo-option-ligne">
+                <input type="radio" name="prereglage" id={`bo-prereglage-${id}`} value={id} checked={id === PREREGLAGE_PAR_DEFAUT} aria-describedby={`bo-prereglage-${id}-aide`} />
+                <p class="bo-option-ligne__texte"><label for={`bo-prereglage-${id}`}>{PREREGLAGES[id].titre}</label> <span class="bo-choix__aide" id={`bo-prereglage-${id}-aide`}>{PREREGLAGES[id].description}</span></p>
+              </div>
+            ))}
+          </fieldset>
+          <div class="bo-case bo-option-ligne">
+            <input type="checkbox" id="bo-token-contacts" name="contacts" aria-describedby="bo-token-contacts-help" />
+            <p class="bo-option-ligne__texte"><label for="bo-token-contacts">Lire aussi les demandes de contact</label> <span class="bo-choix__aide" id="bo-token-contacts-help">Noms, adresses e-mail et messages des visiteurs, et la boîte à outils, en lecture seule.</span></p>
+          </div>
+          <div class="bo-actions"><button class="bo-button bo-button--primary" type="submit">Créer l’accès</button></div>
+          <p class="bo-help bo-mcp__garde-fou">Aucun accès ne modifie les demandes, l’adresse de contact ni les accès, et aucun n’envoie d’e-mail.</p>
+        </fieldset>
+        <Retour id="bo-token-form-retour" />
+      </form>
+
+      <section class="bo-carte bo-secret foyer" id="bo-secret" aria-labelledby="bo-secret-title" data-retour="bo-secret-retour" hidden>
+        <h3 id="bo-secret-title" tabindex="-1">L’accès est prêt</h3>
+        <p>Collez ces deux lignes dans un terminal&nbsp;: la première retire un ancien serveur «&nbsp;<code data-serveur-mcp>portfolio</code>&nbsp;» s’il existe, la seconde ajoute cet accès. Claude Code pourra se servir du portfolio dans tous vos projets.</p>
+        <pre class="bo-commande"><code id="bo-token-command"></code></pre>
+        <div class="bo-actions">
+          <button class="bo-button bo-button--primary" id="bo-token-copy" type="button">Copier la commande</button>
+          <button class="bo-button" id="bo-token-verify" type="button">Vérifier l’accès</button>
+        </div>
+        <Retour id="bo-secret-retour" />
+        <div class="bo-verification" id="bo-token-tools" hidden>
+          <p id="bo-token-tools-summary"></p>
+          <ul class="bo-outils-mcp" id="bo-token-tools-list" aria-labelledby="bo-token-tools-summary"></ul>
+        </div>
+        <p class="bo-secret__avertissement">Ce secret ne sera plus affiché après «&nbsp;Terminé&nbsp;» ni en quittant la rubrique. Perdu&nbsp;? Révoquez cet accès et créez-en un autre&nbsp;: sa commande remplacera celle-ci. La commande contient le secret&nbsp;: collez-la seulement dans votre terminal.</p>
+        <details class="bo-details">
+          <summary>Autres clients&nbsp;: le secret seul</summary>
+          <div class="bo-details__contenu">
+            <div class="bo-champ">
+              <label for="bo-token-secret">Secret de l’accès</label>
+              <input id="bo-token-secret" class="bo-code" readonly autocomplete="off" spellcheck="false" aria-describedby="bo-token-secret-help" />
+              <p class="bo-help" id="bo-token-secret-help">À envoyer dans l’en-tête <code>Authorization: Bearer &lt;secret&gt;</code>. Codex et les autres clients&nbsp;: <code>backend/README.md</code>, section «&nbsp;Connecter un client MCP&nbsp;».</p>
+            </div>
+            <div class="bo-actions"><button class="bo-button" id="bo-token-copy-secret" type="button">Copier le secret</button></div>
+          </div>
+        </details>
+        <div class="bo-actions bo-secret__fin"><button class="bo-button" id="bo-token-hide" type="button">Terminé</button></div>
+      </section>
+    </div>
+
+    <div class="bo-mcp__liste" data-retour="bo-tokens-retour">
+      <div class="bo-mcp__liste-entete">
+        <h3 id="bo-tokens-title">Accès actifs</h3>
+        <p class="bo-muted chiffres" id="bo-tokens-count"></p>
+      </div>
+      <Retour id="bo-tokens-retour" />
+      <div class="bo-table-cadre">
+        <table class="bo-table" id="bo-token-table" aria-labelledby="bo-tokens-title" hidden>
+          <thead>
+            <tr><th scope="col">Nom</th><th scope="col">Permissions</th><th scope="col">Création</th><th scope="col">Dernière utilisation</th><th scope="col"><span class="sr">Action</span></th></tr>
+          </thead>
+          <tbody id="bo-token-list"></tbody>
+        </table>
+      </div>
+      <p class="bo-empty" id="bo-tokens-empty" hidden>Aucun accès MCP pour l’instant. «&nbsp;Créer l’accès&nbsp;» en prépare un pour Claude Code.</p>
+      <details class="bo-details">
+        <summary>Pour un autre client MCP</summary>
+        <dl class="bo-reference">
+          <div><dt>Adresse du serveur</dt><dd><code id="bo-mcp-url"></code></dd></div>
+          <div><dt>Authentification</dt><dd><code>Authorization: Bearer &lt;secret&gt;</code>, un secret par accès</dd></div>
+          <div><dt>Transport</dt><dd>HTTP, sans flux ni session, 120 appels par minute</dd></div>
+          <div><dt>Documentation</dt><dd><code>backend/README.md</code>, section «&nbsp;Connecter un client MCP&nbsp;»</dd></div>
+        </dl>
+      </details>
+    </div>
+  </div>
+</section>

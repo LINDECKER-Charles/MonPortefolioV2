@@ -1,8 +1,29 @@
-/** Espace privé. Les textes reçus de l’API sont toujours insérés comme texte. */
+/**
+ * Le backoffice : session, navigation entre rubriques et rubriques simples
+ * (demandes, adresse, boîte à outils). Les accès MCP vivent dans
+ * backoffice-acces.ts, l’atelier du blog dans blog-editor.ts (chargé à la
+ * demande) ; sa barre, ses retours et ses aides d’erreur dans
+ * backoffice-atelier.ts.
+ *
+ * Les textes reçus de l’API sont toujours insérés comme texte.
+ *
+ * Retours : chaque action dit ce qui se passe à côté d’elle. Une commande
+ * trouve sa zone par le `data-retour` de son conteneur le plus proche
+ * (components/backoffice/Retour.astro) ; #bo-notice ne porte que la session
+ * (vérification, expiration, déconnexion) et ce qui n’a plus de zone visible.
+ *
+ * Navigation : une rubrique est un lien (`aria-current="page"`) ; le clic est
+ * intercepté, l’adresse et l’historique suivent, et le focus va au titre de
+ * la rubrique.
+ */
 import type { BlogWorkspace } from './blog-editor';
+import { brancherAccesMcp } from './backoffice-acces';
+import { brancherAtelier } from './backoffice-atelier';
+import { ErreurApi, messageDe, type Dire, type Etat } from './backoffice-commun';
+import { TITRES_RUBRIQUES, type Rubrique } from '../components/backoffice/rubriques';
+
 type Statut = 'new' | 'read' | 'archived';
 type Filtre = Statut | 'all';
-type Rubrique = 'contacts' | 'settings' | 'links' | 'tokens' | 'blog';
 interface Demande {
   id: number;
   name: string;
@@ -14,14 +35,13 @@ interface Demande {
   created_at: string;
 }
 interface Outil { id: number; label: string; url: string; description: string }
-interface Jeton { id: number; name: string; created_at: string; last_used_at: string | null; scopes?: string[] }
 interface Boite { contacts: Demande[]; total: number; new_count: number }
 interface Session { authenticated: boolean; smtp_configured: boolean }
 interface Connexion extends Partial<Session> { two_factor_required?: boolean; enrollment_required?: boolean; recovery_codes?: string[] }
 interface ConfigurationDeuxFacteurs { secret: string; otpauth_url: string; qr_code_data_url: string }
-class ErreurApi extends Error {
-  constructor(message: string, readonly status: number, readonly code?: string) { super(message); }
-}
+
+const RUBRIQUES_CONNUES: readonly Rubrique[] = ['contacts', 'settings', 'links', 'tokens', 'blog'];
+const NBSP = ' ';
 
 export function brancherBackoffice(): void {
   if (!document.getElementById('bo-workspace')) return;
@@ -35,6 +55,7 @@ export function brancherBackoffice(): void {
   };
   const login = element('bo-login');
   const workspace = element('bo-workspace');
+  const navigation = element('bo-navigation');
   const loginForm = element<HTMLFormElement>('bo-login-form');
   const password = element<HTMLInputElement>('bo-password');
   const loginEmail = element<HTMLInputElement>('bo-login-email');
@@ -44,7 +65,7 @@ export function brancherBackoffice(): void {
   const recovery = element('bo-recovery');
   const filter = element<HTMLSelectElement>('bo-filter');
   const notice = element('bo-notice');
-  const tabs = [...document.querySelectorAll<HTMLButtonElement>('[data-panel]')];
+  const liens = [...navigation.querySelectorAll<HTMLAnchorElement>('a[data-panel]')];
   const confirm = element<HTMLDialogElement>('bo-confirm');
   const dates = new Intl.DateTimeFormat('fr-FR', { dateStyle: 'medium', timeStyle: 'short' });
   const statuts: Record<Statut, string> = { new: 'Nouvelle', read: 'Lue', archived: 'Archivée' };
@@ -60,13 +81,13 @@ export function brancherBackoffice(): void {
   let contacts: Demande[] = [];
   let selected: Demande | undefined;
   let links: Outil[] = [];
-  let tokens: Jeton[] = [];
   let editingLink: number | undefined;
   let offset = 0;
   let total = 0;
   let requestSequence = 0;
   const limit = 50;
   let blog: BlogWorkspace | undefined;
+  const atelier = brancherAtelier();
   let chargementBlog: Promise<void> | undefined;
   let navigationQueue = Promise.resolve();
   let visibleURL = `${window.location.pathname}${window.location.search}`;
@@ -74,18 +95,32 @@ export function brancherBackoffice(): void {
   let restoringHistory = false;
   history.replaceState({ ...history.state, backofficeIndex: historyPosition }, '', visibleURL);
 
-  function annoncer(message: string, etat: 'pending' | 'success' | 'error' = 'success'): void {
-    notice.textContent = message;
-    notice.dataset.state = etat;
-    notice.hidden = false;
+  /** Un message dans une zone de retour ; #bo-notice se montre, les retours locaux sont toujours là. */
+  function afficher(zone: HTMLElement, message: string, etat: Etat = 'success'): void {
+    zone.textContent = message;
+    zone.dataset.state = etat;
+    if (zone === notice) notice.hidden = false;
+  }
+  function annoncer(message: string, etat: Etat = 'success'): void {
+    afficher(notice, message, etat);
+  }
+  function visible(zone: HTMLElement): boolean {
+    return zone.isConnected && !zone.closest('[hidden]');
+  }
+  /** La zone de retour d’une commande : celle de son conteneur, sinon le retour de session. */
+  function zoneDe(cible: HTMLElement): HTMLElement {
+    const id = cible.closest<HTMLElement>('[data-retour]')?.dataset.retour;
+    return (id && document.getElementById(id)) || notice;
+  }
+  function effacerRetours(): void {
+    for (const zone of document.querySelectorAll<HTMLElement>('.bo-retour')) {
+      zone.textContent = '';
+      delete zone.dataset.state;
+    }
   }
   function date(valeur: string): string {
     const instant = new Date(valeur);
     return Number.isNaN(instant.getTime()) ? 'Date inconnue' : dates.format(instant);
-  }
-  function cacherSecret(): void {
-    element<HTMLInputElement>('bo-token-secret').value = '';
-    element('bo-secret').hidden = true;
   }
   function effacerDeuxFacteurs(): void {
     twoFactorCode.value = '';
@@ -102,26 +137,30 @@ export function brancherBackoffice(): void {
     element('bo-recovery-codes').replaceChildren();
     recovery.hidden = true;
   }
-  function choisirRubrique(rubrique: Rubrique, focus = false): void {
-    if (activePanel === 'tokens' && rubrique !== 'tokens') cacherSecret();
+  function choisirRubrique(rubrique: Rubrique): void {
+    if (activePanel === 'tokens' && rubrique !== 'tokens') acces.cacherSecret();
+    if (activePanel !== rubrique) effacerRetours();
     activePanel = rubrique;
-    for (const tab of tabs) {
-      const active = tab.dataset.panel === rubrique;
-      tab.setAttribute('aria-selected', String(active));
-      tab.tabIndex = active ? 0 : -1;
-      element(`bo-panel-${tab.dataset.panel}`).hidden = !active;
-      if (active && focus) tab.focus();
+    for (const lien of liens) {
+      const actif = lien.dataset.panel === rubrique;
+      if (actif) lien.setAttribute('aria-current', 'page');
+      else lien.removeAttribute('aria-current');
+      element(`bo-panel-${lien.dataset.panel}`).hidden = !actif;
     }
     if (rubrique === 'blog' && authenticated) document.body.dataset.blogWorkspace = 'true';
     else delete document.body.dataset.blogWorkspace;
     document.body.dataset.backofficePage = rubrique === 'blog' ? 'blog' : 'home';
-    if (rubrique !== 'blog') document.title = `${{ contacts: 'Demandes', settings: 'Destinataire', links: 'Boîte à outils', tokens: 'Accès MCP' }[rubrique]} — Backoffice`;
+    if (rubrique !== 'blog') document.title = `${TITRES_RUBRIQUES[rubrique]} — Backoffice`;
+  }
+  /** Le titre de la rubrique lue reçoit le focus ; l’atelier du blog gère le sien. */
+  function focaliserRubrique(): void {
+    if (authenticated && activePanel !== 'blog') element(`bo-titre-${activePanel}`).focus();
   }
   function rubriqueURL(value: string): Rubrique {
     const url = new URL(value, window.location.origin);
     if (/^\/backoffice\/blog(?:\/|$)/.test(url.pathname)) return 'blog';
     const rubrique = url.searchParams.get('rubrique');
-    return rubrique && ['contacts', 'settings', 'links', 'tokens', 'blog'].includes(rubrique) ? rubrique as Rubrique : 'contacts';
+    return rubrique && (RUBRIQUES_CONNUES as readonly string[]).includes(rubrique) ? rubrique as Rubrique : 'contacts';
   }
   async function chargerBlog(): Promise<void> {
     if (blog) return;
@@ -139,7 +178,7 @@ export function brancherBackoffice(): void {
       history.go(historyPosition - targetPosition);
     } else history.replaceState({ ...history.state, backofficeIndex: historyPosition }, '', visibleURL);
   }
-  async function appliquerRoute(value: string, replace = false, popPosition?: number): Promise<void> {
+  async function appliquerRoute(value: string, replace = false, popPosition?: number, retourAvant = atelier.avantNavigation()): Promise<void> {
     const url = new URL(value, window.location.origin);
     if (url.origin !== window.location.origin) return;
     let destination = `${url.pathname}${url.search}`;
@@ -156,28 +195,35 @@ export function brancherBackoffice(): void {
       historyPosition += 1;
       history.pushState({ backofficeIndex: historyPosition }, '', destination);
     }
+    const memeVue = rubrique === activePanel && destination === visibleURL;
     visibleURL = destination;
+    const arrivee = rubrique !== activePanel;
+    if (rubrique === 'blog' && !memeVue) atelier.apresNavigation(retourAvant);
     choisirRubrique(rubrique);
+    // La dernière utilisation des accès change sans nous : relue à chaque visite.
+    if (rubrique === 'tokens' && arrivee && authenticated) void acces.charger().catch((cause: unknown) => erreur(cause, element('bo-tokens-retour')));
     if (rubrique === 'blog' && authenticated) {
+      // La vue demandée est déjà affichée (une validation qui y ramène, un
+      // enregistrement sans changement d’adresse) : la rouvrir déplacerait le
+      // focus et fermerait la bulle d’erreur du champ.
+      const dejaOuvert = memeVue && blog !== undefined;
       await chargerBlog();
-      if (authenticated) await blog?.open(destination);
+      if (authenticated && !dejaOuvert) await blog?.open(destination);
     }
   }
   function naviguer(value: string, replace = false): Promise<void> {
-    const operation = navigationQueue.then(() => appliquerRoute(value, replace));
-    navigationQueue = operation.catch(erreur);
+    const retourAvant = atelier.avantNavigation();
+    const operation = navigationQueue.then(() => appliquerRoute(value, replace, undefined, retourAvant));
+    navigationQueue = operation.catch((cause: unknown) => erreur(cause));
     return navigationQueue;
-  }
-  function allerRubrique(rubrique: Rubrique, focus = false): void {
-    const url = rubrique === 'blog' ? '/backoffice/blog' : `/backoffice?rubrique=${rubrique}`;
-    void naviguer(url).then(() => { if (focus && activePanel === rubrique) tabs.find((tab) => tab.dataset.panel === rubrique)?.focus(); });
   }
   window.addEventListener('popstate', (event) => {
     if (restoringHistory) { restoringHistory = false; return; }
     const destination = `${window.location.pathname}${window.location.search}`;
     const position = typeof event.state?.backofficeIndex === 'number' ? event.state.backofficeIndex : historyPosition;
-    const operation = navigationQueue.then(() => appliquerRoute(destination, false, position));
-    navigationQueue = operation.catch(erreur);
+    const retourAvant = atelier.avantNavigation();
+    const operation = navigationQueue.then(() => appliquerRoute(destination, false, position, retourAvant));
+    navigationQueue = operation.catch((cause: unknown) => erreur(cause));
   });
   function resetLinkForm(): void {
     editingLink = undefined;
@@ -205,23 +251,24 @@ export function brancherBackoffice(): void {
     requestSequence += 1;
     contacts = [];
     links = [];
-    tokens = [];
     selected = undefined;
     offset = 0;
     total = 0;
     filter.value = 'new';
-    for (const id of ['bo-contact-list', 'bo-link-list', 'bo-token-list']) element(id).replaceChildren();
-    for (const id of ['bo-contact-name', 'bo-contact-email', 'bo-contact-date', 'bo-contact-state', 'bo-contact-delivery', 'bo-contact-message']) texte(id, '');
+    for (const id of ['bo-contact-list', 'bo-link-list']) element(id).replaceChildren();
+    for (const id of ['bo-contact-name', 'bo-contact-email', 'bo-contact-date', 'bo-contact-state', 'bo-contact-delivery', 'bo-contact-message', 'bo-total']) texte(id, '');
     element('bo-contact-email').removeAttribute('href');
     element('bo-contact-detail').hidden = true;
+    element('bo-contact-article').classList.remove('foyer');
     texte('bo-contact-title', 'Choisissez une demande');
     element('bo-detail-placeholder').hidden = false;
     element<HTMLFormElement>('bo-settings-form').reset();
-    element<HTMLFormElement>('bo-token-form').reset();
     resetLinkForm();
-    cacherSecret();
+    acces.reinitialiser();
+    effacerRetours();
     choisirRubrique('contacts');
     workspace.hidden = true;
+    navigation.hidden = true;
     login.hidden = false;
     element('bo-logout').hidden = true;
     loginForm.querySelector('fieldset')!.disabled = false;
@@ -257,10 +304,15 @@ export function brancherBackoffice(): void {
       window.clearTimeout(minuterie);
     }
   }
-  function erreur(cause: unknown): void {
-    annoncer(cause instanceof ErreurApi ? cause.message : 'Le backoffice est injoignable. Vérifiez la connexion puis réessayez.', 'error');
+  /** Une erreur dans sa zone, ou dans le retour de session si cette zone n’est plus affichée. */
+  function erreur(cause: unknown, zone: HTMLElement = notice): void {
+    afficher(visible(zone) ? zone : notice, messageDe(cause), 'error');
   }
-  async function action(cible: HTMLElement, operation: () => Promise<void>, attente: string): Promise<void> {
+  /**
+   * Une action : verrou contre le double clic, champs désactivés, attente puis
+   * résultat dans la zone de retour de la commande (`dire`).
+   */
+  async function action(cible: HTMLElement, operation: (dire: Dire) => Promise<void>, attente: string, zone = zoneDe(cible)): Promise<void> {
     if (cible.dataset.busy === 'true') return;
     const execution = String(++actionSequence);
     cible.dataset.execution = execution;
@@ -268,8 +320,18 @@ export function brancherBackoffice(): void {
     cible.setAttribute('aria-busy', 'true');
     const controle = cible instanceof HTMLFormElement ? cible.querySelector('fieldset') : cible instanceof HTMLButtonElement ? cible : null;
     if (controle) controle.disabled = true;
-    annoncer(attente, 'pending');
-    try { await operation(); } catch (cause) { erreur(cause); }
+    afficher(zone, attente, 'pending');
+    zone.dataset.execution = execution;
+    const dire: Dire = (message, etat = 'success') => afficher(visible(zone) ? zone : notice, message, etat);
+    try {
+      await operation(dire);
+      // Sans message de résultat, l’attente s’efface.
+      if (zone.dataset.execution === execution && zone.dataset.state === 'pending') {
+        zone.textContent = '';
+        delete zone.dataset.state;
+        if (zone === notice) notice.hidden = true;
+      }
+    } catch (cause) { erreur(cause, zone); }
     finally {
       if (cible.dataset.execution === execution) {
         delete cible.dataset.busy;
@@ -279,9 +341,12 @@ export function brancherBackoffice(): void {
       }
     }
   }
-  function demanderConfirmation(titre: string, message: string, libelle: string): Promise<boolean> {
+  /** Une confirmation ; `commande`, une ligne de terminal, se montre seule en code sous le message. */
+  function demanderConfirmation(titre: string, message: string, libelle: string, commande = ''): Promise<boolean> {
     texte('bo-confirm-title', titre);
     texte('bo-confirm-message', message);
+    element('bo-confirm-code').replaceChildren(...(commande ? commande.split(' ') : []).flatMap((mot, rang) => [...(rang ? [' '] : []), creer('span', 'bo-commande__mot', mot)]));
+    element('bo-confirm-code').parentElement!.hidden = !commande;
     texte('bo-confirm-submit', libelle);
     confirm.returnValue = '';
     confirm.showModal();
@@ -289,13 +354,30 @@ export function brancherBackoffice(): void {
       confirm.addEventListener('close', () => resolve(confirm.returnValue === 'confirm'), { once: true });
     });
   }
-  function bouton(libelle: string, operation: (bouton: HTMLButtonElement) => Promise<void> | void, danger = false): HTMLButtonElement {
-    const noeud = creer('button', `bo-button${danger ? ' bo-button--danger' : ''}`, libelle);
+  /** Un bouton de ligne : le libellé visible, puis l’élément visé pour les lecteurs d’écran. */
+  function bouton(libelle: string, nomAccessible: string, operation: (bouton: HTMLButtonElement) => Promise<void> | void, classe = ''): HTMLButtonElement {
+    const noeud = creer('button', `bo-button bo-button--petit${classe ? ` ${classe}` : ''}`, libelle);
     noeud.type = 'button';
+    noeud.append(creer('span', 'sr', ` ${nomAccessible}`));
     noeud.addEventListener('click', () => { void operation(noeud); });
     return noeud;
   }
 
+  const acces = brancherAccesMcp({
+    api,
+    action: (cible, operation, attente) => action(cible, operation, attente),
+    afficher,
+    confirmer: demanderConfirmation,
+    estConnecte: () => authenticated,
+    estVisible: () => activePanel === 'tokens' && !workspace.hidden,
+    date,
+  });
+
+  function statutDe(statut: Statut): HTMLSpanElement {
+    const noeud = creer('span', 'bo-state', statuts[statut] ?? statut);
+    noeud.dataset.state = statut;
+    return noeud;
+  }
   function afficherDemande(demande?: Demande, focus = false): void {
     selected = demande;
     for (const ligne of document.querySelectorAll<HTMLElement>('[data-contact-id]')) {
@@ -304,13 +386,15 @@ export function brancherBackoffice(): void {
     texte('bo-contact-title', demande?.subject ?? 'Choisissez une demande');
     element('bo-detail-placeholder').hidden = Boolean(demande);
     element('bo-contact-detail').hidden = !demande;
+    // La demande ouverte est la zone éclairée de l’écran.
+    element('bo-contact-article').classList.toggle('foyer', Boolean(demande));
     if (!demande) return;
     texte('bo-contact-name', demande.name);
     const email = element<HTMLAnchorElement>('bo-contact-email');
     email.textContent = demande.email;
     email.href = `mailto:${encodeURIComponent(demande.email)}`;
     texte('bo-contact-date', date(demande.created_at));
-    texte('bo-contact-state', statuts[demande.status] ?? demande.status);
+    element('bo-contact-state').replaceChildren(statutDe(demande.status));
     texte('bo-contact-delivery', livraisons[demande.delivery_status] ?? demande.delivery_status);
     texte('bo-contact-message', demande.message);
     element('bo-contact-read').hidden = demande.status === 'read';
@@ -326,9 +410,11 @@ export function brancherBackoffice(): void {
   function afficherBoite(boite: Boite): void {
     contacts = boite.contacts;
     total = boite.total;
+    const nouvelles = boite.new_count;
     const compteur = element('bo-new-count');
-    compteur.textContent = String(boite.new_count);
-    compteur.setAttribute('aria-label', `${boite.new_count} nouvelle${boite.new_count > 1 ? 's' : ''} demande${boite.new_count > 1 ? 's' : ''}`);
+    compteur.textContent = String(nouvelles);
+    compteur.dataset.nombre = String(nouvelles);
+    texte('bo-new-count-label', nouvelles === 0 ? ' (aucune nouvelle demande)' : ` (${nouvelles} nouvelle${nouvelles > 1 ? 's' : ''} demande${nouvelles > 1 ? 's' : ''})`);
     texte('bo-total', `${total} demande${total > 1 ? 's' : ''}`);
     const liste = element('bo-contact-list');
     liste.replaceChildren(...contacts.map((demande) => {
@@ -339,11 +425,9 @@ export function brancherBackoffice(): void {
       ligne.setAttribute('aria-pressed', String(selected?.id === demande.id));
       ligne.append(creer('strong', '', demande.subject), creer('span', 'bo-row-person', demande.name));
       const metadonnees = creer('span', 'bo-row-meta');
-      const statut = creer('span', 'bo-state', statuts[demande.status] ?? demande.status);
-      statut.dataset.state = demande.status;
       const moment = creer('time', 'bo-row-date', date(demande.created_at));
       moment.dateTime = demande.created_at;
-      metadonnees.append(statut, moment);
+      metadonnees.append(statutDe(demande.status), moment);
       ligne.append(metadonnees);
       ligne.addEventListener('click', () => afficherDemande(demande, true));
       item.append(ligne);
@@ -374,10 +458,10 @@ export function brancherBackoffice(): void {
   async function changerStatut(cible: HTMLButtonElement, statut: Statut): Promise<void> {
     if (!selected) return;
     const id = selected.id;
-    await action(cible, async () => {
+    await action(cible, async (dire) => {
       await api(`/contacts/${id}`, 'PATCH', { status: statut });
       await chargerDemandes();
-      annoncer(statut === 'read' ? 'La demande est marquée comme lue.' : statut === 'new' ? 'La demande est marquée comme nouvelle.' : 'La demande est archivée.');
+      dire(statut === 'read' ? 'La demande est marquée comme lue.' : statut === 'new' ? 'La demande est marquée comme nouvelle.' : 'La demande est archivée.');
     }, 'Mise à jour de la demande…');
   }
 
@@ -403,12 +487,15 @@ export function brancherBackoffice(): void {
         lien.target = '_blank';
         lien.rel = 'noopener noreferrer';
         lien.setAttribute('aria-label', `${outil.label}, ouvrir dans un nouvel onglet`);
+        const fleche = creer('span', 'fleche', `${NBSP}↗`);
+        fleche.setAttribute('aria-hidden', 'true');
+        lien.append(fleche);
         titre.append(lien);
       } else titre.textContent = outil.label;
       item.append(titre);
       if (outil.description) item.append(creer('p', '', outil.description));
       const actions = creer('div', 'bo-actions');
-      actions.append(bouton('Modifier', () => {
+      actions.append(bouton('Modifier', outil.label, () => {
         editingLink = outil.id;
         element<HTMLInputElement>('bo-link-label').value = outil.label;
         element<HTMLInputElement>('bo-link-url').value = outil.url;
@@ -417,40 +504,17 @@ export function brancherBackoffice(): void {
         texte('bo-link-submit', 'Enregistrer l’outil');
         element('bo-link-cancel').hidden = false;
         element('bo-link-label').focus();
-      }), bouton('Supprimer', async (cible) => {
-        const accord = await demanderConfirmation('Supprimer ce raccourci ?', `Le lien vers ${outil.label} sera supprimé de la boîte à outils.`, 'Supprimer le raccourci');
+      }), bouton('Supprimer', outil.label, async (cible) => {
+        const accord = await demanderConfirmation('Supprimer ce raccourci ?', `Le lien vers ${outil.label} sera supprimé de la boîte à outils.`, 'Supprimer le raccourci');
         if (!accord) return;
-        await action(cible, async () => {
+        await action(cible, async (dire) => {
           await api(`/links/${outil.id}`, 'DELETE');
           if (editingLink === outil.id) resetLinkForm();
           await chargerOutils();
-          annoncer('Le raccourci est supprimé.');
+          dire(`Le raccourci vers ${outil.label} est supprimé.`);
         }, 'Suppression du raccourci…');
-      }, true));
+      }, 'bo-button--danger'));
       item.append(actions);
-      return item;
-    }));
-  }
-  async function chargerJetons(): Promise<void> {
-    const reponse = await api<{ tokens: Jeton[] }>('/tokens');
-    if (!authenticated) return;
-    tokens = reponse.tokens;
-    element('bo-tokens-empty').hidden = tokens.length > 0;
-    element('bo-token-list').replaceChildren(...tokens.map((jeton) => {
-      const item = creer('li', 'bo-token');
-      const informations = creer('div');
-      informations.append(creer('h3', '', jeton.name), creer('p', '', `Créé le ${date(jeton.created_at)}`), creer('p', '', jeton.last_used_at ? `Dernier accès le ${date(jeton.last_used_at)}` : 'Pas encore utilisé'));
-      informations.append(creer('p', '', jeton.scopes?.includes('blog:publish') ? 'Blog : rédaction et publication' : jeton.scopes?.includes('blog:write') ? 'Blog : rédaction et images' : 'Lecture seule'));
-      item.append(informations, bouton('Révoquer', async (cible) => {
-        const accord = await demanderConfirmation('Révoquer cet accès ?', `La connexion ${jeton.name} ne pourra plus consulter les demandes avec ce jeton.`, 'Révoquer l’accès');
-        if (!accord) return;
-        await action(cible, async () => {
-          await api(`/tokens/${jeton.id}`, 'DELETE');
-          cacherSecret();
-          await chargerJetons();
-          annoncer('L’accès MCP est révoqué.');
-        }, 'Révocation de l’accès…');
-      }, true));
       return item;
     }));
   }
@@ -466,15 +530,15 @@ export function brancherBackoffice(): void {
     password.value = '';
     login.hidden = true;
     workspace.hidden = false;
+    navigation.hidden = false;
     element('bo-logout').hidden = false;
     element('bo-smtp-warning').hidden = session.smtp_configured;
-    texte('bo-mcp-url', `${window.location.origin}/mcp`);
     const reglages = await api<{ email: string }>('/settings');
     if (!authenticated || sequence !== authSequence) return;
     element<HTMLInputElement>('bo-email').value = reglages.email;
-    await Promise.all([chargerDemandes(), chargerOutils(), chargerJetons()]);
+    await Promise.all([chargerDemandes(), chargerOutils(), acces.charger()]);
     if (authenticated) {
-      blog?.restoreDraft();
+      if (blog?.restoreDraft()) atelier.conserver();
       await naviguer(`${window.location.pathname}${window.location.search}`, true);
     }
     if (authenticated) notice.hidden = true;
@@ -519,8 +583,10 @@ export function brancherBackoffice(): void {
     twoFactorCode.inputMode = inscription ? 'numeric' : 'text';
     if (inscription) twoFactorCode.pattern = '[0-9]{6}';
     else twoFactorCode.removeAttribute('pattern');
-    if (inscription) await preparerDeuxFacteurs();
-    else { twoFactorForm.querySelector('fieldset')!.disabled = false; notice.hidden = true; twoFactorCode.focus(); }
+    if (inscription) {
+      // L’échec de la préparation se dit sur l’écran de vérification, à côté de « Réessayer ».
+      try { await preparerDeuxFacteurs(); } catch (cause) { erreur(cause, element('bo-two-factor-retour')); }
+    } else { twoFactorForm.querySelector('fieldset')!.disabled = false; notice.hidden = true; twoFactorCode.focus(); }
   }
   function afficherCodesSecours(codes: string[]): void {
     authenticated = true;
@@ -537,27 +603,32 @@ export function brancherBackoffice(): void {
     element('bo-recovery-title').focus();
   }
 
-  for (const tab of tabs) {
-    tab.addEventListener('click', (event) => { event.preventDefault(); allerRubrique(tab.dataset.panel as Rubrique); });
-    tab.addEventListener('keydown', (event) => {
-      const index = tabs.indexOf(tab);
-      let destination: number | undefined;
-      if (event.key === 'ArrowDown' || event.key === 'ArrowRight') destination = (index + 1) % tabs.length;
-      else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') destination = (index + tabs.length - 1) % tabs.length;
-      else if (event.key === 'Home') destination = 0;
-      else if (event.key === 'End') destination = tabs.length - 1;
-      if (destination !== undefined) { event.preventDefault(); allerRubrique(tabs[destination]!.dataset.panel as Rubrique, true); }
+  for (const lien of liens) {
+    lien.addEventListener('click', (event) => {
+      // Un clic du milieu ou avec une touche garde son comportement : un nouvel onglet.
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      const rubrique = lien.dataset.panel as Rubrique;
+      void naviguer(lien.href).then(() => { if (activePanel === rubrique) focaliserRubrique(); });
     });
   }
   loginForm.addEventListener('submit', (event) => {
     event.preventDefault();
     const sequence = authSequence;
     void action(loginForm, async () => {
-      const connexion = await api<Connexion>('/login', 'POST', { email: loginEmail.value.trim(), password: password.value });
+      let connexion: Connexion;
+      try {
+        connexion = await api<Connexion>('/login', 'POST', { email: loginEmail.value.trim(), password: password.value });
+      } catch (cause) {
+        // Le backend répond 401 sans dire pourquoi (« Une connexion au backoffice est nécessaire. ») :
+        // sur cet écran, c’est que l’adresse ou le mot de passe ne va pas. 429, 503… gardent leur message.
+        if (cause instanceof ErreurApi && cause.status === 401) throw new ErreurApi('L’adresse e-mail ou le mot de passe est incorrect.', 401, cause.code);
+        throw cause;
+      }
       if (sequence !== authSequence) return;
       password.value = '';
       if (connexion.two_factor_required) await afficherDeuxFacteurs(Boolean(connexion.enrollment_required));
-      else if (connexion.authenticated) { await ouvrirWorkspace(); if (authenticated && activePanel !== 'blog') tabs.find((tab) => tab.dataset.panel === activePanel)?.focus(); }
+      else if (connexion.authenticated) { await ouvrirWorkspace(); focaliserRubrique(); }
       else throw new ErreurApi('La connexion n’a pas abouti. Réessayez.', 502);
     }, 'Connexion…');
   });
@@ -572,7 +643,7 @@ export function brancherBackoffice(): void {
       if (!connexion.authenticated) throw new ErreurApi('Le code n’a pas pu être vérifié. Réessayez.', 502);
       authenticated = true;
       if (enrollment && connexion.recovery_codes?.length) afficherCodesSecours(connexion.recovery_codes);
-      else { await ouvrirWorkspace(); if (authenticated && activePanel !== 'blog') tabs.find((tab) => tab.dataset.panel === activePanel)?.focus(); }
+      else { await ouvrirWorkspace(); focaliserRubrique(); }
     }, enrollment ? 'Activation de la vérification…' : 'Vérification du code…');
   });
   element('bo-two-factor-back').addEventListener('click', () => { retourConnexion(); notice.hidden = true; loginEmail.focus(); });
@@ -583,15 +654,15 @@ export function brancherBackoffice(): void {
     void action(event.currentTarget as HTMLButtonElement, async () => {
       effacerCodesSecours();
       await ouvrirWorkspace();
-      if (authenticated && activePanel !== 'blog') tabs.find((tab) => tab.dataset.panel === activePanel)?.focus();
-    }, 'Ouverture de l’atelier…');
+      focaliserRubrique();
+    }, 'Ouverture du backoffice…');
   });
   element('bo-recovery-copy').addEventListener('click', (event) => {
-    void action(event.currentTarget as HTMLButtonElement, async () => {
+    void action(event.currentTarget as HTMLButtonElement, async (dire) => {
       try {
         await navigator.clipboard.writeText([...element('bo-recovery-codes').querySelectorAll('code')].map((code) => code.textContent).join('\n'));
-        annoncer('Les codes de secours sont copiés. Conservez-les dans un endroit sûr.');
-      } catch { annoncer('La copie est indisponible. Sélectionnez les codes et copiez-les manuellement.', 'error'); }
+        dire('Les codes de secours sont copiés. Conservez-les dans un endroit sûr.');
+      } catch { dire('La copie est indisponible. Sélectionnez les codes et copiez-les manuellement.', 'error'); }
     }, 'Copie des codes…');
   });
   element<HTMLButtonElement>('bo-logout').addEventListener('click', (event) => {
@@ -599,25 +670,28 @@ export function brancherBackoffice(): void {
     void (async () => {
       if (blog && !await blog.confirmDiscard()) return;
       await action(cible, async () => {
-      await api('/logout', 'POST');
-      retourConnexion();
-      annoncer('Vous êtes déconnecté.');
-      loginEmail.focus();
-      }, 'Déconnexion…');
+        await api('/logout', 'POST');
+        retourConnexion();
+        annoncer('Vous êtes déconnecté.');
+        loginEmail.focus();
+      }, 'Déconnexion…', notice);
     })();
   });
   filter.addEventListener('change', () => {
     offset = 0;
-    void chargerDemandes().catch(erreur);
+    void chargerDemandes().catch((cause: unknown) => erreur(cause, element('bo-inbox-retour')));
   });
   element<HTMLButtonElement>('bo-refresh').addEventListener('click', (event) => {
-    void action(event.currentTarget as HTMLButtonElement, async () => {
+    void action(event.currentTarget as HTMLButtonElement, async (dire) => {
       await chargerDemandes();
-      annoncer('Les demandes sont à jour.');
+      dire('Les demandes sont à jour.');
     }, 'Actualisation des demandes…');
   });
   for (const [id, sens] of [['bo-previous', -1], ['bo-next', 1]] as const) {
-    element(id).addEventListener('click', () => { offset = Math.max(0, offset + sens * limit); void chargerDemandes().catch(erreur); });
+    element(id).addEventListener('click', () => {
+      offset = Math.max(0, offset + sens * limit);
+      void chargerDemandes().catch((cause: unknown) => erreur(cause, element('bo-inbox-retour')));
+    });
   }
   for (const [id, statut] of [['bo-contact-read', 'read'], ['bo-contact-new', 'new'], ['bo-contact-archive', 'archived']] as const) {
     element<HTMLButtonElement>(id).addEventListener('click', (event) => { void changerStatut(event.currentTarget as HTMLButtonElement, statut); });
@@ -626,39 +700,41 @@ export function brancherBackoffice(): void {
     if (!selected) return;
     const id = selected.id;
     const cible = event.currentTarget as HTMLButtonElement;
-    const accord = await demanderConfirmation('Supprimer cette demande ?', `Le message « ${selected.subject} » et ses coordonnées seront supprimés définitivement du backoffice.`, 'Supprimer définitivement');
+    const accord = await demanderConfirmation('Supprimer cette demande ?', `Le message «${NBSP}${selected.subject}${NBSP}» et ses coordonnées seront supprimés définitivement du backoffice.`, 'Supprimer définitivement');
     if (!accord) return;
-    await action(cible, async () => {
+    await action(cible, async (dire) => {
       await api(`/contacts/${id}`, 'DELETE');
       await chargerDemandes();
-      annoncer('La demande est supprimée.');
-      element('bo-filter').focus();
+      dire('La demande est supprimée.');
+      const titre = element('bo-contact-title');
+      titre.tabIndex = -1;
+      titre.focus();
     }, 'Suppression de la demande…');
   });
   const settingsForm = element<HTMLFormElement>('bo-settings-form');
   settingsForm.addEventListener('submit', (event) => {
     event.preventDefault();
     const email = element<HTMLInputElement>('bo-email').value.trim();
-    void action(settingsForm, async () => {
+    void action(settingsForm, async (dire) => {
       await api('/settings', 'PUT', { email });
-      annoncer('L’adresse de contact est enregistrée.');
+      dire('L’adresse de contact est enregistrée.');
     }, 'Enregistrement de l’adresse…');
   });
   const linkForm = element<HTMLFormElement>('bo-link-form');
   linkForm.addEventListener('submit', (event) => {
     event.preventDefault();
     const url = element<HTMLInputElement>('bo-link-url').value.trim();
-    if (!adresseWeb(url)) { annoncer('Saisissez une adresse commençant par https:// ou http://.', 'error'); element('bo-link-url').focus(); return; }
+    if (!adresseWeb(url)) { afficher(element('bo-links-retour'), 'Saisissez une adresse commençant par https:// ou http://.', 'error'); element('bo-link-url').focus(); return; }
     const corps = {
       label: element<HTMLInputElement>('bo-link-label').value.trim(), url,
       description: element<HTMLInputElement>('bo-link-description').value.trim(),
     };
     const id = editingLink;
-    void action(linkForm, async () => {
+    void action(linkForm, async (dire) => {
       await api(id === undefined ? '/links' : `/links/${id}`, id === undefined ? 'POST' : 'PUT', corps);
       resetLinkForm();
       await chargerOutils();
-      annoncer(id === undefined ? 'L’outil est ajouté.' : 'L’outil est enregistré.');
+      dire(id === undefined ? 'L’outil est ajouté.' : 'L’outil est enregistré.');
     }, 'Enregistrement de l’outil…');
   });
   element('bo-link-cancel').addEventListener('click', resetLinkForm);
@@ -669,36 +745,6 @@ export function brancherBackoffice(): void {
       element('bo-link-url').focus();
     });
   }
-  const tokenForm = element<HTMLFormElement>('bo-token-form');
-  tokenForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const name = element<HTMLInputElement>('bo-token-name').value.trim();
-    const permission = element<HTMLSelectElement>('bo-token-permissions').value;
-    const scopes = ['contacts:read', 'blog:read', ...(permission === 'write' || permission === 'publish' ? ['blog:write'] : []), ...(permission === 'publish' ? ['blog:publish'] : [])];
-    void action(tokenForm, async () => {
-      cacherSecret();
-      const jeton = await api<{ token: string }>('/tokens', 'POST', { name, scopes });
-      if (authenticated && activePanel === 'tokens') {
-        element<HTMLInputElement>('bo-token-secret').value = jeton.token;
-        element('bo-secret').hidden = false;
-      }
-      tokenForm.reset();
-      await chargerJetons();
-      if (activePanel === 'tokens') {
-        annoncer('Le jeton est créé. Conservez-le avant de quitter cette rubrique.');
-        element('bo-token-secret').focus();
-      } else annoncer('Le jeton est créé. Son secret n’est plus affiché. Révoquez cet accès et recréez-le pour obtenir un nouveau jeton.');
-    }, 'Création du jeton…');
-  });
-  element('bo-token-hide').addEventListener('click', () => { cacherSecret(); annoncer('Le jeton n’est plus affiché.'); });
-  element<HTMLButtonElement>('bo-token-copy').addEventListener('click', (event) => {
-    void action(event.currentTarget as HTMLButtonElement, async () => {
-      try {
-        await navigator.clipboard.writeText(element<HTMLInputElement>('bo-token-secret').value);
-        annoncer('Le jeton est copié.');
-      } catch { annoncer('La copie est indisponible. Sélectionnez le jeton et copiez-le manuellement.', 'error'); }
-    }, 'Copie du jeton…');
-  });
   function verifierSession(): void {
     const sequence = authSequence;
     void ouvrirWorkspace().catch((cause: unknown) => {

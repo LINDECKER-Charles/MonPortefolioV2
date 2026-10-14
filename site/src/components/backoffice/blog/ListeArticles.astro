@@ -1,0 +1,48 @@
+---
+/**
+ * La liste des articles : recherche dans la page, filtre par état, puis un
+ * tableau à filets (couverture, article, état, date) dont scripts/blog-editor.ts
+ * écrit les lignes (`li > a.blog-post-row`). L’en-tête de colonnes n’est
+ * qu’un repère visuel : chaque ligne dit déjà tout, en mots.
+ *
+ * État vide : #blog-empty (aucun article, ou aucun dans ce filtre) ;
+ * recherche sans résultat : #blog-search-empty.
+ */
+---
+
+<div class="blog-liste" id="blog-list-view">
+  <div class="blog-list-toolbar">
+    <div class="bo-champ blog-search">
+      <label for="blog-list-search">Rechercher dans cette page</label>
+      <input id="blog-list-search" type="search" placeholder="Titre, résumé ou sujet" autocomplete="off" />
+    </div>
+    <div class="bo-champ blog-filtre">
+      <label for="blog-filter">Afficher les articles</label>
+      <select id="blog-filter">
+        <option value="all">Tous les articles</option>
+        <option value="draft">Brouillons</option>
+        <option value="scheduled">Programmés</option>
+        <option value="published">Publiés</option>
+      </select>
+    </div>
+    <button class="bo-button" id="blog-refresh" type="button">Actualiser les articles</button>
+  </div>
+  <p class="blog-results-count" id="blog-results-count" role="status"></p>
+
+  <div class="blog-table">
+    <div class="blog-table__entete" aria-hidden="true"><span>Article</span><span>État</span><span>Date</span></div>
+    <ul class="blog-post-list" id="blog-post-list" aria-label="Articles du blog"></ul>
+  </div>
+
+  <div class="bo-carte blog-empty-state" id="blog-empty" hidden>
+    <h3>Votre premier article commence ici.</h3>
+    <p>Un sujet, quelques idées, une première version. Créez un article et prenez le temps de le relire avant de le publier.</p>
+    <p class="bo-help">Un assistant branché par un accès MCP de rédaction peut aussi préparer un brouillon.</p>
+  </div>
+  <p class="bo-empty" id="blog-search-empty" hidden>Aucun article ne correspond à cette recherche dans la page affichée.</p>
+  <div class="bo-pagination" id="blog-pagination" hidden>
+    <button class="bo-button bo-button--petit" id="blog-previous" type="button">Articles précédents</button>
+    <span class="bo-muted" id="blog-page"></span>
+    <button class="bo-button bo-button--petit" id="blog-next" type="button">Articles suivants</button>
+  </div>
+</div>

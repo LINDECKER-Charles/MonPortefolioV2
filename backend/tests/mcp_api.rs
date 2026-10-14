@@ -200,6 +200,36 @@ async fn discovers_modern_capabilities_without_a_handshake() {
     assert_eq!(data["result"]["resultType"], "complete");
     assert_eq!(data["result"]["supportedVersions"][0], "2026-07-28");
     assert!(data["result"]["_meta"]["io.modelcontextprotocol/serverInfo"]["name"].is_string());
+    assert_eq!(data["result"]["ttlMs"], 300_000);
+    assert_eq!(data["result"]["cacheScope"], "private");
+}
+
+#[tokio::test]
+async fn modern_tool_catalogs_carry_private_cache_hints_and_legacy_ones_stay_unchanged() {
+    let fixture = fixture();
+    let modern = body(
+        fixture
+            .app
+            .clone()
+            .oneshot(modern_request(&fixture.token, "tools/list", json!({})))
+            .await
+            .unwrap(),
+    )
+    .await;
+    assert_eq!(modern["result"]["resultType"], "complete");
+    assert_eq!(modern["result"]["ttlMs"], 300_000);
+    assert_eq!(modern["result"]["cacheScope"], "private");
+    let mut legacy = legacy_request(
+        Some(&fixture.token),
+        json!({ "jsonrpc": "2.0", "id": 7, "method": "tools/list" }),
+    );
+    legacy
+        .headers_mut()
+        .insert("mcp-protocol-version", "2025-11-25".parse().unwrap());
+    let legacy = body(fixture.app.oneshot(legacy).await.unwrap()).await;
+    assert!(legacy["result"]["tools"].is_array());
+    assert!(legacy["result"].get("ttlMs").is_none());
+    assert!(legacy["result"].get("cacheScope").is_none());
 }
 
 #[tokio::test]
@@ -851,6 +881,36 @@ async fn catalog_scopes_and_annotations_describe_actual_blog_effects() {
             assert_eq!(tool["annotations"]["readOnlyHint"], true);
         }
     }
+
+    // Le préréglage « Rédaction » du backoffice : tout lire, écrire des brouillons, rien publier.
+    let writer = blog_token(&fixture, &["blog:read", "blog:write"]);
+    let response = fixture
+        .app
+        .clone()
+        .oneshot(modern_request(&writer, "tools/list", json!({})))
+        .await
+        .unwrap();
+    let result = body(response).await;
+    let mut names: Vec<&str> = result["result"]["tools"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|tool| tool["name"].as_str().unwrap())
+        .collect();
+    names.sort_unstable();
+    assert_eq!(
+        names,
+        [
+            "blog_create_post",
+            "blog_get_post",
+            "blog_list_media",
+            "blog_list_posts",
+            "blog_preview_post",
+            "blog_seo_audit",
+            "blog_update_post",
+            "blog_upload_media",
+        ]
+    );
 }
 
 #[tokio::test]

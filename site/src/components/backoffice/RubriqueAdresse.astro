@@ -1,0 +1,24 @@
+---
+/**
+ * Adresse de contact : le destinataire des demandes, aussi affiché sur le
+ * site. Le changement s’applique sans redéploiement.
+ */
+import EnTeteRubrique from './EnTeteRubrique.astro';
+import Retour from './Retour.astro';
+---
+
+<section class="bo-rubrique" id="bo-panel-settings" aria-labelledby="bo-titre-settings" hidden>
+  <EnTeteRubrique id="bo-titre-settings" titre="Adresse de contact" description="Le formulaire et l’adresse publique du portfolio utilisent ce destinataire." />
+  <p class="bo-avis" id="bo-smtp-warning" hidden>La notification par e-mail est désactivée. Les demandes sont conservées ici. Configurez le serveur SMTP pour recevoir aussi les courriels.</p>
+  <form class="bo-carte bo-formulaire" id="bo-settings-form" data-retour="bo-settings-retour">
+    <fieldset><legend class="sr">Destinataire des messages</legend>
+      <div class="bo-champ">
+        <label for="bo-email">Adresse e-mail</label>
+        <input id="bo-email" name="email" type="email" maxlength="254" autocomplete="email" required aria-describedby="bo-email-help" />
+        <p class="bo-help" id="bo-email-help">La prochaine demande sera envoyée à cette adresse. Le changement s’applique sans redéploiement.</p>
+      </div>
+      <div class="bo-actions"><button class="bo-button bo-button--primary" type="submit">Enregistrer l’adresse</button></div>
+    </fieldset>
+    <Retour id="bo-settings-retour" />
+  </form>
+</section>

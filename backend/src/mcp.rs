@@ -27,6 +27,9 @@ const MAX_REQUEST_BYTES: usize = 8 * 1024 * 1024;
 const REQUESTS_PER_MINUTE: u32 = 120;
 const MAX_CLIENTS: usize = 4_096;
 const SERVER_NAME: &str = "portfolio-backoffice";
+/// Fraîcheur annoncée des résultats que la révision 2026-07-28 rend cachables
+/// (`server/discover`, `tools/list`). Claude Code refuse un catalogue sans elle.
+const CACHE_TTL_MS: u64 = 300_000;
 
 /// À fusionner au routeur principal avant son `with_state`.
 pub fn routes() -> Router<AppState> {
@@ -350,11 +353,11 @@ async fn handle(
         }
         "server/discover" if modern => rpc_result(
             id,
-            json!({
+            cacheable(json!({
                 "supportedVersions": supported_versions(),
                 "capabilities": { "tools": {} },
                 "instructions": instructions()
-            }),
+            })),
             true,
         ),
         "ping" => rpc_result(id, json!({}), modern),
@@ -368,7 +371,16 @@ async fn handle(
                     None,
                 );
             }
-            rpc_result(id, json!({ "tools": tools(&scopes) }), modern)
+            let catalogue = json!({ "tools": tools(&scopes) });
+            rpc_result(
+                id,
+                if modern {
+                    cacheable(catalogue)
+                } else {
+                    catalogue
+                },
+                modern,
+            )
         }
         "tools/call" => call_tool(&state, &scopes, params, id, modern),
         _ => rpc_error(
@@ -1174,6 +1186,15 @@ fn unsupported_version(id: Option<&Value>, requested: &str) -> Response {
         "Version MCP non prise en charge.",
         Some(json!({ "requested": requested, "supported": supported_versions() })),
     )
+}
+
+/// Indications de cache d’un résultat complet (spécification 2026-07-28, « Caching ») :
+/// le catalogue dépend des permissions de l’accès, il ne se partage donc jamais entre
+/// deux accès (`private`).
+fn cacheable(mut result: Value) -> Value {
+    result["ttlMs"] = json!(CACHE_TTL_MS);
+    result["cacheScope"] = json!("private");
+    result
 }
 
 fn rpc_result(id: Option<&Value>, mut result: Value, modern: bool) -> Response {

@@ -50,7 +50,9 @@ SMTP ne fait pas perdre la demande. Renseigner `SMTP_HOST`, `SMTP_FROM` et les r
 pour activer les notifications.
 
 Le **backoffice `/backoffice`** rassemble les demandes (nouvelles, lues, archivées), leur état de
-notification, le blog, l’adresse de contact, les liens de la boîte à outils et les jetons MCP. L’adresse
+notification, le blog, l’adresse de contact, les liens de la boîte à outils et les accès MCP. Il
+suit la direction « Lanterne » du site (jour et nuit, bascule lanterne, sans mesure d’audience) :
+une navigation par rubriques dans l’en-tête et un retour affiché à côté de chaque action. L’adresse
 modifiée est utilisée par le formulaire et les liens e-mail des pages sans redémarrage ni rebuild.
 `CONTACT_EMAIL` initialise seulement une base neuve ; une base existante conserve sa valeur.
 
@@ -69,12 +71,15 @@ En HTTP local seulement, poser `BACKOFFICE_COOKIE_SECURE=false` ; garder `true` 
 Sans identifiants, l’administration est désactivée. Configuration et récupération d’accès :
 [`backend/README.md`](backend/README.md).
 
-Depuis le backoffice, créer un jeton par client pour consulter les demandes et gérer le blog via
-le MCP distant `https://<domaine>/mcp`. Choisir ses permissions : lecture, rédaction ou publication.
-Les jetons existants restent en lecture ; la rédaction et la publication sont des autorisations
-distinctes. La lecture des contacts ne marque aucune demande comme lue.
-Les jetons peuvent être révoqués individuellement. Connexion Claude/Codex, contrat de
-l’API et sauvegarde de la base : [`backend/README.md`](backend/README.md).
+Brancher Claude Code sur le MCP distant `https://<domaine>/mcp` se fait en un geste : rubrique
+« Accès MCP », « Créer l’accès », puis coller la commande affichée une seule fois avec son
+secret (`claude mcp remove` du serveur du même nom, puis `claude mcp add …` : un nouvel accès
+remplace l’ancien). Trois préréglages disent ce que l’assistant pourra faire : lecture du blog,
+**rédaction** (par défaut) ou publication ; lire les demandes de contact est une case à part,
+décochée par défaut. « Vérifier l’accès » montre les outils réellement ouverts, par le chemin de Claude Code. Chaque accès se
+révoque individuellement, avec effet immédiat. Les accès existants gardent leurs permissions, et
+la lecture des contacts ne marque aucune demande comme lue. Parcours complet, autres clients
+(Codex), contrat de l’API et sauvegarde de la base : [`backend/README.md`](backend/README.md).
 
 ## Carte du dépôt
 
@@ -139,8 +144,9 @@ article. Quatre pages distinctes partagent la version de travail : **Rédaction*
 `/backoffice/blog/medias?id=…`, `/backoffice/blog/seo?id=…` et
 `/backoffice/blog/publication?id=…` se rechargent directement. Changer de page dans l’article
 conserve les retouches ; quitter l’article demande confirmation si elles ne sont pas enregistrées.
-Les commandes **Enregistrer** et **Aperçu** restent accessibles pendant la rédaction.
-L’éditeur propose titres, listes, liens,
+Les commandes **Enregistrer** et **Aperçu** restent dans une barre collante en haut de l’article,
+avec le retour de chaque action. La Rédaction reprend la typographie de l’article publié (titre,
+chapeau, texte à la même mesure), jour et nuit. L’éditeur propose titres, listes, liens,
 citations, code, tableaux, alignements, images avec légendes et descriptions, couverture et image
 de partage. Les réglages SEO comprennent titre, description, slug, canonical, indexation et aperçu
 du résultat de recherche. Les images JPEG, PNG, WebP et GIF (4 Mio maximum) sont conservées dans
