@@ -242,3 +242,10 @@ test('la couverture est dimensionnée et chargée en priorité, la liste dimensi
   assert.match(suivante, / sizes="\(max-width: 860px\) calc\(100vw - 32px\), 660px"/);
   assert.match(suivante, / loading="lazy"/);
 });
+
+test('une vignette recadrée en 16:9 demande assez de pixels pour sa hauteur', () => {
+  const liste = renderIndex(LISTE, { posts: [article({ cover_image: '/api/blog/media/3', cover_alt: 'Petite', media: MEDIA }), article({ slug: 'large', cover_image: '/api/blog/media/4', cover_alt: 'Panorama', media: MEDIA })], total: 2 });
+  const [, panorama] = [...liste.matchAll(/<img [^>]*>/g)].map((m) => m[0]);
+  // 3 200 × 600 recadrée en 16:9 : la hauteur de la vignette voit 3 fois sa largeur d’image.
+  assert.match(panorama, / sizes="\(max-width: 860px\) calc\(\(100vw - 32px\) \* 3\), 1980px"/);
+});
