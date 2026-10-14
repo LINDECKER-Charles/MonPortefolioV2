@@ -734,6 +734,29 @@ async fn an_image_is_deleted_only_when_no_version_cites_it() {
     ));
     store.publish_blog_post(edited.id, edited.revision).unwrap();
     store.delete_blog_media(used.id).unwrap();
+
+    // Programmée puis retirée de la version de travail : la version programmée la
+    // cite encore, et sortirait sans elle à l’échéance.
+    let planned = upload(&store, "programmee.png", "image/png", &png());
+    let mut p = input("programmation");
+    p.og_image = Some(planned.url.clone());
+    let post = store.create_blog_post(p).unwrap();
+    let scheduled = store
+        .schedule_blog_post(post.id, unix_now() + 3600, post.revision)
+        .unwrap();
+    let mut changes = scheduled.fields.clone();
+    changes.og_image = None;
+    changes.revision = Some(scheduled.revision);
+    let edited = store.update_blog_post(post.id, changes).unwrap();
+    assert!(matches!(
+        store.delete_blog_media(planned.id),
+        Err(BlogError::MediaInUse)
+    ));
+    // La programmation annulée, plus rien ne la cite.
+    store
+        .unpublish_blog_post(edited.id, edited.revision)
+        .unwrap();
+    store.delete_blog_media(planned.id).unwrap();
 }
 
 /// L’article de test du rendu (site/tests/fixtures, e2e blog-article.spec.ts) :
