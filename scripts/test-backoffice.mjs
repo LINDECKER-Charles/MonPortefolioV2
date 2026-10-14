@@ -418,8 +418,13 @@ async function main() {
   assert.notEqual(publicAvant.reponse.headers.get('etag'), publicApres.reponse.headers.get('etag'));
   assert.equal(createHash('sha256').update(await readFile(path.join(dist, 'contact/index.html'))).digest('hex'), empreinteBuild, 'Le build doit rester identique après le réglage.');
   const lien = (await requete('/api/backoffice/links', { method: 'POST', data: { label: 'Umami', url: 'https://umami.example.test', description: 'Mesure d’audience' }, session: true, status: 201 })).json;
-  const jeton = (await requete('/api/backoffice/tokens', { method: 'POST', data: { name: 'Client de test' }, session: true, status: 201 })).json;
+  // Sans permissions demandées, un accès lit seulement le blog : les demandes se demandent exprès.
+  const parDefaut = (await requete('/api/backoffice/tokens', { method: 'POST', data: { name: 'Accès par défaut' }, session: true, status: 201 })).json;
+  assert.deepEqual(parDefaut.scopes, ['blog:read'], 'Un accès sans permissions demandées ne doit pas lire les demandes de contact.');
+  await requete(`/api/backoffice/tokens/${parDefaut.id}`, { method: 'DELETE', session: true });
+  const jeton = (await requete('/api/backoffice/tokens', { method: 'POST', data: { name: 'Client de test', scopes: ['contacts:read', 'blog:read'] }, session: true, status: 201 })).json;
   assert(typeof jeton.token === 'string' && jeton.token.length >= 32, 'La création doit retourner un secret MCP.');
+  assert.deepEqual(jeton.scopes, ['contacts:read', 'blog:read']);
   const catalogueJetons = await requete('/api/backoffice/tokens', { session: true });
   assert(!catalogueJetons.texte.includes(jeton.token), 'La liste des accès ne doit pas exposer leur secret.');
   console.log('[integration] Destinataire actualisé sans rebuild, outils et jeton : OK');
@@ -440,6 +445,7 @@ async function main() {
   const liens = await mcp('tools/call', { name: 'list_toolbox_links', arguments: {} }, { bearer: jeton.token });
   assert.equal(liens.result.structuredContent.links[0].id, lien.id);
   await testerBlog(jeton.token);
+  await testerStockage(jeton.token);
   await testerAccesRedaction();
   await mcp('tools/list', {}, { session: true, status: 401 });
   await requete('/api/backoffice/contacts', { bearer: jeton.token, status: 401 });
@@ -529,6 +535,40 @@ async function testerBlog(lecture) {
   await requete(image.url.replace('/api/blog/', '/api/backoffice/blog/'), { session: true, status: 404 });
   await requete(`/api/backoffice/tokens/${jeton.id}`, { method: 'DELETE', session: true });
   console.log('[integration] Blog réel : MCP, brouillon privé, SEO HTML, snapshots, programmation, dépublication et suppression d’image : OK');
+}
+
+/**
+ * La rubrique Stockage : GET /api/backoffice/storage à travers le relais Node,
+ * session seulement (un accès MCP est refusé), et son contrat ; puis la
+ * suppression d’une image inutilisée comme la fait l’interface (corps JSON
+ * vide, exigé par le relais pour une mutation du blog).
+ */
+async function testerStockage(bearer) {
+  await requete('/api/backoffice/storage', { status: 401 });
+  await requete('/api/backoffice/storage', { bearer, status: 401 });
+  const png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aXioAAAAASUVORK5CYII=';
+  const image = (await requete('/api/backoffice/blog/media', { method: 'POST', data: { filename: 'stockage.png', content_type: 'image/png', data_base64: png }, session: true, status: 201 })).json;
+  const rapport = (await requete('/api/backoffice/storage', { session: true })).json;
+  assert.deepEqual(Object.keys(rapport).sort(), ['categories', 'contacts', 'database', 'disk', 'media', 'posts']);
+  assert(rapport.disk && Number.isInteger(rapport.disk.total) && Number.isInteger(rapport.disk.available) && rapport.disk.available <= rapport.disk.total, 'Une base fichier doit dire la place de son disque.');
+  const { database: base, categories } = rapport;
+  assert(Number.isInteger(base.file) && Number.isInteger(base.wal), 'Une base fichier doit dire la taille de son fichier et de son journal.');
+  assert.deepEqual(Object.keys(categories).sort(), ['contacts', 'media_originals', 'media_variants', 'posts', 'system']);
+  assert.equal(Object.values(categories).reduce((total, valeur) => total + valeur, 0) + base.free, base.size, 'Les catégories et l’espace libre doivent faire la taille de la base.');
+  assert.equal(rapport.contacts.count, 1);
+  const totaux = rapport.media.map(({ total }) => total);
+  assert.deepEqual(totaux, [...totaux].sort((a, b) => b - a), 'Les images vont de la plus lourde à la plus légère.');
+  const stockee = rapport.media.find(({ id }) => id === image.id);
+  assert(stockee, 'L’image importée doit apparaître dans le stockage.');
+  assert.equal(stockee.filename, 'stockage.png');
+  assert.equal(stockee.admin_url, `/api/backoffice/blog/media/${image.id}`);
+  assert.deepEqual(stockee.posts, [], 'Une image tout juste importée n’est citée par aucun article.');
+  assert.equal(stockee.total, stockee.size + stockee.variants.size);
+  // La suppression : sans corps JSON, le relais la refuse ; avec, elle passe et le rapport suit.
+  await requete(`/api/backoffice/blog/media/${image.id}`, { method: 'DELETE', session: true, status: 415 });
+  assert.deepEqual((await requete(`/api/backoffice/blog/media/${image.id}`, { method: 'DELETE', data: {}, session: true })).json, { deleted: true, id: image.id });
+  assert(!(await requete('/api/backoffice/storage', { session: true })).json.media.some(({ id }) => id === image.id), 'Une image supprimée doit quitter le stockage.');
+  console.log('[integration] Stockage : session seulement, contrat, suppression d’une image inutilisée : OK');
 }
 
 async function testerRenduDeveloppement(post) {
