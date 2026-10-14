@@ -274,10 +274,14 @@
   color: var(--eteint);
 }
 
+/* Pas de lien en flex : le séparateur posé en ::before y deviendrait un
+   élément souligné avec le lien. En bloc, il reste un élément atomique, hors du
+   soulignement, comme dans FilAriane. */
 .blog-article__nav a {
-  display: inline-flex;
-  align-items: center;
+  display: inline-block;
   min-height: 44px;
+  padding-block: var(--s3);
+  line-height: 1.4;
   color: var(--eteint);
 }
 

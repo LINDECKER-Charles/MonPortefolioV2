@@ -247,6 +247,18 @@ test('le code garde la taille de son bloc, et celle de son titre sans le dépass
   expect(tailles.pastille, 'sa pastille tient dans l’interligne').toBeLessThanOrEqual(tailles.interligne);
 });
 
+test('le fil d’Ariane de l’article garde des cibles de 44 px et des séparateurs hors du lien souligné', async ({ page }) => {
+  await ouvrir(page);
+  const liens = await page.locator('.blog-article__nav a').evaluateAll((liste) => liste.map((lien) => ({ hauteur: lien.getBoundingClientRect().height, display: getComputedStyle(lien).display, separateur: getComputedStyle(lien, '::before').display })));
+  expect(liens).toHaveLength(2);
+  for (const lien of liens) {
+    expect(lien.hauteur).toBeGreaterThanOrEqual(44);
+    // Un lien en flex ferait de son séparateur un élément souligné avec lui.
+    expect(lien.display).not.toMatch(/flex/);
+  }
+  expect(liens[1].separateur, 'le séparateur reste un élément atomique').toBe('inline-block');
+});
+
 test('les images réservent leur place, ne s’agrandissent pas et chargent la variante utile', async ({ page }) => {
   await page.addInitScript(() => {
     (window as unknown as { decalage: number }).decalage = 0;
