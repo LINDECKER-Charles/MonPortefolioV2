@@ -101,6 +101,20 @@ async function ouvrir(page: Page, chemin = CHEMIN) {
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
 }
 
+test('le texte de l’auteur reste dans l’écran : titre, étiquettes, carte de la liste', async ({ page }) => {
+  for (const chemin of [CHEMIN, '/blog']) {
+    await ouvrir(page, chemin);
+    const debordements = await page.evaluate(() => {
+      const largeur = document.documentElement.clientWidth;
+      return [...document.querySelectorAll<HTMLElement>('.blog-article__header *, .blog-list *')]
+        .filter((el) => { const boite = el.getBoundingClientRect(); return boite.width > 0 && (boite.right > largeur + 0.5 || el.scrollWidth > el.clientWidth + 1); })
+        .map((el) => `${el.tagName.toLowerCase()} « ${(el.textContent ?? '').trim().slice(0, 40)} »`);
+    });
+    expect(debordements, chemin).toEqual([]);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), chemin).toBe(true);
+  }
+});
+
 test('un tableau large défile au lieu de couper ses mots lettre à lettre', async ({ page }) => {
   await ouvrir(page);
   const large = await page.locator('.blog-table').first().evaluate((region) => ({

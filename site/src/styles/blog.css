@@ -130,6 +130,7 @@
   margin-block: var(--s2) var(--s3);
   font-size: var(--t-xl);
   line-height: 1.1;
+  overflow-wrap: anywhere;
 }
 
 .blog-list__article:first-child h2 {
@@ -182,6 +183,8 @@
 }
 
 .blog-tags li {
+  max-width: 100%;
+  overflow-wrap: anywhere;
   padding: 2px var(--s2);
   border: 1px solid var(--trait);
   border-radius: var(--r1);
@@ -287,6 +290,8 @@
   font-size: var(--t-3xl);
   line-height: 1;
   letter-spacing: var(--ls-affiche);
+  /* Un mot plus long que la colonne se coupe au lieu d’être rogné par main. */
+  overflow-wrap: anywhere;
 }
 
 .blog-article__intro {
