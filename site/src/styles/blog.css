@@ -515,9 +515,21 @@
     min-width: 0;
   }
 
+  /* Sur papier, la colonne prend la largeur de la page et les cellules se
+     resserrent : une douzaine de colonnes reste lisible mot par mot. */
+  .blog-article__header,
+  .blog-prose {
+    width: 100%;
+  }
+
+  .blog-prose table {
+    font-size: var(--t-xs);
+  }
+
   .blog-prose :is(th, td) {
     width: auto !important;
     min-width: 0 !important;
+    padding: var(--s1) var(--s2);
     overflow-wrap: anywhere;
   }
 }
