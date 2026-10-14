@@ -185,7 +185,13 @@ type Coin = 'bas-droite' | 'bas-gauche' | 'haut-droite' | 'haut-gauche';
  * Coordonnées en pourcentages de l’image (CaptureAnnotee) : `cible` dans la
  * vue, `loupe.x/y` au centre du détail agrandi. La loupe de la fiche de
  * branche montre l’âge et la conclusion, pas la ligne de commande que
- * l’application coupe en deux (README de provenance).
+ * l’application coupe en deux (README de provenance) ; celle de l’analyse,
+ * deux couples de lignes entiers de la console, la pastille sur la marge.
+ *
+ * `regionMobile` (CadreCapture, sous 860 px) : l’écran entier y ferait un
+ * texte de 3 à 4 px ; la vue se resserre sur ce que la capture prouve (le
+ * panneau d’effet de la politique, le tracé de la carte, la colonne des
+ * verdicts du registre), l’écran entier restant à un clic.
  */
 export const CAPTURES = {
   entete: {
@@ -196,25 +202,35 @@ export const CAPTURES = {
     alt: 'La fiche de la branche feature/advanced-search : verdict Review, puis les règles appliquées, de la divergence (+3 / −12) à l’âge du dernier commit.',
     legende: 'Dernier commit il y a 55 jours, entre les seuils de 30 et 90 jours : la règle est écrite en clair, avec ses seuils.',
     cible: { x: 76, y: 42.9 },
-    loupe: { x: 87.4, y: 46.3, zoom: 4.1, largeur: 60, ratio: '4 / 1', coin: 'bas-gauche' as Coin, dessous: true },
+    loupe: { x: 87.4, y: 46.6, zoom: 4.1, largeur: 60, ratio: '10 / 3', coin: 'bas-gauche' as Coin, dessous: true },
   },
   politique: {
     alt: 'La politique d’un dépôt : seuils de 30 et 90 jours, un motif protégé, un motif exclu, et leur effet projeté sur la dernière analyse : Review −3, Excluded +3.',
     legende: 'Deux motifs ajoutés, pas encore enregistrés : trois branches passeraient de Review à Excluded.',
+    /** L’écran sans l’en-tête de l’analyse planifiée, qui n’est pas publiée. */
+    region: { x: 0, y: 0, l: 100, h: 93.6 },
+    /** Le panneau « Effect on the last snapshot ». */
+    regionMobile: { x: 73.2, y: 22.5, l: 26, h: 53 },
   },
   analyse: {
     alt: 'Une analyse en cours sur 169 branches, à mi-chemin : le registre se remplit, la carte des branches se dessine et la console liste les commandes git merge-base lancées.',
     legende: 'Une analyse prise en cours, à 106 branches sur 169 : la loupe montre deux appels à git merge-base, chacun avec sa durée en millisecondes.',
     cible: { x: 77.6, y: 65 },
-    loupe: { x: 86.2, y: 76.5, zoom: 4.5, largeur: 60, ratio: '3 / 1', coin: 'bas-gauche' as Coin, dessous: true },
+    loupe: { x: 87.5, y: 77.2, zoom: 4, largeur: 60, ratio: '9 / 2', coin: 'bas-gauche' as Coin, dessous: true },
   },
   topologie: {
     alt: 'La carte des branches d’un dépôt de démonstration : neuf branches partent de main à des moments différents, de 64 à 16 commits de retard.',
     legende: 'La carte des branches : plus un trait est long, plus la branche s’est éloignée de main.',
+    region: { x: 0, y: 0, l: 100, h: 74 },
+    /** Le tracé seul, de la première branche au libellé de main. */
+    regionMobile: { x: 25, y: 32.5, l: 55, h: 41 },
   },
   activite: {
     alt: 'Le registre d’activité : pour chaque branche, le silence depuis son dernier commit, les bandes de 30 et 90 jours, et le verdict recalculé.',
     legende: 'Le registre d’activité : deux curseurs déplacent les seuils et relisent chaque verdict, sans rien enregistrer.',
+    region: { x: 0, y: 0, l: 100, h: 100 },
+    /** Le curseur d’inactivité, les compteurs, la bande des 30 jours et la colonne des verdicts recalculés. */
+    regionMobile: { x: 70.6, y: 28.5, l: 28, h: 62.5 },
   },
 } as const;
 

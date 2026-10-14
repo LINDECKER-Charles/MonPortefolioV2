@@ -43,6 +43,10 @@ const description = 'GitHealth, application de bureau open source : elle lit un
 const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(href, { emplacement: 'preuves' }) });
 /** Une capture de section : la moitié de la colonne au-delà de 1 100 px, toute la largeur en dessous. */
 const TAILLES_SECTION = '(max-width: 1100px) 100vw, 560px';
+/** Les rendus d’une capture recadrée sur mobile : jusqu’à l’original, que le recadrage agrandit. */
+const LARGEURS_RECADREES = [640, 1200, 1600, 2400];
+/** Sous 860 px, l’image entière est affichée à 100 / l fois la largeur de la vue (CadreCapture, `regionMobile`). */
+const taillesRecadrees = (largeurMobile: number) => `(max-width: 860px) ${Math.round(10000 / largeurMobile)}vw, ${TAILLES_SECTION}`;
 ---
 
 <Base titre={titre} description={description} chemin="/projets/githealth" sommaire={SECTIONS}>
@@ -102,8 +106,10 @@ const TAILLES_SECTION = '(max-width: 1100px) 100vw, 560px';
         src={politique}
         alt={CAPTURES.politique.alt}
         legende={CAPTURES.politique.legende}
-        region={{ x: 0, y: 0, l: 100, h: 93.6 }}
-        sizes={TAILLES_SECTION}
+        region={CAPTURES.politique.region}
+        regionMobile={CAPTURES.politique.regionMobile}
+        widths={LARGEURS_RECADREES}
+        sizes={taillesRecadrees(CAPTURES.politique.regionMobile.l)}
         agrandir
       />
     </SectionProjet>
@@ -138,11 +144,23 @@ const TAILLES_SECTION = '(max-width: 1100px) 100vw, 560px';
           src={topologie}
           alt={CAPTURES.topologie.alt}
           legende={CAPTURES.topologie.legende}
-          region={{ x: 0, y: 0, l: 100, h: 74 }}
-          sizes={TAILLES_SECTION}
+          region={CAPTURES.topologie.region}
+          regionMobile={CAPTURES.topologie.regionMobile}
+          widths={LARGEURS_RECADREES}
+          sizes={taillesRecadrees(CAPTURES.topologie.regionMobile.l)}
           agrandir
         />
-        <CadreCapture type="navigateur" src={activite} alt={CAPTURES.activite.alt} legende={CAPTURES.activite.legende} sizes={TAILLES_SECTION} agrandir />
+        <CadreCapture
+          type="navigateur"
+          src={activite}
+          alt={CAPTURES.activite.alt}
+          legende={CAPTURES.activite.legende}
+          region={CAPTURES.activite.region}
+          regionMobile={CAPTURES.activite.regionMobile}
+          widths={LARGEURS_RECADREES}
+          sizes={taillesRecadrees(CAPTURES.activite.regionMobile.l)}
+          agrandir
+        />
       </div>
     </SectionProjet>
 
