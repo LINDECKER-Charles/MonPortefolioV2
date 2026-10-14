@@ -90,36 +90,66 @@ function argument(valeur: string): string {
 }
 
 /**
- * La commande à coller dans un terminal (`claude mcp add --help`) : transport
+ * La commande d’ajout (`claude mcp add --help`), mot par mot : transport
  * HTTP, portée utilisateur (le serveur sert dans tous les projets), en-tête
  * d’autorisation en dernier (`--header` accepte plusieurs valeurs). Le
  * secret du backend est hexadécimal ; un autre secret reste cité sans risque.
  */
-export function commandeClaudeCode(origine: string, serveur: string, secret: string): string {
+export function motsAjout(origine: string, serveur: string, secret: string): string[] {
   const entete = `Authorization: Bearer ${secret}`;
   const enTeteCite = /^[\w .~+/=:-]+$/.test(entete) ? `"${entete}"` : argument(entete);
-  return `claude mcp add --transport http --scope user ${argument(serveur)} ${argument(`${origine}/mcp`)} --header ${enTeteCite}`;
+  return ['claude', 'mcp', 'add', '--transport', 'http', '--scope', 'user', argument(serveur), argument(`${origine}/mcp`), '--header', enTeteCite];
 }
 
-/** La commande qui retire le serveur de Claude Code, rappelée à la révocation. */
+/** La commande d’ajout seule, sur une ligne. */
+export function commandeClaudeCode(origine: string, serveur: string, secret: string): string {
+  return motsAjout(origine, serveur, secret).join(' ');
+}
+
+/** La commande qui retire le serveur de Claude Code (portée utilisateur, celle de l’ajout). */
+export function motsRetrait(serveur: string): string[] {
+  return ['claude', 'mcp', 'remove', '--scope', 'user', argument(serveur)];
+}
+
 export function commandeRetrait(serveur: string): string {
-  return `claude mcp remove ${argument(serveur)}`;
+  return motsRetrait(serveur).join(' ');
+}
+
+/** Ce qui suit le retrait dans la commande à coller : il échoue sans bruit quand le serveur est inconnu. */
+export const RETRAIT_SILENCIEUX = '2>/dev/null';
+
+/**
+ * La commande à coller, en deux lignes : retirer le serveur du même nom s’il
+ * existe (un accès précédent, révoqué ou perdu), puis l’ajouter avec le
+ * nouveau secret. `claude mcp add` refuse un nom déjà connu, et sort quand
+ * même avec le code 0 : sans la première ligne, recréer un accès échouerait
+ * sans qu’on le voie.
+ */
+export function lignesCommande(origine: string, serveur: string, secret: string): string[][] {
+  return [[...motsRetrait(serveur), RETRAIT_SILENCIEUX], motsAjout(origine, serveur, secret)];
+}
+
+export function commandeRemplacement(origine: string, serveur: string, secret: string): string {
+  return lignesCommande(origine, serveur, secret).map((mots) => mots.join(' ')).join('\n');
 }
 
 const relatif = new Intl.RelativeTimeFormat('fr-FR', { numeric: 'auto' });
 const jour = new Intl.DateTimeFormat('fr-FR', { dateStyle: 'medium' });
 
-/** L’âge d’une utilisation, « à l’instant », « il y a 5 minutes », « hier »… puis la date au-delà d’une semaine. */
+/** Une cellule commence par une capitale : « À l’instant », « Il y a 5 minutes », « Hier », « Le 14 oct. 2026 ». */
+const capitale = (texte: string) => texte.charAt(0).toLocaleUpperCase('fr') + texte.slice(1);
+
+/** L’âge d’une utilisation, « À l’instant », « Il y a 5 minutes », « Hier »… puis la date au-delà d’une semaine. */
 export function depuis(valeur: string, maintenant = Date.now()): string {
   const instant = Date.parse(valeur);
   if (Number.isNaN(instant)) return 'Date inconnue';
   const secondes = Math.max(0, Math.round((maintenant - instant) / 1000));
-  if (secondes < 60) return 'à l’instant';
+  if (secondes < 60) return 'À l’instant';
   const minutes = Math.floor(secondes / 60);
-  if (minutes < 60) return relatif.format(-minutes, 'minute');
+  if (minutes < 60) return capitale(relatif.format(-minutes, 'minute'));
   const heures = Math.floor(minutes / 60);
-  if (heures < 24) return relatif.format(-heures, 'hour');
+  if (heures < 24) return capitale(relatif.format(-heures, 'hour'));
   const jours = Math.floor(heures / 24);
-  if (jours < 7) return relatif.format(-jours, 'day');
-  return `le ${jour.format(instant)}`;
+  if (jours < 7) return capitale(relatif.format(-jours, 'day'));
+  return `Le ${jour.format(instant)}`;
 }

@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
   commandeClaudeCode,
+  commandeRemplacement,
   commandeRetrait,
+  lignesCommande,
   depuis,
   libellesPermissions,
   nomPropose,
@@ -73,7 +75,18 @@ describe('commande Claude Code', () => {
       `claude mcp add --transport http --scope user portfolio https://charles-lindecker.com/mcp --header "Authorization: Bearer ${secret}"`,
     );
     expect(commandeClaudeCode('http://localhost:4332', 'portfolio-local', secret)).toContain('portfolio-local http://localhost:4332/mcp');
-    expect(commandeRetrait('portfolio-local')).toBe('claude mcp remove portfolio-local');
+    expect(commandeRetrait('portfolio-local')).toBe('claude mcp remove --scope user portfolio-local');
+  });
+
+  it('retire d’abord le serveur du même nom, pour qu’un nouvel accès remplace l’ancien', () => {
+    expect(commandeRemplacement('https://charles-lindecker.com', 'portfolio', secret)).toBe(
+      `claude mcp remove --scope user portfolio 2>/dev/null\n${commandeClaudeCode('https://charles-lindecker.com', 'portfolio', secret)}`,
+    );
+    const [retrait, ajout] = lignesCommande('https://charles-lindecker.com', 'portfolio', secret);
+    expect(retrait.join(' ')).toBe('claude mcp remove --scope user portfolio 2>/dev/null');
+    // Un mot par argument : la commande ne se coupe jamais au milieu d’une option.
+    expect(ajout).toContain('--scope');
+    expect(ajout.at(-1)).toBe(`"Authorization: Bearer ${secret}"`);
   });
 
   it('cite sans risque un secret qui ne serait pas hexadécimal', () => {
@@ -86,12 +99,12 @@ describe('commande Claude Code', () => {
 describe('dernière utilisation', () => {
   const maintenant = Date.parse('2026-10-14T12:00:00Z');
 
-  it('dit l’âge de l’utilisation, puis la date au-delà d’une semaine', () => {
-    expect(depuis('2026-10-14T11:59:30Z', maintenant)).toBe('à l’instant');
-    expect(depuis('2026-10-14T11:55:00Z', maintenant)).toBe('il y a 5 minutes');
-    expect(depuis('2026-10-14T09:00:00Z', maintenant)).toBe('il y a 3 heures');
-    expect(depuis('2026-10-13T10:00:00Z', maintenant)).toBe('hier');
-    expect(depuis('2026-09-30T10:00:00Z', maintenant)).toMatch(/^le 30 sept\. 2026$/);
+  it('dit l’âge de l’utilisation, puis la date au-delà d’une semaine, avec une capitale en tête de cellule', () => {
+    expect(depuis('2026-10-14T11:59:30Z', maintenant)).toBe('À l’instant');
+    expect(depuis('2026-10-14T11:55:00Z', maintenant)).toBe('Il y a 5 minutes');
+    expect(depuis('2026-10-14T09:00:00Z', maintenant)).toBe('Il y a 3 heures');
+    expect(depuis('2026-10-13T10:00:00Z', maintenant)).toBe('Hier');
+    expect(depuis('2026-09-30T10:00:00Z', maintenant)).toMatch(/^Le 30 sept\. 2026$/);
     expect(depuis('pas une date', maintenant)).toBe('Date inconnue');
   });
 });

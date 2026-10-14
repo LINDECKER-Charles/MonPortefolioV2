@@ -979,6 +979,17 @@
   user-select: all;
 }
 
+/* Une option, un nom ou une adresse ne se coupent jamais (« --scope »,
+   « portfolio-local ») : la ligne passe entre deux mots, et seul le secret,
+   d’un seul tenant, peut aller à la ligne en son milieu. */
+.bo-commande__mot {
+  white-space: nowrap;
+}
+
+.bo-commande__secret {
+  overflow-wrap: anywhere;
+}
+
 :root[data-theme='nuit'] .bo-commande {
   background: var(--fond);
   box-shadow: inset 0 0 0 1px var(--trait);
@@ -1161,6 +1172,15 @@
 .bo-dialog p {
   margin-block: var(--s4) var(--s5);
   overflow-wrap: anywhere;
+}
+
+/* La commande à recopier, seule sur sa ligne, sans ponctuation collée. */
+.bo-dialog p:has(+ .bo-dialog__commande:not([hidden])) {
+  margin-bottom: var(--s3);
+}
+
+.bo-dialog__commande {
+  margin-bottom: var(--s5);
 }
 
 /* ===== Points de rupture ===== */

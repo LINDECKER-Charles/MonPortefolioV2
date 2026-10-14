@@ -4,10 +4,15 @@
  *
  * À gauche, « Nouvel accès » : un nom proposé, trois préréglages qui disent
  * ce que l’assistant pourra faire (Rédaction par défaut) et une case séparée,
- * décochée, pour lire aussi les demandes de contact (lib/acces-mcp.ts). À la
+ * décochée, pour lire aussi les demandes de contact (lib/acces-mcp.ts).
+ * Options en lignes serrées (intitulé puis description dans la même phrase)
+ * et garde-fou sous le bouton : « Créer l’accès » se voit dès l’arrivée, à
+ * 1440 × 900 comme à 390 px, sans défiler. À la
  * création, la carte du secret prend sa place : la seule zone éclairée de
- * l’écran, avec la commande `claude mcp add` prête à copier et la
- * vérification de l’accès (initialize puis tools/list, depuis cette page).
+ * l’écran, avec la commande prête à copier (`claude mcp remove` du serveur
+ * du même nom, puis `claude mcp add`, pour qu’un nouvel accès remplace
+ * l’ancien) et la vérification de l’accès (server/discover puis tools/list,
+ * comme Claude Code, depuis cette page).
  * Le secret n’existe que là : il disparaît à « Terminé », en quittant la
  * rubrique, à la déconnexion ou quand la session expire.
  *
@@ -59,7 +64,7 @@ const hoteCanonique = new URL(SITE.url).hostname;
 
       <section class="bo-carte bo-secret foyer" id="bo-secret" aria-labelledby="bo-secret-title" data-retour="bo-secret-retour" hidden>
         <h3 id="bo-secret-title" tabindex="-1">L’accès est prêt</h3>
-        <p>Collez cette commande dans un terminal&nbsp;: Claude Code pourra se servir du portfolio dans tous vos projets.</p>
+        <p>Collez ces deux lignes dans un terminal&nbsp;: la première retire un ancien serveur «&nbsp;<code data-serveur-mcp>portfolio</code>&nbsp;» s’il existe, la seconde ajoute cet accès. Claude Code pourra se servir du portfolio dans tous vos projets.</p>
         <pre class="bo-commande"><code id="bo-token-command"></code></pre>
         <div class="bo-actions">
           <button class="bo-button bo-button--primary" id="bo-token-copy" type="button">Copier la commande</button>
@@ -70,7 +75,7 @@ const hoteCanonique = new URL(SITE.url).hostname;
           <p id="bo-token-tools-summary"></p>
           <ul class="bo-outils-mcp" id="bo-token-tools-list" aria-labelledby="bo-token-tools-summary"></ul>
         </div>
-        <p class="bo-secret__avertissement">Ce secret ne sera plus affiché après «&nbsp;Terminé&nbsp;» ni en quittant la rubrique. Perdu&nbsp;? Révoquez cet accès et créez-en un autre. La commande contient le secret&nbsp;: collez-la seulement dans votre terminal. Si Claude Code connaît déjà ce serveur, retirez-le d’abord avec <code id="bo-token-remove">claude mcp remove portfolio</code>.</p>
+        <p class="bo-secret__avertissement">Ce secret ne sera plus affiché après «&nbsp;Terminé&nbsp;» ni en quittant la rubrique. Perdu&nbsp;? Révoquez cet accès et créez-en un autre&nbsp;: sa commande remplacera celle-ci. La commande contient le secret&nbsp;: collez-la seulement dans votre terminal.</p>
         <details class="bo-details">
           <summary>Autres clients&nbsp;: le secret seul</summary>
           <div class="bo-details__contenu">

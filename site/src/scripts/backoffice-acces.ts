@@ -8,18 +8,22 @@
  * quittant la rubrique, à la déconnexion, au `pagehide` et à l’expiration de
  * la session (scripts/backoffice.ts).
  *
- * « Vérifier l’accès » appelle /mcp depuis cette page avec le nouveau secret
- * (initialize, puis tools/list) : même origine, sans cookie, comme un client
- * MCP. Le serveur accepte l’en-tête Origin de cette page (backend/src/mcp.rs,
- * valid_origin) et la CSP l’autorise (`connect-src 'self'`). Cet appel compte
- * comme une utilisation de l’accès.
+ * « Vérifier l’accès » appelle /mcp depuis cette page avec le nouveau secret,
+ * par le chemin de Claude Code (révision 2026-07-28 : server/discover, puis
+ * tools/list, avec les indications de cache que Claude Code exige) : même
+ * origine, sans cookie. Le serveur accepte l’en-tête Origin de cette page
+ * (backend/src/mcp.rs, valid_origin) et la CSP l’autorise
+ * (`connect-src 'self'`). Cet appel compte comme une utilisation de l’accès.
+ * Terminé, quitter la rubrique ou se déconnecter l’annule sans message ; un
+ * serveur muet au-delà de 15 s le dit.
  *
  * Préréglages, libellés, nom de serveur et commande : lib/acces-mcp.ts.
  */
 import {
-  commandeClaudeCode,
+  commandeRemplacement,
   commandeRetrait,
   depuis,
+  lignesCommande,
   libellesPermissions,
   nomPropose,
   nomServeur,
@@ -32,12 +36,15 @@ import { ErreurApi, type Dire, type Etat } from './backoffice-commun';
 interface Acces { id: number; name: string; created_at: string; last_used_at: string | null; scopes?: string[] }
 interface AccesCree { id: number; name: string; token: string; scopes: string[] }
 interface OutilMcp { name: string; title?: string }
+/** Un résultat complet de la révision 2026-07-28, cachable. */
+interface ResultatModerne { resultType?: string; ttlMs?: unknown; cacheScope?: unknown }
 
 export interface ContexteAcces {
   api: <T>(chemin: string, method?: string, corps?: unknown) => Promise<T>;
   action: (cible: HTMLElement, operation: (dire: Dire) => Promise<void>, attente: string) => Promise<void>;
   afficher: (zone: HTMLElement, message: string, etat?: Etat) => void;
-  confirmer: (titre: string, message: string, libelle: string) => Promise<boolean>;
+  /** `commande` : une ligne de terminal montrée seule, en code, sous le message. */
+  confirmer: (titre: string, message: string, libelle: string, commande?: string) => Promise<boolean>;
   estConnecte: () => boolean;
   /** Vrai quand la rubrique des accès est affichée. */
   estVisible: () => boolean;
@@ -53,42 +60,68 @@ export interface RubriqueAcces {
 
 const NBSP = ' ';
 const DELAI_VERIFICATION = 15_000;
+/** La révision MCP que suit Claude Code. */
+const VERSION_MODERNE = '2026-07-28';
+/** Raisons d’abandon de la vérification : la minuterie, ou le secret qui n’est plus affiché. */
+const DELAI_DEPASSE = 'delai-depasse';
+const SECRET_CACHE = 'secret-cache';
+
+/** La vérification a été abandonnée parce que le secret n’est plus affiché : rien à dire. */
+class VerificationAnnulee extends Error {}
 const jourCourt = new Intl.DateTimeFormat('fr-FR', { dateStyle: 'medium' });
 const cite = (texte: string) => `«${NBSP}${texte}${NBSP}»`;
 const liste = (mots: string[]) => (mots.length > 1 ? `${mots.slice(0, -1).join(', ')} et ${mots.at(-1)}` : mots[0] ?? '');
 
-/** Un appel JSON-RPC au serveur MCP de ce site, avec le secret de l’accès. */
-async function appelMcp<T>(secret: string, corps: Record<string, unknown>, signal: AbortSignal, version?: string): Promise<T> {
+/** Pourquoi un appel a été abandonné : le délai (on le dit), ou le secret caché (on se tait). */
+function abandon(signal: AbortSignal): Error {
+  return signal.reason === DELAI_DEPASSE
+    ? new ErreurApi('Le serveur MCP ne répond pas dans les temps. Réessayez dans un instant.', 0)
+    : new VerificationAnnulee();
+}
+
+/** Un appel JSON-RPC au serveur MCP de ce site, avec le secret de l’accès, comme le fait Claude Code. */
+async function appelMcp<T>(secret: string, id: number, method: string, signal: AbortSignal): Promise<T & ResultatModerne> {
   const headers: Record<string, string> = {
     Authorization: `Bearer ${secret}`,
     'Content-Type': 'application/json',
     Accept: 'application/json, text/event-stream',
+    'MCP-Protocol-Version': VERSION_MODERNE,
+    'MCP-Method': method,
   };
-  if (version) headers['MCP-Protocol-Version'] = version;
+  const params = { _meta: { 'io.modelcontextprotocol/protocolVersion': VERSION_MODERNE, 'io.modelcontextprotocol/clientCapabilities': {} } };
   let reponse: Response;
   try {
-    reponse = await fetch('/mcp', { method: 'POST', headers, body: JSON.stringify({ jsonrpc: '2.0', ...corps }), credentials: 'omit', cache: 'no-store', signal });
+    reponse = await fetch('/mcp', { method: 'POST', headers, body: JSON.stringify({ jsonrpc: '2.0', id, method, params }), credentials: 'omit', cache: 'no-store', signal });
   } catch {
+    if (signal.aborted) throw abandon(signal);
     throw new ErreurApi('Le serveur MCP est injoignable. Vérifiez la connexion puis réessayez.', 0);
   }
-  const contenu = await reponse.json().catch(() => ({})) as { result?: T; error?: { message?: string } };
+  const contenu = await reponse.json().catch(() => ({})) as { result?: T & ResultatModerne; error?: { message?: string } };
+  if (signal.aborted) throw abandon(signal);
   if (reponse.status === 401) throw new ErreurApi(`Le serveur MCP refuse ce secret${NBSP}: l’accès a sans doute été révoqué.`, 401);
   if (reponse.status === 403) throw new ErreurApi('Le serveur MCP refuse cette origine. Ouvrez le backoffice depuis l’adresse du site.', 403);
   if (reponse.status === 429) throw new ErreurApi('Trop d’appels MCP depuis cette adresse. Réessayez dans une minute.', 429);
   if (!reponse.ok || contenu.error || contenu.result === undefined) {
     throw new ErreurApi(`Le serveur MCP n’a pas répondu comme prévu (statut ${reponse.status}). Réessayez dans un instant.`, reponse.status);
   }
-  return contenu.result;
+  // Claude Code refuse un catalogue sans ses indications de cache (« tools fetch failed »).
+  const resultat = contenu.result;
+  if (resultat.resultType !== 'complete' || typeof resultat.ttlMs !== 'number' || typeof resultat.cacheScope !== 'string') {
+    throw new ErreurApi(`Le serveur MCP répond, mais sans les indications de cache qu’exige Claude Code (${method}). Mettez le backend à jour.`, reponse.status);
+  }
+  return resultat;
 }
 
-/** Ce que verra un client MCP : la poignée de main, puis le catalogue d’outils ouvert par les permissions. */
+/**
+ * Ce que fait Claude Code à la connexion : la découverte du serveur, puis le
+ * catalogue d’outils ouvert par les permissions de l’accès.
+ */
 async function outilsDisponibles(secret: string, signal: AbortSignal): Promise<OutilMcp[]> {
-  const accueil = await appelMcp<{ protocolVersion?: string }>(secret, {
-    id: 1,
-    method: 'initialize',
-    params: { protocolVersion: '2025-11-25', capabilities: {}, clientInfo: { name: 'backoffice-portfolio', version: '1.0.0' } },
-  }, signal);
-  const catalogue = await appelMcp<{ tools?: OutilMcp[] }>(secret, { id: 2, method: 'tools/list', params: {} }, signal, accueil.protocolVersion);
+  const decouverte = await appelMcp<{ supportedVersions?: unknown }>(secret, 1, 'server/discover', signal);
+  if (!Array.isArray(decouverte.supportedVersions) || !decouverte.supportedVersions.includes(VERSION_MODERNE)) {
+    throw new ErreurApi(`Le serveur MCP ne propose pas la révision ${VERSION_MODERNE} que suit Claude Code. Mettez le backend à jour.`, 200);
+  }
+  const catalogue = await appelMcp<{ tools?: OutilMcp[] }>(secret, 2, 'tools/list', signal);
   return Array.isArray(catalogue.tools) ? catalogue.tools : [];
 }
 
@@ -121,19 +154,39 @@ export function brancherAccesMcp(contexte: ContexteAcces): RubriqueAcces {
   let appelEnCours: AbortController | undefined;
 
   element('bo-mcp-url').textContent = `${window.location.origin}/mcp`;
-  element('bo-token-remove').textContent = commandeRetrait(serveur);
+  for (const zone of rubrique.querySelectorAll('[data-serveur-mcp]')) zone.textContent = serveur;
+
+  function effacer(zone: HTMLElement): void {
+    zone.textContent = '';
+    delete zone.dataset.state;
+  }
+
+  /** La commande en mots : une option ne se coupe jamais, seul le secret peut aller à la ligne. */
+  function afficherCommande(secretAcces: string): void {
+    const lignes = lignesCommande(window.location.origin, serveur, secretAcces).map((mots) => {
+      const morceaux: Node[] = [];
+      mots.forEach((mot, rang) => {
+        if (rang) morceaux.push(document.createTextNode(' '));
+        const position = mot.indexOf(secretAcces);
+        if (position < 0) { morceaux.push(creer('span', 'bo-commande__mot', mot)); return; }
+        if (position) morceaux.push(creer('span', 'bo-commande__mot', mot.slice(0, position)));
+        morceaux.push(creer('span', 'bo-commande__secret', mot.slice(position)));
+      });
+      return morceaux;
+    });
+    commande.replaceChildren(...lignes.flatMap((morceaux, rang) => (rang ? [document.createTextNode('\n'), ...morceaux] : morceaux)));
+  }
 
   function cacherSecret(): void {
-    appelEnCours?.abort();
+    appelEnCours?.abort(SECRET_CACHE);
     appelEnCours = undefined;
     affiche = undefined;
-    commande.textContent = '';
+    commande.replaceChildren();
     secret.value = '';
     element('bo-token-tools-summary').textContent = '';
     element('bo-token-tools-list').replaceChildren();
     verification.hidden = true;
-    retourCarte.textContent = '';
-    delete retourCarte.dataset.state;
+    effacer(retourCarte);
     for (const repli of carte.querySelectorAll('details')) repli.open = false;
     carte.hidden = true;
     formulaire.hidden = false;
@@ -141,7 +194,7 @@ export function brancherAccesMcp(contexte: ContexteAcces): RubriqueAcces {
 
   function montrerSecret(cree: AccesCree): void {
     affiche = { id: cree.id, nom: cree.name, secret: cree.token };
-    commande.textContent = commandeClaudeCode(window.location.origin, serveur, cree.token);
+    afficherCommande(cree.token);
     secret.value = cree.token;
     titreCarte.textContent = `L’accès ${cite(cree.name)} est prêt`;
     formulaire.hidden = true;
@@ -189,13 +242,16 @@ export function brancherAccesMcp(contexte: ContexteAcces): RubriqueAcces {
   async function revoquerAcces(item: Acces, bouton: HTMLButtonElement): Promise<void> {
     const accord = await contexte.confirmer(
       'Révoquer cet accès ?',
-      `${cite(item.name)} ne pourra plus rien faire sur le portfolio${NBSP}: ses appels seront refusés dès maintenant. Retirez-le aussi de Claude Code avec ${commandeRetrait(serveur)}.`,
+      `${cite(item.name)} ne pourra plus rien faire sur le portfolio${NBSP}: ses appels seront refusés dès maintenant. Retirez-le aussi de Claude Code${NBSP}:`,
       'Révoquer l’accès',
+      commandeRetrait(serveur),
     );
     if (!accord) return;
     await contexte.action(bouton, async (dire) => {
       await contexte.api(`/tokens/${item.id}`, 'DELETE');
       if (affiche?.id === item.id) cacherSecret();
+      // « L’accès … reste actif » ne vaut plus : la liste dit maintenant la révocation.
+      effacer(retourFormulaire);
       await charger();
       dire(`L’accès ${cite(item.name)} est révoqué.`);
     }, 'Révocation de l’accès…');
@@ -252,7 +308,7 @@ export function brancherAccesMcp(contexte: ContexteAcces): RubriqueAcces {
   }
 
   element('bo-token-copy').addEventListener('click', () => {
-    void copier(commande.textContent ?? '', () => {
+    void copier(affiche ? commandeRemplacement(window.location.origin, serveur, affiche.secret) : '', () => {
       const plage = document.createRange();
       plage.selectNodeContents(commande);
       window.getSelection()?.removeAllRanges();
@@ -270,9 +326,16 @@ export function brancherAccesMcp(contexte: ContexteAcces): RubriqueAcces {
       appelEnCours?.abort();
       const controleur = new AbortController();
       appelEnCours = controleur;
-      const minuterie = window.setTimeout(() => controleur.abort(), DELAI_VERIFICATION);
+      const minuterie = window.setTimeout(() => controleur.abort(DELAI_DEPASSE), DELAI_VERIFICATION);
       try {
-        const outils = await outilsDisponibles(ouvert.secret, controleur.signal);
+        let outils: OutilMcp[];
+        try {
+          outils = await outilsDisponibles(ouvert.secret, controleur.signal);
+        } catch (cause) {
+          // Terminé, la rubrique quittée ou la déconnexion : le secret n’est plus là, rien à dire.
+          if (cause instanceof VerificationAnnulee || affiche?.secret !== ouvert.secret) return;
+          throw cause;
+        }
         if (affiche?.secret !== ouvert.secret) return;
         const nombre = outils.length;
         element('bo-token-tools-summary').textContent = `${nombre} outil${nombre > 1 ? 's' : ''} disponible${nombre > 1 ? 's' : ''} pour cet accès${NBSP}:`;

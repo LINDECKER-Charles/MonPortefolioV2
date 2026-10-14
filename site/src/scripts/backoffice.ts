@@ -330,9 +330,12 @@ export function brancherBackoffice(): void {
       }
     }
   }
-  function demanderConfirmation(titre: string, message: string, libelle: string): Promise<boolean> {
+  /** Une confirmation ; `commande`, une ligne de terminal, se montre seule en code sous le message. */
+  function demanderConfirmation(titre: string, message: string, libelle: string, commande = ''): Promise<boolean> {
     texte('bo-confirm-title', titre);
     texte('bo-confirm-message', message);
+    element('bo-confirm-code').replaceChildren(...(commande ? commande.split(' ') : []).flatMap((mot, rang) => [...(rang ? [' '] : []), creer('span', 'bo-commande__mot', mot)]));
+    element('bo-confirm-code').parentElement!.hidden = !commande;
     texte('bo-confirm-submit', libelle);
     confirm.returnValue = '';
     confirm.showModal();

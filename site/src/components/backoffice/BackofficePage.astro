@@ -83,7 +83,7 @@ const COULEUR_NUIT = '#0b0d12';
       </div>
     </main>
     <footer class="bo-pied bo-cadre"><a href="/">Revenir au portfolio</a><span>Espace privé, hors index</span></footer>
-    <dialog class="bo-dialog" id="bo-confirm" aria-labelledby="bo-confirm-title" aria-describedby="bo-confirm-message"><form method="dialog"><h2 id="bo-confirm-title">Confirmer la suppression</h2><p id="bo-confirm-message"></p><div class="bo-actions"><button class="bo-button" value="cancel" autofocus>Annuler</button><button class="bo-button bo-button--danger" id="bo-confirm-submit" value="confirm">Supprimer</button></div></form></dialog>
+    <dialog class="bo-dialog" id="bo-confirm" aria-labelledby="bo-confirm-title" aria-describedby="bo-confirm-message bo-confirm-code"><form method="dialog"><h2 id="bo-confirm-title">Confirmer la suppression</h2><p id="bo-confirm-message"></p><pre class="bo-commande bo-dialog__commande" hidden><code id="bo-confirm-code"></code></pre><div class="bo-actions"><button class="bo-button" value="cancel" autofocus>Annuler</button><button class="bo-button bo-button--danger" id="bo-confirm-submit" value="confirm">Supprimer</button></div></form></dialog>
     <DialoguesBlog />
     <script>
       import { brancherBackoffice } from '../../scripts/backoffice';

@@ -130,6 +130,25 @@ async function connecter(page: Page) {
 function rubrique(page: Page, nom: string | RegExp) {
   return page.getByRole('navigation', { name: 'Rubriques du backoffice' }).getByRole('link', { name: nom });
 }
+/** Double du serveur MCP (révision 2026-07-28) ; `reponse` remplace la réponse normale. */
+async function mcpDouble(page: Page, reponse?: (methode: string) => Promise<{ status: number; corps: unknown } | 'jamais'>) {
+  const appels: { methode: string; autorisation?: string; cookie?: string; origine?: string; version?: string; enTeteMethode?: string }[] = [];
+  await page.route('**/mcp', async (route) => {
+    const requete = route.request();
+    const corps = requete.postDataJSON() as { id: number; method: string };
+    const enTetes = requete.headers();
+    appels.push({ methode: corps.method, autorisation: enTetes.authorization, cookie: enTetes.cookie, origine: enTetes.origin, version: enTetes['mcp-protocol-version'], enTeteMethode: enTetes['mcp-method'] });
+    const special = await reponse?.(corps.method);
+    if (special === 'jamais') return;
+    if (special) { await route.fulfill({ status: special.status, contentType: 'application/json', body: JSON.stringify(special.corps) }); return; }
+    const cache = { resultType: 'complete', ttlMs: 300000, cacheScope: 'private' };
+    const resultat = corps.method === 'server/discover'
+      ? { supportedVersions: ['2026-07-28', '2025-11-25'], capabilities: { tools: {} }, ...cache }
+      : { tools: [{ name: 'blog_list_posts', title: 'Lister les articles' }, { name: 'blog_create_post', title: 'Créer un brouillon' }], ...cache };
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ jsonrpc: '2.0', id: corps.id, result: resultat }) });
+  });
+  return appels;
+}
 function verifierMutations(mutations: { header: string | undefined }[]) {
   expect(mutations.length).toBeGreaterThan(0);
   for (const mutation of mutations) expect(mutation.header).toBe('1');
@@ -383,17 +402,7 @@ test('le destinataire et les outils sont modifiables et les suggestions attenden
 test('nouvel accès MCP en un geste : Rédaction sans les demandes, commande prête, vérification puis révocation', async ({ page, context }) => {
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   const etat = await apiDouble(page, { authenticated: true });
-  const appelsMcp: { methode: string; autorisation?: string; cookie?: string; origine?: string }[] = [];
-  await page.route('**/mcp', async (route) => {
-    const requete = route.request();
-    const corps = requete.postDataJSON() as { id: number; method: string };
-    const enTetes = requete.headers();
-    appelsMcp.push({ methode: corps.method, autorisation: enTetes.authorization, cookie: enTetes.cookie, origine: enTetes.origin });
-    const resultat = corps.method === 'initialize'
-      ? { protocolVersion: '2025-11-25', capabilities: { tools: {} }, serverInfo: { name: 'portfolio-backoffice', version: '1' } }
-      : { tools: [{ name: 'blog_list_posts', title: 'Lister les articles' }, { name: 'blog_create_post', title: 'Créer un brouillon' }] };
-    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ jsonrpc: '2.0', id: corps.id, result: resultat }) });
-  });
+  const appelsMcp = await mcpDouble(page);
   await page.goto('/backoffice');
   await expect(page.locator('#bo-contact-list').getByRole('button')).toHaveCount(1);
   await rubrique(page, 'Accès MCP').click();
@@ -412,7 +421,8 @@ test('nouvel accès MCP en un geste : Rédaction sans les demandes, commande pr�
   expect(etat.mutations.find(({ path }) => path === '/tokens')?.body).toEqual({ name: 'Claude Code', scopes: ['blog:read', 'blog:write'] });
 
   // Une seule zone éclairée : la commande, avec l’origine du site et le secret.
-  const commande = `claude mcp add --transport http --scope user portfolio-local ${origine}/mcp --header "Authorization: Bearer ${SECRET}"`;
+  // Deux lignes : le serveur du même nom est d’abord retiré, pour qu’un nouvel accès remplace l’ancien.
+  const commande = `claude mcp remove --scope user portfolio-local 2>/dev/null\nclaude mcp add --transport http --scope user portfolio-local ${origine}/mcp --header "Authorization: Bearer ${SECRET}"`;
   const carte = page.locator('#bo-secret');
   await expect(carte).toBeVisible();
   await expect(carte).toHaveClass(/foyer/);
@@ -420,21 +430,25 @@ test('nouvel accès MCP en un geste : Rédaction sans les demandes, commande pr�
   await expect(page.locator('#bo-token-form')).toBeHidden();
   await expect(page.getByRole('heading', { name: 'L’accès « Claude Code » est prêt' })).toBeFocused();
   await expect(page.locator('#bo-token-command')).toHaveText(commande);
+  await expect(page.locator('#bo-token-command .bo-commande__secret')).toHaveText(`${SECRET}"`);
+  await expect(page.locator('#bo-token-command .bo-commande__mot').filter({ hasText: /^--scope$/ })).toHaveCount(2);
   await expect(page.locator('#bo-secret-retour')).toHaveText('Accès créé avec la permission Rédaction.');
-  await expect(page.locator('#bo-token-remove')).toHaveText('claude mcp remove portfolio-local');
+  await expect(page.locator('#bo-secret [data-serveur-mcp]')).toHaveText('portfolio-local');
   await page.getByRole('button', { name: 'Copier la commande', exact: true }).click();
   await expect(page.locator('#bo-secret-retour')).toHaveText('Commande copiée. Collez-la dans un terminal.');
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(commande);
   await accessibilite(page);
 
-  // La vérification passe par /mcp, avec le secret et sans cookie.
+  // La vérification suit Claude Code (révision 2026-07-28), avec le secret et sans cookie.
   await page.getByRole('button', { name: 'Vérifier l’accès', exact: true }).click();
   await expect(page.locator('#bo-token-tools-list li')).toHaveText(['Lister les articles', 'Créer un brouillon']);
   await expect(page.locator('#bo-secret-retour')).toHaveText('L’accès répond : le serveur MCP accepte ce secret.');
-  expect(appelsMcp.map(({ methode }) => methode)).toEqual(['initialize', 'tools/list']);
+  expect(appelsMcp.map(({ methode }) => methode)).toEqual(['server/discover', 'tools/list']);
   for (const appel of appelsMcp) {
     expect(appel.autorisation).toBe(`Bearer ${SECRET}`);
     expect(appel.cookie).toBeUndefined();
+    expect(appel.version).toBe('2026-07-28');
+    expect(appel.enTeteMethode).toBe(appel.methode);
   }
 
   // La liste dit les permissions en mots ; la révocation rappelle de retirer le serveur.
@@ -445,7 +459,10 @@ test('nouvel accès MCP en un geste : Rédaction sans les demandes, commande pr�
   await expect(ligne).toContainText('Jamais');
   await ligne.getByRole('button', { name: 'Révoquer Claude Code', exact: true }).click();
   await expect(page.getByRole('dialog')).toContainText('ne pourra plus rien faire sur le portfolio');
-  await expect(page.getByRole('dialog')).toContainText('claude mcp remove portfolio-local');
+  // La commande de retrait, seule en code, sans point collé.
+  await expect(page.locator('#bo-confirm-code')).toHaveText('claude mcp remove --scope user portfolio-local');
+  await expect(page.locator('#bo-confirm-message')).not.toContainText('claude mcp');
+  await accessibilite(page);
   await page.getByRole('button', { name: 'Révoquer l’accès', exact: true }).click();
   await expect(page.locator('#bo-tokens-empty')).toBeVisible();
   await expect(page.locator('#bo-tokens-retour')).toHaveText('L’accès « Claude Code » est révoqué.');
@@ -504,6 +521,46 @@ test('le plafond des accès MCP s’explique à côté du formulaire', async ({ 
   await expect(page.locator('#bo-token-form-retour')).toHaveAttribute('data-state', 'error');
   await expect(page.locator('#bo-secret')).toBeHidden();
   await expect(page.locator('#bo-notice')).toBeHidden();
+});
+
+test('une vérification abandonnée par « Terminé » se tait ; un secret refusé le dit dans la carte', async ({ page }) => {
+  await apiDouble(page, { authenticated: true });
+  let refuser = false;
+  const appels = await mcpDouble(page, async () => (refuser
+    ? { status: 401, corps: { jsonrpc: '2.0', id: 1, error: { code: -32001, message: 'Jeton refusé.' } } }
+    : 'jamais'));
+  await page.goto('/backoffice?rubrique=tokens');
+  await page.getByRole('button', { name: 'Créer l’accès', exact: true }).click();
+  await page.getByRole('button', { name: 'Vérifier l’accès', exact: true }).click();
+  await expect(page.locator('#bo-secret-retour')).toHaveText('Vérification de l’accès…');
+  await expect.poll(() => appels.length).toBe(1);
+  await page.getByRole('button', { name: 'Terminé', exact: true }).click();
+  await expect(page.locator('#bo-token-form-retour')).toHaveText('L’accès « Claude Code » reste actif. Son secret n’est plus affiché.');
+  // Laisse à l’annulation le temps d’arriver : aucune fausse panne MCP.
+  await page.evaluate(() => new Promise((fin) => setTimeout(fin, 300)));
+  await expect(page.locator('#bo-notice')).toBeHidden();
+  await expect(page.locator('#bo-notice')).not.toContainText('MCP');
+
+  // Un secret refusé (accès révoqué ailleurs) : le message reste dans la carte.
+  refuser = true;
+  await page.getByRole('button', { name: 'Créer l’accès', exact: true }).click();
+  await page.getByRole('button', { name: 'Vérifier l’accès', exact: true }).click();
+  await expect(page.locator('#bo-secret-retour')).toHaveText('Le serveur MCP refuse ce secret : l’accès a sans doute été révoqué.');
+  await expect(page.locator('#bo-secret-retour')).toHaveAttribute('data-state', 'error');
+  await expect(page.locator('#bo-notice')).toBeHidden();
+});
+
+test('révoquer un accès efface « reste actif » sous le formulaire', async ({ page }) => {
+  await apiDouble(page, { authenticated: true });
+  await page.goto('/backoffice?rubrique=tokens');
+  await page.getByRole('button', { name: 'Créer l’accès', exact: true }).click();
+  await page.getByRole('button', { name: 'Terminé', exact: true }).click();
+  await expect(page.locator('#bo-token-form-retour')).toHaveText('L’accès « Claude Code » reste actif. Son secret n’est plus affiché.');
+  await page.locator('#bo-token-list tr').getByRole('button', { name: 'Révoquer Claude Code', exact: true }).click();
+  await page.getByRole('button', { name: 'Révoquer l’accès', exact: true }).click();
+  await expect(page.locator('#bo-tokens-retour')).toHaveText('L’accès « Claude Code » est révoqué.');
+  await expect(page.locator('#bo-tokens-empty')).toBeVisible();
+  await expect(page.locator('#bo-token-form-retour')).toBeEmpty();
 });
 
 for (const theme of ['jour', 'nuit'] as const) {
