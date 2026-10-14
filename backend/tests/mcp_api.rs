@@ -200,6 +200,36 @@ async fn discovers_modern_capabilities_without_a_handshake() {
     assert_eq!(data["result"]["resultType"], "complete");
     assert_eq!(data["result"]["supportedVersions"][0], "2026-07-28");
     assert!(data["result"]["_meta"]["io.modelcontextprotocol/serverInfo"]["name"].is_string());
+    assert_eq!(data["result"]["ttlMs"], 300_000);
+    assert_eq!(data["result"]["cacheScope"], "private");
+}
+
+#[tokio::test]
+async fn modern_tool_catalogs_carry_private_cache_hints_and_legacy_ones_stay_unchanged() {
+    let fixture = fixture();
+    let modern = body(
+        fixture
+            .app
+            .clone()
+            .oneshot(modern_request(&fixture.token, "tools/list", json!({})))
+            .await
+            .unwrap(),
+    )
+    .await;
+    assert_eq!(modern["result"]["resultType"], "complete");
+    assert_eq!(modern["result"]["ttlMs"], 300_000);
+    assert_eq!(modern["result"]["cacheScope"], "private");
+    let mut legacy = legacy_request(
+        Some(&fixture.token),
+        json!({ "jsonrpc": "2.0", "id": 7, "method": "tools/list" }),
+    );
+    legacy
+        .headers_mut()
+        .insert("mcp-protocol-version", "2025-11-25".parse().unwrap());
+    let legacy = body(fixture.app.oneshot(legacy).await.unwrap()).await;
+    assert!(legacy["result"]["tools"].is_array());
+    assert!(legacy["result"].get("ttlMs").is_none());
+    assert!(legacy["result"].get("cacheScope").is_none());
 }
 
 #[tokio::test]
