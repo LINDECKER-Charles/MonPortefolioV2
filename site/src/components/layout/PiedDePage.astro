@@ -60,7 +60,15 @@ const profils = [
         <h2 class="pied__titre">Le site</h2>
         <ul>
           {CV && <li><a href={CV} download data-cv-telechargement="pied-de-page">Mon CV (PDF)</a></li>}
-          {ARCHIVE_V1 && <li><a href={ARCHIVE_V1}>La première version de ce site</a></li>}
+          {
+            ARCHIVE_V1 && (
+              <li>
+                <a href={ARCHIVE_V1} rel="external" data-umami-event="lien-sortant" data-umami-event-domaine={new URL(ARCHIVE_V1).hostname} data-umami-event-emplacement="pied-de-page">
+                  La première version de ce site<span class="fleche" aria-hidden="true">&nbsp;↗</span>
+                </a>
+              </li>
+            )
+          }
           <li><a href="/mentions-legales">Mentions légales</a></li>
         </ul>
         <p class="pied__colophon">Composé en Instrument Serif et Instrument Sans.</p>

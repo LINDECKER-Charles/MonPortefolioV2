@@ -40,11 +40,12 @@ export const CONTACT = {
 export const CV: string | null = null;
 
 /**
- * Archive de la V1, sur son sous-domaine (brief § 6, encore à choisir). Tant
- * qu'elle n'existe pas, le pied de page ne la cite pas : la V1 occupe encore le
- * domaine que la V2 prendra.
+ * Archive de la V1, sur son sous-domaine (questions.md, F1 : `yharnam.`,
+ * 2026-10-14). Construite et mise en ligne par `archive-v1/`, avant la
+ * production de la V2 (docs/bascule.md) : le pied de page ne la cite qu’une
+ * fois qu’elle répond. `null` la retire du pied de page.
  */
-export const ARCHIVE_V1: string | null = null;
+export const ARCHIVE_V1: string | null = 'https://yharnam.charles-lindecker.com';
 
 /**
  * Démos en ligne. Au 2026-10-07, les deux adresses de la V1 (test.omnicard.fr,

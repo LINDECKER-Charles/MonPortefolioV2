@@ -34,8 +34,9 @@ describe('coordonnées', () => {
   });
 
   it('aucun lien vers ce qui n’existe pas encore', () => {
-    // Le CV aligné sur le récit et l'archive de la V1 restent à produire :
-    // tant qu'ils valent null, aucun bouton ni lien ne s'affiche.
+    // Le CV aligné sur le récit reste à produire : tant qu'il vaut null, aucun
+    // bouton ne s'affiche. L'archive de la V1 est une adresse absolue, sur son
+    // propre sous-domaine (docs/bascule.md).
     expect(CV === null || CV.startsWith('/')).toBe(true);
     expect(ARCHIVE_V1 === null || ARCHIVE_V1.startsWith('https://')).toBe(true);
   });
