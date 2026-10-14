@@ -33,7 +33,7 @@ export const PREREGLAGES: Readonly<Record<Prereglage, DefinitionPrereglage>> = {
   },
   publication: {
     titre: 'Publication',
-    description: 'La rédaction, plus publier, programmer, retirer ou supprimer un article.',
+    description: 'La rédaction, plus publier, programmer, retirer ou supprimer un article ou une image.',
     permissions: ['blog:read', 'blog:write', 'blog:publish'],
   },
 };
