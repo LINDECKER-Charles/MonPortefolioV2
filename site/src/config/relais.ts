@@ -21,7 +21,7 @@ import type { EntreeSommaire } from './navigation';
 import type { CarteVitrine } from './vitrine';
 import type { Decision, DonneesFiche, LienProjet, PreuveEnTete, SchemaProjet } from '../components/projets/gabarit/types';
 import { typo } from '../lib/typo';
-import cartePerimetre from '../assets/projets/relais/carte-perimetre.webp';
+import carteDashboard from '../assets/projets/relais/carte-dashboard.webp';
 import angular from '../assets/stacks/angular.svg';
 import rust from '../assets/stacks/rust.svg';
 import sqlite from '../assets/stacks/sqlite.svg';
@@ -52,13 +52,16 @@ export const CARTE: CarteVitrine = {
     { src: angular, alt: 'Angular' },
     { src: sqlite, alt: 'SQLite' },
   ],
-  // Recadrage du panneau de pilotage de la capture de la conversation
-  // (REL-C1, carte-perimetre.webp) : lisible à la taille de la carte.
+  // Recadrage du Dashboard de l’en-tête (REL-C1, carte-dashboard.webp) sur
+  // ses deux premiers compteurs et la consommation locale : lisible à la taille
+  // de la carte, sans chemin de démonstration, dans le cadre navigateur de ses
+  // voisines de la famille « IA ».
   visuel: {
     capture: {
-      type: 'terminal',
-      src: cartePerimetre,
-      alt: typo('Le périmètre d’une session dans Relais : aucun terminal, lecture seule dans les spécifications, écriture dans le seul projet confié.'),
+      type: 'navigateur',
+      src: carteDashboard,
+      alt: typo('Le Dashboard de Relais : les agents actifs, les tokens traités et la consommation locale jour par jour, sur des données de démonstration.'),
+      widths: [480, 960],
     },
   },
 };

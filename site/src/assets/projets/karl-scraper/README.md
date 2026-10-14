@@ -18,7 +18,8 @@ retouche ni texte remplacé. Le dépôt de Karl Scraper est privé (décision de
 - **Navigateur** : Chromium (Playwright), densité 2, locale `fr-FR`, fuseau `Europe/Paris`.
   Thème clair ; la Galaxie est une scène toujours sombre, imposée par l’application.
 - **Conversion** : PNG converti en WebP qualité 90 avec Sharp, sans recadrage ; la Galaxie est
-  ramenée de 3 200 à 2 400 px de large, assez pour la visionneuse.
+  ramenée de 3 200 à 2 400 px de large, assez pour la visionneuse. Seule exception au « sans
+  recadrage » : la vignette de la vitrine (voir le tableau).
 
 ## Les fichiers
 
@@ -26,7 +27,8 @@ retouche ni texte remplacé. Le dépôt de Karl Scraper est privé (décision de
 |---|---|---|---|---|
 | `enchainements.webp` | Réglages, onglet Enchaînements | L’interrupteur général allumé, les plafonds (lancements d’agent par jour, créneaux laissés libres, abandon) et deux règles fictives : retenir une lecture proposée, puis la confier à Relais. Cadre arrêté sous la règle 2. | 2728 × 1278 | En-tête de `/projets/karl-scraper`, recadré sur sa colonne (marges vides hors cadre) |
 | `tableau-de-bord.webp` | Tableau de bord | Les panneaux Par projet, Par statut et l’écart avec l’observation précédente (cinq statuts changés, une tâche nouvelle). | 2392 × 562 | § Une copie locale ; sur mobile, le seul panneau de l’écart |
-| `galaxie.webp` | Galaxie | Les seize tâches sur les anneaux de leur statut, deux en retard, le goulot à « À faire », la frise des trois observations. Fenêtre entière, sans barre latérale. | 2400 × 1350 | § La Galaxie ; carte de la vitrine `/projets` |
+| `galaxie.webp` | Galaxie | Les seize tâches sur les anneaux de leur statut, deux en retard, le goulot à « À faire », la frise des trois observations. Fenêtre entière, sans barre latérale. | 2400 × 1350 | § La Galaxie |
+| `carte-galaxie.webp` | Galaxie, recadrée | Recadrage de `galaxie` sur la moitié gauche des anneaux (zone de 783 × 627 à partir de 550, 250) : les tâches reliées et les libellés « À valider » et « En relecture », sans en trancher aucun. WebP qualité 90. | 783 × 627 | Carte de la vitrine `/projets` |
 | `vue-agent.webp` | Tâches, détail, onglet « Vue agent » | La donnée exacte que l’outil MCP `get_task` sert à un agent pour la tâche fictive n° 1204, figée sur une observation scellée, en entier. Prise à 900 px de large, où l’application empile le détail sur toute la largeur. | 1696 × 1668 | § Ce que l’agent lit |
 
 ## Ce qui reste hors champ
@@ -34,7 +36,7 @@ retouche ni texte remplacé. Le dépôt de Karl Scraper est privé (décision de
 - **Aucun libellé qui nomme l’outil source.** Les écrans dont un libellé codé en dur le nomme
   (liste des tâches avec son détail, règle qui pose le statut, bandeau et cartes chiffrées du
   tableau de bord) ne sont pas publiés ; les cadrages retenus s’arrêtent avant eux. Le préfixe des
-  références de tâche n’apparaît sur aucun des quatre fichiers.
+  références de tâche n’apparaît sur aucun des fichiers.
 - **Barre latérale et barre du haut** : elles portent en dur l’adresse de l’outil source réel et
   le nom technique de l’application ; les écrans sont cadrés sur le seul panneau de contenu.
 - **Lien profond** : le service de démonstration calcule un lien neutre

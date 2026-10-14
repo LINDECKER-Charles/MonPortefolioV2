@@ -21,7 +21,7 @@
 import type { EntreeSommaire } from './navigation';
 import type { CarteVitrine } from './vitrine';
 import type { Decision, DonneesFiche, LienProjet, PreuveEnTete, SchemaProjet } from '../components/projets/gabarit/types';
-import galaxie from '../assets/projets/karl-scraper/galaxie.webp';
+import carteGalaxie from '../assets/projets/karl-scraper/carte-galaxie.webp';
 import angular from '../assets/stacks/angular.svg';
 import dotnet from '../assets/stacks/dotnet.svg';
 import sqlite from '../assets/stacks/sqlite.svg';
@@ -45,14 +45,15 @@ export const CARTE: CarteVitrine = {
     { src: angular, alt: 'Angular' },
     { src: sqlite, alt: 'SQLite' },
   ],
-  // La Galaxie se lit à la taille d’une carte : une scène, pas un texte (KSC-C1).
-  // Entière, à son ratio natif (16:9) : un recadrage trancherait ses libellés.
+  // La Galaxie, recadrée sur ses anneaux (KSC-C1, carte-galaxie.webp) : entière,
+  // ses tâches ne faisaient que 2 ou 3 px à la taille d’une carte. Le recadrage
+  // garde les tâches reliées et deux libellés de statut, sans en trancher aucun.
   visuel: {
     capture: {
       type: 'navigateur',
-      src: galaxie,
-      alt: 'La Galaxie de Karl Scraper : des tâches fictives sur les anneaux de leur statut, les retards en rouge.',
-      widths: [480, 800, 1200],
+      src: carteGalaxie,
+      alt: 'La Galaxie de Karl Scraper : des tâches fictives sur les anneaux de leur statut, reliées entre elles.',
+      widths: [400, 783],
     },
   },
 };

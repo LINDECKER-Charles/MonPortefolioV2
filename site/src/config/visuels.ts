@@ -2755,6 +2755,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
       { nom: 'tableau-de-bord', fichier: 'src/assets/projets/karl-scraper/tableau-de-bord.webp', alt: '' },
       { nom: 'galaxie', fichier: 'src/assets/projets/karl-scraper/galaxie.webp', alt: '' },
       { nom: 'vue-agent', fichier: 'src/assets/projets/karl-scraper/vue-agent.webp', alt: '' },
+      { nom: 'carte-galaxie', fichier: 'src/assets/projets/karl-scraper/carte-galaxie.webp', alt: '' },
     ],
     note: 'Captures provisoires, à refaire après la refonte graphique de l’interface ; provenance dans src/assets/projets/karl-scraper/README.md, alts et légendes dans config/karl-scraper.ts. Aucun libellé qui nomme l’outil source à l’écran.',
   },
@@ -2828,9 +2829,9 @@ export const VISUELS: readonly EntreeVisuel[] = [
       { nom: 'capacite', fichier: 'src/assets/projets/relais/capacite.webp', alt: '' },
       { nom: 'garde-fous', fichier: 'src/assets/projets/relais/garde-fous.webp', alt: '' },
       { nom: 'analyse', fichier: 'src/assets/projets/relais/analyse.webp', alt: '' },
-      { nom: 'carte-perimetre', fichier: 'src/assets/projets/relais/carte-perimetre.webp', alt: '' },
+      { nom: 'carte-dashboard', fichier: 'src/assets/projets/relais/carte-dashboard.webp', alt: '' },
     ],
-    note: 'Livrés le 14/10/2026, provenance dans src/assets/projets/relais/README.md ; leurs alts sont dans config/relais.ts. La vignette carte-perimetre est posée sur la carte de la vitrine par config/relais.ts (CARTE.visuel) ; les autres par la page.',
+    note: 'Livrés le 14/10/2026, provenance dans src/assets/projets/relais/README.md ; leurs alts sont dans config/relais.ts. La vignette carte-dashboard, recadrage du Dashboard, est posée sur la carte de la vitrine par config/relais.ts (CARTE.visuel), dans un cadre navigateur ; les autres par la page.',
   },
 
   // ↑ fin des entrées REL

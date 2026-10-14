@@ -183,15 +183,17 @@ test('la carte de la vitrine : son chiffre, aucun lien sortant, et une vue lisib
   await expect(carte.locator('a[href^="http"]')).toHaveCount(0);
   await expect(carte.getByRole('link', { name: 'Relais', exact: true })).toHaveAttribute('href', CHEMIN);
   await expect(carte.locator('.carte-projet__voir')).toHaveText(/Voir le projet/);
+  // Le cadre navigateur de ses voisines de la famille « IA », pas un terminal.
+  await expect(carte.locator('.carte-projet__visuel .capture--navigateur')).toHaveCount(1);
   const image = carte.locator('.carte-projet__visuel img');
-  await expect(image).toHaveAttribute('alt', /périmètre d’une session/);
+  await expect(image).toHaveAttribute('alt', /Dashboard de Relais/);
   await image.scrollIntoViewIfNeeded();
   await expect(image).toHaveJSProperty('complete', true);
-  // Le recadrage couvre 305 px de l’interface (fichier de 610 px, densité 2) : montré entre 0,9 et
-  // 2 fois cette largeur, le texte de l’écran reste lisible sans être agrandi au-delà du fichier.
+  // Le recadrage couvre 585 px de l’interface (deux compteurs et la consommation locale) : montré
+  // sur 260 px au moins, ses chiffres restent lisibles, sans agrandir le fichier de 960 px.
   const rendu = await image.boundingBox();
-  expect(rendu!.width).toBeGreaterThanOrEqual(0.9 * 305);
-  expect(rendu!.width).toBeLessThanOrEqual(610);
+  expect(rendu!.width).toBeGreaterThanOrEqual(260);
+  expect(rendu!.width).toBeLessThanOrEqual(960);
 });
 
 for (const theme of ['jour', 'nuit'] as const) {

@@ -35,7 +35,7 @@ Méthode, sans rien modifier dans le dépôt de Relais :
 | `capacite.webp` | Vue d’ensemble « Capacité des abonnements » : trois abonnements sous leur seuil de protection | 2880 × 1800 | Section « La capacité », « Voir » |
 | `garde-fous.webp` | Abonnements › Personnel › Garde-fous : nouvelles sessions refusées dès 95 %, session ouverte jamais coupée | 2880 × 1800 | Section « La capacité », « Admettre » |
 | `analyse.webp` | Analyse › Performance et Cache : médiane et P95 des tours, débit, cache | 2880 × 1800 | Section « L’analyse » |
-| `carte-perimetre.webp` | Recadrage du panneau Pilotage de `conversation-perimetre` (de « Projet » à « Périmètre strict · écriture »), WebP qualité 92 | 610 × 490 | Carte de la vitrine (`/projets`) |
+| `carte-dashboard.webp` | Recadrage de `dashboard` sur les deux premiers compteurs et la consommation locale (zone de 1 170 × 1 170 à partir de 530, 440), ramené à 960 px, WebP qualité 90 | 960 × 960 | Carte de la vitrine (`/projets`) |
 
 Les chiffres visibles (tokens, coûts, durées, quotas, nombre d’agents) sont calculés par Relais
 sur ces données de démonstration : ils ne décrivent aucun usage réel. Les incohérences de format
