@@ -370,7 +370,20 @@ async fn handle(
             }
             rpc_result(id, json!({ "tools": tools(&scopes) }), modern)
         }
-        "tools/call" => call_tool(&state, &scopes, params, id, modern),
+        "tools/call" => {
+            // SQLite et le traitement des images importées bloquent : hors des fils d’Axum.
+            let (params, id) = (params.clone(), id.cloned());
+            tokio::task::spawn_blocking(move || {
+                call_tool(&state, &scopes, &params, id.as_ref(), modern)
+            })
+            .await
+            .unwrap_or_else(|_| {
+                http_error(
+                    StatusCode::SERVICE_UNAVAILABLE,
+                    "Le service est temporairement indisponible.",
+                )
+            })
+        }
         _ => rpc_error(
             if modern {
                 StatusCode::NOT_FOUND

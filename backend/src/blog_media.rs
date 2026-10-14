@@ -8,7 +8,14 @@
 //! fausse, fichier tronqué) mais que les navigateurs affichent reste admise,
 //! comme avant la mesure : ses dimensions viennent alors de son en-tête, sans
 //! variante.
-use std::io::Cursor;
+//!
+//! Le coût est borné : 40 millions de pixels au plus, lus dans l’en-tête avant
+//! tout décodage, 160 Mio d’allocation pour le décodeur, et une seule image
+//! traitée à la fois, quelle que soit la voie (backoffice, MCP, démarrage).
+use std::{
+    io::Cursor,
+    sync::{Mutex, PoisonError},
+};
 
 use image::{
     DynamicImage, ExtendedColorType, GenericImageView, ImageDecoder, ImageEncoder, ImageFormat,
@@ -22,8 +29,14 @@ use image::{
 pub const VARIANT_WIDTHS: [u32; 3] = [480, 960, 1600];
 /// Même plafond que les attributs `width`/`height` du document.
 const MAX_DIMENSION: u32 = 10_000;
-const MAX_ALLOC: u64 = 512 * 1024 * 1024;
+/// 40 Mpx : 160 Mo une fois décodés en RGBA, sous la limite d’allocation du décodeur.
+const MAX_PIXELS: u64 = 40_000_000;
+const MAX_ALLOC: u64 = 160 * 1024 * 1024;
 const JPEG_QUALITY: u8 = 80;
+
+/// Un seul traitement à la fois : quelques imports simultanés suffiraient sinon
+/// à épuiser la mémoire du service, et le formulaire de contact avec lui.
+static TURN: Mutex<()> = Mutex::new(());
 
 pub struct Variant {
     pub width: u32,
@@ -37,18 +50,31 @@ pub struct Processed {
     pub variants: Vec<Variant>,
 }
 
-/// `None` si même l’en-tête ne se lit pas : aucun navigateur ne l’afficherait, l’import la refuse.
-pub fn process(bytes: &[u8], content_type: &str) -> Option<Processed> {
+#[derive(Debug, PartialEq, Eq)]
+pub enum Rejected {
+    /// Même l’en-tête ne se lit pas : aucun navigateur ne l’afficherait.
+    Unreadable,
+    /// Plus de 40 millions de pixels : la réduire avant de l’importer.
+    TooLarge,
+}
+
+pub fn process(bytes: &[u8], content_type: &str) -> Result<Processed, Rejected> {
+    let _turn = TURN.lock().unwrap_or_else(PoisonError::into_inner);
     let format = match content_type {
         "image/png" => ImageFormat::Png,
         "image/jpeg" => ImageFormat::Jpeg,
         "image/gif" => ImageFormat::Gif,
         "image/webp" => ImageFormat::WebP,
-        _ => return None,
+        _ => return Err(Rejected::Unreadable),
     };
+    let (width, height) = reader(bytes, format, None)
+        .into_dimensions()
+        .map_err(|_| Rejected::Unreadable)?;
+    if u64::from(width) * u64::from(height) > MAX_PIXELS {
+        return Err(Rejected::TooLarge);
+    }
     let Some(image) = decode(bytes, format) else {
-        let (width, height) = reader(bytes, format).into_dimensions().ok()?;
-        return Some(Processed {
+        return Ok(Processed {
             width,
             height,
             variants: Vec::new(),
@@ -60,26 +86,27 @@ pub fn process(bytes: &[u8], content_type: &str) -> Option<Processed> {
     } else {
         variants(&image, bytes.len())
     };
-    Some(Processed {
+    Ok(Processed {
         width,
         height,
         variants,
     })
 }
 
-fn reader(bytes: &[u8], format: ImageFormat) -> ImageReader<Cursor<&[u8]>> {
+/// `max_alloc` : aucune limite pour lire l’en-tête seul, `MAX_ALLOC` pour décoder.
+fn reader(bytes: &[u8], format: ImageFormat, max_alloc: Option<u64>) -> ImageReader<Cursor<&[u8]>> {
     let mut reader = ImageReader::with_format(Cursor::new(bytes), format);
     let mut limits = Limits::default();
     limits.max_image_width = Some(MAX_DIMENSION);
     limits.max_image_height = Some(MAX_DIMENSION);
-    limits.max_alloc = Some(MAX_ALLOC);
+    limits.max_alloc = max_alloc;
     reader.limits(limits);
     reader
 }
 
 /// L’image entière, tournée selon son orientation EXIF, dans les limites de taille.
 fn decode(bytes: &[u8], format: ImageFormat) -> Option<DynamicImage> {
-    let mut decoder = reader(bytes, format).into_decoder().ok()?;
+    let mut decoder = reader(bytes, format, Some(MAX_ALLOC)).into_decoder().ok()?;
     let orientation = decoder.orientation().ok()?;
     let mut image = DynamicImage::from_decoder(decoder).ok()?;
     image.apply_orientation(orientation);
@@ -112,8 +139,15 @@ fn animated(bytes: &[u8], format: ImageFormat) -> bool {
     }
 }
 
-fn variants(image: &DynamicImage, original: usize) -> Vec<Variant> {
+fn resized(image: &DynamicImage, target: u32) -> DynamicImage {
     let (width, height) = image.dimensions();
+    let target_height =
+        ((u64::from(height) * u64::from(target) + u64::from(width) / 2) / u64::from(width)).max(1);
+    image.resize_exact(target, target_height as u32, FilterType::Triangle)
+}
+
+fn variants(image: &DynamicImage, original: usize) -> Vec<Variant> {
+    let width = image.width();
     let transparent = has_transparency(image);
     let largest = VARIANT_WIDTHS[VARIANT_WIDTHS.len() - 1];
     let mut targets: Vec<u32> = VARIANT_WIDTHS
@@ -127,15 +161,12 @@ fn variants(image: &DynamicImage, original: usize) -> Vec<Variant> {
     targets
         .into_iter()
         .filter_map(|target| {
-            let resized;
+            let reduced;
             let source = if target == width {
                 image
             } else {
-                let target_height = ((u64::from(height) * u64::from(target) + u64::from(width) / 2)
-                    / u64::from(width))
-                .max(1) as u32;
-                resized = image.resize_exact(target, target_height, FilterType::Triangle);
-                &resized
+                reduced = resized(image, target);
+                &reduced
             };
             let (content_type, bytes) = encode(source, transparent)?;
             // À sa taille, la variante doit gagner au moins 10 % ; réduite, peser moins.
@@ -188,5 +219,24 @@ fn encode(image: &DynamicImage, transparent: bool) -> Option<(&'static str, Vec<
             )
             .ok()?;
         Some(("image/jpeg", bytes))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn an_image_over_forty_megapixels_is_refused_before_decoding() {
+        // En-tête PNG de 8 000 × 6 000 px (48 Mpx), avec des données vides.
+        let mut bytes = Vec::new();
+        {
+            let mut encoder = png::Encoder::new(&mut bytes, 8000, 6000);
+            encoder.set_color(png::ColorType::Rgba);
+            encoder.set_depth(png::BitDepth::Eight);
+            let mut writer = encoder.write_header().unwrap();
+            writer.write_chunk(png::chunk::IDAT, &[]).unwrap();
+        }
+        assert_eq!(process(&bytes, "image/png").err(), Some(Rejected::TooLarge));
     }
 }

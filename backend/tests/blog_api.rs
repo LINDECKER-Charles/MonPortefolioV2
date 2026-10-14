@@ -561,6 +561,24 @@ async fn imported_images_are_measured_and_get_lighter_variants_once_published() 
     assert_eq!((gif.width, gif.height), (Some(600), Some(300)));
     assert!(gif.variants.is_empty());
 
+    // Plus de 40 millions de pixels : refusée avant tout décodage, avec sa raison.
+    let mut huge = Vec::new();
+    {
+        let mut encoder = png::Encoder::new(&mut huge, 8000, 6000);
+        encoder.set_color(png::ColorType::Rgba);
+        encoder.set_depth(png::BitDepth::Eight);
+        let mut writer = encoder.write_header().unwrap();
+        writer.write_chunk(png::chunk::IDAT, &[]).unwrap();
+    }
+    assert!(matches!(
+        store.create_blog_media(MediaUpload {
+            filename: "immense.png".into(),
+            content_type: "image/png".into(),
+            data_base64: STANDARD.encode(huge),
+        }),
+        Err(BlogError::ImageTooLarge)
+    ));
+
     // Une signature valide sans en-tête lisible est refusée ; tronquée après son
     // en-tête, l’image reste admise, mesurée par lui et sans variante.
     let mut truncated = original.clone();

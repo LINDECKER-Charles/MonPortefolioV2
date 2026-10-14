@@ -36,6 +36,7 @@ pub enum BlogError {
     RevisionConflict,
     SlugConflict,
     MediaInUse,
+    ImageTooLarge,
     Storage,
 }
 impl BlogError {
@@ -46,6 +47,7 @@ impl BlogError {
             Self::RevisionConflict => "REVISION_CONFLICT",
             Self::SlugConflict => "SLUG_CONFLICT",
             Self::MediaInUse => "MEDIA_IN_USE",
+            Self::ImageTooLarge => "IMAGE_TOO_LARGE",
             Self::Storage => "STORAGE_UNAVAILABLE",
         }
     }
@@ -59,6 +61,9 @@ impl BlogError {
             Self::SlugConflict => "Cette adresse est déjà utilisée par un article.",
             Self::MediaInUse => {
                 "Cette image est utilisée par un article. Retirez-la de ses versions avant de la supprimer."
+            }
+            Self::ImageTooLarge => {
+                "Cette image dépasse 40 millions de pixels. Réduisez-la avant de l’importer."
             }
             Self::Storage => "Le service est temporairement indisponible.",
         }
@@ -77,7 +82,7 @@ impl From<rusqlite::Error> for BlogError {
 impl From<BlogError> for ApiError {
     fn from(error: BlogError) -> Self {
         let status = match error {
-            BlogError::Invalid => StatusCode::UNPROCESSABLE_ENTITY,
+            BlogError::Invalid | BlogError::ImageTooLarge => StatusCode::UNPROCESSABLE_ENTITY,
             BlogError::NotFound => StatusCode::NOT_FOUND,
             BlogError::RevisionConflict | BlogError::SlugConflict | BlogError::MediaInUse => {
                 StatusCode::CONFLICT
@@ -196,19 +201,22 @@ pub(crate) fn initialize(connection: &Connection) -> Result<(), StoreError> {
             )?;
         }
     }
-    // Les images importées avant la mesure reçoivent dimensions et variantes une fois ;
-    // une image illisible est marquée 0 × 0 pour ne pas être relue à chaque démarrage.
+    // Les images importées avant la mesure reçoivent dimensions et variantes une
+    // fois. Chacune est d’abord marquée 0 × 0 : une image illisible, ou qui
+    // ferait tomber le service, n’est jamais relue à chaque démarrage.
     let pending: Vec<(i64, String)> = connection
         .prepare("SELECT id,content_type FROM blog_media WHERE width IS NULL ORDER BY id")?
         .query_map([], |row| Ok((row.get(0)?, row.get(1)?)))?
         .collect::<Result<Vec<_>, _>>()?;
     for (id, content_type) in pending {
+        connection.execute("UPDATE blog_media SET width=0,height=0 WHERE id=?1", [id])?;
         let bytes: Vec<u8> =
             connection.query_row("SELECT data FROM blog_media WHERE id=?1", [id], |r| {
                 r.get(0)
             })?;
-        let processed = crate::blog_media::process(&bytes, &content_type);
-        store_processed(connection, id, processed.as_ref())?;
+        if let Ok(processed) = crate::blog_media::process(&bytes, &content_type) {
+            store_processed(connection, id, &processed)?;
+        }
     }
     Ok(())
 }
@@ -216,14 +224,13 @@ pub(crate) fn initialize(connection: &Connection) -> Result<(), StoreError> {
 fn store_processed(
     connection: &Connection,
     id: i64,
-    processed: Option<&crate::blog_media::Processed>,
+    processed: &crate::blog_media::Processed,
 ) -> rusqlite::Result<()> {
-    let (width, height) = processed.map_or((0, 0), |p| (p.width, p.height));
     connection.execute(
         "UPDATE blog_media SET width=?2,height=?3 WHERE id=?1",
-        params![id, width, height],
+        params![id, processed.width, processed.height],
     )?;
-    for variant in processed.map_or(&[][..], |p| &p.variants) {
+    for variant in &processed.variants {
         connection.execute(
             "INSERT OR REPLACE INTO blog_media_variants(media_id,width,content_type,data) VALUES(?1,?2,?3,?4)",
             params![id, variant.width, variant.content_type, variant.bytes],
@@ -881,8 +888,12 @@ impl Store {
             return Err(BlogError::Invalid);
         }
         // Décodage et réductions avant de prendre la base : seule l’écriture la bloque.
-        let processed =
-            crate::blog_media::process(&bytes, &upload.content_type).ok_or(BlogError::Invalid)?;
+        let processed = crate::blog_media::process(&bytes, &upload.content_type).map_err(
+            |refus| match refus {
+                crate::blog_media::Rejected::TooLarge => BlogError::ImageTooLarge,
+                crate::blog_media::Rejected::Unreadable => BlogError::Invalid,
+            },
+        )?;
         let mut connection = self.connection()?;
         let tx = connection.transaction()?;
         tx.execute(
@@ -890,7 +901,7 @@ impl Store {
             params![upload.filename, upload.content_type, bytes],
         )?;
         let id = tx.last_insert_rowid();
-        store_processed(&tx, id, Some(&processed))?;
+        store_processed(&tx, id, &processed)?;
         let record = media_record(&tx, id)?;
         tx.commit()?;
         Ok(record)
