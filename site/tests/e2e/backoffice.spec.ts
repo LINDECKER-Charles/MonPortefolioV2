@@ -654,8 +654,10 @@ test('Stockage : le disque, la base, les images et les articles, du plus lourd a
   await expect(citee).toContainText(`2000${NNBSP}×${NNBSP}1250${NBSP}px`);
   await expect(citee.locator('.bo-fiche__poids')).toHaveText(`2,1${NBSP}Mo`);
   await expect(citee).toContainText(`original 1,1${NBSP}Mo et 3${NBSP}variantes 1${NBSP}Mo`);
-  // La vignette : la plus petite variante, privée, chargée à la demande, à taille fixe.
-  const vignette = citee.getByRole('img', { name: 'capture-atelier.jpg' });
+  // La vignette : la plus petite variante, privée, chargée à la demande, à taille fixe,
+  // décorative (alt vide) puisque le nom est écrit à côté.
+  const vignette = citee.locator('img.bo-fiche__vignette');
+  await expect(vignette).toHaveAttribute('alt', '');
   await expect(vignette).toHaveAttribute('src', '/api/backoffice/blog/media/1/480');
   await expect(vignette).toHaveAttribute('loading', 'lazy');
   await expect(vignette).toHaveAttribute('width', '96');
@@ -665,7 +667,7 @@ test('Stockage : le disque, la base, les images et les articles, du plus lourd a
   await expect(citee.getByRole('button')).toHaveCount(0);
   const inutilisee = fiches.nth(1);
   await expect(inutilisee).toContainText('Inutilisée');
-  await expect(inutilisee.getByRole('img', { name: 'schema.png' })).toHaveAttribute('src', '/api/backoffice/blog/media/2');
+  await expect(inutilisee.locator('img.bo-fiche__vignette')).toHaveAttribute('src', '/api/backoffice/blog/media/2');
   // Les articles et les demandes.
   await expect(panneau.locator('#bo-storage-posts > li')).toHaveCount(1);
   await expect(panneau.locator('#bo-storage-posts').getByRole('link', { name: 'Préparer une mise en ligne' })).toBeVisible();

@@ -143,7 +143,8 @@ export function brancherStockage(contexte: ContexteStockage): RubriqueStockage {
     const plusPetite = [...image.variants.widths].filter((largeur) => Number.isInteger(largeur) && largeur > 0).sort((a, b) => a - b)[0];
     const img = creer('img', 'bo-fiche__vignette');
     img.src = `/api/backoffice/blog/media/${encodeURIComponent(String(image.id))}${plusPetite ? `/${plusPetite}` : ''}`;
-    img.alt = image.filename;
+    // Décorative : le nom est écrit juste à côté, comme dans la bibliothèque de l’atelier.
+    img.alt = '';
     img.width = VIGNETTE.largeur;
     img.height = VIGNETTE.hauteur;
     img.loading = 'lazy';
