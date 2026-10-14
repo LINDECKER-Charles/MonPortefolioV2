@@ -18,6 +18,12 @@ COPY --from=build /app/target/release/portfolio-backend /usr/local/bin/portfolio
 RUN mkdir /data && chown portfolio:portfolio /data
 USER portfolio
 ENV BACKEND_ADDR=0.0.0.0:8080 DATABASE_PATH=/data/portfolio.sqlite3
+# Allocateur de la glibc : sans ces reglages, chaque fil garde ce qu'il a libere,
+# et des imports d'images enchaines montaient jusqu'a la limite de 320 Mio du
+# conteneur (313 Mio de memoire anonyme, service tue). Deux zones d'allocation
+# au plus, et tout bloc d'au moins 1 Mio rendu au noyau des qu'il est libere :
+# 175 Mio au pire sous la meme charge (backend/README.md, imports d'images).
+ENV MALLOC_ARENA_MAX=2 MALLOC_MMAP_THRESHOLD_=1048576
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl --fail --silent http://127.0.0.1:8080/api/health >/dev/null || exit 1
