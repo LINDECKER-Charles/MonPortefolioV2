@@ -68,7 +68,7 @@ impl BlogError {
                 "Cette image dépasse 25 millions de pixels. Réduisez-la avant de l’importer."
             }
             Self::ImageTooHeavy => {
-                "Cette image est trop lourde à réduire. Exportez-la en JPEG ou en PNG 8 bits, ou réduisez-la (3\u{202f}000\u{a0}px de large suffisent)."
+                "Cette image est trop lourde à réduire. Exportez-la en JPEG ou en PNG 8 bits, ou réduisez-la (3\u{202f}000\u{a0}px sur le plus grand côté suffisent)."
             }
             Self::Storage => "Le service est temporairement indisponible.",
         }

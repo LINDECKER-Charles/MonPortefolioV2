@@ -1146,6 +1146,22 @@ mod tests {
     }
 
     #[test]
+    fn the_advice_of_the_refusal_holds_on_the_longest_side() {
+        // « 3 000 px sur le plus grand côté suffisent » (`BlogError::ImageTooHeavy`) :
+        // 9 Mpx au plus passent dans tous les formats, WebP animé compris
+        // (16 octets par pixel, le plus cher).
+        const { assert!(3000 * 3000 * 16 <= MAX_DECODING) };
+        let square = png_header(3000, 3000, png::BitDepth::Sixteen);
+        assert!(cost(&square, ImageFormat::Png) <= MAX_DECODING);
+        // 3 000 px de large ne suffiraient pas : un portrait reste trop lourd.
+        let portrait = png_header(3000, 4500, png::BitDepth::Sixteen);
+        assert_eq!(
+            process(&portrait, "image/png").err(),
+            Some(Rejected::TooHeavy)
+        );
+    }
+
+    #[test]
     fn an_image_too_heavy_to_reduce_is_refused_at_import_but_kept_when_stored() {
         // PNG RGBA de 16 bits de 12,5 Mpx et plus : son décodage dépasse MAX_DECODING.
         let heavy = png_header(3540, 3540, png::BitDepth::Sixteen);
