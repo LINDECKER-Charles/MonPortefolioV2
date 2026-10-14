@@ -288,8 +288,13 @@ test('les liens sortants sont publics, marqués « ↗ » et mesurés ; aucun po
     // L’invitation open source garde l’emplacement de l’objectif O3.
     expect(lien.emplacement, lien.href).toBe(lien.contribuer ? 'discutons' : 'preuves');
   }
-  // Un projet privé n’a aucun lien sortant sur sa carte.
-  for (const projet of VITRINE.filter((p) => p.prive)) await expect(carte(page, projet.id).locator('a[href^="http"]'), projet.id).toHaveCount(0);
+  // Un projet privé n’a aucun lien sortant sur sa carte : sans lien public, elle dit pourquoi.
+  for (const projet of VITRINE.filter((p) => p.prive)) {
+    await expect(carte(page, projet.id).locator('a[href^="http"]'), projet.id).toHaveCount(0);
+    await expect(carte(page, projet.id).locator('.carte-projet__prive'), projet.id).toHaveText('Dépôt privé');
+  }
+  // Une carte qui porte des liens publics n’a pas la mention.
+  for (const projet of VITRINE.filter((p) => !p.prive)) await expect(carte(page, projet.id).locator('.carte-projet__prive'), projet.id).toHaveCount(0);
 });
 
 test('« Contribuer » : deux guides de contribution et tous les dépôts publics', async ({ page }) => {
