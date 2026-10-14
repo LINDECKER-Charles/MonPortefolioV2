@@ -158,7 +158,7 @@ Les routes suivantes nécessitent une session valide, à l’exception de `login
 | `/blog/posts/{id}/preview`, `/blog/posts/{id}/seo` | GET | lire le brouillon ou son audit SEO |
 | `/blog/posts/{id}/publish`, `/blog/posts/{id}/unpublish` | POST | publier ou retirer avec `{"revision":…}` |
 | `/blog/posts/{id}/schedule` | POST | programmer avec `{"revision":…, "scheduled_at":…}` |
-| `/blog/media`, `/blog/media/{id}`, `/blog/media/{id}/{largeur}` | GET/POST, GET, GET | lister/importer les images, lire leurs octets ou ceux d’une variante avec la session |
+| `/blog/media`, `/blog/media/{id}`, `/blog/media/{id}/{largeur}` | GET/POST, GET/DELETE, GET | lister/importer les images, lire leurs octets ou ceux d’une variante avec la session ; supprimer une image qu’aucune version d’article ne cite (sinon `409 MEDIA_IN_USE`) |
 
 Toutes les mutations, y compris la connexion, exigent `X-Backoffice-Request: 1`. Les requêtes
 POST, PUT et PATCH utilisent `Content-Type: application/json`, même sans corps ; DELETE peut
@@ -269,7 +269,7 @@ les réglages ou les autres jetons.
 |---|---|
 | `contacts:read` | demandes de contact et liens ; contient des coordonnées et des messages privés |
 | `blog:read` | articles, brouillons, aperçus, audit SEO et liste des images |
-| `blog:write` | créer/modifier les brouillons et importer des images ; exige `blog:read` |
+| `blog:write` | créer/modifier les brouillons, importer et supprimer des images ; exige `blog:read` |
 | `blog:publish` | publier, programmer, retirer et supprimer les articles ; exige `blog:write` |
 
 Les jetons existants et les créations sans `scopes` gardent uniquement `contacts:read` et
@@ -302,7 +302,8 @@ les limites du document et de l’image restent contrôlées séparément.
 | `blog_list_media` | `blog:read` | lister les images avec `limit` et `offset` |
 | `blog_create_post` | `blog:write` | créer un brouillon avec contenu et métadonnées |
 | `blog_update_post` | `blog:write` | remplacer les champs éditables avec `id` et `revision` |
-| `blog_upload_media` | `blog:write` | importer une image en base64 |
+| `blog_upload_media` | `blog:write` | importer une image en base64 ; le résultat donne ses dimensions et ses variantes |
+| `blog_delete_media` | `blog:write` | supprimer une image et ses variantes, refusé (`MEDIA_IN_USE`) tant qu’une version d’article la cite |
 | `blog_publish_post` | `blog:publish` | publier la version courante avec `id` et `revision` |
 | `blog_schedule_post` | `blog:publish` | figer/programmer avec `id`, `revision`, `scheduled_at` |
 | `blog_unpublish_post` | `blog:publish` | retirer et annuler la programmation |

@@ -35,6 +35,7 @@ pub enum BlogError {
     NotFound,
     RevisionConflict,
     SlugConflict,
+    MediaInUse,
     Storage,
 }
 impl BlogError {
@@ -44,6 +45,7 @@ impl BlogError {
             Self::NotFound => "NOT_FOUND",
             Self::RevisionConflict => "REVISION_CONFLICT",
             Self::SlugConflict => "SLUG_CONFLICT",
+            Self::MediaInUse => "MEDIA_IN_USE",
             Self::Storage => "STORAGE_UNAVAILABLE",
         }
     }
@@ -55,6 +57,9 @@ impl BlogError {
                 "L’article a changé. Rechargez sa version avant de continuer."
             }
             Self::SlugConflict => "Cette adresse est déjà utilisée par un article.",
+            Self::MediaInUse => {
+                "Cette image est utilisée par un article. Retirez-la de ses versions avant de la supprimer."
+            }
             Self::Storage => "Le service est temporairement indisponible.",
         }
     }
@@ -74,7 +79,9 @@ impl From<BlogError> for ApiError {
         let status = match error {
             BlogError::Invalid => StatusCode::UNPROCESSABLE_ENTITY,
             BlogError::NotFound => StatusCode::NOT_FOUND,
-            BlogError::RevisionConflict | BlogError::SlugConflict => StatusCode::CONFLICT,
+            BlogError::RevisionConflict | BlogError::SlugConflict | BlogError::MediaInUse => {
+                StatusCode::CONFLICT
+            }
             BlogError::Storage => StatusCode::SERVICE_UNAVAILABLE,
         };
         Self::new(status, error.code(), error.message())
@@ -986,6 +993,33 @@ impl Store {
         }
         Ok(Value::Object(details))
     }
+    /// Seule une image qu’aucune version (travail, programmée, publiée) ne cite peut partir.
+    pub fn delete_blog_media(&self, id: i64) -> Result<(), BlogError> {
+        let mut connection = self.connection()?;
+        let tx = connection.transaction()?;
+        let exists: bool = tx.query_row(
+            "SELECT EXISTS(SELECT 1 FROM blog_media WHERE id=?1)",
+            [id],
+            |r| r.get(0),
+        )?;
+        if !exists {
+            return Err(BlogError::NotFound);
+        }
+        let path = format!("/api/blog/media/{id}");
+        let used: bool = tx.query_row(
+            "SELECT EXISTS(SELECT 1 FROM blog_posts,json_tree(blog_posts.editable_json) WHERE json_tree.type='text' AND json_tree.key IN ('src','cover_image','og_image') AND json_tree.value=?1)
+             OR EXISTS(SELECT 1 FROM blog_posts,json_tree(blog_posts.scheduled_json) WHERE blog_posts.scheduled_json IS NOT NULL AND json_tree.type='text' AND json_tree.key IN ('src','cover_image','og_image') AND json_tree.value=?1)
+             OR EXISTS(SELECT 1 FROM blog_posts,json_tree(blog_posts.published_json) WHERE blog_posts.published_json IS NOT NULL AND json_tree.type='text' AND json_tree.key IN ('src','cover_image','og_image') AND json_tree.value=?1)",
+            [path],
+            |r| r.get(0),
+        )?;
+        if used {
+            return Err(BlogError::MediaInUse);
+        }
+        tx.execute("DELETE FROM blog_media WHERE id=?1", [id])?;
+        tx.commit()?;
+        Ok(())
+    }
 }
 const MEDIA_COLUMNS: &str = "id,filename,content_type,length(data),created_at,width,height";
 fn media_variants(connection: &Connection, id: i64) -> rusqlite::Result<Vec<u32>> {
@@ -1173,7 +1207,10 @@ pub fn routes(state: AppState) -> Router<AppState> {
             "/api/backoffice/blog/media",
             get(admin_media_list).post(upload_media),
         )
-        .route("/api/backoffice/blog/media/{id}", get(admin_media))
+        .route(
+            "/api/backoffice/blog/media/{id}",
+            get(admin_media).delete(delete_media),
+        )
         .route(
             "/api/backoffice/blog/media/{id}/{width}",
             get(admin_media_variant),
@@ -1325,6 +1362,13 @@ async fn upload_media(
         .await
         .map_err(|_| BlogError::Storage)??;
     Ok((StatusCode::CREATED, Json(media)))
+}
+async fn delete_media(
+    State(s): State<AppState>,
+    Path(id): Path<i64>,
+) -> Result<Json<Value>, ApiError> {
+    s.store.delete_blog_media(id)?;
+    Ok(Json(json!({"deleted":true,"id":id})))
 }
 fn media_response(data: MediaData) -> Response {
     (

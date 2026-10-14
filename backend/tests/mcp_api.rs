@@ -637,6 +637,7 @@ async fn existing_read_only_tokens_never_gain_blog_write_or_publish_permissions(
         ),
         ("blog_unpublish_post", json!({ "id": 1, "revision": 1 })),
         ("blog_delete_post", json!({ "id": 1, "revision": 1 })),
+        ("blog_delete_media", json!({ "id": 1 })),
     ] {
         let result = invoke(&fixture, &fixture.token, name, arguments).await;
         assert_eq!(result["isError"], true);
@@ -826,7 +827,7 @@ async fn catalog_scopes_and_annotations_describe_actual_blog_effects() {
         .unwrap();
     let result = body(response).await;
     let tools = result["result"]["tools"].as_array().unwrap();
-    assert_eq!(tools.len(), 12);
+    assert_eq!(tools.len(), 13);
     for tool in tools {
         let name = tool["name"].as_str().unwrap();
         assert!(name.starts_with("blog_"));
@@ -843,6 +844,7 @@ async fn catalog_scopes_and_annotations_describe_actual_blog_effects() {
                 | "blog_schedule_post"
                 | "blog_unpublish_post"
                 | "blog_delete_post"
+                | "blog_delete_media"
         ) {
             assert_eq!(tool["annotations"]["readOnlyHint"], false);
             assert_eq!(tool["annotations"]["destructiveHint"], true);
@@ -932,4 +934,60 @@ async fn only_admin_sessions_can_create_tokens_with_explicit_consistent_permissi
     assert_eq!(scopes, vec!["blog:read", "blog:write", "blog:publish"]);
     let listing = serde_json::to_string(&store.list_tokens().unwrap()).unwrap();
     assert!(!listing.contains(published["token"].as_str().unwrap()));
+}
+
+#[tokio::test]
+async fn writers_delete_only_images_that_no_article_cites() {
+    let fixture = fixture();
+    let writer = blog_token(&fixture, &["blog:read", "blog:write"]);
+    let png = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aXioAAAAASUVORK5CYII=";
+    let mut ids = Vec::new();
+    for filename in ["libre.png", "citee.png"] {
+        let media = invoke(
+            &fixture,
+            &writer,
+            "blog_upload_media",
+            json!({ "filename": filename, "content_type": "image/png", "data_base64": png }),
+        )
+        .await;
+        assert_eq!(media["isError"], false);
+        assert_eq!(media["structuredContent"]["width"], 1);
+        ids.push(media["structuredContent"]["id"].as_i64().unwrap());
+    }
+    let mut cited = draft();
+    cited["cover_image"] = json!(format!("/api/blog/media/{}", ids[1]));
+    cited["cover_alt"] = json!("Un point");
+    assert_eq!(
+        invoke(&fixture, &writer, "blog_create_post", cited).await["isError"],
+        false
+    );
+    let deleted = invoke(
+        &fixture,
+        &writer,
+        "blog_delete_media",
+        json!({ "id": ids[0] }),
+    )
+    .await;
+    assert_eq!(
+        deleted["structuredContent"],
+        json!({ "deleted": true, "id": ids[0] })
+    );
+    let refused = invoke(
+        &fixture,
+        &writer,
+        "blog_delete_media",
+        json!({ "id": ids[1] }),
+    )
+    .await;
+    assert_eq!(refused["isError"], true);
+    assert_eq!(refused["structuredContent"]["code"], "MEDIA_IN_USE");
+    let reader = blog_token(&fixture, &["blog:read"]);
+    let denied = invoke(
+        &fixture,
+        &reader,
+        "blog_delete_media",
+        json!({ "id": ids[1] }),
+    )
+    .await;
+    assert_eq!(denied["structuredContent"]["code"], "PERMISSION_DENIED");
 }

@@ -682,3 +682,56 @@ fn images_imported_before_measurement_are_measured_at_startup() {
         let _ = std::fs::remove_file(format!("{}{suffix}", path.display()));
     }
 }
+
+#[tokio::test]
+async fn an_image_is_deleted_only_when_no_version_cites_it() {
+    let (app, store, cookie) = fixture();
+    let unused = upload(&store, "libre.jpg", "image/jpeg", &photo(1200, 600));
+    let used = upload(&store, "citee.png", "image/png", &png());
+    let mut p = input("citation");
+    p.og_image = Some(used.url.clone());
+    let post = store.create_blog_post(p).unwrap();
+    let delete = |id: i64, cookie: Option<String>| {
+        let app = app.clone();
+        async move {
+            app.oneshot(request(
+                "DELETE",
+                &format!("/api/backoffice/blog/media/{id}"),
+                json!(null),
+                cookie.as_deref(),
+            ))
+            .await
+            .unwrap()
+        }
+    };
+    assert_eq!(
+        delete(unused.id, None).await.status(),
+        StatusCode::UNAUTHORIZED
+    );
+    let response = delete(unused.id, Some(cookie.clone())).await;
+    assert_eq!(response.status(), StatusCode::OK);
+    assert_eq!(body(response).await, json!({"deleted":true,"id":unused.id}));
+    assert!(matches!(
+        store.get_blog_media_variant(unused.id, 480),
+        Err(BlogError::NotFound)
+    ));
+    assert_eq!(
+        delete(unused.id, Some(cookie.clone())).await.status(),
+        StatusCode::NOT_FOUND
+    );
+    let response = delete(used.id, Some(cookie.clone())).await;
+    assert_eq!(response.status(), StatusCode::CONFLICT);
+    assert_eq!(body(response).await["code"], "MEDIA_IN_USE");
+    // Publiée puis retirée de la version de travail : la version publique la cite encore.
+    let published = store.publish_blog_post(post.id, post.revision).unwrap();
+    let mut changes = published.fields.clone();
+    changes.og_image = None;
+    changes.revision = Some(published.revision);
+    let edited = store.update_blog_post(post.id, changes).unwrap();
+    assert!(matches!(
+        store.delete_blog_media(used.id),
+        Err(BlogError::MediaInUse)
+    ));
+    store.publish_blog_post(edited.id, edited.revision).unwrap();
+    store.delete_blog_media(used.id).unwrap();
+}
