@@ -16,6 +16,11 @@
 //! Le coût est borné : 40 millions de pixels au plus, lus dans l’en-tête avant
 //! tout décodage, 160 Mio d’allocation pour le décodeur, et une seule image
 //! traitée à la fois, quelle que soit la voie (backoffice, MCP, démarrage).
+//! Le pic d’un import tient donc dans l’image décodée, sa copie tournée (une
+//! orientation de 90° ne se fait pas en place) et la variante en cours : 314 Mio
+//! mesurés sous Linux pour un PNG RGBA de 40 Mpx tourné, 54 Mio pour une photo
+//! JPEG de 12 Mpx. La limite mémoire du service (`compose.deploy.yaml`) en
+//! dépend : baisser `MAX_PIXELS` et `MAX_ALLOC` avant de la baisser.
 use std::{
     io::Cursor,
     sync::{Mutex, PoisonError},
@@ -25,7 +30,6 @@ use image::{
     DynamicImage, ExtendedColorType, GenericImageView, ImageDecoder, ImageEncoder, ImageFormat,
     ImageReader, Limits,
     codecs::{jpeg::JpegEncoder, webp::WebPEncoder},
-    imageops::FilterType,
     metadata::Orientation,
 };
 
@@ -163,11 +167,16 @@ fn animated(bytes: &[u8], format: ImageFormat) -> bool {
     }
 }
 
+/// Réduction par moyenne des surfaces (`thumbnail_exact`) : directe, sans
+/// l’image intermédiaire en flottants de `resize_exact` (16 octets par pixel,
+/// sur toute la largeur de l’original). Mesuré sous Linux, le pic d’une photo
+/// JPEG de 12 Mpx passe ainsi de 120 à 54 Mio, celui d’un PNG de 16 Mpx de 215
+/// à 154 Mio. On ne fait que réduire : ce filtre suffit.
 fn resized(image: &DynamicImage, target: u32) -> DynamicImage {
     let (width, height) = image.dimensions();
     let target_height =
         ((u64::from(height) * u64::from(target) + u64::from(width) / 2) / u64::from(width)).max(1);
-    image.resize_exact(target, target_height as u32, FilterType::Triangle)
+    image.thumbnail_exact(target, target_height as u32)
 }
 
 fn variants(image: &DynamicImage, original: usize) -> Vec<Variant> {
