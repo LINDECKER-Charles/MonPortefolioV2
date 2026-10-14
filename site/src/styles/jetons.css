@@ -92,6 +92,7 @@
   --t-3xl: clamp(2.5rem, 1.6rem + 2.8vw, 4.25rem);       /* 40 → 68, titres de page */
   --t-4xl: clamp(2.875rem, 1.1rem + 5.4vw, 5.75rem);     /* 46 → 92, l’accroche seule */
   --t-impression: 11pt;                                  /* corps de base à l’impression */
+  --t-code-titre: 0.78em;                                /* code dans un titre d’article */
 
   /* Crénage : quatre valeurs */
   --ls-0: 0;

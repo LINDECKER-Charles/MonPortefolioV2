@@ -430,9 +430,8 @@
   font-size: var(--t-s);
 }
 
-/* Le code d’un bloc ou d’un titre prend la taille de son conteneur. */
-.blog-prose pre code,
-.blog-prose :is(h2, h3, h4) code {
+/* Le code d’un bloc prend la taille du bloc. */
+.blog-prose pre code {
   font-size: inherit;
 }
 
@@ -440,6 +439,15 @@
   padding: 0.05em 0.3em;
   border-radius: var(--r1);
   background: var(--surface);
+}
+
+/* Dans un titre, le code suit la taille du titre, mais en retrait : à taille
+   égale, la chasse fixe paraît bien plus grosse que l’Instrument Serif, et sa
+   pastille dépasserait l’interligne. */
+.blog-prose :is(h2, h3, h4) code {
+  font-size: var(--t-code-titre);
+  vertical-align: 0.05em;
+  padding-block: 0;
 }
 
 /* Même principe dans le texte : la taille d’affichage vient des attributs

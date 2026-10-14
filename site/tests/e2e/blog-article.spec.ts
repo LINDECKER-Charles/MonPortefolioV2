@@ -234,14 +234,17 @@ test('les paragraphes restent séparés dans les listes, les citations et les ce
   expect(titre[0], 'un titre cité se distingue du texte cité').not.toBe(titre[1]);
 });
 
-test('le code garde la taille de son bloc ou de son titre', async ({ page }) => {
+test('le code garde la taille de son bloc, et celle de son titre sans le dépasser', async ({ page }) => {
   await ouvrir(page);
   const tailles = await page.evaluate(() => {
-    const taille = (selecteur: string) => getComputedStyle(document.querySelector(selecteur)!).fontSize;
-    return { pre: taille('.blog-prose pre'), codeDuBloc: taille('.blog-prose pre code'), titre: taille('.blog-prose h2:has(code)'), codeDuTitre: taille('.blog-prose h2 code') };
+    const taille = (selecteur: string) => parseFloat(getComputedStyle(document.querySelector(selecteur)!).fontSize);
+    const code = document.querySelector('.blog-prose h2 code')!;
+    return { pre: taille('.blog-prose pre'), codeDuBloc: taille('.blog-prose pre code'), titre: taille('.blog-prose h2:has(code)'), codeDuTitre: taille('.blog-prose h2 code'), interligne: parseFloat(getComputedStyle(code.closest('h2')!).lineHeight), pastille: code.getBoundingClientRect().height };
   });
   expect(tailles.codeDuBloc).toBe(tailles.pre);
-  expect(tailles.codeDuTitre).toBe(tailles.titre);
+  expect(tailles.codeDuTitre / tailles.titre, 'le code suit le titre, en retrait').toBeGreaterThanOrEqual(0.7);
+  expect(tailles.codeDuTitre / tailles.titre).toBeLessThanOrEqual(0.9);
+  expect(tailles.pastille, 'sa pastille tient dans l’interligne').toBeLessThanOrEqual(tailles.interligne);
 });
 
 test('les images réservent leur place, ne s’agrandissent pas et chargent la variante utile', async ({ page }) => {
