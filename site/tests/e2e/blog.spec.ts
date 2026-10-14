@@ -19,7 +19,7 @@ function post(id = 1): Post {
     updated_at: '2026-10-08T09:00:00Z', revision: 1, has_unpublished_changes: false, scheduled_revision: null };
 }
 async function mockApi(page: Page, posts: Post[] = []) {
-  const state = { posts, authenticated: true, conflict: false, media: [] as { id: number; filename: string; url: string; content_type: string; size: number; created_at: string }[], mutations: [] as { path: string; method: string; body: Record<string, unknown>; header?: string }[] };
+  const state = { posts, authenticated: true, conflict: false, media: [] as { id: number; filename: string; url: string; content_type: string; size: number; created_at: string }[], mutations: [] as { path: string; method: string; body: Record<string, unknown>; header?: string }[], uploadRefusal: null as null | { status: number; code: string; message: string } };
   await page.context().route('**/api/backoffice/**', async (route) => {
     const request = route.request(); const url = new URL(request.url());
     const path = url.pathname.replace('/api/backoffice', '');
@@ -40,6 +40,10 @@ async function mockApi(page: Page, posts: Post[] = []) {
     if (path.startsWith('/blog/media/')) { await route.fulfill({ contentType: 'image/png', body: Buffer.from(PNG, 'base64') }); return; }
     if (path.startsWith('/blog/preview/')) { await route.fulfill({ contentType: 'text/html; charset=utf-8', body: '<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Aperçu privé</title></head><body><h1>Aperçu privé</h1></body></html>' }); return; }
     if (path === '/blog/media') {
+      if (method === 'POST' && state.uploadRefusal) {
+        const { status, code, message } = state.uploadRefusal;
+        await route.fulfill({ status, contentType: 'application/json', headers: status === 503 ? { 'Retry-After': '10' } : {}, body: JSON.stringify({ code, message }) }); return;
+      }
       if (method === 'POST') {
         const item = { id: state.media.length + 1, filename: String(body.filename), content_type: String(body.content_type), size: 68, url: `/api/blog/media/${state.media.length + 1}`, created_at: '2026-10-08T09:00:00Z' };
         state.media.push(item); await send(item); return;
@@ -183,6 +187,29 @@ test('rédiger un brouillon riche, décrire une image et ouvrir un aperçu priv�
   expect(state.posts[0]?.status).toBe('draft');
   expect(errors).toEqual([]);
   for (const mutation of state.mutations) expect(mutation.header).toBe('1');
+});
+
+test('l’atelier montre tel quel le refus d’une image trop lourde à réduire ou d’un import en attente', async ({ page }) => {
+  const state = await mockApi(page);
+  await openBlog(page);
+  await page.getByRole('button', { name: 'Nouvel article', exact: true }).click();
+  await onlySection(page, 'redaction');
+  await page.getByRole('button', { name: 'Image', exact: true }).click();
+  const notice = page.locator('#blog-media-notice');
+  // Les messages du backend (blog.rs, upload_queue.rs), recopiés tels quels.
+  for (const refusal of [
+    { status: 422, code: 'IMAGE_TOO_HEAVY', message: 'Cette image est trop lourde à réduire. Exportez-la en JPEG ou en PNG 8 bits, ou réduisez-la (3\u202f000\u00a0px de large suffisent).' },
+    { status: 503, code: 'UPLOAD_BUSY', message: 'D’autres images sont en cours d’import. Réessayez dans quelques secondes.' },
+  ]) {
+    state.uploadRefusal = refusal;
+    await page.getByLabel('Fichier image').setInputFiles({ name: 'photo.png', mimeType: 'image/png', buffer: Buffer.from(PNG, 'base64') });
+    await page.getByRole('button', { name: 'Téléverser l’image', exact: true }).click();
+    await expect(notice).toHaveText(refusal.message);
+    await expect(notice).toHaveAttribute('data-state', 'error');
+    await expect(page.locator('#blog-image-src')).toHaveValue('');
+  }
+  expect(state.media).toEqual([]);
+  await expect(page.getByRole('button', { name: 'Téléverser l’image', exact: true })).toBeEnabled();
 });
 
 test('programmer en heure locale, garder les retouches privées et republier avec une révision', async ({ page }) => {
