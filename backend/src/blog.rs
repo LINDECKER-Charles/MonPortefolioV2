@@ -1270,10 +1270,16 @@ pub fn routes(state: AppState) -> Router<AppState> {
             crate::admin::require_session,
         ))
         .layer(DefaultBodyLimit::max(MAX_BLOG_BODY_BYTES));
+    // L’import attend sa place (`upload_queue`) après la session, avant de lire son corps.
     let media = Router::new()
         .route(
             "/api/backoffice/blog/media",
-            get(admin_media_list).post(upload_media),
+            post(upload_media)
+                .route_layer(middleware::from_fn_with_state(
+                    state.clone(),
+                    crate::upload_queue::wait_turn,
+                ))
+                .get(admin_media_list),
         )
         .route(
             "/api/backoffice/blog/media/{id}",
@@ -1422,13 +1428,18 @@ async fn admin_media_list(
 }
 async fn upload_media(
     State(s): State<AppState>,
+    turn: crate::upload_queue::MaybeTurn,
     Json(p): Json<MediaUpload>,
 ) -> Result<(StatusCode, Json<MediaRecord>), ApiError> {
     // Le décodage et les réductions prennent du calcul : hors des fils d’Axum.
+    // Ils gardent la place de l’envoi jusqu’au bout, même si le client part.
     let store = s.store.clone();
-    let media = tokio::task::spawn_blocking(move || store.create_blog_media(p))
-        .await
-        .map_err(|_| BlogError::Storage)??;
+    let media = tokio::task::spawn_blocking(move || {
+        let _turn = turn;
+        store.create_blog_media(p)
+    })
+    .await
+    .map_err(|_| BlogError::Storage)??;
     Ok((StatusCode::CREATED, Json(media)))
 }
 async fn delete_media(

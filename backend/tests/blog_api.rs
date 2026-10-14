@@ -1134,3 +1134,128 @@ fn fixture_marks(content: &Value, path: &[usize]) -> Vec<Value> {
         .cloned()
         .unwrap_or_default()
 }
+
+/// Une requête du backoffice ou du MCP dont le corps arrive en flux et ne finit
+/// qu’à la fermeture de son émetteur : un gros import en cours.
+fn streamed(
+    request: Request<Body>,
+) -> (
+    http_body_util::channel::Sender<axum::body::Bytes>,
+    Request<Body>,
+) {
+    let (sender, body) = http_body_util::channel::Channel::<axum::body::Bytes>::new(1);
+    let (parts, _) = request.into_parts();
+    (sender, Request::from_parts(parts, Body::new(body)))
+}
+fn mcp_upload(token: &str, payload: &Value) -> Request<Body> {
+    let mut req = request(
+        "POST",
+        "/mcp",
+        json!({"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"blog_upload_media","arguments":payload}}),
+        None,
+    );
+    let headers = req.headers_mut();
+    headers.insert(
+        header::AUTHORIZATION,
+        format!("Bearer {token}").parse().unwrap(),
+    );
+    headers.insert(
+        header::ACCEPT,
+        "application/json, text/event-stream".parse().unwrap(),
+    );
+    req
+}
+
+#[tokio::test]
+async fn large_imports_share_two_places_between_the_backoffice_and_mcp() {
+    let store = Arc::new(Store::in_memory("owner@example.org").unwrap());
+    let state = AppState::with_store(
+        None,
+        None,
+        store.clone(),
+        Some(BackofficeConfig {
+            email: "admin@example.org".into(),
+            password: "correct horse battery staple".into(),
+            environment: AppEnvironment::Development,
+            totp_encryption_key: None,
+        }),
+        false,
+    )
+    .unwrap()
+    .with_upload_wait(Duration::from_millis(300));
+    let app = routes::router(state);
+    let cookie = format!(
+        "portfolio_backoffice={}",
+        store.create_session(Duration::from_secs(600)).unwrap()
+    );
+    let (_, token) = store
+        .create_token_with_scopes("Imports", &["blog:read".into(), "blog:write".into()])
+        .unwrap();
+    // Plus de 64 Kio une fois en base64 : un gros envoi.
+    let mut padded = png();
+    padded.extend_from_slice(&vec![0; 70_000]);
+    let large = json!({"filename":"grande.png","content_type":"image/png","data_base64":STANDARD.encode(&padded)});
+    let small = json!({"filename":"petite.png","content_type":"image/png","data_base64":STANDARD.encode(png())});
+    let backoffice = |payload: &Value| {
+        request(
+            "POST",
+            "/api/backoffice/blog/media",
+            payload.clone(),
+            Some(&cookie),
+        )
+    };
+
+    // Deux imports en cours, l’un par le backoffice, l’autre par le MCP.
+    let (backoffice_sender, held) = streamed(backoffice(&large));
+    let held_backoffice = tokio::spawn(app.clone().oneshot(held));
+    let (mcp_sender, held) = streamed(mcp_upload(&token, &large));
+    let held_mcp = tokio::spawn(app.clone().oneshot(held));
+    tokio::time::sleep(Duration::from_millis(50)).await;
+
+    // Un troisième, par l’une ou l’autre voie, attend puis reçoit une réponse 503.
+    for third in [backoffice(&large), mcp_upload(&token, &large)] {
+        let started = std::time::Instant::now();
+        let response = app.clone().oneshot(third).await.unwrap();
+        assert!(started.elapsed() >= Duration::from_millis(300));
+        assert_eq!(response.status(), StatusCode::SERVICE_UNAVAILABLE);
+        assert_eq!(response.headers()[header::RETRY_AFTER], "10");
+        let refused = body(response).await;
+        assert_eq!(refused["code"], "UPLOAD_BUSY");
+        assert_eq!(
+            refused["message"],
+            "D’autres images sont en cours d’import. Réessayez dans quelques secondes."
+        );
+    }
+    // Les petites requêtes ne passent jamais par la file.
+    let response = app.clone().oneshot(backoffice(&small)).await.unwrap();
+    assert_eq!(response.status(), StatusCode::CREATED);
+    let response = app
+        .clone()
+        .oneshot(mcp_upload(&token, &small))
+        .await
+        .unwrap();
+    assert_eq!(body(response).await["result"]["isError"], false);
+    let response = app
+        .clone()
+        .oneshot(request(
+            "GET",
+            "/api/backoffice/blog/media",
+            json!(null),
+            Some(&cookie),
+        ))
+        .await
+        .unwrap();
+    assert_eq!(response.status(), StatusCode::OK);
+
+    // Les deux imports en cours finissent (corps vide, refusé) : les places reviennent.
+    drop((backoffice_sender, mcp_sender));
+    assert_eq!(
+        held_backoffice.await.unwrap().unwrap().status(),
+        StatusCode::BAD_REQUEST
+    );
+    held_mcp.await.unwrap().unwrap();
+    let response = app.clone().oneshot(backoffice(&large)).await.unwrap();
+    assert_eq!(response.status(), StatusCode::CREATED);
+    let response = app.oneshot(mcp_upload(&token, &large)).await.unwrap();
+    assert_eq!(body(response).await["result"]["isError"], false);
+}

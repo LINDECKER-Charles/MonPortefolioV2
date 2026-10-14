@@ -49,13 +49,18 @@ impl ApiError {
     }
 
     pub fn rate_limited(seconds: u64) -> Self {
-        let mut error = Self::new(
+        Self::new(
             StatusCode::TOO_MANY_REQUESTS,
             "RATE_LIMITED",
             "Trop de tentatives. Patientez avant de réessayer.",
-        );
-        error.retry_after = Some(seconds);
-        error
+        )
+        .with_retry_after(seconds)
+    }
+
+    /// Le délai, en secondes, avant de réessayer (`Retry-After`).
+    pub fn with_retry_after(mut self, seconds: u64) -> Self {
+        self.retry_after = Some(seconds);
+        self
     }
 }
 

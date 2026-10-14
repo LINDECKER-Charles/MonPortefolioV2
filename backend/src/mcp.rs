@@ -12,6 +12,7 @@ use axum::{
     body::to_bytes,
     extract::{ConnectInfo, Request, State},
     http::{HeaderMap, StatusCode, Uri, header},
+    middleware::{self, Next},
     response::{IntoResponse, Response},
     routing::post,
 };
@@ -31,11 +32,42 @@ const SERVER_NAME: &str = "portfolio-backoffice";
 /// (`server/discover`, `tools/list`). Claude Code refuse un catalogue sans elle.
 const CACHE_TTL_MS: u64 = 300_000;
 
-/// À fusionner au routeur principal avant son `with_state`.
-pub fn routes() -> Router<AppState> {
+/// À fusionner au routeur principal avant son `with_state`. Un appel passe par
+/// le jeton (`authorize`), puis, s’il porte un gros corps (`blog_upload_media`),
+/// par la file des imports d’images (`upload_queue`) avant que son corps soit lu.
+pub fn routes(state: AppState) -> Router<AppState> {
     Router::new()
-        .route("/mcp", post(handle).get(no_stream).delete(no_stream))
+        .route(
+            "/mcp",
+            post(handle)
+                .route_layer(middleware::from_fn_with_state(
+                    state.clone(),
+                    crate::upload_queue::wait_turn,
+                ))
+                .route_layer(middleware::from_fn_with_state(state, authorize))
+                .get(no_stream)
+                .delete(no_stream),
+        )
         .layer(Extension(Arc::new(McpLimiter::default())))
+}
+
+/// Les permissions du jeton qui appelle, vérifiées par `authorize`.
+#[derive(Clone)]
+struct Scopes(Vec<String>);
+
+async fn authorize(
+    State(state): State<AppState>,
+    Extension(limiter): Extension<Arc<McpLimiter>>,
+    mut request: Request,
+    next: Next,
+) -> Response {
+    match guard(&state, &limiter, &request) {
+        Ok(scopes) => {
+            request.extensions_mut().insert(Scopes(scopes));
+            next.run(request).await
+        }
+        Err(response) => *response,
+    }
 }
 
 #[derive(Default)]
@@ -177,13 +209,9 @@ async fn no_stream(
 
 async fn handle(
     State(state): State<AppState>,
-    Extension(limiter): Extension<Arc<McpLimiter>>,
+    Extension(Scopes(scopes)): Extension<Scopes>,
     request: Request,
 ) -> Response {
-    let scopes = match guard(&state, &limiter, &request) {
-        Ok(scopes) => scopes,
-        Err(response) => return *response,
-    };
     let headers = request.headers().clone();
     if !headers
         .get(header::CONTENT_TYPE)

@@ -10,9 +10,10 @@ mod rate_limit;
 pub mod routes;
 pub mod storage;
 mod two_factor;
+mod upload_queue;
 pub mod usage;
 
-use std::sync::Arc;
+use std::{sync::Arc, time::Duration};
 
 use tokio::sync::Semaphore;
 
@@ -26,6 +27,8 @@ pub struct AppState {
     mail_slots: Arc<Semaphore>,
     pub(crate) store: Arc<Store>,
     pub(crate) admin_auth: Arc<admin::AdminAuth>,
+    /// Les gros envois (imports d’images) partagent ces places, toutes voies confondues.
+    pub(crate) upload_queue: upload_queue::UploadQueue,
 }
 
 impl AppState {
@@ -60,6 +63,14 @@ impl AppState {
                 password_hash,
                 secure_cookie,
             )),
+            upload_queue: upload_queue::UploadQueue::new(upload_queue::UPLOAD_WAIT),
         })
+    }
+
+    /// Pour les tests : l’attente d’une place avant la réponse 503 (`UPLOAD_WAIT` sinon).
+    #[doc(hidden)]
+    pub fn with_upload_wait(mut self, wait: Duration) -> Self {
+        self.upload_queue = upload_queue::UploadQueue::new(wait);
+        self
     }
 }

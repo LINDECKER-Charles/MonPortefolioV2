@@ -53,7 +53,7 @@ fn fixture() -> Fixture {
         .unwrap();
     let state = AppState::with_store(None, None, store.clone(), None, false).unwrap();
     Fixture {
-        app: mcp::routes().with_state(state),
+        app: mcp::routes(state.clone()).with_state(state),
         store,
         token,
         token_id,

@@ -27,7 +27,7 @@ url = "2.5"
 image = { version = "0.25", default-features = false, features = ["jpeg", "png", "gif", "webp"] }
 
 [dev-dependencies]
-http-body-util = "0.1"
+http-body-util = { version = "0.1", features = ["channel"] }
 tower = { version = "0.5", features = ["util"] }
 
 [profile.release]
