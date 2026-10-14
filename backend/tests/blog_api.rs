@@ -735,3 +735,28 @@ async fn an_image_is_deleted_only_when_no_version_cites_it() {
     store.publish_blog_post(edited.id, edited.revision).unwrap();
     store.delete_blog_media(used.id).unwrap();
 }
+
+/// L’article de test du rendu (site/tests/fixtures, e2e blog-article.spec.ts) :
+/// ce que le site affiche doit d’abord être un document que la validation admet.
+#[test]
+fn the_rendering_fixture_is_a_publishable_document() {
+    let store = Store::in_memory("owner@example.org").unwrap();
+    for n in 1..=6 {
+        upload(&store, &format!("fixture-{n}.png"), "image/png", &png());
+    }
+    let fixture: BlogInput = serde_json::from_str(include_str!(
+        "../../site/tests/fixtures/article-complet.json"
+    ))
+    .unwrap();
+    let post = store.create_blog_post(fixture).unwrap();
+    store.publish_blog_post(post.id, post.revision).unwrap();
+    assert_eq!(
+        store
+            .get_public_blog_post("article-complet")
+            .unwrap()
+            .fields
+            .og_image
+            .as_deref(),
+        Some("/api/blog/media/6")
+    );
+}
