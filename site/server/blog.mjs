@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { imageArticle, lienArticle } from './blog-regles.mjs';
 
 const ORIGIN = 'https://charles-lindecker.com';
 const AUTHOR = 'Charles Lindecker';
@@ -7,14 +8,11 @@ const MAX_RESPONSE = 8 * 1024 * 1024;
 export const escapeHtml = (value = '') => String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const jsonScript = (value) => JSON.stringify(value).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
 
+/** Liens et images suivent la règle du backend (blog-regles.mjs) ; l’aperçu lit les images par la session. */
 function safeUrl(value, image = false, preview = false) {
-  if (typeof value !== 'string' || /[\x00-\x20\\]/.test(value)) return '';
-  if (image) {
-    if (!/^\/(api\/blog\/media\/[1-9]\d*|(?:assets|images|og|_astro)\/[a-zA-Z0-9_./%-]+)$/.test(value) || value.includes('..') || /%2e|%2f|%5c/i.test(value)) return '';
-    return preview ? value.replace('/api/blog/media/', '/api/backoffice/blog/media/') : value;
-  }
-  if (/^\/(?!\/)/.test(value) || /^#[\w-]+$/.test(value)) return value;
-  try { const url = new URL(value); return ['https:', 'http:', 'mailto:'].includes(url.protocol) && !url.username && !url.password ? url.href : ''; } catch { return ''; }
+  if (!image) return lienArticle(value);
+  const src = imageArticle(value);
+  return src && preview ? src.replace('/api/blog/media/', '/api/backoffice/blog/media/') : src;
 }
 
 /** Documents structurés uniquement : aucun HTML d’auteur ne traverse le renderer. */

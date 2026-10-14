@@ -3,6 +3,7 @@ import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import { TableKit, TableView } from '@tiptap/extension-table';
 import TextAlign from '@tiptap/extension-text-align';
+import { imageArticle, lienArticle } from '../../server/blog-regles.mjs';
 
 class KeyboardTableView extends TableView {
   constructor(...args: ConstructorParameters<typeof TableView>) {
@@ -487,6 +488,7 @@ export function brancherBlog(context: Context): BlogWorkspace {
     const data = payload();
     if (data.cover_image && !data.cover_alt) { showSection('medias'); void context.navigate(sectionURL('medias')); notice('Décrivez l’image de couverture avant d’enregistrer.', true); input('blog-cover-alt').focus(); return false; }
     if (data.tags.length > 20 || data.tags.some((tag) => tag.length > 50)) { showSection('medias'); void context.navigate(sectionURL('medias')); notice('Utilisez au plus 20 étiquettes de 50 caractères chacune.', true); input('blog-tags').focus(); return false; }
+    if ((data.cover_image && !imageArticle(data.cover_image)) || (data.og_image && !imageArticle(data.og_image))) { const section = data.cover_image && !imageArticle(data.cover_image) ? 'medias' : 'seo'; showSection(section); void context.navigate(sectionURL(section)); notice('Choisissez la couverture et l’image de partage dans la bibliothèque d’images.', true); return false; }
     if (data.canonical_url && !data.canonical_url.startsWith('https://')) { showSection('seo'); void context.navigate(sectionURL('seo')); notice('L’adresse canonique doit commencer par https://.', true); input('blog-canonical').focus(); return false; }
     let missingAlt = false;
     const check = (node: JSONContent) => { if (node.type === 'image' && !String(node.attrs?.alt ?? '').trim()) missingAlt = true; node.content?.forEach(check); };
@@ -601,9 +603,10 @@ export function brancherBlog(context: Context): BlogWorkspace {
     event.preventDefault();
     const href = input('blog-link-url').value.trim();
     try {
-      if (!href.startsWith('#') && !(href.startsWith('/') && !href.startsWith('//')) && !['https:', 'http:'].includes(new URL(href).protocol)) throw new Error('invalid');
+      // La règle du backend et du rendu public (server/blog-regles.mjs).
+      if (!lienArticle(href)) throw new Error('invalid');
       editor.chain().focus().extendMarkRange('link').setLink({ href }).run(); linkDialog.close();
-    } catch { input('blog-link-url').setCustomValidity('Saisissez une adresse http:// ou https://, un chemin /blog/article ou une ancre #titre.'); input('blog-link-url').reportValidity(); }
+    } catch { input('blog-link-url').setCustomValidity('Saisissez une adresse http:// ou https://, un chemin du site comme /blog/article ou /projets/omnicard#decisions, ou une ancre #titre.'); input('blog-link-url').reportValidity(); }
   });
   input('blog-link-url').addEventListener('input', () => input('blog-link-url').setCustomValidity(''));
 

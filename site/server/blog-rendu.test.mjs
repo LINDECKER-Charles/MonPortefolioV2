@@ -6,7 +6,12 @@
  */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { renderArticle, renderIndex } from './blog.mjs';
+import { readFileSync } from 'node:fs';
+import { renderArticle, renderDocument, renderIndex } from './blog.mjs';
+import { imageArticle, lienArticle } from './blog-regles.mjs';
+
+/** Les cas que la validation Rust vérifie aussi (backend/tests/blog_api.rs). */
+const REGLES = JSON.parse(readFileSync(new URL('../tests/fixtures/liens-blog.json', import.meta.url), 'utf8'));
 
 const GABARIT = '<html><head><title>Gabarit</title><meta name="description" content="test"></head><body><header>Entête</header><main id="contenu"><div id="blog-article-slot"></div></main><footer>Pied</footer></body></html>';
 const LISTE = '<html><head><title>Le blog</title></head><body><main><h1>Le blog.</h1><div id="blog-publications" data-astro-cid-blog><section><p>Le premier article reste à écrire.</p></section></div></main><footer>Pied</footer></body></html>';
@@ -46,4 +51,25 @@ test('les motifs $ d’un titre ne dupliquent pas la liste ni son état vide', (
   assert.doesNotMatch(html, /Le premier article reste à écrire/);
   assert.match(html, /<a href="\/blog\/motifs">Motifs \$\$ \$&amp; \$&#39; \$`<\/a>/);
   assert.match(html, /<p>\$&amp; et \$\$<\/p>/);
+});
+
+test('liens et images suivent la règle du backend, cas par cas', () => {
+  for (const href of REGLES.liens.admis) assert.ok(lienArticle(href), `lien admis : ${href}`);
+  for (const href of REGLES.liens.refuses) assert.equal(lienArticle(href), '', `lien refusé : ${JSON.stringify(href)}`);
+  for (const src of REGLES.images.admises) assert.equal(imageArticle(src), src, `image admise : ${src}`);
+  for (const src of REGLES.images.refusees) assert.equal(imageArticle(src), '', `image refusée : ${src}`);
+});
+
+test('le rendu garde les liens internes avec ancre ou paramètres et retire mailto: et les images non importées', () => {
+  const lien = (href) => ({ type: 'paragraph', content: [texte('lien', [{ type: 'link', attrs: { href } }])] });
+  const html = renderDocument({ type: 'doc', content: [
+    lien('/projets/omnicard#decisions'), lien('/blog?page=2'), lien('#le-contexte'), lien('mailto:owner@example.org'),
+    { type: 'image', attrs: { src: '/assets/demo.png', alt: 'absente' } },
+    { type: 'image', attrs: { src: '/images/charles.webp', alt: 'du site' } },
+  ] });
+  assert.match(html, /<a href="\/projets\/omnicard#decisions"/);
+  assert.match(html, /<a href="\/blog\?page=2"/);
+  assert.match(html, /<a href="#le-contexte"/);
+  assert.doesNotMatch(html, /mailto:|\/assets\/|\/images\//);
+  assert.match(html, /<p>lien<\/p>$/, 'le texte d’un lien refusé reste, sans lien');
 });

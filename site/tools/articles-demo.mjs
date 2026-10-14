@@ -30,8 +30,8 @@
  * la racine du dépôt), toujours sous les mêmes garde-fous.
  *
  * L’outil essaie aussi quelques documents que la validation doit refuser
- * (lien interne avec # ou ?, mailto:, retour chariot, image /images/…) et en
- * affiche le résultat ; rien n’en reste en base.
+ * (mailto:, paramètre ou ancre non sûrs, retour chariot, image qui n’est pas
+ * importée) et en affiche le résultat ; rien n’en reste en base.
  */
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -274,9 +274,9 @@ function articles(I) {
       og_image: I.partage,
       content: doc(
         AVERTISSEMENT(),
-        p('Sommaire à la main, avec des ancres : ', t('aller au titre centré', lien('#titre-centre')), ', ', t('aller au titre long', lien('#titre-long')), ', ', t('aller à la fin', lien('#fin')), '. Les titres n’ont pas d’identifiant : ces ancres ne mènent nulle part.'),
+        p('Sommaire à la main, avec des ancres vers les titres : ', t('aller au titre centré', lien('#titre-centre')), ', ', t('aller au titre long', lien('#titre-long')), ', ', t('aller à la fin', lien('#fin')), '.'),
         h(2, 'Premier titre de niveau 2'),
-        p('Liens internes : ', t('les projets', lien('/projets')), ', ', t('l’article sur le code', lien('/blog/demo-code-blocs')), ', ', t('le blog', lien('/blog', { target: '_self' })), '.'),
+        p('Liens internes : ', t('les projets', lien('/projets')), ', ', t('l’article sur le code', lien('/blog/demo-code-blocs')), ', ', t('le blog', lien('/blog', { target: '_self' })), ', ', t('les décisions d’Omnicard', lien('/projets/omnicard#decisions')), ' et ', t('la deuxième page du blog', lien('/blog?page=2')), '.'),
         p('Liens sortants : ', t('un site d’exemple avec un titre', lien('https://example.org/', { title: 'Site d’exemple, ouvert dans un nouvel onglet', target: '_blank', rel: 'noopener noreferrer nofollow', class: 'lien-demo' })), ' et ', t('un autre en http', lien('http://example.com/demo', { target: null, title: null, rel: null, class: null })), '.'),
         h(4, 'Un titre de niveau 4 directement après un niveau 2'),
         p('L’ordre des titres saute un niveau : axe le signale (heading-order).'),
@@ -464,7 +464,6 @@ function articles(I) {
         img(I.petite, { title: 'Image sans attribut alt : le backend l’accepte, le rendu pose alt vide.' }),
         img(I.paysage, { alt: 'Image de démonstration avec largeur et hauteur.', title: 'Largeur et hauteur déclarées (1 600 × 1 000).', width: 1600, height: 1000 }),
         img(I.paysage, { alt: 'Image de démonstration avec seulement une hauteur.', title: 'Hauteur seule (300) : déformée ?', height: 300 }),
-        img('/assets/demo/inexistante.png', { alt: 'Image servie depuis /assets/, admise par le backend.', title: 'Chemin /assets/ : le dossier n’existe pas dans le site.' }),
         h(2, 'Images dans d’autres blocs'),
         bq(p('Une image dans une citation :'), img(I.petite, { alt: 'Petite image dans une citation.', title: 'Dans une citation.' })),
         ul(li(p('Une image dans une liste :'), img(I.transparente, { alt: 'Dessin transparent dans une liste.', title: 'Dans une liste.' }))),
@@ -495,12 +494,13 @@ function verifierCouverture(liste) {
 async function essais() {
   const base = (slug, content) => ({ title: 'Essai refusé', slug, excerpt: 'Essai.', content, tags: [], cover_image: null, cover_alt: '', seo_title: '', seo_description: '', canonical_url: null, og_image: null, noindex: true });
   const cas = [
-    ['lien interne avec ancre (/projets/omnicard#decisions)', doc(p(t('lien', lien('/projets/omnicard#decisions'))))],
-    ['lien interne avec paramètre (/blog?page=2)', doc(p(t('lien', lien('/blog?page=2'))))],
     ['lien mailto:', doc(p(t('écrire', lien('mailto:demo@example.test'))))],
+    ['lien interne avec un paramètre non sûr (/blog?page=<2>)', doc(p(t('lien', lien('/blog?page=<2>'))))],
+    ['ancre vide (#)', doc(p(t('lien', lien('#'))))],
     ['texte avec \\r\\n (copier-coller Windows)', doc(p(texteBrut('ligne 1\r\nligne 2')))],
     ['image /images/… (existe dans public/)', doc(img('/images/charles.webp', { alt: 'x' }))],
     ['image /og/… (existe dans public/)', doc(img('/og/accueil.png', { alt: 'x' }))],
+    ['image /assets/… (aucun dossier servi)', doc(img('/assets/demo/inexistante.png', { alt: 'x' }))],
     ['image /api/blog/media/ inconnue', doc(img('/api/blog/media/999999', { alt: 'x' }))],
     ['titre de niveau 1', doc({ type: 'heading', attrs: { level: 1 }, content: [t('H1')] })],
   ];
