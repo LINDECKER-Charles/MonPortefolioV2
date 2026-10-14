@@ -109,18 +109,20 @@ services:
           # le decodage (tampons propres a chaque decodeur compris ; au-dela,
           # l'import est refuse), une image decodee a la fois. Mesures
           # (memory.peak du cgroup, Linux, conteneur neuf limite sans swap,
-          # 32 Mio au repos compris) : 73 Mio pour une photo JPEG de 12 Mpx,
-          # 165 a 178 Mio pour un JPEG progressif de 24 Mpx, et 184 Mio au
-          # pire, pour un JPEG progressif en 4:4:4 de 16,6 Mpx, au seuil du
-          # decodage. 320m laissent 1,75 fois ce pire pic.
-          # Les gros envois (backend/src/upload_queue.rs) attendent leur tour
-          # sans lire leur corps, deux a la fois, 10 s au plus avant une
-          # reponse 503 : une image lourde et 8 ou 16 imports de 4 Mio a la
-          # fois montent a 243 Mio de memoire anonyme (l'allocateur garde ce
-          # que chaque fil de decodage a libere), sans OOM. Sans cette file,
-          # 8 imports simultanes tuaient le conteneur en pleine requete, a 256m
-          # comme a 320m, et le formulaire de contact avec lui. Pour baisser
-          # cette limite, baisser d'abord MAX_DECODING, puis la remesurer.
+          # allocateur regle par backend/Dockerfile, 28 Mio au repos compris) :
+          # 144 Mio pour un PNG RGBA de 2 500 x 10 000, 150 a 163 Mio au seuil
+          # du decodage, et 168 Mio au pire, pour une photo d'iPhone de
+          # 24,5 Mpx en JPEG progressif. 320m laissent 1,9 fois ce pire pic.
+          # Les imports (backend/src/upload_queue.rs) attendent leur tour,
+          # deux a la fois, 10 s au plus avant une reponse 503 ; un gros corps
+          # attend sans etre lu. Une image lourde et 8 a 48 imports de 4 Mio a
+          # la fois montent a 171 Mio de memoire anonyme, 48 clients qui
+          # enchainent leurs imports pendant 30 s a 175 Mio (la limite vaut
+          # 1,8 fois ce pic), sans OOM. Sans la file, 8 imports simultanes
+          # tuaient le conteneur, a 256m comme a 320m, et le formulaire de
+          # contact avec lui ; sans les reglages de l'allocateur, des imports
+          # enchaines montaient a 313 Mio. Pour baisser cette limite, baisser
+          # d'abord MAX_DECODING, puis la remesurer.
           memory: 320m
 
 networks:

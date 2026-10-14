@@ -409,18 +409,26 @@ CADDY_DOMAINS=exemple.test BACKEND_PROXY_TOKEN=exemple-token-local-de-trente-deu
   25 Mpx, 150 Mo au plus tenus par le décodage, tampons propres à chaque décodeur compris
   (au-delà, l'import est refusé : `422 IMAGE_TOO_HEAVY`), une image décodée à la fois. Mesuré
   sous Linux (`memory.peak` du cgroup d'un conteneur neuf limité à 320 Mio sans swap, comme en
-  production, environ 32 Mio au repos compris) : 73 Mio pour une photo JPEG de 12 Mpx, 124 Mio
-  pour un PNG RGBA de 25 Mpx tourné par son orientation EXIF, 163 Mio pour un PNG RGBA de
-  2 500 × 10 000, 165 à 178 Mio pour un JPEG progressif de 24 Mpx, et 184 Mio au pire, pour un
-  JPEG progressif en 4:4:4 de 16,6 Mpx, au seuil du décodage ; une image refusée par ce seuil
-  reste sous 44 Mio. 320 Mio laissent 1,75× ce pire cas.
+  production, avec les réglages de l'allocateur de l'image, 28 Mio au repos compris) : 92 à
+  94 Mio pour un JPEG séquentiel de 24 Mpx, 144 Mio pour un PNG RGBA de 2 500 × 10 000, 150 à
+  163 Mio pour les images au seuil du décodage (WebP, GIF, PNG de 16 bits, JPEG progressifs en
+  4:4:4 ou en CMJN), et 168 Mio au pire, pour une photo d'iPhone de 24,5 Mpx en JPEG progressif ;
+  une image refusée par le seuil de décodage n'ajoute rien au service au repos. 320 Mio laissent
+  1,9× ce pire cas.
   Les gros imports (`backend/src/upload_queue.rs`) attendent leur tour sans lire leur corps,
-  deux à la fois, 10 s au plus avant une réponse `503 UPLOAD_BUSY` : une image lourde et 8 ou
-  16 imports de 4 Mio à la fois aboutissent tous, avec 243 Mio de mémoire anonyme au pire (la
-  glibc garde par fil de traitement ce qu'il a libéré) ; 48 à la fois, 38 aboutissent et 11
-  reçoivent la réponse 503, sans OOM, et le formulaire de contact répond pendant ce temps. Sans
-  cette file, 8 imports simultanés tuaient le conteneur en pleine requête, à 256 Mio comme à
-  320, et le formulaire de contact avec lui jusqu'au redémarrage. Le plafond de 4 Mio par
+  deux à la fois, 10 s au plus avant une réponse `503 UPLOAD_BUSY` ; un import plus petit prend
+  sa place une fois lu, avant son décodage, car un fichier de 15 Kio peut coûter autant à décoder
+  qu'un fichier de 4 Mio. Une image lourde et 8 ou 16 imports de 4 Mio à la fois aboutissent
+  tous ; 48 à la fois, 38 aboutissent et 11 reçoivent la réponse 503 ; 171 Mio de mémoire anonyme
+  au pire. 48 clients qui enchaînent des imports de 24 Mpx pendant 30 s montent à 175 Mio : la
+  limite vaut 1,8× ce pic. Aucun OOM, et le formulaire de contact répond pendant ce temps (le cache
+  de fichiers de SQLite remplit le reste du cgroup, que le noyau récupère). Sans la file, 8
+  imports simultanés tuaient le conteneur en pleine requête, à 256 Mio comme à 320, et le
+  formulaire de contact avec lui jusqu'au redémarrage ; sans la place des petits imports, 12 GIF
+  de 15 Kio à la fois. L'allocateur est réglé dans `backend/Dockerfile` (`MALLOC_ARENA_MAX=2`,
+  `MALLOC_MMAP_THRESHOLD_=1048576`) : sans ces réglages, la glibc garde par fil la mémoire
+  libérée, le pire import seul monte à 184 Mio, et 48 clients en continu tuaient le conteneur
+  une fois sur deux, à 313 Mio de mémoire anonyme. Ne pas les retirer. Le plafond de 4 Mio par
   fichier est une décision : une photo plus lourde s'exporte plus petite avant l'import.
   Le pic réel reste à relever en production : `docker stats` au premier gros import. Pour
   baisser la limite, baisser d'abord `MAX_DECODING`, puis remesurer, et aligner
