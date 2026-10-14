@@ -1082,7 +1082,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     id: 'PRJ-12',
     serie: 'projets',
     page: '/projets',
-    emplacement: 'Projets archivés, première case du volet',
+    emplacement: 'Projets archivés, dernière case du volet',
     sujet: 'La version précédente',
     composition: 'Une étagère vue de face, en légère plongée : à gauche, un livre plus ancien, fermé, debout, au dos usé et sans titre ; à droite, posé à plat sur la tablette, un manuel neuf ouvert ; la lanterne posée entre les deux (vers 50 % de la largeur et 58 % de la hauteur) éclaire le dos de l’ancien livre ; aucun titre, aucune lettre',
     cadrage: 'Première case du volet des projets archivés, 4:3, environ 280 px de large sur ordinateur et 45 % de la largeur sur mobile : les deux livres se lisent à cette taille.',
@@ -1097,7 +1097,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     pose: ['components/vitrine/ArchivesProjets.astro'],
     alt: 'Un livre ancien debout sur une étagère, à côté d’un manuel neuf ouvert, éclairé par une lanterne.',
     fichier: 'src/assets/visuels/projets/PRJ-12_1600x1200.webp',
-    note: 'Reprend ILL-10 de docs/assets-complementaires.md (direction précédente). Posé le 14/10/2026 en tête du volet des projets archivés, qui reçoit Life Pixel, img-convertor et Shreksophone : décoratif, à la place d’une carte.',
+    note: 'Reprend ILL-10 de docs/assets-complementaires.md (direction précédente). Posé le 14/10/2026 en dernière case du volet des projets archivés, qui reçoit Life Pixel, img-convertor et Shreksophone : décoratif, à la place d’une carte.',
   },
 
   // PVZ

@@ -658,7 +658,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image) · **Série** : Vitrine des projets
 - **Produit par** : Codex
-- **Emplacement** : `/projets` · Projets archivés, première case du volet _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/projets` · Projets archivés, dernière case du volet _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/components/vitrine/ArchivesProjets.astro`
 - **Sujet** : La version précédente
 - **Composition (pour le prompt)** : Une étagère vue de face, en légère plongée : à gauche, un livre plus ancien, fermé, debout, au dos usé et sans titre ; à droite, posé à plat sur la tablette, un manuel neuf ouvert ; la lanterne posée entre les deux (vers 50 % de la largeur et 58 % de la hauteur) éclaire le dos de l’ancien livre ; aucun titre, aucune lettre
@@ -670,7 +670,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Masters** : jour `design/assets/visuels/projets/PRJ-12.png` ; nuit `design/assets/visuels/projets/PRJ-12.nuit.png`, en édition depuis le jour, même cadrage au pixel près
 - **Rendus** : `npm run visuels:rendre PRJ-12` écrit le jour `PRJ-12_1600x1200.webp` et la nuit `PRJ-12_1600x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un livre ancien debout sur une étagère, à côté d’un manuel neuf ouvert, éclairé par une lanterne. »
-- **Note** : Reprend ILL-10 de docs/assets-complementaires.md (direction précédente). Posé le 14/10/2026 en tête du volet des projets archivés, qui reçoit Life Pixel, img-convertor et Shreksophone : décoratif, à la place d’une carte.
+- **Note** : Reprend ILL-10 de docs/assets-complementaires.md (direction précédente). Posé le 14/10/2026 en dernière case du volet des projets archivés, qui reçoit Life Pixel, img-convertor et Shreksophone : décoratif, à la place d’une carte.
 
 #### PVZ-01 · Traduction et équipe
 
