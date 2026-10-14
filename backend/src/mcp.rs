@@ -1002,7 +1002,7 @@ fn blog_tools() -> Vec<Value> {
         tool(
             "blog_upload_media",
             "Importer une image",
-            "Importer une image PNG, JPEG, GIF ou WebP en base64. Aucun téléchargement externe n’est effectué. Réutiliser l’URL retournée et écrire un texte alternatif dans l’article. Permission blog:write.",
+            "Importer une image PNG, JPEG, GIF ou WebP en base64. Aucun téléchargement externe n’est effectué. Le serveur mesure ses dimensions et prépare des variantes réduites pour le rendu. Réutiliser l’URL retournée et écrire un texte alternatif dans l’article. Permission blog:write.",
             json!({
                 "type": "object", "properties": {
                     "filename": { "type": "string", "minLength": 1, "maxLength": 200 },

@@ -9,7 +9,7 @@ use base64::{Engine, engine::general_purpose::STANDARD};
 use http_body_util::BodyExt;
 use portfolio_backend::{
     AppState,
-    blog::{BlogError, BlogInput, MediaUpload, unix_now},
+    blog::{BlogError, BlogInput, MediaRecord, MediaUpload, unix_now},
     config::{AppEnvironment, BackofficeConfig},
     routes,
     storage::Store,
@@ -469,4 +469,216 @@ async fn blog_route_limits_allow_documents_and_media_larger_than_contact_limit()
     bytes.extend_from_slice(&vec![0; 30_000]);
     let response=app.oneshot(request("POST","/api/backoffice/blog/media",json!({"filename":"large.png","content_type":"image/png","data_base64":STANDARD.encode(bytes)}),Some(&cookie))).await.unwrap();
     assert_eq!(response.status(), StatusCode::CREATED);
+}
+
+fn encoded(image: image::DynamicImage, format: image::ImageFormat) -> Vec<u8> {
+    let mut bytes = std::io::Cursor::new(Vec::new());
+    image.write_to(&mut bytes, format).unwrap();
+    bytes.into_inner()
+}
+/// Un dégradé légèrement bruité : en JPEG de qualité 100, les variantes l’allègent.
+fn photo(width: u32, height: u32) -> Vec<u8> {
+    let image = image::RgbImage::from_fn(width, height, |x, y| {
+        let grain = (x.wrapping_mul(2_654_435_761) ^ y.wrapping_mul(40_503)) % 24;
+        image::Rgb([(x / 8 % 256) as u8, (y / 6 % 256) as u8, (96 + grain) as u8])
+    });
+    let mut bytes = Vec::new();
+    image::codecs::jpeg::JpegEncoder::new_with_quality(&mut bytes, 100)
+        .encode_image(&image)
+        .unwrap();
+    bytes
+}
+fn upload(store: &Store, filename: &str, content_type: &str, bytes: &[u8]) -> MediaRecord {
+    store
+        .create_blog_media(MediaUpload {
+            filename: filename.into(),
+            content_type: content_type.into(),
+            data_base64: STANDARD.encode(bytes),
+        })
+        .unwrap()
+}
+
+#[tokio::test]
+async fn imported_images_are_measured_and_get_lighter_variants_once_published() {
+    let (app, store, cookie) = fixture();
+    let original = photo(1800, 1125);
+    assert!(original.len() < portfolio_backend::blog::MAX_IMAGE_BYTES);
+    let large = upload(&store, "photo.jpg", "image/jpeg", &original);
+    assert_eq!((large.width, large.height), (Some(1800), Some(1125)));
+    assert_eq!(large.variants, vec![480, 960, 1600]);
+    let variant = store.get_blog_media_variant(large.id, 960).unwrap();
+    assert_eq!(variant.content_type, "image/jpeg");
+    assert!(variant.bytes.len() < original.len());
+    let decoded = image::load_from_memory(&variant.bytes).unwrap();
+    assert_eq!((decoded.width(), decoded.height()), (960, 600));
+
+    // Transparence : la variante reste transparente (WebP sans perte).
+    let mut drawing = image::RgbaImage::new(1200, 800);
+    for (x, y, pixel) in drawing.enumerate_pixels_mut() {
+        if (x / 40 + y / 40) % 2 == 0 {
+            *pixel = image::Rgba([0, 0, 0, 255]);
+        }
+    }
+    let transparent = upload(
+        &store,
+        "trait.png",
+        "image/png",
+        &encoded(
+            image::DynamicImage::ImageRgba8(drawing),
+            image::ImageFormat::Png,
+        ),
+    );
+    assert_eq!(
+        (transparent.width, transparent.height),
+        (Some(1200), Some(800))
+    );
+    for width in &transparent.variants {
+        let variant = store
+            .get_blog_media_variant(transparent.id, *width)
+            .unwrap();
+        assert_eq!(variant.content_type, "image/webp");
+        assert!(
+            image::load_from_memory(&variant.bytes)
+                .unwrap()
+                .color()
+                .has_alpha()
+        );
+    }
+
+    // Une petite image légère n’a aucune variante utile ; un GIF garde son animation.
+    let small = upload(&store, "petite.png", "image/png", &png());
+    assert_eq!((small.width, small.height), (Some(1), Some(1)));
+    assert!(small.variants.is_empty());
+    let gif = upload(
+        &store,
+        "anime.gif",
+        "image/gif",
+        &encoded(
+            image::DynamicImage::ImageRgba8(image::RgbaImage::new(600, 300)),
+            image::ImageFormat::Gif,
+        ),
+    );
+    assert_eq!((gif.width, gif.height), (Some(600), Some(300)));
+    assert!(gif.variants.is_empty());
+
+    // Une signature valide sans en-tête lisible est refusée ; tronquée après son
+    // en-tête, l’image reste admise, mesurée par lui et sans variante.
+    let mut truncated = original.clone();
+    truncated.truncate(400);
+    truncated.extend_from_slice(b"\xff\xd9");
+    assert!(matches!(
+        store.create_blog_media(MediaUpload {
+            filename: "coupee.jpg".into(),
+            content_type: "image/jpeg".into(),
+            data_base64: STANDARD.encode(truncated),
+        }),
+        Err(BlogError::Invalid)
+    ));
+    let mut partial = original.clone();
+    partial.truncate(4000);
+    partial.extend_from_slice(b"\xff\xd9");
+    let partial = upload(&store, "partielle.jpg", "image/jpeg", &partial);
+    assert_eq!((partial.width, partial.height), (Some(1800), Some(1125)));
+    assert!(partial.variants.is_empty());
+
+    let get = |path: String, cookie: Option<String>| {
+        let app = app.clone();
+        async move {
+            app.oneshot(request("GET", &path, json!(null), cookie.as_deref()))
+                .await
+                .unwrap()
+        }
+    };
+    let variant_path = format!("/api/blog/media/{}/960", large.id);
+    assert_eq!(
+        get(variant_path.clone(), None).await.status(),
+        StatusCode::NOT_FOUND,
+        "une variante reste privée avant publication"
+    );
+    let private = get(
+        format!("/api/backoffice/blog/media/{}/960", large.id),
+        Some(cookie.clone()),
+    )
+    .await;
+    assert_eq!(private.status(), StatusCode::OK);
+    assert_eq!(private.headers()[header::CONTENT_TYPE], "image/jpeg");
+
+    let mut p = input("images-mesurees");
+    p.cover_image = Some(transparent.url.clone());
+    p.cover_alt = "Un damier".into();
+    p.content = json!({"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Texte."}]},{"type":"image","attrs":{"src":large.url,"alt":"Une photo"}}]});
+    let post = store.create_blog_post(p).unwrap();
+    let preview = body(
+        get(
+            format!("/api/backoffice/blog/posts/{}/preview", post.id),
+            Some(cookie.clone()),
+        )
+        .await,
+    )
+    .await;
+    assert_eq!(
+        preview["media"][&large.url],
+        json!({"width":1800,"height":1125,"variants":[480,960,1600]})
+    );
+    store.publish_blog_post(post.id, post.revision).unwrap();
+    let public = body(get("/api/blog/posts/images-mesurees".into(), None).await).await;
+    assert_eq!(public["media"][&large.url]["width"], 1800);
+    assert_eq!(public["media"][&transparent.url]["height"], 800);
+    let list = body(get("/api/blog/posts".into(), None).await).await;
+    assert_eq!(list["posts"][0]["media"][&transparent.url]["width"], 1200);
+    assert!(
+        list["posts"][0]["media"].get(&large.url).is_none(),
+        "la liste ne décrit que la couverture"
+    );
+    let response = get(variant_path, None).await;
+    assert_eq!(response.status(), StatusCode::OK);
+    assert_eq!(
+        response.headers()[header::CONTENT_SECURITY_POLICY],
+        "default-src 'none'; sandbox"
+    );
+    assert_eq!(
+        get(format!("/api/blog/media/{}/700", large.id), None)
+            .await
+            .status(),
+        StatusCode::NOT_FOUND
+    );
+}
+
+#[test]
+fn images_imported_before_measurement_are_measured_at_startup() {
+    let path = std::env::temp_dir().join(format!(
+        "portfolio-media-{}-{}.sqlite3",
+        std::process::id(),
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    {
+        let connection = rusqlite::Connection::open(&path).unwrap();
+        connection.execute_batch("CREATE TABLE blog_media (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,filename TEXT NOT NULL,content_type TEXT NOT NULL,
+            data BLOB NOT NULL,created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')));").unwrap();
+        connection
+            .execute(
+                "INSERT INTO blog_media(filename,content_type,data) VALUES('ancienne.jpg','image/jpeg',?1),('illisible.png','image/png',?2)",
+                rusqlite::params![photo(1000, 500), b"\x89PNG\r\n\x1a\n".to_vec()],
+            )
+            .unwrap();
+    }
+    let store = Store::open(&path, Some("owner@example.org")).unwrap();
+    let media = store.list_blog_media(10, 0).unwrap();
+    let old = media.iter().find(|m| m.filename == "ancienne.jpg").unwrap();
+    assert_eq!((old.width, old.height), (Some(1000), Some(500)));
+    // Réencodée à sa largeur, l’image de qualité 100 gagne plus de 10 % : 1 000 est servie aussi.
+    assert_eq!(old.variants, vec![480, 960, 1000]);
+    let unreadable = media
+        .iter()
+        .find(|m| m.filename == "illisible.png")
+        .unwrap();
+    assert_eq!((unreadable.width, unreadable.height), (None, None));
+    drop(store);
+    for suffix in ["", "-wal", "-shm"] {
+        let _ = std::fs::remove_file(format!("{}{suffix}", path.display()));
+    }
 }

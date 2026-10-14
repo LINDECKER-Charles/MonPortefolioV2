@@ -158,7 +158,7 @@ Les routes suivantes nécessitent une session valide, à l’exception de `login
 | `/blog/posts/{id}/preview`, `/blog/posts/{id}/seo` | GET | lire le brouillon ou son audit SEO |
 | `/blog/posts/{id}/publish`, `/blog/posts/{id}/unpublish` | POST | publier ou retirer avec `{"revision":…}` |
 | `/blog/posts/{id}/schedule` | POST | programmer avec `{"revision":…, "scheduled_at":…}` |
-| `/blog/media`, `/blog/media/{id}` | GET/POST, GET | lister/importer les images puis lire leurs octets avec la session |
+| `/blog/media`, `/blog/media/{id}`, `/blog/media/{id}/{largeur}` | GET/POST, GET, GET | lister/importer les images, lire leurs octets ou ceux d’une variante avec la session |
 
 Toutes les mutations, y compris la connexion, exigent `X-Backoffice-Request: 1`. Les requêtes
 POST, PUT et PATCH utilisent `Content-Type: application/json`, même sans corps ; DELETE peut
@@ -227,12 +227,27 @@ vérifient aussi les échéances. Une échéance passée pendant un arrêt est d
 Un retrait annule la programmation et retire la version publique, en conservant le brouillon.
 
 Les routes publiques sont `GET /api/blog/posts?limit=…&offset=…` (résumés publiés),
-`GET /api/blog/posts/{slug}` (version publiée) et `GET /api/blog/media/{id}`. Aucun brouillon
+`GET /api/blog/posts/{slug}` (version publiée), `GET /api/blog/media/{id}` et ses variantes
+`GET /api/blog/media/{id}/{largeur}`. Aucun brouillon
 ni article programmé sans version publiée n’y apparaît. Une image importée reste inaccessible
 par sa route publique tant qu’aucune version publiée ne la référence ; le backoffice peut la lire
 via sa route privée. Les octets des images PNG, JPEG, GIF et WebP sont enregistrés dans SQLite,
 avec vérification de leur signature et une limite de 4 Mio. L’import prend
 `{"filename":"…", "content_type":"image/png", "data_base64":"…"}`, sans préfixe `data:`.
+
+À l’import, le backend décode l’image (10 000 px de côté au plus), en mesure les dimensions,
+orientation EXIF comprise, et prépare des variantes réduites aux largeurs 480, 960 et 1 600 px
+(et à sa propre largeur si elle ne dépasse pas 1 600 px) : JPEG de qualité 80, ou WebP sans
+perte si l’image a de la transparence. Une variante qui ne pèse pas moins que l’original n’est
+pas gardée ; une image animée (GIF, PNG ou WebP) n’en a aucune. L’original reste intact. Une
+image dont même l’en-tête ne se lit pas est refusée ; celle que le décodeur ne lit qu’en partie
+reste admise, mesurée par son en-tête et sans variante. Les images importées avant cette mesure
+sont traitées une fois, au démarrage. Chaque image de la bibliothèque porte `width`, `height` et
+`variants` (largeurs servies sous `/api/blog/media/{id}/{largeur}`, avec la même règle de
+visibilité que l’original). `GET /api/blog/posts/{slug}`, l’aperçu
+`GET /api/backoffice/blog/posts/{id}/preview` et, pour les couvertures, la liste publique ajoutent
+`media` : pour chaque URL d’image de l’article, `{"width":…, "height":…, "variants":[…]}`. Le
+rendu Node en tire `width`, `height`, `srcset` et `sizes`.
 
 Le SEO se règle séparément du titre et de l’extrait : titre/description pour les moteurs,
 adresse canonique, image de partage et exclusion de l’index. En leur absence, les métadonnées
