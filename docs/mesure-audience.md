@@ -127,7 +127,7 @@ Précisions :
 
 | Propriété | Valeurs |
 |---|---|
-| `emplacement` | `en-tete`, `sommaire`, `hero`, `preuves`, `fiche-projet`, `competences`, `discutons`, `contact`, `pied-de-page`, `page-404`, `mentions` |
+| `emplacement` | `en-tete`, `sommaire`, `hero`, `preuves`, `fiche-projet`, `competences`, `discutons`, `contact`, `pied-de-page`, `page-404`, `mentions`, `article` |
 | `chapitre` | `origine`, `aujourdhui`, `discutons` |
 | `choix` | `nuit`, `jour` |
 | `origine` | `interne`, `externe`, `directe` |
@@ -174,6 +174,12 @@ Ces clics indiquent une consultation technique, sans constituer un objectif de p
 Depuis le 2026-10-13, les liens réglementaires des mentions légales (hébergeur `www.hostinger.fr`,
 plaintes à la CNIL `www.cnil.fr`) utilisent `lien-sortant` avec l’emplacement `mentions`, comme
 tout lien externe : le plan de marquage n’admet plus d’exception.
+
+Depuis le 2026-10-14, les liens externes écrits dans un article du blog utilisent `lien-sortant`
+avec l’emplacement `article` et le seul nom d’hôte de leur cible. Le serveur les pose au rendu
+(`site/server/blog.mjs`), avec la flèche ↗ des sorties du site ; les liens internes d’un article
+restent des navigations ordinaires. Ces clics disent quelles sources un lecteur va vérifier, sans
+constituer un objectif de prise de contact.
 
 **Historique avant cet essai** : les valeurs de `chapitre` `preuves` et `dehors`, ainsi que
 l’emplacement `dehors`, ne font plus partie du plan courant. Les données déjà collectées sous
