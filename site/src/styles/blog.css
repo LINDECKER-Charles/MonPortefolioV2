@@ -126,10 +126,36 @@
   grid-row: 1;
 }
 
+/* Après la vedette, chaque carte prend deux rangées de la grille : l’image,
+   puis le texte. La date et le titre de deux cartes voisines partent de la
+   même ligne ; une carte sans couverture laisse vide la rangée de l’image, au
+   lieu de placer son titre sous l’image de sa voisine, comme une légende. */
+@media (min-width: 861px) {
+  /* Une seule colonne, pleine largeur : le justify-content de la carte en
+     flex placerait sinon le texte d’une carte sans image au bout de la case. */
+  .blog-list__article:not(:first-child) {
+    display: grid;
+    grid-row: span 2;
+    grid-template-rows: subgrid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-content: normal;
+    row-gap: var(--s4);
+  }
+
+  .blog-list__article:not(:first-child) > div {
+    grid-row: 2;
+  }
+
+  .blog-list__article:not(:first-child) img {
+    grid-row: 1;
+  }
+}
+
 .blog-list__article h2 {
   margin-block: var(--s2) var(--s3);
   font-size: var(--t-xl);
   line-height: 1.1;
+  overflow-wrap: anywhere;
 }
 
 .blog-list__article:first-child h2 {
@@ -157,12 +183,21 @@
   line-height: 1.5;
 }
 
+/* Une image animée arrive dans un <picture> (son image fixe sous
+   prefers-reduced-motion) : l’image reste l’élément mis en page. */
+.blog-list__article picture,
+.blog-article picture {
+  display: contents;
+}
+
+/* height: auto : l’attribut height posé par le serveur (dimensions réelles)
+   l’emporterait sinon sur le recadrage 16:9. */
 .blog-list__article img {
   width: 100%;
+  height: auto;
   aspect-ratio: 16 / 9;
   object-fit: cover;
   border-radius: var(--r2);
-  background: var(--emplacement);
 }
 
 .blog-meta {
@@ -182,6 +217,8 @@
 }
 
 .blog-tags li {
+  max-width: 100%;
+  overflow-wrap: anywhere;
   padding: 2px var(--s2);
   border: 1px solid var(--trait);
   border-radius: var(--r1);
@@ -244,10 +281,14 @@
   color: var(--eteint);
 }
 
+/* Pas de lien en flex : le séparateur posé en ::before y deviendrait un
+   élément souligné avec le lien. En bloc, il reste un élément atomique, hors du
+   soulignement, comme dans FilAriane. */
 .blog-article__nav a {
-  display: inline-flex;
-  align-items: center;
+  display: inline-block;
   min-height: 44px;
+  padding-block: var(--s3);
+  line-height: 1.4;
   color: var(--eteint);
 }
 
@@ -287,6 +328,8 @@
   font-size: var(--t-3xl);
   line-height: 1;
   letter-spacing: var(--ls-affiche);
+  /* Un mot plus long que la colonne se coupe au lieu d’être rogné par main. */
+  overflow-wrap: anywhere;
 }
 
 .blog-article__intro {
@@ -294,9 +337,12 @@
   line-height: 1.5;
 }
 
+/* Le serveur pose width et height à la taille d’affichage (au plus 1 000 × 650,
+   jamais agrandie) : la boîte est réservée avant le chargement. */
 .blog-article__cover {
   display: block;
-  width: min(100%, 1000px);
+  max-width: min(100%, 1000px);
+  height: auto;
   max-height: 650px;
   margin: var(--s7) auto;
   object-fit: contain;
@@ -343,6 +389,23 @@
   margin-top: var(--s2);
 }
 
+/* Dans une liste, une citation ou une cellule, les blocs gardent un écart :
+   global.css met les paragraphes à zéro, et .blog-prose > * + * ne vise que
+   les blocs de premier niveau. */
+.blog-prose :is(li, blockquote, td, th) > * + * {
+  margin-top: var(--s3);
+}
+
+/* Le premier et le dernier bloc collent à leur conteneur : une liste garde
+   sinon la marge de 1em du navigateur. */
+.blog-prose :is(li, blockquote, td, th) > :first-child {
+  margin-top: 0;
+}
+
+.blog-prose :is(li, blockquote, td, th) > :last-child {
+  margin-bottom: 0;
+}
+
 .blog-prose blockquote {
   padding: var(--s2) 0 var(--s2) var(--s5);
   border-inline-start: 2px solid var(--trait);
@@ -352,12 +415,23 @@
   line-height: 1.25;
 }
 
+/* Un titre cité se distingue de la citation : la voix du texte courant, en
+   petit et en graisse 600, comme un intitulé. */
+.blog-prose blockquote :is(h2, h3, h4) {
+  margin-top: var(--s4);
+  font-family: var(--police-texte);
+  font-style: normal;
+  font-weight: 600;
+  font-size: var(--t-s);
+  letter-spacing: var(--ls-petit);
+  line-height: 1.4;
+}
+
 .blog-prose pre {
   padding: var(--s5);
   overflow-x: auto;
   border: 1px solid var(--filet);
   border-radius: var(--r2);
-  background: var(--surface);
   font-size: var(--t-xs);
   line-height: 1.6;
 }
@@ -367,28 +441,84 @@
   font-size: var(--t-s);
 }
 
+/* Le code d’un bloc prend la taille du bloc. */
+.blog-prose pre code {
+  font-size: inherit;
+}
+
 .blog-prose :not(pre) > code {
   padding: 0.05em 0.3em;
   border-radius: var(--r1);
   background: var(--surface);
 }
 
+/* Dans un titre, le code suit la taille du titre, mais en retrait : à taille
+   égale, la chasse fixe paraît bien plus grosse que l’Instrument Serif, et sa
+   pastille dépasserait l’interligne. */
+.blog-prose :is(h2, h3, h4) code {
+  font-size: var(--t-code-titre);
+  vertical-align: 0.05em;
+  padding-block: 0;
+}
+
+/* Même principe dans le texte : la taille d’affichage vient des attributs
+   (au plus la colonne et 800 px de haut), une petite image reste petite. */
 .blog-prose figure img,
 .blog-prose > img {
-  width: 100%;
+  height: auto;
   max-height: 800px;
   object-fit: contain;
   border-radius: var(--r2);
 }
 
+/* Une image transparente au trait sombre disparaîtrait la nuit : les images
+   d’article reposent sur la plaque claire des logos, la même de jour et de
+   nuit, invisible sous une image opaque. */
+.blog-prose figure img,
+.blog-prose > img,
+.blog-article__cover,
+.blog-list__article img {
+  background: var(--papier-logo);
+}
+
+/* Une légende garde sa voix partout, même dans une citation en italique. */
 .blog-prose figcaption {
   margin-top: var(--s2);
   color: var(--eteint);
+  font-family: var(--police-texte);
+  font-style: normal;
   font-size: var(--t-xs);
+  line-height: 1.75;
+  letter-spacing: var(--ls-0);
 }
 
+/* Une région qui défile le montre, sans JavaScript : une ombre au bord d’où
+   il reste du contenu, masquée au début et à la fin par un voile du fond qui
+   défile avec le contenu (background-attachment: local). */
 .blog-prose .blog-table {
   overflow-x: auto;
+  background:
+    linear-gradient(to right, var(--fond) 30%, transparent) left center / var(--s7) 100% no-repeat local,
+    linear-gradient(to left, var(--fond) 30%, transparent) right center / var(--s7) 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%, var(--trait), transparent) left center / var(--s3) 100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%, var(--trait), transparent) right center / var(--s3) 100% no-repeat scroll;
+}
+
+.blog-prose pre {
+  background:
+    linear-gradient(to right, var(--surface) 30%, transparent) left center / var(--s7) 100% no-repeat local,
+    linear-gradient(to left, var(--surface) 30%, transparent) right center / var(--s7) 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%, var(--trait), transparent) left center / var(--s3) 100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%, var(--trait), transparent) right center / var(--s3) 100% no-repeat scroll,
+    var(--surface);
+}
+
+/* Un tableau large défile : ses cellules ne prennent pas la coupure « anywhere »
+   de la prose, qui les tasserait lettre à lettre, et gardent une largeur
+   lisible (trois colonnes tiennent encore à 390 px). */
+.blog-prose :is(th, td) {
+  min-width: 7em;
+  overflow-wrap: break-word;
 }
 
 .blog-prose table {
@@ -411,22 +541,100 @@
   font-weight: 600;
 }
 
+/* Sur écran étroit, le tableau prend sa largeur naturelle et défile : une
+   colonne courte reste étroite, un texte long s’étale sur une mesure de
+   lecture au lieu de s’empiler mot à mot dans 7em. */
+@media screen and (max-width: 860px) {
+  .blog-prose .blog-table table {
+    width: max-content;
+    min-width: 100%;
+  }
+
+  .blog-prose :is(th, td) {
+    min-width: 0;
+  }
+
+  .blog-prose :is(th, td) > * {
+    max-inline-size: 28ch;
+  }
+}
+
+/* Une colonne d’en-tête garde le filet de sa ligne : le filet porteur ne
+   souligne que la ligne d’en-tête. */
+.blog-prose tbody th {
+  border-bottom-color: var(--filet);
+}
+
 .blog-prose hr {
   margin-block: var(--s7);
   border: 0;
   border-top: 1px solid var(--trait);
 }
 
-.blog-align-center {
+/* Préfixées par .blog-prose : l’alignement d’une cellule l’emporte sur le
+   text-align: start des cellules (même spécificité sinon). */
+.blog-prose .blog-align-center {
   text-align: center;
 }
 
-.blog-align-right {
+.blog-prose .blog-align-right {
   text-align: right;
 }
 
-.blog-align-justify {
+/* Justifié, le texte se coupe (la page est en français) pour éviter les
+   rivières ; un titre ne se justifie pas et reste au début. */
+.blog-prose .blog-align-justify {
   text-align: justify;
+  hyphens: auto;
+}
+
+.blog-prose :is(h2, h3, h4).blog-align-justify {
+  text-align: start;
+}
+
+/* À l’impression, rien ne défile : le code passe à la ligne et les tableaux
+   tiennent dans la page, largeurs fixées comprises. */
+@media print {
+  .blog-prose pre {
+    overflow: visible;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .blog-prose .blog-table {
+    overflow: visible;
+  }
+
+  .blog-prose table {
+    table-layout: fixed;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Sur papier, la colonne prend la largeur de la page et les cellules se
+     resserrent : une douzaine de colonnes reste lisible mot par mot. */
+  .blog-article__header,
+  .blog-prose {
+    width: 100%;
+  }
+
+  .blog-prose table {
+    font-size: var(--t-xs);
+  }
+
+  /* Coupés en fin de ligne par la césure, jamais au milieu d’un mot. */
+  .blog-prose :is(th, td) {
+    width: auto !important;
+    min-width: 0 !important;
+    padding: var(--s1) var(--s2);
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+
+  /* Une rangée, une image ou un bloc de code reste entier sur sa page. */
+  .blog-prose :is(tr, figure, pre) {
+    break-inside: avoid;
+  }
 }
 
 .blog-preview-notice {

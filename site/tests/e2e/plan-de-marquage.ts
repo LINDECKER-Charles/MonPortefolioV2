@@ -21,6 +21,7 @@ export const EMPLACEMENTS = [
   'pied-de-page',
   'page-404',
   'mentions',
+  'article',
 ] as const;
 
 /** Règle d'une propriété : liste fermée, ou nom d'hôte de la cible du lien. */

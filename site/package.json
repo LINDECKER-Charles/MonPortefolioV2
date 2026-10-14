@@ -20,6 +20,7 @@
     "visuels": "node --disable-warning=ExperimentalWarning tools/visuels-manquants.mjs",
     "visuels:doc": "node --disable-warning=ExperimentalWarning tools/generer-visuels.mjs",
     "visuels:rendre": "node --disable-warning=ExperimentalWarning tools/rendre-visuels.mjs",
+    "blog:demo": "node --env-file-if-exists=../.env --disable-warning=ExperimentalWarning tools/articles-demo.mjs",
     "serve": "node --env-file-if-exists=../.env server/server.mjs",
     "preview": "npm run build && npm run serve"
   },

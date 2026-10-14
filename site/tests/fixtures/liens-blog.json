@@ -1,0 +1,36 @@
+{
+  "description": "Une seule règle d’adresses pour les articles du blog : la validation Rust (backend/tests/blog_api.rs), le rendu Node et l’éditeur (site/server/blog-regles.mjs, server/blog-rendu.test.mjs) vérifient les mêmes cas.",
+  "liens": {
+    "admis": [
+      "/projets/omnicard#decisions",
+      "/blog?page=2",
+      "/blog?page=2#articles",
+      "/",
+      "/blog/",
+      "/blog/demo-code-blocs",
+      "#le-contexte",
+      "https://example.org/chemin?a=1#b",
+      "http://example.com"
+    ],
+    "refuses": [
+      "mailto:owner@example.org",
+      "javascript:alert(1)",
+      "data:text/html,x",
+      "//evil.test/chemin",
+      "/a/../secret",
+      "/blog?",
+      "/blog?page=<2>",
+      "/blog#",
+      "/blog#un titre",
+      "#",
+      "/projets/é",
+      "https://user:secret@example.org",
+      "https://exa\nmple.org",
+      "blog/sans-barre"
+    ]
+  },
+  "images": {
+    "admises": ["/api/blog/media/1", "/api/blog/media/42"],
+    "refusees": ["/assets/demo.png", "/images/charles.webp", "/og/accueil.png", "/api/blog/media/0", "/api/blog/media/01", "https://example.org/image.png", "data:image/png;base64,AAAA"]
+  }
+}

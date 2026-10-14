@@ -35,6 +35,8 @@ pub enum BlogError {
     NotFound,
     RevisionConflict,
     SlugConflict,
+    MediaInUse,
+    ImageTooLarge,
     Storage,
 }
 impl BlogError {
@@ -44,6 +46,8 @@ impl BlogError {
             Self::NotFound => "NOT_FOUND",
             Self::RevisionConflict => "REVISION_CONFLICT",
             Self::SlugConflict => "SLUG_CONFLICT",
+            Self::MediaInUse => "MEDIA_IN_USE",
+            Self::ImageTooLarge => "IMAGE_TOO_LARGE",
             Self::Storage => "STORAGE_UNAVAILABLE",
         }
     }
@@ -55,6 +59,12 @@ impl BlogError {
                 "L’article a changé. Rechargez sa version avant de continuer."
             }
             Self::SlugConflict => "Cette adresse est déjà utilisée par un article.",
+            Self::MediaInUse => {
+                "Cette image est utilisée par un article. Retirez-la de ses versions avant de la supprimer."
+            }
+            Self::ImageTooLarge => {
+                "Cette image dépasse 40 millions de pixels. Réduisez-la avant de l’importer."
+            }
             Self::Storage => "Le service est temporairement indisponible.",
         }
     }
@@ -72,9 +82,11 @@ impl From<rusqlite::Error> for BlogError {
 impl From<BlogError> for ApiError {
     fn from(error: BlogError) -> Self {
         let status = match error {
-            BlogError::Invalid => StatusCode::UNPROCESSABLE_ENTITY,
+            BlogError::Invalid | BlogError::ImageTooLarge => StatusCode::UNPROCESSABLE_ENTITY,
             BlogError::NotFound => StatusCode::NOT_FOUND,
-            BlogError::RevisionConflict | BlogError::SlugConflict => StatusCode::CONFLICT,
+            BlogError::RevisionConflict | BlogError::SlugConflict | BlogError::MediaInUse => {
+                StatusCode::CONFLICT
+            }
             BlogError::Storage => StatusCode::SERVICE_UNAVAILABLE,
         };
         Self::new(status, error.code(), error.message())
@@ -149,6 +161,15 @@ pub struct MediaRecord {
     pub size: u64,
     pub url: String,
     pub created_at: String,
+    /// Dimensions réelles, orientation comprise ; absentes si l’image n’a pas pu être mesurée.
+    pub width: Option<u32>,
+    pub height: Option<u32>,
+    /// Largeurs servies sous `{url}/{largeur}`, de la plus petite à la plus grande.
+    pub variants: Vec<u32>,
+    /// Image animée : largeur de son image fixe, servie sous `{url}/{largeur}`
+    /// à qui demande moins de mouvement.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub still: Option<u32>,
 }
 pub struct MediaData {
     pub content_type: String,
@@ -167,7 +188,75 @@ pub(crate) fn initialize(connection: &Connection) -> Result<(), StoreError> {
         CREATE INDEX IF NOT EXISTS blog_schedule ON blog_posts(scheduled_at) WHERE scheduled_at IS NOT NULL;
         CREATE TABLE IF NOT EXISTS blog_media (
         id INTEGER PRIMARY KEY AUTOINCREMENT,filename TEXT NOT NULL,content_type TEXT NOT NULL,
-        data BLOB NOT NULL,created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')));")?;
+        data BLOB NOT NULL,created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')));
+        CREATE TABLE IF NOT EXISTS blog_media_variants (
+        media_id INTEGER NOT NULL REFERENCES blog_media(id) ON DELETE CASCADE,
+        width INTEGER NOT NULL,content_type TEXT NOT NULL,data BLOB NOT NULL,
+        still INTEGER NOT NULL DEFAULT 0,
+        PRIMARY KEY(media_id,width));")?;
+    let variant_columns = connection
+        .prepare("PRAGMA table_info(blog_media_variants)")?
+        .query_map([], |row| row.get::<_, String>(1))?
+        .collect::<Result<Vec<_>, _>>()?;
+    if !variant_columns.iter().any(|name| name == "still") {
+        connection.execute(
+            "ALTER TABLE blog_media_variants ADD COLUMN still INTEGER NOT NULL DEFAULT 0",
+            [],
+        )?;
+    }
+    let columns = connection
+        .prepare("PRAGMA table_info(blog_media)")?
+        .query_map([], |row| row.get::<_, String>(1))?
+        .collect::<Result<Vec<_>, _>>()?;
+    for column in ["width", "height"] {
+        if !columns.iter().any(|name| name == column) {
+            connection.execute(
+                &format!("ALTER TABLE blog_media ADD COLUMN {column} INTEGER"),
+                [],
+            )?;
+        }
+    }
+    // Les images importées avant la mesure reçoivent dimensions, variantes et
+    // original sans métadonnées une fois. Chacune est d’abord marquée 0 × 0 :
+    // une image illisible, ou qui ferait tomber le service, n’est jamais relue
+    // à chaque démarrage.
+    let pending: Vec<(i64, String)> = connection
+        .prepare("SELECT id,content_type FROM blog_media WHERE width IS NULL ORDER BY id")?
+        .query_map([], |row| Ok((row.get(0)?, row.get(1)?)))?
+        .collect::<Result<Vec<_>, _>>()?;
+    for (id, content_type) in pending {
+        connection.execute("UPDATE blog_media SET width=0,height=0 WHERE id=?1", [id])?;
+        let bytes: Vec<u8> =
+            connection.query_row("SELECT data FROM blog_media WHERE id=?1", [id], |r| {
+                r.get(0)
+            })?;
+        if let Ok(processed) = crate::blog_media::process(&bytes, &content_type) {
+            connection.execute(
+                "UPDATE blog_media SET data=?2 WHERE id=?1",
+                params![id, processed.original],
+            )?;
+            store_processed(connection, id, &processed)?;
+        }
+    }
+    Ok(())
+}
+
+fn store_processed(
+    connection: &Connection,
+    id: i64,
+    processed: &crate::blog_media::Processed,
+) -> rusqlite::Result<()> {
+    connection.execute(
+        "UPDATE blog_media SET width=?2,height=?3 WHERE id=?1",
+        params![id, processed.width, processed.height],
+    )?;
+    let variants = processed.variants.iter().map(|variant| (variant, false));
+    for (variant, still) in variants.chain(processed.still.iter().map(|variant| (variant, true))) {
+        connection.execute(
+            "INSERT OR REPLACE INTO blog_media_variants(media_id,width,content_type,data,still) VALUES(?1,?2,?3,?4,?5)",
+            params![id, variant.width, variant.content_type, variant.bytes, still],
+        )?;
+    }
     Ok(())
 }
 
@@ -196,10 +285,13 @@ fn safe_path(value: &str, prefix: &str) -> bool {
             .bytes()
             .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'/' | b'-' | b'_' | b'.'))
 }
+/// Seules les images importées s’affichent : le site ne sert aucun dossier
+/// d’images d’auteur, et ses propres fichiers (`/images/`, `/og/`) changent
+/// avec lui. Même règle dans server/blog.mjs et l’éditeur.
 pub fn valid_image_url(value: &str) -> bool {
     value.strip_prefix("/api/blog/media/").is_some_and(|id| {
         !id.is_empty() && !id.starts_with('0') && id.bytes().all(|b| b.is_ascii_digit())
-    }) || safe_path(value, "/assets/")
+    })
 }
 fn web_url(value: &str) -> bool {
     value.len() <= 2048
@@ -211,13 +303,32 @@ fn web_url(value: &str) -> bool {
                 && url.password().is_none()
         })
 }
+fn anchor(value: &str) -> bool {
+    !value.is_empty()
+        && value
+            .bytes()
+            .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'-' | b'_'))
+}
+/// Une seule règle de liens, reprise par l’éditeur (blog-editor.ts) et le rendu
+/// (server/blog.mjs) : adresse http(s) absolue ; chemin du site, avec au besoin
+/// des paramètres et une ancre sûrs (`/blog?page=2`, `/projets/omnicard#decisions`) ;
+/// ancre d’un titre de l’article (`#le-contexte`).
 fn link_url(value: &str) -> bool {
-    web_url(value)
-        || safe_path(value, "/")
-        || (value.starts_with('#')
-            && value[1..]
-                .bytes()
-                .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'-' | b'_')))
+    let (rest, fragment) = value
+        .split_once('#')
+        .map_or((value, None), |(rest, fragment)| (rest, Some(fragment)));
+    let (path, query) = rest
+        .split_once('?')
+        .map_or((rest, None), |(path, query)| (path, Some(query)));
+    let internal = safe_path(path, "/")
+        && query.is_none_or(|query| {
+            !query.is_empty()
+                && query.bytes().all(|b| {
+                    b.is_ascii_alphanumeric() || matches!(b, b'=' | b'&' | b'-' | b'_' | b'.')
+                })
+        })
+        && fragment.is_none_or(anchor);
+    web_url(value) || internal || value.strip_prefix('#').is_some_and(anchor)
 }
 
 impl BlogInput {
@@ -558,7 +669,8 @@ fn available_slug(connection: &Connection, slug: &str, id: i64) -> Result<(), Bl
 fn encode<T: Serialize>(value: &T) -> Result<String, BlogError> {
     serde_json::to_string(value).map_err(|_| BlogError::Storage)
 }
-fn check_media(connection: &Connection, fields: &BlogInput) -> Result<(), BlogError> {
+/// Les images d’un article : contenu, couverture et partage.
+fn media_refs(fields: &BlogInput) -> Vec<String> {
     fn walk(value: &Value, refs: &mut Vec<String>) {
         if let Some(src) = value
             .get("attrs")
@@ -577,7 +689,13 @@ fn check_media(connection: &Connection, fields: &BlogInput) -> Result<(), BlogEr
     walk(&fields.content, &mut refs);
     refs.extend(fields.cover_image.iter().cloned());
     refs.extend(fields.og_image.iter().cloned());
-    for path in refs {
+    refs
+}
+fn media_id(path: &str) -> Option<i64> {
+    path.strip_prefix("/api/blog/media/")?.parse().ok()
+}
+fn check_media(connection: &Connection, fields: &BlogInput) -> Result<(), BlogError> {
+    for path in media_refs(fields) {
         if let Some(id) = path.strip_prefix("/api/blog/media/") {
             let id = id.parse::<i64>().map_err(|_| BlogError::Invalid)?;
             let exists: bool = connection.query_row(
@@ -790,22 +908,40 @@ impl Store {
         {
             return Err(BlogError::Invalid);
         }
-        let connection = self.connection()?;
-        connection.execute(
-            "INSERT INTO blog_media(filename,content_type,data) VALUES(?1,?2,?3)",
-            params![upload.filename, upload.content_type, bytes],
+        // Décodage et réductions avant de prendre la base : seule l’écriture la bloque.
+        let processed = crate::blog_media::process(&bytes, &upload.content_type).map_err(
+            |refus| match refus {
+                crate::blog_media::Rejected::TooLarge => BlogError::ImageTooLarge,
+                crate::blog_media::Rejected::Unreadable => BlogError::Invalid,
+            },
         )?;
-        media_record(&connection, connection.last_insert_rowid())
+        let mut connection = self.connection()?;
+        let tx = connection.transaction()?;
+        tx.execute(
+            "INSERT INTO blog_media(filename,content_type,data) VALUES(?1,?2,?3)",
+            params![upload.filename, upload.content_type, processed.original],
+        )?;
+        let id = tx.last_insert_rowid();
+        store_processed(&tx, id, &processed)?;
+        let record = media_record(&tx, id)?;
+        tx.commit()?;
+        Ok(record)
     }
     pub fn list_blog_media(&self, limit: u32, offset: u32) -> Result<Vec<MediaRecord>, BlogError> {
         if !(1..=100).contains(&limit) {
             return Err(BlogError::Invalid);
         }
         let connection = self.connection()?;
-        let mut query=connection.prepare("SELECT id,filename,content_type,length(data),created_at FROM blog_media ORDER BY id DESC LIMIT ?1 OFFSET ?2")?;
-        Ok(query
+        let mut query = connection.prepare(&format!(
+            "SELECT {MEDIA_COLUMNS} FROM blog_media ORDER BY id DESC LIMIT ?1 OFFSET ?2"
+        ))?;
+        let mut media = query
             .query_map(params![limit, offset], media_row)?
-            .collect::<Result<Vec<_>, _>>()?)
+            .collect::<Result<Vec<_>, _>>()?;
+        for record in &mut media {
+            (record.variants, record.still) = media_variants(&connection, record.id)?;
+        }
+        Ok(media)
     }
     pub fn get_blog_media(&self, id: i64) -> Result<MediaData, BlogError> {
         self.connection()?
@@ -822,18 +958,124 @@ impl Store {
             .optional()?
             .ok_or(BlogError::NotFound)
     }
-    pub fn get_public_blog_media(&self, id: i64) -> Result<MediaData, BlogError> {
+    /// Une image (ou l’une de ses variantes) n’est publique que si une version publiée la référence.
+    fn check_public_media(&self, id: i64) -> Result<(), BlogError> {
         self.publish_due_blog_posts(unix_now())?;
         let path = format!("/api/blog/media/{id}");
         let public:bool=self.connection()?.query_row("SELECT EXISTS(SELECT 1 FROM blog_posts,json_tree(blog_posts.published_json) WHERE blog_posts.published_json IS NOT NULL AND json_tree.type='text' AND json_tree.key IN ('src','cover_image','og_image') AND json_tree.value=?1)",[path],|r|r.get(0))?;
-        if !public {
-            return Err(BlogError::NotFound);
+        if public {
+            Ok(())
+        } else {
+            Err(BlogError::NotFound)
         }
+    }
+    pub fn get_public_blog_media(&self, id: i64) -> Result<MediaData, BlogError> {
+        self.check_public_media(id)?;
         self.get_blog_media(id)
     }
+    pub fn get_blog_media_variant(&self, id: i64, width: u32) -> Result<MediaData, BlogError> {
+        self.connection()?
+            .query_row(
+                "SELECT content_type,data FROM blog_media_variants WHERE media_id=?1 AND width=?2",
+                params![id, width],
+                |r| {
+                    Ok(MediaData {
+                        content_type: r.get(0)?,
+                        bytes: r.get(1)?,
+                    })
+                },
+            )
+            .optional()?
+            .ok_or(BlogError::NotFound)
+    }
+    pub fn get_public_blog_media_variant(
+        &self,
+        id: i64,
+        width: u32,
+    ) -> Result<MediaData, BlogError> {
+        self.check_public_media(id)?;
+        self.get_blog_media_variant(id, width)
+    }
+    /// Dimensions et variantes des images d’un article, par URL publique, pour
+    /// que le rendu pose `width`, `height` et `srcset` sans relire les fichiers.
+    pub fn blog_media_details(
+        &self,
+        paths: impl IntoIterator<Item = String>,
+    ) -> Result<Value, BlogError> {
+        let connection = self.connection()?;
+        let mut details = serde_json::Map::new();
+        for path in paths {
+            let Some(id) = media_id(&path) else { continue };
+            if details.contains_key(&path) {
+                continue;
+            }
+            let dimensions: Option<(Option<u32>, Option<u32>)> = connection
+                .query_row(
+                    "SELECT width,height FROM blog_media WHERE id=?1",
+                    [id],
+                    |r| Ok((r.get(0)?, r.get(1)?)),
+                )
+                .optional()?;
+            if let Some((Some(width @ 1..), Some(height @ 1..))) = dimensions {
+                let (variants, still) = media_variants(&connection, id)?;
+                let mut detail = json!({"width":width,"height":height,"variants":variants});
+                if let Some(still) = still {
+                    detail["still"] = json!(still);
+                }
+                details.insert(path, detail);
+            }
+        }
+        Ok(Value::Object(details))
+    }
+    /// Seule une image qu’aucune version (travail, programmée, publiée) ne cite peut partir.
+    pub fn delete_blog_media(&self, id: i64) -> Result<(), BlogError> {
+        let mut connection = self.connection()?;
+        let tx = connection.transaction()?;
+        let exists: bool = tx.query_row(
+            "SELECT EXISTS(SELECT 1 FROM blog_media WHERE id=?1)",
+            [id],
+            |r| r.get(0),
+        )?;
+        if !exists {
+            return Err(BlogError::NotFound);
+        }
+        let path = format!("/api/blog/media/{id}");
+        let used: bool = tx.query_row(
+            "SELECT EXISTS(SELECT 1 FROM blog_posts,json_tree(blog_posts.editable_json) WHERE json_tree.type='text' AND json_tree.key IN ('src','cover_image','og_image') AND json_tree.value=?1)
+             OR EXISTS(SELECT 1 FROM blog_posts,json_tree(blog_posts.scheduled_json) WHERE blog_posts.scheduled_json IS NOT NULL AND json_tree.type='text' AND json_tree.key IN ('src','cover_image','og_image') AND json_tree.value=?1)
+             OR EXISTS(SELECT 1 FROM blog_posts,json_tree(blog_posts.published_json) WHERE blog_posts.published_json IS NOT NULL AND json_tree.type='text' AND json_tree.key IN ('src','cover_image','og_image') AND json_tree.value=?1)",
+            [path],
+            |r| r.get(0),
+        )?;
+        if used {
+            return Err(BlogError::MediaInUse);
+        }
+        tx.execute("DELETE FROM blog_media WHERE id=?1", [id])?;
+        tx.commit()?;
+        Ok(())
+    }
+}
+const MEDIA_COLUMNS: &str = "id,filename,content_type,length(data),created_at,width,height";
+/// Les largeurs des variantes, puis celle de l’image fixe d’une image animée.
+fn media_variants(connection: &Connection, id: i64) -> rusqlite::Result<(Vec<u32>, Option<u32>)> {
+    let rows = connection
+        .prepare("SELECT width,still FROM blog_media_variants WHERE media_id=?1 ORDER BY width")?
+        .query_map([id], |r| Ok((r.get::<_, u32>(0)?, r.get::<_, bool>(1)?)))?
+        .collect::<rusqlite::Result<Vec<_>>>()?;
+    let still = rows
+        .iter()
+        .find(|(_, still)| *still)
+        .map(|(width, _)| *width);
+    let variants = rows
+        .into_iter()
+        .filter(|(_, still)| !still)
+        .map(|(width, _)| width)
+        .collect();
+    Ok((variants, still))
 }
 fn media_row(r: &rusqlite::Row<'_>) -> rusqlite::Result<MediaRecord> {
     let id = r.get(0)?;
+    let measured = |value: Option<u32>| value.filter(|&n| n > 0);
     Ok(MediaRecord {
         id,
         filename: r.get(1)?,
@@ -841,14 +1083,20 @@ fn media_row(r: &rusqlite::Row<'_>) -> rusqlite::Result<MediaRecord> {
         size: r.get(3)?,
         url: format!("/api/blog/media/{id}"),
         created_at: r.get(4)?,
+        width: measured(r.get(5)?),
+        height: measured(r.get(6)?),
+        variants: Vec::new(),
+        still: None,
     })
 }
 fn media_record(connection: &Connection, id: i64) -> Result<MediaRecord, BlogError> {
-    Ok(connection.query_row(
-        "SELECT id,filename,content_type,length(data),created_at FROM blog_media WHERE id=?1",
+    let mut record = connection.query_row(
+        &format!("SELECT {MEDIA_COLUMNS} FROM blog_media WHERE id=?1"),
         [id],
         media_row,
-    )?)
+    )?;
+    (record.variants, record.still) = media_variants(connection, id)?;
+    Ok(record)
 }
 fn sniff_image(bytes: &[u8]) -> Option<&'static str> {
     if bytes.len() >= 24 && bytes.starts_with(b"\x89PNG\r\n\x1a\n") && &bytes[12..16] == b"IHDR" {
@@ -990,7 +1238,10 @@ pub fn routes(state: AppState) -> Router<AppState> {
         .route("/api/backoffice/blog/posts/{id}/publish", post(publish))
         .route("/api/backoffice/blog/posts/{id}/schedule", post(schedule))
         .route("/api/backoffice/blog/posts/{id}/unpublish", post(unpublish))
-        .route("/api/backoffice/blog/posts/{id}/preview", get(admin_get))
+        .route(
+            "/api/backoffice/blog/posts/{id}/preview",
+            get(admin_preview),
+        )
         .route("/api/backoffice/blog/posts/{id}/seo", get(audit))
         .route_layer(middleware::from_fn_with_state(
             state.clone(),
@@ -1002,7 +1253,14 @@ pub fn routes(state: AppState) -> Router<AppState> {
             "/api/backoffice/blog/media",
             get(admin_media_list).post(upload_media),
         )
-        .route("/api/backoffice/blog/media/{id}", get(admin_media))
+        .route(
+            "/api/backoffice/blog/media/{id}",
+            get(admin_media).delete(delete_media),
+        )
+        .route(
+            "/api/backoffice/blog/media/{id}/{width}",
+            get(admin_media_variant),
+        )
         .route_layer(middleware::from_fn_with_state(
             state,
             crate::admin::require_session,
@@ -1014,6 +1272,20 @@ pub fn routes(state: AppState) -> Router<AppState> {
         .route("/api/blog/posts", get(public_list))
         .route("/api/blog/posts/{slug}", get(public_get))
         .route("/api/blog/media/{id}", get(public_media))
+        .route("/api/blog/media/{id}/{width}", get(public_media_variant))
+}
+/// L’article et, sous `media`, les dimensions et variantes de ses images (rendu Node).
+fn with_media(store: &Store, post: BlogPost) -> Result<Value, BlogError> {
+    let media = store.blog_media_details(media_refs(&post.fields))?;
+    let mut value = serde_json::to_value(post).map_err(|_| BlogError::Storage)?;
+    value["media"] = media;
+    Ok(value)
+}
+async fn admin_preview(
+    State(s): State<AppState>,
+    Path(id): Path<i64>,
+) -> Result<Json<Value>, ApiError> {
+    Ok(Json(with_media(&s.store, s.store.get_blog_post(id)?)?))
 }
 async fn admin_list(
     State(s): State<AppState>,
@@ -1080,7 +1352,22 @@ async fn public_list(
     State(s): State<AppState>,
     Query(q): Query<PageQuery>,
 ) -> Result<Json<Value>, ApiError> {
-    summaries(s.store.list_public_blog_posts(q.limit, q.offset)?)
+    let page = s.store.list_public_blog_posts(q.limit, q.offset)?;
+    let media = page
+        .posts
+        .iter()
+        .map(|post| {
+            s.store
+                .blog_media_details(post.fields.cover_image.iter().cloned())
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let Json(mut value) = summaries(page)?;
+    if let Some(posts) = value.get_mut("posts").and_then(Value::as_array_mut) {
+        for (post, media) in posts.iter_mut().zip(media) {
+            post["media"] = media;
+        }
+    }
+    Ok(Json(value))
 }
 fn summaries(page: BlogPage) -> Result<Json<Value>, ApiError> {
     let mut page = serde_json::to_value(page).map_err(|_| BlogError::Storage)?;
@@ -1097,8 +1384,11 @@ fn summaries(page: BlogPage) -> Result<Json<Value>, ApiError> {
 async fn public_get(
     State(s): State<AppState>,
     Path(slug): Path<String>,
-) -> Result<Json<BlogPost>, ApiError> {
-    Ok(Json(s.store.get_public_blog_post(&slug)?))
+) -> Result<Json<Value>, ApiError> {
+    Ok(Json(with_media(
+        &s.store,
+        s.store.get_public_blog_post(&slug)?,
+    )?))
 }
 async fn admin_media_list(
     State(s): State<AppState>,
@@ -1112,7 +1402,19 @@ async fn upload_media(
     State(s): State<AppState>,
     Json(p): Json<MediaUpload>,
 ) -> Result<(StatusCode, Json<MediaRecord>), ApiError> {
-    Ok((StatusCode::CREATED, Json(s.store.create_blog_media(p)?)))
+    // Le décodage et les réductions prennent du calcul : hors des fils d’Axum.
+    let store = s.store.clone();
+    let media = tokio::task::spawn_blocking(move || store.create_blog_media(p))
+        .await
+        .map_err(|_| BlogError::Storage)??;
+    Ok((StatusCode::CREATED, Json(media)))
+}
+async fn delete_media(
+    State(s): State<AppState>,
+    Path(id): Path<i64>,
+) -> Result<Json<Value>, ApiError> {
+    s.store.delete_blog_media(id)?;
+    Ok(Json(json!({"deleted":true,"id":id})))
 }
 fn media_response(data: MediaData) -> Response {
     (
@@ -1136,4 +1438,18 @@ async fn public_media(
     Path(id): Path<i64>,
 ) -> Result<Response, ApiError> {
     Ok(media_response(s.store.get_public_blog_media(id)?))
+}
+async fn admin_media_variant(
+    State(s): State<AppState>,
+    Path((id, width)): Path<(i64, u32)>,
+) -> Result<Response, ApiError> {
+    Ok(media_response(s.store.get_blog_media_variant(id, width)?))
+}
+async fn public_media_variant(
+    State(s): State<AppState>,
+    Path((id, width)): Path<(i64, u32)>,
+) -> Result<Response, ApiError> {
+    Ok(media_response(
+        s.store.get_public_blog_media_variant(id, width)?,
+    ))
 }

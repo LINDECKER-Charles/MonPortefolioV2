@@ -1,5 +1,6 @@
 pub mod admin;
 pub mod blog;
+mod blog_media;
 pub mod config;
 pub mod contact;
 pub mod error;

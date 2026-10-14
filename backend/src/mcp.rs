@@ -382,7 +382,20 @@ async fn handle(
                 modern,
             )
         }
-        "tools/call" => call_tool(&state, &scopes, params, id, modern),
+        "tools/call" => {
+            // SQLite et le traitement des images importées bloquent : hors des fils d’Axum.
+            let (params, id) = (params.clone(), id.cloned());
+            tokio::task::spawn_blocking(move || {
+                call_tool(&state, &scopes, &params, id.as_ref(), modern)
+            })
+            .await
+            .unwrap_or_else(|_| {
+                http_error(
+                    StatusCode::SERVICE_UNAVAILABLE,
+                    "Le service est temporairement indisponible.",
+                )
+            })
+        }
         _ => rpc_error(
             if modern {
                 StatusCode::NOT_FOUND
@@ -631,9 +644,12 @@ fn required_scope(name: &str) -> Option<&'static str> {
         "blog_list_posts" | "blog_get_post" | "blog_preview_post" | "blog_seo_audit"
         | "blog_list_media" => Some("blog:read"),
         "blog_create_post" | "blog_update_post" | "blog_upload_media" => Some("blog:write"),
-        "blog_publish_post" | "blog_schedule_post" | "blog_unpublish_post" | "blog_delete_post" => {
-            Some("blog:publish")
-        }
+        // Supprimer est définitif : article ou image, il faut la permission de publier.
+        "blog_publish_post"
+        | "blog_schedule_post"
+        | "blog_unpublish_post"
+        | "blog_delete_post"
+        | "blog_delete_media" => Some("blog:publish"),
         _ => None,
     }
 }
@@ -836,6 +852,18 @@ fn call_blog_tool(
                 .create_blog_media(upload)
                 .map(|media| json!(media))
         }
+        "blog_delete_media" => {
+            let Ok(identity) = serde_json::from_value::<BlogIdentity>(value) else {
+                return invalid();
+            };
+            if identity.id <= 0 {
+                return invalid();
+            }
+            state
+                .store
+                .delete_blog_media(identity.id)
+                .map(|()| json!({ "deleted": true, "id": identity.id }))
+        }
         _ => return invalid(),
     };
     match result {
@@ -956,7 +984,7 @@ fn blog_tools() -> Vec<Value> {
             "blog_seo_audit",
             "Vérifier le SEO",
             "Vérifier titre, description, URL, structure des titres, images et indexation. Le score donne des pistes éditoriales, sans garantie de positionnement. Permission blog:read.",
-            identity,
+            identity.clone(),
             true,
             false,
             true,
@@ -1014,7 +1042,7 @@ fn blog_tools() -> Vec<Value> {
         tool(
             "blog_upload_media",
             "Importer une image",
-            "Importer une image PNG, JPEG, GIF ou WebP en base64. Aucun téléchargement externe n’est effectué. Réutiliser l’URL retournée et écrire un texte alternatif dans l’article. Permission blog:write.",
+            "Importer une image PNG, JPEG, GIF ou WebP en base64. Aucun téléchargement externe n’est effectué. Le serveur mesure ses dimensions et prépare des variantes réduites pour le rendu. Réutiliser l’URL retournée et écrire un texte alternatif dans l’article. Permission blog:write.",
             json!({
                 "type": "object", "properties": {
                     "filename": { "type": "string", "minLength": 1, "maxLength": 200 },
@@ -1025,6 +1053,15 @@ fn blog_tools() -> Vec<Value> {
             false,
             false,
             false,
+        ),
+        tool(
+            "blog_delete_media",
+            "Supprimer une image",
+            "Supprimer définitivement une image importée et ses variantes. Refusé (MEDIA_IN_USE) tant qu’une version de travail, programmée ou publiée d’un article la cite. Exige blog:publish.",
+            identity,
+            false,
+            true,
+            true,
         ),
     ]
 }
@@ -1065,7 +1102,7 @@ fn blog_input_schema(update: bool) -> Value {
                             "start": { "type": ["integer", "null"], "minimum": 1, "maximum": 1000000 },
                             "type": { "type": ["string", "null"], "enum": ["1", "a", "A", "i", "I", null] },
                             "language": { "type": ["string", "null"], "maxLength": 40, "pattern": "^[a-zA-Z0-9+#_-]*$" },
-                            "src": { "type": "string", "description": "URL /api/blog/media/{id} d’une image importée ou /assets/ du site." },
+                            "src": { "type": "string", "description": "URL /api/blog/media/{id} d’une image importée (blog_upload_media), seule source admise." },
                             "alt": { "type": ["string", "null"], "maxLength": 300 },
                             "title": { "type": ["string", "null"], "maxLength": 300 },
                             "width": { "type": ["integer", "null"], "minimum": 1, "maximum": 10000 },
@@ -1084,7 +1121,7 @@ fn blog_input_schema(update: bool) -> Value {
                     "type": { "type": "string", "enum": ["bold", "italic", "strike", "underline", "code", "link"] },
                     "attrs": {
                         "type": "object", "properties": {
-                            "href": { "type": "string", "description": "URL HTTP/HTTPS ou lien interne. javascript: et data: sont refusés." },
+                            "href": { "type": "string", "description": "URL HTTP/HTTPS absolue, chemin du site avec paramètres et ancre facultatifs ([A-Za-z0-9/_.-], ?[A-Za-z0-9=&_.-], #[A-Za-z0-9_-] : /blog?page=2, /projets/omnicard#decisions) ou ancre d’un titre (#le-contexte). mailto:, javascript: et data: sont refusés." },
                             "title": { "type": ["string", "null"], "maxLength": 300 },
                             "target": { "type": ["string", "null"], "enum": ["_blank", "_self", null] },
                             "rel": { "type": ["string", "null"] },
