@@ -954,11 +954,11 @@ export const VISUELS: readonly EntreeVisuel[] = [
   {
     id: 'PRJ-06',
     serie: 'projets',
-    page: '/projets',
-    emplacement: 'Carte GitHealth (famille « Outils »), en attendant sa capture',
+    page: '/projets/githealth',
+    emplacement: '§ Les verdicts de la page GitHealth, sous la liste des verdicts',
     sujet: 'Décider quoi faire d’une branche',
     composition: 'Trois branches d’un même tronc, dessinées comme des rameaux stylisés partant d’une racine commune, chacune terminée par un petit picto de verdict sans texte : un sceau plein (garder), une loupe (revoir), un balai (nettoyer) ; la lanterne, posée au pied du tronc (vers 50 % de la largeur et 84 % de la hauteur), éclaire la branche à revoir ; fond en réserve, aucun personnage',
-    cadrage: 'Dans le panneau de la carte, posé dans l’acte de veille : entier (contenu, fond transparent, rien de rogné), environ 300 px de large et centré dans le panneau portrait sur ordinateur, pleine largeur en 4:3 sur mobile ; le sujet se lit à ces deux tailles.',
+    cadrage: 'Sous la liste des verdicts de la page GitHealth, sur la pierre de la page : entier (fond transparent, rien de rogné), environ 280 px de large à toutes les largeurs ; le sujet se lit à cette taille.',
     calques: { encre: 'traits, contours et hachures d’ombre', aplat: 'tronc, branches et pictos de verdict', lumiere: 'flamme et branche à revoir' },
     fond: 'transparent',
     format: '4:3, 1200 × 900',
@@ -967,10 +967,10 @@ export const VISUELS: readonly EntreeVisuel[] = [
     hauteur: 900,
     methode: 'IMG',
     priorite: 'socle',
-    pose: ['config/githealth.ts', 'pages/projets/index.astro'],
+    pose: ['pages/projets/githealth.astro'],
     alt: 'Trois branches d’un même tronc, chacune avec son verdict : garder, revoir ou nettoyer.',
     fichier: 'src/assets/visuels/projets/PRJ-06_1200x900.webp',
-    note: 'Dessiné pour la rangée « Aussi », il suit GitHealth dans la vitrine le 14/10/2026 : posé par la carte du projet (CARTE.visuel de config/githealth.ts, rendu par pages/projets/index.astro), décoratif, le nom de la carte dit le reste. Une capture réelle de l’application le remplacera.',
+    note: 'Dessiné pour la rangée « Aussi », il a suivi GitHealth dans la vitrine le 14/10/2026, puis sur sa page quand la carte a reçu sa capture réelle (GTH-C1) : il illustre la liste des verdicts (pages/projets/githealth.astro), hors de tout acte sombre.',
   },
   {
     id: 'PRJ-07',
@@ -2691,6 +2691,31 @@ export const VISUELS: readonly EntreeVisuel[] = [
   },
 
   // GTH — GitHealth (série « githealth », /projets/githealth) : ses entrées, sous ce repère.
+  {
+    id: 'GTH-C1',
+    serie: 'githealth',
+    page: '/projets/githealth',
+    emplacement: 'En-tête et § Les verdicts, La politique, L’analyse en direct, Les visualisations ; carte de la vitrine (famille « Outils »)',
+    sujet: 'Les écrans de GitHealth, sur des dépôts de démonstration',
+    composition: 'Écrans réels de l’application lancée en local (build de la révision bd2e5c9, thème clair) sur des dépôts Git de démonstration aux auteurs fictifs, sans retouche ni recomposition ; la carte de la vitrine recadre la fiche de branche de la même capture',
+    format: 'format natif des écrans (16:10) ; fiche de branche en portrait pour la carte',
+    ratio: null,
+    methode: 'CAP',
+    priorite: 'socle',
+    pose: ['pages/projets/githealth.astro', 'config/githealth.ts'],
+    alt: '',
+    fichier: null,
+    declinaisons: [
+      { nom: 'diagnostic', fichier: 'src/assets/projets/githealth/diagnostic.webp', alt: '' },
+      { nom: 'fiche-branche', fichier: 'src/assets/projets/githealth/fiche-branche.webp', alt: '' },
+      { nom: 'politique', fichier: 'src/assets/projets/githealth/politique.webp', alt: '' },
+      { nom: 'analyse-en-cours', fichier: 'src/assets/projets/githealth/analyse-en-cours.webp', alt: '' },
+      { nom: 'carte-topologie', fichier: 'src/assets/projets/githealth/carte-topologie.webp', alt: '' },
+      { nom: 'registre-activite', fichier: 'src/assets/projets/githealth/registre-activite.webp', alt: '' },
+      { nom: 'vitrine-fiche-branche', fichier: 'src/assets/projets/githealth/vitrine-fiche-branche.webp', alt: '' },
+    ],
+    note: 'Livrés le 14/10/2026, provenance dans src/assets/projets/githealth/README.md ; leurs alts sont dans config/githealth.ts (CAPTURES et CARTE). Interface en anglais, celle de l’application ; l’engrenage de la barre du haut et le scan planifié viennent de la branche de développement, non publiés.',
+  },
 
   // ↑ fin des entrées GTH
 
