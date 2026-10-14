@@ -26,7 +26,7 @@ const NBSP = '\u00a0';
 const NNBSP = '\u202f';
 
 /** Doubles de l’API, sans stockage réel ni envoi de courriel. */
-async function apiDouble(page: Page, options: { authenticated?: boolean; smtp?: boolean; twoFactor?: boolean; enrollment?: boolean; setupFailures?: number; tokenLimit?: boolean; disque?: { total: number; available: number } | null; imagePriseEntreTemps?: number } = {}) {
+async function apiDouble(page: Page, options: { authenticated?: boolean; smtp?: boolean; twoFactor?: boolean; enrollment?: boolean; setupFailures?: number; tokenLimit?: boolean; disque?: { total: number; available: number } | null; imagePriseEntreTemps?: number; journalVide?: boolean } = {}) {
   const etat = {
     authenticated: options.authenticated ?? false,
     smtp: options.smtp ?? true,
@@ -121,7 +121,7 @@ async function apiDouble(page: Page, options: { authenticated?: boolean; smtp?: 
       const somme = (cle: 'size' | 'total') => etat.images.reduce((total, image) => total + image[cle], 0);
       await repondre({
         disk: enMemoire ? null : options.disque ?? { total: 994_662_584_320, available: 247_984_865_280 },
-        database: { file: enMemoire ? null : 4096, wal: enMemoire ? null : 3_695_672, size: 3_399_680, free: 397_312, page_size: 4096 },
+        database: { file: enMemoire ? null : 4096, wal: enMemoire ? null : options.journalVide ? 0 : 3_695_672, size: 3_399_680, free: 397_312, page_size: 4096 },
         categories: { media_originals: somme('size'), media_variants: somme('total') - somme('size'), posts: 16_384, contacts: 8192, system: 57_344 },
         media: [...etat.images].sort((a, b) => b.total - a.total),
         posts: [{ ...ARTICLE, size: 377 }],
@@ -641,7 +641,7 @@ test('Stockage : le disque, la base, les images et les articles, du plus lourd a
   await expect(panneau.locator('#bo-storage-disk-alert')).toBeEmpty();
   // La base : fichier et journal, puis sa répartition chiffrée.
   await expect(panneau.locator('#bo-storage-db-total')).toHaveText(`3,7${NBSP}Mo`);
-  await expect(panneau.locator('#bo-storage-db-files')).toContainText('journal');
+  await expect(panneau.locator('#bo-storage-db-files')).toHaveText(`Fichier 4,1${NBSP}Ko et journal 3,7${NBSP}Mo.`);
   await expect(panneau.locator('#bo-storage-db-legend .bo-legende__libelle')).toHaveText(['Originaux des images', 'Variantes des images', 'Articles', 'Demandes de contact', 'Fonctionnement', 'Espace libéré']);
   await expect(panneau.getByText('Espace libéré : réutilisé par les prochains imports, le fichier ne rétrécit pas.')).toBeVisible();
 
@@ -703,9 +703,11 @@ test('Stockage : le disque, la base, les images et les articles, du plus lourd a
 });
 
 test('Stockage par son adresse : le disque qui se remplit, et une image prise entre-temps', async ({ page }) => {
-  const etat = await apiDouble(page, { authenticated: true, disque: { total: 100_000_000_000, available: 5_000_000_000 }, imagePriseEntreTemps: 2 });
+  const etat = await apiDouble(page, { authenticated: true, disque: { total: 100_000_000_000, available: 5_000_000_000 }, imagePriseEntreTemps: 2, journalVide: true });
   await page.goto('/backoffice?rubrique=storage');
   await expect(page.getByRole('heading', { name: 'Stockage', level: 2 })).toBeVisible();
+  // Après un redémarrage, le journal est vide : rien n’attend d’être reporté.
+  await expect(page.locator('#bo-storage-db-files')).toHaveText(`Fichier 4,1${NBSP}Ko, journal vide.`);
   const alerte = page.locator('#bo-storage-disk-alert');
   await expect(alerte).toHaveRole('status');
   await expect(alerte).toHaveText(`Le disque se remplit${NBSP}: il reste 5${NBSP}Go, 5${NBSP}% du disque.`);

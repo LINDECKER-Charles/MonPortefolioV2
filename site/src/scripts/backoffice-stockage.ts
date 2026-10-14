@@ -120,7 +120,9 @@ export function brancherStockage(contexte: ContexteStockage): RubriqueStockage {
     texte('bo-storage-db-total', octets(surDisque));
     texte('bo-storage-db-files', base.file === null
       ? `Base en mémoire, ${octets(base.size)} de pages.`
-      : `Fichier ${octets(base.file)} et journal ${octets(base.wal ?? 0)}, pas encore reporté dans le fichier.`);
+      : base.wal
+        ? `Fichier ${octets(base.file)} et journal ${octets(base.wal)}.`
+        : `Fichier ${octets(base.file)}, journal vide.`);
     const valeurs = PARTS.map(([cle, libelle]) => ({ cle, libelle, valeur: cle === 'free' ? base.free : parts[cle] }));
     const somme = valeurs.reduce((total, { valeur }) => total + valeur, 0) || 1;
     element('bo-storage-db-bar').replaceChildren(...valeurs.filter(({ valeur }) => valeur > 0).map(({ cle, valeur }) => {
