@@ -571,6 +571,58 @@ async fn manages_toolbox_and_mcp_tokens_without_reexposing_secrets() {
 }
 
 #[tokio::test]
+async fn the_mcp_access_ceiling_is_explained_and_freed_by_a_revocation() {
+    let (app, store) = fixture(None);
+    let cookie = login(&app).await;
+    let scopes = vec!["blog:read".to_owned()];
+    let first = store
+        .create_token_with_scopes("Accès 1", &scopes)
+        .unwrap()
+        .0;
+    for index in 2..=64 {
+        store
+            .create_token_with_scopes(&format!("Accès {index}"), &scopes)
+            .unwrap();
+    }
+    let create = || {
+        request(
+            "POST",
+            "/api/backoffice/tokens",
+            json!({"name":"Claude Code","scopes":["blog:read","blog:write"]}),
+            Some(&cookie),
+        )
+    };
+    let refused = app.clone().oneshot(create()).await.unwrap();
+    assert_eq!(refused.status(), StatusCode::CONFLICT);
+    let refused = body(refused).await;
+    assert_eq!(refused["code"], "TOKEN_LIMIT_REACHED");
+    let message = refused["message"].as_str().unwrap();
+    assert!(message.contains("64 accès MCP"), "{message}");
+    assert!(message.contains("Révoquez"), "{message}");
+    assert!(!message.contains("indisponible"), "{message}");
+    assert_eq!(store.list_tokens().unwrap().len(), 64);
+    assert_eq!(
+        app.clone()
+            .oneshot(request(
+                "DELETE",
+                &format!("/api/backoffice/tokens/{first}"),
+                json!({}),
+                Some(&cookie)
+            ))
+            .await
+            .unwrap()
+            .status(),
+        StatusCode::OK
+    );
+    let created = app.clone().oneshot(create()).await.unwrap();
+    assert_eq!(created.status(), StatusCode::CREATED);
+    assert_eq!(
+        body(created).await["scopes"],
+        json!(["blog:read", "blog:write"])
+    );
+}
+
+#[tokio::test]
 async fn changing_admin_password_invalidates_previous_sessions() {
     let (app, store) = fixture(None);
     let cookie = login(&app).await;

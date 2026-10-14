@@ -24,7 +24,7 @@ use crate::{
     AppState,
     config::BackofficeConfig,
     error::ApiError,
-    storage::{StoreError, TwoFactorResult},
+    storage::{StoreError, TokenCreationError, TwoFactorResult},
 };
 use subtle::ConstantTimeEq;
 
@@ -182,6 +182,14 @@ fn invalid() -> ApiError {
         StatusCode::UNPROCESSABLE_ENTITY,
         "VALIDATION_ERROR",
         "Vérifiez les champs du formulaire.",
+    )
+}
+/// Le plafond d’accès MCP (storage::MAX_TOKENS) : une règle à expliquer, pas une panne.
+fn token_limit_reached() -> ApiError {
+    ApiError::new(
+        StatusCode::CONFLICT,
+        "TOKEN_LIMIT_REACHED",
+        "Le portfolio compte déjà 64 accès MCP, le maximum. Révoquez un accès inutilisé pour en créer un autre.",
     )
 }
 fn not_found() -> ApiError {
@@ -759,7 +767,10 @@ async fn create_token(
     let (id, token) = state
         .store
         .create_token_with_scopes(name, &payload.scopes)
-        .map_err(storage_error)?;
+        .map_err(|error| match error {
+            TokenCreationError::LimitReached => token_limit_reached(),
+            TokenCreationError::Store(error) => storage_error(error),
+        })?;
     Ok((
         StatusCode::CREATED,
         Json(json!({"id":id,"name":name,"token":token,"scopes":payload.scopes})),

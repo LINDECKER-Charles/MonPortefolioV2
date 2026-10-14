@@ -74,6 +74,28 @@ pub struct TokenRecord {
     pub scopes: Vec<String>,
 }
 
+/// Nombre maximal d’accès MCP actifs : au-delà, il faut en révoquer un.
+pub const MAX_TOKENS: u64 = 64;
+
+/// Échec de la création d’un accès MCP : le plafond est une règle, pas une panne.
+#[derive(Debug)]
+pub enum TokenCreationError {
+    LimitReached,
+    Store(StoreError),
+}
+
+impl From<StoreError> for TokenCreationError {
+    fn from(error: StoreError) -> Self {
+        Self::Store(error)
+    }
+}
+
+impl From<rusqlite::Error> for TokenCreationError {
+    fn from(error: rusqlite::Error) -> Self {
+        Self::Store(error.into())
+    }
+}
+
 pub(crate) enum TwoFactorResult {
     Verified {
         session: String,
@@ -629,7 +651,7 @@ impl Store {
             .collect::<Result<Vec<_>, _>>()?)
     }
 
-    pub fn create_token(&self, name: &str) -> Result<(i64, String), StoreError> {
+    pub fn create_token(&self, name: &str) -> Result<(i64, String), TokenCreationError> {
         self.create_token_with_scopes(name, &["contacts:read".into(), "blog:read".into()])
     }
 
@@ -637,15 +659,15 @@ impl Store {
         &self,
         name: &str,
         scopes: &[String],
-    ) -> Result<(i64, String), StoreError> {
+    ) -> Result<(i64, String), TokenCreationError> {
         if !crate::admin::valid_token_scopes(scopes) {
-            return Err(StoreError);
+            return Err(StoreError.into());
         }
         let connection = self.connection()?;
         let count: u64 =
             connection.query_row("SELECT count(*) FROM tokens", [], |row| row.get(0))?;
-        if count >= 64 {
-            return Err(StoreError);
+        if count >= MAX_TOKENS {
+            return Err(TokenCreationError::LimitReached);
         }
         let token = random_secret();
         connection.execute(
