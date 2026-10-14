@@ -18,6 +18,10 @@ describe('routes relayées par le proxy de développement', () => {
       '/api/backoffice/tokens/3',
       '/api/backoffice/blog/posts/12/preview',
       '/api/blog/posts/mon-article',
+      '/api/blog/media/4',
+      '/api/blog/media/4/640',
+      '/api/backoffice/blog/media/4',
+      '/api/backoffice/blog/media/4/1280',
       '/mcp',
     ]) expect(relayee(adresse), adresse).toBe(true);
   });
@@ -30,6 +34,8 @@ describe('routes relayées par le proxy de développement', () => {
       '/mcp/outils',
       '/backoffice',
       '/api/backoffice/blog/posts/12/supprimer',
+      '/api/blog/media/4/0',
+      '/api/blog/media/4/640/2',
     ]) expect(relayee(adresse), adresse).toBe(false);
   });
 });
