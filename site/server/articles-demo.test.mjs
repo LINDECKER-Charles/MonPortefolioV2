@@ -30,7 +30,7 @@ function lancer(env) {
 
 test('l’outil de démonstration refuse toute cible qui n’est pas locale et en development, sans rien envoyer', async (t) => {
   let requetes = 0;
-  const serveur = createServer((req, res) => { requetes += 1; res.writeHead(503); res.end(); });
+  const serveur = createServer((_req, res) => { requetes += 1; res.writeHead(503); res.end(); });
   await new Promise((resolve) => serveur.listen(0, '127.0.0.1', resolve));
   t.after(() => new Promise((resolve) => serveur.close(resolve)));
   const port = serveur.address().port;
