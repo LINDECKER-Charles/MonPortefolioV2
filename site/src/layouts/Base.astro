@@ -26,6 +26,7 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { Font, getImage } from 'astro:assets';
 import Entete from '../components/layout/Entete.astro';
+import Favicons from '../components/layout/Favicons.astro';
 import PiedDePage from '../components/layout/PiedDePage.astro';
 import photo from '../assets/photos/charles-4.webp';
 import { SITE } from '../config/site';
@@ -118,9 +119,7 @@ if (!horsIndex) {
     {chemin === '/' && <meta property="profile:first_name" content="Charles" />}
     {chemin === '/' && <meta property="profile:last_name" content="Lindecker" />}
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="icon" href="/favicon.ico?v=20261013-embleme" sizes="16x16 32x32 48x48" />
-    <link rel="icon" href="/favicon.png?v=20261013-embleme" type="image/png" sizes="64x64" media="(prefers-color-scheme: light)" />
-    <link rel="icon" href="/favicon-nuit.png?v=20261013-embleme" type="image/png" sizes="64x64" media="(prefers-color-scheme: dark)" />
+    <Favicons />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20261013-embleme" />
     <link rel="manifest" href="/site.webmanifest" />
     {/* Synchrone, avant les styles : le thème est posé avant le premier rendu. */}

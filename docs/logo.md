@@ -47,6 +47,22 @@ d’ordinateur et du pied de page :
   Sans, le logo validé et les photos de séance (`site/src/lib/partage.ts`). L’image par défaut
   est aussi copiée en `site/public/og/accueil.png`, l’image de repli des articles du blog.
 
+**Correction du favicon du 2026-10-14.** Le repli ICO sombre pouvait disparaître sur des
+onglets sombres ; les deux PNG dépendaient de la sélection de `media` par le navigateur,
+alors que la couleur d’un thème d’onglets peut différer de la préférence système. Le favicon
+conserve son fond transparent et le dessin GLO-01, avec un contour clair sous l’encre sombre.
+Le cadrage inclut désormais le bas du livre et ce contour sans les couper. Un même dessin
+est fourni en SVG, PNG 64 px et ICO 16/32/48 px, sans condition de thème et sans JavaScript.
+`components/layout/Favicons.astro` partage les déclarations versionnées entre site et atelier.
+L’ancienne URL `favicon-nuit.png` reste disponible avec ce dessin universel. Les icônes Apple
+et d’application conservent leur fond opaque ; le logo du site ne change pas.
+
+Reproduction : `node tools/preparer-icones.mjs` dans `site/`. Les tests contrôlent le contraste
+des deux parties du dessin à 16 px sur huit fonds, le contenu multi-résolution de l’ICO,
+les déclarations de toutes les pages et le décodage HTTP dans Chromium, Firefox et WebKit,
+avec et sans JavaScript, en préférence claire et sombre. Ces tests de moteur ne contrôlent
+pas l’interface native des onglets ni le cache d’un profil de navigateur déjà utilisé.
+
 ## L'idée
 
 Un livre ouvert avec une lanterne gothique en son creux. La composition est validée.

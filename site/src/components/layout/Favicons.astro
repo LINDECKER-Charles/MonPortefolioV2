@@ -1,0 +1,11 @@
+---
+/**
+ * Même symbole bicolore sur tous les fonds d’onglets, sans dépendance au thème.
+ * ICO multi-résolution et PNG en repli du SVG ; version pour renouveler le cache.
+ * Partagé par le site public et le backoffice.
+ */
+const version = '20261014-contraste';
+---
+<link rel="icon" href={`/favicon.ico?v=${version}`} type="image/x-icon" sizes="16x16 32x32 48x48" />
+<link rel="icon" href={`/favicon.png?v=${version}`} type="image/png" sizes="64x64" />
+<link rel="icon" href={`/favicon.svg?v=${version}`} type="image/svg+xml" sizes="any" />

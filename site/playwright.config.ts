@@ -3,7 +3,8 @@ import { IS_CI, MESURE, SITE, SKIP_BUILD } from './tests/e2e/support/serveurs.mj
 
 /**
  * Tests de bout en bout : le build de production, servi par le serveur de
- * production (server/server.mjs), dans Chromium à deux largeurs. Pas
+ * production (server/server.mjs), dans Chromium à deux largeurs ; le favicon
+ * est aussi vérifié dans Firefox et WebKit. Pas
  * d'`astro dev` : c'est ce qui part en ligne qui est testé — en-têtes,
  * statuts, chargeur de mesure compris.
  */
@@ -30,6 +31,8 @@ export default defineConfig({
       use: { ...devices['Pixel 7'], viewport: { width: 390, height: 844 } },
     },
     { name: 'bureau-1440', use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } } },
+    { name: 'favicon-firefox', testMatch: 'favicons.spec.ts', use: { ...devices['Desktop Firefox'] } },
+    { name: 'favicon-webkit', testMatch: 'favicons.spec.ts', use: { ...devices['Desktop Safari'] } },
   ],
   webServer: [
     {

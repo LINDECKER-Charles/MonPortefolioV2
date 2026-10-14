@@ -1,5 +1,6 @@
 ---
 import { Font } from 'astro:assets';
+import Favicons from '../layout/Favicons.astro';
 import '../../styles/backoffice.css';
 import BlogWorkspace from './BlogWorkspace.astro';
 import '../../styles/blog-editor.css';
@@ -26,7 +27,7 @@ const description = 'L’espace privé du portfolio de Charles Lindecker pour co
     <meta property="og:image" content="https://charles-lindecker.com/og/accueil.png" />
     <meta name="twitter:card" content="summary" />
     <meta name="theme-color" content="#1f4fd1" />
-    <link rel="icon" href="/favicon.ico" />
+    <Favicons />
     <Font cssVariable="--police-texte" preload />
   </head>
   <body data-backoffice-page={blogSection ? 'blog' : 'home'} data-blog-section={blogSection ?? 'list'}>

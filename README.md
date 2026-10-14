@@ -36,9 +36,9 @@ npm run preview      # build + serveur de production, http://127.0.0.1:4000
 | `npm run visuels` | liste les visuels « socle » manquants du registre `src/config/visuels.ts`, rendus et masters de nuit compris (`-- --tout` pour tous, `-- --verifier` pour contrôler les fichiers livrés, `-- --strict` pour échouer s'il en manque) ; le build en affiche le décompte sans échouer |
 | `npm run visuels:doc` | régénère `docs/visuels-a-generer.md`, la commande de production des images, depuis le registre |
 | `npm run visuels:rendre <ID>` | rend les deux masters d’une image générée (`design/assets/visuels/<série>/<ID>.png` et `<ID>.nuit.png`) aux couleurs des jetons : `<ID>_<l>x<h>.webp` (jour) et `.nuit.webp` (nuit), sous le plafond de poids du registre ; `-- --tout` pour tous les masters déposés |
-| `npm run test:e2e` | build + tests navigateur (Playwright, Chromium à 390 et 1440 px, axe) |
+| `npm run test:e2e` | build + tests navigateur (Playwright, Chromium à 390 et 1440 px, axe ; favicons aussi dans Firefox et WebKit) |
 
-Première exécution des tests navigateur : `npx playwright install chromium`.
+Première exécution des tests navigateur : `npx playwright install chromium firefox webkit`.
 
 ```bash
 docker compose up --build    # les deux services, http://127.0.0.1:4000

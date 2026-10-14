@@ -91,13 +91,13 @@ jobs:
       - name: Installation des dependances
         run: npm ci
 
-      - name: Chromium
+      - name: Chromium, Firefox et WebKit
         # La version suit @playwright/test, epingle dans package-lock.json.
         # Pas de cache : Playwright le deconseille, restaurer coute autant que
         # telecharger et les bibliotheques systeme ne se mettent pas en cache.
         # `--only-shell` : les tests tournent sans fenetre, le Chromium complet
         # ne serait qu'un telechargement de plus.
-        run: npx playwright install --with-deps --only-shell chromium
+        run: npx playwright install --with-deps --only-shell chromium firefox webkit
 
       - name: Installation Rust pour le parcours complet
         uses: dtolnay/rust-toolchain@stable
