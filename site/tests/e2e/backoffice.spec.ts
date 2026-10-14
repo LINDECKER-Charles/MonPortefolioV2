@@ -569,6 +569,29 @@ test('révoquer un accès efface « reste actif » sous le formulaire', async ({
   await expect(page.locator('#bo-token-form-retour')).toBeEmpty();
 });
 
+test('la lanterne du backoffice passe à la nuit sans rien mettre en file de mesure', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'light' });
+  await apiDouble(page, { authenticated: true });
+  const requetesMesure: string[] = [];
+  page.on('request', (request) => { if (/mesure\.js|umami|script\.js/.test(request.url())) requetesMesure.push(request.url()); });
+  // Le serveur suivi : même là, le backoffice reste hors mesure.
+  await page.goto(`${MESURE.url}/backoffice?rubrique=tokens`);
+  await expect(page.locator('#bo-workspace')).toBeVisible();
+  const bascule = page.locator('[data-theme-bascule]');
+  await expect(bascule).toHaveCount(1);
+  await expect(bascule).toHaveAttribute('data-sans-mesure', '');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'jour');
+  await expect(bascule).toHaveAttribute('aria-pressed', 'false');
+  await bascule.click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'nuit');
+  await expect(bascule).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Créer l’accès', exact: true }).click();
+  await expect(page.locator('#bo-secret')).toBeVisible();
+  await accessibilite(page);
+  expect(await fileDeMesure(page)).toEqual([]);
+  expect(requetesMesure).toEqual([]);
+});
+
 for (const theme of ['jour', 'nuit'] as const) {
   test.describe(`thème ${theme}`, () => {
     test.use({ colorScheme: theme === 'nuit' ? 'dark' : 'light' });
