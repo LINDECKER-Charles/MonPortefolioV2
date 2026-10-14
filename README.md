@@ -170,7 +170,7 @@ essaie aussi des documents que le backend doit refuser et affiche leur résultat
 cible hors de la boucle locale (`BACKEND_URL` sur 127.0.0.1, localhost ou ::1), tout
 `APP_ENV` autre que `development` et tout backend qui exige la 2FA : ces articles ne vont jamais
 en production. Il est idempotent ; `-- --nettoyer` supprime les articles `demo-*`, puis leurs
-images directement dans la base SQLite locale (`DATABASE_PATH`), faute de route de suppression.
+images par l’API du backoffice, qui garde une image encore citée par un autre article.
 Pour les voir : backend lancé depuis la racine, `npm run build`, puis `npm run serve` (qui lit
 `BACKEND_URL` dans le `.env`) et `/blog` ; l’aperçu du brouillon demande une connexion au
 backoffice sur la même origine.

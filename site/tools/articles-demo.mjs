@@ -24,22 +24,18 @@
  * sont dessinées ici avec sharp (formes simples et la mention « Image de
  * démonstration ») : aucun fichier n’est écrit sur le disque.
  *
- * Le backend n’a pas de route pour supprimer une image : --nettoyer retire
- * les articles par l’API, puis les images demo-* qu’aucun article ne
- * référence directement dans la base SQLite locale (DATABASE_PATH, relatif à
- * la racine du dépôt), toujours sous les mêmes garde-fous.
+ * --nettoyer retire les articles demo-* puis les images demo-* par l’API
+ * (DELETE /api/backoffice/blog/media/{id}), qui refuse une image encore citée
+ * par un autre article.
  *
  * L’outil essaie aussi quelques documents que la validation doit refuser
  * (mailto:, paramètre ou ancre non sûrs, retour chariot, image qui n’est pas
  * importée) et en affiche le résultat ; rien n’en reste en base.
  */
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import { typo } from '../src/lib/typo.ts';
 import { slugTitre } from '../server/blog.mjs';
 
-const RACINE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const args = process.argv.slice(2);
 const NETTOYER = args.includes('--nettoyer');
 const PROGRAMMER_DANS = Number(args.find((a) => a.startsWith('--programmer-dans='))?.split('=')[1] ?? 7 * 24 * 60);
@@ -525,18 +521,14 @@ async function nettoyer() {
     await exiger('DELETE', `/api/backoffice/blog/posts/${post.id}`, { revision: post.revision });
     console.log(`  article ${post.slug} supprimé`);
   }
-  const demo = (await imagesEnBase()).filter((m) => m.filename.startsWith('demo-'));
-  if (!demo.length) return;
-  const base = path.resolve(RACINE, process.env.DATABASE_PATH ?? 'data/portfolio.sqlite3');
-  if (!base.startsWith(RACINE + path.sep)) arreter(`base hors du dépôt (${base}) : images laissées en place.`);
-  const { DatabaseSync } = await import('node:sqlite');
-  const sqlite = new DatabaseSync(base);
-  sqlite.exec('PRAGMA busy_timeout = 5000');
-  const supprimer = sqlite.prepare("DELETE FROM blog_media WHERE id = ? AND filename LIKE 'demo-%' AND NOT EXISTS (SELECT 1 FROM blog_posts, json_tree(blog_posts.editable_json) WHERE json_tree.type = 'text' AND json_tree.value = ?)");
-  let n = 0;
-  for (const m of demo) n += Number(supprimer.run(m.id, m.url).changes);
-  sqlite.close();
-  console.log(`  ${n} image(s) demo-* supprimée(s) dans ${path.relative(RACINE, base)}`);
+  let supprimees = 0; let citees = 0;
+  for (const m of (await imagesEnBase()).filter((media) => media.filename.startsWith('demo-'))) {
+    const r = await api('DELETE', `/api/backoffice/blog/media/${m.id}`, {});
+    if (r.status === 409 && r.json?.code === 'MEDIA_IN_USE') citees += 1;
+    else if (r.status >= 400) arreter(`DELETE ${m.url} → ${r.status} ${JSON.stringify(r.json)}`);
+    else supprimees += 1;
+  }
+  console.log(`  ${supprimees} image(s) demo-* supprimée(s)${citees ? `, ${citees} laissée(s) : un autre article les cite` : ''}`);
 }
 
 /* ===== Création ou mise à jour ===== */
