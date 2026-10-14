@@ -1,8 +1,10 @@
 ---
 /**
  * REL-F1 · Le point d’accès : les outils de la machine passent par Relais,
- * qui tient les comptes, les permissions, la capacité et les conversations,
- * et lance lui-même ses versions épinglées de Claude Code et de Codex.
+ * qui prend en charge les comptes, les permissions, la capacité et les
+ * conversations, et lance lui-même ses versions fixées de Claude Code et de
+ * Codex. Chaque libellé de flèche tient dans un seul <span> : seule la flèche
+ * est un élément flex, sans espace parasite avant la virgule.
  * Figure en HTML (aucune image), de haut en bas à toutes les largeurs : elle
  * se lit à 390 px comme dans la colonne de la section. Données : POINT_ACCES
  * (config/relais.ts), avec leurs sources.
@@ -30,14 +32,14 @@ const { class: classe } = Astro.props;
       }
     </ul>
   </div>
-  <p class="acces__lien"><span class="acces__fleche" aria-hidden="true">↓</span> une API locale, sur <code>127.0.0.1</code>, derrière une clé</p>
+  <p class="acces__lien"><span class="acces__fleche" aria-hidden="true">↓</span> <span>une API locale, sur <code>127.0.0.1</code>, derrière une clé</span></p>
   <div class="acces__relais foyer">
     <p class="acces__nom" id="acces-relais">Relais</p>
     <ul aria-labelledby="acces-relais">
       {POINT_ACCES.relais.map((element) => <li>{element}</li>)}
     </ul>
   </div>
-  <p class="acces__lien"><span class="acces__fleche" aria-hidden="true">↓</span> lance ses propres versions, épinglées</p>
+  <p class="acces__lien"><span class="acces__fleche" aria-hidden="true">↓</span> <span>lance sa propre version de chaque agent</span></p>
   <div class="acces__etage">
     <p class="acces__titre" id="acces-agents">Les agents</p>
     <ul class="acces__puces" aria-labelledby="acces-agents">
@@ -51,7 +53,7 @@ const { class: classe } = Astro.props;
       }
     </ul>
   </div>
-  <figcaption class="acces__legende">Qui passe par Relais, ce qu’il tient pour eux et ce qu’il lance. Versions relevées le 14/10/2026.</figcaption>
+  <figcaption class="acces__legende">Qui passe par Relais, ce qu’il prend en charge pour eux et ce qu’il lance. Versions relevées le 14/10/2026.</figcaption>
 </figure>
 
 <style>
