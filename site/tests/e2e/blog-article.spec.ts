@@ -161,6 +161,16 @@ test('les paragraphes restent séparés dans les listes, les citations et les ce
   expect(titre[0], 'un titre cité se distingue du texte cité').not.toBe(titre[1]);
 });
 
+test('le code garde la taille de son bloc ou de son titre', async ({ page }) => {
+  await ouvrir(page);
+  const tailles = await page.evaluate(() => {
+    const taille = (selecteur: string) => getComputedStyle(document.querySelector(selecteur)!).fontSize;
+    return { pre: taille('.blog-prose pre'), codeDuBloc: taille('.blog-prose pre code'), titre: taille('.blog-prose h2:has(code)'), codeDuTitre: taille('.blog-prose h2 code') };
+  });
+  expect(tailles.codeDuBloc).toBe(tailles.pre);
+  expect(tailles.codeDuTitre).toBe(tailles.titre);
+});
+
 test('les images réservent leur place, ne s’agrandissent pas et chargent la variante utile', async ({ page }) => {
   await page.addInitScript(() => {
     (window as unknown as { decalage: number }).decalage = 0;
