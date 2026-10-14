@@ -20,6 +20,7 @@
 import type { EntreeSommaire } from './navigation';
 import type { CarteVitrine } from './vitrine';
 import type { Decision, DonneesFiche, LienProjet, PreuveEnTete, SchemaProjet } from '../components/projets/gabarit/types';
+import { typo } from '../lib/typo';
 import cartePerimetre from '../assets/projets/relais/carte-perimetre.webp';
 import angular from '../assets/stacks/angular.svg';
 import rust from '../assets/stacks/rust.svg';
@@ -33,10 +34,11 @@ export const CARTE: CarteVitrine = {
   // README l. 6-8 : « lance sa propre version de Claude Code et de Codex CLI,
   // isole les comptes, expose une API aux outils de la machine et conserve les
   // conversations dans SQLite ».
-  besoin: 'Donner aux outils de ma machine un seul point d’accès local aux agents Claude Code et Codex, qui tient leurs comptes, leurs permissions et leurs conversations.',
+  besoin: 'Donner aux outils de ma machine un seul point d’accès local aux agents Claude Code et Codex, qui isole leurs comptes, décide de leurs permissions et garde leurs conversations.',
   // docs/registre-correctifs.md l. 3-6 et 28 : la base de l’instance en
-  // service après trois jours (du 21 au 23/09/2026), relue à bdf041f.
-  chiffre: { valeur: '1 011', libelle: 'décisions de permission en trois jours de service', releve: '14 octobre 2026' },
+  // service après trois jours (du 21 au 23/09/2026), relue à bdf041f. Le
+  // compte est figé au 23/09/2026 : c’est sa date, pas celle de la lecture.
+  chiffre: { valeur: '1 011', libelle: 'décisions de permission en trois jours de service', releve: '23 septembre 2026' },
   // git log à bdf041f : 260 commits, un seul auteur.
   role: 'Conçu et développé seul',
   statut: { texte: 'Outil personnel, en usage quotidien' },
@@ -53,7 +55,7 @@ export const CARTE: CarteVitrine = {
     capture: {
       type: 'terminal',
       src: cartePerimetre,
-      alt: 'Le périmètre d’une session dans Relais : aucun terminal, lecture seule dans les spécifications, écriture dans le seul projet confié.',
+      alt: typo('Le périmètre d’une session dans Relais : aucun terminal, lecture seule dans les spécifications, écriture dans le seul projet confié.'),
     },
   },
 };
@@ -65,7 +67,7 @@ export const CARTE: CarteVitrine = {
 export const EN_TETE = {
   titre: 'Un seul point d’accès aux agents IA de ma machine.',
   chapeau:
-    'Plusieurs de mes outils confient du travail à des agents Claude Code et Codex. Relais les lance à leur place : il isole chaque abonnement, décide des permissions, tient la capacité et garde chaque conversation. Je l’ai conçu et développé seul, en Rust et en Angular.',
+    'Plusieurs de mes outils confient du travail à des agents Claude Code et Codex. Relais les lance à leur place : il isole chaque abonnement, en surveille la capacité, décide des permissions et garde les conversations. Je l’ai conçu et développé seul, en Rust et en Angular.',
   liens: [] satisfies LienProjet[],
 };
 
@@ -98,7 +100,7 @@ export const PREUVES: readonly PreuveEnTete[] = [
 ];
 
 export const FICHE: DonneesFiche = {
-  besoin: 'Donner aux outils de ma machine un seul point d’accès local aux agents IA, avec des comptes isolés et des permissions tenues.',
+  besoin: 'Donner aux outils de ma machine un seul point d’accès local aux agents IA, avec des comptes isolés et chaque permission décidée par Relais.',
   part: 'J’ai conçu et développé seul le serveur en Rust et l’interface Angular, avec leurs tests et leur documentation.',
   role: 'Conception et développement',
   // Premier commit le 18/09/2026 (9930260).
@@ -125,13 +127,13 @@ export const SECTIONS: readonly EntreeSommaire[] = [
 /* ------------------------------------------------------------------ */
 
 /**
- * Qui passe par Relais, ce qu’il tient et ce qu’il lance. Clients : Sillage
+ * Qui passe par Relais, ce qu’il prend en charge et ce qu’il lance. Clients : Sillage
  * se déclare par `application_name` (docs/api-contract.md l. 342) ; Karl
  * Scraper confie ses agents à Relais depuis le 21/09/2026 (dossier de faits
  * de Karl Scraper) ; tout outil qui a la clé (page « Intégrer un outil ») ;
- * la console elle-même (« Nouvelle session »). Ce que Relais tient : README
+ * la console elle-même (« Nouvelle session »). Ce qu’il prend en charge : README
  * l. 6-8, docs/architecture.md, backend/src/launch_brake.rs. Versions
- * épinglées : runtime/package.json.
+ * fixées par Relais : runtime/package.json.
  */
 export const POINT_ACCES = {
   outils: [
@@ -180,33 +182,40 @@ export type NomCapture = 'dashboard' | 'conversation-perimetre' | 'capacite' | '
 
 export const CAPTURES: Readonly<Record<NomCapture, CaptureRelais>> = {
   dashboard: {
-    alt: 'Le tableau de bord de Relais : cinq agents actifs, la consommation des sept derniers jours et la capacité de trois abonnements de démonstration.',
+    alt: typo('Le tableau de bord de Relais : cinq agents actifs, la consommation des sept derniers jours et la capacité de trois abonnements de démonstration.'),
     legende: 'Le tableau de bord, fenêtre entière, sur des données de démonstration. Un clic l’agrandit.',
   },
   'conversation-perimetre': {
-    alt: 'Une conversation dans Relais : chaque appel d’outil suivi de sa décision ; la lecture d’un fichier hors du périmètre échoue, avec son motif.',
-    legende: 'Lecture refusée hors du périmètre, motif à l’appui ; à droite, les dossiers ouverts en lecture et en écriture.',
-    // « Échec » sur la lecture refusée ; la loupe sur le motif rendu par Relais.
+    alt: typo('Une conversation dans Relais : chaque appel d’outil suivi de sa décision ; la lecture d’un fichier hors du périmètre échoue, avec son motif.'),
+    legende: 'Lecture refusée hors du périmètre, motif à l’appui, sur des données de démonstration ; la réponse vient d’un agent de démonstration. À droite, les dossiers ouverts en lecture et en écriture.',
+    // « Échec » sur la lecture refusée ; la loupe sur le motif rendu par Relais,
+    // la phrase entière (x 14,5 à 42,4 % de l’image).
     cible: { x: 60.2, y: 38.2 },
-    loupe: { x: 28.5, y: 58.5, zoom: 3.1, largeur: 60, ratio: '4 / 1', coin: 'haut-droite', dessous: true },
+    loupe: { x: 28.5, y: 58.4, zoom: 3.3, largeur: 60, ratio: '4 / 1', coin: 'haut-droite', dessous: true },
   },
   capacite: {
-    alt: 'La capacité de trois abonnements de démonstration : quotas de cinq heures et de sept jours, chacun face au repère de son seuil de protection.',
-    legende: 'Trois abonnements disponibles, chacun sous son seuil de protection.',
+    alt: typo('La capacité de trois abonnements de démonstration : quotas de cinq heures et de sept jours, chacun face au repère de son seuil de protection.'),
+    legende: 'Le quota de cinq heures de l’abonnement « Personnel » : 35,8 %, sous le repère de son seuil de protection. Les trois abonnements de démonstration sont disponibles.',
+    // Le repère du seuil sur la jauge de cinq heures de « Personnel » ; la loupe
+    // sur cette jauge, son pourcentage et sa réinitialisation (x 34,4 à 48,4 %).
+    cible: { x: 47.7, y: 52.4 },
+    loupe: { x: 41.3, y: 52.4, zoom: 6, largeur: 50, ratio: '3 / 1', coin: 'haut-droite', dessous: true },
   },
   'garde-fous': {
-    alt: 'Les garde-fous d’un abonnement : nouvelles sessions refusées dès 95 % du quota ; une session déjà ouverte n’est jamais coupée.',
-    legende: 'Le seuil de protection : 95 % par défaut.',
-    // Le champ « 95 » ; la loupe sur « Une session déjà ouverte n’est jamais coupée ».
-    cible: { x: 40.8, y: 67.8 },
-    loupe: { x: 54.5, y: 57.3, zoom: 2.5, largeur: 64, ratio: '6 / 1', coin: 'haut-droite', dessous: true },
+    alt: typo('Les garde-fous d’un abonnement : nouvelles sessions refusées dès 95 % du quota ; une session déjà ouverte n’est jamais coupée.'),
+    legende: 'Le seuil de protection : nouvelles sessions refusées dès 95 % du quota, par défaut. Une session déjà ouverte n’est jamais coupée.',
+    // Le champ « 95 », la cible un peu sous son centre : sa pastille reste à
+    // gauche du libellé ; la loupe sur ce champ et son libellé (x 39 à 66 %).
+    cible: { x: 39.6, y: 70 },
+    loupe: { x: 52.6, y: 66, zoom: 3.4, largeur: 58, ratio: '9 / 2', coin: 'haut-droite', dessous: true },
   },
   analyse: {
-    alt: 'L’analyse de Relais sur des données de démonstration : durée médiane et P95 des tours, débit, et part des tokens relus depuis le cache.',
-    legende: 'Le P95 des tours, calculé par Relais sur les données de démonstration.',
-    // Le P95 d’un tour ; la loupe sur les quatre mesures de performance.
-    cible: { x: 34.5, y: 30 },
-    loupe: { x: 41, y: 28, zoom: 2.4, largeur: 60, ratio: '3 / 1', coin: 'bas-droite', dessous: true },
+    alt: typo('L’analyse de Relais sur des données de démonstration : durée médiane des tours, durée sous laquelle tombent 95 % d’entre eux, débit, et part des tokens relus depuis le cache.'),
+    legende: 'La durée d’un tour : la médiane, et le P95, sous lequel tombent 95 % des tours. Calculés par Relais sur les données de démonstration.',
+    // Le P95 d’un tour, la pastille à gauche de son libellé ; la loupe sur la
+    // médiane et le P95 seuls (x 21 à 41 %).
+    cible: { x: 33.2, y: 30.5 },
+    loupe: { x: 31.2, y: 28, zoom: 4.8, largeur: 60, ratio: '7 / 2', coin: 'bas-droite', dessous: true },
   },
 };
 
@@ -217,32 +226,37 @@ export const CAPTURES: Readonly<Record<NomCapture, CaptureRelais>> = {
 export const DECISIONS: readonly Decision[] = [
   {
     // backend/src/provider.rs l. 215 et 300-306 (environnement vidé, liste
-    // blanche, dossier de configuration par profil) ; README l. 182 ;
-    // docs/architecture.md l. 76.
-    contrainte: 'Plusieurs abonnements sur une même machine, alors que le CLI lit par défaut la connexion et les variables d’environnement de l’utilisateur.',
-    choix: 'Relais lance sa propre version épinglée de chaque CLI, jamais celle installée sur la machine, avec un dossier de configuration par abonnement et un environnement vidé, puis rempli depuis une liste blanche.',
+    // blanche, dossier de configuration par profil) ; README l. 182 (« CLI
+    // épinglé dans `runtime/` ») ; docs/architecture.md l. 76.
+    contrainte: 'Plusieurs abonnements sur une même machine, alors que Claude Code et Codex lisent par défaut la connexion et les variables d’environnement de l’utilisateur.',
+    choix: 'Relais lance sa propre version de chaque agent, fixée dans son dossier, jamais celle installée sur la machine, avec un dossier de configuration par abonnement et un environnement vidé, puis rempli depuis une liste blanche.',
     effet: 'Aucune clé ni variable d’un abonnement ne passe à un autre, et deux abonnements liés au même compte sont signalés.',
   },
   {
-    // docs/filesystem-scope.md ; docs/audit-permissions-demo.md l. 12-21 et
-    // 73-74 ; docs/registre-correctifs.md l. 208-210 et « Statut » de C1.
-    contrainte: 'Un outil confie à l’agent un dossier où écrire et d’autres à lire seulement, alors que les permissions de l’agent ne l’isolent pas.',
-    choix: 'En mode strict, sans terminal, Relais décide lui-même de chaque lecture et de chaque écriture, sur le chemin réel du fichier : remontées, liens et fichiers à plusieurs liens physiques refusés.',
-    effet: 'Les 52 cas de l’audit passent. Recoupés un à un, les 69 refus de lecture et de recherche des trois jours de service ont fait corriger les motifs refusés à tort.',
+    // docs/filesystem-scope.md l. 62-81 (liens et jonctions sortant des
+    // racines, `..`, fichiers à plusieurs liens physiques) ;
+    // docs/audit-permissions-demo.md l. 12-17, 73-74 et 94-104 (défaut
+    // reproduit puis corrigé après signalement) ; docs/registre-correctifs.md
+    // C1 (l. 208-215, « Recoupés avec les paramètres des appels ») et son
+    // Statut (correctifs f2a2d68 : groupes, négation, motif absolu, racine du
+    // parcours, dossiers ignorés ; `..`, `~`, `:` toujours refusés).
+    contrainte: 'Les permissions de l’agent ne suffisent pas à le garder dans les dossiers confiés : un chemin peut remonter hors du dossier, passer par un lien ou désigner un fichier qui porte un second nom ailleurs.',
+    choix: 'Relais vérifie le chemin réel du fichier, pas celui que l’agent écrit : les chemins qui remontent hors du dossier, les liens qui en sortent et les fichiers à plusieurs liens physiques sont refusés.',
+    effet: 'L’audit de 52 cas a trouvé un défaut sur les fichiers à plusieurs liens physiques, corrigé après signalement ; les 52 cas passent. Recoupés avec les paramètres des appels, les 69 refus de lecture et de recherche des trois premiers jours de service ont montré des recherches refusées à tort : j’ai assoupli les règles des recherches, sans rouvrir les chemins hors du périmètre.',
   },
   {
-    // backend/src/quota_routing.rs l. 1-15 et 33 (40 sessions récentes) ;
-    // README l. 166-167 : « Seuils et limites refusent les nouvelles sessions
-    // sans couper celles qui tournent ».
-    contrainte: 'Un seuil fixe laisse entrer de nouvelles sessions alors que celles qui tournent consomment encore : huit agents en parallèle portent un petit abonnement de 90 % à plus de 100 %.',
-    choix: 'Relais lit les quotas que communique le fournisseur et, avant d’admettre une session, réserve ce que consommeront celles qui tournent, au rythme appris des 40 dernières sessions.',
-    effet: 'Près de son seuil, un abonnement refuse les nouvelles sessions, sans couper celles qui tournent.',
+    // backend/src/quota_routing.rs l. 1-15 et 33 (40 sessions récentes).
+    contrainte: 'Un seuil fixe laisse entrer de nouvelles sessions alors que celles qui tournent consomment encore : huit agents lancés en parallèle peuvent faire passer un petit abonnement de 90 % à plus de 100 % de son quota avant que le premier ait fini.',
+    choix: 'Avant d’admettre une session, Relais réserve ce que consommeront celles qui tournent et la nouvelle, au rythme qu’il apprend des 40 dernières sessions.',
+    effet: 'La réserve suit l’usage réel de chaque abonnement, et l’abonnement refuse avant d’atteindre son seuil, au lieu de le laisser dépasser par les sessions déjà lancées.',
   },
   {
-    // backend/src/launch_brake.rs l. 1-35 ; commits f45d3bd et cba3002 (05/10/2026).
-    contrainte: 'Le 27/09/2026, un outil a recréé une session par minute pendant sept heures, sur un abonnement où chacune mourait en deux secondes ; Relais n’enregistrait que « code 1 ».',
-    choix: 'Un frein par application et par abonnement : vingt lancements d’affilée, puis un toutes les trois secondes. Trois échecs au démarrage suspendent l’abonnement, et l’erreur cite la dernière ligne du CLI.',
-    effet: 'Un lancement refusé attend une minute, puis le double à chaque refus, jusqu’à une heure ; l’abonnement rouvre dès qu’une session répond, ou d’un clic sur « Réessayer ».',
+    // backend/src/launch_brake.rs l. 1-35 ; commits f45d3bd (503 et
+    // Retry-After doublé pour un abonnement suspendu nommé, 429 au-delà du
+    // débit) et cba3002 (« Réessayer »), du 05/10/2026.
+    contrainte: 'Le 27/09/2026, un outil a recréé une session par minute pendant sept heures, sur un abonnement où chacune mourait en deux secondes ; Relais n’enregistrait qu’un code d’erreur, sans message.',
+    choix: 'Un frein par application et par abonnement : vingt lancements d’affilée, puis un toutes les trois secondes. Trois échecs d’affilée au démarrage suspendent l’abonnement, et l’erreur cite la dernière ligne d’erreur de l’agent.',
+    effet: 'Tant que l’abonnement est suspendu, un lancement qui le nomme est refusé avec une attente conseillée d’une minute, doublée à chaque refus jusqu’à une heure ; l’abonnement rouvre dès qu’une de ses sessions répond, ou d’un clic sur « Réessayer ».',
   },
 ];
 

@@ -103,7 +103,7 @@ test('le point d’accès : la figure, et les liens vers Sillage et Karl Scraper
   expect(boite!.x + boite!.width).toBeLessThanOrEqual(section!.x + section!.width + 1);
 });
 
-test('cinq vraies vues : l’en-tête entière, trois annotées, toutes agrandissables', async ({ page }) => {
+test('cinq vraies vues : l’en-tête entière, quatre annotées, toutes agrandissables', async ({ page }) => {
   await page.goto(CHEMIN);
   const vue = page.locator('.rel-entete-capture .capture__vue');
   const image = vue.locator('img');
@@ -113,7 +113,7 @@ test('cinq vraies vues : l’en-tête entière, trois annotées, toutes agrandis
   expect(Math.abs(rendu!.width - cadre!.width)).toBeLessThan(1);
   expect(rendu!.width / rendu!.height).toBeCloseTo(2880 / 1800, 1);
   await expect(page.locator('main a[data-agrandir]')).toHaveCount(5);
-  await expect(page.locator('main .capture-annotee')).toHaveCount(3);
+  await expect(page.locator('main .capture-annotee')).toHaveCount(4);
   await expect(page.locator('#perimetre img').first()).toHaveAttribute('alt', /hors du périmètre/);
   await expect(page.locator('#capacite .rel-capacite__etape h3')).toHaveText(['Voir', 'Admettre']);
   const agrandir = page.locator('#perimetre a[data-agrandir]');
