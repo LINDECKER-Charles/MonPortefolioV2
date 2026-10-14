@@ -1,12 +1,18 @@
 ---
 /**
- * ÉBAUCHE du socle : remplacée par la page du projet.
+ * Karl Scraper : la preuve de « Automatiser des tâches ». Page bâtie sur le
+ * gabarit commun des pages de projet (components/projets/gabarit, règle E5) :
+ * en-tête et fiche, corps libre (une copie locale, la Galaxie, ce que l’agent
+ * lit, la chaîne d’un ticket), « Comment je l’ai construit », sortie et note
+ * de sources. Données, alts et sources : config/karl-scraper.ts, que cette
+ * page tient seule (sa carte de la vitrine comprise).
  *
- * Karl Scraper : la preuve de « Automatiser des tâches ». Page bâtie sur le gabarit
- * commun des pages de projet (components/projets/gabarit, règle E5) : en-tête
- * et fiche, une section, « Comment je l’ai construit », sortie et note de
- * sources. Données et sources : config/karl-scraper.ts, que cette page tient
- * seule (sa carte de la vitrine comprise).
+ * Dépôt privé, présenté sans lien ni nom de dépôt ; l’outil qu’il lit se dit
+ * « un outil de gestion de tâches » (décision de Charles du 14/10/2026).
+ * Captures (KSC-C1) : vraies vues de l’application lancée en local sur des
+ * données fictives, provisoires jusqu’à la refonte graphique de son interface
+ * (src/assets/projets/karl-scraper/README.md). La chaîne d’un ticket (KSC-F1)
+ * montre ce qu’aucune capture ne montre sans agent lancé.
  */
 import Base from '../../layouts/Base.astro';
 import CorpsProjet from '../../components/projets/gabarit/CorpsProjet.astro';
@@ -15,35 +21,146 @@ import EnTeteProjet from '../../components/projets/gabarit/EnTeteProjet.astro';
 import SectionProjet from '../../components/projets/gabarit/SectionProjet.astro';
 import SortieProjet from '../../components/projets/gabarit/SortieProjet.astro';
 import SourcesProjet from '../../components/projets/gabarit/SourcesProjet.astro';
+import FigureChaine from '../../components/projets/karl-scraper/FigureChaine.astro';
+import CadreCapture from '../../components/ui/CadreCapture.astro';
+import CaptureAnnotee from '../../components/ui/CaptureAnnotee.astro';
+import Visionneuse from '../../components/ui/Visionneuse.astro';
+import enchainements from '../../assets/projets/karl-scraper/enchainements.webp';
+import galaxie from '../../assets/projets/karl-scraper/galaxie.webp';
+import tableauDeBord from '../../assets/projets/karl-scraper/tableau-de-bord.webp';
+import vueAgent from '../../assets/projets/karl-scraper/vue-agent.webp';
 import { SITE } from '../../config/site';
-import { DECISIONS, EN_TETE, FICHE, LIENS_SORTIE, PREUVES, SECTIONS } from '../../config/karl-scraper';
+import { DECISIONS, ECRANS, EN_TETE, FICHE, LIENS_SORTIE, PREUVES, SECTIONS } from '../../config/karl-scraper';
 
 // ≤ 45 caractères avant « — Charles Lindecker » (titre ≤ 65 au total).
 const titre = `Karl Scraper, automatiser ses tâches — ${SITE.nom}`;
 // 110 à 165 caractères.
-const description = 'Karl Scraper : un outil personnel qui garde une copie locale de mes tâches, la donne à lire à des agents IA et enchaîne les gestes d’un ticket.';
+const description = 'Karl Scraper tient une copie locale de mes tâches, la donne à lire à des agents IA et enchaîne les gestes d’un ticket jusqu’à sa pull request.';
 ---
 
 <Base titre={titre} description={description} chemin="/projets/karl-scraper" sommaire={SECTIONS}>
-  <EnTeteProjet projet="karl-scraper" titre={EN_TETE.titre} chapeau={EN_TETE.chapeau} liens={EN_TETE.liens} preuves={PREUVES} fiche={FICHE} />
+  <EnTeteProjet projet="karl-scraper" titre={EN_TETE.titre} chapeau={EN_TETE.chapeau} liens={EN_TETE.liens} preuves={PREUVES} fiche={FICHE}>
+    <!-- Les réglages des enchaînements, recadrés sur leur colonne (les marges vides de l’écran sortent du cadre). -->
+    <CadreCapture
+      slot="visuel"
+      type="navigateur"
+      src={enchainements}
+      alt={ECRANS.enchainements.alt}
+      legende={ECRANS.enchainements.legende}
+      region={{ x: 20.5, y: 0, l: 59, h: 100 }}
+      class="ksc-entete-capture"
+      widths={[960, 1400, 1900, 2728]}
+      sizes="(max-width: 860px) 170vw, (max-width: 1100px) 1090px, 950px"
+      loading="eager"
+      agrandir
+    />
+  </EnTeteProjet>
 
   <CorpsProjet sections={SECTIONS}>
-    <SectionProjet id="apercu" titre="En bref">
+    <SectionProjet id="copie" etiquette="Une copie locale" titre="Une copie locale, scellée à chaque passage">
       <Fragment slot="texte">
-        <p>Karl Scraper lit l’outil de gestion de tâches en ligne dans un navigateur dont il garde la session, et en tient une copie locale, scellée à chaque passage. Des agents IA lisent cette copie par un serveur MCP&nbsp;; je retiens ou j’écarte leur lecture&nbsp;; puis un agent travaille le ticket dans un worktree et ouvre la pull request.</p>
-        <p>Les enchaînements font à ma place les gestes que j’aurais faits d’un clic. Aucune règle n’est livrée&nbsp;: c’est moi qui les écris et qui les active.</p>
+        <p>Karl Scraper garde ouverte la session d’un navigateur sur l’outil de gestion de tâches et relit mes tâches assignées&nbsp;: description, commentaires, listes à cocher, historique et pièces jointes. Le tout tient dans une base SQLite, sur mon poste.</p>
+        <p>Chaque passage scelle une observation qui ne bougera plus. D’une observation à l’autre, l’écart se lit tâche par tâche, et une empreinte évite de relire en détail ce qui n’a pas bougé.</p>
       </Fragment>
+      <!-- Les trois panneaux sur ordinateur ; sur mobile, l’écart seul, lisible (l’écran entier s’agrandit). -->
+      <CadreCapture
+        type="navigateur"
+        src={tableauDeBord}
+        alt={ECRANS.tableauDeBord.alt}
+        legende={ECRANS.tableauDeBord.legende}
+        region={{ x: 0, y: 0, l: 100, h: 100 }}
+        regionMobile={{ x: 66.5, y: 0, l: 33.5, h: 100 }}
+        class="ksc-capture-large"
+        widths={[800, 1200, 1600, 2392]}
+        sizes="(max-width: 860px) 300vw, 1000px"
+        agrandir
+      />
     </SectionProjet>
 
-    <DecisionsProjet decisions={DECISIONS} />
+    <div class="ksc-acte acte-veille">
+      <SectionProjet id="galaxie" etiquette="La Galaxie" titre="Voir d’un coup d’œil où tout en est" alignement="centre">
+        <Fragment slot="texte">
+          <p>La Galaxie montre la même copie en scène. Chaque tâche est un point sur l’anneau de son statut&nbsp;; les retards sont en rouge, le goulot est nommé en haut, et la frise des observations court en bas.</p>
+        </Fragment>
+        <CadreCapture
+          slot="figure"
+          type="navigateur"
+          src={galaxie}
+          alt={ECRANS.galaxie.alt}
+          legende={ECRANS.galaxie.legende}
+          widths={[800, 1200, 1600, 2400]}
+          sizes="(max-width: 1100px) 100vw, 560px"
+          agrandir
+        />
+      </SectionProjet>
+    </div>
 
-    <SortieProjet projet="karl-scraper" liens={LIENS_SORTIE}>
-      <p>Automatiser sans perdre la main&nbsp;: une règle a les mêmes gardes qu’un clic, et cède au geste qui la contredit.</p>
+    <SectionProjet id="agent" etiquette="Ce que l’agent lit" titre="Ce que l’agent lit, et rien de plus">
+      <Fragment slot="texte">
+        <p>Les agents lisent cette copie par un serveur MCP&nbsp;: 13&nbsp;outils, dont 10 en lecture seule. Les trois autres déposent une analyse ou demandent un nouveau passage&nbsp;; aucun ne touche à l’outil source.</p>
+        <p>Pour chaque tâche, l’onglet «&nbsp;Vue agent&nbsp;» montre la donnée exacte que le serveur sert, avec l’observation d’où elle vient. Un bouton copie le lien MCP de la tâche, à donner à un agent.</p>
+      </Fragment>
+      <CaptureAnnotee
+        slot="figure"
+        type="navigateur"
+        src={vueAgent}
+        alt={ECRANS.vueAgent.alt}
+        legende={ECRANS.vueAgent.legende}
+        ratio="1696 / 1668"
+        cible={{ x: 6.5, y: 39.5 }}
+        loupe={{ x: 20.5, y: 44.3, zoom: 3, largeur: 48, ratio: '3 / 1', coin: 'bas-droite', dessous: true }}
+        widths={[700, 1100, 1696]}
+        sizes="(max-width: 1100px) 100vw, 520px"
+        agrandir
+      />
+    </SectionProjet>
+
+    <SectionProjet id="chaine" titre="Du ticket à la pull request">
+      <Fragment slot="texte">
+        <p>Après un passage, un agent lit chaque nouvelle tâche et rend une compréhension courte, avec le dépôt et le worktree où la travailler. Je la retiens ou je l’écarte&nbsp;: c’est le seul arbitrage de la chaîne. Une tâche retenue part chez le seul agent qui écrit, dans un worktree, et il ouvre une pull request par dépôt touché.</p>
+        <p>Les enchaînements font à ma place les gestes que j’aurais faits d’un clic&nbsp;: des règles «&nbsp;quand…, alors…&nbsp;» que j’écris et que j’active, sur 14&nbsp;déclencheurs et 18&nbsp;actions. Aucune règle n’est livrée, l’interrupteur général est coupé par défaut et un plafond quotidien borne les lancements d’agent.</p>
+        <p>Ses agents passent tous par <a href="/projets/relais">Relais</a>, qui borne leur dépense&nbsp;; une tâche complexe peut devenir un plan, relu pas à pas, puis confié à <a href="/projets/sillage">Sillage</a>, qui orchestre un graphe d’agents.</p>
+      </Fragment>
+      <FigureChaine />
+    </SectionProjet>
+
+    <DecisionsProjet decisions={DECISIONS} chapeau="Ce que l’outil et ses agents ont le droit de faire, et ce qui le garantit." />
+
+    <SortieProjet projet="karl-scraper" titre="Où il en est" liens={LIENS_SORTIE}>
+      <p>Karl Scraper tourne sur mon poste, sans être déployé ni exposé&nbsp;: il n’écoute que la machine elle-même. Il tient la copie de mes tâches et sait en confier la lecture et la réalisation à des agents. Son interface attend une refonte graphique&nbsp;: les écrans de cette page sont provisoires.</p>
     </SortieProjet>
 
     <SourcesProjet>
-      <p><b>Le projet.</b> Dépôt privé, présenté sans lien, relu le 14/10/2026 à la révision 6615950 du 09/10/2026. Les chiffres viennent de son code&nbsp;: le catalogue des enchaînements, les outils du serveur MCP et la garde des appels réseau.</p>
-      <p><b>Données.</b> Aucune donnée réelle n’est montrée sur cette page.</p>
+      <p><b>Le projet.</b> Dépôt privé, présenté sans lien, relu le 14/10/2026 à la révision 6615950 du 09/10/2026&nbsp;: 282&nbsp;commits d’un seul auteur, du 28/08 au 09/10/2026. Les chiffres viennent de son code&nbsp;: le catalogue des enchaînements (14&nbsp;déclencheurs, 18&nbsp;actions), les outils du serveur MCP (13, dont 10 marqués en lecture seule) et la liste blanche des appels réseau. La chaîne d’un ticket et les décisions viennent de ses plans et de ses invariants, à la même révision.</p>
+      <p><b>Ce qui n’est pas montré.</b> Un «&nbsp;dossier de tâche&nbsp;» unifié est écrit dans les plans, mais seul son premier lot est livré&nbsp;: il n’est pas présenté ici. Sans agent lancé, les écrans de préparation, de réalisation et de plans restent vides&nbsp;; la figure de la chaîne les remplace.</p>
+      <p><b>Captures.</b> Application lancée en local le 14/10/2026, à la même révision et sans modification, face à un faux serveur source&nbsp;: données fictives (trois projets, seize tâches, trois observations), aucun agent lancé, aucune donnée réelle. Les deux règles d’enchaînement sont écrites pour la démonstration. Les écrans sont cadrés sur leur contenu, sans retouche. Ils sont provisoires et seront refaits après la refonte graphique de l’interface.</p>
     </SourcesProjet>
   </CorpsProjet>
+
+  <Visionneuse />
 </Base>
+
+<style>
+  /* La Galaxie, toujours sombre : la nuit dans le jour, comme la scène. */
+  .ksc-acte {
+    margin-top: var(--entre-sections);
+    padding: 0 clamp(16px, 3.4vw, 40px) clamp(24px, 3.4vw, 40px);
+    border-radius: var(--r2);
+  }
+
+  .ksc-acte :global(.section-projet) {
+    padding-top: clamp(24px, 3.4vw, 40px);
+  }
+
+  :global(.ksc-capture-large) {
+    margin-top: var(--s6);
+  }
+
+  /* La loupe garde l’image entière à sa proportion : sans cette règle, celle
+     d’une capture recadrée (CadreCapture, même spécificité, plus loin dans la
+     feuille) lui impose la hauteur de la loupe et n’en montre que le haut. */
+  :global(#agent .loupe > picture > img) {
+    height: auto;
+    object-fit: fill;
+  }
+</style>

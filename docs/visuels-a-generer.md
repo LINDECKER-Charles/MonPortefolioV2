@@ -9,7 +9,7 @@ Tu produis **uniquement les images générées (IMG)** de la refonte du portfoli
 **Ce document est la seule référence de la série.** Il porte les retours de Charles sur la planche d’essai du 13 octobre 2026 (moins « image générée », une vraie version de nuit) et remplace toute consigne antérieure. Lis-le de haut en bas avant la première image.
 
 - **Deux masters par image**, dessinés au même cadrage au pixel près, dans les trois mêmes couleurs de clé : le jour `<ID>.png`, puis la nuit `<ID>.nuit.png`, faite **en édition depuis le master de jour** (section « Version de nuit »). Le site affiche l’un ou l’autre selon le thème.
-- Le registre recense **176 emplacements** (123 « socle », 53 « élargi »), dont **74 images à générer** : 0 restent à livrer, dont 0 « socle ».
+- Le registre recense **178 emplacements** (125 « socle », 53 « élargi »), dont **74 images à générer** : 0 restent à livrer, dont 0 « socle ».
 - **Socle** : posé sur une page du site, qui affiche un cadre hachuré tant que le fichier manque. À produire d’abord.
 - **Élargi** : aucune page ne l’attend encore ; chaque fiche dit pourquoi. Peut suivre.
 - **Le prompt de jour** se rédige en anglais : le bloc de style, la phrase de fond, puis la traduction des seuls champs **Sujet** et **Composition** de la fiche, le calage de la lanterne quand la fiche la place, enfin le prompt négatif. Le champ **Emplacement** donne le contexte et peut nommer une marque ou un jeu : il ne va jamais dans un prompt.
@@ -180,11 +180,12 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 | Omnicard | 13 | 5 | IMG 2 · SVG 2 · FIG 3 · CAP 5 · PHO 0 · OG 1 |
 | Bloodborne Legendary Run | 16 | 8 | IMG 4 · SVG 6 · FIG 1 · CAP 4 · PHO 0 · OG 1 |
 | gup | 7 | 6 | IMG 2 · SVG 1 · FIG 3 · CAP 1 · PHO 0 · OG 0 |
+| Karl Scraper | 2 | 2 | IMG 0 · SVG 0 · FIG 1 · CAP 1 · PHO 0 · OG 0 |
 | Parcours : hub, professionnel, compétences, formation | 33 | 30 | IMG 24 · SVG 4 · FIG 3 · CAP 1 · PHO 1 · OG 0 |
 | Contact | 4 | 4 | IMG 3 · SVG 0 · FIG 0 · CAP 0 · PHO 1 · OG 0 |
 | Blog | 2 | 1 | IMG 2 · SVG 0 · FIG 0 · CAP 0 · PHO 0 · OG 0 |
 | États : 404 et hors ligne | 3 | 2 | IMG 1 · SVG 1 · FIG 0 · CAP 0 · PHO 1 · OG 0 |
-| **Total** | **176** | **123** | IMG 79 · SVG 37 · FIG 25 · CAP 26 · PHO 4 · OG 5 |
+| **Total** | **178** | **125** | IMG 79 · SVG 37 · FIG 26 · CAP 27 · PHO 4 · OG 5 |
 
 ## Partie 1 — Commande Codex : les images à générer
 
@@ -1577,7 +1578,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 Rien ici n’est à générer : les dessins vectoriels s’écrivent à la main, les figures se codent depuis des données sourcées, les captures se prennent sur l’application ou la page réelle, les images de partage se composent en HTML.
 
-**Déjà faits** : GLO-01, GLO-03, GLO-04, GLO-05, GLO-07, GLO-08, ACC-01, ACC-06, ACC-14, ACC-17, PRJ-04, PRJ-05, PVZ-03, PVZ-F1, PVZ-F2, PVZ-F3, PVZ-F4, PVZ-F5, LOD-03, LOD-05, LOD-06, LOD-07, LOD-08, LOD-09, LOD-10, LOD-11, LOD-12, LOD-F1, LOD-F2, LOD-F3, LOD-F4, LOD-F5, LOD-F6, OMN-03, OMN-04, OMN-05, BLR-06, BLR-07, BLR-08, BLR-09, BLR-10, BLR-F1, BLR-C4, GUP-02, GUP-F1, GUP-F2, GUP-F3, GUP-C1, PAR-PHO, PAR-F1, PRO-F1, CMP-F1, CMP-09, CMP-10, FOR-09, CON-PHO, ERR-PHO.
+**Déjà faits** : GLO-01, GLO-03, GLO-04, GLO-05, GLO-07, GLO-08, ACC-01, ACC-06, ACC-14, ACC-17, PRJ-04, PRJ-05, PVZ-03, PVZ-F1, PVZ-F2, PVZ-F3, PVZ-F4, PVZ-F5, LOD-03, LOD-05, LOD-06, LOD-07, LOD-08, LOD-09, LOD-10, LOD-11, LOD-12, LOD-F1, LOD-F2, LOD-F3, LOD-F4, LOD-F5, LOD-F6, OMN-03, OMN-04, OMN-05, BLR-06, BLR-07, BLR-08, BLR-09, BLR-10, BLR-F1, BLR-C4, GUP-02, GUP-F1, GUP-F2, GUP-F3, GUP-C1, KSC-F1, KSC-C1, PAR-PHO, PAR-F1, PRO-F1, CMP-F1, CMP-09, CMP-10, FOR-09, CON-PHO, ERR-PHO.
 
 | Zone | Socle | Élargi |
 |---|---|---|
@@ -2760,6 +2761,34 @@ Fiches pour mémoire : rien à produire.
 - **Fichiers attendus** (5) : `site/src/assets/projets/gup/packages-select.webp` ; `site/src/assets/projets/gup/scan-progress.webp` ; `site/src/assets/projets/gup/confirm-update.webp` ; `site/src/assets/projets/gup/update-running.webp` ; `site/src/assets/projets/gup/journal-activity.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
 - **Note** : CAP-GUP-1 du cahier (§ 6.12) : livrés, provenance dans src/assets/projets/gup/README.md ; leurs alts sont dans config/gup.ts. Les recadrages 4:5 pour mobile restent à faire.
+
+### Karl Scraper
+
+#### KSC-F1 · La chaîne d’un ticket
+
+- **Priorité** : socle · **Méthode** : FIG, figure codée depuis des données, rien à générer
+- **Produit par** : équipe Karl Scraper
+- **Emplacement** : `/projets/karl-scraper` · § Du ticket à la pull request _(contexte : ne pas le recopier dans un prompt)_
+- **Posé dans** : `src/pages/projets/karl-scraper.astro`
+- **Sujet** : La chaîne d’un ticket
+- **Composition** : Cinq étapes en ligne, de la synchronisation au statut : qui agit à chaque étape, et ce que chacune peut faire dans l’outil source (le lire, rien, y écrire le statut)
+- **Format** : —
+- **Composant** : `site/src/components/projets/karl-scraper/FigureChaine.astro`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : « Cinq étapes d’un ticket, de la synchronisation au statut ; seule la dernière écrit dans l’outil source, et seulement le statut. »
+- **Note** : Codée en HTML, données CHAINE de config/karl-scraper.ts, tirées du code et des plans du dépôt privé (révision 6615950). Elle montre la préparation et la réalisation, que les captures ne montrent pas sans agent lancé.
+
+#### KSC-C1 · Les écrans de Karl Scraper
+
+- **Priorité** : socle · **Méthode** : CAP, capture réelle, rien à générer
+- **Produit par** : équipe Karl Scraper
+- **Emplacement** : `/projets/karl-scraper` · En-tête, § Une copie locale, § La Galaxie, § Ce que l’agent lit ; carte de la vitrine _(contexte : ne pas le recopier dans un prompt)_
+- **Posé dans** : `src/pages/projets/karl-scraper.astro`, `src/config/karl-scraper.ts`
+- **Sujet** : Les écrans de Karl Scraper
+- **Composition** : Écrans réels de l’application lancée en local à la révision 6615950, face à un faux serveur source et sur des données fictives (trois projets, seize tâches, trois observations), aucun agent lancé, sans retouche ni recomposition
+- **Format** : format natif des écrans
+- **Fichiers attendus** (4) : `site/src/assets/projets/karl-scraper/enchainements.webp` ; `site/src/assets/projets/karl-scraper/tableau-de-bord.webp` ; `site/src/assets/projets/karl-scraper/galaxie.webp` ; `site/src/assets/projets/karl-scraper/vue-agent.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Captures provisoires, à refaire après la refonte graphique de l’interface ; provenance dans src/assets/projets/karl-scraper/README.md, alts et légendes dans config/karl-scraper.ts. Aucun libellé qui nomme l’outil source à l’écran.
 
 ### Parcours : hub, professionnel, compétences, formation
 
