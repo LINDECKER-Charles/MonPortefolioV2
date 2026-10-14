@@ -41,7 +41,7 @@ async function apiDouble(page: Page, options: { authenticated?: boolean; smtp?: 
     if (method !== 'GET') etat.mutations.push({ path, method, body, header: request.headers()['x-backoffice-request'] });
     else etat.consultations.push(path);
     if (path === '/login') {
-      if (body?.email !== 'admin@example.test' || body?.password !== 'mot-de-passe-test') { await repondre({ code: 'INVALID_CREDENTIALS', message: 'L’adresse e-mail ou le mot de passe est incorrect.' }, 401); return; }
+      if (body?.email !== 'admin@example.test' || body?.password !== 'mot-de-passe-test') { await repondre({ code: 'UNAUTHORIZED', message: 'Une connexion au backoffice est nécessaire.' }, 401); return; }
       if (options.twoFactor) {
         etat.challenge = true;
         await repondre({ authenticated: false, two_factor_required: true, enrollment_required: etat.enrollment }); return;

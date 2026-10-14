@@ -605,7 +605,15 @@ export function brancherBackoffice(): void {
     event.preventDefault();
     const sequence = authSequence;
     void action(loginForm, async () => {
-      const connexion = await api<Connexion>('/login', 'POST', { email: loginEmail.value.trim(), password: password.value });
+      let connexion: Connexion;
+      try {
+        connexion = await api<Connexion>('/login', 'POST', { email: loginEmail.value.trim(), password: password.value });
+      } catch (cause) {
+        // Le backend répond 401 sans dire pourquoi (« Une connexion au backoffice est nécessaire. ») :
+        // sur cet écran, c’est que l’adresse ou le mot de passe ne va pas. 429, 503… gardent leur message.
+        if (cause instanceof ErreurApi && cause.status === 401) throw new ErreurApi('L’adresse e-mail ou le mot de passe est incorrect.', 401, cause.code);
+        throw cause;
+      }
       if (sequence !== authSequence) return;
       password.value = '';
       if (connexion.two_factor_required) await afficherDeuxFacteurs(Boolean(connexion.enrollment_required));
