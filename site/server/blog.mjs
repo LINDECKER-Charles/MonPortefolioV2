@@ -52,8 +52,14 @@ function infoImage(media, src) {
   const width = dimension(info?.width); const height = dimension(info?.height);
   if (!width || !height) return null;
   const variants = (Array.isArray(info.variants) ? info.variants : []).filter((largeur) => dimension(largeur) && largeur <= width).sort((a, b) => a - b);
-  return { width, height, variants };
+  return { width, height, variants, still: dimension(info.still) };
 }
+/**
+ * Une image animée a une image fixe (`still`) : `<picture>` la sert à qui
+ * demande moins de mouvement, sans JavaScript. blog.css garde l’image pour
+ * élément mis en page (`picture { display: contents }`).
+ */
+const avecImageFixe = (img, src, info, adresse) => (info?.still ? `<picture><source media="(prefers-reduced-motion: reduce)" srcset="${escapeHtml(adresse(`${src}/${info.still}`))}">${img}</picture>` : img);
 /** Réduit sans jamais agrandir, en gardant les proportions, pour tenir dans la boîte. */
 function ajuster({ width, height }, boite) {
   const echelle = Math.min(1, boite.largeur / width, boite.hauteur / height);
@@ -168,7 +174,8 @@ export function renderDocument(doc, { preview = false, reserved = [], media = {}
         if (!src) return '';
         const info = infoImage(media, src);
         const taille = tailleImage(attrs, info);
-        return `<figure><img ${sources(src, info, taille?.height ? taille : null, versApercu(preview))} alt="${texteAuteur(texteBorne(attrs.alt))}"${attributsTaille(taille)} loading="lazy" decoding="async">${texteBorne(attrs.title) ? `<figcaption>${texteAuteur(attrs.title)}</figcaption>` : ''}</figure>`;
+        const img = `<img ${sources(src, info, taille?.height ? taille : null, versApercu(preview))} alt="${texteAuteur(texteBorne(attrs.alt))}"${attributsTaille(taille)} loading="lazy" decoding="async">`;
+        return `<figure>${avecImageFixe(img, src, info, versApercu(preview))}${texteBorne(attrs.title) ? `<figcaption>${texteAuteur(attrs.title)}</figcaption>` : ''}</figure>`;
       }
       case 'table': {
         tables += 1;
@@ -223,7 +230,7 @@ export function renderArticle(template, post, { preview = false } = {}) {
   // La couverture est le plus grand élément du premier écran : dimensionnée, chargée en priorité.
   const couverture = infoImage(post.media, image);
   const tailleCouverture = couverture && ajuster(couverture, COUVERTURE);
-  const content = `<article class="wrap blog-article">${preview ? noticeApercu(post) : ''}<nav class="blog-article__nav" aria-label="Fil d’Ariane"><a href="/">Accueil</a><a href="/blog">Blog</a><span aria-current="page">${texteAuteur(post.title)}</span></nav><header class="blog-article__header"><p class="blog-meta">${AUTHOR}${post.published_at ? ` — <time datetime="${isoDate(post.published_at)}">${escapeHtml(frenchDate(post.published_at))}</time>` : ''} — ${reading}\u00a0min\u00a0de\u00a0lecture</p><h1>${texteAuteur(post.title)}</h1><p class="blog-article__intro">${texteAuteur(post.excerpt)}</p>${tagsHtml(post)}</header>${image ? `<img class="blog-article__cover" ${sources(image, couverture, tailleCouverture, versApercu(preview))} alt="${texteAuteur(post.cover_alt)}"${attributsTaille(tailleCouverture)} fetchpriority="high" decoding="async">` : ''}<div class="blog-prose">${renderDocument(post.content, { preview, media: post.media, reserved: [...template.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]) })}</div></article>`;
+  const content = `<article class="wrap blog-article">${preview ? noticeApercu(post) : ''}<nav class="blog-article__nav" aria-label="Fil d’Ariane"><a href="/">Accueil</a><a href="/blog">Blog</a><span aria-current="page">${texteAuteur(post.title)}</span></nav><header class="blog-article__header"><p class="blog-meta">${AUTHOR}${post.published_at ? ` — <time datetime="${isoDate(post.published_at)}">${escapeHtml(frenchDate(post.published_at))}</time>` : ''} — ${reading}\u00a0min\u00a0de\u00a0lecture</p><h1>${texteAuteur(post.title)}</h1><p class="blog-article__intro">${texteAuteur(post.excerpt)}</p>${tagsHtml(post)}</header>${image ? avecImageFixe(`<img class="blog-article__cover" ${sources(image, couverture, tailleCouverture, versApercu(preview))} alt="${texteAuteur(post.cover_alt)}"${attributsTaille(tailleCouverture)} fetchpriority="high" decoding="async">`, image, couverture, versApercu(preview)) : ''}<div class="blog-prose">${renderDocument(post.content, { preview, media: post.media, reserved: [...template.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]) })}</div></article>`;
   // Remplacement par fonction : un texte d’auteur qui porte $&, $' ou $$ serait sinon lu comme un motif de String.replace.
   let html = template.replace(/<title>[\s\S]*?<\/title>/, '').replace(/<meta\s+(?:name="(?:description|robots|twitter:[^"]*)"|property="(?:og:|article:)[^"]*")[^>]*>/g, '').replace(/<link rel="canonical"[^>]*>/g, '').replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '').replace('</head>', () => metadata(post, preview) + '</head>').replace(/<div id="blog-article-slot"[^>]*><\/div>/, () => content).replace(/<noscript>[\s\S]*?<\/noscript>/g, '');
   if (preview) html = html.replace(/<script[^>]*src="\/mesure.js"[^>]*><\/script>/g, '');
@@ -238,7 +245,7 @@ export function renderIndex(template, page, number = 1) {
     const facteur = info ? Math.round(Math.max(1, (info.width / info.height) / (16 / 9)) * 100) / 100 : 1;
     return facteur > 1 ? `(max-width: 860px) calc((100vw - ${GOUTTIERES}px) * ${facteur}), ${Math.round(largeur * facteur)}px` : `(max-width: 860px) calc(100vw - ${GOUTTIERES}px), ${largeur}px`;
   };
-  const list = page.posts.map((post, rang) => { const image = safeUrl(post.cover_image, true); const info = infoImage(post.media, image); const vignette = image ? `<img ${sources(image, info, info, (url) => url, tailleVignette(info, rang ? 660 : 760))} alt="${texteAuteur(post.cover_alt)}"${attributsTaille(info)}${rang ? ' loading="lazy"' : ''} decoding="async">` : ''; return `<article class="blog-list__article"><div><p class="blog-meta"><time datetime="${isoDate(post.published_at)}">${escapeHtml(frenchDate(post.published_at))}</time></p><h2><a href="/blog/${escapeHtml(post.slug)}">${texteAuteur(post.title)}</a></h2><p>${texteAuteur(post.excerpt)}</p>${tagsHtml(post)}</div>${vignette}</article>`; }).join('');
+  const list = page.posts.map((post, rang) => { const image = safeUrl(post.cover_image, true); const info = infoImage(post.media, image); const vignette = image ? avecImageFixe(`<img ${sources(image, info, info, (url) => url, tailleVignette(info, rang ? 660 : 760))} alt="${texteAuteur(post.cover_alt)}"${attributsTaille(info)}${rang ? ' loading="lazy"' : ''} decoding="async">`, image, info, (url) => url) : ''; return `<article class="blog-list__article"><div><p class="blog-meta"><time datetime="${isoDate(post.published_at)}">${escapeHtml(frenchDate(post.published_at))}</time></p><h2><a href="/blog/${escapeHtml(post.slug)}">${texteAuteur(post.title)}</a></h2><p>${texteAuteur(post.excerpt)}</p>${tagsHtml(post)}</div>${vignette}</article>`; }).join('');
   const pagination = `<nav class="blog-pagination" aria-label="Pages du blog">${number > 1 ? `<a rel="prev" href="/blog${number === 2 ? '' : `?page=${number - 1}`}">Articles précédents</a>` : '<span></span>'}${number * 20 < page.total ? `<a rel="next" href="/blog?page=${number + 1}">Articles suivants</a>` : ''}</nav>`;
   let html = template.replace(/<div id="blog-publications"[^>]*>[\s\S]*?<\/section>\s*<\/div>/, () => `<div id="blog-publications"><section class="blog-list" aria-label="Articles publiés">${list}</section>${pagination}</div>`);
   if (number > 1) html = html.replaceAll(`href="${ORIGIN}/blog"`, `href="${ORIGIN}/blog?page=${number}"`).replaceAll(`content="${ORIGIN}/blog"`, `content="${ORIGIN}/blog?page=${number}"`);

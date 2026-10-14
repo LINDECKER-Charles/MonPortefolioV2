@@ -183,6 +183,13 @@
   line-height: 1.5;
 }
 
+/* Une image animée arrive dans un <picture> (son image fixe sous
+   prefers-reduced-motion) : l’image reste l’élément mis en page. */
+.blog-list__article picture,
+.blog-article picture {
+  display: contents;
+}
+
 /* height: auto : l’attribut height posé par le serveur (dimensions réelles)
    l’emporterait sinon sur le recadrage 16:9. */
 .blog-list__article img {

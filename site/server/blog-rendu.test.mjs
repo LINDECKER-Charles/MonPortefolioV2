@@ -252,3 +252,17 @@ test('une vignette recadrée en 16:9 demande assez de pixels pour sa hauteur', (
   // 3 200 × 600 recadrée en 16:9 : la hauteur de la vignette voit 3 fois sa largeur d’image.
   assert.match(panorama, / sizes="\(max-width: 860px\) calc\(\(100vw - 32px\) \* 3\), 1980px"/);
 });
+
+test('une image animée sert son image fixe à qui demande moins de mouvement, sans JavaScript', () => {
+  const media = { '/api/blog/media/9': { width: 600, height: 300, variants: [], still: 600 }, '/api/blog/media/2': { width: 800, height: 400, variants: [480] } };
+  const image = (src) => ({ type: 'image', attrs: { src, alt: 'Animation' } });
+  const doc = { type: 'doc', content: [image('/api/blog/media/9'), image('/api/blog/media/2')] };
+  const html = renderDocument(doc, { media });
+  assert.match(html, /<figure><picture><source media="\(prefers-reduced-motion: reduce\)" srcset="\/api\/blog\/media\/9\/600"><img src="\/api\/blog\/media\/9" alt="Animation" width="600" height="300"[^>]*><\/picture><\/figure>/);
+  assert.equal(compter(html, /<picture>/g), 1, 'une image fixe n’a pas d’image de repli');
+  assert.match(renderDocument(doc, { media, preview: true }), /srcset="\/api\/backoffice\/blog\/media\/9\/600"/, 'l’aperçu lit l’image fixe par la session');
+  const couverture = renderArticle(GABARIT, article({ cover_image: '/api/blog/media/9', cover_alt: 'Animation', media }));
+  assert.match(couverture, /<picture><source media="\(prefers-reduced-motion: reduce\)" srcset="\/api\/blog\/media\/9\/600"><img class="blog-article__cover"/);
+  const liste = renderIndex(LISTE, { posts: [article({ cover_image: '/api/blog/media/9', cover_alt: 'Animation', media })], total: 1 });
+  assert.match(liste, /<picture><source media="\(prefers-reduced-motion: reduce\)" srcset="\/api\/blog\/media\/9\/600"><img /);
+});
