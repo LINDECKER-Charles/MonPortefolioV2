@@ -109,6 +109,49 @@ async function mcp(method, params, options = {}) {
   return resultat.json;
 }
 
+/** Un appel MCP par le chemin de Claude Code (révision 2026-07-28) : en-têtes et métadonnées exigés. */
+async function mcpModerne(method, params, options = {}) {
+  const resultat = await requete('/mcp', {
+    method: 'POST', accept: 'application/json, text/event-stream',
+    data: { jsonrpc: '2.0', id: ++identifiantRpc, method, params: { ...params, _meta: { 'io.modelcontextprotocol/protocolVersion': '2026-07-28', 'io.modelcontextprotocol/clientCapabilities': {} } } },
+    ...options,
+    headers: { 'MCP-Protocol-Version': '2026-07-28', 'MCP-Method': method, ...(method === 'tools/call' ? { 'MCP-Name': params.name } : {}), ...options.headers },
+  });
+  if (options.status === undefined || options.status === 200) {
+    assert(!resultat.json.error, `${method} : erreur JSON-RPC inattendue`);
+  }
+  return resultat.json;
+}
+
+/**
+ * L’accès que crée le backoffice par défaut (préréglage Rédaction, sans les
+ * demandes), tel que Claude Code le voit à travers le relais Node : le
+ * catalogue de la rédaction seul, les demandes refusées, les indications de
+ * cache que Claude Code exige, et l’origine du site acceptée, une autre non.
+ */
+async function testerAccesRedaction() {
+  const acces = (await requete('/api/backoffice/tokens', { method: 'POST', data: { name: 'Claude Code', scopes: ['blog:read', 'blog:write'] }, session: true, status: 201 })).json;
+  assert.deepEqual(acces.scopes, ['blog:read', 'blog:write']);
+  const decouverte = await mcpModerne('server/discover', {}, { bearer: acces.token });
+  assert(decouverte.result.supportedVersions.includes('2026-07-28'));
+  const catalogue = await mcpModerne('tools/list', {}, { bearer: acces.token });
+  assert.deepEqual(catalogue.result.tools.map((outil) => outil.name).sort(), ['blog_create_post', 'blog_get_post', 'blog_list_media', 'blog_list_posts', 'blog_preview_post', 'blog_seo_audit', 'blog_update_post', 'blog_upload_media']);
+  for (const resultat of [decouverte.result, catalogue.result]) {
+    assert.equal(resultat.resultType, 'complete');
+    assert.equal(resultat.ttlMs, 300000, 'Claude Code refuse un catalogue sans ttlMs.');
+    assert.equal(resultat.cacheScope, 'private', 'Le catalogue dépend de l’accès : jamais partagé.');
+  }
+  const refus = await mcpModerne('tools/call', { name: 'contacts_summary', arguments: {} }, { bearer: acces.token });
+  assert.equal(refus.result.isError, true);
+  assert.equal(refus.result.structuredContent.code, 'PERMISSION_DENIED', 'Un accès Rédaction ne lit pas les demandes.');
+  // « Vérifier l’accès » appelle /mcp depuis la page : l’origine du site passe, une autre non.
+  await mcpModerne('tools/list', {}, { bearer: acces.token, headers: { Origin: origine } });
+  await mcpModerne('tools/list', {}, { bearer: acces.token, headers: { Origin: 'https://etranger.example.test' }, status: 403 });
+  await requete(`/api/backoffice/tokens/${acces.id}`, { method: 'DELETE', session: true });
+  await mcpModerne('tools/list', {}, { bearer: acces.token, status: 401 });
+  console.log('[integration] Accès Rédaction en 2026-07-28 : catalogue, demandes refusées, cache et origine : OK');
+}
+
 function memoriserCookie(reponse, nom) {
   const entetes = reponse.headers.getSetCookie();
   const valeur = entetes.find((entete) => entete.startsWith(`${nom}=`) && !entete.includes('Max-Age=0'));
@@ -397,6 +440,7 @@ async function main() {
   const liens = await mcp('tools/call', { name: 'list_toolbox_links', arguments: {} }, { bearer: jeton.token });
   assert.equal(liens.result.structuredContent.links[0].id, lien.id);
   await testerBlog(jeton.token);
+  await testerAccesRedaction();
   await mcp('tools/list', {}, { session: true, status: 401 });
   await requete('/api/backoffice/contacts', { bearer: jeton.token, status: 401 });
   await requete(`/api/backoffice/tokens/${jeton.id}`, { method: 'DELETE', session: true });
