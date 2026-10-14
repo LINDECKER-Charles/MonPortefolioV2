@@ -160,13 +160,18 @@ const dessous = Boolean(loupe?.dessous);
     display: contents;
   }
 
-  .loupe > picture > img {
+  /* L’image entière, à sa proportion. `.capture-annotee` (posée sur le cadre)
+     passe devant les règles de l’image recadrée de CadreCapture (`ratio`,
+     `region`), qui visent toute `picture img` de la vue : sans elle, la loupe
+     prendrait leur hauteur, leur `object-fit: cover` ou leur décalage. */
+  :global(.capture-annotee) .loupe > picture > img {
     position: absolute;
     left: 50%;
     top: 50%;
     width: calc(var(--lz) * 100%);
     max-width: none;
     height: auto;
+    object-fit: fill;
     translate: calc(-1 * var(--lx)) calc(-1 * var(--ly));
   }
 
