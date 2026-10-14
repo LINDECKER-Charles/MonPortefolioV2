@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::{borrow::Cow, collections::BTreeMap};
 
 use axum::{
     Json,
@@ -10,7 +10,7 @@ use serde::Serialize;
 #[derive(Serialize)]
 struct ErrorBody {
     code: &'static str,
-    message: &'static str,
+    message: Cow<'static, str>,
     #[serde(skip_serializing_if = "Option::is_none")]
     fields: Option<BTreeMap<&'static str, &'static str>>,
 }
@@ -22,12 +22,16 @@ pub struct ApiError {
 }
 
 impl ApiError {
-    pub fn new(status: StatusCode, code: &'static str, message: &'static str) -> Self {
+    pub fn new(
+        status: StatusCode,
+        code: &'static str,
+        message: impl Into<Cow<'static, str>>,
+    ) -> Self {
         Self {
             status,
             body: ErrorBody {
                 code,
-                message,
+                message: message.into(),
                 fields: None,
             },
             retry_after: None,

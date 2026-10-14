@@ -24,7 +24,7 @@ use crate::{
     AppState,
     config::BackofficeConfig,
     error::ApiError,
-    storage::{StoreError, TokenCreationError, TwoFactorResult},
+    storage::{MAX_TOKENS, StoreError, TokenCreationError, TwoFactorResult},
 };
 use subtle::ConstantTimeEq;
 
@@ -189,7 +189,9 @@ fn token_limit_reached() -> ApiError {
     ApiError::new(
         StatusCode::CONFLICT,
         "TOKEN_LIMIT_REACHED",
-        "Le portfolio compte déjà 64 accès MCP, le maximum. Révoquez un accès inutilisé pour en créer un autre.",
+        format!(
+            "Le portfolio compte déjà {MAX_TOKENS} accès MCP, le maximum. Révoquez un accès inutilisé pour en créer un autre."
+        ),
     )
 }
 fn not_found() -> ApiError {

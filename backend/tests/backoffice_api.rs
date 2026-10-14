@@ -17,7 +17,7 @@ use portfolio_backend::{
     contact::ContactMessage,
     mail::{DeliveryError, DeliveryFuture, MailDelivery},
     routes,
-    storage::Store,
+    storage::{MAX_TOKENS, Store},
 };
 use serde_json::{Value, json};
 use tower::ServiceExt;
@@ -579,7 +579,7 @@ async fn the_mcp_access_ceiling_is_explained_and_freed_by_a_revocation() {
         .create_token_with_scopes("Accès 1", &scopes)
         .unwrap()
         .0;
-    for index in 2..=64 {
+    for index in 2..=MAX_TOKENS {
         store
             .create_token_with_scopes(&format!("Accès {index}"), &scopes)
             .unwrap();
@@ -597,10 +597,13 @@ async fn the_mcp_access_ceiling_is_explained_and_freed_by_a_revocation() {
     let refused = body(refused).await;
     assert_eq!(refused["code"], "TOKEN_LIMIT_REACHED");
     let message = refused["message"].as_str().unwrap();
-    assert!(message.contains("64 accès MCP"), "{message}");
+    assert!(
+        message.contains(&format!("{MAX_TOKENS} accès MCP")),
+        "{message}"
+    );
     assert!(message.contains("Révoquez"), "{message}");
     assert!(!message.contains("indisponible"), "{message}");
-    assert_eq!(store.list_tokens().unwrap().len(), 64);
+    assert_eq!(store.list_tokens().unwrap().len() as u64, MAX_TOKENS);
     assert_eq!(
         app.clone()
             .oneshot(request(
