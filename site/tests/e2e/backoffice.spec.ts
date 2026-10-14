@@ -416,6 +416,12 @@ test('nouvel accès MCP en un geste : Rédaction sans les demandes, commande pr�
   await expect(page.getByLabel('Nom de l’accès')).toHaveValue('Claude Code');
   await expect(page.getByRole('radio', { name: 'Rédaction', exact: true })).toBeChecked();
   await expect(page.getByRole('checkbox', { name: 'Lire aussi les demandes de contact' })).not.toBeChecked();
+  // Tout est prérempli : sur un écran de bureau, le bouton se voit sans défiler.
+  const ecran = page.viewportSize()!;
+  if (ecran.width >= 1200) {
+    const bouton = await page.getByRole('button', { name: 'Créer l’accès', exact: true }).boundingBox();
+    expect(bouton!.y + bouton!.height).toBeLessThanOrEqual(ecran.height);
+  }
   await accessibilite(page);
   await page.getByRole('button', { name: 'Créer l’accès', exact: true }).click();
   expect(etat.mutations.find(({ path }) => path === '/tokens')?.body).toEqual({ name: 'Claude Code', scopes: ['blog:read', 'blog:write'] });

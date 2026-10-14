@@ -44,20 +44,18 @@ const hoteCanonique = new URL(SITE.url).hostname;
           <fieldset class="bo-choix">
             <legend>Ce que l’assistant pourra faire</legend>
             {ORDRE_PREREGLAGES.map((id) => (
-              <div class="bo-choix__option">
+              <div class="bo-choix__option bo-option-ligne">
                 <input type="radio" name="prereglage" id={`bo-prereglage-${id}`} value={id} checked={id === PREREGLAGE_PAR_DEFAUT} aria-describedby={`bo-prereglage-${id}-aide`} />
-                <label for={`bo-prereglage-${id}`}>{PREREGLAGES[id].titre}</label>
-                <p class="bo-choix__aide" id={`bo-prereglage-${id}-aide`}>{PREREGLAGES[id].description}</p>
+                <p class="bo-option-ligne__texte"><label for={`bo-prereglage-${id}`}>{PREREGLAGES[id].titre}</label> <span class="bo-choix__aide" id={`bo-prereglage-${id}-aide`}>{PREREGLAGES[id].description}</span></p>
               </div>
             ))}
           </fieldset>
-          <div class="bo-case">
+          <div class="bo-case bo-option-ligne">
             <input type="checkbox" id="bo-token-contacts" name="contacts" aria-describedby="bo-token-contacts-help" />
-            <label for="bo-token-contacts">Lire aussi les demandes de contact</label>
-            <p class="bo-choix__aide" id="bo-token-contacts-help">Noms, adresses e-mail et messages des visiteurs, et la boîte à outils, en lecture seule.</p>
+            <p class="bo-option-ligne__texte"><label for="bo-token-contacts">Lire aussi les demandes de contact</label> <span class="bo-choix__aide" id="bo-token-contacts-help">Noms, adresses e-mail et messages des visiteurs, et la boîte à outils, en lecture seule.</span></p>
           </div>
-          <p class="bo-help">Aucun accès ne modifie les demandes, l’adresse de contact ni les accès, et aucun n’envoie d’e-mail.</p>
           <div class="bo-actions"><button class="bo-button bo-button--primary" type="submit">Créer l’accès</button></div>
+          <p class="bo-help bo-mcp__garde-fou">Aucun accès ne modifie les demandes, l’adresse de contact ni les accès, et aucun n’envoie d’e-mail.</p>
         </fieldset>
         <Retour id="bo-token-form-retour" />
       </form>

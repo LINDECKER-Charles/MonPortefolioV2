@@ -431,6 +431,40 @@
   line-height: 1.5;
 }
 
+/* Une option en une phrase serrée : l’intitulé, puis sa description à la
+   suite (accès MCP). La carte entière reste la cible. */
+.bo-option-ligne {
+  grid-template-columns: auto minmax(0, 1fr);
+  padding-block: var(--s2);
+}
+
+.bo-option-ligne > input {
+  grid-row: 1;
+  margin-top: var(--s1);
+}
+
+.bo-option-ligne__texte {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.bo-option-ligne__texte > label {
+  display: inline;
+  margin: 0 var(--s1) 0 0;
+  cursor: pointer;
+}
+
+.bo-option-ligne__texte > label::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--r2);
+}
+
+.bo-option-ligne__texte > .bo-choix__aide {
+  display: inline;
+}
+
 .bo-choix__option:has(input:checked),
 .bo-case:has(input:checked) {
   border-color: var(--accent);
@@ -946,6 +980,10 @@
 .bo-mcp__creation,
 .bo-mcp__liste {
   min-width: 0;
+}
+
+.bo-formulaire .bo-mcp__garde-fou {
+  margin-top: 0;
 }
 
 .bo-mcp__liste-entete {
