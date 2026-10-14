@@ -55,8 +55,10 @@ export default defineConfig({
             plugins: [blogDevelopment(backend)],
             define: { 'import.meta.env.PUBLIC_CONTACT_EMAIL': JSON.stringify('') },
             server: {
+              // Les listes (demandes, articles, images) passent leurs filtres en
+              // paramètres : l’expression admet une chaîne de requête.
               proxy: {
-                '^/(api/(contact|health|config/contact|blog/(posts(/[a-z0-9-]+)?|media/[1-9][0-9]*)|backoffice/((login|logout|session|settings|contacts|links|tokens)(/[1-9][0-9]*)?|2fa/(setup|verify)|blog/(posts(/[1-9][0-9]*(/(publish|schedule|unpublish|preview|seo))?)?|media(/[1-9][0-9]*)?)))|mcp)$': {
+                '^/(api/(contact|health|config/contact|blog/(posts(/[a-z0-9-]+)?|media/[1-9][0-9]*)|backoffice/((login|logout|session|settings|contacts|links|tokens)(/[1-9][0-9]*)?|2fa/(setup|verify)|blog/(posts(/[1-9][0-9]*(/(publish|schedule|unpublish|preview|seo))?)?|media(/[1-9][0-9]*)?)))|mcp)(\\?.*)?$': {
                   target: backend?.origine,
                   timeout: 20_000,
                   proxyTimeout: 20_000,
