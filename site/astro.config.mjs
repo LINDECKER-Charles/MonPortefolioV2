@@ -5,6 +5,7 @@ import { loadEnvFile } from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { lireConfigBackend } from './server/contact.mjs';
 import { blogDevelopment } from './server/blog-dev.mjs';
+import { ROUTES_PROXY_DEV } from './src/lib/proxy-dev.mjs';
 
 /**
  * Aucun <script> exécutable en ligne : la CSP envoyée par server/server.mjs
@@ -55,10 +56,9 @@ export default defineConfig({
             plugins: [blogDevelopment(backend)],
             define: { 'import.meta.env.PUBLIC_CONTACT_EMAIL': JSON.stringify('') },
             server: {
-              // Les listes (demandes, articles, images) passent leurs filtres en
-              // paramètres : l’expression admet une chaîne de requête.
+              // Routes relayées et chaîne de requête : src/lib/proxy-dev.mjs.
               proxy: {
-                '^/(api/(contact|health|config/contact|blog/(posts(/[a-z0-9-]+)?|media/[1-9][0-9]*)|backoffice/((login|logout|session|settings|contacts|links|tokens)(/[1-9][0-9]*)?|2fa/(setup|verify)|blog/(posts(/[1-9][0-9]*(/(publish|schedule|unpublish|preview|seo))?)?|media(/[1-9][0-9]*)?)))|mcp)(\\?.*)?$': {
+                [ROUTES_PROXY_DEV]: {
                   target: backend?.origine,
                   timeout: 20_000,
                   proxyTimeout: 20_000,
