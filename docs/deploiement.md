@@ -7,12 +7,14 @@ ligne, la bascule depuis la V1, les gestes courants et les pièges connus. Les v
 sont dans [`secrets.md`](secrets.md) ; la mesure d'audience a son propre document,
 [`mesure-audience.md`](mesure-audience.md).
 
-> **Aujourd'hui, seul l'environnement de test de la V2 tourne.** La V1 (dépôt `MonPortfolio`,
-> piles `monportfolio-staging` et `monportfolio-prod`) déclare `charles-lindecker.com`,
-> `www.charles-lindecker.com` et `test.charles-lindecker.com` sur l'edge du même hôte. Deux
-> conteneurs qui déclarent le même domaine se marchent dessus : la production de la V2 ne se
-> déploie qu'**après** le déplacement de la V1 sur son sous-domaine d'archive (§ 4.2). Le
-> déploiement le vérifie et refuse de démarrer sur un domaine qu'un autre projet déclare encore.
+> **Au 2026-10-14, aucun environnement de la V2 ne tourne** : ni secret, ni exécution de la
+> chaîne, ni DNS pour le test. La V1 (dépôt `MonPortfolio`, piles `monportfolio-staging` et
+> `monportfolio-prod`) déclare `charles-lindecker.com`, `www.charles-lindecker.com` et
+> `test.charles-lindecker.com` sur l'edge du même hôte. Deux conteneurs qui déclarent le même
+> domaine se marchent dessus : la production de la V2 ne se déploie qu'**après** l'arrêt de la V1,
+> archivée sur `yharnam.charles-lindecker.com`. Le déploiement le vérifie et refuse de démarrer
+> sur un domaine qu'un autre projet déclare encore. Mise en service, secrets et gestes manuels,
+> dans l'ordre : [`bascule.md`](bascule.md).
 
 ---
 
@@ -34,8 +36,9 @@ portfolio-prod-web-1   portfolio-test-web-1   monportfolio-* (V1)     analytics-
 :4000 (interne)        :4000 (interne)        charles-lindecker.com   (pile analytics,
 après la bascule :     test.v2.charles-       www., test.             infra-vps)
 charles-lindecker.com  lindecker.com          jusqu'à la bascule,     /u/script.js,
-www. -> 301 apex                              puis sous-domaine       /u/api/send
-                                              d'archive
+www. -> 301 apex                              puis arrêtées ;         /u/api/send
+                                              monportfolio-archive
+                                              sur yharnam.
 ```
 
 Trois propriétés structurent tout le reste :
@@ -78,16 +81,18 @@ répond, y compris lorsque SMTP n’est pas encore renseigné.
 
 ## 2. Chaîne de mise en ligne
 
-**Déclenchements automatiques suspendus pendant la transition avec la V1 (2026-10-08).**
-Les push, y compris sur `dev` et `main`, et les PR ne lancent aucun workflow. Le lancement
-manuel reste disponible (§ « Redéployer sans nouveau commit »). Pour réactiver la chaîne,
-rétablir `push` sur `[dev, main]` et `pull_request` sur `[dev]` dans `.github/workflows/ci.yml`.
-Les déclenchements décrits ci-dessous correspondent au fonctionnement après réactivation.
+Les déclenchements automatiques, suspendus pendant la transition avec la V1 (2026-10-08), sont
+rétablis par la branche de bascule (2026-10-14) : `push` sur `dev` et `main`, `pull_request` sur
+`dev`, et le lancement manuel.
 
 ```
 push dev  ->  _tests  ->  fusion dev->test  ->  _build (:sha + :staging)  ->  _deploy TEST
 push main ->  _promote (:staging -> :prod, :latest)                       ->  _deploy PROD
 ```
+
+L'archive de la V1 a sa propre chaîne, `.github/workflows/archive-v1.yml` : un push sur `dev` qui
+touche `archive-v1/` (ou un lancement manuel) la reconstruit depuis le dépôt `MonPortfolio` figé
+et la redéploie dans `/opt/monportfolio-archive` ([`archive-v1/README.md`](../archive-v1/README.md)).
 
 `_tests` joue quatre jobs en parallèle : l’API (`backend` : rustfmt, Clippy, tests dont SMTP
 local), l'application (`front` : `astro check`, tests dont ceux
@@ -140,7 +145,7 @@ exécute ce dernier depuis le fichier. Le script :
 | Hôte canonique | — | `www.` renvoyé en 301 vers l'apex |
 | Indexation (`X-Robots-Tag`) | `noindex` | `all` |
 | Mesure d'audience | active, site Umami « Portfolio V2 (test) » | préparée, commentée : après la purge à 25 mois |
-| État au 2026-10-07 | à mettre en service (§ 4.1) | attend la bascule (§ 4.2) |
+| État au 2026-10-14 | à mettre en service ([`bascule.md`](bascule.md), phase 2) | attend la bascule ([`bascule.md`](bascule.md), phase 3) |
 
 Les dossiers et les noms de projet de la V2 sont distincts de ceux de la V1
 (`/opt/monportfolio-staging`, `/opt/monportfolio-prod`) : jamais de dossier partagé entre les
@@ -182,53 +187,21 @@ deux versions.
 
 5. **Recette de la mesure d'audience** : [`mesure-audience.md`](mesure-audience.md) § 6.
 
-### 4.2 Bascule depuis la V1 (plus tard)
+### 4.2 Bascule depuis la V1 et archive
 
 L'invariant : **à aucun moment deux projets ne déclarent le même domaine.** La V1 quitte
-`charles-lindecker.com` et `www.` avant que la V2 ne les déclare. Le garde-fou du déploiement
-refuserait l'ordre inverse ; les étapes ci-dessous évitent d'en arriver là.
+`charles-lindecker.com` et `www.` avant que la V2 ne les déclare ; le garde-fou du déploiement
+refuserait l'ordre inverse. La procédure complète, avec les secrets, le DNS, les gestes manuels,
+les vérifications et le retour arrière, est dans [`bascule.md`](bascule.md). En résumé :
 
-Prérequis : la recette en test est faite ; le sous-domaine d'archive et la version archivée sont
-tranchés ([`questions.md`](questions.md), bloc F ; [`brief.md`](brief.md) § 6). Cas prévu : la V2
-est déployée sur le même hôte que la V1, et le DNS de `charles-lindecker.com` et `www.` y pointe
-déjà. Sur un autre hôte, il faudrait en plus une bascule DNS, avec `TLS_ASSERT=0` le temps de la
-propagation.
-
-1. **DNS du sous-domaine d'archive** (`v1.`, `yharnam.` ou `archive.`, à choisir) : A vers l'hôte.
-2. **Secrets de production de la V2** : `PROD_*` et `ENV_PROD`, d'après `.env.prod.example`
-   ([`secrets.md`](secrets.md)). `TLS_ASSERT=1` : les certificats de ces domaines sont déjà émis
-   sur cet edge.
-3. **Archive en ligne, sur son seul sous-domaine** (dépôt `MonPortfolio`, brief § 6) : une pile
-   figée sur le digest de l'image `:prod` retenue, qui ne déclare que le sous-domaine d'archive.
-   Côté V1, ce domaine doit figurer dans `NG_ALLOWED_HOSTS` (sinon la V1 y retombe en rendu
-   client), avec `ROBOTS_NOINDEX=1`. Vérifier qu'elle répond ; `monportfolio-prod` sert toujours
-   le domaine principal.
-4. **La V1 quitte le domaine principal** : couper sa CI (`gh workflow disable ci.yml --repo
-   LINDECKER-Charles/MonPortfolio`), sinon un prochain déploiement de la V1 réécrirait le `.env`
-   de l'hôte depuis son secret et redéclarerait le domaine ; puis arrêter sa pile de production
-   (`docker compose down` dans `/opt/monportfolio-prod`). Plus aucun conteneur de la V1 ne doit
-   déclarer `charles-lindecker.com` ni `www.`. **Dès cet instant, le domaine principal ne répond
-   plus : enchaîner aussitôt l'étape suivante**, à un moment creux.
-
-   Variante plus courte : reconfigurer `monportfolio-prod` elle-même sur le sous-domaine
-   d'archive (son secret `ENV_PROD`, puis un dernier déploiement de la V1) fond les étapes 3 et 4 ;
-   couper la CI de la V1 juste après.
-5. **La V2 en production** : fusionner `test` dans `main`, pousser. La chaîne promeut `:staging`
-   en `:prod` et déploie ; le garde-fou vérifie que les domaines sont libres.
-6. **Vérifier** :
-
-   ```bash
-   curl -sI https://charles-lindecker.com/ | grep -iE '^(HTTP|x-robots-tag)'       # 200, all
-   curl -sI https://www.charles-lindecker.com/mentions-legales | grep -i '^location'
-   #   location: https://charles-lindecker.com/mentions-legales
-   curl -o /dev/null -w '%{http_code} %{redirect_url}\n' https://charles-lindecker.com/projects
-   #   301 https://charles-lindecker.com/
-   curl -sI https://<archive>.charles-lindecker.com/ | grep -i x-robots-tag        # noindex (V1)
-   ```
-
-7. **Après** : la pile `monportfolio-staging` (`test.charles-lindecker.com`) ne gêne pas la V2 ;
-   l'arrêter avec la CI de la V1 si elle n'a plus d'usage. La mesure en production suit sa propre
-   condition ([`mesure-audience.md`](mesure-audience.md) § 7).
+1. **Préparer** : DNS de `yharnam.` et `test.v2.`, clé SSH, `ENV_TEST`, `ENV_PROD` et les dix
+   secrets. Rien ne change en ligne.
+2. **Intégrer** : un push sur `dev` met en ligne la V2 en test et l'archive de la V1 sur
+   `yharnam.charles-lindecker.com` (`.github/workflows/archive-v1.yml`, [`archive-v1/`](../archive-v1/README.md)).
+   La V1 sert toujours le domaine principal.
+3. **Basculer** : couper la CI de la V1, arrêter ses deux piles, fusionner `test` dans `main`.
+   Environ cinq minutes de coupure.
+4. **Vérifier** depuis le poste : `node scripts/verifier-bascule.mjs`.
 
 ---
 
@@ -305,8 +278,8 @@ gh workflow run ci.yml --ref dev     # test (rejoue tests et build)
 ```
 
 > GitHub n'expose `workflow_dispatch` que si le workflow le déclare sur la branche **par défaut**
-> (`main`). Tant que `ci.yml` n'y est pas, le lancement manuel est indisponible. Pendant la
-> suspension des automatismes, un commit vide sur `dev` ne relance rien non plus.
+> (`main`). Tant que `ci.yml` n'y est pas, c'est-à-dire jusqu'à la bascule, le lancement manuel
+> est indisponible : un push sur `dev` relance la chaîne de test.
 
 ### Développer en local
 

@@ -125,8 +125,10 @@ Points à lire avant de remplir :
 
 - **La production attend le départ de la V1.** Tant que la V1 déclare `charles-lindecker.com` et
   `www.` sur l'edge, le déploiement de production refuse de démarrer (domaine déjà déclaré par un
-  autre projet). Poser `PROD_*` et `ENV_PROD` plus tôt est donc sans risque ; l'ordre de bascule
-  est dans [`deploiement.md`](deploiement.md) § 4.2.
+  autre projet). Poser `PROD_*` et `ENV_PROD` plus tôt est donc sans risque, et même nécessaire :
+  l'archive de la V1 (`.github/workflows/archive-v1.yml`) se déploie avec `PROD_HOST`,
+  `PROD_SSH_USER` et `PROD_SSH_KEY` dès l'intégration. L'ordre de bascule est dans
+  [`bascule.md`](bascule.md).
 
 - **`CADDY_DOMAINS` n'a pas de valeur par défaut, par construction.** Le calque de déploiement le
   déclare en `${CADDY_DOMAINS:?…}` : un `.env` qui l'oublie fait échouer le `docker compose up` au
@@ -229,13 +231,17 @@ l'infrastructure partagée.
 
 ### d. Accès en lecture au registre GHCR
 
-Le VPS fait `docker compose pull` sur `ghcr.io/lindecker-charles/monportefoliov2`. Deux options :
+Le VPS fait `docker compose pull` sur trois images : `ghcr.io/lindecker-charles/monportefoliov2`,
+`monportefoliov2-backend` et `monportfolio-archive` (l'archive de la V1). Nées d'un dépôt privé,
+elles sont privées. Deux options :
 
-**Option 1 — rendre le package public (recommandé).** L'image ne contient que le site compilé et
-son serveur, publics de toute façon une fois en ligne. Aucun identifiant à gérer sur le serveur.
+**Option 1 — rendre les packages publics (recommandé).** Les images ne contiennent que le site
+compilé, son serveur, l'API compilée et l'archive de la V1, dont le code est public. Aucun
+identifiant à gérer sur le serveur.
 
-> GitHub → profil → Packages → `monportefoliov2` → Package settings → Change visibility → Public.
-> Le package n'apparaît qu'**après** la première exécution de `_build`.
+> GitHub → profil → Packages → `monportefoliov2`, `monportefoliov2-backend`,
+> `monportfolio-archive` → Package settings → Change visibility → Public.
+> Un package n'apparaît qu'**après** sa première publication (`_build`, `archive-v1.yml`).
 
 **Option 2 — garder le package privé.** Une authentification persistante sur l'hôte, avec un PAT
 classique portant la seule portée `read:packages` :
@@ -271,7 +277,7 @@ couvre en plus tout conteneur lancé à la main.
 | `test.v2.charles-lindecker.com` | A | IP de l'hôte | environnement de test | **à créer** avant le premier déploiement |
 | `charles-lindecker.com` | A | IP de l'hôte | production | en place (sert la V1) |
 | `www.charles-lindecker.com` | CNAME vers l'apex | — | production, redirigé vers l'apex | en place |
-| sous-domaine d'archive de la V1 | A | IP de l'hôte | archive de la V1 | à créer à la bascule ([`deploiement.md`](deploiement.md) § 4.2) |
+| `yharnam.charles-lindecker.com` | A | IP de l'hôte | archive de la V1 | **à créer** avant d'intégrer la bascule ([`bascule.md`](bascule.md) § 3.1) |
 
 Sans enregistrement, Let's Encrypt échoue et Caddy entre en back-off.
 
