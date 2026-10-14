@@ -1,0 +1,29 @@
+---
+/**
+ * En-tête d’une rubrique de l’atelier : le titre (Instrument Serif, le seul
+ * titre dominant de l’écran), une phrase qui dit à quoi sert la rubrique, et
+ * à droite son action (slot `actions`).
+ *
+ *   <EnTeteRubrique id="bo-titre-contacts" titre="Demandes de contact" description="…">
+ *     <button slot="actions" class="bo-button">Actualiser</button>
+ *   </EnTeteRubrique>
+ *
+ * Le titre reçoit le focus quand on arrive sur la rubrique (tabindex -1).
+ */
+interface Props {
+  /** Identifiant du titre, référencé par l’`aria-labelledby` de la rubrique. */
+  id: string;
+  titre: string;
+  description?: string;
+}
+
+const { id, titre, description } = Astro.props;
+---
+
+<header class="bo-rubrique__entete">
+  <div class="bo-rubrique__intitule">
+    <h2 id={id} tabindex="-1">{titre}</h2>
+    {description && <p class="bo-rubrique__description">{description}</p>}
+  </div>
+  {Astro.slots.has('actions') && <div class="bo-rubrique__actions"><slot name="actions" /></div>}
+</header>

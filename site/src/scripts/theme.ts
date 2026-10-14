@@ -161,7 +161,7 @@ export function brancherTheme(): void {
       choixSession = true;
       appliquer(suivant, bouton);
       memoriser(suivant);
-      mesurer('theme', { choix: suivant });
+      if (!bouton.hasAttribute('data-sans-mesure')) mesurer('theme', { choix: suivant });
     });
   }
 

@@ -1,0 +1,20 @@
+---
+/**
+ * Le retour d’une action, posé à côté d’elle : « Enregistrement… », « L’adresse
+ * est enregistrée. », ou l’erreur et ce qu’il faut faire. Une région `status`
+ * toujours présente (vide, elle ne prend aucune place) : les lecteurs d’écran
+ * annoncent chaque message.
+ *
+ * Un conteneur relie ses commandes à son retour : `data-retour="<id>"`
+ * (scripts/backoffice.ts, `zoneDe`). L’état (`data-state` : pending, success,
+ * error) donne la forme ; le texte dit toujours ce qui s’est passé.
+ */
+interface Props {
+  id: string;
+  class?: string;
+}
+
+const { id, class: classe } = Astro.props;
+---
+
+<p class:list={['bo-retour', classe]} id={id} role="status" aria-live="polite"></p>

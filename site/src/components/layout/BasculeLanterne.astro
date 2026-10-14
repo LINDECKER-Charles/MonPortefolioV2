@@ -11,16 +11,25 @@
  *
  * Sans JavaScript, la bascule ne ferait rien : elle n’est pas affichée, et le
  * thème suit prefers-color-scheme.
+ *
+ * `mesure={false}` (le backoffice, hors mesure d’audience) : le choix du
+ * thème n’entre pas dans la file de mesure (`data-sans-mesure`).
  */
 import lanterne from '../../assets/visuels/global/GLO-03.svg?raw';
 import '../../styles/theme-transition.css';
+
+interface Props {
+  mesure?: boolean;
+}
+
+const { mesure = true } = Astro.props;
 
 const dessin = lanterne
   .replace(/<title>[\s\S]*?<\/title>/, '')
   .replace(/<svg\b[^>]*>/, '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">');
 ---
 
-<button class="bascule" type="button" data-theme-bascule data-js-seulement aria-pressed="false" aria-label="Mode nuit" title="Passer en mode nuit">
+<button class="bascule" type="button" data-theme-bascule data-js-seulement data-sans-mesure={mesure ? undefined : ''} aria-pressed="false" aria-label="Mode nuit" title="Passer en mode nuit">
   <Fragment set:html={dessin} />
 </button>
 
