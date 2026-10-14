@@ -126,6 +126,31 @@
   grid-row: 1;
 }
 
+/* Après la vedette, chaque carte prend deux rangées de la grille : l’image,
+   puis le texte. La date et le titre de deux cartes voisines partent de la
+   même ligne ; une carte sans couverture laisse vide la rangée de l’image, au
+   lieu de placer son titre sous l’image de sa voisine, comme une légende. */
+@media (min-width: 861px) {
+  /* Une seule colonne, pleine largeur : le justify-content de la carte en
+     flex placerait sinon le texte d’une carte sans image au bout de la case. */
+  .blog-list__article:not(:first-child) {
+    display: grid;
+    grid-row: span 2;
+    grid-template-rows: subgrid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-content: normal;
+    row-gap: var(--s4);
+  }
+
+  .blog-list__article:not(:first-child) > div {
+    grid-row: 2;
+  }
+
+  .blog-list__article:not(:first-child) img {
+    grid-row: 1;
+  }
+}
+
 .blog-list__article h2 {
   margin-block: var(--s2) var(--s3);
   font-size: var(--t-xl);

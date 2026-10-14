@@ -65,6 +65,9 @@ test.beforeAll(async () => {
   const octets = await fichiers();
   const publie = { id: 1, ...ARTICLE, status: 'published', published_at: 1791468000, scheduled_at: null, created_at: '2026-10-08T12:00:00Z', updated_at: '2026-10-08T12:00:00Z', revision: 2, has_unpublished_changes: false, scheduled_revision: null, media: MEDIA };
   const { content: _contenu, ...resume } = publie;
+  // Après la vedette, deux rangées de la grille : sans puis avec couverture, et l’inverse.
+  const carte = (id: number, slug: string, couverture: string | null) => ({ ...resume, id, slug, title: `Carte ${slug}`, excerpt: 'Un résumé de deux lignes environ, pour la grille de la liste.', cover_image: couverture, cover_alt: couverture ? 'Une couverture' : '', media: couverture ? { [couverture]: MEDIA[couverture] } : {} });
+  const liste = [resume, carte(2, 'sans-a', null), carte(3, 'avec-a', '/api/blog/media/1'), carte(4, 'avec-b', '/api/blog/media/6'), carte(5, 'sans-b', null)];
   backend = createServer((req, res) => {
     const url = req.url ?? '';
     const image = /^\/api\/blog\/media\/(\d+)(?:\/(\d+))?$/.exec(url);
@@ -77,7 +80,7 @@ test.beforeAll(async () => {
     }
     res.setHeader('Content-Type', 'application/json');
     if (url === '/api/config/contact') { res.end('{"email":"e2e-contact@example.test"}'); return; }
-    if (url.startsWith('/api/blog/posts?')) { res.end(JSON.stringify({ posts: [resume], total: 1, limit: 20, offset: 0 })); return; }
+    if (url.startsWith('/api/blog/posts?')) { res.end(JSON.stringify({ posts: liste, total: liste.length, limit: 20, offset: 0 })); return; }
     if (url === `/api/blog/posts/${ARTICLE.slug}`) { res.end(JSON.stringify(publie)); return; }
     res.writeHead(404);
     res.end('{}');
@@ -270,6 +273,23 @@ test('la vignette de la liste reste recadrée en 16:9, quelles que soient les di
   await expect(vignette).toHaveAttribute('height', '1400');
   const [largeur, hauteur] = await vignette.evaluate((img) => [img.getBoundingClientRect().width, img.getBoundingClientRect().height]);
   expect(largeur / hauteur).toBeCloseTo(16 / 9, 1);
+});
+
+test('dans la grille de la liste, deux cartes voisines alignent leur date, avec ou sans couverture', async ({ page }) => {
+  test.skip((page.viewportSize()?.width ?? 0) <= 860, 'une seule colonne sous 861 px');
+  await ouvrir(page, '/blog');
+  const cartes = await page.locator('.blog-list__article:not(:first-child)').evaluateAll((liste) => liste.map((carte) => ({
+    date: Math.round(carte.querySelector('.blog-meta')!.getBoundingClientRect().top),
+    image: carte.querySelector('img') ? Math.round(carte.querySelector('img')!.getBoundingClientRect().bottom) : null,
+    retrait: Math.round(carte.querySelector('.blog-meta')!.getBoundingClientRect().left - carte.getBoundingClientRect().left),
+  })));
+  expect(cartes).toHaveLength(4);
+  for (const carte of cartes) expect(carte.retrait, 'le texte part du bord de sa case').toBe(0);
+  for (const [gauche, droite] of [[cartes[0], cartes[1]], [cartes[2], cartes[3]]]) {
+    expect(gauche.date, 'même ligne de départ pour la date et le titre').toBe(droite.date);
+    // L’image d’une carte se lit au-dessus de son propre texte, jamais au-dessus du titre voisin seul.
+    for (const image of [gauche.image, droite.image]) if (image !== null) expect(image).toBeLessThan(gauche.date);
+  }
 });
 
 test('sans JavaScript, l’article est complet', async ({ browser }) => {
