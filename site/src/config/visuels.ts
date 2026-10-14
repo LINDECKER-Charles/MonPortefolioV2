@@ -2720,6 +2720,44 @@ export const VISUELS: readonly EntreeVisuel[] = [
   // ↑ fin des entrées GTH
 
   // KSC — Karl Scraper (série « karl-scraper », /projets/karl-scraper) : ses entrées, sous ce repère.
+  {
+    id: 'KSC-F1',
+    serie: 'karl-scraper',
+    page: '/projets/karl-scraper',
+    emplacement: '§ Du ticket à la pull request',
+    sujet: 'La chaîne d’un ticket',
+    composition: 'Cinq étapes en ligne, de la synchronisation au statut : qui agit à chaque étape, et ce que chacune peut faire dans l’outil source (le lire, rien, y écrire le statut)',
+    format: '—',
+    ratio: null,
+    methode: 'FIG',
+    priorite: 'socle',
+    pose: ['pages/projets/karl-scraper.astro'],
+    alt: 'Cinq étapes d’un ticket, de la synchronisation au statut ; seule la dernière écrit dans l’outil source, et seulement le statut.',
+    fichier: 'src/components/projets/karl-scraper/FigureChaine.astro',
+    note: 'Codée en HTML, données CHAINE de config/karl-scraper.ts, tirées du code et des plans du dépôt privé (révision 6615950). Elle montre la préparation et la réalisation, que les captures ne montrent pas sans agent lancé.',
+  },
+  {
+    id: 'KSC-C1',
+    serie: 'karl-scraper',
+    page: '/projets/karl-scraper',
+    emplacement: 'En-tête, § Une copie locale, § La Galaxie, § Ce que l’agent lit ; carte de la vitrine',
+    sujet: 'Les écrans de Karl Scraper',
+    composition: 'Écrans réels de l’application lancée en local à la révision 6615950, face à un faux serveur source et sur des données fictives (trois projets, seize tâches, trois observations), aucun agent lancé, sans retouche ni recomposition',
+    format: 'format natif des écrans',
+    ratio: null,
+    methode: 'CAP',
+    priorite: 'socle',
+    pose: ['pages/projets/karl-scraper.astro', 'config/karl-scraper.ts'],
+    alt: '',
+    fichier: null,
+    declinaisons: [
+      { nom: 'enchainements', fichier: 'src/assets/projets/karl-scraper/enchainements.webp', alt: '' },
+      { nom: 'tableau-de-bord', fichier: 'src/assets/projets/karl-scraper/tableau-de-bord.webp', alt: '' },
+      { nom: 'galaxie', fichier: 'src/assets/projets/karl-scraper/galaxie.webp', alt: '' },
+      { nom: 'vue-agent', fichier: 'src/assets/projets/karl-scraper/vue-agent.webp', alt: '' },
+    ],
+    note: 'Captures provisoires, à refaire après la refonte graphique de l’interface ; provenance dans src/assets/projets/karl-scraper/README.md, alts et légendes dans config/karl-scraper.ts. Aucun libellé qui nomme l’outil source à l’écran.',
+  },
 
   // ↑ fin des entrées KSC
 

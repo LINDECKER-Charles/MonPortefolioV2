@@ -1,0 +1,177 @@
+---
+/**
+ * KSC-F1 · La chaîne d’un ticket : les cinq étapes de Karl Scraper, de la
+ * synchronisation au statut, avec qui agit à chacune et ce qu’elle peut faire
+ * dans l’outil source (le lire, rien, ou y écrire le statut). Figure codée
+ * depuis CHAINE (config/karl-scraper.ts), tirée du code et des plans du dépôt
+ * privé à la révision 6615950 (09/10/2026). Elle montre ce que les captures
+ * ne peuvent pas montrer sans agent lancé : la préparation et la réalisation.
+ *
+ * Une liste ordonnée, lisible sans JavaScript ni style : cinq colonnes au-delà
+ * de 860 px, une colonne en dessous. L’accès à la source a une forme et un mot
+ * (filet tireté pour la lecture, plein pour l’écriture), jamais la couleur
+ * seule.
+ */
+import { CHAINE, type AccesSource } from '../../../config/karl-scraper';
+import { typo } from '../../../lib/typo';
+
+interface Props {
+  class?: string;
+}
+
+const { class: classe } = Astro.props;
+
+const ACCES: Readonly<Record<AccesSource, string>> = {
+  lecture: 'le lit',
+  aucun: 'aucun accès',
+  statut: 'y écrit le statut',
+};
+---
+
+<figure class:list={['chaine', classe]} data-visuel="KSC-F1">
+  <figcaption class="chaine__titre">Le chemin d’un ticket, et ce que chaque étape peut faire dans l’outil source</figcaption>
+  <ol class="chaine__etapes">
+    {
+      CHAINE.map((etape, index) => (
+        <li class:list={['chaine__etape', `chaine__etape--${etape.acces}`]}>
+          <span class="chaine__rang chiffres" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+          <b class="chaine__geste">{etape.geste}</b>
+          <span class="chaine__acteur">{typo(etape.acteur)}</span>
+          <span class="chaine__texte">{typo(etape.texte)}</span>
+          <span class="chaine__acces">Outil source&nbsp;: <strong>{ACCES[etape.acces]}</strong></span>
+        </li>
+      ))
+    }
+  </ol>
+  <p class="chaine__source">D’après le code et les plans du dépôt, à la révision du 09/10/2026.</p>
+</figure>
+
+<style>
+  .chaine {
+    display: grid;
+    gap: var(--s4);
+    margin: var(--s6) 0 0;
+  }
+
+  .chaine__titre {
+    font-size: var(--t-s);
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .chaine__etapes {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--s4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Chaque étape : un filet porteur en tête, puis son rang, son geste, qui
+     agit, ce qu’elle fait et son accès à la source, en bas. */
+  .chaine__etape {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+    padding-top: var(--s3);
+    border-top: 1px solid var(--trait);
+  }
+
+  /* La flèche vers l’étape suivante, dans la gouttière : décorative, sans
+     texte de remplacement (l’ordre est celui de la liste ordonnée). */
+  .chaine__etape:not(:last-child)::after {
+    content: '→' / '';
+    position: absolute;
+    top: var(--s2);
+    right: calc(var(--s4) * -0.75);
+    font-size: var(--t-s);
+    line-height: 1;
+    color: var(--eteint);
+  }
+
+  .chaine__rang {
+    font-size: var(--t-xs);
+    font-weight: 600;
+    color: var(--eteint);
+  }
+
+  .chaine__geste {
+    font-family: var(--police-titre);
+    font-size: var(--t-xl);
+    font-weight: 400;
+    line-height: 1.1;
+  }
+
+  .chaine__acteur {
+    font-size: var(--t-xs);
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .chaine__texte {
+    font-size: var(--t-s);
+    line-height: 1.5;
+    color: var(--eteint);
+  }
+
+  .chaine__acces {
+    margin-top: auto;
+    padding: var(--s1) var(--s2);
+    border: 1px solid transparent;
+    border-radius: var(--r1);
+    font-size: var(--t-xs);
+    line-height: 1.4;
+    color: var(--eteint);
+  }
+
+  .chaine__acces strong {
+    font-weight: 600;
+    color: var(--encre);
+  }
+
+  .chaine__etape--lecture .chaine__acces {
+    border: 1px dashed var(--trait);
+  }
+
+  /* Sans cadre visible, le mot s’aligne sur le texte de l’étape. */
+  .chaine__etape--aucun .chaine__acces {
+    padding-inline: 0;
+  }
+
+  /* La seule écriture vers la source : un cadre plein, à l’encre. */
+  .chaine__etape--statut {
+    border-top-color: var(--encre);
+  }
+
+  .chaine__etape--statut .chaine__acces {
+    border: 1px solid var(--encre);
+    color: var(--encre);
+  }
+
+  .chaine__source {
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  /* Sur mobile, une colonne : la flèche descend sous chaque étape. */
+  @media (max-width: 860px) {
+    .chaine__etapes {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s5);
+    }
+
+    .chaine__etape:not(:last-child)::after {
+      content: '↓' / '';
+      top: auto;
+      right: auto;
+      bottom: calc(var(--s5) * -0.85);
+      left: 0;
+    }
+
+    .chaine__acces {
+      align-self: flex-start;
+    }
+  }
+</style>

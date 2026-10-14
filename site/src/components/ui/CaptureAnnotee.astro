@@ -160,11 +160,12 @@ const dessous = Boolean(loupe?.dessous);
     display: contents;
   }
 
-  /* Préfixé par la vue : plus spécifique que les recadrages de CadreCapture
-     (`.capture--recadree .capture__vue picture img`, `.capture--region …`),
-     qui visent la capture et que la loupe, enveloppée elle aussi dans un
-     <picture>, égalait. À égalité, l’ordre des feuilles décidait : l’image
-     de la loupe prenait la hauteur de la loupe et n’en montrait que le haut. */
+  /* L’image entière, à sa proportion. Préfixé par la vue : plus spécifique que
+     les recadrages de CadreCapture (`.capture--recadree .capture__vue picture img`,
+     `.capture--region …`), qui visent toute `picture img` de la vue et que la
+     loupe, enveloppée elle aussi dans un <picture>, égalait. À égalité, l’ordre
+     des feuilles décidait : l’image de la loupe prenait la hauteur de la loupe,
+     son `object-fit: cover` ou son décalage, et n’en montrait que le haut. */
   :global(.capture__vue) .loupe > picture > img {
     position: absolute;
     left: 50%;
@@ -172,6 +173,7 @@ const dessous = Boolean(loupe?.dessous);
     width: calc(var(--lz) * 100%);
     max-width: none;
     height: auto;
+    object-fit: fill;
     translate: calc(-1 * var(--lx)) calc(-1 * var(--ly));
   }
 
