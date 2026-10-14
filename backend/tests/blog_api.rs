@@ -760,3 +760,266 @@ fn the_rendering_fixture_is_a_publishable_document() {
         Some("/api/blog/media/6")
     );
 }
+
+/// L’inventaire du schéma des articles (site/tests/fixtures/schema-blog.json),
+/// que le rendu Node vérifie aussi : chaque valeur admise passe, chaque valeur
+/// refusée et chaque attribut absent de l’inventaire sont refusés.
+const SCHEMA: &str = include_str!("../../site/tests/fixtures/schema-blog.json");
+const RENDERING_FIXTURE: &str = include_str!("../../site/tests/fixtures/article-complet.json");
+
+/// Fusionne `attrs` dans les attributs de base d’un nœud.
+fn with_attrs(base: Value, attrs: &Value) -> Value {
+    let mut merged = base;
+    for (key, value) in attrs.as_object().unwrap() {
+        merged[key] = value.clone();
+    }
+    merged
+}
+
+/// Un document minimal où le nœud `kind` porte `attrs`, à une place que la validation admet.
+fn placed(kind: &str, attrs: &Value) -> Value {
+    let text = json!({"type":"text","text":"x"});
+    let paragraph = json!({"type":"paragraph","content":[text]});
+    let doc = |block: Value| json!({"type":"doc","content":[block]});
+    let table = |row: Value| doc(json!({"type":"table","content":[row]}));
+    let cell = |kind: &str, attrs: &Value| json!({"type":kind,"attrs":attrs,"content":[paragraph]});
+    match kind {
+        "doc" => json!({"type":"doc","attrs":attrs,"content":[paragraph]}),
+        "paragraph" => doc(json!({"type":"paragraph","attrs":attrs,"content":[text]})),
+        "heading" => doc(
+            json!({"type":"heading","attrs":with_attrs(json!({"level":2}), attrs),"content":[text]}),
+        ),
+        "text" => {
+            doc(json!({"type":"paragraph","content":[{"type":"text","text":"x","attrs":attrs}]}))
+        }
+        "hardBreak" => {
+            doc(json!({"type":"paragraph","content":[text,{"type":"hardBreak","attrs":attrs}]}))
+        }
+        "horizontalRule" => doc(json!({"type":"horizontalRule","attrs":attrs})),
+        "bulletList" | "orderedList" => doc(
+            json!({"type":kind,"attrs":attrs,"content":[{"type":"listItem","content":[paragraph]}]}),
+        ),
+        "listItem" => doc(
+            json!({"type":"bulletList","content":[{"type":"listItem","attrs":attrs,"content":[paragraph]}]}),
+        ),
+        "blockquote" => doc(json!({"type":"blockquote","attrs":attrs,"content":[paragraph]})),
+        "codeBlock" => doc(json!({"type":"codeBlock","attrs":attrs,"content":[text]})),
+        "image" => doc(
+            json!({"type":"image","attrs":with_attrs(json!({"src":"/api/blog/media/1"}), attrs)}),
+        ),
+        "table" => doc(
+            json!({"type":"table","attrs":attrs,"content":[{"type":"tableRow","content":[cell("tableCell", &json!({}))]}]}),
+        ),
+        "tableRow" => table(
+            json!({"type":"tableRow","attrs":attrs,"content":[cell("tableCell", &json!({}))]}),
+        ),
+        "tableCell" | "tableHeader" => {
+            table(json!({"type":"tableRow","content":[cell(kind, attrs)]}))
+        }
+        _ => panic!("nœud absent de placed() : {kind}"),
+    }
+}
+
+/// Un paragraphe dont le texte porte la marque `mark` avec `attrs`.
+fn marked(mark: &str, attrs: &Value) -> Value {
+    let attrs = if mark == "link" {
+        with_attrs(json!({"href":"/blog"}), attrs)
+    } else {
+        attrs.clone()
+    };
+    json!({"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"x","marks":[{"type":mark,"attrs":attrs}]}]}]})
+}
+
+fn validates(content: Value) -> Result<(), BlogError> {
+    let mut p = input("schema");
+    p.content = content;
+    p.validate()
+}
+
+#[test]
+fn every_node_mark_and_attribute_of_the_shared_schema_is_validated_as_listed() {
+    let schema: Value = serde_json::from_str(SCHEMA).unwrap();
+    let groups = [
+        ("noeuds", placed as fn(&str, &Value) -> Value),
+        ("marques", marked),
+    ];
+    // Tous les noms d’attributs connus, plus des noms qu’aucun nœud n’admet.
+    let mut names = std::collections::BTreeSet::from(["style", "id", "onclick", "html", "src-set"]);
+    for (group, _) in groups {
+        for spec in schema[group].as_object().unwrap().values() {
+            names.extend(spec.as_object().unwrap().keys().map(String::as_str));
+        }
+    }
+    let sample = |name: &str| -> Value {
+        for (group, _) in groups {
+            for spec in schema[group].as_object().unwrap().values() {
+                if let Some(value) = spec[name]["admis"]
+                    .as_array()
+                    .and_then(|values| values.iter().find(|v| !v.is_null()))
+                {
+                    return value.clone();
+                }
+            }
+        }
+        json!("x")
+    };
+    for (group, build) in groups {
+        for (kind, spec) in schema[group].as_object().unwrap() {
+            assert!(
+                validates(build(kind, &json!({}))).is_ok(),
+                "{kind} sans attribut"
+            );
+            let spec = spec.as_object().unwrap();
+            for (name, values) in spec {
+                for value in values["admis"].as_array().unwrap() {
+                    assert!(
+                        validates(build(kind, &json!({ name: value }))).is_ok(),
+                        "{kind}.{name} = {value} doit passer"
+                    );
+                }
+                for value in values["refuses"].as_array().unwrap() {
+                    assert!(
+                        matches!(
+                            validates(build(kind, &json!({ name: value }))),
+                            Err(BlogError::Invalid)
+                        ),
+                        "{kind}.{name} = {value} doit être refusé"
+                    );
+                }
+            }
+            for name in names.iter().filter(|name| !spec.contains_key(**name)) {
+                assert!(
+                    matches!(
+                        validates(build(kind, &json!({ *name: sample(name) }))),
+                        Err(BlogError::Invalid)
+                    ),
+                    "{kind} n’admet pas l’attribut {name}"
+                );
+            }
+        }
+    }
+    for kind in ["html", "iframe", "script", "mention", "taskList", "details"] {
+        let node = json!({"type":"doc","content":[{"type":kind,"content":[{"type":"paragraph"}]}]});
+        assert!(
+            matches!(validates(node), Err(BlogError::Invalid)),
+            "nœud {kind}"
+        );
+        let mark = json!({"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"x","marks":[{"type":kind}]}]}]});
+        assert!(
+            matches!(validates(mark), Err(BlogError::Invalid)),
+            "marque {kind}"
+        );
+    }
+}
+
+/// Le chemin (indices de `content`) de chaque nœud d’un document, racine comprise.
+fn node_paths(node: &Value, at: &mut Vec<usize>, out: &mut Vec<Vec<usize>>) {
+    out.push(at.clone());
+    for (index, child) in node["content"].as_array().into_iter().flatten().enumerate() {
+        at.push(index);
+        node_paths(child, at, out);
+        at.pop();
+    }
+}
+fn node_at<'a>(root: &'a mut Value, path: &[usize]) -> &'a mut Value {
+    path.iter()
+        .fold(root, |node, &index| &mut node["content"][index])
+}
+
+#[test]
+fn every_node_of_the_rendering_fixture_refuses_unknown_attributes_and_unsafe_values() {
+    let fixture: BlogInput = serde_json::from_str(RENDERING_FIXTURE).unwrap();
+    assert!(fixture.validate().is_ok());
+    let mut paths = Vec::new();
+    node_paths(&fixture.content, &mut Vec::new(), &mut paths);
+    let refused = |path: &[usize], change: &dyn Fn(&mut Value)| {
+        let mut p = fixture.clone();
+        change(node_at(&mut p.content, path));
+        matches!(p.validate(), Err(BlogError::Invalid))
+    };
+    let (mut links, mut headings, mut images) = (0, 0, 0);
+    for path in &paths {
+        let kind = node_at(&mut fixture.content.clone(), path)["type"]
+            .as_str()
+            .unwrap()
+            .to_owned();
+        assert!(
+            refused(path, &|node| node["attrs"]["style"] =
+                json!("position:fixed")),
+            "attribut inconnu sur {kind} {path:?}"
+        );
+        assert!(
+            refused(path, &|node| node["html"] = json!("<b>x</b>")),
+            "clé inconnue sur {kind} {path:?}"
+        );
+        if !path.is_empty() {
+            assert!(
+                refused(path, &|node| node["type"] = json!("html")),
+                "type inconnu à la place de {kind} {path:?}"
+            );
+        }
+        match kind.as_str() {
+            "heading" => {
+                headings += 1;
+                for level in [1, 5] {
+                    assert!(
+                        refused(path, &|node| node["attrs"]["level"] = json!(level)),
+                        "titre {path:?} de niveau {level}"
+                    );
+                }
+            }
+            "image" => {
+                images += 1;
+                for src in [
+                    "/assets/demo.png",
+                    "/images/charles.webp",
+                    "https://example.org/x.png",
+                    "javascript:alert(1)",
+                ] {
+                    assert!(
+                        refused(path, &|node| node["attrs"]["src"] = json!(src)),
+                        "image {path:?} en {src}"
+                    );
+                }
+            }
+            "text" => {
+                assert!(
+                    refused(path, &|node| node["marks"] = json!([{"type":"script"}])),
+                    "marque inconnue sur {path:?}"
+                );
+                let marks = fixture_marks(&fixture.content, path);
+                for (index, mark) in marks.iter().enumerate() {
+                    if mark["type"] != "link" {
+                        continue;
+                    }
+                    links += 1;
+                    for href in [
+                        "javascript:alert(1)",
+                        "JaVaScRiPt:alert(1)",
+                        "mailto:owner@example.org",
+                        "data:text/html,x",
+                        "//evil.test/",
+                    ] {
+                        assert!(
+                            refused(path, &|node| node["marks"][index]["attrs"]["href"] =
+                                json!(href)),
+                            "lien {path:?} vers {href}"
+                        );
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+    assert!(
+        links >= 5 && headings >= 5 && images >= 5,
+        "l’article de test garde des liens ({links}), des titres ({headings}) et des images ({images})"
+    );
+}
+fn fixture_marks(content: &Value, path: &[usize]) -> Vec<Value> {
+    let mut root = content.clone();
+    node_at(&mut root, path)["marks"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default()
+}
