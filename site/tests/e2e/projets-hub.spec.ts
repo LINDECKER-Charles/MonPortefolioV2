@@ -324,6 +324,19 @@ test('les projets archivés restent discrets, repliés et ouvrables au clavier',
   await expect(page.getByRole('region', { name: 'Projets archivés', exact: true })).toContainText('Des projets publics, sans page dédiée.');
 });
 
+test('une adresse qui vise les archives les ouvre : la sortie de la dernière page de la vitrine', async ({ page }) => {
+  await page.goto('/projets#projets-archives');
+  const archives = page.locator('#projets-archives');
+  await expect(archives).toHaveAttribute('open', '');
+  await expect(archives.locator('li.archives__projet:visible')).toHaveCount(PROJETS_ARCHIVES.length);
+  // Au changement d’ancre aussi, sur la page déjà chargée.
+  await archives.locator('summary').click();
+  await expect(archives).not.toHaveAttribute('open');
+  await page.evaluate(() => (location.hash = '#contribuer'));
+  await page.evaluate(() => (location.hash = '#projets-archives'));
+  await expect(archives).toHaveAttribute('open', '');
+});
+
 test('les archives reprennent les cartes de l’ancienne rangée « Aussi », vignettes et liens publics', async ({ page }) => {
   await page.goto('/projets');
   const archives = page.locator('#projets-archives');

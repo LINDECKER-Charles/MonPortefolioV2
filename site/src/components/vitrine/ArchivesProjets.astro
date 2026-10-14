@@ -12,7 +12,10 @@
  *
  * Tant qu’il est vide, il le dit ; son nombre n’apparaît qu’à partir d’un
  * projet archivé. Un signe « + » dit qu’il s’ouvre et tourne en « × » une fois
- * ouvert. Un titre de niveau 2, masqué à l’œil (le résumé le dit déjà), range
+ * ouvert. Une ancre qui le vise (#projets-archives, la sortie de la dernière
+ * page de la vitrine) l’ouvre, au chargement comme au changement d’ancre ;
+ * sans JavaScript, il reste replié et s’ouvre à la main. Un titre de niveau 2,
+ * masqué à l’œil (le résumé le dit déjà), range
  * les noms des projets dans le plan de la page. Sans JavaScript, le navigateur
  * télécharge les vignettes du volet même fermé : elles comptent dans le
  * budget d’images de /projets. Liste : PROJETS_ARCHIVES (config/projets.ts).
@@ -60,6 +63,18 @@ const VIGNETTE = '(max-width: 860px) 45vw, 280px';
     }
   </details>
 </section>
+
+<script>
+  /** Ouvre le volet quand l’adresse le vise : la sortie de la dernière page de la vitrine y mène. */
+  function ouvrirSiVise(): void {
+    if (location.hash !== '#projets-archives') return;
+    const volet = document.getElementById('projets-archives');
+    if (volet instanceof HTMLDetailsElement && !volet.open) volet.open = true;
+  }
+
+  ouvrirSiVise();
+  window.addEventListener('hashchange', ouvrirSiVise);
+</script>
 
 <style>
   .archives {
