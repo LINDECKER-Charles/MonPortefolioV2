@@ -16,6 +16,7 @@ describe('routes relayées par le proxy de développement', () => {
       '/api/backoffice/blog/media?limit=24&offset=0',
       '/api/backoffice/tokens',
       '/api/backoffice/tokens/3',
+      '/api/backoffice/storage',
       '/api/backoffice/blog/posts/12/preview',
       '/api/blog/posts/mon-article',
       '/api/blog/media/4',
@@ -30,6 +31,8 @@ describe('routes relayées par le proxy de développement', () => {
     for (const adresse of [
       '/api/backoffice/inconnu?x=1',
       '/api/backoffice/tokens/0',
+      '/api/backoffice/storage/1',
+      '/api/backoffice/storagex',
       '/mcpx',
       '/mcp/outils',
       '/backoffice',

@@ -134,6 +134,24 @@ test('une page de 100 demandes maximales Unicode peut dépasser 2 Mio et reste c
   assert.equal(JSON.parse(body).contacts.length, 100);
 });
 
+test('le stockage se relaie en lecture seule, avec la session et sans paramètre', async () => {
+  const response = await fetch(`${base}/api/backoffice/storage?url=https://evil.test`, { headers: { Cookie: 'portfolio_session=test', Authorization: 'Bearer must-not-reach-admin' } });
+  assert.equal(response.status, 200);
+  const call = calls.at(-1);
+  assert.equal(call.url, '/api/backoffice/storage');
+  assert.equal(call.method, 'GET');
+  assert.equal(call.headers.cookie, 'portfolio_session=test');
+  assert.equal(call.headers.authorization, undefined);
+  const before = calls.length;
+  for (const methode of ['POST', 'PUT', 'DELETE']) {
+    const refus = await fetch(`${base}/api/backoffice/storage`, { method: methode, headers: { 'Content-Type': 'application/json', 'X-Backoffice-Request': '1' }, body: methode === 'DELETE' ? undefined : '{}' });
+    assert.equal(refus.status, 405, methode);
+    assert.equal(refus.headers.get('allow'), 'GET, HEAD');
+  }
+  assert.equal((await fetch(`${base}/api/backoffice/storage/1`)).status, 404);
+  assert.equal(calls.length, before);
+});
+
 test('les routes explicites gardent DELETE sans corps et refusent les chemins arbitraires', async () => {
   const response = await fetch(`${base}/api/backoffice/tokens/12`, { method: 'DELETE', headers: { 'X-Backoffice-Request': '1' } });
   assert.equal(response.status, 204);
