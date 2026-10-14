@@ -11,7 +11,10 @@
 //! `prefers-reduced-motion: reduce`. Une image que le décodeur refuse entière
 //! (somme de contrôle fausse, fichier tronqué) mais que les navigateurs
 //! affichent reste admise : ses dimensions viennent alors de son en-tête, sans
-//! variante.
+//! variante. Une image dont le décodage tiendrait plus de `MAX_DECODING` est
+//! refusée à l’import (`Rejected::TooHeavy`) : sans variante, son original
+//! partirait tel quel sur mobile, sans que son auteur le sache. Déjà en base et
+//! mesurée au démarrage (`process_stored`), elle reste gardée sans variante.
 //!
 //! Le coût est borné : 25 millions de pixels au plus, lus dans l’en-tête avant
 //! tout décodage ; 150 Mo au plus tenus par le décodage (`MAX_DECODING`),
@@ -44,8 +47,7 @@
 //!   Mpx, 168 ; WebP sans perte de 21 Mpx, 169 ; JPEG progressif CMJN de 13,5
 //!   Mpx, 182 ; et le pire cas, un JPEG progressif en 4:4:4 de 16,6 Mpx :
 //!   183 Mio ;
-//! - au-delà, l’image est admise sans variante : 57 Mio pour un WebP de 24 Mpx
-//!   avec transparence, qui en demandait 287 une fois décodé.
+//! - au-delà, l’image est refusée à l’import, sans être décodée.
 //!
 //! Les imports simultanés attendent leur tour, mais les fichiers reçus
 //! s’additionnent : quatre gros imports à la fois atteignent la limite.
@@ -61,7 +63,7 @@ use std::{
 
 use image::{
     ColorType, DynamicImage, ExtendedColorType, GenericImageView, ImageDecoder, ImageEncoder,
-    ImageFormat, ImageReader, Limits,
+    ImageError, ImageFormat, ImageReader, Limits,
     codecs::{jpeg::JpegEncoder, webp::WebPEncoder},
     metadata::Orientation,
 };
@@ -82,7 +84,9 @@ const MAX_ALLOC: u64 = MAX_PIXELS * 4;
 /// image qui demande plus (JPEG progressif de plus de 16 Mpx en 4:4:4 ou de
 /// 13 Mpx en CMJN, WebP de plus de 13 Mpx avec transparence, de 21 Mpx sans ou
 /// de 9 Mpx animé, GIF de plus de 18 Mpx, PNG de 16 bits par canal de plus de
-/// 12,5 Mpx) est admise sans variante, comme une image que le décodeur refuse.
+/// 12,5 Mpx) est refusée à l’import ; déjà en base, elle reste gardée sans
+/// variante. Exportée en JPEG (séquentiel) ou en PNG 8 bits, la même image de
+/// 25 Mpx au plus passe toujours.
 const MAX_DECODING: u64 = MAX_PIXELS * 6;
 const JPEG_QUALITY: u8 = 80;
 
@@ -113,9 +117,32 @@ pub enum Rejected {
     Unreadable,
     /// Plus de 25 millions de pixels : la réduire avant de l’importer.
     TooLarge,
+    /// Son décodage tiendrait plus de `MAX_DECODING` : sans variante, l’original
+    /// partirait tel quel sur mobile. L’exporter en JPEG ou en PNG 8 bits, ou la réduire.
+    TooHeavy,
 }
 
+/// Pourquoi une image n’a pas été décodée.
+#[derive(Debug, PartialEq, Eq)]
+enum Undecoded {
+    /// Le décodage tiendrait plus de `MAX_DECODING`.
+    TooHeavy,
+    /// Le décodeur la refuse entière (somme de contrôle fausse, fichier tronqué).
+    Failed,
+}
+
+/// Une image importée : refusée si son décodage dépasse `MAX_DECODING`.
 pub fn process(bytes: &[u8], content_type: &str) -> Result<Processed, Rejected> {
+    prepare(bytes, content_type, true)
+}
+
+/// Une image déjà en base, mesurée au démarrage : gardée sans variante si son
+/// décodage dépasse `MAX_DECODING`, comme avant le refus à l’import.
+pub fn process_stored(bytes: &[u8], content_type: &str) -> Result<Processed, Rejected> {
+    prepare(bytes, content_type, false)
+}
+
+fn prepare(bytes: &[u8], content_type: &str, refuse_heavy: bool) -> Result<Processed, Rejected> {
     let _turn = TURN.lock().unwrap_or_else(PoisonError::into_inner);
     let format = match content_type {
         "image/png" => ImageFormat::Png,
@@ -132,14 +159,18 @@ pub fn process(bytes: &[u8], content_type: &str) -> Result<Processed, Rejected> 
     }
     let original =
         strip_metadata(bytes, format, orientation(bytes, format)).ok_or(Rejected::Unreadable)?;
-    let Some((image, orientation)) = decode(bytes, format) else {
-        return Ok(Processed {
-            width,
-            height,
-            original,
-            variants: Vec::new(),
-            still: None,
-        });
+    let (image, orientation) = match decode(bytes, format) {
+        Ok(decoded) => decoded,
+        Err(Undecoded::TooHeavy) if refuse_heavy => return Err(Rejected::TooHeavy),
+        Err(_) => {
+            return Ok(Processed {
+                width,
+                height,
+                original,
+                variants: Vec::new(),
+                still: None,
+            });
+        }
     };
     let (width, height) = displayed(&image, orientation);
     let (variants, still) = if animated(bytes, format) {
@@ -178,15 +209,22 @@ fn orientation(bytes: &[u8], format: ImageFormat) -> Orientation {
 
 /// L’image entière telle que stockée, sans la tourner, en 8 bits par canal, et
 /// son orientation EXIF. Une image dont le décodage coûterait plus de
-/// `MAX_DECODING` n’est pas décodée : elle est admise sans variante.
-fn decode(bytes: &[u8], format: ImageFormat) -> Option<(DynamicImage, Orientation)> {
-    let mut decoder = reader(bytes, format, Some(MAX_ALLOC)).into_decoder().ok()?;
+/// `MAX_DECODING`, ou plus que la limite d’allocation des décodeurs, n’est pas
+/// décodée (`Undecoded::TooHeavy`).
+fn decode(bytes: &[u8], format: ImageFormat) -> Result<(DynamicImage, Orientation), Undecoded> {
+    let undecoded = |error: ImageError| match error {
+        ImageError::Limits(_) => Undecoded::TooHeavy,
+        _ => Undecoded::Failed,
+    };
+    let mut decoder = reader(bytes, format, Some(MAX_ALLOC))
+        .into_decoder()
+        .map_err(undecoded)?;
     if decoding_cost(bytes, format, &decoder) > MAX_DECODING {
-        return None;
+        return Err(Undecoded::TooHeavy);
     }
-    let orientation = decoder.orientation().ok()?;
-    let image = DynamicImage::from_decoder(decoder).ok()?;
-    Some((eight_bits(image), orientation))
+    let orientation = decoder.orientation().map_err(undecoded)?;
+    let image = DynamicImage::from_decoder(decoder).map_err(undecoded)?;
+    Ok((eight_bits(image), orientation))
 }
 
 /// Ce que le décodage tient en mémoire au plus, en octets. `max_alloc` ne
@@ -1034,7 +1072,10 @@ mod tests {
             let mut writer = encoder.write_header().unwrap();
             writer.write_chunk(png::chunk::IDAT, &[]).unwrap();
         }
-        assert!(decode(&wide, ImageFormat::Png).is_none());
+        assert_eq!(
+            decode(&wide, ImageFormat::Png).err(),
+            Some(Undecoded::TooHeavy)
+        );
     }
 
     /// Le coût de décodage d’une image, lu dans son seul en-tête.
@@ -1066,12 +1107,18 @@ mod tests {
         assert!(cost(&sixteen, ImageFormat::Png) <= MAX_DECODING);
         let sixteen = png_header(3540, 3540, png::BitDepth::Sixteen);
         assert!(cost(&sixteen, ImageFormat::Png) > MAX_DECODING);
-        assert!(decode(&sixteen, ImageFormat::Png).is_none());
+        assert_eq!(
+            decode(&sixteen, ImageFormat::Png).err(),
+            Some(Undecoded::TooHeavy)
+        );
         // GIF : le cadre et le canevas, 4 octets par pixel chacun.
         let mut gif = encoded(12, 6, ImageFormat::Gif);
         gif[6..10].copy_from_slice(&[0x88, 0x13, 0x88, 0x13]);
         assert_eq!(cost(&gif, ImageFormat::Gif), 5000 * 5000 * 8);
-        assert!(decode(&gif, ImageFormat::Gif).is_none());
+        assert_eq!(
+            decode(&gif, ImageFormat::Gif).err(),
+            Some(Undecoded::TooHeavy)
+        );
         // WebP sans perte avec transparence : 11 octets par pixel, 13,6 Mpx passent.
         let webp = |width: u32, height: u32| {
             let mut bytes = encoded(4, 4, ImageFormat::WebP);
@@ -1083,11 +1130,31 @@ mod tests {
         };
         assert_eq!(cost(&webp(3690, 3690), ImageFormat::WebP), 3690 * 3690 * 11);
         assert!(cost(&webp(3690, 3690), ImageFormat::WebP) <= MAX_DECODING);
-        assert!(decode(&webp(3700, 3700), ImageFormat::WebP).is_none());
+        assert_eq!(
+            decode(&webp(3700, 3700), ImageFormat::WebP).err(),
+            Some(Undecoded::TooHeavy)
+        );
         // JPEG séquentiel : la sortie seule.
         let jpeg = encoded(40, 20, ImageFormat::Jpeg);
         assert_eq!(progressive_coefficients(&jpeg), Some(0));
         assert_eq!(cost(&jpeg, ImageFormat::Jpeg), 40 * 20 * 3);
+    }
+
+    #[test]
+    fn an_image_too_heavy_to_reduce_is_refused_at_import_but_kept_when_stored() {
+        // PNG RGBA de 16 bits de 12,5 Mpx et plus : son décodage dépasse MAX_DECODING.
+        let heavy = png_header(3540, 3540, png::BitDepth::Sixteen);
+        assert_eq!(process(&heavy, "image/png").err(), Some(Rejected::TooHeavy));
+        // Déjà en base, elle reste gardée sans variante, mesurée par son en-tête.
+        let stored = process_stored(&heavy, "image/png").unwrap();
+        assert_eq!((stored.width, stored.height), (3540, 3540));
+        assert!(stored.variants.is_empty() && stored.still.is_none());
+        // Légère mais refusée entière par le décodeur (données vides) : admise
+        // sans variante, comme avant.
+        let empty = png_header(100, 100, png::BitDepth::Eight);
+        let admitted = process(&empty, "image/png").unwrap();
+        assert_eq!((admitted.width, admitted.height), (100, 100));
+        assert!(admitted.variants.is_empty());
     }
 
     #[test]

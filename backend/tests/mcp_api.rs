@@ -1077,3 +1077,37 @@ async fn publishers_delete_only_images_that_no_article_cites() {
     assert_eq!(refused["isError"], true);
     assert_eq!(refused["structuredContent"]["code"], "MEDIA_IN_USE");
 }
+
+/// Un PNG RGBA de 16 bits par canal dont seul l’en-tête compte : 3 540 × 3 540 px,
+/// trop lourd à décoder pour en tirer des variantes.
+fn too_heavy_png() -> Vec<u8> {
+    let mut bytes = Vec::new();
+    {
+        let mut encoder = png::Encoder::new(&mut bytes, 3540, 3540);
+        encoder.set_color(png::ColorType::Rgba);
+        encoder.set_depth(png::BitDepth::Sixteen);
+        let mut writer = encoder.write_header().unwrap();
+        writer.write_chunk(png::chunk::IDAT, &[]).unwrap();
+    }
+    bytes
+}
+
+#[tokio::test]
+async fn an_image_too_heavy_to_reduce_is_refused_with_the_message_to_show_as_is() {
+    let fixture = fixture();
+    let writer = blog_token(&fixture, &["blog:read", "blog:write"]);
+    let refused = invoke(
+        &fixture,
+        &writer,
+        "blog_upload_media",
+        json!({ "filename": "lourde.png", "content_type": "image/png", "data_base64": STANDARD.encode(too_heavy_png()) }),
+    )
+    .await;
+    let message = portfolio_backend::blog::BlogError::ImageTooHeavy.message();
+    assert!(message.starts_with("Cette image est trop lourde à réduire."));
+    assert_eq!(refused["isError"], true);
+    assert_eq!(refused["structuredContent"]["code"], "IMAGE_TOO_HEAVY");
+    assert_eq!(refused["structuredContent"]["message"], message);
+    assert_eq!(refused["content"][0]["text"], message);
+    assert!(fixture.store.list_blog_media(10, 0).unwrap().is_empty());
+}

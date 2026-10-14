@@ -488,6 +488,19 @@ fn photo(width: u32, height: u32) -> Vec<u8> {
         .unwrap();
     bytes
 }
+/// Un PNG RGBA de 16 bits par canal dont seul l’en-tête compte : 3 540 × 3 540 px,
+/// trop lourd à décoder pour en tirer des variantes.
+fn too_heavy_png() -> Vec<u8> {
+    let mut bytes = Vec::new();
+    {
+        let mut encoder = png::Encoder::new(&mut bytes, 3540, 3540);
+        encoder.set_color(png::ColorType::Rgba);
+        encoder.set_depth(png::BitDepth::Sixteen);
+        let mut writer = encoder.write_header().unwrap();
+        writer.write_chunk(png::chunk::IDAT, &[]).unwrap();
+    }
+    bytes
+}
 fn upload(store: &Store, filename: &str, content_type: &str, bytes: &[u8]) -> MediaRecord {
     store
         .create_blog_media(MediaUpload {
@@ -592,6 +605,30 @@ async fn imported_images_are_measured_and_get_lighter_variants_once_published() 
         }),
         Err(BlogError::ImageTooLarge)
     ));
+
+    // Trop lourde à réduire (son décodage dépasserait le plafond) : refusée avec
+    // un message qui dit quoi faire, au lieu d’être gardée sans variante.
+    let response = app
+        .clone()
+        .oneshot(request(
+            "POST",
+            "/api/backoffice/blog/media",
+            json!({"filename":"lourde.png","content_type":"image/png","data_base64":STANDARD.encode(too_heavy_png())}),
+            Some(&cookie),
+        ))
+        .await
+        .unwrap();
+    assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
+    let refused = body(response).await;
+    assert_eq!(refused["code"], "IMAGE_TOO_HEAVY");
+    assert_eq!(refused["message"], BlogError::ImageTooHeavy.message());
+    assert!(
+        !store
+            .list_blog_media(100, 0)
+            .unwrap()
+            .iter()
+            .any(|media| media.filename == "lourde.png")
+    );
 
     // Une signature valide sans en-tête lisible est refusée ; tronquée après son
     // en-tête, l’image reste admise, mesurée par lui et sans variante.
@@ -744,8 +781,8 @@ fn images_imported_before_measurement_are_measured_at_startup() {
             data BLOB NOT NULL,created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')));").unwrap();
         connection
             .execute(
-                "INSERT INTO blog_media(filename,content_type,data) VALUES('ancienne.jpg','image/jpeg',?1),('illisible.png','image/png',?2)",
-                rusqlite::params![photo(1000, 500), b"\x89PNG\r\n\x1a\n".to_vec()],
+                "INSERT INTO blog_media(filename,content_type,data) VALUES('ancienne.jpg','image/jpeg',?1),('illisible.png','image/png',?2),('lourde.png','image/png',?3)",
+                rusqlite::params![photo(1000, 500), b"\x89PNG\r\n\x1a\n".to_vec(), too_heavy_png()],
             )
             .unwrap();
     }
@@ -760,6 +797,11 @@ fn images_imported_before_measurement_are_measured_at_startup() {
         .find(|m| m.filename == "illisible.png")
         .unwrap();
     assert_eq!((unreadable.width, unreadable.height), (None, None));
+    // Trop lourde à réduire, refusée à l’import : déjà en base, elle reste
+    // gardée, mesurée par son en-tête et sans variante.
+    let heavy = media.iter().find(|m| m.filename == "lourde.png").unwrap();
+    assert_eq!((heavy.width, heavy.height), (Some(3540), Some(3540)));
+    assert!(heavy.variants.is_empty());
     drop(store);
     for suffix in ["", "-wal", "-shm"] {
         let _ = std::fs::remove_file(format!("{}{suffix}", path.display()));

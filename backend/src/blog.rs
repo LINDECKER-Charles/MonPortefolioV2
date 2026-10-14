@@ -37,6 +37,7 @@ pub enum BlogError {
     SlugConflict,
     MediaInUse,
     ImageTooLarge,
+    ImageTooHeavy,
     Storage,
 }
 impl BlogError {
@@ -48,6 +49,7 @@ impl BlogError {
             Self::SlugConflict => "SLUG_CONFLICT",
             Self::MediaInUse => "MEDIA_IN_USE",
             Self::ImageTooLarge => "IMAGE_TOO_LARGE",
+            Self::ImageTooHeavy => "IMAGE_TOO_HEAVY",
             Self::Storage => "STORAGE_UNAVAILABLE",
         }
     }
@@ -64,6 +66,9 @@ impl BlogError {
             }
             Self::ImageTooLarge => {
                 "Cette image dépasse 25 millions de pixels. Réduisez-la avant de l’importer."
+            }
+            Self::ImageTooHeavy => {
+                "Cette image est trop lourde à réduire. Exportez-la en JPEG ou en PNG 8 bits, ou réduisez-la (3\u{202f}000\u{a0}px de large suffisent)."
             }
             Self::Storage => "Le service est temporairement indisponible.",
         }
@@ -82,7 +87,9 @@ impl From<rusqlite::Error> for BlogError {
 impl From<BlogError> for ApiError {
     fn from(error: BlogError) -> Self {
         let status = match error {
-            BlogError::Invalid | BlogError::ImageTooLarge => StatusCode::UNPROCESSABLE_ENTITY,
+            BlogError::Invalid | BlogError::ImageTooLarge | BlogError::ImageTooHeavy => {
+                StatusCode::UNPROCESSABLE_ENTITY
+            }
             BlogError::NotFound => StatusCode::NOT_FOUND,
             BlogError::RevisionConflict | BlogError::SlugConflict | BlogError::MediaInUse => {
                 StatusCode::CONFLICT
@@ -230,7 +237,8 @@ pub(crate) fn initialize(connection: &Connection) -> Result<(), StoreError> {
             connection.query_row("SELECT data FROM blog_media WHERE id=?1", [id], |r| {
                 r.get(0)
             })?;
-        if let Ok(processed) = crate::blog_media::process(&bytes, &content_type) {
+        // Une image trop lourde à réduire, refusée à l’import, reste gardée ici sans variante.
+        if let Ok(processed) = crate::blog_media::process_stored(&bytes, &content_type) {
             connection.execute(
                 "UPDATE blog_media SET data=?2 WHERE id=?1",
                 params![id, processed.original],
@@ -912,6 +920,7 @@ impl Store {
         let processed = crate::blog_media::process(&bytes, &upload.content_type).map_err(
             |refus| match refus {
                 crate::blog_media::Rejected::TooLarge => BlogError::ImageTooLarge,
+                crate::blog_media::Rejected::TooHeavy => BlogError::ImageTooHeavy,
                 crate::blog_media::Rejected::Unreadable => BlogError::Invalid,
             },
         )?;
