@@ -500,3 +500,24 @@ test('une adresse refusée le dit sous le champ et garde le focus ; le retour d�
   await section(page, 'publication', 1);
   await expect(page.locator('#blog-notice')).toBeHidden();
 });
+
+test('un champ refusé sur une autre page que celle affichée y ramène et garde le focus', async ({ page }) => {
+  const state = await mockApi(page, [post()]);
+  await page.goto('/backoffice/blog/seo?id=1');
+  await onlySection(page, 'seo');
+  await page.locator('#blog-slug').fill('Slug Invalide !!');
+  await section(page, 'redaction', 1);
+
+  // Enregistrer depuis la Rédaction : la page Référencement s’ouvre, puis le
+  // champ refusé reçoit le focus et sa bulle ; l’ouverture ne le lui vole plus.
+  await page.locator('#blog-save').click();
+  await expect(page).toHaveURL(/\/backoffice\/blog\/seo\?id=1$/);
+  await onlySection(page, 'seo');
+  await expect(page.locator('#blog-slug')).toBeFocused();
+  await expect(page.locator('#blog-slug')).toHaveAttribute('aria-invalid', 'true');
+  await expect(page.locator('#blog-slug-erreur')).toBeVisible();
+  // Plus rien ne le déplace une fois la navigation terminée.
+  await page.evaluate(() => new Promise((fin) => requestAnimationFrame(() => requestAnimationFrame(fin))));
+  expect(await page.evaluate(() => document.activeElement?.id)).toBe('blog-slug');
+  expect(state.mutations.filter((mutation) => mutation.method === 'PUT')).toEqual([]);
+});

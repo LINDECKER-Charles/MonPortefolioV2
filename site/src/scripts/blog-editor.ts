@@ -477,23 +477,36 @@ export function brancherBlog(context: Context): BlogWorkspace {
     }, 'Chargement de l’article…');
     if (generation === current && context.isAuthenticated() && editing) showSection(route.section, true);
   }
+  /**
+   * Ramène à la page de l’article qui porte le refus, PUIS y pose le focus, le
+   * message et la bulle du champ. Dans l’autre ordre, l’ouverture de la page
+   * (showSection(…, true)) volerait le focus au champ refusé. validate() reste
+   * synchrone : l’aperçu ouvre son onglet dans le geste de l’utilisateur.
+   */
+  async function refuser(section: BlogSection, refus: { message?: string; champ?: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement; signaler?: boolean }) {
+    showSection(section);
+    await context.navigate(sectionURL(section));
+    if (refus.message) notice(refus.message, true);
+    refus.champ?.focus();
+    if (refus.signaler) refus.champ?.reportValidity();
+  }
   function validate() {
     const invalid = form.querySelector<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>('input:invalid, textarea:invalid, select:invalid');
     if (invalid) {
       const section = invalid.closest<HTMLElement>('[data-blog-page]')?.dataset.blogPage as BlogSection | undefined;
-      if (section) { showSection(section); void context.navigate(sectionURL(section)); }
-      invalid.focus(); invalid.reportValidity();
+      if (section) void refuser(section, { champ: invalid, signaler: true });
+      else { invalid.focus(); invalid.reportValidity(); }
       return false;
     }
     const data = payload();
-    if (data.cover_image && !data.cover_alt) { showSection('medias'); void context.navigate(sectionURL('medias')); notice('Décrivez l’image de couverture avant d’enregistrer.', true); input('blog-cover-alt').focus(); return false; }
-    if (data.tags.length > 20 || data.tags.some((tag) => tag.length > 50)) { showSection('medias'); void context.navigate(sectionURL('medias')); notice('Utilisez au plus 20 étiquettes de 50 caractères chacune.', true); input('blog-tags').focus(); return false; }
-    if ((data.cover_image && !imageArticle(data.cover_image)) || (data.og_image && !imageArticle(data.og_image))) { const section = data.cover_image && !imageArticle(data.cover_image) ? 'medias' : 'seo'; showSection(section); void context.navigate(sectionURL(section)); notice('Choisissez la couverture et l’image de partage dans la bibliothèque d’images.', true); return false; }
-    if (data.canonical_url && !data.canonical_url.startsWith('https://')) { showSection('seo'); void context.navigate(sectionURL('seo')); notice('L’adresse canonique doit commencer par https://.', true); input('blog-canonical').focus(); return false; }
+    if (data.cover_image && !data.cover_alt) { void refuser('medias', { message: 'Décrivez l’image de couverture avant d’enregistrer.', champ: input('blog-cover-alt') }); return false; }
+    if (data.tags.length > 20 || data.tags.some((tag) => tag.length > 50)) { void refuser('medias', { message: 'Utilisez au plus 20 étiquettes de 50 caractères chacune.', champ: input('blog-tags') }); return false; }
+    if ((data.cover_image && !imageArticle(data.cover_image)) || (data.og_image && !imageArticle(data.og_image))) { void refuser(data.cover_image && !imageArticle(data.cover_image) ? 'medias' : 'seo', { message: 'Choisissez la couverture et l’image de partage dans la bibliothèque d’images.' }); return false; }
+    if (data.canonical_url && !data.canonical_url.startsWith('https://')) { void refuser('seo', { message: 'L’adresse canonique doit commencer par https://.', champ: input('blog-canonical') }); return false; }
     let missingAlt = false;
     const check = (node: JSONContent) => { if (node.type === 'image' && !String(node.attrs?.alt ?? '').trim()) missingAlt = true; node.content?.forEach(check); };
     check(data.content);
-    if (missingAlt) { showSection('redaction'); void context.navigate(sectionURL('redaction')); notice('Une image du contenu n’a pas de description. Sélectionnez-la et utilisez Image pour compléter sa description.', true); return false; }
+    if (missingAlt) { void refuser('redaction', { message: 'Une image du contenu n’a pas de description. Sélectionnez-la et utilisez Image pour compléter sa description.' }); return false; }
     return true;
   }
   async function save(): Promise<BlogPost | undefined> {
