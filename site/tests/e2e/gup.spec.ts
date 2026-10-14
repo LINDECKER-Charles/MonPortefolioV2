@@ -185,16 +185,16 @@ test('les 153 sources : choisir un système grise celles que gup n’y lance jam
   }
 });
 
-test('la sortie : projet précédent de la vitrine, retour à la vitrine, « Discutons » vers /contact', async ({ page }) => {
+test('la sortie : projets voisins dans l’ordre de la vitrine, retour à la vitrine, « Discutons » vers /contact', async ({ page }) => {
   await page.goto(CHEMIN);
   const sortie = page.locator('#retiens');
   const discutons = sortie.getByRole('link', { name: /^Discutons/ });
   await expect(discutons).toHaveAttribute('href', '/contact');
   await expect(discutons).toHaveAttribute('data-umami-event', 'contact-page');
   await expect(discutons).toHaveAttribute('data-umami-event-emplacement', 'discutons');
-  await expect(sortie.getByRole('link', { name: /Projet précédent\s+Bloodborne Legendary Run/ })).toHaveAttribute('href', '/projets/bloodborne-legendary-run');
+  await expect(sortie.getByRole('link', { name: /Projet précédent\s+League Of Data Base/ })).toHaveAttribute('href', '/projets/league-of-database');
   await expect(sortie.getByRole('link', { name: /Tous les projets/ })).toHaveAttribute('href', '/projets');
-  await expect(sortie).not.toContainText('Projet suivant');
+  await expect(sortie.getByRole('link', { name: /Projet suivant\s+GitHealth/ })).toHaveAttribute('href', '/projets/githealth');
   // La phrase de clôture est sourcée : aucune formulation « à confirmer ».
   await expect(sortie.getByRole('heading', { level: 2 })).toHaveText('En une phrase');
   await expect(sortie).toContainText('quel que soit l’outil qui l’a installé');

@@ -305,8 +305,8 @@ test('la sortie : projets voisins dans l’ordre de la vitrine, « Discutons » 
   await expect(discutons).toHaveAttribute('href', '/contact');
   await expect(discutons).toHaveAttribute('data-umami-event', 'contact-page');
   await expect(discutons).toHaveAttribute('data-umami-event-emplacement', 'discutons');
-  await expect(sortie.getByRole('link', { name: /Projet suivant\s+Omnicard/ })).toHaveAttribute('href', '/projets/omnicard');
-  await expect(sortie.getByRole('link', { name: /Projet précédent\s+PvZ Fusion, pôle francophone/ })).toHaveAttribute('href', '/projets/pvz-fusion');
+  await expect(sortie.getByRole('link', { name: /Projet suivant\s+gup/ })).toHaveAttribute('href', '/projets/gup');
+  await expect(sortie.getByRole('link', { name: /Projet précédent\s+Bloodborne Legendary Run/ })).toHaveAttribute('href', '/projets/bloodborne-legendary-run');
   await expect(sortie.getByRole('link', { name: /Tous les projets/ })).toHaveAttribute('href', '/projets');
   await expect(page.locator('#sources')).toContainText('sans affiliation à Riot Games');
 });

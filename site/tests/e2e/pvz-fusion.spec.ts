@@ -149,7 +149,7 @@ test('la sortie : projet suivant de la vitrine, retour à la vitrine, « Discuto
   await expect(discutons).toHaveAttribute('href', '/contact');
   await expect(discutons).toHaveAttribute('data-umami-event', 'contact-page');
   await expect(discutons).toHaveAttribute('data-umami-event-emplacement', 'discutons');
-  await expect(sortie.getByRole('link', { name: /Projet suivant\s+League Of Data Base/ })).toHaveAttribute('href', '/projets/league-of-database');
+  await expect(sortie.getByRole('link', { name: /Projet suivant\s+Omnicard/ })).toHaveAttribute('href', '/projets/omnicard');
   await expect(sortie.getByRole('link', { name: /Tous les projets/ })).toHaveAttribute('href', '/projets');
   await expect(sortie).not.toContainText('Projet précédent');
 });

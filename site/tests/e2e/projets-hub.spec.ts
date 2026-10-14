@@ -1,25 +1,28 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
+import { COMPTE_GITHUB, DEPOTS_PUBLICS } from '../../src/config/liens-publics';
+import { VEDETTE, VITRINE, VITRINE_PAR_FAMILLE, type ProjetVitrine } from '../../src/config/projets';
 import { surveillerConsole } from './support/navigateur';
 
 /**
  * La vitrine /projets (cahier des charges, § 5.2 ; décisions de Charles du
- * 13/10/2026) : un titre, une phrase, l’index des étiquettes de preuve, puis
- * cinq projets dans l’ordre de ce qu’ils prouvent, PvZ Fusion en vedette.
- * Chaque carte mène à sa page au clavier et sans JavaScript, porte un chiffre,
- * un rôle, un statut et des liens publics mesurés ; suivent la rangée
- * « Aussi », les archives discrètes, « Contribuer » et « Discutons ».
+ * 13 et du 14/10/2026) : un titre, une phrase, l’index des étiquettes de
+ * preuve par famille, puis une section par famille — « Lead et équipe » (PvZ
+ * Fusion en vedette), « Jeu vidéo », « Outils », « IA » —, dans l’ordre de
+ * VITRINE. Chaque carte mène à sa page au clavier et sans JavaScript, porte
+ * son rang, un chiffre, un rôle, un statut et des liens publics mesurés ;
+ * suivent la rangée « Aussi », les archives discrètes, « Contribuer » et
+ * « Discutons ».
+ *
+ * L’ordre, les familles et les noms se lisent dans config/projets.ts : ce test
+ * ne fige que les valeurs des cinq premières cartes, et vérifie pour les
+ * autres la structure (rang, chiffre, liens), quelle que soit leur page.
  */
 
-const PROJETS = [
-  { id: 'pvz', nom: 'PvZ Fusion, pôle francophone', preuve: 'Une équipe formée et menée', chemin: '/projets/pvz-fusion', chiffre: '20' },
-  { id: 'league', nom: 'League Of Data Base', preuve: 'Un système en production', chemin: '/projets/league-of-database', chiffre: '403' },
-  { id: 'omnicard', nom: 'Omnicard', preuve: 'Réinventer', chemin: '/projets/omnicard', chiffre: '181' },
-  { id: 'bloodborne', nom: 'Bloodborne Legendary Run', preuve: 'Un produit de bout en bout', chemin: '/projets/bloodborne-legendary-run', chiffre: '1 289' },
-  { id: 'gup', nom: 'gup', preuve: 'Un outil open source', chemin: '/projets/gup', chiffre: '153' },
-] as const;
+/** Les chiffres figés des cinq cartes historiques (config/vitrine.ts). */
+const CHIFFRES: Partial<Record<ProjetVitrine['id'], string>> = { pvz: '20', omnicard: '181', bloodborne: '1 289', league: '403', gup: '153' };
 
-/** Les seules sorties admises depuis la vitrine : liste blanche et sites des projets. */
+/** Les seules sorties admises depuis la vitrine hors des cartes entrées le 14/10/2026 : liste blanche et sites des projets. */
 const SORTIES_ADMISES = [
   'https://github.com/Teyliu/PVZF-Translation',
   'https://league-of-data-base.com/fr/',
@@ -29,7 +32,6 @@ const SORTIES_ADMISES = [
   'https://bloodborne-legendary-run.com/fr/sky',
   'https://github.com/LINDECKER-Charles/gup',
   'https://www.npmjs.com/package/@charles_lindecker/gup',
-  'https://github.com/LINDECKER-Charles/App.GitHealth',
   'https://github.com/LINDECKER-Charles/app-life-pixel',
   'https://github.com/LINDECKER-Charles/Web-Image-Formateur',
   'https://lindecker-charles.github.io/ShrekSophone/',
@@ -39,11 +41,17 @@ const SORTIES_ADMISES = [
   'https://github.com/LINDECKER-Charles?tab=repositories',
 ];
 
-const REGLES = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'];
+/** Un dépôt GitHub de la liste blanche (liens-publics.ts), quelle que soit la page du dépôt visée. */
+const DEPOT_PUBLIC = new RegExp(`^https://github\\.com/${COMPTE_GITHUB}/(?:${DEPOTS_PUBLICS.map((d) => d.nom.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})(?:[/?#]|$)`, 'i');
 
-const vitrine = (page: Page) => page.getByRole('list', { name: 'Cinq projets, ordonnés par ce qu’ils prouvent', exact: true });
-const carte = (page: Page, id: string) => vitrine(page).locator(`:scope > li#${id}`);
-const lienDeCarte = (page: Page, projet: (typeof PROJETS)[number]) => carte(page, projet.id).getByRole('link', { name: projet.nom, exact: true });
+const REGLES = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'];
+const deuxChiffres = (rang: number) => String(rang).padStart(2, '0');
+const exact = (texte: string) => texte.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+const carte = (page: Page, id: string) => page.locator(`.vitrine-famille .vitrine > li#${id}`);
+const cartes = (page: Page) => page.locator('.vitrine-famille .vitrine > li');
+const lienDeCarte = (page: Page, projet: ProjetVitrine) => carte(page, projet.id).getByRole('link', { name: projet.nom, exact: true });
+const index = (page: Page) => page.getByRole('navigation', { name: 'Ce que prouve chaque projet', exact: true });
 
 async function axe(page: Page) {
   const resultats = await new AxeBuilder({ page }).withTags(REGLES).analyze();
@@ -59,11 +67,10 @@ test('le premier écran dit quoi et pourquoi : titre, phrase, index des preuves 
   await page.goto('/projets');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Projets');
   await expect(page.locator('[data-pli="titre"]')).toBeInViewport();
-  await expect(page.locator('[data-pli="identite"]')).toHaveText('Des projets menés au bout : une équipe, des systèmes en production, des outils publiés.');
+  await expect(page.locator('[data-pli="identite"]')).toHaveText('Des projets menés au bout : une équipe, des systèmes en production, des outils publiés, des agents IA encadrés.');
   await expect(page.locator('[data-pli="identite"]')).toBeInViewport();
-  const index = page.getByRole('navigation', { name: 'Ce que prouve chaque projet', exact: true });
-  await expect(index.getByRole('link').first()).toBeInViewport();
-  const vedette = carte(page, 'pvz');
+  await expect(index(page).getByRole('link').first()).toBeInViewport();
+  const vedette = carte(page, VEDETTE);
   await expect(vedette).toHaveClass(/carte-projet--vedette/);
   // La preuve du premier écran : le chiffre de la vedette, marqué par CarteProjet (règle E1).
   const preuve = page.locator('[data-pli="preuve"]');
@@ -77,9 +84,11 @@ test('le premier écran dit quoi et pourquoi : titre, phrase, index des preuves 
 test('les chiffres des cartes portent leur date (règle C1)', async ({ page }) => {
   await page.goto('/projets');
   const releve = page.locator('.vitrine-releve');
-  await expect(releve).toHaveText('Chiffres au 13 octobre 2026 ; objectifs de Bloodborne Legendary Run au 8 octobre 2026.');
-  // Juste sous la vitrine, avant « Aussi ».
-  expect(await releve.evaluate((p) => p.previousElementSibling?.matches('ol.vitrine'))).toBe(true);
+  // Le relevé commun des cinq premières cartes, puis celui des cartes relevées à une autre date.
+  // Les espaces avant « ; » sont insécables (typo) : \s les lit toutes.
+  await expect(releve).toHaveText(/^Chiffres au 13 octobre 2026\s;\sobjectifs de Bloodborne Legendary Run au 8 octobre 2026(?:\s;\s[^;]+ au \d{1,2} [a-zéû]+ \d{4})*\.$/);
+  // Juste sous la dernière famille, avant « Aussi ».
+  expect(await releve.evaluate((p) => p.previousElementSibling?.matches('section.vitrine-famille'))).toBe(true);
 });
 
 test('sur ordinateur, le visuel d’une carte « ligne » remplit son panneau', async ({ page }) => {
@@ -98,18 +107,41 @@ test('sur ordinateur, le visuel d’une carte « ligne » remplit son panneau', 
   await expect(carte(page, 'gup').locator('.capture__vue img')).toHaveCSS('object-fit', 'cover');
 });
 
-test('cinq projets dans l’ordre de ce qu’ils prouvent, une seule fois chacun, sans catégorie par loisir', async ({ page }) => {
+test('sur ordinateur, une famille de trois tient sur une ligne, ses visuels à la même hauteur', async ({ page }) => {
+  test.skip((page.viewportSize()?.width ?? 0) <= 1100, 'grand écran seulement');
   await page.goto('/projets');
-  const cartes = vitrine(page).locator(':scope > li');
-  await expect(cartes).toHaveCount(5);
-  expect(await cartes.evaluateAll((liste) => liste.map((li) => li.id))).toEqual(PROJETS.map((p) => p.id));
-  await expect(vitrine(page).locator('.carte-projet--vedette')).toHaveCount(1);
-  await expect(vitrine(page).locator('.carte-projet--ligne')).toHaveCount(4);
-  for (const [index, projet] of PROJETS.entries()) {
+  for (const famille of VITRINE_PAR_FAMILLE.filter((f) => f.projets.length === 3)) {
+    const boites = await page.locator(`#famille-${famille.id} .vitrine > li`).evaluateAll((liste) =>
+      liste.map((li) => ({ haut: li.getBoundingClientRect().top, visuel: li.querySelector('.carte-projet__visuel')?.getBoundingClientRect().height })),
+    );
+    expect(new Set(boites.map((b) => Math.round(b.haut))).size, famille.id).toBe(1);
+    const hauteurs = boites.flatMap((b) => (b.visuel ? [Math.round(b.visuel)] : []));
+    expect(new Set(hauteurs).size, famille.id).toBeLessThanOrEqual(1);
+  }
+});
+
+test('une section par famille, dans l’ordre ; chaque projet une seule fois, à son rang', async ({ page }) => {
+  await page.goto('/projets');
+  const sections = page.locator('section.vitrine-famille');
+  await expect(sections).toHaveCount(VITRINE_PAR_FAMILLE.length);
+  await expect(sections.getByRole('heading', { level: 2 })).toHaveText(VITRINE_PAR_FAMILLE.map((famille) => famille.titre));
+  expect(await sections.evaluateAll((liste) => liste.map((s) => s.id))).toEqual(VITRINE_PAR_FAMILLE.map((famille) => `famille-${famille.id}`));
+  for (const famille of VITRINE_PAR_FAMILLE) {
+    // La liste de la famille porte le nom de son titre.
+    const liste = page.locator(`#famille-${famille.id}`).getByRole('list', { name: famille.titre, exact: true });
+    expect(await liste.locator(':scope > li').evaluateAll((li) => li.map((x) => x.id))).toEqual(famille.projets.map((p) => p.id));
+  }
+  await expect(cartes(page)).toHaveCount(VITRINE.length);
+  expect(await cartes(page).evaluateAll((liste) => liste.map((li) => li.id))).toEqual(VITRINE.map((p) => p.id));
+  await expect(page.locator('.vitrine .carte-projet--vedette')).toHaveCount(1);
+  await expect(page.locator('.vitrine .carte-projet--ligne')).toHaveCount(VITRINE.length - 1);
+  for (const [i, projet] of VITRINE.entries()) {
     const li = carte(page, projet.id);
-    await expect(li.getByRole('heading', { level: 2 })).toContainText(projet.nom);
-    await expect(li.locator('.carte-projet__preuve')).toHaveText(new RegExp(`^\\s*${String(index + 1).padStart(2, '0')}\\s*${projet.preuve}\\s*$`));
-    await expect(li.locator('.carte-projet__chiffre b')).toHaveText(projet.chiffre);
+    await expect(li.getByRole('heading', { level: 3 })).toContainText(projet.nom);
+    await expect(li.locator('.carte-projet__preuve')).toHaveText(new RegExp(`^\\s*${deuxChiffres(i + 1)}\\s*${exact(projet.preuve)}\\s*$`));
+    // Un chiffre par carte, sourcé et daté (règle C1) ; ceux des cinq premières sont figés ici.
+    await expect(li.locator('.carte-projet__chiffre b')).toHaveCount(1);
+    await expect(li.locator('.carte-projet__chiffre b')).toHaveText(CHIFFRES[projet.id] ?? /\d/);
     await expect(li.locator('.carte-projet__voir')).toHaveText(/^\s*Voir le projet\s*→\s*$/);
     await expect(li.locator('.carte-projet__fiche dt')).toHaveText(['Rôle', 'Statut']);
     await expect(li.locator('.statut')).toHaveCount(1);
@@ -129,38 +161,44 @@ test('les statuts sont honnêtes : une forme et un mot', async ({ page }) => {
   await expect(carte(page, 'omnicard').locator('.statut')).toHaveClass(/statut--eteint/);
   await expect(carte(page, 'omnicard').locator('.statut')).toHaveText('Hors ligne, en attente de refonte');
   await expect(carte(page, 'gup').locator('.statut')).toHaveClass(/statut--ouvert/);
-  await expect(carte(page, 'bloodborne').locator('.statut')).toHaveText('En ligne, web ; Android en test');
+  await expect(carte(page, 'bloodborne').locator('.statut')).toHaveText('En ligne, web ; Android en test');
   // La réserve sur le nom est dite une fois, dans la note de sources de la page League.
   await expect(carte(page, 'league').locator('.a-confirmer')).toHaveCount(0);
 });
 
-test('l’index des preuves mène à chaque carte, sans rien masquer', async ({ page }) => {
+test('l’index des preuves, famille par famille, mène à chaque carte sans rien masquer', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/projets');
-  const index = page.getByRole('navigation', { name: 'Ce que prouve chaque projet', exact: true });
-  const liens = index.getByRole('link');
-  await expect(liens).toHaveCount(5);
-  for (const [rang, projet] of PROJETS.entries()) {
+  const familles = index(page).locator('.index-preuves__famille');
+  await expect(familles.locator('.index-preuves__titre')).toHaveText(VITRINE_PAR_FAMILLE.map((famille) => famille.titre));
+  for (const [i, famille] of VITRINE_PAR_FAMILLE.entries()) {
+    await expect(index(page).getByRole('list', { name: famille.titre, exact: true }).getByRole('link')).toHaveCount(famille.projets.length);
+    expect(await familles.nth(i).getByRole('link').evaluateAll((liens) => liens.map((a) => a.getAttribute('href')))).toEqual(famille.projets.map((p) => `#${p.id}`));
+  }
+  const liens = index(page).getByRole('link');
+  await expect(liens).toHaveCount(VITRINE.length);
+  for (const [rang, projet] of VITRINE.entries()) {
     const lien = liens.nth(rang);
     await expect(lien).toHaveAttribute('href', `#${projet.id}`);
-    await expect(lien).toContainText(projet.preuve);
+    // Le numéro se voit à toutes les largeurs ; l’étiquette est dans le nom du lien.
+    await expect(lien).toHaveAccessibleName(new RegExp(`^${deuxChiffres(rang + 1)}\\s*${exact(projet.preuve)}$`));
     await lien.focus();
     await page.keyboard.press('Enter');
     expect(new URL(page.url()).hash).toBe(`#${projet.id}`);
     await expect(carte(page, projet.id)).toBeInViewport();
-    await expect(vitrine(page).locator(':scope > li:visible')).toHaveCount(5);
+    await expect(cartes(page).locator(':scope:visible')).toHaveCount(VITRINE.length);
   }
 });
 
-for (const projet of PROJETS) {
+for (const projet of VITRINE) {
   test(`la carte ${projet.id} mène à sa page au clavier`, async ({ page }) => {
     const erreurs = surveillerConsole(page);
     await page.goto('/projets');
     const lien = lienDeCarte(page, projet);
-    await expect(lien).toHaveAttribute('href', projet.chemin);
+    await expect(lien).toHaveAttribute('href', projet.href);
     await lien.focus();
     await page.keyboard.press('Enter');
-    await expect.poll(() => new URL(page.url()).pathname).toBe(projet.chemin);
+    await expect.poll(() => new URL(page.url()).pathname).toBe(projet.href);
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     expect(erreurs).toEqual([]);
   });
@@ -196,15 +234,20 @@ test('des captures réelles dans leurs cadres, et les emplacements de la command
   for (const [id, visuel] of [['pvz', 'PRJ-01'], ['league', 'PRJ-02'], ['omnicard', 'PRJ-03']] as const) {
     await expect(carte(page, id).locator(`[data-visuel="${visuel}"]`)).toHaveCount(1);
   }
-  for (const visuel of ['PRJ-06', 'PRJ-07', 'PRJ-08', 'PRJ-10', 'PRJ-11']) {
+  for (const visuel of ['PRJ-07', 'PRJ-08', 'PRJ-10', 'PRJ-11']) {
     await expect(page.locator(`[data-visuel="${visuel}"]`)).toHaveCount(1);
+  }
+  // Le visuel d’une carte, quand elle en a un, vit dans son panneau, dans l’acte de veille.
+  for (const projet of VITRINE) {
+    const panneau = carte(page, projet.id).locator('.carte-projet__visuel');
+    if (await panneau.count()) await expect(panneau, projet.id).toHaveClass(/acte-veille/);
   }
 });
 
-test('« Aussi » : quatre projets publics, et la démo de Shreksophone en ligne', async ({ page }) => {
+test('« Aussi » : trois projets publics, et la démo de Shreksophone en ligne', async ({ page }) => {
   await page.goto('/projets');
   const aussi = page.getByRole('region', { name: 'Aussi', exact: true });
-  await expect(aussi.getByRole('heading', { level: 3 })).toHaveText(['GitHealth', 'Life Pixel', 'img-convertor', 'Shreksophone']);
+  await expect(aussi.getByRole('heading', { level: 3 })).toHaveText(['Life Pixel', 'img-convertor', 'Shreksophone']);
   await expect(aussi.getByRole('link', { name: /La démo/ })).toHaveAttribute('href', 'https://lindecker-charles.github.io/ShrekSophone/');
   await expect(page.locator('a[href*="shrek.charles-lindecker.com"]')).toHaveCount(0);
   // Un nom de dépôt en linéale : son trait d’union ne s’ouvre pas comme dans la sérif.
@@ -212,22 +255,28 @@ test('« Aussi » : quatre projets publics, et la démo de Shreksophone en ligne
   expect(await depot.evaluate((h) => getComputedStyle(h).fontFamily)).toMatch(/Instrument Sans/);
 });
 
-test('les liens sortants sont publics, marqués « ↗ » et mesurés', async ({ page }) => {
+test('les liens sortants sont publics, marqués « ↗ » et mesurés ; aucun pour un projet privé', async ({ page }) => {
   await page.goto('/projets');
-  const liens = await page.locator('main a[href^="http"]').evaluateAll((elements) =>
-    elements.map((lien) => ({
-      href: lien.getAttribute('href') ?? '',
-      texte: lien.textContent ?? '',
-      rel: lien.getAttribute('rel'),
-      evenement: lien.getAttribute('data-umami-event'),
-      domaine: lien.getAttribute('data-umami-event-domaine'),
-      emplacement: lien.getAttribute('data-umami-event-emplacement'),
-      contribuer: Boolean(lien.closest('#contribuer')),
-    })),
+  const nouvelles = VITRINE.filter((projet) => !(projet.id in CHIFFRES)).map((projet) => projet.id);
+  const liens = await page.locator('main a[href^="http"]').evaluateAll(
+    (elements, ids) =>
+      elements.map((lien) => ({
+        href: lien.getAttribute('href') ?? '',
+        texte: lien.textContent ?? '',
+        rel: lien.getAttribute('rel'),
+        evenement: lien.getAttribute('data-umami-event'),
+        domaine: lien.getAttribute('data-umami-event-domaine'),
+        emplacement: lien.getAttribute('data-umami-event-emplacement'),
+        contribuer: Boolean(lien.closest('#contribuer')),
+        carte: ids.find((id) => lien.closest(`li#${id}`)) ?? null,
+      })),
+    nouvelles,
   );
-  expect(liens.length).toBeGreaterThanOrEqual(15);
+  expect(liens.length).toBeGreaterThanOrEqual(13);
   for (const lien of liens) {
-    expect(SORTIES_ADMISES, lien.href).toContain(lien.href);
+    // Une carte entrée le 14/10/2026 ne mène qu’à un dépôt de la liste blanche, ou hors de GitHub.
+    if (lien.carte) expect(new URL(lien.href).hostname !== 'github.com' || DEPOT_PUBLIC.test(lien.href), lien.href).toBe(true);
+    else expect(SORTIES_ADMISES, lien.href).toContain(lien.href);
     expect(lien.texte, lien.href).toContain('↗');
     expect(lien.rel, lien.href).toBe('external');
     expect(lien.evenement, lien.href).toBe('lien-sortant');
@@ -235,6 +284,8 @@ test('les liens sortants sont publics, marqués « ↗ » et mesurés', async ({
     // L’invitation open source garde l’emplacement de l’objectif O3.
     expect(lien.emplacement, lien.href).toBe(lien.contribuer ? 'discutons' : 'preuves');
   }
+  // Un projet privé n’a aucun lien sortant sur sa carte.
+  for (const projet of VITRINE.filter((p) => p.prive)) await expect(carte(page, projet.id).locator('a[href^="http"]'), projet.id).toHaveCount(0);
 });
 
 test('« Contribuer » : deux guides de contribution et tous les dépôts publics', async ({ page }) => {
@@ -279,18 +330,19 @@ test('« Discutons » mène à la page Contact et se mesure', async ({ page }) =
   await expect(page).toHaveURL(/\/contact$/);
 });
 
-test('sur mobile, l’index passe à la ligne : cinq preuves entières, rien ne défile', async ({ page }) => {
+test('sur mobile, l’index se replie par famille : chaque numéro entier, rien ne défile', async ({ page }) => {
   test.skip((page.viewportSize()?.width ?? 0) > 860, 'mobile seulement');
   await page.goto('/projets');
-  const liste = page.getByRole('navigation', { name: 'Ce que prouve chaque projet', exact: true }).locator('ol');
-  const { defile, hauteur } = await liste.evaluate((ol) => ({ defile: ol.scrollWidth > ol.clientWidth, hauteur: ol.getBoundingClientRect().height }));
+  const liste = index(page).locator('.index-preuves__familles');
+  const { defile, hauteur } = await liste.evaluate((ul) => ({ defile: ul.scrollWidth > ul.clientWidth, hauteur: ul.getBoundingClientRect().height }));
   expect(defile).toBe(false);
   // Trois lignes au plus : le chiffre de la vedette reste au premier écran (E1).
   expect(hauteur).toBeLessThan(110);
   for (const lien of await liste.getByRole('link').all()) {
     await expect(lien).toBeInViewport({ ratio: 1 });
-    // Une cible d’au moins 24 px de haut (WCAG 2.5.8).
-    expect((await lien.boundingBox())!.height).toBeGreaterThanOrEqual(24);
+    // Une cible d’au moins 24 px de côté (WCAG 2.5.8).
+    const boite = (await lien.boundingBox())!;
+    expect(Math.min(boite.width, boite.height)).toBeGreaterThanOrEqual(24);
   }
   expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
 });
@@ -315,31 +367,33 @@ for (const theme of ['jour', 'nuit'] as const) {
 test.describe('la vitrine sans JavaScript', () => {
   test.use({ javaScriptEnabled: false, reducedMotion: 'reduce' });
 
-  test('tout le contenu est là : cinq cartes, l’index, « Aussi », « Contribuer » et les archives', async ({ page }) => {
+  test('tout le contenu est là : les cartes de chaque famille, l’index, « Aussi », « Contribuer » et les archives', async ({ page }) => {
     await page.goto('/projets');
-    await expect(vitrine(page).locator(':scope > li:visible')).toHaveCount(5);
-    await expect(page.getByRole('region', { name: 'Aussi', exact: true }).locator('li:visible')).toHaveCount(4);
+    await expect(cartes(page).locator(':scope:visible')).toHaveCount(VITRINE.length);
+    await expect(page.locator('section.vitrine-famille:visible')).toHaveCount(VITRINE_PAR_FAMILLE.length);
+    await expect(page.getByRole('region', { name: 'Aussi', exact: true }).locator('li:visible')).toHaveCount(3);
     await expect(page.locator('#contribuer')).toBeVisible();
     await expect(page.locator('#projets-archives summary')).toBeVisible();
-    await page.getByRole('navigation', { name: 'Ce que prouve chaque projet', exact: true }).getByRole('link').nth(3).click();
-    expect(new URL(page.url()).hash).toBe('#bloodborne');
-    await expect(carte(page, 'bloodborne')).toBeInViewport();
+    await index(page).getByRole('link').nth(3).click();
+    expect(new URL(page.url()).hash).toBe(`#${VITRINE[3].id}`);
+    await expect(carte(page, VITRINE[3].id)).toBeInViewport();
   });
 
-  for (const projet of PROJETS) {
+  for (const projet of VITRINE) {
     test(`la carte ${projet.id} ouvre sa page sans JavaScript`, async ({ page }) => {
       await page.goto('/projets');
       await lienDeCarte(page, projet).click();
-      await expect.poll(() => new URL(page.url()).pathname).toBe(projet.chemin);
+      await expect.poll(() => new URL(page.url()).pathname).toBe(projet.href);
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     });
   }
 });
 
-test('depuis la vitrine, la vedette mène à PvZ Fusion, puis au projet suivant', async ({ page }) => {
+test('depuis la vitrine, la vedette mène à sa page, puis au projet suivant', async ({ page }) => {
+  const [premier, second] = VITRINE;
   await page.goto('/projets');
-  await lienDeCarte(page, PROJETS[0]).click();
-  await expect(page).toHaveURL(/\/projets\/pvz-fusion$/);
+  await lienDeCarte(page, premier).click();
+  await expect(page).toHaveURL(new RegExp(`${exact(premier.href)}$`));
   await page.locator('#retiens').getByRole('link', { name: /Projet suivant/ }).click();
-  await expect(page).toHaveURL(/\/projets\/league-of-database$/);
+  await expect(page).toHaveURL(new RegExp(`${exact(second.href)}$`));
 });

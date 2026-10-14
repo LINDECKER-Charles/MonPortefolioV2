@@ -1,9 +1,15 @@
 /**
- * Contenu de la vitrine /projets (cahier des charges, § 5.2 ; décisions de
- * Charles du 13/10/2026). L’ordre, le nom canonique et l’étiquette de preuve
- * de chaque projet viennent de VITRINE (config/projets.ts) ; ce fichier n’y
- * ajoute que ce que la carte montre : le besoin, un seul chiffre, le rôle, le
- * statut, les liens publics et trois technologies au plus.
+ * Contenu des cartes de la vitrine /projets (cahier des charges, § 5.2 ;
+ * décisions de Charles du 13 et du 14/10/2026). L’ordre, la famille, le nom
+ * canonique et l’étiquette de preuve de chaque projet viennent de VITRINE
+ * (config/projets.ts) ; une carte n’y ajoute que ce qu’elle montre : le
+ * besoin, un seul chiffre, le rôle, le statut, les liens publics, trois
+ * technologies au plus et, pour les projets entrés le 14/10/2026, son visuel.
+ *
+ * Les cartes de PvZ Fusion, Omnicard, Bloodborne Legendary Run, League Of Data
+ * Base et gup s’écrivent ici. Celles de GitHealth, Karl Scraper, Sillage et
+ * Relais vivent dans le fichier de leur page (config/<projet>.ts, export
+ * CARTE), que chaque page tient seule : ce fichier ne fait que les importer.
  *
  * Chaque fait vient de docs/matiere-premiere.md, d’un README public ou d’une
  * page publique du projet (source notée à côté). Un fait que Charles n’a pas
@@ -12,12 +18,15 @@
  * de sa page, et non sur chaque carte.
  *
  * Liens : seulement les dépôts publics de la liste blanche
- * (config/liens-publics.ts), les sites en ligne des projets et leurs paquets.
- * Aucune démo hors ligne : celle de Shreksophone est servie par GitHub Pages
- * (réponse 200 vérifiée le 13/10/2026), pas par l’ancien domaine bloqué.
+ * (config/liens-publics.ts), les sites en ligne des projets et leurs paquets ;
+ * aucun pour un projet privé (`prive` dans VITRINE). Aucune démo hors ligne.
  */
 import type { ImageMetadata } from 'astro';
-import type { ProjetVitrine } from './projets';
+import { VITRINE, type ProjetVitrine } from './projets';
+import { CARTE as CARTE_GITHEALTH } from './githealth';
+import { CARTE as CARTE_KARL_SCRAPER } from './karl-scraper';
+import { CARTE as CARTE_RELAIS } from './relais';
+import { CARTE as CARTE_SILLAGE } from './sillage';
 import angular from '../assets/stacks/angular.svg';
 import capacitor from '../assets/stacks/capacitor.svg';
 import csharp from '../assets/stacks/csharp.svg';
@@ -33,17 +42,54 @@ export interface LienPublic {
   libelle: string;
 }
 
+/** Une capture réelle posée sur une carte, dans son cadre d’appareil (CadreCapture). */
+export interface CaptureCarte {
+  type: 'navigateur' | 'telephone' | 'terminal';
+  src: ImageMetadata;
+  /** Ce que la capture prouve (règle A5), pas ce qu’elle montre en vrac. */
+  alt: string;
+  /** Adresse affichée dans la barre du navigateur (sans https://). */
+  adresse?: string;
+  /** Recadrage de la vue (« 16 / 10 ») ; sans lui, la capture est montrée entière. */
+  ratio?: string;
+  /** Recadrage sous 860 px, s’il diffère. */
+  ratioMobile?: string;
+  /** Position du recadrage (object-position). */
+  position?: string;
+  /** Largeurs produites (srcset). */
+  widths?: number[];
+  sizes?: string;
+}
+
+/**
+ * Le visuel d’une carte, posé par pages/projets/index.astro : une capture
+ * réelle (`capture`), ou un emplacement du registre des visuels (`visuel`,
+ * son identifiant), posé dans l’acte de veille de la carte. Le fichier qui
+ * écrit `visuel: 'PRJ-06'` figure dans la `pose` de l’entrée
+ * (config/visuels.ts). Sans visuel, la carte n’a que son texte.
+ */
+export type VisuelCarte =
+  | { capture: CaptureCarte; visuel?: never }
+  | { visuel: string; /** Décoratif par défaut : le nom de la carte dit le reste. */ alt?: string; ratioMobile?: string; capture?: never };
+
 export interface CarteVitrine {
   /** Le besoin en une phrase : à quoi sert le projet, avant les détails. */
   besoin: string;
-  /** Un seul chiffre sourcé par carte. */
-  chiffre: { valeur: string; libelle: string };
+  /**
+   * Un seul chiffre sourcé par carte. `releve` : sa date (« 14 octobre
+   * 2026 »), quand elle diffère de celle des cinq premières cartes ; la ligne
+   * des relevés sous la vitrine (RELEVE) la reprend.
+   */
+  chiffre: { valeur: string; libelle: string; releve?: string };
   role: string;
   statut: { texte: string; etat?: 'actif' | 'ouvert' | 'eteint' };
   liens: readonly LienPublic[];
-  technos: readonly { src: ImageMetadata; alt: string }[];
+  /** Trois au plus ; `mono` : logo monochrome, inversé la nuit. */
+  technos: readonly { src: ImageMetadata; alt: string; mono?: boolean }[];
   /** Ce qui reste à confirmer sur le nom, en info-bulle de la marque. */
   aConfirmer?: string;
+  /** Le visuel de la carte (projets entrés le 14/10/2026) ; les cinq premières gardent le leur, posé par la page. */
+  visuel?: VisuelCarte;
 }
 
 export const CARTES: Readonly<Record<ProjetVitrine['id'], CarteVitrine>> = {
@@ -127,11 +173,16 @@ export const CARTES: Readonly<Record<ProjetVitrine['id'], CarteVitrine>> = {
       { src: vitest, alt: 'Vitest' },
     ],
   },
+  githealth: CARTE_GITHEALTH,
+  'karl-scraper': CARTE_KARL_SCRAPER,
+  sillage: CARTE_SILLAGE,
+  relais: CARTE_RELAIS,
 };
 
 /**
- * « Aussi » : quatre projets publics sans page dédiée (décision de Charles du
- * 13/10/2026), chacun avec son emplacement de visuel (PRJ-06 à PRJ-10).
+ * « Aussi » : trois projets publics sans page dédiée (décision de Charles du
+ * 13/10/2026), chacun avec son emplacement de visuel (PRJ-07 à PRJ-10).
+ * GitHealth en est sorti le 14/10/2026 pour la vitrine (famille « Outils »).
  * Descriptions tirées de la matière première et des README publics.
  */
 export interface ProjetAussi {
@@ -145,14 +196,6 @@ export interface ProjetAussi {
 }
 
 export const AUSSI: readonly ProjetAussi[] = [
-  {
-    // README : « See which branches still matter — without touching the repository. »
-    id: 'githealth',
-    nom: 'GitHealth',
-    visuel: 'PRJ-06',
-    description: 'Voir quelles branches Git comptent encore, sans toucher au dépôt : une application de bureau qui travaille en local.',
-    liens: [{ href: 'https://github.com/LINDECKER-Charles/App.GitHealth', libelle: 'Le code' }],
-  },
   {
     id: 'life-pixel',
     nom: 'Life Pixel',
@@ -200,12 +243,27 @@ export const CONTRIBUER: readonly { nom: string; texte: string; lien: LienPublic
   },
 ];
 
+/** Le relevé commun des cinq premières cartes. */
+const RELEVE_COMMUN = 'Chiffres au 13 octobre 2026 ; objectifs de Bloodborne Legendary Run au 8 octobre 2026';
+
+/** « A », « A et B », « A, B et C ». */
+const enListe = (noms: readonly string[]) => (noms.length < 2 ? noms.join('') : `${noms.slice(0, -1).join(', ')} et ${noms.at(-1)}`);
+
+/** Les cartes à relevé propre (`chiffre.releve`), regroupées par date, dans l’ordre de la vitrine. */
+const relevesPropres = new Map<string, string[]>();
+for (const projet of VITRINE) {
+  const date = CARTES[projet.id].chiffre.releve;
+  if (date) relevesPropres.set(date, [...(relevesPropres.get(date) ?? []), projet.nom]);
+}
+
 /**
  * La date des chiffres des cartes, affichée sous la vitrine (règle C1 : un
  * chiffre a sa source et sa date). Les patchs de League Of Data Base
- * augmentent toutes les deux semaines : cette ligne change avec eux.
+ * augmentent toutes les deux semaines : cette ligne change avec eux. Une carte
+ * relevée à une autre date le dit par son `chiffre.releve`, que la ligne
+ * reprend : « … ; GitHealth et Relais au 14 octobre 2026. »
  */
-export const RELEVE = 'Chiffres au 13 octobre 2026 ; objectifs de Bloodborne Legendary Run au 8 octobre 2026.';
+export const RELEVE = `${[RELEVE_COMMUN, ...[...relevesPropres].map(([date, noms]) => `${enListe(noms)} au ${date}`)].join(' ; ')}.`;
 
 /** Tous les dépôts publics de Charles, sur son profil GitHub. */
 export const TOUS_LES_DEPOTS = 'https://github.com/LINDECKER-Charles?tab=repositories';

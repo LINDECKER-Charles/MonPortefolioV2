@@ -5,7 +5,7 @@ import EnTeteProjet from '../../src/components/projets/gabarit/EnTeteProjet.astr
 import FicheProjet from '../../src/components/projets/gabarit/FicheProjet.astro';
 import SortieProjet from '../../src/components/projets/gabarit/SortieProjet.astro';
 import SourcesProjet from '../../src/components/projets/gabarit/SourcesProjet.astro';
-import { projetDeLaVitrine, VITRINE } from '../../src/config/projets';
+import { FAMILLES_PROJETS, projetDeLaVitrine, VEDETTE, VITRINE, VITRINE_PAR_FAMILLE } from '../../src/config/projets';
 import { anglaises, DECISIONS, EN_TETE, FICHE, manquantes, PREUVES, RELEVE_ATTEINT, RELEVES } from '../../src/config/pvz-fusion';
 
 /**
@@ -22,18 +22,44 @@ const rendre = async (composant: Parameters<AstroContainer['renderToString']>[0]
 };
 
 describe('la vitrine, source des noms canoniques', () => {
-  it('range les cinq projets dans l’ordre de ce qu’ils prouvent', () => {
-    expect(VITRINE.map((projet) => projet.id)).toEqual(['pvz', 'league', 'omnicard', 'bloodborne', 'gup']);
+  it('range les projets famille par famille, dans l’ordre de ce qu’ils prouvent (décision du 14/10/2026)', () => {
+    expect(VITRINE.map((projet) => projet.id)).toEqual(['pvz', 'omnicard', 'bloodborne', 'league', 'gup', 'githealth', 'karl-scraper', 'sillage', 'relais']);
     expect(VITRINE[0]).toMatchObject({ nom: 'PvZ Fusion, pôle francophone', href: '/projets/pvz-fusion', preuve: 'Une équipe formée et menée' });
+    expect(VEDETTE).toBe('pvz');
   });
 
-  it('donne le rang et les voisins d’un projet, sans boucler', () => {
+  it('nomme quatre familles en français, dans l’ordre de la page', () => {
+    expect(FAMILLES_PROJETS.map(({ id, titre }) => [id, titre])).toEqual([
+      ['equipe', 'Lead et équipe'],
+      ['jeu', 'Jeu vidéo'],
+      ['outils', 'Outils'],
+      ['ia', 'IA'],
+    ]);
+  });
+
+  it('garde chaque famille d’un seul tenant, dans l’ordre des familles, sans famille vide', () => {
+    // Les familles se suivent : jamais un projet d’une famille entre deux d’une autre.
+    const suite = VITRINE.map((projet) => projet.famille).filter((famille, i, toutes) => i === 0 || famille !== toutes[i - 1]);
+    expect(suite).toEqual(FAMILLES_PROJETS.map((famille) => famille.id));
+    for (const famille of VITRINE_PAR_FAMILLE) expect(famille.projets.length, famille.id).toBeGreaterThan(0);
+    expect(VITRINE_PAR_FAMILLE.flatMap((famille) => famille.projets)).toEqual([...VITRINE]);
+    expect(VITRINE.find((projet) => projet.id === VEDETTE)?.famille).toBe(FAMILLES_PROJETS[0].id);
+  });
+
+  it('donne des noms, des adresses et des étiquettes uniques', () => {
+    for (const cle of ['id', 'nom', 'href', 'preuve'] as const) expect(new Set(VITRINE.map((projet) => projet[cle])).size, cle).toBe(VITRINE.length);
+  });
+
+  it('donne le rang, la famille et les voisins d’un projet, d’une famille à l’autre, sans boucler', () => {
     const premier = projetDeLaVitrine('pvz');
     expect(premier.rang).toBe(1);
+    expect(premier.famille).toEqual({ id: 'equipe', titre: 'Lead et équipe' });
     expect(premier.precedent).toBeUndefined();
-    expect(premier.suivant?.id).toBe('league');
-    const dernier = projetDeLaVitrine('gup');
-    expect(dernier.precedent?.id).toBe('bloodborne');
+    expect(premier.suivant?.id).toBe('omnicard');
+    expect(projetDeLaVitrine('gup')).toMatchObject({ rang: 5, famille: { id: 'outils' }, precedent: { id: 'league' }, suivant: { id: 'githealth' } });
+    const dernier = projetDeLaVitrine(VITRINE[VITRINE.length - 1].id);
+    expect(dernier.rang).toBe(VITRINE.length);
+    expect(dernier.precedent?.id).toBe(VITRINE[VITRINE.length - 2].id);
     expect(dernier.suivant).toBeUndefined();
     expect(() => projetDeLaVitrine('inconnu' as never)).toThrow(/VITRINE/);
   });
@@ -120,7 +146,7 @@ describe('DecisionsProjet', () => {
 describe('SortieProjet', () => {
   it('mène au projet suivant de la vitrine, à la vitrine et à « Discutons »', async () => {
     const html = await rendre(SortieProjet, { projet: 'pvz' }, { default: '<p>Ce que j’en retiens.</p>' });
-    expect(html).toMatch(/<a class="voisin[^"]*" href="\/projets\/league-of-database"/);
+    expect(html).toMatch(/<a class="voisin[^"]*" href="\/projets\/omnicard"/);
     expect(html).toContain('Projet suivant');
     expect(html).not.toContain('Projet précédent');
     expect(html).toMatch(/href="\/projets"/);
@@ -128,15 +154,15 @@ describe('SortieProjet', () => {
   });
 
   it('propose le précédent et le suivant au milieu de la vitrine, chacun avec la flèche de son sens', async () => {
-    const html = await rendre(SortieProjet, { projet: 'omnicard' });
-    expect(html).toContain('href="/projets/bloodborne-legendary-run"');
+    const html = await rendre(SortieProjet, { projet: 'bloodborne' });
     expect(html).toContain('href="/projets/league-of-database"');
-    expect(html).toMatch(/href="\/projets\/league-of-database"[\s\S]*?<span class="fleche" aria-hidden="true"[^>]*>←\s<\/span>League Of Data Base/);
-    expect(html).toMatch(/Bloodborne Legendary Run<span class="fleche" aria-hidden="true"[^>]*>\s→<\/span>/);
+    expect(html).toContain('href="/projets/omnicard"');
+    expect(html).toMatch(/href="\/projets\/omnicard"[\s\S]*?<span class="fleche" aria-hidden="true"[^>]*>←\s<\/span>Omnicard/);
+    expect(html).toMatch(/League Of Data Base<span class="fleche" aria-hidden="true"[^>]*>\s→<\/span>/);
   });
 
   it('mène le dernier projet de la vitrine aux autres projets publics (« Aussi »)', async () => {
-    const html = await rendre(SortieProjet, { projet: 'gup' });
+    const html = await rendre(SortieProjet, { projet: VITRINE[VITRINE.length - 1].id });
     expect(html).not.toContain('Projet suivant');
     expect(html).toMatch(/<a class="voisin[^"]*" href="\/projets#aussi"/);
     expect(html).toContain('Les autres projets publics');

@@ -297,7 +297,7 @@ test('la sortie : projets voisins dans l’ordre de la vitrine, « Discutons » 
   await expect(discutons).toHaveAttribute('data-umami-event', 'contact-page');
   await expect(discutons).toHaveAttribute('data-umami-event-emplacement', 'discutons');
   await expect(sortie.getByRole('link', { name: /Projet suivant\s+Bloodborne Legendary Run/ })).toHaveAttribute('href', '/projets/bloodborne-legendary-run');
-  await expect(sortie.getByRole('link', { name: /Projet précédent\s+League Of Data Base/ })).toHaveAttribute('href', '/projets/league-of-database');
+  await expect(sortie.getByRole('link', { name: /Projet précédent\s+PvZ Fusion, pôle francophone/ })).toHaveAttribute('href', '/projets/pvz-fusion');
   await expect(sortie.locator('[data-citation]')).toHaveText(/Le projet qui m’a fait le plus apprendre/);
 });
 
