@@ -881,6 +881,36 @@ async fn catalog_scopes_and_annotations_describe_actual_blog_effects() {
             assert_eq!(tool["annotations"]["readOnlyHint"], true);
         }
     }
+
+    // Le préréglage « Rédaction » du backoffice : tout lire, écrire des brouillons, rien publier.
+    let writer = blog_token(&fixture, &["blog:read", "blog:write"]);
+    let response = fixture
+        .app
+        .clone()
+        .oneshot(modern_request(&writer, "tools/list", json!({})))
+        .await
+        .unwrap();
+    let result = body(response).await;
+    let mut names: Vec<&str> = result["result"]["tools"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|tool| tool["name"].as_str().unwrap())
+        .collect();
+    names.sort_unstable();
+    assert_eq!(
+        names,
+        [
+            "blog_create_post",
+            "blog_get_post",
+            "blog_list_media",
+            "blog_list_posts",
+            "blog_preview_post",
+            "blog_seo_audit",
+            "blog_update_post",
+            "blog_upload_media",
+        ]
+    );
 }
 
 #[tokio::test]
