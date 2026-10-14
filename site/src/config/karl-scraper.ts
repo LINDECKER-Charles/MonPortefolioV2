@@ -36,7 +36,7 @@ export const CARTE: CarteVitrine = {
   chiffre: { valeur: '18', libelle: 'actions et 14 déclencheurs pour enchaîner les gestes d’un ticket', releve: '14 octobre 2026' },
   role: 'Conçu et développé seul',
   // Sourcé : le service tourne sur mon poste (127.0.0.1:5177, relevé le 14/10/2026). L’usage
-  // quotidien attend la réponse de Charles (K3) : la carte n’a pas de marque par champ.
+  // quotidien attend la réponse de Charles (Q72) : la carte n’a pas de marque par champ.
   statut: { texte: 'Outil personnel, en service sur mon poste' },
   liens: [],
   // backend/Directory.Build.props (net10.0) ; frontend Angular 22 ; EF Core et SQLite (Directory.Packages.props).
@@ -62,7 +62,7 @@ export const CARTE: CarteVitrine = {
 /* ------------------------------------------------------------------ */
 
 export const EN_TETE = {
-  // Second vers propre au projet (aucun agent n’ouvre l’outil source), pas la formule de Sillage (K5).
+  // Second vers propre au projet (aucun agent n’ouvre l’outil source), pas la formule de Sillage (Q96).
   titre: ['Automatiser le chemin d’un ticket.', 'Sans ouvrir l’outil aux agents.'],
   chapeau:
     'Mes tâches vivent dans un outil de gestion de tâches en ligne. Karl Scraper en tient une copie locale, la donne à lire à des agents IA et enchaîne les gestes d’une tâche, du ticket à sa pull request, sans leur ouvrir l’outil source. Je l’ai conçu et développé seul.',
@@ -104,10 +104,10 @@ export const FICHE: DonneesFiche = {
   role: 'Conception et développement',
   periode: 'Depuis fin août 2026',
   equipe: 'Projet personnel, seul',
-  // Le service tourne sur mon poste (relevé le 14/10/2026) ; « en usage quotidien » attend K3.
+  // Le service tourne sur mon poste (relevé le 14/10/2026) ; « en usage quotidien » attend Q72.
   statut: { texte: 'Outil personnel, en service sur mon poste' },
   liens: [],
-  aConfirmer: { equipe: 'Présentation en projet personnel à confirmer par Charles (K1)' },
+  aConfirmer: { equipe: 'Présentation en projet personnel à confirmer par Charles (Q92)' },
 };
 
 /** Les sections du corps : sommaire de l’en-tête et navigation de page. */
@@ -167,7 +167,7 @@ export interface EtapeChaine {
  * L’agent qui prépare ne passe pas par le serveur MCP : le service recopie
  * le cache dans le dossier de son lancement (TicketCorpus) et il n’a que
  * Read, Glob et Grep (docs/invariants/agents.md:84-90, preparation.md:167-168).
- * Les acteurs disent ce que l’outil permet, pas mon usage (K3).
+ * Les acteurs disent ce que l’outil permet, pas mon usage (Q94).
  */
 export const CHAINE: readonly EtapeChaine[] = [
   { geste: 'Synchroniser', acteur: 'Le service', texte: 'Relit mes tâches assignées et scelle une observation locale.', acces: 'lecture' },

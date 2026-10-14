@@ -60,7 +60,7 @@ test('la fiche technique : sept cases, statut à forme et mot, dépôt privé sa
   const fiche = page.getByRole('group', { name: 'Fiche du projet' });
   await expect(fiche.locator('dt')).toHaveText(['Besoin', 'Ma part', 'Rôle', 'Période', 'Équipe', 'Statut', 'Liens publics']);
   // Seul ce qui est sourcé s’affiche sans marque : le service tourne sur le poste ; la présentation
-  // en projet personnel attend la réponse de Charles (K1).
+  // en projet personnel attend la réponse de Charles (Q92).
   await expect(fiche.locator('.statut')).toHaveText('Outil personnel, en service sur mon poste');
   await expect(fiche.locator('.fiche-projet__case--equipe .a-confirmer')).toHaveText('à confirmer');
   await expect(fiche.locator('.fiche-projet__case--part')).toContainText('282 commits');
