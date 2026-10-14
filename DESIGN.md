@@ -363,7 +363,10 @@ Chaque composant est documenté en tête de son fichier.
   publier. Dans l’atelier, la barre de l’article (`blog/BarreArticle.astro`) est collante :
   Enregistrer et Aperçu restent à portée. Les images de la rédaction s’affichent comme dans
   l’article publié : taille de leurs attributs, au plus la colonne et 800 px de haut, sur la
-  plaque claire des logos.
+  plaque claire des logos. La rubrique Stockage (`RubriqueStockage.astro`) est une page de
+  consultation sans zone éclairée : deux cartes (le disque, la base en barre empilée légendée,
+  parts distinguées par la valeur et la trame), puis des fiches à filets du plus lourd au plus
+  léger ; tailles en base 1000 comme le Finder (`lib/octets.ts`).
 
 ### Motion
 
