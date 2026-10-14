@@ -52,16 +52,19 @@ export const PARTAGE_DEFAUT: ImagePartage = {
   alt: `${NOM}, architecte logiciel. ${ACCROCHE}`,
 };
 
+/** « Encadrer des agents IA » → « encadrer des agents IA » : seule l’initiale change, un sigle reste en capitales. */
+const minusculeInitiale = (texte: string) => texte.charAt(0).toLowerCase() + texte.slice(1);
+
 /** Une déclinaison de GLO-08 : `public/og/GLO-08-<page>_1200x630.png`. */
 function declinaison(chemin: string, titre: string, visuel: VisuelPartage, options: { surtitre?: string; etiquette?: string } = {}): ImagePartage {
   const page = chemin.slice(1).replaceAll('/', '-');
-  const description = (options.etiquette ? `${titre}\u00a0: ${options.etiquette.toLowerCase()}` : titre).replace(/\.$/, '');
+  const description = (options.etiquette ? `${titre}\u00a0: ${minusculeInitiale(options.etiquette)}` : titre).replace(/\.$/, '');
   return { chemin, fichier: `public/og/GLO-08-${page}_1200x630.png`, titre, visuel, alt: `${NOM}, ${description}.`, ...options };
 }
 
 export const IMAGES_PARTAGE: readonly ImagePartage[] = [
   PARTAGE_DEFAUT,
-  declinaison('/projets', 'Projets', 'lanterne', { surtitre: 'Une équipe, des systèmes en production, des outils publiés' }),
+  declinaison('/projets', 'Projets', 'lanterne', { surtitre: 'Une équipe, des systèmes en production, des outils publiés, des agents IA encadrés' }),
   ...VITRINE.map((projet) => declinaison(projet.href, projet.nom, 'lanterne', { surtitre: 'Projet', etiquette: projet.preuve })),
   declinaison('/parcours', 'Parcours', 'parcours'),
   declinaison('/parcours/professionnel', 'Parcours professionnel', 'parcours', { surtitre: 'Parcours' }),

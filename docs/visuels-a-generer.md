@@ -9,7 +9,7 @@ Tu produis **uniquement les images générées (IMG)** de la refonte du portfoli
 **Ce document est la seule référence de la série.** Il porte les retours de Charles sur la planche d’essai du 13 octobre 2026 (moins « image générée », une vraie version de nuit) et remplace toute consigne antérieure. Lis-le de haut en bas avant la première image.
 
 - **Deux masters par image**, dessinés au même cadrage au pixel près, dans les trois mêmes couleurs de clé : le jour `<ID>.png`, puis la nuit `<ID>.nuit.png`, faite **en édition depuis le master de jour** (section « Version de nuit »). Le site affiche l’un ou l’autre selon le thème.
-- Le registre recense **176 emplacements** (122 « socle », 54 « élargi »), dont **74 images à générer** : 0 restent à livrer, dont 0 « socle ».
+- Le registre recense **176 emplacements** (123 « socle », 53 « élargi »), dont **74 images à générer** : 0 restent à livrer, dont 0 « socle ».
 - **Socle** : posé sur une page du site, qui affiche un cadre hachuré tant que le fichier manque. À produire d’abord.
 - **Élargi** : aucune page ne l’attend encore ; chaque fiche dit pourquoi. Peut suivre.
 - **Le prompt de jour** se rédige en anglais : le bloc de style, la phrase de fond, puis la traduction des seuls champs **Sujet** et **Composition** de la fiche, le calage de la lanterne quand la fiche la place, enfin le prompt négatif. Le champ **Emplacement** donne le contexte et peut nommer une marque ou un jeu : il ne va jamais dans un prompt.
@@ -135,7 +135,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 | Scènes du récit | ACC-03, ACC-04, ACC-05, ACC-07, ACC-08, ACC-09, ACC-11, ACC-16 | trois quarts en léger surplomb ; exceptions : ACC-04 vue de dessus (une table), ACC-08 de face (un mur droit) | aux deux tiers de la hauteur (aucun en vue de dessus) | trait principal d’environ 3 px à 1 800 px de large, hachures d’environ 1 px | posée dans la scène, à la position de la fiche ; contrainte dure pour les scènes animées |
 | Cartes de la méthode | ACC-18, ACC-19, ACC-20 | vue frontale, légère contre-plongée | au tiers bas | trait principal d’environ 4 px à 1 200 px de large, hachures larges : lisible à 165 px | au premier plan, à la position de la fiche (contrainte dure) |
 | Le pôle, en trois scènes | ACC-21, ACC-22, ACC-23 | trois quarts, à hauteur d’épaule ; même décor et mêmes silhouettes d’une scène à l’autre | à mi-hauteur | trait principal d’environ 4 px à 1 800 px de large, peu de hachures : lisible à 300 px | à la position de la fiche (contrainte dure) |
-| Vitrine des projets | PRJ-01, PRJ-02, PRJ-06, PRJ-07, PRJ-08, PRJ-09, PRJ-10, PRJ-11, PRJ-12 | de face en légère plongée | aux deux tiers de la hauteur | trait principal d’environ 3 px à 1 600 px de large, hachures d’environ 1 px ; plus épais pour les vignettes « Aussi » (lisibles à 300 px) | posée bas dans le cadre, à la position de la fiche |
+| Vitrine des projets | PRJ-01, PRJ-02, PRJ-06, PRJ-07, PRJ-08, PRJ-09, PRJ-10, PRJ-11, PRJ-12 | de face en légère plongée | aux deux tiers de la hauteur | trait principal d’environ 3 px à 1 600 px de large, hachures d’environ 1 px ; plus épais pour les vignettes des projets archivés (lisibles à 280 px) | posée bas dans le cadre, à la position de la fiche |
 | PvZ Fusion, scènes | PVZ-01, PVZ-02a, PVZ-02b, PVZ-02c, PVZ-09, PVZ-10 | trois quarts en légère plongée ; exception : PVZ-09 de profil | à mi-hauteur | trait principal d’environ 3 px à 1 600 px de large | sur la table, à la position de la fiche |
 | Vignettes à motif unique | PVZ-04, PVZ-05, PVZ-06, PVZ-07, PVZ-08, PVZ-11 | trois quarts, motif centré | aucun : fond transparent | trait épais, environ 8 px à 480 px de large, peu de hachures : lisible à 96 px | petite, à côté du motif |
 | Pages de projet | LOD-02, LOD-04, OMN-01, BLR-01, BLR-03, BLR-04, BLR-05, GUP-01, GUP-03 | trois quarts en légère plongée ; exceptions : LOD-02 et BLR-04 de face, LOD-04 en coupe horizontale | aux deux tiers de la hauteur | trait principal d’environ 3 px à 1 600 px de large | à la position de la fiche |
@@ -174,7 +174,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 |---|---|---|---|
 | Identité et éléments globaux | 13 | 6 | IMG 0 · SVG 11 · FIG 0 · CAP 0 · PHO 0 · OG 2 |
 | Accueil | 23 | 17 | IMG 15 · SVG 3 · FIG 3 · CAP 1 · PHO 1 · OG 0 |
-| Projets (vitrine) | 12 | 10 | IMG 10 · SVG 0 · FIG 0 · CAP 2 · PHO 0 · OG 0 |
+| Projets (vitrine) | 12 | 11 | IMG 10 · SVG 0 · FIG 0 · CAP 2 · PHO 0 · OG 0 |
 | PvZ Fusion | 26 | 17 | IMG 13 · SVG 0 · FIG 6 · CAP 6 · PHO 0 · OG 1 |
 | League Of Data Base | 24 | 16 | IMG 3 · SVG 9 · FIG 6 · CAP 6 · PHO 0 · OG 0 |
 | Omnicard | 13 | 5 | IMG 2 · SVG 2 · FIG 3 · CAP 5 · PHO 0 · OG 1 |
@@ -184,7 +184,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 | Contact | 4 | 4 | IMG 3 · SVG 0 · FIG 0 · CAP 0 · PHO 1 · OG 0 |
 | Blog | 2 | 1 | IMG 2 · SVG 0 · FIG 0 · CAP 0 · PHO 0 · OG 0 |
 | États : 404 et hors ligne | 3 | 2 | IMG 1 · SVG 1 · FIG 0 · CAP 0 · PHO 1 · OG 0 |
-| **Total** | **176** | **122** | IMG 79 · SVG 37 · FIG 25 · CAP 26 · PHO 4 · OG 5 |
+| **Total** | **176** | **123** | IMG 79 · SVG 37 · FIG 25 · CAP 26 · PHO 4 · OG 5 |
 
 ## Partie 1 — Commande Codex : les images à générer
 
@@ -547,67 +547,67 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image) · **Série** : Vitrine des projets
 - **Produit par** : Codex
-- **Emplacement** : `/projets` · « Aussi », GitHealth _(contexte : ne pas le recopier dans un prompt)_
-- **Posé dans** : `src/config/vitrine.ts`, `src/components/vitrine/RangeeAussi.astro`
+- **Emplacement** : `/projets` · Carte GitHealth (famille « Outils »), en attendant sa capture _(contexte : ne pas le recopier dans un prompt)_
+- **Posé dans** : `src/config/githealth.ts`, `src/pages/projets/index.astro`
 - **Sujet** : Décider quoi faire d’une branche
 - **Composition (pour le prompt)** : Trois branches d’un même tronc, dessinées comme des rameaux stylisés partant d’une racine commune, chacune terminée par un petit picto de verdict sans texte : un sceau plein (garder), une loupe (revoir), un balai (nettoyer) ; la lanterne, posée au pied du tronc (vers 50 % de la largeur et 84 % de la hauteur), éclaire la branche à revoir ; fond en réserve, aucun personnage
 - **Lanterne : 50 % × 84 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = tronc, branches et pictos de verdict ; lumière (#FF0000) = flamme et branche à revoir · **Fond** : transparent, de jour comme de nuit
-- **Cadrage (pour vérifier)** : Vignette de la rangée « Aussi », 4:3, environ 300 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.
+- **Cadrage (pour vérifier)** : Dans le panneau de la carte, posé dans l’acte de veille : entier (contenu, fond transparent, rien de rogné), environ 300 px de large et centré dans le panneau portrait sur ordinateur, pleine largeur en 4:3 sur mobile ; le sujet se lit à ces deux tailles.
 - **Format** : 4:3, 1200 × 900
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-06_1200x900.webp`
 - **Masters** : jour `design/assets/visuels/projets/PRJ-06.png` ; nuit `design/assets/visuels/projets/PRJ-06.nuit.png`, en édition depuis le jour, même cadrage au pixel près
 - **Rendus** : `npm run visuels:rendre PRJ-06` écrit le jour `PRJ-06_1200x900.webp` et la nuit `PRJ-06_1200x900.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Trois branches d’un même tronc, chacune avec son verdict : garder, revoir ou nettoyer. »
-- **Note** : Posé dans la rangée « Aussi » de la vitrine (config/vitrine.ts, components/vitrine/RangeeAussi.astro) : décoratif, le texte voisin dit la même chose.
+- **Note** : Dessiné pour la rangée « Aussi », il suit GitHealth dans la vitrine le 14/10/2026 : posé par la carte du projet (CARTE.visuel de config/githealth.ts, rendu par pages/projets/index.astro), décoratif, le nom de la carte dit le reste. Une capture réelle de l’application le remplacera.
 
 #### PRJ-07 · Une animation pixel art dans une page
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image) · **Série** : Vitrine des projets
 - **Produit par** : Codex
-- **Emplacement** : `/projets` · « Aussi », Life Pixel _(contexte : ne pas le recopier dans un prompt)_
-- **Posé dans** : `src/config/vitrine.ts`, `src/components/vitrine/RangeeAussi.astro`
+- **Emplacement** : `/projets` · Projets archivés, Life Pixel _(contexte : ne pas le recopier dans un prompt)_
+- **Posé dans** : `src/config/projets.ts`, `src/components/vitrine/ArchivesProjets.astro`
 - **Sujet** : Une animation pixel art dans une page
 - **Composition (pour le prompt)** : Une grille de pixel art posée à plat sur une table, une petite mascotte ronde et générique (jamais un personnage connu) dessinée en trois images successives, superposées en pelure d’oignon ; un trait de lumière mène vers une fenêtre de navigateur vide de texte où la même mascotte, plus grande, s’anime ; la lanterne posée à gauche de la grille (vers 20 % de la largeur et 66 % de la hauteur) l’éclaire
 - **Lanterne : 20 % × 66 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, grille et fenêtre ; lumière (#FF0000) = flamme, grille éclairée et trait de lumière · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Vignette de la rangée « Aussi », 4:3, environ 300 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.
+- **Cadrage (pour vérifier)** : Vignette du volet des projets archivés, 4:3, environ 280 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.
 - **Format** : 4:3
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-07_1600x1200.webp`
 - **Masters** : jour `design/assets/visuels/projets/PRJ-07.png` ; nuit `design/assets/visuels/projets/PRJ-07.nuit.png`, en édition depuis le jour, même cadrage au pixel près
 - **Rendus** : `npm run visuels:rendre PRJ-07` écrit le jour `PRJ-07_1600x1200.webp` et la nuit `PRJ-07_1600x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une mascotte en pixel art dessinée image par image, puis animée dans une page web. »
-- **Note** : Posé dans la rangée « Aussi » de la vitrine (config/vitrine.ts, components/vitrine/RangeeAussi.astro) : décoratif, le texte voisin dit la même chose.
+- **Note** : Dessiné pour la rangée « Aussi », il suit le projet dans le volet des projets archivés le 14/10/2026 (PROJETS_ARCHIVES de config/projets.ts, rendu par components/vitrine/ArchivesProjets.astro) : décoratif, le texte voisin dit la même chose.
 
 #### PRJ-08 · Une image, des variantes
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image) · **Série** : Vitrine des projets
 - **Produit par** : Codex
-- **Emplacement** : `/projets` · « Aussi », img-convertor _(contexte : ne pas le recopier dans un prompt)_
-- **Posé dans** : `src/config/vitrine.ts`, `src/components/vitrine/RangeeAussi.astro`
+- **Emplacement** : `/projets` · Projets archivés, img-convertor _(contexte : ne pas le recopier dans un prompt)_
+- **Posé dans** : `src/config/projets.ts`, `src/components/vitrine/ArchivesProjets.astro`
 - **Sujet** : Une image, des variantes
 - **Composition (pour le prompt)** : Une grande image encadrée (un paysage simple) à gauche, d’où partent quatre copies de la même image, de largeurs décroissantes, alignées en escalier vers la droite comme sur des écrans de tailles différentes (grand écran, portable, tablette, téléphone), sans poids ni chiffre ; la lanterne posée devant l’original (vers 22 % de la largeur et 78 % de la hauteur) l’éclaire
 - **Lanterne : 22 % × 78 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = cadres et écrans ; lumière (#FF0000) = flamme et image originale · **Fond** : transparent, de jour comme de nuit
-- **Cadrage (pour vérifier)** : Vignette de la rangée « Aussi », 4:3, environ 300 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.
+- **Cadrage (pour vérifier)** : Vignette du volet des projets archivés, 4:3, environ 280 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.
 - **Format** : 4:3
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-08_1600x1200.webp`
 - **Masters** : jour `design/assets/visuels/projets/PRJ-08.png` ; nuit `design/assets/visuels/projets/PRJ-08.nuit.png`, en édition depuis le jour, même cadrage au pixel près
 - **Rendus** : `npm run visuels:rendre PRJ-08` écrit le jour `PRJ-08_1600x1200.webp` et la nuit `PRJ-08_1600x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une image et ses quatre déclinaisons, de la plus large à la plus étroite. »
-- **Note** : Posé dans la rangée « Aussi » de la vitrine (config/vitrine.ts, components/vitrine/RangeeAussi.astro) : décoratif, le texte voisin dit la même chose.
+- **Note** : Dessiné pour la rangée « Aussi », il suit le projet dans le volet des projets archivés le 14/10/2026 (PROJETS_ARCHIVES de config/projets.ts, rendu par components/vitrine/ArchivesProjets.astro) : décoratif, le texte voisin dit la même chose.
 
 #### PRJ-09 · La veille qui devient lecture
 
 - **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Vitrine des projets
 - **Produit par** : Codex
-- **Emplacement** : `/projets` · « Aussi », MaVeille (si le site revient) _(contexte : ne pas le recopier dans un prompt)_
-- **Élargi, non posé** : MaVeille n’est pas dans la rangée « Aussi » tant que son site n’est pas de retour en ligne.
+- **Emplacement** : `/projets` · Projets archivés, MaVeille (si le site revient) _(contexte : ne pas le recopier dans un prompt)_
+- **Élargi, non posé** : MaVeille n’est ni dans la vitrine ni dans les projets archivés tant que son site n’est pas de retour en ligne.
 - **Sujet** : La veille qui devient lecture
 - **Composition (pour le prompt)** : Sur une table vue de trois quarts en légère plongée, une pile de rapports imprimés à gauche, aux tranches marquées de simples traits ; à droite, une seule page reliée, ouverte, dont la marge porte un sommaire en traits courts ; un ruban de lumière relie le haut de la pile à la page ; la lanterne posée derrière la page (vers 66 % de la largeur et 40 % de la hauteur) l’éclaire ; aucun chiffre, aucune date ni lettre lisible
 - **Lanterne : 66 % × 40 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = table, rapports et page ; lumière (#FF0000) = flamme, ruban de lumière et page ouverte · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Vignette de la rangée « Aussi », 4:3, environ 300 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.
+- **Cadrage (pour vérifier)** : Vignette du volet des projets archivés, 4:3, environ 280 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.
 - **Format** : 4:3
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-09_1600x1200.webp`
 - **Masters** : jour `design/assets/visuels/projets/PRJ-09.png` ; nuit `design/assets/visuels/projets/PRJ-09.nuit.png`, en édition depuis le jour, même cadrage au pixel près
@@ -618,19 +618,19 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 - **Priorité** : socle · **Méthode** : IMG, à générer (image) · **Série** : Vitrine des projets
 - **Produit par** : Codex
-- **Emplacement** : `/projets` · « Aussi », Shreksophone _(contexte : ne pas le recopier dans un prompt)_
-- **Posé dans** : `src/config/vitrine.ts`, `src/components/vitrine/RangeeAussi.astro`
+- **Emplacement** : `/projets` · Projets archivés, Shreksophone _(contexte : ne pas le recopier dans un prompt)_
+- **Posé dans** : `src/config/projets.ts`, `src/components/vitrine/ArchivesProjets.astro`
 - **Sujet** : L’absurde assumé
 - **Composition (pour le prompt)** : Une fenêtre de navigateur vide de texte, vue de face ; un saxophone en surgit à moitié, pavillon vers le haut, comme s’il crevait l’interface ; des notes de musique débordent du cadre et s’envolent ; absurde assumé, même gravure que le reste de la série ; aucun personnage ; la lanterne posée au pied de la fenêtre (vers 64 % de la largeur et 82 % de la hauteur) éclaire le pavillon
 - **Lanterne : 64 % × 82 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = fenêtre, saxophone et notes ; lumière (#FF0000) = flamme et pavillon éclairé · **Fond** : transparent, de jour comme de nuit
-- **Cadrage (pour vérifier)** : Vignette de la rangée « Aussi », 4:3, environ 300 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.
-- **Format** : 4:3, 1600 × 1200 (comme le reste de la rangée « Aussi »)
+- **Cadrage (pour vérifier)** : Vignette du volet des projets archivés, 4:3, environ 280 px de large sur ordinateur et 45 % de la largeur sur mobile : le sujet se lit à cette taille.
+- **Format** : 4:3, 1600 × 1200 (comme les autres vignettes des projets archivés)
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-10_1600x1200.webp`
 - **Masters** : jour `design/assets/visuels/projets/PRJ-10.png` ; nuit `design/assets/visuels/projets/PRJ-10.nuit.png`, en édition depuis le jour, même cadrage au pixel près
 - **Rendus** : `npm run visuels:rendre PRJ-10` écrit le jour `PRJ-10_1600x1200.webp` et la nuit `PRJ-10_1600x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un saxophone qui surgit d’une fenêtre de navigateur, des notes qui débordent du cadre. »
-- **Note** : Posé dans la rangée « Aussi » de la vitrine (config/vitrine.ts, components/vitrine/RangeeAussi.astro) : décoratif, le texte voisin dit la même chose. Passé de 1:1 à 4:3 pour s’aligner sur les trois autres.
+- **Note** : Dessiné pour la rangée « Aussi », il suit le projet dans le volet des projets archivés le 14/10/2026 (PROJETS_ARCHIVES de config/projets.ts, rendu par components/vitrine/ArchivesProjets.astro) : décoratif, le texte voisin dit la même chose. Passé de 1:1 à 4:3 pour s’aligner sur les trois autres.
 
 #### PRJ-11 · Les portes ouvertes de l’open source
 
@@ -652,21 +652,21 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 #### PRJ-12 · La version précédente
 
-- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Vitrine des projets
+- **Priorité** : socle · **Méthode** : IMG, à générer (image) · **Série** : Vitrine des projets
 - **Produit par** : Codex
-- **Emplacement** : `/projets` · Archives (quand elles existent) _(contexte : ne pas le recopier dans un prompt)_
-- **Élargi, non posé** : le volet des projets archivés est vide ; il reste une simple ligne tant qu’il ne contient aucun projet.
+- **Emplacement** : `/projets` · Projets archivés, première case du volet _(contexte : ne pas le recopier dans un prompt)_
+- **Posé dans** : `src/components/vitrine/ArchivesProjets.astro`
 - **Sujet** : La version précédente
 - **Composition (pour le prompt)** : Une étagère vue de face, en légère plongée : à gauche, un livre plus ancien, fermé, debout, au dos usé et sans titre ; à droite, posé à plat sur la tablette, un manuel neuf ouvert ; la lanterne posée entre les deux (vers 50 % de la largeur et 58 % de la hauteur) éclaire le dos de l’ancien livre ; aucun titre, aucune lettre
 - **Lanterne : 50 % × 58 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
 - **Couleurs de clé, le jour** : encre (#000000) = traits, contours et hachures d’ombre ; aplat (#FFFFFF) = étagère et livres ; lumière (#FF0000) = flamme et dos de l’ancien livre · **Fond** : rempli d’aplat
-- **Cadrage (pour vérifier)** : Vignette 4:3 d’environ 300 px de large : les deux livres se lisent à cette taille.
+- **Cadrage (pour vérifier)** : Première case du volet des projets archivés, 4:3, environ 280 px de large sur ordinateur et 45 % de la largeur sur mobile : les deux livres se lisent à cette taille.
 - **Format** : 4:3
 - **Fichier attendu** : `site/src/assets/visuels/projets/PRJ-12_1600x1200.webp`
 - **Masters** : jour `design/assets/visuels/projets/PRJ-12.png` ; nuit `design/assets/visuels/projets/PRJ-12.nuit.png`, en édition depuis le jour, même cadrage au pixel près
 - **Rendus** : `npm run visuels:rendre PRJ-12` écrit le jour `PRJ-12_1600x1200.webp` et la nuit `PRJ-12_1600x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un livre ancien debout sur une étagère, à côté d’un manuel neuf ouvert, éclairé par une lanterne. »
-- **Note** : Reprend ILL-10 de docs/assets-complementaires.md (direction précédente).
+- **Note** : Reprend ILL-10 de docs/assets-complementaires.md (direction précédente). Posé le 14/10/2026 en tête du volet des projets archivés, qui reçoit Life Pixel, img-convertor et Shreksophone : décoratif, à la place d’une carte.
 
 #### PVZ-01 · Traduction et équipe
 
@@ -2183,10 +2183,10 @@ Fiches pour mémoire : rien à produire.
 - **Posé dans** : `src/lib/partage.ts`, `src/layouts/Base.astro`
 - **Sujet** : Gabarit de GLO-07 avec le visuel de la page : Projets, chaque projet, Parcours et ses trois pages, Contact, Blog, Mentions légales
 - **Composition** : Titre à gauche, visuel à droite, emblème en bas
-- **Format** : 1200 × 630 (×13)
-- **Fichiers attendus** (13) : `site/public/og/GLO-08-projets_1200x630.png` (alt « Charles Lindecker, Projets. ») ; `site/public/og/GLO-08-projets-pvz-fusion_1200x630.png` (alt « Charles Lindecker, PvZ Fusion, pôle francophone : une équipe formée et menée. ») ; `site/public/og/GLO-08-projets-league-of-database_1200x630.png` (alt « Charles Lindecker, League Of Data Base : un système en production. ») ; `site/public/og/GLO-08-projets-omnicard_1200x630.png` (alt « Charles Lindecker, Omnicard : réinventer. ») ; `site/public/og/GLO-08-projets-bloodborne-legendary-run_1200x630.png` (alt « Charles Lindecker, Bloodborne Legendary Run : un produit de bout en bout. ») ; `site/public/og/GLO-08-projets-gup_1200x630.png` (alt « Charles Lindecker, gup : un outil open source. ») ; `site/public/og/GLO-08-parcours_1200x630.png` (alt « Charles Lindecker, Parcours. ») ; `site/public/og/GLO-08-parcours-professionnel_1200x630.png` (alt « Charles Lindecker, Parcours professionnel. ») ; `site/public/og/GLO-08-parcours-competences_1200x630.png` (alt « Charles Lindecker, Compétences. ») ; `site/public/og/GLO-08-parcours-formation_1200x630.png` (alt « Charles Lindecker, Formation et certifications. ») ; `site/public/og/GLO-08-contact_1200x630.png` (alt « Charles Lindecker, Discutons. ») ; `site/public/og/GLO-08-blog_1200x630.png` (alt « Charles Lindecker, Blog. ») ; `site/public/og/GLO-08-mentions-legales_1200x630.png` (alt « Charles Lindecker, Mentions légales. »)
+- **Format** : 1200 × 630 (×17)
+- **Fichiers attendus** (17) : `site/public/og/GLO-08-projets_1200x630.png` (alt « Charles Lindecker, Projets. ») ; `site/public/og/GLO-08-projets-pvz-fusion_1200x630.png` (alt « Charles Lindecker, PvZ Fusion, pôle francophone : une équipe formée et menée. ») ; `site/public/og/GLO-08-projets-omnicard_1200x630.png` (alt « Charles Lindecker, Omnicard : réinventer. ») ; `site/public/og/GLO-08-projets-bloodborne-legendary-run_1200x630.png` (alt « Charles Lindecker, Bloodborne Legendary Run : un produit de bout en bout. ») ; `site/public/og/GLO-08-projets-league-of-database_1200x630.png` (alt « Charles Lindecker, League Of Data Base : un système en production. ») ; `site/public/og/GLO-08-projets-gup_1200x630.png` (alt « Charles Lindecker, gup : un outil open source. ») ; `site/public/og/GLO-08-projets-githealth_1200x630.png` (alt « Charles Lindecker, GitHealth : une application de bureau. ») ; `site/public/og/GLO-08-projets-karl-scraper_1200x630.png` (alt « Charles Lindecker, Karl Scraper : automatiser des tâches. ») ; `site/public/og/GLO-08-projets-sillage_1200x630.png` (alt « Charles Lindecker, Sillage : orchestrer des agents IA. ») ; `site/public/og/GLO-08-projets-relais_1200x630.png` (alt « Charles Lindecker, Relais : encadrer des agents IA. ») ; `site/public/og/GLO-08-parcours_1200x630.png` (alt « Charles Lindecker, Parcours. ») ; `site/public/og/GLO-08-parcours-professionnel_1200x630.png` (alt « Charles Lindecker, Parcours professionnel. ») ; `site/public/og/GLO-08-parcours-competences_1200x630.png` (alt « Charles Lindecker, Compétences. ») ; `site/public/og/GLO-08-parcours-formation_1200x630.png` (alt « Charles Lindecker, Formation et certifications. ») ; `site/public/og/GLO-08-contact_1200x630.png` (alt « Charles Lindecker, Discutons. ») ; `site/public/og/GLO-08-blog_1200x630.png` (alt « Charles Lindecker, Blog. ») ; `site/public/og/GLO-08-mentions-legales_1200x630.png` (alt « Charles Lindecker, Mentions légales. »)
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Charles Lindecker et le titre de la page partagée, par exemple « Charles Lindecker, Parcours. » (voir chaque déclinaison). »
-- **Note** : Treize déclinaisons, une par page publique, livrées le 13 octobre 2026 : lib/partage.ts est la seule source de leurs titres et de leurs alts, tools/generer-partage.mjs les compose en HTML avec la vraie typographie, et layouts/Base.astro choisit celle de la page. Le visuel de droite est une photo de séance (Contact, Parcours) ou la lanterne allumée ; PVZ-OG, OMN-OG et BLR-OG pourront le remplacer pour leur projet. La 404 garde l’image par défaut, GLO-07.
+- **Note** : Dix-sept déclinaisons, une par page publique : treize livrées le 13 octobre 2026, puis, le 14 octobre 2026, GitHealth, Karl Scraper, Sillage et Relais, avec Projets et chaque projet dans l’ordre de la vitrine en quatre familles. Ordre et textes : lib/partage.ts est la seule source de leurs titres et de leurs alts, tools/generer-partage.mjs les compose en HTML avec la vraie typographie, et layouts/Base.astro choisit celle de la page. Le visuel de droite est une photo de séance (Contact, Parcours) ou la lanterne allumée ; PVZ-OG, OMN-OG et BLR-OG pourront le remplacer pour leur projet. La 404 garde l’image par défaut, GLO-07.
 
 ### Accueil
 

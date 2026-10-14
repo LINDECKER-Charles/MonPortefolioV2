@@ -73,6 +73,10 @@ export type SerieVisuel =
   | 'omnicard'
   | 'bloodborne'
   | 'gup'
+  | 'githealth'
+  | 'karl-scraper'
+  | 'sillage'
+  | 'relais'
   | 'parcours'
   | 'contact'
   | 'blog'
@@ -279,21 +283,25 @@ export const VISUELS: readonly EntreeVisuel[] = [
     emplacement: 'Partage par page',
     sujet: 'Gabarit de GLO-07 avec le visuel de la page : Projets, chaque projet, Parcours et ses trois pages, Contact, Blog, Mentions légales',
     composition: 'Titre à gauche, visuel à droite, emblème en bas',
-    format: '1200 × 630 (×13)',
+    format: '1200 × 630 (×17)',
     ratio: '1200 / 630',
     methode: 'OG',
     priorite: 'socle',
     pose: ['lib/partage.ts', 'layouts/Base.astro'],
     alt: 'Charles Lindecker et le titre de la page partagée, par exemple « Charles Lindecker, Parcours. » (voir chaque déclinaison).',
     fichier: null,
-    lot: 13,
+    lot: 17,
     declinaisons: [
       { nom: 'projets', fichier: 'public/og/GLO-08-projets_1200x630.png', alt: 'Charles Lindecker, Projets.' },
       { nom: 'projets-pvz-fusion', fichier: 'public/og/GLO-08-projets-pvz-fusion_1200x630.png', alt: 'Charles Lindecker, PvZ Fusion, pôle francophone : une équipe formée et menée.' },
-      { nom: 'projets-league-of-database', fichier: 'public/og/GLO-08-projets-league-of-database_1200x630.png', alt: 'Charles Lindecker, League Of Data Base : un système en production.' },
       { nom: 'projets-omnicard', fichier: 'public/og/GLO-08-projets-omnicard_1200x630.png', alt: 'Charles Lindecker, Omnicard : réinventer.' },
       { nom: 'projets-bloodborne-legendary-run', fichier: 'public/og/GLO-08-projets-bloodborne-legendary-run_1200x630.png', alt: 'Charles Lindecker, Bloodborne Legendary Run : un produit de bout en bout.' },
+      { nom: 'projets-league-of-database', fichier: 'public/og/GLO-08-projets-league-of-database_1200x630.png', alt: 'Charles Lindecker, League Of Data Base : un système en production.' },
       { nom: 'projets-gup', fichier: 'public/og/GLO-08-projets-gup_1200x630.png', alt: 'Charles Lindecker, gup : un outil open source.' },
+      { nom: 'projets-githealth', fichier: 'public/og/GLO-08-projets-githealth_1200x630.png', alt: 'Charles Lindecker, GitHealth : une application de bureau.' },
+      { nom: 'projets-karl-scraper', fichier: 'public/og/GLO-08-projets-karl-scraper_1200x630.png', alt: 'Charles Lindecker, Karl Scraper : automatiser des tâches.' },
+      { nom: 'projets-sillage', fichier: 'public/og/GLO-08-projets-sillage_1200x630.png', alt: 'Charles Lindecker, Sillage : orchestrer des agents IA.' },
+      { nom: 'projets-relais', fichier: 'public/og/GLO-08-projets-relais_1200x630.png', alt: 'Charles Lindecker, Relais : encadrer des agents IA.' },
       { nom: 'parcours', fichier: 'public/og/GLO-08-parcours_1200x630.png', alt: 'Charles Lindecker, Parcours.' },
       { nom: 'parcours-professionnel', fichier: 'public/og/GLO-08-parcours-professionnel_1200x630.png', alt: 'Charles Lindecker, Parcours professionnel.' },
       { nom: 'parcours-competences', fichier: 'public/og/GLO-08-parcours-competences_1200x630.png', alt: 'Charles Lindecker, Compétences.' },
@@ -302,7 +310,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
       { nom: 'blog', fichier: 'public/og/GLO-08-blog_1200x630.png', alt: 'Charles Lindecker, Blog.' },
       { nom: 'mentions-legales', fichier: 'public/og/GLO-08-mentions-legales_1200x630.png', alt: 'Charles Lindecker, Mentions légales.' },
     ],
-    note: 'Treize déclinaisons, une par page publique, livrées le 13 octobre 2026 : lib/partage.ts est la seule source de leurs titres et de leurs alts, tools/generer-partage.mjs les compose en HTML avec la vraie typographie, et layouts/Base.astro choisit celle de la page. Le visuel de droite est une photo de séance (Contact, Parcours) ou la lanterne allumée ; PVZ-OG, OMN-OG et BLR-OG pourront le remplacer pour leur projet. La 404 garde l’image par défaut, GLO-07.',
+    note: 'Dix-sept déclinaisons, une par page publique : treize livrées le 13 octobre 2026, puis, le 14 octobre 2026, GitHealth, Karl Scraper, Sillage et Relais, avec Projets et chaque projet dans l’ordre de la vitrine en quatre familles. Ordre et textes : lib/partage.ts est la seule source de leurs titres et de leurs alts, tools/generer-partage.mjs les compose en HTML avec la vraie typographie, et layouts/Base.astro choisit celle de la page. Le visuel de droite est une photo de séance (Contact, Parcours) ou la lanterne allumée ; PVZ-OG, OMN-OG et BLR-OG pourront le remplacer pour leur projet. La 404 garde l’image par défaut, GLO-07.',
   },
   {
     id: 'GLO-09',
@@ -2682,6 +2690,22 @@ export const VISUELS: readonly EntreeVisuel[] = [
     note: 'CAP-GUP-1 du cahier (§ 6.12) : livrés, provenance dans src/assets/projets/gup/README.md ; leurs alts sont dans config/gup.ts. Les recadrages 4:5 pour mobile restent à faire.',
   },
 
+  // GTH — GitHealth (série « githealth », /projets/githealth) : ses entrées, sous ce repère.
+
+  // ↑ fin des entrées GTH
+
+  // KSC — Karl Scraper (série « karl-scraper », /projets/karl-scraper) : ses entrées, sous ce repère.
+
+  // ↑ fin des entrées KSC
+
+  // SIL — Sillage (série « sillage », /projets/sillage) : ses entrées, sous ce repère.
+
+  // ↑ fin des entrées SIL
+
+  // REL — Relais (série « relais », /projets/relais) : ses entrées, sous ce repère.
+
+  // ↑ fin des entrées REL
+
   // PAR
   {
     id: 'PAR-PHO',
@@ -3656,7 +3680,18 @@ export function producteur(visuel: EntreeVisuel): 'codex' | 'equipe' | 'charles'
 }
 
 /** Ordre des séries dans les listes et dans la commande de production. */
-export const ORDRE_SERIES: readonly SerieVisuel[] = ['global', 'accueil', 'projets', 'pvz-fusion', 'league-of-database', 'omnicard', 'bloodborne', 'gup', 'parcours', 'contact', 'blog', 'etats'];
+export const ORDRE_SERIES: readonly SerieVisuel[] = ['global', 'accueil', 'projets', 'pvz-fusion', 'league-of-database', 'omnicard', 'bloodborne', 'gup', 'githealth', 'karl-scraper', 'sillage', 'relais', 'parcours', 'contact', 'blog', 'etats'];
+
+/**
+ * Les séries des quatre pages entrées dans la vitrine le 14/10/2026 (GitHealth,
+ * Karl Scraper, Sillage, Relais), chacune tenue par sa page : ses entrées
+ * s’écrivent sous son repère dans VISUELS (GTH, KSC, SIL, REL). Leurs images
+ * générées rejoignent d’office la série de dessin « Pages de projet »
+ * (FAMILLES), et les compteurs figés de tests/unit/visuels.test.ts ne comptent
+ * que l’inventaire d’avant elles : ajouter une entrée ne touche qu’au repère
+ * de sa série.
+ */
+export const SERIES_VITRINE_FINALE: readonly SerieVisuel[] = ['githealth', 'karl-scraper', 'sillage', 'relais'];
 
 /** Sujet à transmettre à un générateur d’image : sans nom de marque. */
 export function sujetPourGenerateur(visuel: EntreeVisuel): string {
@@ -3807,6 +3842,11 @@ export interface FamilleVisuel {
   lanterne: string;
 }
 
+/** Les images générées (hors reprises) de ces séries, dans l’ordre du registre. */
+function imagesDesSeries(series: readonly SerieVisuel[]): string[] {
+  return VISUELS.filter((v) => series.includes(v.serie) && v.methode === 'IMG' && !v.reprend?.length).map((v) => v.id);
+}
+
 /** Les séries de dessin des images générées : chaque image en fait partie d’une seule. */
 export const FAMILLES: readonly FamilleVisuel[] = [
   {
@@ -3859,7 +3899,8 @@ export const FAMILLES: readonly FamilleVisuel[] = [
   },
   {
     nom: 'Pages de projet',
-    ids: ['LOD-02', 'LOD-04', 'OMN-01', 'BLR-01', 'BLR-03', 'BLR-04', 'BLR-05', 'GUP-01', 'GUP-03'],
+    // Les images générées des pages entrées le 14/10/2026 en font partie d’office (SERIES_VITRINE_FINALE).
+    ids: ['LOD-02', 'LOD-04', 'OMN-01', 'BLR-01', 'BLR-03', 'BLR-04', 'BLR-05', 'GUP-01', 'GUP-03', ...imagesDesSeries(SERIES_VITRINE_FINALE)],
     angle: 'trois quarts en légère plongée ; exceptions : LOD-02 et BLR-04 de face, LOD-04 en coupe horizontale',
     horizon: 'aux deux tiers de la hauteur',
     trait: 'trait principal d’environ 3 px à 1 600 px de large',
