@@ -737,8 +737,14 @@ struct TokenInput {
     scopes: Vec<String>,
 }
 
+/// Sans permissions explicites, un accès ne lit que le blog : les demandes de
+/// contact (`contacts:read`) se demandent exprès. Les accès créés avant le
+/// 14/10/2026 gardent la permission qu’ils avaient.
 fn default_token_scopes() -> Vec<String> {
-    vec!["contacts:read".into(), "blog:read".into()]
+    crate::storage::DEFAULT_TOKEN_SCOPES
+        .iter()
+        .map(|scope| (*scope).to_owned())
+        .collect()
 }
 
 pub(crate) fn valid_token_scopes(scopes: &[String]) -> bool {

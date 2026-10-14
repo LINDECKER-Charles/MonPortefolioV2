@@ -28,7 +28,9 @@ struct Fixture {
 
 fn fixture() -> Fixture {
     let store = Arc::new(Store::in_memory("owner@example.org").unwrap());
-    let (token_id, token) = store.create_token("Tests MCP").unwrap();
+    let (token_id, token) = store
+        .create_token_with_scopes("Tests MCP", &["contacts:read".into(), "blog:read".into()])
+        .unwrap();
     let contact = |subject: &str| ContactMessage {
         name: "Une personne".into(),
         email: "visitor@example.org".parse().unwrap(),
@@ -972,14 +974,35 @@ async fn only_admin_sessions_can_create_tokens_with_explicit_consistent_permissi
         assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
     }
     assert!(store.list_tokens().unwrap().is_empty());
+    // Sans `scopes`, un accès lit seulement le blog : les demandes de contact se demandent exprès.
     let read = app
         .clone()
-        .oneshot(request(json!({ "name": "Lecture historique" }), true))
+        .oneshot(request(json!({ "name": "Lecture par défaut" }), true))
         .await
         .unwrap();
     assert_eq!(read.status(), StatusCode::CREATED);
     let read = body(read).await;
-    assert_eq!(read["scopes"], json!(["contacts:read", "blog:read"]));
+    assert_eq!(read["scopes"], json!(["blog:read"]));
+    assert_eq!(
+        store
+            .authenticate_token_scopes(read["token"].as_str().unwrap())
+            .unwrap()
+            .unwrap(),
+        vec!["blog:read"]
+    );
+    let contacts = app
+        .clone()
+        .oneshot(request(
+            json!({ "name": "Demandes", "scopes": ["contacts:read", "blog:read"] }),
+            true,
+        ))
+        .await
+        .unwrap();
+    assert_eq!(contacts.status(), StatusCode::CREATED);
+    assert_eq!(
+        body(contacts).await["scopes"],
+        json!(["contacts:read", "blog:read"])
+    );
     let published = app.oneshot(request(full, true)).await.unwrap();
     assert_eq!(published.status(), StatusCode::CREATED);
     let published = body(published).await;

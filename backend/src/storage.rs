@@ -74,6 +74,10 @@ pub struct TokenRecord {
     pub scopes: Vec<String>,
 }
 
+/// Permissions d’un accès créé sans permissions explicites : la lecture du blog
+/// seule. Lire les demandes de contact se demande exprès.
+pub const DEFAULT_TOKEN_SCOPES: [&str; 1] = ["blog:read"];
+
 /// Nombre maximal d’accès MCP actifs : au-delà, il faut en révoquer un.
 pub const MAX_TOKENS: u64 = 64;
 
@@ -652,7 +656,8 @@ impl Store {
     }
 
     pub fn create_token(&self, name: &str) -> Result<(i64, String), TokenCreationError> {
-        self.create_token_with_scopes(name, &["contacts:read".into(), "blog:read".into()])
+        let scopes = DEFAULT_TOKEN_SCOPES.map(str::to_owned);
+        self.create_token_with_scopes(name, &scopes)
     }
 
     pub fn create_token_with_scopes(
@@ -1060,6 +1065,11 @@ mod tests {
         let store = Store::in_memory("owner@example.org").unwrap();
         let (id, token) = store.create_token("Portable").unwrap();
         assert!(store.authenticate_token(&token).unwrap());
+        // Sans permissions explicites, un nouvel accès ne lit pas les demandes de contact.
+        assert_eq!(
+            store.authenticate_token_scopes(&token).unwrap(),
+            Some(vec!["blog:read".into()])
+        );
         assert!(store.list_tokens().unwrap()[0].last_used_at.is_some());
         store.delete_token(id).unwrap();
         assert!(!store.authenticate_token(&token).unwrap());
