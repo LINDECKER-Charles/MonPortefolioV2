@@ -59,6 +59,13 @@ async function apiDouble(page: Page, options: { authenticated?: boolean; smtp?: 
     const repondre = async (contenu: unknown, status = 200) => route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(contenu) });
     if (method !== 'GET') etat.mutations.push({ path, method, body, header: request.headers()['x-backoffice-request'] });
     else etat.consultations.push(path);
+    // Comme le relais Node (server/contact.mjs) : une mutation sans type JSON,
+    // même sans corps, est refusée en 415 ; un DELETE hors du blog n’en est pas une.
+    const mutation = method !== 'GET' && method !== 'HEAD' && (method !== 'DELETE' || path.startsWith('/blog/'));
+    if (mutation && !/^application\/json(?:\s*;|$)/i.test(request.headers()['content-type'] ?? '')) {
+      await repondre({ code: 'unsupported_media_type', message: 'Le formulaire doit être envoyé au format JSON.' }, 415);
+      return;
+    }
     if (path === '/login') {
       if (body?.email !== 'admin@example.test' || body?.password !== 'mot-de-passe-test') { await repondre({ code: 'UNAUTHORIZED', message: 'Une connexion au backoffice est nécessaire.' }, 401); return; }
       if (options.twoFactor) {

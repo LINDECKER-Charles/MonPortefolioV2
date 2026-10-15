@@ -331,8 +331,12 @@ export function brancherBackoffice(): void {
     const minuterie = window.setTimeout(() => controleur.abort(), 20_000);
     try {
       const headers: Record<string, string> = { Accept: 'application/json' };
-      if (method !== 'GET') headers['X-Backoffice-Request'] = '1';
-      if (corps !== undefined) headers['Content-Type'] = 'application/json';
+      // Le relais Node refuse en 415 toute mutation sans type JSON, même sans
+      // corps (inscription 2FA, déconnexion) : le type part avec chaque mutation.
+      if (method !== 'GET') {
+        headers['X-Backoffice-Request'] = '1';
+        headers['Content-Type'] = 'application/json';
+      }
       const reponse = await fetch(`/api/backoffice${chemin}`, {
         method, headers, credentials: 'same-origin', cache: 'no-store',
         ...(corps !== undefined ? { body: JSON.stringify(corps) } : {}), signal: controleur.signal,
