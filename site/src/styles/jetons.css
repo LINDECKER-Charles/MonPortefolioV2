@@ -73,8 +73,8 @@
   --cadre-texte: #9499a3;
   --papier-logo: #ffffff;     /* fond des logos qui l’exigent */
   --capture-turquoise: #6aaa9a;  /* les étoiles de l’ami, relevées sur une capture de Bloodborne */
-  --voile-portrait: rgb(11 13 18 / 0.72);
-  --voile-lune: rgb(26 38 78 / 0.38);         /* clair de lune sur la photo */
+  --voile-portrait: rgb(11 13 18 / 0.42);     /* bords de la photo, la nuit : le visage reste lisible */
+  --voile-lune: rgb(26 38 78 / 0.24);         /* clair de lune sur la photo */
   --lueur-portrait: rgb(240 178 74 / 0.36);   /* la lanterne sur le visage */
   --voile-cible: rgb(11 13 18 / 0.55);        /* anneau des cibles */
   --voile-visionneuse: rgb(11 13 18 / 0.88);

@@ -4,8 +4,9 @@
  * lanterne (signature « allumage », direction « Lanterne »).
  *
  * Le jour, la photo telle quelle. La nuit, elle garde ses couleurs (le bleu
- * roi de la chemise est l’identité) : assombrie sous un voile de lune, avec
- * une lueur de lanterne sur le côté éclairé du visage. Filtres CSS
+ * roi de la chemise est l’identité) : un peu assombrie sous un voile de lune,
+ * avec une lueur de lanterne sur le côté éclairé du visage ; le visage reste
+ * lisible (retour du 15/10/2026 : « trop sombre »). Filtres CSS
  * déterministes, aucune image régénérée, rien de sépia.
  *
  *   <Portrait src={photo} alt="…" widths={[360, 720]} sizes="…" />
@@ -86,7 +87,7 @@ const { src, alt, widths = [480, 960], sizes = '100vw', loading = 'lazy', fetchp
   }
 
   :global(:root[data-theme='nuit']) .portrait :global(img) {
-    filter: brightness(0.66) saturate(0.92) contrast(1.06);
+    filter: brightness(0.86) saturate(0.95) contrast(1.04);
   }
 
   :global(:root[data-theme='nuit']) .portrait::before,
@@ -96,7 +97,7 @@ const { src, alt, widths = [480, 960], sizes = '100vw', loading = 'lazy', fetchp
 
   @media (prefers-color-scheme: dark) {
     :global(:root:not([data-theme])) .portrait :global(img) {
-      filter: brightness(0.66) saturate(0.92) contrast(1.06);
+      filter: brightness(0.86) saturate(0.95) contrast(1.04);
     }
 
     :global(:root:not([data-theme])) .portrait::before,
