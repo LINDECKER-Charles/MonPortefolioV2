@@ -2,10 +2,11 @@
 /**
  * Rééquilibrer mes propres cartes : la même carte dans la saison 1 (archive
  * du dépôt de présentation public) et dans la version actuelle du projet
- * (export de l’outil du projet, le 13/10/2026), côte à côte. La version en
- * ligne de ces valeurs reste marquée « à confirmer » : le catalogue public
- * 1.2.0 en affiche encore d’autres. Un cercle marque sur chaque carte la valeur qui a
- * changé ; la liste dit le changement en texte.
+ * (export de l’outil du projet, le 13/10/2026), côte à côte. L’étiquette
+ * dit « version actuelle du projet », pas du jeu en ligne : le catalogue
+ * public 1.2.0 en affiche encore d’autres, et la note de sources le rappelle.
+ * Un cercle marque sur chaque carte la valeur qui a changé ; la liste dit le
+ * changement en texte.
  *
  *   <ComparateurCartes />
  *
@@ -22,7 +23,6 @@ import archiveFloppa from '../../../assets/projets/omnicard/archive-floppa.webp'
 import gehrman from '../../../assets/projets/omnicard/carte-gehrman.webp';
 import gitgud from '../../../assets/projets/omnicard/carte-gitgud.webp';
 import floppa from '../../../assets/projets/omnicard/carte-floppa.webp';
-import AConfirmer from '../../ui/AConfirmer.astro';
 import { REEQUILIBRAGES, type Reequilibrage } from '../../../config/omnicard';
 import { typo } from '../../../lib/typo';
 
@@ -59,7 +59,6 @@ const resume = (carte: Reequilibrage, cote: 'avant' | 'apres') =>
                 <div class:list={['comparaison__carte', `comparaison__carte--${cote}`]}>
                   <p class="comparaison__etiquette">
                     {cote === 'avant' ? 'Saison 1' : 'Version actuelle du projet'}
-                    {cote === 'apres' && <AConfirmer titre="Version en ligne à confirmer par Charles : le catalogue public 1.2.0 affiche encore d’autres valeurs" />}
                   </p>
                   <div class="comparaison__image">
                     <Picture
@@ -135,8 +134,8 @@ const resume = (carte: Reequilibrage, cote: 'avant' | 'apres') =>
     display: block;
   }
 
-  /* Les deux cartes s’alignent par le bas : l’étiquette de droite peut
-     passer sur deux lignes avec sa marque « à confirmer ». */
+  /* Les deux cartes s’alignent par le bas : l’étiquette de droite,
+     « Version actuelle du projet », peut passer sur deux lignes. */
   .comparaison__cartes {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));

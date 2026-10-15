@@ -293,8 +293,10 @@ principaux : 1 100 px (colonne de navigation) et 860 px (mobile, en-tête de 60 
 
 Pages de projet : un gabarit commun (`site/src/components/projets/gabarit/`). L’en-tête tient au
 premier écran à 1 440 × 900 (nom canonique, étiquette de preuve, titre, chapeau, actions, visuel,
-repères chiffrés, fiche technique en tableau à filets) ; puis un corps libre, « Comment je l’ai
-construit », la sortie commune et la note de sources.
+repères chiffrés, fiche technique en tableau à filets) ; puis un corps libre, « Sous le capot »
+(une liste de points d’une ligne qui se déplient), la sortie commune et la note de sources. Les
+jeux vidéo (Omnicard, Bloodborne Legendary Run, League Of Data Base) montrent une vraie capture en
+tête et sur leurs cartes ; PvZ Fusion garde son illustration.
 
 ## Elevation & Depth
 
@@ -348,7 +350,17 @@ Chaque composant est documenté en tête de son fichier.
 - **Appel** (`pages/AppelDiscutons.astro`) : « Discutons → » vers `/contact`, après un filet ou sur
   l’aplat bleu roi.
 - **Gabarit de projet** (`projets/gabarit/`) : `EnTeteProjet`, `FicheProjet`, `CorpsProjet`,
-  `SectionProjet`, `DecisionsProjet`, `SortieProjet`, `SourcesProjet`.
+  `SectionProjet`, `SousLeCapot`, `SortieProjet`, `SourcesProjet`.
+- **Sous le capot** (`projets/gabarit/SousLeCapot.astro`, depuis le 15 octobre 2026) : une liste
+  à filets, un point par ligne dans un `<summary>` natif (numéro en éteint, intitulé en Instrument
+  Sans 600, indice « code » ou « aperçu » à chasse fixe, signe « + / − » en bleu roi dans un cercle
+  de 28 px : ce qui se clique), cible de 56 px, focus visible. Déplié : « contrainte, choix, effet »
+  (l’effet en Instrument Serif) ou un texte, à la mesure, puis l’extrait sur toute la ligne, sur
+  l’acte, rayon de 6 px, pile système à chasse fixe (aucune police de code auto-hébergée),
+  défilement horizontal au clavier ; légende : le chemin du fichier public, ou « forme simplifiée
+  écrite pour cette page : le code est privé ». Groupes titrés en Instrument Serif. Sans
+  JavaScript, tout s’ouvre ; à l’impression, tout est déplié. Le même composant sert la liste des
+  fonctions des pages IA.
 - **Backoffice** (`components/backoffice/`, depuis le 14 octobre 2026) : le même système que le
   site, mêmes jetons (`tests/unit/styles.test.ts` le parcourt), styles dans
   `styles/backoffice.css` et, pour l’atelier du blog, `styles/blog-editor.css`, sur les mêmes

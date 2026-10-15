@@ -4,7 +4,7 @@
  * le gabarit commun des pages de projet (components/projets/gabarit, règle
  * E5) : en-tête et fiche, corps libre (ranger 1 289 objectifs, savoir où
  * reprendre, allumer une étoile, le guide, entre amis, la boutique,
- * l’essayer), « Comment je l’ai construit », sortie et note de sources.
+ * l’essayer), « Sous le capot », sortie et note de sources.
  * Données : config/bloodborne.ts ; planche des constellations :
  * config/bloodborne-constellations.ts.
  *
@@ -14,11 +14,11 @@
 import { getImage, Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import CorpsProjet from '../../components/projets/gabarit/CorpsProjet.astro';
-import DecisionsProjet from '../../components/projets/gabarit/DecisionsProjet.astro';
 import EnTeteProjet from '../../components/projets/gabarit/EnTeteProjet.astro';
 import SectionProjet from '../../components/projets/gabarit/SectionProjet.astro';
 import SortieProjet from '../../components/projets/gabarit/SortieProjet.astro';
 import SourcesProjet from '../../components/projets/gabarit/SourcesProjet.astro';
+import SousLeCapot from '../../components/projets/gabarit/SousLeCapot.astro';
 import Acces from '../../components/projets/bloodborne/Acces.astro';
 import Boutique from '../../components/projets/bloodborne/Boutique.astro';
 import CielLisible from '../../components/projets/bloodborne/CielLisible.astro';
@@ -39,7 +39,7 @@ import comparaison from '../../assets/projets/bloodborne/social-comparaison.webp
 import objectif from '../../assets/projets/bloodborne/social-objectif.webp';
 import ajout from '../../assets/projets/bloodborne/social-ajout.webp';
 import { SITE } from '../../config/site';
-import { DECISIONS, EN_TETE, FICHE, LIENS, PREUVES, REPERES_GUIDE, REPRISE, SECTIONS, SOCIAL } from '../../config/bloodborne';
+import { CAPOT, EN_TETE, FICHE, LIENS, PREUVES, REPERES_GUIDE, REPRISE, SECTIONS, SOCIAL } from '../../config/bloodborne';
 import { attributsMesure } from '../../lib/liens';
 import { typo } from '../../lib/typo';
 
@@ -171,9 +171,9 @@ const LIENS_SORTIE = [
       <Acces />
     </SectionProjet>
 
-    <DecisionsProjet decisions={DECISIONS} chapeau="Trois décisions, chacune datée dans le journal public du projet, étape par étape.">
+    <SousLeCapot points={CAPOT} chapeau="Trois décisions, chacune datée dans le journal public du projet. Un clic déplie le détail et sa forme dans le code.">
       <Fabrication />
-    </DecisionsProjet>
+    </SousLeCapot>
 
     <SortieProjet projet="bloodborne" titre="En une phrase" liens={LIENS_SORTIE}>
       <p>Un produit que j’ai fait grandir étape par étape&nbsp;: d’un premier ciel de 84&nbsp;étoiles à 1&nbsp;289&nbsp;objectifs, avec un guide, des amis et une boutique, sur le web et Android.</p>
@@ -184,6 +184,7 @@ const LIENS_SORTIE = [
       <p><b>Journal.</b> Le premier ciel de 84&nbsp;étoiles, le découpage en constellations et les 143&nbsp;noms corrigés (06/09/2026), les arbres et le décompte des croisements (07/09, version&nbsp;6), l’appui maintenu (08/09, version&nbsp;11), le pas suivant en braise (08/09, version&nbsp;12), la même reprise partout (25/09), les renvois du ciel vers le guide (13/09), la bannière vue des amis (03/10), l’achat d’un appui maintenu (04/10), les versions vérifiées par des tests (05/09) et l’application Android à chaque mise à jour (06/09) viennent du <a {...sortant(LIENS.journal)}>journal public du projet<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>, relu le 13/10/2026. La livraison construite une fois puis promue telle quelle vient de la chaîne d’intégration du dépôt, relue le même jour&nbsp;; le dépôt du code est privé&nbsp;: aucun lien n’y mène.</p>
       <p><b>Captures et vidéos.</b> Écrans et vidéos de l’application réelle, avec des personnages et des progressions d’exemple, sans compte réel&nbsp;; l’avant et l’après du 08/09/2026 sont des captures d’époque du journal. Les allumages sont enregistrés sur téléphone, sans son. Les chiffres visibles sur les captures ne mesurent pas l’adoption du projet.</p>
       <p><b>Crédits.</b> Projet de fan indépendant, sans affiliation à Sony Interactive Entertainment ni à FromSoftware. Vue de Yharnam&nbsp;: capture de MoonlightGhost, Bloodborne Wiki. Visuels du jeu © Sony Interactive Entertainment / FromSoftware. <a {...sortant(LIENS.angularPresse)}>Logo Angular<span class="fleche" aria-hidden="true">&nbsp;↗</span></a> © Google / Angular team, utilisé sous <a {...sortant(LIENS.licenceCcBy)}>CC BY 4.0<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>.</p>
+      <p><b>Sous le capot.</b> Formes simplifiées, écrites pour cette page d’après le dépôt privé, relu le 15/10/2026&nbsp;: le fichier des constellations (116&nbsp;étoiles et 115&nbsp;traits pour l’Arsenal de Yharnam) et la chaîne d’intégration.</p>
     </SourcesProjet>
   </CorpsProjet>
 

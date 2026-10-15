@@ -47,18 +47,18 @@ test('l’en-tête tient dans le premier écran : titre, identité, preuve, acti
   }
 });
 
-test('le nom canonique en minuscules, l’étiquette de preuve et « Comment je l’ai construit »', async ({ page }) => {
+test('le nom canonique en minuscules, l’étiquette de preuve et « Sous le capot »', async ({ page }) => {
   await page.goto(CHEMIN);
   const ariane = page.getByRole('navigation', { name: 'Fil d’Ariane', exact: true });
   await expect(ariane.locator('[aria-current="page"]')).toHaveText('gup');
   await expect(page.locator('.projet-tete')).not.toContainText('GUP');
   const entete = page.locator('.projet-tete');
   await expect(entete).toContainText('Un outil open source');
-  const construit = entete.locator('[data-pli="action"]').getByRole('link', { name: /Comment je l’ai construit/ });
+  const construit = entete.locator('[data-pli="action"]').getByRole('link', { name: /Sous le capot/ });
   await expect(construit).toHaveAttribute('href', '#construit');
   await construit.click();
   await expect(page.locator('#construit')).toBeInViewport();
-  await expect(page.locator('#construit .decision')).toHaveCount(4);
+  await expect(page.locator('#construit .point-capot')).toHaveCount(6);
 });
 
 test('la fiche technique : sept cases, statut à forme et mot, liens publics mesurés', async ({ page }) => {
@@ -221,7 +221,7 @@ test('la part de chacun : la contribution extérieure est dite, le lot administr
   await expect(sources.getByRole('link', { name: /n°\s23/ })).toHaveAttribute('href', 'https://github.com/LINDECKER-Charles/gup/pull/23');
   await expect(page.locator('.projet-tete')).not.toContainText(/conçu, écrit/);
   // Le lot administrateur unique vient d’une contribution extérieure : pas une décision « à moi ».
-  expect((await page.locator('#construit .decision').allInnerTexts()).join(' ')).not.toMatch(/UAC|administrateur/);
+  expect((await page.locator('#construit .point-capot').allTextContents()).join(' ')).not.toMatch(/UAC|administrateur/);
   await expect(page.locator('#construit')).toContainText('Un paquet par appel');
   // L’exception Scoop à la règle « sans shell » est dite, avec sa source.
   await expect(page.locator('#construit')).toContainText('Seul Scoop');
@@ -230,7 +230,9 @@ test('la part de chacun : la contribution extérieure est dite, le lot administr
 
 test('les cibles autonomes font au moins 44 px : liens de trace et choix du système', async ({ page }) => {
   await page.goto(CHEMIN);
-  const cibles = page.locator('.gup-cas a, .gup-pratiques a, .gup-autres a, [data-visuel="GUP-F2"] .sources__choix label');
+  // Les traces de « Sous le capot » vivent dans leurs plis : ouverts, elles comptent aussi.
+  await page.locator('#construit details').evaluateAll((plis) => plis.forEach((pli) => ((pli as HTMLDetailsElement).open = true)));
+  const cibles = page.locator('.gup-cas a, .gup-pratiques a, #construit .point-capot__lien, [data-visuel="GUP-F2"] .sources__choix label');
   expect(await cibles.count()).toBeGreaterThan(15);
   for (const cible of await cibles.all()) {
     const boite = await cible.boundingBox();
@@ -335,7 +337,7 @@ test.describe('sans JavaScript', () => {
     const figure = page.locator('[data-visuel="GUP-F2"]');
     await figure.getByRole('radio', { name: 'Linux', exact: true }).check();
     await expect(figure.locator('.sources__bilan')).toHaveText(/Sous Linux\s:\s126 sources possibles/);
-    await page.locator('[data-pli="action"]').getByRole('link', { name: /Comment je l’ai construit/ }).click();
+    await page.locator('[data-pli="action"]').getByRole('link', { name: /Sous le capot/ }).click();
     expect(new URL(page.url()).hash).toBe('#construit');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
     expect(erreurs).toEqual([]);

@@ -28,7 +28,7 @@ test('l’en-tête tient dans le premier écran : titre, identité, preuve, acti
   }
 });
 
-test('le nom canonique, l’étiquette de preuve et « Comment je l’ai construit »', async ({ page }) => {
+test('le nom canonique, l’étiquette de preuve et « Sous le capot »', async ({ page }) => {
   await page.goto(CHEMIN);
   const ariane = page.getByRole('navigation', { name: 'Fil d’Ariane', exact: true });
   await expect(ariane.locator('[aria-current="page"]')).toHaveText('Sillage');
@@ -36,11 +36,11 @@ test('le nom canonique, l’étiquette de preuve et « Comment je l’ai constru
   await expect(entete).toContainText('Orchestrer des agents IA');
   // Dépôt privé : la seule action de l’en-tête mène à la page elle-même.
   await expect(entete.locator('[data-pli="action"] a')).toHaveCount(1);
-  const construit = entete.locator('[data-pli="action"]').getByRole('link', { name: /Comment je l’ai construit/ });
+  const construit = entete.locator('[data-pli="action"]').getByRole('link', { name: /Sous le capot/ });
   await expect(construit).toHaveAttribute('href', '#construit');
   await construit.click();
   await expect(page.locator('#construit')).toBeInViewport();
-  await expect(page.locator('#construit .decision')).toHaveCount(4);
+  await expect(page.locator('#construit .point-capot')).toHaveCount(10);
 });
 
 test('la fiche technique : sept cases, statut à forme et mot, dépôt privé sans aucun lien', async ({ page }) => {
@@ -80,7 +80,8 @@ test('dépôt privé : aucune sortie du site, aucun nom de dépôt ni projet voi
   const principe = page.locator('#principe');
   await expect(principe.getByRole('link', { name: 'Relais', exact: true })).toHaveAttribute('href', '/projets/relais');
   await expect(principe.getByRole('link', { name: 'Karl Scraper', exact: true })).toHaveAttribute('href', '/projets/karl-scraper');
-  await expect(page.locator('#construit').getByRole('link', { name: /^Relais/ })).toHaveAttribute('href', '/projets/relais');
+  // Le lien vers Relais vit dans le pli de sa décision, replié par défaut.
+  await expect(page.locator('#construit a[href="/projets/relais"]')).toHaveCount(1);
 });
 
 test('de vrais écrans, dans l’ordre du récit, qui s’ouvrent en grand et se referment à Échap', async ({ page }) => {
@@ -198,7 +199,7 @@ test('une seule navigation de page, sans la note de sources ; la note dit d’o�
   const navigation = page.locator('nav[aria-label="Dans cette page"]');
   await expect(navigation).toHaveCount(1);
   if ((page.viewportSize()?.width ?? 0) > 1100) await expect(navigation).toBeVisible();
-  const attendus = ['#principe', '#composer', '#reprendre', '#resultat', '#construit', '#retiens'];
+  const attendus = ['#principe', '#composer', '#reprendre', '#resultat', '#fonctions', '#construit', '#retiens'];
   expect(await navigation.locator('a').evaluateAll((liens) => liens.map((lien) => lien.getAttribute('href')))).toEqual(attendus);
   for (const ancre of attendus) await expect(page.locator(ancre)).toHaveCount(1);
   const sources = page.locator('#sources');
@@ -227,7 +228,7 @@ for (const theme of ['jour', 'nuit'] as const) {
     test('en-tête, écrans, décisions et sortie restent accessibles', async ({ page }) => {
       await page.goto(CHEMIN);
       await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
-      for (const zone of ['.projet-tete', '#principe', '#composer', '#reprendre', '#resultat', '#construit', '#retiens']) {
+      for (const zone of ['.projet-tete', '#principe', '#composer', '#reprendre', '#resultat', '#fonctions', '#construit', '#retiens']) {
         const resultats = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice']).include(zone).analyze();
         expect(resultats.violations.map((v) => ({ id: v.id, cibles: v.nodes.slice(0, 3).map((n) => n.target) })), zone).toEqual([]);
       }
@@ -250,7 +251,7 @@ test.describe('sans JavaScript', () => {
     // La vue que la largeur masque prend une source neutre (ImageAdaptative) : rien ne part.
     const masquee = largeur > 860 ? /\/(page-projet|reprendre-execution|recapitulatif)-mobile\.[^/]*\.webp/ : /\/(page-projet|reprendre-execution|recapitulatif)\.[^/]*\.webp/;
     expect(requetes.filter((url) => masquee.test(url))).toEqual([]);
-    await page.locator('[data-pli="action"]').getByRole('link', { name: /Comment je l’ai construit/ }).click();
+    await page.locator('[data-pli="action"]').getByRole('link', { name: /Sous le capot/ }).click();
     expect(new URL(page.url()).hash).toBe('#construit');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
     expect(erreurs).toEqual([]);

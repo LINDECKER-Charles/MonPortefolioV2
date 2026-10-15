@@ -3,7 +3,7 @@
  * Karl Scraper : la preuve de « Automatiser des tâches ». Page bâtie sur le
  * gabarit commun des pages de projet (components/projets/gabarit, règle E5) :
  * en-tête et fiche, corps libre (une copie locale, la Galaxie, ce que l’agent
- * lit, la chaîne d’un ticket), « Comment je l’ai construit », sortie et note
+ * lit, la chaîne d’un ticket), « Sous le capot », sortie et note
  * de sources. Données, alts et sources : config/karl-scraper.ts, que cette
  * page tient seule (sa carte de la vitrine comprise).
  *
@@ -16,11 +16,11 @@
  */
 import Base from '../../layouts/Base.astro';
 import CorpsProjet from '../../components/projets/gabarit/CorpsProjet.astro';
-import DecisionsProjet from '../../components/projets/gabarit/DecisionsProjet.astro';
 import EnTeteProjet from '../../components/projets/gabarit/EnTeteProjet.astro';
 import SectionProjet from '../../components/projets/gabarit/SectionProjet.astro';
 import SortieProjet from '../../components/projets/gabarit/SortieProjet.astro';
 import SourcesProjet from '../../components/projets/gabarit/SourcesProjet.astro';
+import SousLeCapot from '../../components/projets/gabarit/SousLeCapot.astro';
 import FigureChaine from '../../components/projets/karl-scraper/FigureChaine.astro';
 import CadreCapture from '../../components/ui/CadreCapture.astro';
 import CaptureAnnotee from '../../components/ui/CaptureAnnotee.astro';
@@ -30,7 +30,7 @@ import galaxie from '../../assets/projets/karl-scraper/galaxie.webp';
 import tableauDeBord from '../../assets/projets/karl-scraper/tableau-de-bord.webp';
 import vueAgent from '../../assets/projets/karl-scraper/vue-agent.webp';
 import { SITE } from '../../config/site';
-import { DECISIONS, ECRANS, EN_TETE, FICHE, LIENS_SORTIE, PREUVES, SECTIONS } from '../../config/karl-scraper';
+import { CAPOT, ECRANS, EN_TETE, FICHE, FONCTIONS, LIENS_SORTIE, PREUVES, SECTIONS } from '../../config/karl-scraper';
 
 // ≤ 45 caractères avant « — Charles Lindecker » (titre ≤ 65 au total).
 const titre = `Karl Scraper, automatiser ses tâches — ${SITE.nom}`;
@@ -130,7 +130,9 @@ const description = 'Karl Scraper tient une copie locale de mes tâches, la donn
       <FigureChaine />
     </SectionProjet>
 
-    <DecisionsProjet decisions={DECISIONS} chapeau="Ce que l’outil et ses agents ont le droit de faire, et ce qui le garantit." />
+    <SousLeCapot id="fonctions" titre="Toutes ses fonctions, une ligne chacune" points={FONCTIONS} chapeau="De la copie locale à la pull request : un clic déplie chaque fonction." />
+
+    <SousLeCapot points={CAPOT} chapeau="L’architecture, puis ce que l’outil et ses agents ont le droit de faire, et ce qui le garantit. Le code est privé : les extraits sont des formes simplifiées, écrites pour cette page." />
 
     <SortieProjet projet="karl-scraper" titre="Où il en est" liens={LIENS_SORTIE}>
       <p>Karl Scraper tourne sur mon poste, sans être déployé ni exposé&nbsp;: il n’écoute que la machine elle-même. Il tient la copie de mes tâches et sait en confier la lecture et la réalisation à des agents. Son interface attend une refonte graphique&nbsp;: les écrans de cette page sont provisoires.</p>
@@ -140,6 +142,7 @@ const description = 'Karl Scraper tient une copie locale de mes tâches, la donn
       <p><b>Le projet.</b> Dépôt privé, présenté sans lien, relu le 14/10/2026 à la révision 6615950 du 09/10/2026&nbsp;: 282&nbsp;commits d’un seul auteur, du 28/08 au 09/10/2026. Les chiffres viennent de son code&nbsp;: le catalogue des enchaînements (14&nbsp;déclencheurs, 18&nbsp;actions), les outils du serveur MCP (13, dont 10 marqués en lecture seule) et la liste blanche des appels réseau. La chaîne d’un ticket et les décisions viennent de ses plans et de ses invariants, à la même révision.</p>
       <p><b>Ce qui n’est pas montré.</b> Un «&nbsp;dossier de tâche&nbsp;» unifié est écrit dans les plans, mais seul son premier lot est livré&nbsp;: il n’est pas présenté ici. Sans agent lancé, les écrans de préparation, de réalisation et de plans restent vides&nbsp;; la figure de la chaîne les remplace.</p>
       <p><b>Captures.</b> Application lancée en local le 14/10/2026, à la même révision et sans modification, face à un faux serveur source&nbsp;: données fictives (trois projets, seize tâches, trois observations), aucun agent lancé, aucune donnée réelle. Les deux règles d’enchaînement sont écrites pour la démonstration. Les écrans sont cadrés sur leur contenu, sans retouche. Ils sont provisoires et seront refaits après la refonte graphique de l’interface.</p>
+      <p><b>Fonctions et sous le capot.</b> Relus le 15/10/2026 à la même révision&nbsp;: plans, invariants, documentation de l’API locale et code. Les extraits sont des formes simplifiées, écrites pour cette page, sans nom interne ni chemin de la machine. Les cas de test sont comptés dans le code (1&nbsp;345 côté serveur, 718 côté interface), sans être exécutés.</p>
     </SourcesProjet>
   </CorpsProjet>
 

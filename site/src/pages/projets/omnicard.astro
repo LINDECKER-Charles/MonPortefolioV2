@@ -3,7 +3,7 @@
  * Omnicard : la preuve de « réinventer ». Page bâtie sur le gabarit commun
  * des pages de projet (components/projets/gabarit, règle E5) : en-tête et
  * fiche, corps libre (le jeu papier, le rééquilibrage, une partie, le jeu en
- * images, le moteur de règles), « Comment je l’ai construit », sortie et
+ * images, le moteur de règles), « Sous le capot », sortie et
  * note de sources. Données et sources : config/omnicard.ts.
  *
  * Ordre du récit (cahier, § 5.5) : l’origine, la créativité ; comment on
@@ -12,11 +12,11 @@
  */
 import Base from '../../layouts/Base.astro';
 import CorpsProjet from '../../components/projets/gabarit/CorpsProjet.astro';
-import DecisionsProjet from '../../components/projets/gabarit/DecisionsProjet.astro';
 import EnTeteProjet from '../../components/projets/gabarit/EnTeteProjet.astro';
 import SectionProjet from '../../components/projets/gabarit/SectionProjet.astro';
 import SortieProjet from '../../components/projets/gabarit/SortieProjet.astro';
 import SourcesProjet from '../../components/projets/gabarit/SourcesProjet.astro';
+import SousLeCapot from '../../components/projets/gabarit/SousLeCapot.astro';
 import ComparateurCartes from '../../components/projets/omnicard/ComparateurCartes.astro';
 import CompteARebours from '../../components/projets/omnicard/CompteARebours.astro';
 import EventailCartes from '../../components/projets/omnicard/EventailCartes.astro';
@@ -25,10 +25,12 @@ import PlateauPartie from '../../components/projets/omnicard/PlateauPartie.astro
 import ReperesPartie from '../../components/projets/omnicard/ReperesPartie.astro';
 import ServeurArbitre from '../../components/projets/omnicard/ServeurArbitre.astro';
 import TrajetAction from '../../components/projets/omnicard/TrajetAction.astro';
+import CadreCapture from '../../components/ui/CadreCapture.astro';
 import Visionneuse from '../../components/ui/Visionneuse.astro';
 import Visuel from '../../components/ui/Visuel.astro';
+import accueil from '../../assets/projets/omnicard/accueil.webp';
 import { SITE } from '../../config/site';
-import { DECISIONS, EN_TETE, FICHE, LIENS, LIENS_SORTIE, PREUVES, SECTIONS } from '../../config/omnicard';
+import { CAPOT, EN_TETE, FICHE, LIENS, LIENS_SORTIE, PREUVES, SECTIONS } from '../../config/omnicard';
 import { attributsMesure } from '../../lib/liens';
 import '../../styles/omnicard.css';
 
@@ -39,7 +41,21 @@ const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(h
 
 <Base titre={titre} description={description} chemin="/projets/omnicard" sommaire={SECTIONS}>
   <EnTeteProjet projet="omnicard" titre={EN_TETE.titre} chapeau={EN_TETE.chapeau} liens={EN_TETE.liens} preuves={PREUVES} fiche={FICHE}>
-    <Visuel slot="visuel" id="OMN-01" loading="eager" sizes="(max-width: 1100px) 100vw, 520px" />
+    <!-- La page d’accueil du jeu, qui a « très bien vieilli » (Charles, 15/10/2026) : capture d’une version précédente, entière d’un clic. -->
+    <CadreCapture
+      slot="visuel"
+      type="navigateur"
+      src={accueil}
+      alt="La page d’accueil d’Omnicard : des cartes qui flottent au-dessus d’un paysage nocturne, autour du dos de carte du jeu, puis la récompense quotidienne à réclamer."
+      legende="La page d’accueil du jeu, dans une version précédente."
+      ratio="3 / 2"
+      ratioMobile="16 / 11"
+      position="50% 0"
+      widths={[640, 1040, 1440]}
+      sizes="(max-width: 1100px) 100vw, 520px"
+      loading="eager"
+      agrandir
+    />
   </EnTeteProjet>
 
   <CorpsProjet sections={SECTIONS}>
@@ -94,7 +110,7 @@ const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(h
       </div>
     </SectionProjet>
 
-    <DecisionsProjet decisions={DECISIONS} chapeau="Apprendre en dépassant ce que je savais faire : une stack que je maîtrisais, un jeu qu’elle n’était pas faite pour porter." />
+    <SousLeCapot points={CAPOT} chapeau="Apprendre en dépassant ce que je savais faire : une stack que je maîtrisais, un jeu qu’elle n’était pas faite pour porter." />
 
     <SortieProjet projet="omnicard" liens={LIENS_SORTIE}>
       <p data-citation>«&nbsp;Le projet qui m’a fait le plus apprendre.&nbsp;»</p>
@@ -105,8 +121,9 @@ const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(h
       <p><b>Le projet.</b> Le jeu papier, les éditions, la reprise du projet seul, les trois mois de travail cumulé et le choix d’Angular et de .NET viennent de mon témoignage (questionnaire du portfolio, D1 et D2)&nbsp;; le statut hors ligne, en attente de refonte, est confirmé au 13/10/2026. Le moteur de règles en C# déroule les parties côté serveur&nbsp;: mélange, pioche et tours.</p>
       <p><b>Cartes.</b> Les cartes de la saison&nbsp;1 sont celles de <a {...sortant(LIENS.archive)}>l’archive du dépôt de présentation<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. À droite, les exports de l’outil du projet faits le 13/10/2026&nbsp;; le catalogue public 1.2.0 affiche encore 4/8 pour Gehrman et 0/4 pour Floppa&nbsp;: Mage. Les effets cités viennent du <a {...sortant(LIENS.galerie)}>catalogue public, version 1.2.0<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>, qui compte 181&nbsp;cartes&nbsp;: 114 Bloodborne, 51 JoJo et 16 WTF.</p>
       <p><b>Règles.</b> Points de vie, deck, mana, cristaux, lignes et types de cartes&nbsp;: <a {...sortant(LIENS.regles)}>version joueur des règles du moteur<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. Le compte à rebours de GitGud suit le mot-clé Délai du <a {...sortant(LIENS.motsCles)}>glossaire<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>&nbsp;: le compteur ne baisse qu’à la fin du tour du joueur qui a programmé l’effet, et l’effet est annulé si l’unité qui l’a programmé meurt. Relevés le 13/10/2026.</p>
-      <p><b>Captures.</b> Collection, deck et booster&nbsp;: captures d’une version précédente du jeu, conservées par la première version de ce portfolio&nbsp;; leur date n’est pas documentée et leurs compteurs ne sont pas des chiffres actuels.</p>
+      <p><b>Captures.</b> Page d’accueil, collection, deck et booster&nbsp;: captures d’une version précédente du jeu, conservées par la première version de ce portfolio&nbsp;; leur date n’est pas documentée et leurs compteurs ne sont pas des chiffres actuels.</p>
       <p><b>Univers.</b> Omnicard est un projet de fan, non commercial. Les univers, les personnages et les illustrations des cartes appartiennent à leurs ayants droit&nbsp;; je n’en suis pas l’auteur.</p>
+      <p><b>Sous le capot.</b> Le mot-clé Délai vient du glossaire public, à la révision 8be9cbb. Le hub de partie est une forme simplifiée, écrite pour cette page d’après le code privé du jeu, relu le 15/10/2026&nbsp;: chaque action passe par le serveur, qui renvoie à chaque joueur sa propre vue de la partie.</p>
     </SourcesProjet>
   </CorpsProjet>
 

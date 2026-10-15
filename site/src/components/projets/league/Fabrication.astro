@@ -8,8 +8,8 @@
  * Chaque bloc porte l’identifiant de l’ancienne page (#trafic, #audience,
  * #sauvegardes, #livraison) et sa trace publique, en permalien figé
  * (config/league-of-database.ts, LIENS). Le dispositif des sauvegardes est
- * celui du dépôt public : son activation en production reste à confirmer, et
- * la page ne lui attribue aucune exécution.
+ * celui du dépôt public : la page dit ce qu’il prévoit, sans lui attribuer
+ * aucune exécution.
  *
  * Les dessins sont des glyphes de schéma au trait (encre), la marque en
  * laiton (la lanterne, la nuit) ; les logos viennent de src/assets/stacks/.
@@ -21,7 +21,6 @@ import dotnet from '../../../assets/stacks/dotnet.svg?url';
 import actions from '../../../assets/stacks/github-actions.svg?url';
 import nginx from '../../../assets/stacks/nginx.svg?url';
 import postgres from '../../../assets/stacks/postgresql.svg?url';
-import AConfirmer from '../../ui/AConfirmer.astro';
 import LienAction from '../../ui/LienAction.astro';
 import { LIENS } from '../../../config/league-of-database';
 ---
@@ -117,7 +116,7 @@ import { LIENS } from '../../../config/league-of-database';
     <section class="bloc" id="sauvegardes" aria-labelledby="sauvegardes-titre">
       <div class="bloc__tete">
         <h3 id="sauvegardes-titre">Une copie ailleurs, un retour vérifiable</h3>
-        <p>La chaîne prévoit une sauvegarde chaque nuit et une restauration réelle chaque mois.<AConfirmer titre="Activation en production à confirmer par Charles (questions, Q8)">activation à confirmer</AConfirmer></p>
+        <p>La chaîne prévoit une sauvegarde chaque nuit et une restauration réelle chaque mois.</p>
       </div>
       <figure class="schema sauvegarde" aria-labelledby="sauvegardes-titre" aria-describedby="sauvegardes-legende">
         <p class="sauvegarde__frontiere" aria-hidden="true"><span>Sur le serveur</span><span>Hors du serveur</span></p>

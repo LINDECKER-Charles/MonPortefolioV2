@@ -1,0 +1,383 @@
+---
+/**
+ * « Sous le capot » (gabarit E5 · 4, depuis le 15/10/2026) : la manière dont
+ * le projet est construit, en une liste serrée de points d’une ligne. Chaque
+ * point se déplie (<details> natif, sans JavaScript) sur son explication,
+ * « contrainte, choix, effet » pour une décision ou un texte pour un fait
+ * technique, puis un extrait court et sa trace publique. Il remplace « Comment
+ * je l’ai construit », jugé trop lourd (retour de Charles du 15/10/2026) :
+ * rien n’est retiré, tout est replié. L’en-tête y mène en un clic
+ * (#construit, l’ancre d’origine).
+ *
+ *   <SousLeCapot points={POINTS} chapeau="…" />
+ *   <SousLeCapot points={…}>… (suite : figure, schéma, pictos)</SousLeCapot>
+ *
+ * Un point peut porter un `groupe` (« Architecture », « Garde-fous »…) : la
+ * liste se coupe alors en groupes titrés, dans l’ordre de leur première
+ * apparition. Les points sont numérotés d’un bout à l’autre ; chacun a son
+ * ancre (`construit-1`…), qui l’ouvre. L’extrait est du vrai code d’un dépôt
+ * public, avec son chemin, ou une forme écrite pour la page quand le code est
+ * privé (types.ts, `Extrait`). Imprimé, tout est déplié.
+ */
+import SectionProjet from './SectionProjet.astro';
+import LienAction from '../../ui/LienAction.astro';
+import type { Emplacement } from '../../../lib/liens';
+import { typo } from '../../../lib/typo';
+import type { PointCapot } from './types';
+
+interface Props {
+  points: readonly PointCapot[];
+  id?: string;
+  titre?: string;
+  chapeau?: string;
+  emplacement?: Emplacement;
+}
+
+const { points, id = 'construit', titre = 'Sous le capot', chapeau, emplacement = 'preuves' } = Astro.props;
+if (points.length < 2 || points.length > 10) throw new Error(`<SousLeCapot> : deux à dix points (règle E5), ${points.length} reçus.`);
+for (const point of points) {
+  const decision = Boolean(point.contrainte && point.choix && point.effet);
+  if (!point.titre.trim()) throw new Error('<SousLeCapot> : chaque point a son titre d’une ligne.');
+  if (decision === Boolean(point.texte) || (!decision && (point.contrainte || point.choix || point.effet))) {
+    throw new Error(`<SousLeCapot> : « ${point.titre} » se dit soit « contrainte, choix, effet », soit en texte.`);
+  }
+  if (point.extrait && point.extrait.code.trimEnd().split('\n').length > 12) throw new Error(`<SousLeCapot> : l’extrait de « ${point.titre} » dépasse douze lignes.`);
+}
+
+/** Les groupes, dans l’ordre de leur première apparition ; un seul, sans titre, quand aucun point n’en a. */
+const groupes: { titre?: string; points: { point: PointCapot; rang: number }[] }[] = [];
+points.forEach((point, index) => {
+  const groupe = groupes.find((g) => g.titre === point.groupe) ?? groupes[groupes.push({ titre: point.groupe, points: [] }) - 1];
+  groupe.points.push({ point, rang: index + 1 });
+});
+const deux = (n: number) => String(n).padStart(2, '0');
+---
+
+<SectionProjet id={id} titre={titre} chapeau={chapeau} class="capot">
+  {
+    groupes.map((groupe, g) => (
+      <div class="capot__groupe">
+        {groupe.titre && <h3 class="capot__groupe-titre" id={`${id}-groupe-${g + 1}`}>{typo(groupe.titre)}</h3>}
+        <ol class="capot__liste" aria-labelledby={groupe.titre ? `${id}-groupe-${g + 1}` : undefined} aria-label={groupe.titre ? undefined : `${points.length} points, à déplier`}>
+          {groupe.points.map(({ point, rang }) => (
+            <li class="point-capot" id={`${id}-${rang}`}>
+              <details class="point-capot__pli" data-capot>
+                <summary class="point-capot__resume">
+                  <span class="point-capot__rang" aria-hidden="true">{deux(rang)}</span>
+                  <span class="point-capot__titre">{typo(point.titre)}</span>
+                  {point.extrait && <span class="point-capot__indice">{point.extrait.ecrit ? 'aperçu' : 'code'}</span>}
+                  <span class="point-capot__marque" aria-hidden="true" />
+                </summary>
+                <div class="point-capot__corps">
+                  <div class="point-capot__texte">
+                    {point.texte ? (
+                      <p>{typo(point.texte)}</p>
+                    ) : (
+                      <dl>
+                        <dt>Contrainte</dt>
+                        <dd>{typo(point.contrainte!)}</dd>
+                        <dt>Choix</dt>
+                        <dd>{typo(point.choix!)}</dd>
+                        <dt>Effet</dt>
+                        <dd class="point-capot__effet">{typo(point.effet!)}</dd>
+                      </dl>
+                    )}
+                    {point.lien && <LienAction class="point-capot__lien" href={point.lien.href} emplacement={emplacement}>{typo(point.lien.libelle)}</LienAction>}
+                  </div>
+                  {point.extrait && (
+                    <figure class="extrait">
+                      <figcaption class="extrait__legende">
+                        {point.extrait.fichier ? (
+                          <>
+                            <code>{point.extrait.fichier}</code> · {point.extrait.langage}
+                          </>
+                        ) : (
+                          <>{point.extrait.langage}, forme simplifiée écrite pour cette page&nbsp;: le code est privé</>
+                        )}
+                      </figcaption>
+                      <pre class="extrait__code" tabindex="0"><code>{point.extrait.code.trimEnd()}</code></pre>
+                    </figure>
+                  )}
+                </div>
+              </details>
+            </li>
+          ))}
+        </ol>
+      </div>
+    ))
+  }
+  <slot />
+</SectionProjet>
+
+<script>
+  /** Ouvre le point de « Sous le capot » qu’une ancre vise, au chargement comme au changement d’ancre. */
+  function ouvrir(ancre: string): void {
+    if (!ancre || ancre === '#') return;
+    let cible: Element | null = null;
+    try {
+      cible = document.getElementById(decodeURIComponent(ancre.slice(1)));
+    } catch {
+      return;
+    }
+    const pli = cible?.querySelector<HTMLDetailsElement>(':scope > details[data-capot]');
+    if (pli) pli.open = true;
+  }
+
+  ouvrir(location.hash);
+  window.addEventListener('hashchange', () => ouvrir(location.hash));
+  window.addEventListener('beforeprint', () => {
+    for (const pli of document.querySelectorAll<HTMLDetailsElement>('details[data-capot]')) pli.open = true;
+  });
+</script>
+
+<style>
+  .capot__groupe {
+    max-width: 60rem;
+    margin-top: var(--s6);
+  }
+
+  .capot__groupe + .capot__groupe {
+    margin-top: var(--s7);
+  }
+
+  .capot__groupe-titre {
+    margin-bottom: var(--s3);
+    font-size: var(--t-xl);
+    line-height: 1.1;
+  }
+
+  .capot__liste {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--trait);
+  }
+
+  .point-capot {
+    border-bottom: 1px solid var(--filet);
+  }
+
+  .point-capot__resume {
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: var(--s3);
+    min-height: 56px;
+    padding-block: var(--s3);
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .point-capot__resume::-webkit-details-marker {
+    display: none;
+  }
+
+  .point-capot__resume:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+    border-radius: var(--r1);
+  }
+
+  .point-capot__rang {
+    font-size: var(--t-xs);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: var(--ls-petit);
+    color: var(--eteint);
+  }
+
+  .point-capot__titre {
+    font-size: var(--t-m);
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--encre);
+  }
+
+  .point-capot__resume:hover .point-capot__titre {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+  }
+
+  /* Ce que le pli contient en plus du texte : un extrait de code, ou une forme écrite pour la page. */
+  .point-capot__indice {
+    padding: 0 var(--s2);
+    border: 1px solid var(--filet);
+    border-radius: var(--r1);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: var(--t-xs);
+    line-height: 1.6;
+    color: var(--eteint);
+  }
+
+  /* Le signe d’ouverture, en bleu roi : ce qui se clique. « + » replié, « − » ouvert. */
+  .point-capot__marque {
+    grid-column: 4;
+    position: relative;
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    color: var(--accent);
+  }
+
+  .point-capot__marque::before,
+  .point-capot__marque::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: 11px;
+    height: 1.5px;
+    background: currentColor;
+    translate: -50% -50%;
+    transition: rotate var(--d-ui) var(--courbe);
+  }
+
+  .point-capot__marque::after {
+    rotate: 90deg;
+  }
+
+  .point-capot__pli[open] .point-capot__marque::after {
+    rotate: 0deg;
+  }
+
+  .point-capot__resume:hover .point-capot__marque {
+    border-color: var(--accent-survol);
+    color: var(--accent-survol);
+  }
+
+  /* Le texte à sa mesure, puis l’extrait sous lui, sur toute la ligne : une
+     ligne de code se lit entière (une centaine de signes) au lieu d’être
+     coupée dans une demi-colonne. */
+  .point-capot__corps {
+    display: grid;
+    gap: var(--s4);
+    padding: var(--s1) 0 var(--s5) calc(2.25rem + var(--s3));
+  }
+
+  .point-capot__texte {
+    max-width: var(--mesure);
+  }
+
+  .point-capot__texte p {
+    font-size: var(--t-s);
+    line-height: 1.55;
+  }
+
+  dl {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--s2) var(--s4);
+    margin: 0;
+  }
+
+  dt {
+    padding-top: 0.2em;
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: var(--ls-petit);
+    color: var(--eteint);
+  }
+
+  dd {
+    margin: 0;
+    font-size: var(--t-s);
+    line-height: 1.5;
+  }
+
+  .point-capot__effet {
+    font-family: var(--police-titre);
+    font-size: var(--t-l);
+    line-height: 1.2;
+    color: var(--encre);
+  }
+
+  .point-capot__texte :global(.point-capot__lien) {
+    margin-top: var(--s3);
+    min-height: 44px;
+  }
+
+  .extrait {
+    min-width: 0;
+    margin: 0;
+  }
+
+  .extrait__legende {
+    margin-bottom: var(--s2);
+    font-size: var(--t-xs);
+    line-height: 1.45;
+    color: var(--eteint);
+    overflow-wrap: anywhere;
+  }
+
+  .extrait__legende code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: var(--encre);
+  }
+
+  .extrait__code {
+    margin: 0;
+    padding: var(--s3) var(--s4);
+    overflow-x: auto;
+    border: 1px solid var(--filet);
+    border-radius: var(--r2);
+    background: var(--acte);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: var(--t-xs);
+    line-height: 1.55;
+    color: var(--encre);
+    tab-size: 2;
+  }
+
+  .extrait__code:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 860px) {
+    .point-capot__resume {
+      grid-template-columns: 1.75rem minmax(0, 1fr) auto;
+    }
+
+    .point-capot__marque {
+      grid-column: 3;
+    }
+
+    /* Sur mobile, l’indice laisse sa place au titre ; l’extrait reste dans le pli. */
+    .point-capot__indice {
+      display: none;
+    }
+
+    .point-capot__corps {
+      padding-left: 0;
+    }
+  }
+
+  /* Sur un téléphone, l’intitulé passe au-dessus de son texte : toute la largeur pour lire. */
+  @media (max-width: 560px) {
+    dl {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+    }
+
+    dd {
+      margin-bottom: var(--s3);
+    }
+  }
+
+  /* À l’impression, tout est déplié, sans signe d’ouverture. */
+  @media print {
+    .point-capot__pli::details-content {
+      content-visibility: visible;
+      display: block;
+    }
+
+    .point-capot__marque {
+      display: none;
+    }
+
+    .extrait__code {
+      white-space: pre-wrap;
+    }
+  }
+</style>

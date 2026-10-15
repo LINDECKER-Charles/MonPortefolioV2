@@ -31,12 +31,12 @@ import SceneSysteme from '../components/accueil/SceneSysteme.astro';
 import TeteChapitre from '../components/accueil/TeteChapitre.astro';
 import CarteProjet from '../components/pages/CarteProjet.astro';
 import Acte from '../components/ui/Acte.astro';
+import CadreCapture from '../components/ui/CadreCapture.astro';
 import LienAction from '../components/ui/LienAction.astro';
 import PreuveChiffree from '../components/ui/PreuveChiffree.astro';
 import PreuvesChiffrees from '../components/ui/PreuvesChiffrees.astro';
 import Surligneur from '../components/ui/Surligneur.astro';
 import Terme from '../components/ui/Terme.astro';
-import Visuel from '../components/ui/Visuel.astro';
 import { CHAPITRES } from '../config/chapitres';
 import { GLOSSAIRE } from '../config/glossaire';
 import { projetDeLaVitrine } from '../config/projets';
@@ -106,7 +106,17 @@ const omnicard = projetDeLaVitrine('omnicard');
           statut={CARTES.omnicard.statut}
           liens={[...CARTES.omnicard.liens]}
         >
-          <Visuel slot="visuel" id="OMN-01" acte sizes="(max-width: 860px) 100vw, 560px" />
+          <!-- La page d’accueil du jeu (capture d’une version précédente, docs/assets-omnicard.md), la même que sur la vitrine. -->
+          <CadreCapture
+            slot="visuel"
+            type="navigateur"
+            src={CARTES.omnicard.visuel!.capture!.src}
+            alt={CARTES.omnicard.visuel!.capture!.alt}
+            ratio="16 / 10"
+            position="50% 12%"
+            widths={[480, 960, 1440]}
+            sizes="(max-width: 860px) calc(100vw - 52px), 520px"
+          />
         </CarteProjet>
       </div>
 

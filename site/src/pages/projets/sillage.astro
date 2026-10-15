@@ -3,7 +3,7 @@
  * Sillage : la preuve d’« orchestrer des agents IA ». Page bâtie sur le
  * gabarit commun des pages de projet (components/projets/gabarit, règle E5) :
  * en-tête et fiche, corps libre (le principe, composer une tâche, reprendre
- * après une coupure, le résultat), « Comment je l’ai construit », sortie et
+ * après une coupure, le résultat), « Sous le capot », sortie et
  * note de sources. Données et sources : config/sillage.ts, que cette page
  * tient seule (sa carte de la vitrine comprise).
  *
@@ -14,11 +14,11 @@
  */
 import Base from '../../layouts/Base.astro';
 import CorpsProjet from '../../components/projets/gabarit/CorpsProjet.astro';
-import DecisionsProjet from '../../components/projets/gabarit/DecisionsProjet.astro';
 import EnTeteProjet from '../../components/projets/gabarit/EnTeteProjet.astro';
 import SectionProjet from '../../components/projets/gabarit/SectionProjet.astro';
 import SortieProjet from '../../components/projets/gabarit/SortieProjet.astro';
 import SourcesProjet from '../../components/projets/gabarit/SourcesProjet.astro';
+import SousLeCapot from '../../components/projets/gabarit/SousLeCapot.astro';
 import CadreCapture from '../../components/ui/CadreCapture.astro';
 import CaptureAnnotee from '../../components/ui/CaptureAnnotee.astro';
 import Visionneuse from '../../components/ui/Visionneuse.astro';
@@ -31,7 +31,7 @@ import recapitulatifMobile from '../../assets/projets/sillage/recapitulatif-mobi
 import reprendre from '../../assets/projets/sillage/reprendre-execution.webp';
 import reprendreMobile from '../../assets/projets/sillage/reprendre-execution-mobile.webp';
 import { SITE } from '../../config/site';
-import { DECISIONS, ECRANS, EN_TETE, FICHE, LIENS_SORTIE, PREUVES, SECTIONS } from '../../config/sillage';
+import { CAPOT, ECRANS, EN_TETE, FICHE, FONCTIONS, LIENS_SORTIE, PREUVES, SECTIONS } from '../../config/sillage';
 import { typo } from '../../lib/typo';
 
 // ≤ 45 caractères avant « — Charles Lindecker » (titre ≤ 65 au total).
@@ -190,7 +190,9 @@ const alt = (ecran: keyof typeof ECRANS) => typo(ECRANS[ecran].alt);
       </SectionProjet>
     </div>
 
-    <DecisionsProjet decisions={DECISIONS} chapeau="Quatre choix qui ne se voient pas à l’écran, chacun né d’un problème relevé. Le serveur les tient par 643 tests, que l’intégration continue joue sous Windows et macOS." />
+    <SousLeCapot id="fonctions" titre="Toutes ses fonctions, une ligne chacune" points={FONCTIONS} chapeau="Du projet au résultat : un clic déplie chaque fonction." />
+
+    <SousLeCapot points={CAPOT} chapeau="L’architecture, puis quatre choix nés d’un problème relevé, et ce qui les tient. Le code est privé : les extraits sont des formes simplifiées, écrites pour cette page." />
 
     <SortieProjet projet="sillage" titre="Aujourd’hui" liens={LIENS_SORTIE}>
       <p>Neuf exécutions réelles en huit jours, 579&nbsp;agents lancés, 63&nbsp;500 appels d’outils, sept blocages durs relevés puis traités&nbsp;: Sillage tourne sur ma machine, avec Relais.</p>
@@ -201,6 +203,7 @@ const alt = (ecran: keyof typeof ECRANS) => typo(ECRANS[ecran].alt);
       <p><b>Chiffres.</b> Les 579&nbsp;agents et les 63&nbsp;500 appels d’outils, dont 1&nbsp;004 en échec, viennent du registre des blocages du dépôt (révision 9b4533a du 05/10/2026), qui en tire sept blocages durs&nbsp;; il couvre neuf exécutions réelles, du 26/09 au 03/10/2026. Les 643&nbsp;tests du serveur sont comptés dans son code à la révision c256e76&nbsp;; avec 206&nbsp;tests Node, 22&nbsp;parcours d’interface et 14&nbsp;scénarios de bout en bout, aucun ne consomme d’abonnement&nbsp;: ceux qui parlent à un fournisseur passent par un fournisseur simulé.</p>
       <p><b>Décisions.</b> Les 10&nbsp;000 à 27&nbsp;000 caractères que rendent les agents, quelle que soit la cible annoncée, viennent des contrats de contexte (révision 480e358)&nbsp;; les 26&nbsp;commandes Git bloquées et les 39&nbsp;blocages dus au bac à sable des agents, du registre des blocages&nbsp;; les 2,19&nbsp;milliards de tokens relus sur 79&nbsp;sessions, de la mesure qui a motivé la fenêtre de compaction (révision ae2efd8 du 12/10/2026)&nbsp;; le découplage de Relais et ses trois lectures du dossier voisin, du rapport d’architecture (révision ed4080b). Les deux corrections au plus, la fenêtre de 300&nbsp;000 tokens et les cas où Sillage crée le worktree d’un agent sont lus dans le code.</p>
       <p><b>Écrans.</b> L’application lancée en local à la révision c256e76, contre le faux fournisseur des tests du dépôt, sur des projets, des tâches et des résultats de démonstration&nbsp;: aucun abonnement, aucune donnée ni tâche réelle. Les vues de téléphone sont capturées à 390&nbsp;px de large. Leurs durées et leurs commits ne mesurent rien.</p>
+      <p><b>Fonctions et sous le capot.</b> Relus le 15/10/2026 à la même révision&nbsp;: la documentation, le contrat de l’API, les contrats des agents et le code. Les extraits sont des formes simplifiées, écrites pour cette page. Tests comptés dans le code&nbsp;: 643 en Rust, 206 pour les scripts, 22 parcours d’interface et 14 scénarios de bout en bout.</p>
     </SourcesProjet>
   </CorpsProjet>
 

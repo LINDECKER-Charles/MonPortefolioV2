@@ -10,7 +10,7 @@
  * permaliens de la note de méthode.
  */
 import type { EntreeSommaire } from './navigation';
-import type { DonneesFiche, PreuveEnTete } from '../components/projets/gabarit/types';
+import type { DonneesFiche, PointCapot, PreuveEnTete } from '../components/projets/gabarit/types';
 
 /* ------------------------------------------------------------------ */
 /* Liens publics                                                       */
@@ -85,7 +85,7 @@ export const SECTIONS: readonly EntreeSommaire[] = [
   { id: 'equipe', titre: 'L’équipe' },
   { id: 'semaine', titre: 'La semaine type' },
   { id: 'resultat', titre: 'Le résultat' },
-  { id: 'construit', titre: 'Comment je l’ai construit' },
+  { id: 'construit', titre: 'Sous le capot' },
   { id: 'retiens', titre: 'Ce que j’en retiens' },
 ];
 
@@ -234,28 +234,62 @@ export const COMMANDES = [
 ] as const;
 
 /* ------------------------------------------------------------------ */
-/* Comment je l’ai construit (gabarit E5 · 4)                          */
+/* Sous le capot (gabarit E5 · 4)                                      */
 /* ------------------------------------------------------------------ */
 
-export const DECISIONS = [
+/**
+ * Trois décisions, chacune avec sa trace publique. Les extraits viennent du
+ * Console Manager, dépôt public de la liste blanche, à la révision 492c8de
+ * de sa branche principale (lue le 15/10/2026).
+ */
+export const CAPOT: readonly PointCapot[] = [
   {
+    titre: 'Un outil qui compare chaque langue à l’anglais',
     contrainte: 'Une nouvelle version du jeu sort chaque mois environ, et personne ne sait ce qui manque.',
     choix: 'Un outil qui compare chaque langue à l’anglais et écrit le bloc exact à traduire.',
     effet: 'Chaque version devient une liste de tâches, entrée par entrée.',
     lien: { href: LIENS.outilCode, libelle: 'Le code du Console Manager' },
+    extrait: {
+      fichier: 'src/core/diff.ts',
+      langage: 'TypeScript',
+      code: `/** Entries from \`source\` whose \`id\` does not appear in \`target\`. */
+export function missingById<T extends HasId>(source: Iterable<T>, target: Iterable<T>): T[] {
+  const targetIds = new Set<Id>();
+  for (const item of target) targetIds.add(item.id);
+  return [...source].filter((item) => !targetIds.has(item.id));
+}`,
+    },
   },
   {
+    titre: 'Une carte de tâche par entrée manquante',
     contrainte: 'Des bénévoles qui arrivent sans savoir par où commencer.',
     choix: 'Une carte de tâche par entrée manquante : chacun prend ce qu’il peut traduire.',
     effet: 'Chacun prend une tâche à sa mesure, jusqu’à dix en même temps au plus fort.',
+    extrait: {
+      fichier: 'src/reporting/trello-csv.ts',
+      langage: 'TypeScript',
+      code: `/** Trello CSV + import README generation. */
+export const CSV_HEADER = ["Name", "Description", "Labels", "List"] as const;`,
+    },
   },
   {
+    titre: 'Une pull request par semaine, qui crédite chacun',
     contrainte: 'Un travail bénévole reste invisible si personne ne le nomme.',
     choix: 'Une pull request par semaine qui crédite chacun, et un bilan individuel tiré de l’outil.',
     effet: 'Douze personnes créditées en plus de moi ; la PR #110 en crédite huit, moi compris.',
     lien: { href: LIENS.pr110, libelle: 'La PR #110' },
+    extrait: {
+      fichier: 'src/tools/pr-resume/index.ts',
+      langage: 'TypeScript',
+      code: `/** PR recap → per-contributor documentation blocks.
+ *
+ * Ported from the standalone \`pvzf-make-pr\` CLI. Turns the weekly translation
+ * PR recap into one markdown block per contributor, ready to archive under the
+ * contributor documentation.
+ */`,
+    },
   },
-] as const;
+];
 
 /* ------------------------------------------------------------------ */
 /* Sortie (gabarit E5 · 5)                                             */

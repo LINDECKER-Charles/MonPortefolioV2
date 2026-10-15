@@ -41,18 +41,18 @@ test('l’en-tête tient dans le premier écran : titre, identité, preuve, acti
   }
 });
 
-test('le nom canonique, l’étiquette de preuve et « Comment je l’ai construit »', async ({ page }) => {
+test('le nom canonique, l’étiquette de preuve et « Sous le capot »', async ({ page }) => {
   await page.goto(CHEMIN);
   const ariane = page.getByRole('navigation', { name: 'Fil d’Ariane', exact: true });
   await expect(ariane.locator('[aria-current="page"]')).toHaveText('Karl Scraper');
   const entete = page.locator('.projet-tete');
   await expect(entete).toContainText('Automatiser des tâches');
-  const construit = entete.locator('[data-pli="action"]').getByRole('link', { name: /Comment je l’ai construit/ });
+  const construit = entete.locator('[data-pli="action"]').getByRole('link', { name: /Sous le capot/ });
   await expect(construit).toHaveAttribute('href', '#construit');
   await expect(entete.locator('[data-pli="action"] a')).toHaveCount(1);
   await construit.click();
   await expect(page.locator('#construit')).toBeInViewport();
-  await expect(page.locator('#construit .decision')).toHaveCount(4);
+  await expect(page.locator('#construit .point-capot')).toHaveCount(10);
 });
 
 test('la fiche technique : sept cases, statut à forme et mot, dépôt privé sans aucun lien', async ({ page }) => {
@@ -62,7 +62,8 @@ test('la fiche technique : sept cases, statut à forme et mot, dépôt privé sa
   // Seul ce qui est sourcé s’affiche sans marque : le service tourne sur le poste ; la présentation
   // en projet personnel attend la réponse de Charles (Q92).
   await expect(fiche.locator('.statut')).toHaveText('Outil personnel, en service sur mon poste');
-  await expect(fiche.locator('.fiche-projet__case--equipe .a-confirmer')).toHaveText('à confirmer');
+  // Plus aucune marque « à confirmer » depuis le 15/10/2026.
+  await expect(fiche.locator('.a-confirmer')).toHaveCount(0);
   await expect(fiche.locator('.fiche-projet__case--part')).toContainText('282 commits');
   await expect(fiche.locator('.fiche-projet__case--liens')).toHaveText(/Aucun\s:\sle code est dans un dépôt privé\./);
   await expect(fiche.locator('a')).toHaveCount(0);
@@ -231,7 +232,7 @@ test('une seule navigation de page, sans la note de sources', async ({ page }) =
   const navigation = page.locator('nav[aria-label="Dans cette page"]');
   await expect(navigation).toHaveCount(1);
   if ((page.viewportSize()?.width ?? 0) > 1100) await expect(navigation).toBeVisible();
-  const attendus = ['#copie', '#galaxie', '#agent', '#chaine', '#construit', '#retiens'];
+  const attendus = ['#copie', '#galaxie', '#agent', '#chaine', '#fonctions', '#construit', '#retiens'];
   expect(await navigation.locator('a').evaluateAll((liens) => liens.map((lien) => lien.getAttribute('href')))).toEqual(attendus);
   for (const ancre of attendus) await expect(page.locator(ancre)).toHaveCount(1);
 });
@@ -244,7 +245,7 @@ for (const theme of ['jour', 'nuit'] as const) {
       await page.goto(CHEMIN);
       await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
       await page.locator('#sources summary').click();
-      for (const zone of ['.projet-tete', '#copie', '#galaxie', '#agent', '#chaine', '#construit', '#retiens', '#sources']) {
+      for (const zone of ['.projet-tete', '#copie', '#galaxie', '#agent', '#chaine', '#fonctions', '#construit', '#retiens', '#sources']) {
         // En haut de page : l’en-tête collant ne recouvre aucune cible (règle target-size).
         await page.evaluate(() => window.scrollTo(0, 0));
         const resultats = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice']).include(zone).analyze();
@@ -268,7 +269,7 @@ test.describe('sans JavaScript', () => {
       await expect.poll(() => image.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0), zone).toBe(true);
     }
     await expect(page.locator('#chaine .chaine__etape')).toHaveCount(5);
-    await page.locator('[data-pli="action"]').getByRole('link', { name: /Comment je l’ai construit/ }).click();
+    await page.locator('[data-pli="action"]').getByRole('link', { name: /Sous le capot/ }).click();
     expect(new URL(page.url()).hash).toBe('#construit');
     await page.locator('#sources summary').click();
     await expect(page.locator('#sources')).toContainText('faux serveur source');

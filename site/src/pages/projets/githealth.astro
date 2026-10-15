@@ -3,7 +3,7 @@
  * GitHealth : la preuve d’« une application de bureau ». Page bâtie sur le
  * gabarit commun des pages de projet (components/projets/gabarit, règle E5) :
  * en-tête et fiche, corps libre (les verdicts, la politique, l’analyse en
- * direct, les visualisations), « Comment je l’ai construit », sortie et note
+ * direct, les visualisations), « Sous le capot », sortie et note
  * de sources. Données, liens figés et textes des captures : config/githealth.ts,
  * que cette page tient seule (sa carte de la vitrine comprise).
  *
@@ -15,11 +15,11 @@
  */
 import Base from '../../layouts/Base.astro';
 import CorpsProjet from '../../components/projets/gabarit/CorpsProjet.astro';
-import DecisionsProjet from '../../components/projets/gabarit/DecisionsProjet.astro';
 import EnTeteProjet from '../../components/projets/gabarit/EnTeteProjet.astro';
 import SectionProjet from '../../components/projets/gabarit/SectionProjet.astro';
 import SortieProjet from '../../components/projets/gabarit/SortieProjet.astro';
 import SourcesProjet from '../../components/projets/gabarit/SourcesProjet.astro';
+import SousLeCapot from '../../components/projets/gabarit/SousLeCapot.astro';
 import CadreCapture from '../../components/ui/CadreCapture.astro';
 import CaptureAnnotee from '../../components/ui/CaptureAnnotee.astro';
 import Visionneuse from '../../components/ui/Visionneuse.astro';
@@ -31,7 +31,7 @@ import ficheBranche from '../../assets/projets/githealth/fiche-branche.webp';
 import politique from '../../assets/projets/githealth/politique.webp';
 import activite from '../../assets/projets/githealth/registre-activite.webp';
 import { SITE } from '../../config/site';
-import { CAPTURES, DECISIONS, EN_TETE, FICHE, LIENS, LIENS_SORTIE, PREUVES, SECTIONS, VERDICTS } from '../../config/githealth';
+import { CAPTURES, CAPOT, EN_TETE, FICHE, LIENS, LIENS_SORTIE, PREUVES, SECTIONS, VERDICTS } from '../../config/githealth';
 import { attributsMesure } from '../../lib/liens';
 import { typo } from '../../lib/typo';
 
@@ -164,7 +164,7 @@ const taillesRecadrees = (largeurMobile: number) => `(max-width: 860px) ${Math.r
       </div>
     </SectionProjet>
 
-    <DecisionsProjet decisions={DECISIONS} chapeau="Quatre choix qui ne se voient pas à l’écran, et ce qu’ils garantissent." />
+    <SousLeCapot points={CAPOT} chapeau="Quatre choix qui ne se voient pas à l’écran, et ce qu’ils garantissent ; chacun se déplie sur son extrait du code public." />
 
     <SortieProjet projet="githealth" titre="Aujourd’hui" liens={LIENS_SORTIE}>
       <p>La version&nbsp;0.2.0, publiée le 14/09/2026, est livrée pour quatre cibles natives&nbsp;: Windows, macOS Intel et Apple Silicon, et Linux. Elle s’installe sous Windows et macOS, et tourne aussi sous Linux. La suite avance sur la branche de développement&nbsp;: l’analyse planifiée et une API locale y attendent leur version.</p>
@@ -175,6 +175,7 @@ const taillesRecadrees = (largeurMobile: number) => `(max-width: 860px) ${Math.r
       <p><b>Écrans.</b> Six vues réelles de l’application, lancée en local le 14/10/2026 sur des dépôts Git de démonstration fabriqués pour l’occasion&nbsp;: auteurs fictifs, aucune donnée réelle, interface ni retouchée ni recomposée. L’application capturée vient de la branche de développement (révision bd2e5c9 du 16/09/2026)&nbsp;: le numéro de version affiché est 0.2.0, mais l’engrenage de la barre du haut et l’analyse planifiée, en bas de l’écran de politique, ne sont pas encore publiés. Tout le reste existe dans la 0.2.0.</p>
       <p><b>Verdicts et politique.</b> L’échelle des verdicts, dont l’échelle courte des branches fusionnées, vient du <a {...sortant(LIENS.verdicts)}>guide de l’utilisateur<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>&nbsp;; l’effet projeté de la politique, du <a {...sortant(LIENS.politique)}>même guide<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>&nbsp;; la séparation des faits et de leur lecture, de <a {...sortant(LIENS.etats)}>l’architecture<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. La console de l’analyse et l’onglet Visualisation sont décrits dans les notes de la 0.2.0&nbsp;: <a {...sortant(LIENS.console)}>la console<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>, <a {...sortant(LIENS.visualisation)}>les visualisations<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. La topologie en un seul appel est <a {...sortant(LIENS.topologie)}>dans le code<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>.</p>
       <p><b>Le projet.</b> Dépôt public sous licence MIT, commencé le 28/08/2026&nbsp;: 159&nbsp;commits de ma main et 11 de Dependabot à la révision bd2e5c9. Versions 0.1.0 (31/08/2026) et 0.2.0 (14/09/2026). L’interface de l’application est en anglais.</p>
+      <p><b>Sous le capot.</b> Extraits de la branche de développement, révision bd2e5c9, relus le 15/10/2026.</p>
     </SourcesProjet>
   </CorpsProjet>
 

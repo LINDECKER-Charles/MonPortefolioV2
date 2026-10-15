@@ -19,7 +19,7 @@
  * on relie les règles, la galerie et l’archive.
  */
 import type { EntreeSommaire } from './navigation';
-import type { Decision, DonneesFiche, LienProjet, PreuveEnTete } from '../components/projets/gabarit/types';
+import type { PointCapot, DonneesFiche, LienProjet, PreuveEnTete } from '../components/projets/gabarit/types';
 
 /* ------------------------------------------------------------------ */
 /* Liens publics : le dépôt de présentation, et lui seul                */
@@ -89,7 +89,6 @@ export const FICHE: DonneesFiche = {
     { href: LIENS.regles, libelle: 'Règles' },
     { href: LIENS.galerie, libelle: 'Galerie de cartes' },
   ],
-  aConfirmer: { periode: 'Dates de début et de lancement à confirmer par Charles (Q8)' },
 };
 
 /** Les sections du corps : sommaire de l’en-tête et navigation de page. */
@@ -99,7 +98,7 @@ export const SECTIONS: readonly EntreeSommaire[] = [
   { id: 'partie', titre: 'Une partie' },
   { id: 'jeu', titre: 'Le jeu en images' },
   { id: 'moteur', titre: 'Le moteur de règles' },
-  { id: 'construit', titre: 'Comment je l’ai construit' },
+  { id: 'construit', titre: 'Sous le capot' },
   { id: 'retiens', titre: 'Ce que j’en retiens' },
 ];
 
@@ -161,8 +160,9 @@ export interface Reequilibrage {
  * Saison 1 : cartes de l’archive publique (Archive/Carte/saison_01). Version
  * actuelle du projet : exports de l’outil du projet, depuis ses données, le
  * 13/10/2026 (docs/assets-omnicard.md). Le catalogue public 1.2.0 affiche
- * encore 4/8 pour Gehrman et 0/4 pour Floppa : Mage ; la version en ligne de
- * ces valeurs reste à confirmer par Charles, d’où la marque « à confirmer ».
+ * encore 4/8 pour Gehrman et 0/4 pour Floppa : Mage ; la page dit « version
+ * actuelle du projet », sans dire que ces valeurs sont celles du jeu en ligne,
+ * et sa note de sources rappelle l’écart.
  */
 export const REEQUILIBRAGES: readonly Reequilibrage[] = [
   { id: 'gehrman', nom: 'Gehrman, Premier Chasseur', court: 'Gehrman', changements: [{ quoi: 'Statistiques', avant: '4/8', apres: '4/15', zones: ['droite'] }] },
@@ -248,22 +248,53 @@ export const TRAJET = [
 ] as const;
 
 /* ------------------------------------------------------------------ */
-/* Comment je l’ai construit (gabarit E5 · 4)                          */
+/* Sous le capot (gabarit E5 · 4)                                      */
 /* ------------------------------------------------------------------ */
 
-export const DECISIONS: readonly Decision[] = [
+export const CAPOT: readonly PointCapot[] = [
   {
+    titre: 'Angular et .NET, une stack que je maîtrisais',
     contrainte: 'Le passage au jeu vidéo traînait, et je voulais me lancer sans perdre de temps.',
     choix: 'Angular et .NET, que je connaissais déjà, plutôt qu’un moteur de jeu à découvrir.',
     effet: 'Un jeu dans le navigateur, sur une stack maîtrisée mais pas faite pour ça.',
   },
   {
+    // Le hub de partie du code privé (GameHub) : l’action passe par le moteur, un refus
+    // ne revient qu’au joueur, puis chaque joueur reçoit sa propre vue (BroadcastState).
+    titre: 'Le serveur arbitre chaque action',
     contrainte: 'Deux navigateurs, une seule partie : il faut un arbitre.',
     choix: 'Un moteur de règles en C#, côté serveur : il mélange, fait piocher, déroule les tours et résout chaque effet.',
     effet: 'Chaque joueur envoie son action ; le serveur tranche et renvoie l’état de la partie.',
     lien: { href: LIENS.regles, libelle: 'Les règles du moteur, version joueur' },
+    extrait: {
+      ecrit: true,
+      langage: 'C#',
+      code: `// Chaque action d’un joueur passe par le hub de la partie
+public async Task JouerCarte(DemandeCarte demande)
+{
+    var partie = SessionDe(demande.Code);
+    var verdict = await partie.ExecuterAsync(jeu => jeu.JouerCarte(joueur, demande.Carte, demande.Cible));
+    if (!verdict.Reussi) throw new HubException(verdict.Erreur); // refus pour ce joueur seul
+    await DiffuserEtat(partie); // chaque joueur reçoit sa propre vue de la partie
+}`,
+    },
   },
   {
+    titre: 'Des effets écrits en mots-clés',
+    texte: 'Une carte combine des effets et des conditions nommés par des mots-clés : Délai, Rechargement, Quand, Assassinat… Une phrase suffit au joueur ; le moteur, lui, doit savoir quand l’effet part, qui le compte et ce qui l’annule. Le glossaire public en donne la règle.',
+    lien: { href: LIENS.motsCles, libelle: 'Le glossaire des mots-clés' },
+    extrait: {
+      fichier: 'docs/keywords.md',
+      langage: 'Markdown',
+      code: `### Délai(N)
+Effet programmé pour s'exécuter **N tours plus tard**. Le compteur décrémente uniquement à la fin du tour du joueur qui a programmé l'effet. Si l'unité émettrice meurt, l'effet est annulé.
+
+### Rechargement(N)
+Effet **récurrent** qui se redéclenche tous les N tours (différent de Délai qui ne se déclenche qu'une fois).`,
+    },
+  },
+  {
+    titre: 'SignalR, le cache et le prérendu serveur',
     contrainte: 'Des parties en temps réel, sur une stack qui n’était pas pensée pour un jeu.',
     choix: 'SignalR pour le temps réel, puis le cache, le prérendu serveur et un déploiement optimisé.',
     effet: 'SignalR, le cache, l’optimisation du déploiement et le prérendu serveur : ce que ce projet m’a appris.',

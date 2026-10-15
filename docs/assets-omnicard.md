@@ -16,9 +16,15 @@ ne sont pas présentés comme des chiffres actuels.
 | `collection.webp` | `collection.webp` | Catalogue, cartes possédées et filtres |
 | `deck.webp` | `deck_building.webp` | Composition du deck et catalogue |
 | `ouverture.webp` | `packet-opening-2.webp` | Cartes obtenues après ouverture d’un paquet |
+| `accueil.webp` | `home_page.webp` | Page d’accueil du jeu : cartes en éventail et récompense quotidienne (ajoutée le 15 octobre 2026) |
 
 Captures intégrales, sans recadrage ni modification du contenu. Conversion WebP,
 qualité 90, largeur maximale 1 800 px, sans agrandissement.
+
+`accueil.webp` est réduite de 1 819 à 1 800 px de largeur, en qualité 86, sans recadrage.
+Charles trouve que cette page d’accueil a « très bien vieilli » (retours du 15 octobre 2026) :
+elle remplace l’illustration OMN-01 en tête de la page Omnicard, sur la carte Omnicard de
+l’accueil et sur celle de la vitrine. Aucun pseudonyme, compte ni compteur n’y apparaît.
 
 ## Cartes issues du projet
 

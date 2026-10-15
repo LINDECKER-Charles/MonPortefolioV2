@@ -198,7 +198,8 @@ test.describe('chargement demandé immédiat', () => {
   for (const [chemin, id, theme] of [
     ['/parcours/formation', 'FOR-01', 'light'],
     ['/parcours/formation', 'FOR-01', 'dark'],
-    ['/projets/omnicard', 'OMN-01', 'light'],
+    // OMN-01 a laissé l’en-tête d’Omnicard à sa vraie page d’accueil (15/10/2026) : PVZ-01 prend le relais.
+    ['/projets/pvz-fusion', 'PVZ-01', 'light'],
     ['/page-absente', 'ERR-01', 'dark'],
   ] as const) {
     test(`${id} (${theme === 'dark' ? 'nuit' : 'jour'}) : seule la version affichée est téléchargée`, async ({ page }) => {

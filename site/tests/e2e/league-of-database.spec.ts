@@ -44,18 +44,18 @@ test('l’en-tête tient dans le premier écran : titre, identité, preuve, acti
   }
 });
 
-test('le nom canonique, l’étiquette de preuve et le chemin vers « Comment je l’ai construit »', async ({ page }) => {
+test('le nom canonique, l’étiquette de preuve et le chemin vers « Sous le capot »', async ({ page }) => {
   await page.goto(CHEMIN);
   const ariane = page.getByRole('navigation', { name: 'Fil d’Ariane', exact: true });
   await expect(ariane.locator('[aria-current="page"]')).toHaveText('League Of Data Base');
   await expect(page.locator('main')).not.toContainText(/League Of Database|League of Database/);
   const entete = page.locator('.projet-tete');
   await expect(entete).toContainText('Un système en production');
-  const construit = entete.locator('[data-pli="action"]').getByRole('link', { name: /Comment je l’ai construit/ });
+  const construit = entete.locator('[data-pli="action"]').getByRole('link', { name: /Sous le capot/ });
   await expect(construit).toHaveAttribute('href', '#construit');
   await construit.click();
   await expect(page.locator('#construit')).toBeInViewport();
-  await expect(page.locator('#construit .decision')).toHaveCount(3);
+  await expect(page.locator('#construit .point-capot')).toHaveCount(3);
 });
 
 test('la fiche technique : sept cases à filets, statut à forme et mot, liens publics mesurés', async ({ page }) => {
@@ -294,8 +294,9 @@ test('les pièges des données, la réécriture et l’exploitation gardent leur
     await expect(page.locator(`#fabrication ${bloc} figure`), bloc).toHaveCount(1);
   }
   await expect(page.locator('#audience')).toContainText('Umami');
-  // Le dispositif des sauvegardes est public ; son activation reste à confirmer, et la page le dit.
-  await expect(page.locator('#sauvegardes .a-confirmer')).toContainText('à confirmer');
+  // Le dispositif des sauvegardes est public : la page dit ce qu’il prévoit, sans marque « à confirmer ».
+  await expect(page.locator('#sauvegardes')).toContainText('La chaîne prévoit une sauvegarde chaque nuit');
+  await expect(page.locator('main .a-confirmer')).toHaveCount(0);
 });
 
 test('la sortie : projets voisins dans l’ordre de la vitrine, « Discutons » vers /contact', async ({ page }) => {

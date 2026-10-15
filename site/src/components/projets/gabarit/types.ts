@@ -58,11 +58,37 @@ export interface SchemaProjet {
   langue?: string | readonly string[];
 }
 
-/** Une décision de « Comment je l’ai construit » : contrainte, choix, effet. */
-export interface Decision {
-  contrainte: string;
-  choix: string;
-  effet: string;
-  /** La trace publique de la décision. */
+/**
+ * Un extrait de « Sous le capot ». Du vrai code seulement pour un dépôt public
+ * de la liste blanche (config/liens-publics.ts) : `fichier` donne son chemin,
+ * à la révision citée dans la note de sources. Pour un dépôt privé, une forme
+ * écrite pour la page (`ecrit`) : configuration, commande, structure de
+ * données ou pseudo-code simplifié, jamais du code recopié, ni nom d’employeur,
+ * de client, de chemin interne ou de secret.
+ */
+export type Extrait = {
+  /** Le code tel qu’il s’affiche, indentation comprise ; douze lignes au plus. */
+  code: string;
+  /** Le langage, dit dans la légende : « C# », « TypeScript », « JSON »… */
+  langage: string;
+} & ({ fichier: string; ecrit?: never } | { ecrit: true; fichier?: never });
+
+/**
+ * Un point de « Sous le capot » (gabarit E5 · 4) : une ligne, dépliable sur
+ * son explication et un extrait court. Une décision se dit « contrainte,
+ * choix, effet » ; un fait technique qui n’en est pas une se dit en `texte`.
+ */
+export interface PointCapot {
+  /** Le point en une ligne : ce que l’on lit replié. */
+  titre: string;
+  contrainte?: string;
+  choix?: string;
+  effet?: string;
+  /** L’explication, quand le point n’est pas une décision. */
+  texte?: string;
+  extrait?: Extrait;
+  /** La trace publique du point. */
   lien?: LienProjet;
+  /** Le groupe du point (« Architecture », « Garde-fous »…), titre de sa liste. */
+  groupe?: string;
 }
