@@ -81,10 +81,10 @@ configuration SMTP pour l’envoi réel. Récapitulatif :
 | `APP_ENV` | non | `test` | `production` | `production` par défaut ; seule la valeur `development` dispense de 2FA, réservée au poste local |
 | `BACKOFFICE_EMAIL` | pour administrer | adresse de connexion | adresse de connexion | identifiant indépendant de l’adresse publique de contact |
 | `BACKOFFICE_PASSWORD` | pour administrer | secret propre au test | secret propre à la production | au moins 12 octets, entre apostrophes dans `.env` ; le backend calcule l’empreinte Argon2id |
-| `BACKOFFICE_TOTP_ENCRYPTION_KEY` | pour administrer hors dev | clé propre au test | clé propre à la production | `openssl rand -hex 32` ; chiffre le secret TOTP en SQLite et accompagne les sauvegardes |
+| `BACKOFFICE_TOTP_ENCRYPTION_KEY` | pour administrer hors dev | clé propre au test | clé propre à la production | `openssl rand -hex 32` ; chiffre le secret TOTP et, par une sous-clé, le mot de passe SMTP du backoffice en SQLite ; accompagne les sauvegardes |
 | `BACKOFFICE_COOKIE_SECURE` | non | `true` | `true` | cookie sécurisé sur HTTPS ; `false` réservé au HTTP local |
 | `BACKEND_PROXY_TOKEN` | oui | secret propre au test | secret propre à la production | protège la transmission de l’IP entre Node et Rust ; `openssl rand -hex 32` |
-| `SMTP_HOST` | pour notifier | relais SMTP | relais SMTP | absent : demandes conservées sans notification e-mail |
+| `SMTP_HOST` | non : repli | relais SMTP | relais SMTP | repli quand aucun serveur d’envoi n’est réglé dans le backoffice ; sans l’un ni l’autre, demandes conservées sans notification e-mail |
 | `SMTP_FROM` | avec le relais | expéditeur autorisé | expéditeur autorisé | adresse acceptée par le fournisseur SMTP ; le visiteur reste dans `Reply-To` |
 | `SMTP_PORT`, `SMTP_TLS` | non | `587`, `starttls` | idem | STARTTLS obligatoire ou TLS direct (`465`, `tls`) ; `none` seulement sur boucle locale |
 | `SMTP_USERNAME`, `SMTP_PASSWORD` | ensemble si nécessaires | compte SMTP | compte SMTP | identifiants du relais, uniquement dans le backend |
@@ -101,8 +101,11 @@ Points à lire avant de remplir :
 
 - **L’adresse est gérée dans le backoffice.** `CONTACT_EMAIL` initialise une base neuve ;
   modifier ensuite le destinataire dans `/backoffice` met à jour les pages, les liens et les
-  prochaines notifications sans redémarrage. Les autres réglages SMTP restent des secrets
-  d’environnement. `BACKEND_URL` sert seulement en local à joindre Rust ; Compose fixe la
+  prochaines notifications sans redémarrage. Le serveur d’envoi se règle aussi dans le
+  backoffice (rubrique « E-mails », par exemple la messagerie Hostinger :
+  `smtp.hostinger.com`, port 465, TLS) ; ce réglage prime sur les variables `SMTP_*`, qui
+  restent le repli. Son mot de passe est chiffré en SQLite avec une sous-clé de
+  `BACKOFFICE_TOTP_ENCRYPTION_KEY` et n’est jamais réaffiché. `BACKEND_URL` sert seulement en local à joindre Rust ; Compose fixe la
   destination à `http://backend:8080`.
   Le jeton partagé accepte 32 à 256 caractères ASCII imprimables sans espace. Il doit être
   différent entre test et production ; aucune valeur remplie ne doit être versionnée.
@@ -120,8 +123,9 @@ Points à lire avant de remplir :
   secours affichés une seule fois. La clé de chiffrement doit être sauvegardée avec la base :
   une base seule ne permet pas de récupérer le secret TOTP. Récupération d’accès et contrat :
   [`backend/README.md`](../backend/README.md). Les jetons MCP sont créés et révoqués dans le
-  backoffice ; leurs empreintes vivent dans SQLite, leurs secrets dans les clients choisis,
-  jamais dans le dépôt.
+  backoffice, pour un an au plus ; leurs empreintes vivent dans SQLite, leurs secrets dans les
+  clients choisis, jamais dans le dépôt. Changer la clé rend illisible le mot de passe SMTP
+  enregistré : le ressaisir dans le backoffice.
 
 - **La production attend le départ de la V1.** Tant que la V1 déclare `charles-lindecker.com` et
   `www.` sur l'edge, le déploiement de production refuse de démarrer (domaine déjà déclaré par un
