@@ -14,8 +14,8 @@ const rubriques = [
 
 const EXPERIENCES = [
   { id: 'architecture', poste: 'Architecte logiciel', repere: 'Architecte logiciel', dates: ['2026-08'], statut: 'En poste', nature: 'CDI' },
-  { id: 'mission-locale', poste: 'Mentor et animateur d’ateliers', repere: 'Mission Locale', dates: ['2026-01'], statut: 'Terminé', nature: 'Bénévolat' },
-  { id: 'elan', poste: 'Formateur en développement web', repere: 'Elan Formation', dates: ['2025-12'], statut: 'Mission terminée', nature: 'Freelance' },
+  { id: 'mission-locale', poste: 'Mentor et animateur d’ateliers', repere: 'Mission Locale', dates: ['2026-01', '2026-06'], statut: 'Terminé', nature: 'Bénévolat' },
+  { id: 'elan', poste: 'Formateur en développement web', repere: 'Elan Formation', dates: ['2025-12', '2026-05'], statut: 'Mission terminée', nature: 'Freelance' },
   { id: 'devmates', poste: 'Développeur indépendant', repere: 'Dev-Mates', dates: ['2025-11'], statut: 'Société ouverte', nature: 'Freelance' },
   { id: 'pvz', poste: 'Lead et mainteneur', repere: 'PvZ Fusion', dates: ['2025-10', '2025-12'], statut: 'En cours', nature: 'Bénévolat' },
   { id: 'atis', poste: 'Développeur full stack', repere: 'ATIS Solutions', dates: ['2025-08', '2025-09'], statut: 'Stage terminé', nature: 'Stage' },
@@ -54,7 +54,7 @@ test.describe('hub', () => {
     const portes = page.getByRole('navigation', { name: 'Explorer le parcours', exact: true });
     await expect(portes.getByRole('link', { name: 'Parcours professionnel', exact: true })).toHaveAccessibleDescription(/6 expériences.*20 personnes formées au pôle francophone/);
     // Une seule source pour le cœur de la stack : « Au quotidien » (config/competences.ts).
-    await expect(portes.getByRole('link', { name: 'Compétences', exact: true })).toHaveAccessibleDescription(/Au quotidien\s:\sC#, \.NET, Angular, TypeScript, PostgreSQL, Docker, Git, GitHub Actions\sniveaux à confirmer/);
+    await expect(portes.getByRole('link', { name: 'Compétences', exact: true })).toHaveAccessibleDescription(/Au quotidien\s:\sC#, \.NET, Angular, TypeScript, PostgreSQL, Docker, Git, GitHub Actions$/);
     await expect(portes).not.toContainText(/à valider|MySQL/);
     await expect(portes.getByRole('link', { name: 'Formation et certifications', exact: true })).toHaveAccessibleDescription(/Titre DWWM, RNCP niveau 5.*12 certifications/);
     for (const id of ['PAR-01', 'PAR-02', 'PAR-03']) await expect(portes.locator(`[data-visuel="${id}"]`)).toHaveCount(1);
@@ -67,16 +67,18 @@ test.describe('hub', () => {
     const frise = page.getByRole('figure', { name: 'De 2023 à aujourd’hui' });
     await expect(frise).toBeVisible();
     const liens = frise.getByRole('link');
-    await expect(liens).toHaveCount(8);
-    await expect(frise.getByRole('list', { name: 'Formation' }).getByRole('link')).toHaveCount(2);
+    await expect(liens).toHaveCount(9);
+    await expect(frise.getByRole('list', { name: 'Formation' }).getByRole('link')).toHaveCount(3);
     await expect(frise.getByRole('list', { name: 'Travail' }).getByRole('link')).toHaveCount(4);
     await expect(frise.getByRole('list', { name: 'Communauté' }).getByRole('link')).toHaveCount(2);
     for (const lien of await liens.all()) {
       await expect(lien).toHaveAttribute('href', /^\/parcours\/(?:professionnel|formation)#[a-z-]+$/);
     }
     // Le nom du lien lit la période en mots : jamais « flèche droite ».
-    await expect(frise.getByRole('link', { name: 'Formateur, Elan Formation, Freelance, décembre 2025, fin à confirmer', exact: true })).toHaveCount(1);
+    await expect(frise.getByRole('link', { name: 'Formateur, Elan Formation, Freelance, décembre 2025 à mai 2026', exact: true })).toHaveCount(1);
     await expect(frise.getByRole('link', { name: 'BUT Réseaux & Télécoms, Formation, de 2023 à 2024', exact: true })).toHaveAttribute('href', '/parcours/formation#reseaux');
+    // La piscine de 42, juste après le BUT : elle comble le trou avant le titre.
+    await expect(frise.getByRole('link', { name: 'Piscine de 42, sélection d’entrée, Formation, juillet 2024', exact: true })).toHaveAttribute('href', '/parcours/formation#piscine');
     await expect(frise.getByRole('link', { name: 'Titre DWWM, Elan Formation, Formation, avril à octobre 2025', exact: true })).toHaveCount(1);
     for (const lien of await liens.all()) expect(await lien.getAttribute('aria-label')).not.toContain('→');
 
@@ -202,7 +204,7 @@ test.describe('page Professionnel', () => {
     await expect(lignes.first()).toBeInViewport();
     await expect(lignes.first()).toContainText('CDI, depuis août 2026');
     for (const [index, { id }] of EXPERIENCES.entries()) await expect(lignes.nth(index)).toHaveAttribute('href', `#${id}`);
-    await expect(chronologie.getByRole('link', { name: 'Mentor, Mission Locale, Bénévolat, janvier 2026, fin à confirmer', exact: true })).toHaveCount(1);
+    await expect(chronologie.getByRole('link', { name: 'Mentor, Mission Locale, Bénévolat, janvier à juin 2026', exact: true })).toHaveCount(1);
     await expect(chronologie.getByRole('link', { name: 'Développeur full stack, ATIS Solutions, Stage, août à septembre 2025', exact: true })).toHaveCount(1);
 
     await lignes.nth(2).click();
@@ -262,8 +264,10 @@ test.describe('page Professionnel', () => {
       }
       await expect(page.locator('#architecture .fiche__structure')).toHaveText('B-Hive Mulhouse');
       await expect(page.locator('#architecture')).toContainText('Je travaille sur le développement web et le DevOps.');
-      // Fins inconnues : jamais extrapolées.
-      for (const id of ['elan', 'mission-locale']) await expect(page.locator(`#${id} .a-confirmer`)).toHaveText('fin à confirmer');
+      // Fins données par Charles le 15/10/2026 : plus aucune marque.
+      await expect(page.locator('#elan .fiche__periode time').last()).toHaveText('mai 2026');
+      await expect(page.locator('#mission-locale .fiche__periode time').first()).toHaveText('Janvier');
+      await expect(page.locator('main .a-confirmer')).toHaveCount(0);
       // Dev-Mates : la société ouverte, mais sans client ; rien de non sourcé (« conseil »).
       await expect(page.locator('#devmates .fiche__situation')).toHaveText('Ma société reste ouverte, sans client actuellement.');
       await expect(page.locator('#devmates')).not.toContainText(/conseil/i);
@@ -335,7 +339,7 @@ test.describe('page Formation', () => {
       await expect(complement.getByText('Titre non passé', { exact: true })).toBeVisible();
     });
 
-    test('la frise présente les formations récentes en premier, sans date inventée', async ({ page }) => {
+    test('la frise présente les formations récentes en premier, chacune datée', async ({ page }) => {
       await page.goto('/parcours/formation');
       const frise = page.locator('#formation ol.formation-timeline');
       const etapes = frise.locator(':scope > li');
@@ -346,11 +350,15 @@ test.describe('page Formation', () => {
         await expect(etapes.nth(index).getByRole('heading', { level: 3, name: formation, exact: true })).toBeVisible();
         await expect(etapes.nth(index).locator(`[data-visuel="${visuels[index]}"]`)).toBeVisible();
       }
-      const datesReseaux = await etapes.nth(2).locator('time[datetime]').evaluateAll((dates) => dates.map((date) => date.getAttribute('datetime')));
-      expect(datesReseaux).toEqual(['2023', '2024']);
-      // Q9 : pas de date pour la piscine de 42, ni pour les deux premières années.
-      for (const index of [1, 3, 4, 5]) await expect(etapes.nth(index).locator('time')).toHaveCount(0);
-      await expect(etapes.nth(1)).not.toContainText(/20\d\d/);
+      // Chaque étape d’avant le titre est datée (retour du 15/10/2026), du plus récent au plus ancien, et le repère le dit.
+      await expect(frise.locator('.formation-sens')).toHaveText('Avant le titre, du plus récent au plus ancien');
+      const datesAvant = [['2024-07'], ['2023', '2024'], ['2022', '2023'], ['2021', '2022']];
+      for (const [rang, attendues] of datesAvant.entries()) {
+        const dates = await etapes.nth(rang + 1).locator('.station__quand time[datetime]').evaluateAll((temps) => temps.map((t) => t.getAttribute('datetime')));
+        expect(dates).toEqual(attendues);
+      }
+      await expect(etapes.nth(1).locator('.station__quand')).toHaveText('Juillet 2024');
+      await expect(etapes.nth(5).locator('time')).toHaveCount(0);
       await expect(etapes.nth(5)).toContainText(/vers\s*13\s*ans/i);
       await expect(etapes.nth(5)).toContainText('Le C, pour passer ensuite au C++ et coder mes jeux sur Unreal Engine');
       await expect(etapes.nth(1).getByRole('link', { name: /Mes exercices/ })).toHaveAttribute('href', 'https://github.com/LINDECKER-Charles/Piscine42-Mulhouse-2024');

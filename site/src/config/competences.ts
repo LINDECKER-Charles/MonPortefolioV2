@@ -8,8 +8,8 @@
  * attestée.
  *
  * Hiérarchie en trois niveaux (cahier, § 5.10 ; Q9) : proposée à partir de la
- * stack déclarée du CV, actualisée par l’audit public. À confirmer par Charles :
- * la page la marque « à confirmer » tant qu’il ne l’a pas fait.
+ * stack déclarée du CV, actualisée par l’audit public, et gardée par Charles
+ * à sa relecture du 15/10/2026 (plus de marque « à confirmer »).
  *   - Au quotidien : le cœur et les ops du CV, en grandes tuiles ;
  *   - Pratiqué : le reste du CV et ce que mes projets mettent en œuvre
  *     (Rust, Axum, Tokio et SQLx portent Life Pixel et l’API de ce site ;
@@ -167,16 +167,16 @@ export const SITES_OFFICIELS = {
 /**
  * Compétences humaines : un intitulé, trois verbes, une illustration
  * (CMP-02 à CMP-08). `demarche` : les verbes forment une suite (›) plutôt
- * qu’une liste (·). `aConfirmer` : verbes reformulés depuis la V1 (adjectifs
- * ou noms seuls), à confirmer par Charles. Pas de ligne de fait (Q9).
+ * qu’une liste (·). Les verbes, reformulés depuis la V1 (adjectifs ou noms
+ * seuls), sont validés par Charles le 15/10/2026. Pas de ligne de fait (Q9).
  */
 export const COMPETENCES_HUMAINES = [
-  { nom: 'Pédagogie', visuel: 'CMP-02', verbes: ['Expliquer', 'Accompagner', 'Rendre autonome'], demarche: true, aConfirmer: true },
-  { nom: 'Coordination', visuel: 'CMP-03', verbes: ['Accueillir', 'Organiser', 'Relire'], demarche: false, aConfirmer: false },
-  { nom: 'Écoute et cadrage', visuel: 'CMP-04', verbes: ['Écouter le besoin', 'Échanger', 'Cadrer'], demarche: true, aConfirmer: true },
-  { nom: 'Communication directe', visuel: 'CMP-05', verbes: ['Dire franchement', 'Échanger sincèrement', 'Avancer ensemble'], demarche: false, aConfirmer: true },
-  { nom: 'Créativité', visuel: 'CMP-06', verbes: ['Expérimenter', 'Réinventer', 'Prendre à contre-courant'], demarche: false, aConfirmer: true },
-  { nom: 'Apprentissage et adaptation', visuel: 'CMP-07', verbes: ['Comprendre', 'Tester', 'Ajuster'], demarche: true, aConfirmer: false },
+  { nom: 'Pédagogie', visuel: 'CMP-02', verbes: ['Expliquer', 'Accompagner', 'Rendre autonome'], demarche: true },
+  { nom: 'Coordination', visuel: 'CMP-03', verbes: ['Accueillir', 'Organiser', 'Relire'], demarche: false },
+  { nom: 'Écoute et cadrage', visuel: 'CMP-04', verbes: ['Écouter le besoin', 'Échanger', 'Cadrer'], demarche: true },
+  { nom: 'Communication directe', visuel: 'CMP-05', verbes: ['Dire franchement', 'Échanger sincèrement', 'Avancer ensemble'], demarche: false },
+  { nom: 'Créativité', visuel: 'CMP-06', verbes: ['Expérimenter', 'Réinventer', 'Prendre à contre-courant'], demarche: false },
+  { nom: 'Apprentissage et adaptation', visuel: 'CMP-07', verbes: ['Comprendre', 'Tester', 'Ajuster'], demarche: true },
 ] as const;
 
 /** Septième carte : les méthodes de travail du CV, Trello lié à son site. */

@@ -159,11 +159,11 @@ const omnicard = projetDeLaVitrine('omnicard');
         <div class="moment__visuel">
           <Scene id="ACC-08" nom="portes" lumiere={[90, 52]} legende="Des voies essayées, puis une réorientation." sizes="(max-width: 860px) 100vw, 640px" />
           <ol class="portes" aria-label="Quatre tentatives avant la bonne voie">
-            <li>BUT Informatique</li>
-            <li>Physique-chimie</li>
-            <li>BUT Réseaux &amp; Télécoms, 2023-2024</li>
-            <li>Piscine de 42</li>
-            <li class="portes__ouverte">Elan Formation, 2025</li>
+            <li>BUT Informatique, <span class="portes__date">2021–2022</span></li>
+            <li>Physique-chimie, <span class="portes__date">2022–2023</span></li>
+            <li>BUT Réseaux &amp; Télécoms, <span class="portes__date">2023–2024</span></li>
+            <li>Piscine de 42, <span class="portes__date">juillet 2024</span></li>
+            <li class="portes__ouverte">Elan Formation, <span class="portes__date">2025</span></li>
           </ol>
         </div>
       </article>
@@ -357,6 +357,11 @@ const omnicard = projetDeLaVitrine('omnicard');
     font-size: var(--t-xs);
     line-height: 1.35;
     color: var(--eteint);
+  }
+
+  /* Une date ne se coupe pas : elle passe entière à la ligne. */
+  .portes__date {
+    white-space: nowrap;
   }
 
   .portes .portes__ouverte {

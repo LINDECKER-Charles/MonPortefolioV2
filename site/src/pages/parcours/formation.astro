@@ -2,7 +2,8 @@
 /**
  * Formation et certifications (cahier, § 5.11) : « ce que j’ai dans mon
  * sac », en diagonale. Le titre obtenu domine, le programme CDA reste
- * distinct, le chemin d’avant tient en cinq stations, puis les douze
+ * distinct, le chemin d’avant tient en cinq stations datées, lues du plus
+ * récent au plus ancien (le repère le dit au-dessus du trait), puis les douze
  * certifications (versions réunies, chacune avec son certificat) et la
  * pratique sur Frontend Mentor. Données : config/formation.ts.
  */
@@ -80,6 +81,7 @@ const preuve = (href: string) => attributsMesure(href, { emplacement: 'preuves' 
               <p class="cda__statut">{COMPLEMENT_CDA.titreNonPasse}</p>
             </div>
           </aside>
+          <p class="formation-sens" id="formation-sens">Avant le titre, du plus récent au plus ancien</p>
         </li>
         {
           ETUDES_AVANT.map((etude) => (
@@ -88,12 +90,14 @@ const preuve = (href: string) => attributsMesure(href, { emplacement: 'preuves' 
                 <Visuel id={etude.visuel} alt="" class="station__visuel" sizes="72px" />
                 <div class="station__texte">
                   <p class="station__quand">
-                    {etude.quand?.debut ? (
+                    {etude.quand.debut && etude.quand.fin ? (
                       <>
                         <time datetime={etude.quand.debut}>{etude.quand.debut}</time>–<time datetime={etude.quand.fin}>{etude.quand.fin}</time>
                       </>
+                    ) : etude.quand.debut ? (
+                      <time datetime={etude.quand.debut}>{etude.quand.texte}</time>
                     ) : (
-                      etude.quand?.texte
+                      etude.quand.texte
                     )}
                   </p>
                   <h3 id={`${etude.id}-titre`}>{etude.titre}</h3>
@@ -313,6 +317,17 @@ const preuve = (href: string) => attributsMesure(href, { emplacement: 'preuves' 
     background: var(--encre);
   }
 
+  /* Le repère de lecture, juste au-dessus du trait des stations : le
+     chemin d’avant se lit du plus récent (à gauche, en haut sur mobile) au
+     plus ancien. */
+  .formation-sens {
+    margin-top: var(--s3);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: var(--ls-petit);
+    color: var(--eteint);
+  }
+
   /* Le chemin d’avant : cinq stations compactes sur une ligne, reliées par un
      trait qui finit sur la dernière pastille. La vignette se tient à gauche du
      texte ; dans une colonne étroite, elle passe au-dessus. */
@@ -407,7 +422,7 @@ const preuve = (href: string) => attributsMesure(href, { emplacement: 'preuves' 
 
   .station__quand {
     min-height: 1.4em;
-    font-size: var(--t-xs);
+    font-size: var(--t-s);
     font-weight: 600;
     font-variant-numeric: tabular-nums lining-nums;
     color: var(--encre);
