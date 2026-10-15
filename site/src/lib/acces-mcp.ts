@@ -72,7 +72,7 @@ export function nomPropose(existants: readonly string[], base = NOM_PAR_DEFAUT):
 /**
  * Le nom du serveur dans Claude Code, déduit de l’hôte : `portfolio` en
  * production, `portfolio-local` sur le poste, `portfolio-<sous-domaine>`
- * ailleurs (`portfolio-test` sur test.v2…). Deux environnements ne se
+ * ailleurs (`portfolio-test` sur test.…). Deux environnements ne se
  * marchent jamais dessus dans la configuration de Claude Code.
  */
 export function nomServeur(hote: string, hoteCanonique: string): string {
