@@ -1,6 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 import { IS_CI, MESURE, SITE, SKIP_BUILD } from './tests/e2e/support/serveurs.mjs';
 
+const CHROMIUM_SANS_HINTING = ['--font-render-hinting=none'];
+
 /**
  * Tests de bout en bout : le build de production, servi par le serveur de
  * production (server/server.mjs), dans Chromium à deux largeurs ; le favicon
@@ -23,14 +25,19 @@ export default defineConfig({
     timezoneId: 'Europe/Paris',
     trace: 'retain-on-failure',
   },
+  // Sous Linux, Chromium sans écran arrondit au pixel la chasse des caractères :
+  // une ligne déborde là où macOS, Windows et le Chromium de bureau la tiennent
+  // (fiche de PvZ Fusion : 906 px au lieu de 880 à 1 440 × 900, mesuré le
+  // 15/10/2026 dans l’image Playwright). Sans ce réglage, la CI teste un rendu
+  // que les visiteurs n’ont pas.
   projects: [
     {
       name: 'mobile-390',
       // Réponses du serveur et marquage identiques à toutes les largeurs : vérifiés une fois, à 1440 px.
       testIgnore: /(en-tetes|mesure|plan-de-marquage)\.spec\.ts$/,
-      use: { ...devices['Pixel 7'], viewport: { width: 390, height: 844 } },
+      use: { ...devices['Pixel 7'], viewport: { width: 390, height: 844 }, launchOptions: { args: CHROMIUM_SANS_HINTING } },
     },
-    { name: 'bureau-1440', use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } } },
+    { name: 'bureau-1440', use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 }, launchOptions: { args: CHROMIUM_SANS_HINTING } } },
     { name: 'favicon-firefox', testMatch: 'favicons.spec.ts', use: { ...devices['Desktop Firefox'] } },
     { name: 'favicon-webkit', testMatch: 'favicons.spec.ts', use: { ...devices['Desktop Safari'] } },
   ],
