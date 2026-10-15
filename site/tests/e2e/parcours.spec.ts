@@ -14,8 +14,8 @@ const rubriques = [
 
 const EXPERIENCES = [
   { id: 'architecture', poste: 'Architecte logiciel', repere: 'Architecte logiciel', dates: ['2026-08'], statut: 'En poste', nature: 'CDI' },
-  { id: 'mission-locale', poste: 'Mentor et animateur d’ateliers', repere: 'Mission Locale', dates: ['2026-01'], statut: 'Terminé', nature: 'Bénévolat' },
-  { id: 'elan', poste: 'Formateur en développement web', repere: 'Elan Formation', dates: ['2025-12'], statut: 'Mission terminée', nature: 'Freelance' },
+  { id: 'mission-locale', poste: 'Mentor et animateur d’ateliers', repere: 'Mission Locale', dates: ['2026-01', '2026-06'], statut: 'Terminé', nature: 'Bénévolat' },
+  { id: 'elan', poste: 'Formateur en développement web', repere: 'Elan Formation', dates: ['2025-12', '2026-05'], statut: 'Mission terminée', nature: 'Freelance' },
   { id: 'devmates', poste: 'Développeur indépendant', repere: 'Dev-Mates', dates: ['2025-11'], statut: 'Société ouverte', nature: 'Freelance' },
   { id: 'pvz', poste: 'Lead et mainteneur', repere: 'PvZ Fusion', dates: ['2025-10', '2025-12'], statut: 'En cours', nature: 'Bénévolat' },
   { id: 'atis', poste: 'Développeur full stack', repere: 'ATIS Solutions', dates: ['2025-08', '2025-09'], statut: 'Stage terminé', nature: 'Stage' },
@@ -75,7 +75,7 @@ test.describe('hub', () => {
       await expect(lien).toHaveAttribute('href', /^\/parcours\/(?:professionnel|formation)#[a-z-]+$/);
     }
     // Le nom du lien lit la période en mots : jamais « flèche droite ».
-    await expect(frise.getByRole('link', { name: 'Formateur, Elan Formation, Freelance, décembre 2025, fin à confirmer', exact: true })).toHaveCount(1);
+    await expect(frise.getByRole('link', { name: 'Formateur, Elan Formation, Freelance, décembre 2025 à mai 2026', exact: true })).toHaveCount(1);
     await expect(frise.getByRole('link', { name: 'BUT Réseaux & Télécoms, Formation, de 2023 à 2024', exact: true })).toHaveAttribute('href', '/parcours/formation#reseaux');
     await expect(frise.getByRole('link', { name: 'Titre DWWM, Elan Formation, Formation, avril à octobre 2025', exact: true })).toHaveCount(1);
     for (const lien of await liens.all()) expect(await lien.getAttribute('aria-label')).not.toContain('→');
@@ -202,7 +202,7 @@ test.describe('page Professionnel', () => {
     await expect(lignes.first()).toBeInViewport();
     await expect(lignes.first()).toContainText('CDI, depuis août 2026');
     for (const [index, { id }] of EXPERIENCES.entries()) await expect(lignes.nth(index)).toHaveAttribute('href', `#${id}`);
-    await expect(chronologie.getByRole('link', { name: 'Mentor, Mission Locale, Bénévolat, janvier 2026, fin à confirmer', exact: true })).toHaveCount(1);
+    await expect(chronologie.getByRole('link', { name: 'Mentor, Mission Locale, Bénévolat, janvier à juin 2026', exact: true })).toHaveCount(1);
     await expect(chronologie.getByRole('link', { name: 'Développeur full stack, ATIS Solutions, Stage, août à septembre 2025', exact: true })).toHaveCount(1);
 
     await lignes.nth(2).click();
@@ -262,8 +262,10 @@ test.describe('page Professionnel', () => {
       }
       await expect(page.locator('#architecture .fiche__structure')).toHaveText('B-Hive Mulhouse');
       await expect(page.locator('#architecture')).toContainText('Je travaille sur le développement web et le DevOps.');
-      // Fins inconnues : jamais extrapolées.
-      for (const id of ['elan', 'mission-locale']) await expect(page.locator(`#${id} .a-confirmer`)).toHaveText('fin à confirmer');
+      // Fins données par Charles le 15/10/2026 : plus aucune marque.
+      await expect(page.locator('#elan .fiche__periode time').last()).toHaveText('mai 2026');
+      await expect(page.locator('#mission-locale .fiche__periode time').first()).toHaveText('Janvier');
+      await expect(page.locator('main .a-confirmer')).toHaveCount(0);
       // Dev-Mates : la société ouverte, mais sans client ; rien de non sourcé (« conseil »).
       await expect(page.locator('#devmates .fiche__situation')).toHaveText('Ma société reste ouverte, sans client actuellement.');
       await expect(page.locator('#devmates')).not.toContainText(/conseil/i);

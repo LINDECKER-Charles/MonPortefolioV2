@@ -6,8 +6,10 @@
  *
  * Faits : docs/matiere-premiere.md (Identité, Parcours), docs/questions.md
  * (A2, B3, C5, C7) et, pour les rôles chez PvZ Fusion, le journal public du
- * pôle (config/pvz-fusion.ts, ROLES). Une date de fin inconnue n’est jamais
- * extrapolée : elle reste « à confirmer ».
+ * pôle (config/pvz-fusion.ts, ROLES). Fins d’Elan Formation (mai 2026) et du
+ * mentorat à la Mission Locale (juin 2026) : données par Charles le
+ * 15/10/2026. Une date de fin inconnue n’est jamais extrapolée : le champ
+ * `finAConfirmer` la dit (aucune aujourd’hui).
  */
 
 /** Les trois pages du parcours, partagées par le hub, les onglets et la suite de lecture. */
@@ -128,8 +130,7 @@ export const EXPERIENCES: readonly Experience[] = [
     lieu: 'Altkirch',
     nature: 'benevolat',
     debut: '2026-01',
-    fin: null,
-    finAConfirmer: true,
+    fin: '2026-06',
     statut: { texte: 'Terminé', etat: 'eteint' },
     mission: 'J’ai accompagné des jeunes vers les métiers du web et animé leurs premiers ateliers de code.',
     visuel: 'PRO-04',
@@ -143,8 +144,7 @@ export const EXPERIENCES: readonly Experience[] = [
     lieu: 'Mulhouse',
     nature: 'freelance',
     debut: '2025-12',
-    fin: null,
-    finAConfirmer: true,
+    fin: '2026-05',
     statut: { texte: 'Mission terminée', etat: 'eteint' },
     mission: 'J’ai repris en urgence une promotion DWWM et CDA et l’ai accompagnée jusqu’à la soutenance.',
     preuve: { valeur: 'Tous titrés', libelle: 'une dizaine d’apprenants accompagnés', source: 'Témoignage' },
