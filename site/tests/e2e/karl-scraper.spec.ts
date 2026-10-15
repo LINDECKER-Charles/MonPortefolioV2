@@ -41,18 +41,18 @@ test('l’en-tête tient dans le premier écran : titre, identité, preuve, acti
   }
 });
 
-test('le nom canonique, l’étiquette de preuve et « Comment je l’ai construit »', async ({ page }) => {
+test('le nom canonique, l’étiquette de preuve et « Sous le capot »', async ({ page }) => {
   await page.goto(CHEMIN);
   const ariane = page.getByRole('navigation', { name: 'Fil d’Ariane', exact: true });
   await expect(ariane.locator('[aria-current="page"]')).toHaveText('Karl Scraper');
   const entete = page.locator('.projet-tete');
   await expect(entete).toContainText('Automatiser des tâches');
-  const construit = entete.locator('[data-pli="action"]').getByRole('link', { name: /Comment je l’ai construit/ });
+  const construit = entete.locator('[data-pli="action"]').getByRole('link', { name: /Sous le capot/ });
   await expect(construit).toHaveAttribute('href', '#construit');
   await expect(entete.locator('[data-pli="action"] a')).toHaveCount(1);
   await construit.click();
   await expect(page.locator('#construit')).toBeInViewport();
-  await expect(page.locator('#construit .decision')).toHaveCount(4);
+  await expect(page.locator('#construit .point-capot')).toHaveCount(4);
 });
 
 test('la fiche technique : sept cases, statut à forme et mot, dépôt privé sans aucun lien', async ({ page }) => {
@@ -268,7 +268,7 @@ test.describe('sans JavaScript', () => {
       await expect.poll(() => image.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0), zone).toBe(true);
     }
     await expect(page.locator('#chaine .chaine__etape')).toHaveCount(5);
-    await page.locator('[data-pli="action"]').getByRole('link', { name: /Comment je l’ai construit/ }).click();
+    await page.locator('[data-pli="action"]').getByRole('link', { name: /Sous le capot/ }).click();
     expect(new URL(page.url()).hash).toBe('#construit');
     await page.locator('#sources summary').click();
     await expect(page.locator('#sources')).toContainText('faux serveur source');

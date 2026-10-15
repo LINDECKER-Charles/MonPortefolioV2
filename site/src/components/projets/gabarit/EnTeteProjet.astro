@@ -13,8 +13,8 @@
  *
  * Le nom, l’étiquette et le rang viennent de VITRINE (config/projets.ts) :
  * une seule graphie par projet (règle E6). La première action mène toujours
- * à « Comment je l’ai construit » (`construit`, l’identifiant de la section
- * DecisionsProjet). Tout tient dans le premier écran à 1 440 × 900 ; les
+ * à « Sous le capot » (`construit`, l’identifiant de la section SousLeCapot,
+ * gardé depuis « Comment je l’ai construit »). Tout tient dans le premier écran à 1 440 × 900 ; les
  * éléments `[data-pli]` (titre, identité, preuve, action) y sont visibles à
  * 1 440 et à 390 px de large (règle E1). Sur mobile, les repères passent
  * avant le visuel, et le fil d’Ariane s’arrête à « Projets » : le nom suit
@@ -37,12 +37,12 @@ interface Props {
   /** Le titre ; en tableau, une ligne par phrase (« Traduire un jeu. », « Faire grandir une équipe. »). */
   titre: string | readonly string[];
   chapeau: string;
-  /** Actions après « Comment je l’ai construit » : application, dépôt public… */
+  /** Actions après « Sous le capot » : application, dépôt public… */
   liens?: readonly LienProjet[];
   /** Un à trois repères chiffrés. */
   preuves: readonly PreuveEnTete[];
   fiche: DonneesFiche;
-  /** Identifiant de la section « Comment je l’ai construit ». */
+  /** Identifiant de la section « Sous le capot ». */
   construit?: string;
   emplacement?: Emplacement;
 }
@@ -67,7 +67,7 @@ const avecVisuel = Astro.slots.has('visuel');
         <h1 class="projet-tete__titre" data-pli="titre">{lignes.map((ligne, index) => <>{index > 0 && ' '}<span class="projet-tete__ligne">{typo(ligne)}</span></>)}</h1>
         <p class="chapeau projet-tete__chapeau" data-pli="identite">{typo(chapeau)}</p>
         <div class="actions projet-tete__actions" data-pli="action">
-          <LienAction href={`#${construit}`}>Comment je l’ai construit</LienAction>
+          <LienAction href={`#${construit}`}>Sous le capot</LienAction>
           {liens.map((lien) => <LienAction href={lien.href} emplacement={emplacement}>{typo(lien.libelle)}</LienAction>)}
         </div>
       </div>

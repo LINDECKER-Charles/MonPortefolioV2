@@ -16,7 +16,7 @@
  */
 import type { EntreeSommaire } from './navigation';
 import type { CarteVitrine } from './vitrine';
-import type { Decision, DonneesFiche, LienProjet, PreuveEnTete, SchemaProjet } from '../components/projets/gabarit/types';
+import type { PointCapot, DonneesFiche, LienProjet, PreuveEnTete, SchemaProjet } from '../components/projets/gabarit/types';
 import ficheBrancheCarte from '../assets/projets/githealth/vitrine-fiche-branche.webp';
 import angular from '../assets/stacks/angular.svg';
 import dotnet from '../assets/stacks/dotnet.svg';
@@ -150,7 +150,7 @@ export const SECTIONS: readonly EntreeSommaire[] = [
   { id: 'politique', titre: 'La politique' },
   { id: 'analyse', titre: 'L’analyse en direct' },
   { id: 'visualisation', titre: 'Les visualisations' },
-  { id: 'construit', titre: 'Comment je l’ai construit' },
+  { id: 'construit', titre: 'Sous le capot' },
   { id: 'retiens', titre: 'Aujourd’hui' },
 ];
 
@@ -235,33 +235,79 @@ export const CAPTURES = {
 } as const;
 
 /* ------------------------------------------------------------------ */
-/* Comment je l’ai construit (gabarit E5 · 4)                          */
+/* Sous le capot (gabarit E5 · 4)                                      */
 /* ------------------------------------------------------------------ */
 
-export const DECISIONS: readonly Decision[] = [
+/** Extraits : dépôt public, branche de développement (REVISION bd2e5c9), relus le 15/10/2026. */
+export const CAPOT: readonly PointCapot[] = [
   {
+    titre: 'Git en lecture seule, sans réseau ni identifiants',
     contrainte: 'Un diagnostic ne doit jamais devenir une modification du dépôt observé.',
     choix: 'Git en ligne de commande, lancé sans passer par un interpréteur de commandes et limité à six commandes de lecture différentes ; chaque appel coupe le réseau, les identifiants et la maintenance automatique.',
     effet: 'Un test de bout en bout relève l’empreinte du dépôt avant et après tout le parcours : références, journaux, index et copie de travail restent identiques.',
     lien: { href: LIENS.empreinte, libelle: 'Le test d’empreinte' },
+    extrait: {
+      fichier: 'src/App.GitHealth.Api/Git/Process/GitProcessRunner.cs',
+      langage: 'C#',
+      code: `arguments.Add("--no-pager");
+AddConfiguration(arguments, "color.ui=false");
+AddConfiguration(arguments, "protocol.allow=never");
+AddConfiguration(arguments, "protocol.file.allow=never");
+AddConfiguration(arguments, "credential.helper=");
+AddConfiguration(arguments, "core.fsmonitor=false");
+AddConfiguration(arguments, "mailmap.file=");
+AddConfiguration(arguments, "maintenance.auto=false");
+AddConfiguration(arguments, "gc.auto=0");
+AddConfiguration(arguments, "fetch.writeCommitGraph=false");`,
+    },
   },
   {
+    titre: 'Un seul processus, une seule adresse locale',
     contrainte: 'Livrer une application de bureau sur trois systèmes sans surveiller deux processus.',
     choix: 'Le serveur sert l’API et l’interface à une seule adresse locale, et ouvre la fenêtre du système dans le même processus.',
     effet: 'Un seul processus et une seule adresse locale ; l’installation se fait pour l’utilisateur, sans droits d’administrateur.',
     lien: { href: LIENS.structure, libelle: 'Les choix de structure' },
+    extrait: {
+      fichier: 'docs/ARCHITECTURE.md',
+      langage: 'Markdown',
+      code: `| Host | ASP.NET Core serves the API and the Angular files | One process, one port and one origin |
+| Main execution | Self-contained .NET executable | Direct access to the machine's repositories |
+| Desktop shell | Photino inside the host process | No child process to supervise |
+| Distribution | Velopack, per-user installation | No UAC, data outside the installation |`,
+    },
   },
   {
+    titre: 'La position de toutes les branches en un appel',
     contrainte: 'Rester rapide sur un dépôt de plusieurs centaines de branches.',
     choix: 'La position de toutes les branches par rapport à main se calcule en un seul appel à Git, avec un repli au parallélisme borné pour les versions anciennes ; un banc de mesure tient des budgets de durée.',
-    effet: 'La position de 1 000 branches par rapport à main se lit en 231 ms dans 95 % des mesures, pour un budget de 850 ms. Reste l’étape la plus longue, le relevé des auteurs de chaque branche : environ 26 ms par branche sur le même banc.',
+    effet: 'La position de 1 000 branches par rapport à main se lit en 231 ms dans 95 % des mesures, pour un budget de 850 ms. Reste l’étape la plus longue, le relevé des auteurs de chaque branche : environ 26 ms par branche sur le même banc.',
     lien: { href: LIENS.rapport, libelle: 'Le banc de la version 0.2.0' },
+    extrait: {
+      fichier: 'src/App.GitHealth.Api/Git/Scanning/GitTopologyReader.cs',
+      langage: 'C#',
+      code: `var format = "%(refname)%00%(objectname)%00" +
+    $"%(ahead-behind:{scan.Reference.Commit.Value})%00";
+return RunAsync(
+    scan.Repository.Context,
+    ["for-each-ref", "--sort=refname", $"--format={format}",
+        "refs/heads", "refs/remotes"],
+    cancellationToken);`,
+    },
   },
   {
+    titre: 'Un assistant IA facultatif, qui ne lit qu’une analyse',
     contrainte: 'Un agent IA peut aider à lire un diagnostic, sans toucher au dépôt ni recevoir de données sans accord.',
     choix: 'Un accord par dépôt, vérifié par l’API. L’agent tourne dans un dossier vide, en lecture seule, et n’interroge qu’une analyse enregistrée, avec un jeton valable le temps d’une exécution.',
     effet: 'C’est la seule fonction qui envoie des données du dépôt hors de la machine, et elle reste facultative ; la lecture seule tient même si l’agent est un programme tiers.',
     lien: { href: LIENS.assistant, libelle: 'L’architecture de l’assistant' },
+    extrait: {
+      fichier: 'docs/ARCHITECTURE.md',
+      langage: 'Markdown',
+      code: `| Agent input | A read-only tool bridge over a stored capture | The agent queries measurements; it never opens the repository |
+| Agent authorisation | One 256-bit token per run, closed when it settles | A capture is reachable only while its run is alive |
+| Agent sandbox | Empty scratch directory, the CLI's read-only mode | The read-only guarantee survives a foreign process |
+| Assistant consent | A moment stored on the project, checked by the API | The screen asks; the API is what refuses |`,
+    },
   },
 ];
 

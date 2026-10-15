@@ -55,11 +55,11 @@ test('le nom canonique, l’étiquette de preuve et trois décisions sourcées',
   const ariane = page.getByRole('navigation', { name: 'Fil d’Ariane', exact: true });
   await expect(ariane.locator('[aria-current="page"]')).toHaveText('Bloodborne Legendary Run');
   await expect(page.locator('.projet-tete')).toContainText('Un produit de bout en bout');
-  const construit = page.locator('[data-pli="action"]').getByRole('link', { name: /Comment je l’ai construit/ });
+  const construit = page.locator('[data-pli="action"]').getByRole('link', { name: /Sous le capot/ });
   await expect(construit).toHaveAttribute('href', '#construit');
   await construit.click();
   await expect(page.locator('#construit')).toBeInViewport();
-  const decisions = page.locator('#construit .decision');
+  const decisions = page.locator('#construit .point-capot');
   await expect(decisions).toHaveCount(3);
   await expect(decisions.first()).toContainText('Un seul croisement de traits sur 1 008, contre 68 sur 319.');
   // Chacune des trois renvoie à son étape du journal public.
@@ -453,7 +453,7 @@ test.describe('sans JavaScript', () => {
       expect(reponse.headers()['content-type']).toMatch(/^image\/webp/);
     }
 
-    await page.locator('[data-pli="action"]').getByRole('link', { name: /Comment je l’ai construit/ }).click();
+    await page.locator('[data-pli="action"]').getByRole('link', { name: /Sous le capot/ }).click();
     expect(new URL(page.url()).hash).toBe('#construit');
     await expect(page.locator('#construit')).toBeInViewport();
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);

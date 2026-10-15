@@ -29,7 +29,7 @@ test('l’en-tête tient dans le premier écran : titre, identité, preuve, acti
   }
 });
 
-test('le nom canonique, l’étiquette de preuve et « Comment je l’ai construit »', async ({ page }) => {
+test('le nom canonique, l’étiquette de preuve et « Sous le capot »', async ({ page }) => {
   await page.goto(CHEMIN);
   const ariane = page.getByRole('navigation', { name: 'Fil d’Ariane', exact: true });
   await expect(ariane.locator('[aria-current="page"]')).toHaveText('Relais');
@@ -37,11 +37,11 @@ test('le nom canonique, l’étiquette de preuve et « Comment je l’ai constru
   await expect(entete).toContainText('Encadrer des agents IA');
   // Aucune action vers le code : le seul lien de l’en-tête mène à la construction.
   await expect(entete.locator('[data-pli="action"] a')).toHaveCount(1);
-  const construit = entete.locator('[data-pli="action"]').getByRole('link', { name: /Comment je l’ai construit/ });
+  const construit = entete.locator('[data-pli="action"]').getByRole('link', { name: /Sous le capot/ });
   await expect(construit).toHaveAttribute('href', '#construit');
   await construit.click();
   await expect(page.locator('#construit')).toBeInViewport();
-  await expect(page.locator('#construit .decision')).toHaveCount(4);
+  await expect(page.locator('#construit .point-capot')).toHaveCount(4);
 });
 
 test('la fiche technique : sept cases, statut à forme et mot, aucun lien public mais le dépôt privé dit', async ({ page }) => {
@@ -225,11 +225,11 @@ test.describe('sans JavaScript', () => {
     await expect(page.locator('.rel-entete-capture img')).toBeVisible();
     await expect(page.locator('figure[data-visuel="REL-F1"]')).toBeVisible();
     await expect(page.locator('main .capture-annotee img').first()).toBeAttached();
-    await expect(page.locator('#construit .decision')).toHaveCount(4);
+    await expect(page.locator('#construit .point-capot')).toHaveCount(4);
     // La note de sources se lit sans script : le résumé l’ouvre.
     await page.locator('#sources summary').click();
     await expect(page.locator('#sources')).toContainText('260');
-    await page.locator('[data-pli="action"]').getByRole('link', { name: /Comment je l’ai construit/ }).click();
+    await page.locator('[data-pli="action"]').getByRole('link', { name: /Sous le capot/ }).click();
     expect(new URL(page.url()).hash).toBe('#construit');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
     expect(erreurs).toEqual([]);

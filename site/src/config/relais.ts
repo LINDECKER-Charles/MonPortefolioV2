@@ -19,7 +19,7 @@
  */
 import type { EntreeSommaire } from './navigation';
 import type { CarteVitrine } from './vitrine';
-import type { Decision, DonneesFiche, LienProjet, PreuveEnTete, SchemaProjet } from '../components/projets/gabarit/types';
+import type { PointCapot, DonneesFiche, LienProjet, PreuveEnTete, SchemaProjet } from '../components/projets/gabarit/types';
 import { typo } from '../lib/typo';
 import carteDashboard from '../assets/projets/relais/carte-dashboard.webp';
 import angular from '../assets/stacks/angular.svg';
@@ -125,7 +125,7 @@ export const SECTIONS: readonly EntreeSommaire[] = [
   { id: 'perimetre', titre: 'Le périmètre' },
   { id: 'capacite', titre: 'La capacité' },
   { id: 'analyse', titre: 'L’analyse' },
-  { id: 'construit', titre: 'Comment je l’ai construit' },
+  { id: 'construit', titre: 'Sous le capot' },
   { id: 'retiens', titre: 'En une phrase' },
 ];
 
@@ -227,43 +227,76 @@ export const CAPTURES: Readonly<Record<NomCapture, CaptureRelais>> = {
 };
 
 /* ------------------------------------------------------------------ */
-/* Comment je l’ai construit (gabarit E5 · 4)                          */
+/* Sous le capot (gabarit E5 · 4)                                      */
 /* ------------------------------------------------------------------ */
 
-export const DECISIONS: readonly Decision[] = [
+export const CAPOT: readonly PointCapot[] = [
   {
-    // backend/src/provider.rs l. 215 et 300-306 (environnement vidé, liste
-    // blanche, dossier de configuration par profil) ; README l. 182 (« CLI
-    // épinglé dans `runtime/` ») ; docs/architecture.md l. 76.
+    // backend/src/provider.rs l. 215 et 300-306 (environnement vidé, liste blanche, dossier de configuration
+    // par profil) ; README l. 182 (« CLI épinglé dans `runtime/` ») ; docs/architecture.md l. 76.
+    titre: 'Une version fixée de chaque agent, un dossier par abonnement',
     contrainte: 'Plusieurs abonnements sur une même machine, alors que Claude Code et Codex lisent par défaut la connexion et les variables d’environnement de l’utilisateur.',
     choix: 'Relais lance sa propre version de chaque agent, fixée dans son dossier, jamais celle installée sur la machine, avec un dossier de configuration par abonnement et un environnement vidé, puis rempli depuis une liste blanche.',
     effet: 'Aucune clé ni variable d’un abonnement ne passe à un autre, et deux abonnements liés au même compte sont signalés.',
+    extrait: {
+      ecrit: true,
+      langage: 'Configuration',
+      code: `exécutable            runtime/ de Relais, version fixée (jamais celui du PATH)
+environnement         vidé, puis rempli depuis une liste blanche
+CLAUDE_CONFIG_DIR     le dossier de l’abonnement
+ANTHROPIC_CONFIG_DIR  le dossier de l’abonnement`,
+    },
   },
   {
-    // docs/filesystem-scope.md l. 62-81 (liens et jonctions sortant des
-    // racines, `..`, fichiers à plusieurs liens physiques) ;
-    // docs/audit-permissions-demo.md l. 12-17, 73-74 et 94-104 (défaut
-    // reproduit puis corrigé après signalement) ; docs/registre-correctifs.md
-    // C1 (l. 208-215, « Recoupés avec les paramètres des appels ») et son
-    // Statut (correctifs f2a2d68 : groupes, négation, motif absolu, racine du
-    // parcours, dossiers ignorés ; `..`, `~`, `:` toujours refusés).
+    // docs/filesystem-scope.md l. 62-81 ; docs/audit-permissions-demo.md l. 12-17, 73-74 et 94-104 ;
+    // docs/registre-correctifs.md C1 (l. 208-215) et son Statut (correctifs f2a2d68).
+    titre: 'Le chemin réel du fichier, pas celui que l’agent écrit',
     contrainte: 'Les permissions de l’agent ne suffisent pas à le garder dans les dossiers confiés : un chemin peut remonter hors du dossier, passer par un lien ou désigner un fichier qui porte un second nom ailleurs.',
     choix: 'Relais vérifie le chemin réel du fichier, pas celui que l’agent écrit : les chemins qui remontent hors du dossier, les liens qui en sortent et les fichiers à plusieurs liens physiques sont refusés.',
     effet: 'L’audit de 52 cas a trouvé un défaut sur les fichiers à plusieurs liens physiques, corrigé après signalement ; les 52 cas passent. Recoupés avec les paramètres des appels, les 69 refus de lecture et de recherche des trois premiers jours de service ont montré des recherches refusées à tort : j’ai assoupli les règles des recherches, sans rouvrir les chemins hors du périmètre.',
+    extrait: {
+      ecrit: true,
+      langage: 'Règle',
+      code: `chemin demandé → chemin réel (canonique)
+  remonte hors du dossier confié         → refusé
+  lien qui sort du dossier               → refusé
+  fichier à plusieurs liens physiques    → refusé
+  dans un dossier confié                 → admis, en lecture ou en écriture
+le refus revient à l’agent avec son motif`,
+    },
   },
   {
-    // backend/src/quota_routing.rs l. 1-15 et 33 (40 sessions récentes).
+    // backend/src/quota_routing.rs l. 1-15 et 33 (40 sessions récentes) ; docs/architecture.md (« Quotas »).
+    titre: 'Admettre une session selon la charge réelle',
     contrainte: 'Un seuil fixe laisse entrer de nouvelles sessions alors que celles qui tournent consomment encore : huit agents lancés en parallèle peuvent faire passer un petit abonnement de 90 % à plus de 100 % de son quota avant que le premier ait fini.',
     choix: 'Avant d’admettre une session, Relais réserve ce que consommeront celles qui tournent et la nouvelle, au rythme qu’il apprend des 40 dernières sessions.',
     effet: 'La réserve suit l’usage réel de chaque abonnement, et l’abonnement refuse avant d’atteindre son seuil, au lieu de le laisser dépasser par les sessions déjà lancées.',
+    extrait: {
+      ecrit: true,
+      langage: 'Pseudo-code',
+      code: `admettre la session si
+    quota lu chez le fournisseur
+  + réserve des sessions en cours
+  + réserve de la nouvelle session      ≤ seuil (95 % par défaut)
+réserve : au rythme appris des 40 dernières sessions
+une session déjà ouverte n’est jamais coupée`,
+    },
   },
   {
-    // backend/src/launch_brake.rs l. 1-35 ; commits f45d3bd (503 et
-    // Retry-After doublé pour un abonnement suspendu nommé, 429 au-delà du
-    // débit) et cba3002 (« Réessayer »), du 05/10/2026.
+    // backend/src/launch_brake.rs l. 1-35 ; commits f45d3bd (503 et Retry-After doublé pour un abonnement
+    // suspendu nommé, 429 au-delà du débit) et cba3002 (« Réessayer »), du 05/10/2026.
+    titre: 'Un frein sur les lancements, né d’un incident',
     contrainte: 'Le 27/09/2026, un outil a recréé une session par minute pendant sept heures, sur un abonnement où chacune mourait en deux secondes ; Relais n’enregistrait qu’un code d’erreur, sans message.',
     choix: 'Un frein par application et par abonnement : vingt lancements d’affilée, puis un toutes les trois secondes. Trois échecs d’affilée au démarrage suspendent l’abonnement, et l’erreur cite la dernière ligne d’erreur de l’agent.',
     effet: 'Tant que l’abonnement est suspendu, un lancement qui le nomme est refusé avec une attente conseillée d’une minute, doublée à chaque refus jusqu’à une heure ; l’abonnement rouvre dès qu’une de ses sessions répond, ou d’un clic sur « Réessayer ».',
+    extrait: {
+      ecrit: true,
+      langage: 'HTTP',
+      code: `POST /api/sessions          (21e lancement d’affilée)
+→ 429 Too Many Requests
+  Retry-After: 3
+  { "error_code": "rate_limited", "retry_after_seconds": 3 }`,
+    },
   },
 ];
 

@@ -1,17 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
-import DecisionsProjet from '../../src/components/projets/gabarit/DecisionsProjet.astro';
 import EnTeteProjet from '../../src/components/projets/gabarit/EnTeteProjet.astro';
 import FicheProjet from '../../src/components/projets/gabarit/FicheProjet.astro';
 import SortieProjet from '../../src/components/projets/gabarit/SortieProjet.astro';
 import SourcesProjet from '../../src/components/projets/gabarit/SourcesProjet.astro';
+import SousLeCapot from '../../src/components/projets/gabarit/SousLeCapot.astro';
 import { FAMILLES_PROJETS, projetDeLaVitrine, VEDETTE, VITRINE, VITRINE_PAR_FAMILLE } from '../../src/config/projets';
-import { anglaises, DECISIONS, EN_TETE, FICHE, manquantes, PREUVES, RELEVE_ATTEINT, RELEVES } from '../../src/config/pvz-fusion';
+import { anglaises, CAPOT, EN_TETE, FICHE, manquantes, PREUVES, RELEVE_ATTEINT, RELEVES } from '../../src/config/pvz-fusion';
 
 /**
  * Le gabarit commun des pages de projet (règle E5) : un ordre de vitrine et
  * des noms canoniques uniques (E6), une fiche à sept cases, un en-tête qui
- * marque son premier écran (E1), deux à quatre décisions et une sortie vers
+ * marque son premier écran (E1), « Sous le capot » (deux à dix points
+ * dépliables) et une sortie vers
  * le projet suivant et « Discutons ». Les données de PvZ Fusion servent de
  * cas réel.
  */
@@ -133,13 +134,14 @@ describe('EnTeteProjet', () => {
     expect(avec).toContain('class="projet-tete__visuel');
   });
 
-  it('reprend le nom canonique et l’étiquette de la vitrine, et mène d’abord à « Comment je l’ai construit »', async () => {
+  it('reprend le nom canonique et l’étiquette de la vitrine, et mène d’abord à « Sous le capot »', async () => {
     const html = await rendre(EnTeteProjet, props);
     expect(html).toContain('PvZ Fusion, pôle francophone');
     expect(html).toContain('Une équipe formée et menée');
     expect(html).toMatch(/aria-current="page"[^>]*>PvZ Fusion, pôle francophone</);
     const actions = html.slice(html.indexOf('data-pli="action"'));
     expect(actions.match(/<a [^>]*href="([^"]+)"/)?.[1]).toBe('#construit');
+    expect(actions).toMatch(/>\s*Sous le capot/);
   });
 
   it('refuse plus de trois repères ou plus d’un chiffre surligné', async () => {
@@ -148,18 +150,54 @@ describe('EnTeteProjet', () => {
   });
 });
 
-describe('DecisionsProjet', () => {
-  it('pose « Comment je l’ai construit » à l’ancre attendue, une carte par décision', async () => {
-    const html = await rendre(DecisionsProjet, { decisions: DECISIONS });
+describe('SousLeCapot', () => {
+  it('pose « Sous le capot » à l’ancre d’origine, un point dépliable par décision', async () => {
+    const html = await rendre(SousLeCapot, { points: CAPOT });
     expect(html).toMatch(/<section id="construit"[^>]*aria-labelledby="construit-titre"/);
-    expect(html).toMatch(/<h2[^>]*id="construit-titre"[^>]*>Comment je l’ai construit<\/h2>/);
-    expect(html.match(/<li class="decision"/g)).toHaveLength(DECISIONS.length);
+    expect(html).toMatch(/<h2[^>]*id="construit-titre"[^>]*>Sous le capot<\/h2>/);
+    expect(html.match(/<li class="point-capot"/g)).toHaveLength(CAPOT.length);
+    // Chaque point : une ligne dans un <summary> natif, son ancre, puis « contrainte, choix, effet ».
+    expect(html.match(/<details class="point-capot__pli" data-capot[^>]*>\s*<summary/g)).toHaveLength(CAPOT.length);
+    expect(html).not.toMatch(/<details[^>]*\bopen\b/);
+    expect([...html.matchAll(/<li class="point-capot" id="([^"]+)"/g)].map((m) => m[1])).toEqual(CAPOT.map((_, i) => `construit-${i + 1}`));
+    expect([...html.matchAll(/<span class="point-capot__titre"[^>]*>([^<]+)<\/span>/g)].map((m) => m[1])).toEqual(CAPOT.map((p) => p.titre));
     expect([...html.matchAll(/<dt[^>]*>([^<]+)<\/dt>/g)].slice(0, 3).map((m) => m[1])).toEqual(['Contrainte', 'Choix', 'Effet']);
   });
 
-  it('refuse moins de deux ou plus de quatre décisions', async () => {
-    await expect(rendre(DecisionsProjet, { decisions: DECISIONS.slice(0, 1) })).rejects.toThrow(/deux à quatre/);
-    await expect(rendre(DecisionsProjet, { decisions: [...DECISIONS, ...DECISIONS] })).rejects.toThrow(/deux à quatre/);
+  it('montre l’extrait d’un dépôt public avec son chemin, et dit d’un extrait écrit que le code est privé', async () => {
+    const publique = await rendre(SousLeCapot, { points: CAPOT });
+    expect(publique).toMatch(/<figcaption class="extrait__legende"[^>]*>\s*<code[^>]*>src\/core\/diff\.ts<\/code> · TypeScript/);
+    expect(publique).toMatch(/<pre class="extrait__code"[^>]*tabindex="0"[^>]*><code[^>]*>[^<]*missingById/);
+    expect(publique).toMatch(/class="point-capot__indice"[^>]*>code</);
+    const ecrit = await rendre(SousLeCapot, {
+      points: [
+        { titre: 'Un point écrit', texte: 'Une explication.', extrait: { ecrit: true, langage: 'Schéma', code: 'a → b' } },
+        { titre: 'Un autre', texte: 'Une autre explication.' },
+      ],
+    });
+    expect(ecrit).toMatch(/Schéma, forme simplifiée écrite pour cette page\s: le code est privé/);
+    expect(ecrit).toMatch(/class="point-capot__indice"[^>]*>aperçu</);
+    expect(ecrit).not.toMatch(/<dl/);
+  });
+
+  it('range les points par groupe, numérotés d’un bout à l’autre', async () => {
+    const html = await rendre(SousLeCapot, {
+      points: [
+        { groupe: 'Architecture', titre: 'Un', texte: 'x' },
+        { groupe: 'Architecture', titre: 'Deux', texte: 'x' },
+        { groupe: 'Limites', titre: 'Trois', texte: 'x' },
+      ],
+    });
+    expect([...html.matchAll(/<h3 class="capot__groupe-titre"[^>]*>([^<]+)<\/h3>/g)].map((m) => m[1])).toEqual(['Architecture', 'Limites']);
+    expect([...html.matchAll(/<span class="point-capot__rang"[^>]*>(\d+)<\/span>/g)].map((m) => m[1])).toEqual(['01', '02', '03']);
+  });
+
+  it('refuse moins de deux ou plus de dix points, un point sans forme et un extrait trop long', async () => {
+    await expect(rendre(SousLeCapot, { points: CAPOT.slice(0, 1) })).rejects.toThrow(/deux à dix/);
+    await expect(rendre(SousLeCapot, { points: [...CAPOT, ...CAPOT, ...CAPOT, ...CAPOT] })).rejects.toThrow(/deux à dix/);
+    await expect(rendre(SousLeCapot, { points: [{ titre: 'Rien', contrainte: 'a' }, CAPOT[0]] })).rejects.toThrow(/contrainte, choix, effet/);
+    const long = { titre: 'Long', texte: 'x', extrait: { ecrit: true, langage: 'Texte', code: Array.from({ length: 13 }, (_, i) => `ligne ${i}`).join('\n') } };
+    await expect(rendre(SousLeCapot, { points: [long, CAPOT[0]] })).rejects.toThrow(/douze lignes/);
   });
 });
 

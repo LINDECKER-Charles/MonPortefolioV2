@@ -13,7 +13,7 @@
  * concentrent les jours de publication et ne mesurent pas un usage.
  */
 import type { EntreeSommaire } from './navigation';
-import type { Decision, DonneesFiche, LienProjet, PreuveEnTete } from '../components/projets/gabarit/types';
+import type { PointCapot, DonneesFiche, LienProjet, PreuveEnTete } from '../components/projets/gabarit/types';
 
 /* ------------------------------------------------------------------ */
 /* Liens publics                                                       */
@@ -115,7 +115,7 @@ export const SECTIONS: readonly EntreeSommaire[] = [
   { id: 'essai', titre: 'La démonstration' },
   { id: 'regles', titre: 'Les règles de 153 outils' },
   { id: 'produit', titre: 'Tenu comme un produit' },
-  { id: 'construit', titre: 'Comment je l’ai construit' },
+  { id: 'construit', titre: 'Sous le capot' },
   { id: 'retiens', titre: 'En une phrase' },
 ];
 
@@ -293,47 +293,128 @@ export const PRATIQUES: readonly { titre: string; texte: string; trace: LienProj
 ];
 
 /* ------------------------------------------------------------------ */
-/* Comment je l’ai construit (gabarit E5 · 4)                          */
+/* Sous le capot (gabarit E5 · 4)                                      */
 /* ------------------------------------------------------------------ */
 
-export const DECISIONS: readonly Decision[] = [
+/**
+ * Quatre décisions d’architecture, puis les deux choix qui suivaient sous
+ * « Et deux choix de plus » (le filtre par système, le contraste), réunis le
+ * 15/10/2026 dans la même liste ; GUP-02 dessine les six, dans cet ordre.
+ * Extraits : dépôt public, release 0.5.3 (REVISION 0c0e85a), relus le 15/10/2026.
+ */
+export const CAPOT: readonly PointCapot[] = [
   {
+    titre: 'Chaque source dans son fichier, derrière un contrat',
     contrainte: '153 outils, dont certains plantent, bloquent ou répondent n’importe quoi.',
     choix: 'Chaque source dans son propre fichier, derrière un contrat commun, sans dépendre des autres.',
     effet: 'Une source en panne ne perd que sa propre ligne.',
     lien: { href: LIENS.architecture, libelle: 'L’architecture' },
+    extrait: {
+      fichier: 'src/core/types.ts',
+      langage: 'TypeScript',
+      code: `export interface Provider {
+  readonly id: string;
+  readonly displayName: string;
+  readonly platforms?: PlatformSet;
+  // …
+  isAvailable(): Promise<boolean>;
+  listOutdated(): Promise<OutdatedPackage[]>;
+  update(packageId: string, options?: UpdateOptions): Promise<UpdateOutcome>;
+  // …
+}`,
+    },
   },
   {
+    titre: 'Aucun programme lancé par un shell',
     contrainte: 'gup lance des programmes avec des noms de paquets venus de l’extérieur.',
     choix: 'Tous les programmes partent d’un seul point du code, arguments en liste, sans shell. Seul Scoop, qui l’exige, passe par une liste blanche contrôlée ; un test refuse tout nouvel appel à un shell.',
     effet: 'Un nom de paquet reste un argument, jamais une commande.',
     lien: { href: LIENS.shell, libelle: 'Le test de sécurité' },
+    extrait: {
+      fichier: 'tests/security/shell-usage.test.ts',
+      langage: 'TypeScript',
+      code: `it("no source file uses child_process directly — runner.ts is the single chokepoint", async () => {
+  const files = await walk(SRC_ROOT);
+  const offenders: string[] = [];
+  for (const file of files) {
+    const rel = toPosixRel(file);
+    if (rel === "src/core/runner.ts") continue;
+    const content = await readFile(file, "utf8");
+    if (/from\\s+["']node:child_process["']/.test(content)) offenders.push(rel);
+    if (/require\\(["']child_process["']\\)/.test(content)) offenders.push(rel);
+  }
+  expect(offenders).toEqual([]);
+});`,
+    },
   },
   {
+    titre: 'Un paquet par appel au gestionnaire',
     contrainte: 'Une installation peut échouer ou dépasser son délai au milieu d’un lot.',
     choix: 'Un paquet par appel au gestionnaire, même quand l’outil sait tout mettre à jour d’un coup, au prix de quelques lancements de plus.',
     effet: 'Un échec ne fait tomber qu’une installation, jamais le lot entier.',
     lien: { href: LIENS.decisions, libelle: 'Les décisions notables' },
+    extrait: {
+      fichier: 'src/core/update/apply-update.ts',
+      langage: 'TypeScript',
+      code: `async function settledUpdate(
+  provider: Provider,
+  packageId: string,
+  update: UpdateOptions | undefined,
+): Promise<UpdateOutcome> {
+  try {
+    return update ? await provider.update(packageId, update) : await provider.update(packageId);
+  } catch (error) {
+    return { id: packageId, success: false, message: rejectionMessage(error) };
+  }
+}`,
+    },
   },
   {
+    titre: 'Un gup éphémère toutes les 15 minutes',
     contrainte: 'Programmer des mises à jour sans laisser un programme tourner en permanence.',
     choix: 'Le planificateur du système lance un gup éphémère toutes les 15 minutes, seulement si une programmation existe.',
     effet: 'Rien ne tourne en arrière-plan.',
     lien: { href: LIENS.planification, libelle: 'La planification' },
-  },
-];
+    extrait: {
+      fichier: 'src/core/scheduler/scheduler-timing.ts',
+      langage: 'TypeScript',
+      code: `/**
+ *     MAX_RUN_MINUTES + cap  <  TICK_WATCHDOG_MINUTES  <  EXECUTION_TIME_LIMIT_MINUTES
+ *          120 + 30          <          170           <             180
+ */
 
-/** Deux choix de plus, sans la place d’une carte : le filtre par système et le contraste. */
-export const AUTRES_CHOIX: readonly { titre: string; texte: string; trace: LienProjet }[] = [
+/** How often the OS trigger starts a tick: latency against wake-ups. */
+export const TICK_INTERVAL_MINUTES = 15;`,
+    },
+  },
   {
     titre: 'Chaque système voit ses outils',
     texte: 'Une source d’un autre système est grisée et n’est jamais lancée, même si un exécutable du même nom traîne dans le PATH.',
-    trace: { href: LIENS.catalogue, libelle: 'Le filtre par système' },
+    lien: { href: LIENS.catalogue, libelle: 'Le filtre par système' },
+    extrait: {
+      fichier: 'src/core/platform/is-supported-on.ts',
+      langage: 'TypeScript',
+      code: `export function isSupportedOn(
+  subject: PlatformScoped,
+  platform: NodeJS.Platform = process.platform,
+): boolean {
+  return subject.platforms === undefined || subject.platforms.includes(platform);
+}`,
+    },
   },
   {
-    titre: 'Lisible partout',
+    titre: 'Lisible partout, couleurs personnalisées comprises',
     texte: '27 thèmes, et chaque texte atteint le contraste WCAG AA, couleurs personnalisées comprises.',
-    trace: { href: LIENS.contraste, libelle: 'La garantie de contraste' },
+    lien: { href: LIENS.contraste, libelle: 'La garantie de contraste' },
+    extrait: {
+      fichier: 'src/ui/theme/contrast-rules.ts',
+      langage: 'TypeScript',
+      code: `/** Minimum ratios: text (WCAG 1.4.3 / 1.4.6) and UI elements (1.4.11, which has no AAA). */
+export const CONTRAST_TARGETS: Readonly<Record<ContrastLevel, { text: number; ui: number }>> = {
+  AA: { text: 4.5, ui: 3 },
+  AAA: { text: 7, ui: 3 },
+};`,
+    },
   },
 ];
 

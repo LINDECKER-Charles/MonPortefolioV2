@@ -3,7 +3,7 @@
  * Sillage : la preuve d’« orchestrer des agents IA ». Page bâtie sur le
  * gabarit commun des pages de projet (components/projets/gabarit, règle E5) :
  * en-tête et fiche, corps libre (le principe, composer une tâche, reprendre
- * après une coupure, le résultat), « Comment je l’ai construit », sortie et
+ * après une coupure, le résultat), « Sous le capot », sortie et
  * note de sources. Données et sources : config/sillage.ts, que cette page
  * tient seule (sa carte de la vitrine comprise).
  *
@@ -14,11 +14,11 @@
  */
 import Base from '../../layouts/Base.astro';
 import CorpsProjet from '../../components/projets/gabarit/CorpsProjet.astro';
-import DecisionsProjet from '../../components/projets/gabarit/DecisionsProjet.astro';
 import EnTeteProjet from '../../components/projets/gabarit/EnTeteProjet.astro';
 import SectionProjet from '../../components/projets/gabarit/SectionProjet.astro';
 import SortieProjet from '../../components/projets/gabarit/SortieProjet.astro';
 import SourcesProjet from '../../components/projets/gabarit/SourcesProjet.astro';
+import SousLeCapot from '../../components/projets/gabarit/SousLeCapot.astro';
 import CadreCapture from '../../components/ui/CadreCapture.astro';
 import CaptureAnnotee from '../../components/ui/CaptureAnnotee.astro';
 import Visionneuse from '../../components/ui/Visionneuse.astro';
@@ -31,7 +31,7 @@ import recapitulatifMobile from '../../assets/projets/sillage/recapitulatif-mobi
 import reprendre from '../../assets/projets/sillage/reprendre-execution.webp';
 import reprendreMobile from '../../assets/projets/sillage/reprendre-execution-mobile.webp';
 import { SITE } from '../../config/site';
-import { DECISIONS, ECRANS, EN_TETE, FICHE, LIENS_SORTIE, PREUVES, SECTIONS } from '../../config/sillage';
+import { CAPOT, ECRANS, EN_TETE, FICHE, LIENS_SORTIE, PREUVES, SECTIONS } from '../../config/sillage';
 import { typo } from '../../lib/typo';
 
 // ≤ 45 caractères avant « — Charles Lindecker » (titre ≤ 65 au total).
@@ -190,7 +190,7 @@ const alt = (ecran: keyof typeof ECRANS) => typo(ECRANS[ecran].alt);
       </SectionProjet>
     </div>
 
-    <DecisionsProjet decisions={DECISIONS} chapeau="Quatre choix qui ne se voient pas à l’écran, chacun né d’un problème relevé. Le serveur les tient par 643 tests, que l’intégration continue joue sous Windows et macOS." />
+    <SousLeCapot points={CAPOT} chapeau="Quatre choix qui ne se voient pas à l’écran, chacun né d’un problème relevé. Le serveur les tient par 643 tests, que l’intégration continue joue sous Windows et macOS." />
 
     <SortieProjet projet="sillage" titre="Aujourd’hui" liens={LIENS_SORTIE}>
       <p>Neuf exécutions réelles en huit jours, 579&nbsp;agents lancés, 63&nbsp;500 appels d’outils, sept blocages durs relevés puis traités&nbsp;: Sillage tourne sur ma machine, avec Relais.</p>

@@ -10,7 +10,7 @@
  * permaliens figés à la révision auditée pour les preuves.
  */
 import type { EntreeSommaire } from './navigation';
-import type { Decision, DonneesFiche, LienProjet, PreuveEnTete } from '../components/projets/gabarit/types';
+import type { PointCapot, DonneesFiche, LienProjet, PreuveEnTete } from '../components/projets/gabarit/types';
 
 /* ------------------------------------------------------------------ */
 /* Liens publics                                                       */
@@ -106,7 +106,7 @@ export const SECTIONS: readonly EntreeSommaire[] = [
   { id: 'donnees', titre: 'Les pièges des données' },
   { id: 'reecriture', titre: 'La réécriture' },
   { id: 'fabrication', titre: 'En production' },
-  { id: 'construit', titre: 'Comment je l’ai construit' },
+  { id: 'construit', titre: 'Sous le capot' },
   { id: 'retiens', titre: 'Ce que j’en retiens' },
 ];
 
@@ -269,27 +269,62 @@ export const JALONS = [
 ] as const;
 
 /* ------------------------------------------------------------------ */
-/* Comment je l’ai construit (gabarit E5 · 4)                          */
+/* Sous le capot (gabarit E5 · 4)                                      */
 /* ------------------------------------------------------------------ */
 
-export const DECISIONS: readonly Decision[] = [
+/**
+ * Extraits : dépôt public LeagueOfDataBaseFinal, à la révision auditée
+ * (REVISION, 12/10/2026), relus le 15/10/2026.
+ */
+export const CAPOT: readonly PointCapot[] = [
   {
+    titre: 'Chaque piège des données devient une règle',
     contrainte: 'Riot publie ses données telles quelles : fichiers manquants, langues absentes, objets en double.',
     choix: 'Chaque piège devient une règle et un test ; une absence définitive est enregistrée, une erreur passagère jamais.',
     effet: '403 patchs lisibles, même incomplets.',
     lien: { href: LIENS.heritage, libelle: 'Les pièges, dans le dépôt' },
+    extrait: {
+      fichier: 'src/LoDb.Ingestion/Egress/EgressFetcher.cs',
+      langage: 'C#',
+      code: `var status = response.StatusCode;
+response.Dispose();
+return status is HttpStatusCode.Forbidden or HttpStatusCode.NotFound
+    ? new FetchOutcome.Absent((int)status)
+    : throw new EgressTransientException($"Upstream answered {(int)status}.", status);`,
+    },
   },
   {
+    titre: 'Deux caches : le patch du jour et les archives',
     contrainte: 'Une visite des archives ne doit pas chasser le patch actuel du cache.',
     choix: 'Deux caches séparés, un rendu par adresse et des rendus simultanés bornés.',
     effet: 'Les archives sans ralentir le patch du jour.',
     lien: { href: LIENS.routage, libelle: 'Le routage du cache' },
+    extrait: {
+      fichier: 'docker/nginx/sites/site.conf',
+      langage: 'nginx',
+      code: `# The latest patch's pages (snippets/page-cache.conf) …
+proxy_cache_path /var/cache/nginx/pages levels=1:2 use_temp_path=off
+                 keys_zone=lodb_pages:\${LODB_PAGE_CACHE_KEYS_SIZE} …;
+# The past patches' pages (snippets/archive-cache.conf) … a sweep of every
+# patch cannot evict the latest patch's pages.
+proxy_cache_path /var/cache/nginx/archive levels=1:2 use_temp_path=off
+                 keys_zone=lodb_archive:\${LODB_ARCHIVE_CACHE_KEYS_SIZE} …;`,
+    },
   },
   {
+    titre: 'Comparer les deux moteurs avant de basculer',
     contrainte: 'Changer tout le moteur sans perdre un compte ni un lien.',
     choix: 'Comparer les deux versions sur 75 couples (version, langue) avant de basculer.',
-    effet: '12\u00a0260 écarts classés, aucun défaut neuf.',
+    effet: '12 260 écarts classés, aucun défaut neuf.',
     lien: { href: LIENS.parite, libelle: 'Le rapport de parité' },
+    extrait: {
+      fichier: 'docs/reecriture/rapports/parite-lot-1.md',
+      langage: 'Markdown',
+      code: `**Résultat** : 12 260 écarts, tous classés. Aucun n'est un défaut de la nouvelle stack.
+Trois règles couvrent 328 défauts de l'ancienne stack que la nouvelle corrige
+volontairement ; trois règles couvrent 11 932 écarts attendus, tous dus au stockage
+paresseux de l'ancienne stack.`,
+    },
   },
 ];
 

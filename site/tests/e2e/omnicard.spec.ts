@@ -44,18 +44,18 @@ test('l’en-tête tient dans le premier écran : titre, identité, preuve, acti
   }
 });
 
-test('le nom canonique, l’étiquette de preuve et le chemin vers « Comment je l’ai construit »', async ({ page }) => {
+test('le nom canonique, l’étiquette de preuve et le chemin vers « Sous le capot »', async ({ page }) => {
   await page.goto(CHEMIN);
   await expect(page.getByRole('navigation', { name: 'Fil d’Ariane', exact: true }).locator('[aria-current="page"]')).toHaveText('Omnicard');
   const entete = page.locator('.projet-tete');
   await expect(entete).toContainText('Réinventer');
-  const construit = entete.locator('[data-pli="action"]').getByRole('link', { name: /Comment je l’ai construit/ });
+  const construit = entete.locator('[data-pli="action"]').getByRole('link', { name: /Sous le capot/ });
   await expect(construit).toHaveAttribute('href', '#construit');
   // « Le jeu en images », l’appel de l’ancienne page, reste une action de l’en-tête.
   await expect(entete.locator('[data-pli="action"]').getByRole('link', { name: /Le jeu en images/ })).toHaveAttribute('href', '#jeu');
   await construit.click();
   await expect(page.locator('#construit')).toBeInViewport();
-  await expect(page.locator('#construit .decision')).toHaveCount(3);
+  await expect(page.locator('#construit .point-capot')).toHaveCount(4);
 });
 
 test('la fiche : sept cases, statut hors ligne à forme et mot, dates à confirmer, liens mesurés', async ({ page }) => {

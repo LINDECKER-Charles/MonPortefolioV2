@@ -50,17 +50,17 @@ test('l’en-tête tient dans le premier écran : titre, identité, preuve, acti
   }
 });
 
-test('le nom canonique, l’étiquette de preuve et le chemin vers « Comment je l’ai construit »', async ({ page }) => {
+test('le nom canonique, l’étiquette de preuve et le chemin vers « Sous le capot »', async ({ page }) => {
   await page.goto(CHEMIN);
   const ariane = page.getByRole('navigation', { name: 'Fil d’Ariane', exact: true });
   await expect(ariane.locator('[aria-current="page"]')).toHaveText('PvZ Fusion, pôle francophone');
   const entete = page.locator('.projet-tete');
   await expect(entete).toContainText('Une équipe formée et menée');
-  const construit = entete.locator('[data-pli="action"]').getByRole('link', { name: /Comment je l’ai construit/ });
+  const construit = entete.locator('[data-pli="action"]').getByRole('link', { name: /Sous le capot/ });
   await expect(construit).toHaveAttribute('href', '#construit');
   await construit.click();
   await expect(page.locator('#construit')).toBeInViewport();
-  await expect(page.locator('#construit .decision')).toHaveCount(3);
+  await expect(page.locator('#construit .point-capot')).toHaveCount(3);
 });
 
 test('la fiche technique : sept cases à filets, statut à forme et mot, liens publics mesurés', async ({ page }) => {
@@ -241,7 +241,7 @@ test.describe('sans JavaScript', () => {
     await expect(demo.locator('#extraits-francais')).toBeVisible();
     await expect(demo.locator('#extraits-origine')).toBeHidden();
     await expect(demo.getByRole('button')).toHaveCount(0);
-    await page.locator('[data-pli="action"]').getByRole('link', { name: /Comment je l’ai construit/ }).click();
+    await page.locator('[data-pli="action"]').getByRole('link', { name: /Sous le capot/ }).click();
     expect(new URL(page.url()).hash).toBe('#construit');
     await expect(page.locator('#construit')).toBeInViewport();
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);

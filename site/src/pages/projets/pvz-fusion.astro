@@ -3,17 +3,17 @@
  * PvZ Fusion, pôle francophone : la preuve d’« emmener ». Première page bâtie
  * sur le gabarit commun des pages de projet (components/projets/gabarit,
  * règle E5) : en-tête et fiche, corps libre (le point de départ, l’équipe, la
- * semaine type, le résultat), « Comment je l’ai construit », sortie et note
+ * semaine type, le résultat), « Sous le capot », sortie et note
  * de sources. Données et relevés : config/pvz-fusion.ts.
  */
 import { Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import CorpsProjet from '../../components/projets/gabarit/CorpsProjet.astro';
-import DecisionsProjet from '../../components/projets/gabarit/DecisionsProjet.astro';
 import EnTeteProjet from '../../components/projets/gabarit/EnTeteProjet.astro';
 import SectionProjet from '../../components/projets/gabarit/SectionProjet.astro';
 import SortieProjet from '../../components/projets/gabarit/SortieProjet.astro';
 import SourcesProjet from '../../components/projets/gabarit/SourcesProjet.astro';
+import SousLeCapot from '../../components/projets/gabarit/SousLeCapot.astro';
 import BoucleSemaine from '../../components/projets/pvz/BoucleSemaine.astro';
 import DemoTraduction from '../../components/projets/pvz/DemoTraduction.astro';
 import FigureDepart from '../../components/projets/pvz/FigureDepart.astro';
@@ -26,7 +26,7 @@ import PreuvesChiffrees from '../../components/ui/PreuvesChiffrees.astro';
 import Visuel from '../../components/ui/Visuel.astro';
 import capture from '../../assets/captures/pvz-fusion.webp';
 import { SITE } from '../../config/site';
-import { CORRECTIONS, DECISIONS, EN_TETE, FICHE, LIENS, LIENS_SORTIE, PARCOURS_EQUIPE, PREUVES, SECTIONS, VOLUMES } from '../../config/pvz-fusion';
+import { CORRECTIONS, CAPOT, EN_TETE, FICHE, LIENS, LIENS_SORTIE, PARCOURS_EQUIPE, PREUVES, SECTIONS, VOLUMES } from '../../config/pvz-fusion';
 import { attributsMesure } from '../../lib/liens';
 import { typo } from '../../lib/typo';
 
@@ -137,7 +137,7 @@ const etiquette = (id: string) => SECTIONS.find((section) => section.id === id)?
       </div>
     </SectionProjet>
 
-    <DecisionsProjet decisions={DECISIONS} />
+    <SousLeCapot points={CAPOT} chapeau="Trois décisions d’organisation, et l’outil qui les tient." />
 
     <SortieProjet projet="pvz" liens={LIENS_SORTIE}>
       <p>Ce dont je suis le plus fier&nbsp;: des personnes arrivées sans compétences, parfois avec du mal à travailler en groupe, et qui ont fini ancrées dans la communauté et brillantes sur la technique.</p>
@@ -149,6 +149,7 @@ const etiquette = (id: string) => SECTIONS.find((section) => section.id === id)?
       <p><b>Volumes.</b> Le <a {...sortant(LIENS.bilanFige)}>bilan du pôle, figé au 26/09/2026<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>, déclare 5&nbsp;179 nouvelles traductions&nbsp;: 4&nbsp;862 dans mon bilan, 317 dans ceux des douze autres membres du bilan. Ce sont des entrées cumulées au fil des versions, pas des textes uniques ni un taux de couverture. Les 583 ajustements se comptent à part&nbsp;; les 637 relectures sont mon compteur, pas celui du pôle. Le journal détaillé de mon bilan donne 4&nbsp;853 nouvelles traductions et 293 ajustements&nbsp;: les synthèses et les journaux présentent ces écarts, conservés tels quels.</p>
       <p><b>Pull requests.</b> Les <a {...sortant(LIENS.prs)}>35 pull requests<span class="fleche" aria-hidden="true">&nbsp;↗</span></a> ont été ouvertes par mon compte entre le 16/10/2025 et le 26/09/2026, et toutes fusionnées&nbsp;; elles ne correspondent pas à 35 semaines consécutives. La 4.0&nbsp;: textes d’origine versés le 20/09/2026, pull request française fusionnée le 26/09, version multilingue publiée le 01/10.</p>
       <p><b>Rôles et équipe.</b> Dates des rôles et des arrivées&nbsp;: journaux publics des membres du pôle, dont <a {...sortant(LIENS.journalFige)}>le mien<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>&nbsp;; c’est aussi là que se lisent les corrections citées. Ma première pull request, ouverte le 16/10/2025 et fusionnée le 21/10, précède mon entrée au journal comme traducteur, datée du 21/10/2025. Ces journaux ne consignent que neuf arrivées, sur les vingt personnes formées. Les 20 personnes formées, le pic de dix contributeurs en même temps, le tableau commun, le classement hebdomadaire, les récapitulatifs individuels et le rythme d’une pull request par semaine viennent de mon témoignage du 13/10/2026&nbsp;; aucun message privé n’est reproduit. Les extraits de menus viennent des <a {...sortant(LIENS.textesSources)}>textes sources, lignes 40 à 51<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>.</p>
+      <p><b>Sous le capot.</b> Les extraits viennent du Console Manager, dépôt public, à la révision 492c8de de sa branche principale, lue le 15/10/2026.</p>
     </SourcesProjet>
   </CorpsProjet>
 </Base>

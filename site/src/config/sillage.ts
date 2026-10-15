@@ -28,7 +28,7 @@
  */
 import type { EntreeSommaire } from './navigation';
 import type { CarteVitrine } from './vitrine';
-import type { Decision, DonneesFiche, LienProjet, PreuveEnTete, SchemaProjet } from '../components/projets/gabarit/types';
+import type { PointCapot, DonneesFiche, LienProjet, PreuveEnTete, SchemaProjet } from '../components/projets/gabarit/types';
 import angular from '../assets/stacks/angular.svg';
 import rust from '../assets/stacks/rust.svg';
 import sqlite from '../assets/stacks/sqlite.svg';
@@ -115,7 +115,7 @@ export const SECTIONS: readonly EntreeSommaire[] = [
   { id: 'composer', titre: 'Composer une tâche' },
   { id: 'reprendre', titre: 'Reprendre après une coupure' },
   { id: 'resultat', titre: 'Le résultat' },
-  { id: 'construit', titre: 'Comment je l’ai construit' },
+  { id: 'construit', titre: 'Sous le capot' },
   { id: 'retiens', titre: 'Aujourd’hui' },
 ];
 
@@ -157,31 +157,65 @@ export const ECRANS = {
 } as const satisfies Record<string, EcranSillage>;
 
 /* ------------------------------------------------------------------ */
-/* Comment je l’ai construit (gabarit E5 · 4)                          */
+/* Sous le capot (gabarit E5 · 4)                                      */
 /* ------------------------------------------------------------------ */
 
-export const DECISIONS: readonly Decision[] = [
+export const CAPOT: readonly PointCapot[] = [
   {
-    contrainte: 'Les agents rendent de 10\u00a0000 à 27\u00a0000 caractères, quelle que soit la cible qu’on leur annonce, et une seule réponse mal formée peut casser la chaîne.',
+    // docs/context-contracts.md l. 1-60 et 195-215 ; README l. 172-197 ; backend/src/short_result.rs:11 (MAX_REPAIRS = 2).
+    titre: 'Un résultat court, corrigé dans la même session',
+    contrainte: 'Les agents rendent de 10 000 à 27 000 caractères, quelle que soit la cible qu’on leur annonce, et une seule réponse mal formée peut casser la chaîne.',
     choix: 'Chaque agent rend un résultat court et structuré : résumé, décisions, contrôles, blocages, suite. Une réponse hors du format attendu lui revient dans la même session, avec l’erreur, deux fois au plus.',
     effet: 'Les agents suivants reçoivent des faits et des références, pas des conversations entières ; un blocage arrête la suite.',
     lien: { href: '#resultat', libelle: 'Le récapitulatif' },
+    extrait: {
+      ecrit: true,
+      langage: 'JSON',
+      code: `{
+  "outcome": "partial",
+  "summary": "Interfaces examinées ; raccordement restant.",
+  "decisions": [],
+  "checks": [{ "kind": "runtime_test", "status": "not_run" }],
+  "blockers": [],
+  "next_action": "Effectuer les essais dans le navigateur."
+}`,
+    },
   },
   {
+    // docs/blocages-agents.md:25-35 (révision 9b4533a) ; backend/src/session/worktree.rs:1-5 ; README l. 392-410.
+    titre: 'Sillage crée lui-même le worktree de l’agent',
     contrainte: 'Des agents en parallèle dans un même dossier se gênaient : 26 commandes Git bloquées sur un verrou, des commits réécrits par un autre agent. Enfermés dans leur bac à sable, d’autres agents ne pouvaient ni committer, ni ouvrir un navigateur, ni joindre le réseau : 39 blocages en trois exécutions.',
     choix: 'Quand un agent en a besoin (sa mission le demande, ou un autre agent écrit en même temps dans le même dossier), Sillage crée lui-même son worktree avant sa première session, le garde pour les suivantes, committe pour l’agent si besoin, puis fusionne.',
     effet: 'Le même mécanisme committe pour les agents enfermés et sépare ceux qui écrivent en parallèle. Seuls les worktrees propres et fusionnés sont nettoyés, jamais les branches.',
   },
   {
+    // docs/plan-contexte-agents.md:8-34 (révision ae2efd8) ; backend/src/models.rs:725-729 (300 000) ; README l. 450-458.
+    titre: 'Une fenêtre de compaction pour chaque session',
     contrainte: 'À chaque appel, toute la conversation de l’agent était relue : 2,19 milliards de tokens, les unités de texte que lit le modèle, sur 79 sessions de trois tâches, et rien ne bornait une session.',
-    choix: 'Chaque session demande à Relais une fenêtre de compaction, de 300\u00a0000 tokens par défaut, réglable ou désactivable : au-delà, sa conversation est résumée.',
-    effet: 'Une session est résumée vers 270\u00a0000 tokens au lieu de grossir jusqu’à la limite du modèle.',
+    choix: 'Chaque session demande à Relais une fenêtre de compaction, de 300 000 tokens par défaut, réglable ou désactivable : au-delà, sa conversation est résumée.',
+    effet: 'Une session est résumée vers 270 000 tokens au lieu de grossir jusqu’à la limite du modèle.',
+    extrait: {
+      ecrit: true,
+      langage: 'JSON annoté',
+      code: `// Demande de session à Relais, réglage par défaut
+{ "autocompact_tokens": 300000 }`,
+    },
   },
   {
+    // docs/architecture-report.md (révision ed4080b) ; README l. 47-50 ; capacités annoncées par Relais.
+    titre: 'Relais n’expose que des capacités génériques',
     contrainte: 'Des notions propres à Sillage étaient entrées dans Relais, et Sillage allait lire le jeton de Relais dans son dossier : trois lectures dans le code exécuté.',
     choix: 'Relais n’expose que des capacités génériques. Sillage garde son schéma de création de tâche et ses validations, et reçoit le jeton par ses paramètres.',
     effet: 'Plus aucune lecture du dossier voisin : deux applications qui s’installent séparément, et un point d’accès que d’autres outils utilisent.',
     lien: { href: '/projets/relais', libelle: 'Relais' },
+    extrait: {
+      ecrit: true,
+      langage: 'JSON annoté',
+      code: `// GET /api/status chez Relais : les capacités dont Sillage se sert
+{ "capabilities": {
+    "working_context": true, "filesystem_scope": true,
+    "idempotent_session_creation": true, "mcp_http": true, "mcp_http_auto": true } }`,
+    },
   },
 ];
 

@@ -13,11 +13,11 @@
  */
 import Base from '../../layouts/Base.astro';
 import CorpsProjet from '../../components/projets/gabarit/CorpsProjet.astro';
-import DecisionsProjet from '../../components/projets/gabarit/DecisionsProjet.astro';
 import EnTeteProjet from '../../components/projets/gabarit/EnTeteProjet.astro';
 import SectionProjet from '../../components/projets/gabarit/SectionProjet.astro';
 import SortieProjet from '../../components/projets/gabarit/SortieProjet.astro';
 import SourcesProjet from '../../components/projets/gabarit/SourcesProjet.astro';
+import SousLeCapot from '../../components/projets/gabarit/SousLeCapot.astro';
 import CaptureLeague from '../../components/projets/league/CaptureLeague.astro';
 import ComparaisonAhri from '../../components/projets/league/ComparaisonAhri.astro';
 import Fabrication from '../../components/projets/league/Fabrication.astro';
@@ -29,7 +29,7 @@ import LienAction from '../../components/ui/LienAction.astro';
 import Visionneuse from '../../components/ui/Visionneuse.astro';
 import Visuel from '../../components/ui/Visuel.astro';
 import { SITE } from '../../config/site';
-import { DECISIONS, EN_TETE, FICHE, FICHES, LANGUES, LIENS, LIENS_SORTIE, lienLangue, PLATEFORME, PREUVES, SECTIONS } from '../../config/league-of-database';
+import { CAPOT, EN_TETE, FICHE, FICHES, LANGUES, LIENS, LIENS_SORTIE, lienLangue, PLATEFORME, PREUVES, SECTIONS } from '../../config/league-of-database';
 import { attributsMesure } from '../../lib/liens';
 import { typo } from '../../lib/typo';
 
@@ -227,7 +227,7 @@ const ADRESSE = 'league-of-data-base.com';
       </div>
     </SectionProjet>
 
-    <DecisionsProjet decisions={DECISIONS} />
+    <SousLeCapot points={CAPOT} chapeau="Trois décisions, chacune avec sa trace dans le code public." />
 
     <SortieProjet projet="league" liens={LIENS_SORTIE}>
       <p>League Of Data Base est en ligne&nbsp;: 403 patchs, 21 langues, et depuis le 4 octobre 2026 un moteur entièrement neuf, sans qu’un compte ni un ancien lien ne se perde.</p>
@@ -240,6 +240,7 @@ const ADRESSE = 'league-of-data-base.com';
       <p><b>Exploitation.</b> Caches, ingestion, mesure, sauvegardes et livraison sont décrits dans le dépôt public, à la même révision. Les fréquences des sauvegardes sont celles du dispositif&nbsp;; leur activation en production reste à confirmer. Aucun chiffre d’audience n’est publié&nbsp;: le tableau Umami est privé.</p>
       <p><b>Nom.</b> League Of Data Base<AConfirmer titre="Nom officiel à confirmer (question Q8)">nom à confirmer</AConfirmer>.</p>
       <p><b>Riot Games.</b> Les données et les illustrations du jeu proviennent de Riot Games. Projet indépendant, sans affiliation à Riot Games.</p>
+      <p><b>Sous le capot.</b> Extraits du dépôt public, à la révision auditée 1c9b447, relus le 15/10/2026.</p>
     </SourcesProjet>
   </CorpsProjet>
 

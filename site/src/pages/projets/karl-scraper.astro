@@ -3,7 +3,7 @@
  * Karl Scraper : la preuve de « Automatiser des tâches ». Page bâtie sur le
  * gabarit commun des pages de projet (components/projets/gabarit, règle E5) :
  * en-tête et fiche, corps libre (une copie locale, la Galaxie, ce que l’agent
- * lit, la chaîne d’un ticket), « Comment je l’ai construit », sortie et note
+ * lit, la chaîne d’un ticket), « Sous le capot », sortie et note
  * de sources. Données, alts et sources : config/karl-scraper.ts, que cette
  * page tient seule (sa carte de la vitrine comprise).
  *
@@ -16,11 +16,11 @@
  */
 import Base from '../../layouts/Base.astro';
 import CorpsProjet from '../../components/projets/gabarit/CorpsProjet.astro';
-import DecisionsProjet from '../../components/projets/gabarit/DecisionsProjet.astro';
 import EnTeteProjet from '../../components/projets/gabarit/EnTeteProjet.astro';
 import SectionProjet from '../../components/projets/gabarit/SectionProjet.astro';
 import SortieProjet from '../../components/projets/gabarit/SortieProjet.astro';
 import SourcesProjet from '../../components/projets/gabarit/SourcesProjet.astro';
+import SousLeCapot from '../../components/projets/gabarit/SousLeCapot.astro';
 import FigureChaine from '../../components/projets/karl-scraper/FigureChaine.astro';
 import CadreCapture from '../../components/ui/CadreCapture.astro';
 import CaptureAnnotee from '../../components/ui/CaptureAnnotee.astro';
@@ -30,7 +30,7 @@ import galaxie from '../../assets/projets/karl-scraper/galaxie.webp';
 import tableauDeBord from '../../assets/projets/karl-scraper/tableau-de-bord.webp';
 import vueAgent from '../../assets/projets/karl-scraper/vue-agent.webp';
 import { SITE } from '../../config/site';
-import { DECISIONS, ECRANS, EN_TETE, FICHE, LIENS_SORTIE, PREUVES, SECTIONS } from '../../config/karl-scraper';
+import { CAPOT, ECRANS, EN_TETE, FICHE, LIENS_SORTIE, PREUVES, SECTIONS } from '../../config/karl-scraper';
 
 // ≤ 45 caractères avant « — Charles Lindecker » (titre ≤ 65 au total).
 const titre = `Karl Scraper, automatiser ses tâches — ${SITE.nom}`;
@@ -130,7 +130,7 @@ const description = 'Karl Scraper tient une copie locale de mes tâches, la donn
       <FigureChaine />
     </SectionProjet>
 
-    <DecisionsProjet decisions={DECISIONS} chapeau="Ce que l’outil et ses agents ont le droit de faire, et ce qui le garantit." />
+    <SousLeCapot points={CAPOT} chapeau="Ce que l’outil et ses agents ont le droit de faire, et ce qui le garantit." />
 
     <SortieProjet projet="karl-scraper" titre="Où il en est" liens={LIENS_SORTIE}>
       <p>Karl Scraper tourne sur mon poste, sans être déployé ni exposé&nbsp;: il n’écoute que la machine elle-même. Il tient la copie de mes tâches et sait en confier la lecture et la réalisation à des agents. Son interface attend une refonte graphique&nbsp;: les écrans de cette page sont provisoires.</p>

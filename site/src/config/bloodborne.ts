@@ -12,7 +12,7 @@
  * test gardés à la demande de Charles, 13/10/2026).
  */
 import type { EntreeSommaire } from './navigation';
-import type { Decision, DonneesFiche, PreuveEnTete } from '../components/projets/gabarit/types';
+import type { PointCapot, DonneesFiche, PreuveEnTete } from '../components/projets/gabarit/types';
 
 /* ------------------------------------------------------------------ */
 /* Liens publics                                                       */
@@ -72,12 +72,12 @@ export const SECTIONS: readonly EntreeSommaire[] = [
   { id: 'amis', titre: 'Entre amis' },
   { id: 'boutique', titre: 'La boutique' },
   { id: 'essayer', titre: 'L’essayer' },
-  { id: 'construit', titre: 'Comment je l’ai construit' },
+  { id: 'construit', titre: 'Sous le capot' },
   { id: 'retiens', titre: 'En une phrase' },
 ];
 
 /* ------------------------------------------------------------------ */
-/* Comment je l’ai construit (gabarit E5 · 4)                          */
+/* Sous le capot (gabarit E5 · 4)                                      */
 /* ------------------------------------------------------------------ */
 
 /**
@@ -86,24 +86,57 @@ export const SECTIONS: readonly EntreeSommaire[] = [
  * dépôt (docs/matiere-premiere.md) ; le dépôt est privé, le lien mène au
  * journal.
  */
-export const DECISIONS: readonly Decision[] = [
+export const CAPOT: readonly PointCapot[] = [
   {
+    // constellation.json du dépôt privé, relu le 15/10/2026 : 116 étoiles et 115 traits
+    // pour l’Arsenal de Yharnam, un arbre parti d’une seule étoile d’entrée.
+    titre: 'Des constellations en arbres',
     contrainte: 'Près de mille succès dans un seul ciel formaient un buisson où personne ne retrouvait rien.',
     choix: 'Découper le ciel en constellations à thème, puis faire de chacune un arbre qui part d’une seule étoile d’entrée.',
-    effet: 'Un seul croisement de traits sur 1 008, contre 68 sur 319.',
+    effet: 'Un seul croisement de traits sur 1 008, contre 68 sur 319.',
     lien: { href: LIENS.journal, libelle: 'Le journal, 06 et 07/09/2026' },
+    extrait: {
+      ecrit: true,
+      langage: 'JSON annoté',
+      code: `{
+  "code": "l-arsenal-de-yharnam",
+  "label": "L’Arsenal de Yharnam",
+  "stars": [{ "code": "arm-001", "x": 278, "y": 106 }, …],   // 116 étoiles
+  "links": [{ "from": "arm-001", "to": "arm-001-lost" }, …] // 115 traits : un arbre
+}`,
+    },
   },
   {
+    titre: 'Un seul geste pour allumer une étoile',
     contrainte: 'Trois gestes d’allumage cohabitaient dans l’application.',
     choix: 'Un seul geste, l’appui maintenu, qui enregistre la réussite avant de lancer sa cérémonie.',
     effet: 'Un seul geste à apprendre ; la famille de l’objectif décide de la mise en scène.',
     lien: { href: LIENS.journal, libelle: 'Le journal, 08/09/2026' },
+    extrait: {
+      ecrit: true,
+      langage: 'Pseudo-code',
+      code: `appui maintenu jusqu’au bout
+  → enregistrer la réussite          d’abord, côté serveur
+  → lancer la cérémonie              ensuite, selon la famille :
+                                     boss, découverte, rune, gemme…`,
+    },
   },
   {
+    titre: 'Construite une fois, promue telle quelle',
     contrainte: 'Une même application sur le web et sur Android, mise à jour au fil des étapes.',
     choix: 'Une seule interface Angular, Ionic et Capacitor ; chaque version vérifiée par des tests, construite une fois, puis promue telle quelle en production.',
     effet: 'La version testée est celle qui part en ligne, et l’application Android suit chaque mise à jour.',
     lien: { href: LIENS.journal, libelle: 'Le journal, 05 et 06/09/2026' },
+    extrait: {
+      ecrit: true,
+      langage: 'YAML',
+      code: `# La chaîne d’intégration, en résumé
+tests:          chaque révision
+build:          les images, une seule fois
+deploy-staging: ces images en préproduction, puis l’APK de test
+promote:        les mêmes empreintes, ré-étiquetées sans reconstruire
+deploy-prod:    l’empreinte promue, puis l’Android de production`,
+    },
   },
 ];
 

@@ -20,7 +20,7 @@
  */
 import type { EntreeSommaire } from './navigation';
 import type { CarteVitrine } from './vitrine';
-import type { Decision, DonneesFiche, LienProjet, PreuveEnTete, SchemaProjet } from '../components/projets/gabarit/types';
+import type { PointCapot, DonneesFiche, LienProjet, PreuveEnTete, SchemaProjet } from '../components/projets/gabarit/types';
 import carteGalaxie from '../assets/projets/karl-scraper/carte-galaxie.webp';
 import angular from '../assets/stacks/angular.svg';
 import dotnet from '../assets/stacks/dotnet.svg';
@@ -117,7 +117,7 @@ export const SECTIONS: readonly EntreeSommaire[] = [
   { id: 'galaxie', titre: 'La Galaxie' },
   { id: 'agent', titre: 'Ce que l’agent lit' },
   { id: 'chaine', titre: 'Du ticket à la pull request' },
-  { id: 'construit', titre: 'Comment je l’ai construit' },
+  { id: 'construit', titre: 'Sous le capot' },
   { id: 'retiens', titre: 'Où il en est' },
 ];
 
@@ -179,37 +179,58 @@ export const CHAINE: readonly EtapeChaine[] = [
 ];
 
 /* ------------------------------------------------------------------ */
-/* Comment je l’ai construit (gabarit E5 · 4)                          */
+/* Sous le capot (gabarit E5 · 4)                                      */
 /* ------------------------------------------------------------------ */
 
-export const DECISIONS: readonly Decision[] = [
+export const CAPOT: readonly PointCapot[] = [
   {
-    // docs/invariants/securite.md:10-26 ; garde du client HTTP vers l’outil source (KarlGuardHandler,
-    // KarlMethodGuard), sur liste blanche @ 6615950. Les appels vers Relais, Sillage et GitHub n’y passent pas.
+    // docs/invariants/securite.md:10-26 ; garde du client HTTP vers l’outil source, sur liste blanche @ 6615950.
+    // Les appels vers Relais, Sillage et GitHub n’y passent pas.
+    titre: 'Des lectures, et une seule écriture vers l’outil source',
     contrainte: 'L’outil garde une session complète sur une application en production.',
     choix: 'Chaque appel vers l’outil source passe par une liste blanche : des lectures, plus une seule écriture, le statut d’une tâche, relu dans la source juste avant.',
     effet: 'Un défaut de l’outil ne peut modifier qu’un statut.',
+    extrait: {
+      ecrit: true,
+      langage: 'Règle',
+      code: `GET    toute lecture                 → admis
+PATCH  /…/tâches/{uuid}/statut       → admis, après relecture du statut
+tout le reste                        → refusé, avant le réseau`,
+    },
   },
   {
-    // Core/StorageServiceCollectionExtensions.cs:68-71 (Mode=ReadOnly) ; Tests/Architecture/McpIsolationTests.cs:13-15.
+    // Core/StorageServiceCollectionExtensions.cs:68-71 (Mode=ReadOnly) ; Tests/Architecture/McpIsolationTests.cs.
     // trigger_sync (Mcp/Tools/SyncTools.cs:50-66) demande un passage au service, qui seul lit la source.
     // Aucune CI à 6615950 : le test tourne avec la suite de tests, pas « à chaque build ».
+    titre: 'Le serveur MCP n’a pas de plume',
     contrainte: 'Un agent doit lire les tâches sans appeler lui-même la source ni écrire dans la copie locale.',
     choix: 'Le serveur MCP tourne dans un processus à part, ouvre la base en lecture seule et ne connaît ni la synchronisation ni le navigateur.',
     effet: 'Un test d’architecture le vérifie à chaque passage des tests : la règle n’est pas qu’un commentaire.',
+    extrait: {
+      ecrit: true,
+      langage: 'C#',
+      code: `// Le test d’architecture, en substance
+var fermeture = AssembliesTransitives(serveurMcp);
+Assert.DoesNotContain("Microsoft.Playwright", fermeture);
+Assert.DoesNotContain(clientDeLaSource, fermeture);
+// et aucune source du serveur ne nomme une écriture :
+// connexion en écriture, journal des enchaînements, SaveAsync, UpdateAsync`,
+    },
   },
   {
     // AGENTS.md (Stockage) ; docs/invariants/stockage.md:26-47 (magasin illisible en quarantaine, lecture seule) ;
     // docs/PLAN-snapshots-detail.md:296-301 (source `live` par défaut, `latest` ou un run ; pas de `pin_snapshot` ;
     // chaque réponse porte sa source).
+    titre: 'Une source figée au lancement, rien qui se perde',
     contrainte: 'Un agent doit pouvoir raisonner sur un état figé, et aucune de mes décisions ne doit se perdre.',
     choix: 'Chaque passage scelle une observation, et le serveur MCP fixe sa source à son lancement, le cache vivant ou une observation scellée, jamais en cours de session ; chaque réponse dit d’où elle vient. Un fichier de décisions illisible reste intact, en lecture seule, au lieu d’être lu vide puis écrasé.',
     effet: 'Sur une observation, deux appels identiques rendent la même réponse, et une décision prise ne se perd pas.',
   },
   {
-    // PLAN-enchainements.md § 0, points 2-3 ; Core/Automation/AutomationHost.cs:32-40.
+    // PLAN-enchainements.md § 0, points 2-3 et 6-8 ; Core/Automation/AutomationHost.cs:32-40.
+    titre: 'Des règles qui ont les gardes d’un clic',
     contrainte: 'Enchaîner les gestes d’un ticket sans qu’une règle fasse ce que je n’aurais pas validé.',
-    choix: 'Les déclencheurs et les actions vivent dans le code, les règles dans mes réglages. Une règle a les gardes d’un clic, relit la tâche dans la source et la pull request chez GitHub, cède au geste qui la contredit et ne défait jamais rien.',
+    choix: 'Les déclencheurs et les actions vivent dans le code, les règles dans mes réglages. Une règle a les gardes d’un clic, relit la tâche dans la source et la pull request chez GitHub, cède au geste qui la contredit et ne défait jamais rien. Son journal s’écrit avant d’agir : une action à l’issue inconnue n’est jamais rejouée à l’aveugle.',
     effet: 'Sans règle, l’outil se comporte comme avant, et un test le vérifie.',
   },
 ];
