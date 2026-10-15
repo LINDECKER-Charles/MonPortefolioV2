@@ -23,6 +23,10 @@ import {
   commandeRemplacement,
   commandeRetrait,
   depuis,
+  DUREE_PAR_DEFAUT,
+  DUREES,
+  echeance,
+  libelleEcheance,
   lignesCommande,
   libellesPermissions,
   nomPropose,
@@ -33,8 +37,8 @@ import {
 } from '../lib/acces-mcp';
 import { ErreurApi, type Dire, type Etat } from './backoffice-commun';
 
-interface Acces { id: number; name: string; created_at: string; last_used_at: string | null; scopes?: string[] }
-interface AccesCree { id: number; name: string; token: string; scopes: string[] }
+interface Acces { id: number; name: string; created_at: string; last_used_at: string | null; scopes?: string[]; expires_at?: string; expired?: boolean }
+interface AccesCree { id: number; name: string; token: string; scopes: string[]; expires_at?: string }
 interface OutilMcp { name: string; title?: string }
 /** Un résultat complet de la révision 2026-07-28, cachable. */
 interface ResultatModerne { resultType?: string; ttlMs?: unknown; cacheScope?: unknown }
@@ -98,7 +102,12 @@ async function appelMcp<T>(secret: string, id: number, method: string, signal: A
   }
   const contenu = await reponse.json().catch(() => ({})) as { result?: T & ResultatModerne; error?: { message?: string } };
   if (signal.aborted) throw abandon(signal);
-  if (reponse.status === 401) throw new ErreurApi(`Le serveur MCP refuse ce secret${NBSP}: l’accès a sans doute été révoqué.`, 401);
+  if (reponse.status === 401) {
+    const code = (contenu as { code?: unknown }).code;
+    throw code === 'TOKEN_EXPIRED'
+      ? new ErreurApi(`Le serveur MCP refuse ce secret${NBSP}: l’accès a expiré. Créez-en un autre.`, 401, code)
+      : new ErreurApi(`Le serveur MCP refuse ce secret${NBSP}: l’accès a sans doute été révoqué.`, 401);
+  }
   if (reponse.status === 403) throw new ErreurApi('Le serveur MCP refuse cette origine. Ouvrez le backoffice depuis l’adresse du site.', 403);
   if (reponse.status === 429) throw new ErreurApi('Trop d’appels MCP depuis cette adresse. Réessayez dans une minute.', 429);
   if (!reponse.ok || contenu.error || contenu.result === undefined) {
@@ -137,6 +146,8 @@ export function brancherAccesMcp(contexte: ContexteAcces): RubriqueAcces {
   const formulaire = element<HTMLFormElement>('bo-token-form');
   const nom = element<HTMLInputElement>('bo-token-name');
   const demandes = element<HTMLInputElement>('bo-token-contacts');
+  const duree = element<HTMLSelectElement>('bo-token-duration');
+  const finCarte = element('bo-token-expiry');
   const carte = element('bo-secret');
   const titreCarte = element('bo-secret-title');
   const commande = element('bo-token-command');
@@ -191,6 +202,7 @@ export function brancherAccesMcp(contexte: ContexteAcces): RubriqueAcces {
     appelEnCours = undefined;
     affiche = undefined;
     commande.replaceChildren();
+    finCarte.textContent = '';
     secret.value = '';
     element('bo-token-tools-summary').textContent = '';
     element('bo-token-tools-list').replaceChildren();
@@ -204,6 +216,8 @@ export function brancherAccesMcp(contexte: ContexteAcces): RubriqueAcces {
   function montrerSecret(cree: AccesCree): void {
     affiche = { id: cree.id, nom: cree.name, secret: cree.token };
     afficherCommande(cree.token);
+    // La date de fin : l’accès ne se prolonge pas, il faudra en créer un autre.
+    finCarte.textContent = cree.expires_at ? `${libelleEcheance(cree.expires_at)}. À cette date, Claude Code ne pourra plus s’en servir${NBSP}: créez alors un autre accès.` : '';
     secret.value = cree.token;
     titreCarte.textContent = `L’accès ${cite(cree.name)} est prêt`;
     formulaire.hidden = true;
@@ -238,23 +252,53 @@ export function brancherAccesMcp(contexte: ContexteAcces): RubriqueAcces {
     usage.dataset.label = 'Dernière utilisation';
     if (item.last_used_at) usage.append(temps(item.last_used_at, depuis(item.last_used_at)));
     else usage.append(creer('span', 'bo-jamais', 'Jamais'));
+    const fin = creer('td');
+    fin.dataset.label = 'Échéance';
+    const expire = estExpire(item);
+    if (item.expires_at) {
+      // Une forme et des mots, jamais la couleur seule : proche (losange), expiré (trait).
+      const terme = echeance(item.expires_at);
+      const etat = expire ? 'expire' : terme.etat;
+      const marque = creer('span', 'bo-echeance');
+      marque.dataset.echeance = etat;
+      // La date d’un tenant, puis ce qui reste dessous : « Expire le 22 oct. 2026 », « dans 7 jours ».
+      const texte = creer('span', 'bo-echeance__texte');
+      texte.append(temps(item.expires_at, `${etat === 'expire' ? 'Expiré' : 'Expire'} le ${terme.date}`));
+      if (terme.etat === 'proche' && !expire) texte.append(creer('span', 'bo-echeance__reste', `dans ${terme.jours} jour${terme.jours > 1 ? 's' : ''}`));
+      marque.append(texte);
+      fin.append(marque);
+      rang.dataset.echeance = etat;
+    } else fin.append(creer('span', 'bo-jamais', 'Inconnue'));
     const action = creer('td');
-    const revoquer = creer('button', 'bo-button bo-button--danger bo-button--petit', 'Révoquer');
+    const revoquer = creer('button', 'bo-button bo-button--danger bo-button--petit', expire ? 'Supprimer' : 'Révoquer');
     revoquer.type = 'button';
     revoquer.append(creer('span', 'sr', ` ${item.name}`));
     revoquer.addEventListener('click', () => { void revoquerAcces(item, revoquer); });
     action.append(revoquer);
-    rang.append(intitule, permissions, creation, usage, action);
+    rang.append(intitule, permissions, creation, usage, fin, action);
     return rang;
   }
 
+  /** Expiré pour le serveur, ou passé depuis le dernier chargement de la liste. */
+  function estExpire(item: Acces): boolean {
+    return Boolean(item.expired) || (item.expires_at !== undefined && echeance(item.expires_at).etat === 'expire');
+  }
+
   async function revoquerAcces(item: Acces, bouton: HTMLButtonElement): Promise<void> {
-    const accord = await contexte.confirmer(
-      'Révoquer cet accès ?',
-      `${cite(item.name)} ne pourra plus rien faire sur le portfolio${NBSP}: ses appels seront refusés dès maintenant. Retirez-le aussi de Claude Code${NBSP}:`,
-      'Révoquer l’accès',
-      commandeRetrait(serveur),
-    );
+    const expire = estExpire(item);
+    const accord = expire
+      ? await contexte.confirmer(
+        'Supprimer cet accès expiré ?',
+        `${cite(item.name)} a expiré${NBSP}: ses appels sont déjà refusés. Il disparaîtra de la liste. Retirez-le aussi de Claude Code${NBSP}:`,
+        'Supprimer l’accès',
+        commandeRetrait(serveur),
+      )
+      : await contexte.confirmer(
+        'Révoquer cet accès ?',
+        `${cite(item.name)} ne pourra plus rien faire sur le portfolio${NBSP}: ses appels seront refusés dès maintenant. Retirez-le aussi de Claude Code${NBSP}:`,
+        'Révoquer l’accès',
+        commandeRetrait(serveur),
+      );
     if (!accord) return;
     await contexte.action(bouton, async (dire) => {
       await contexte.api(`/tokens/${item.id}`, 'DELETE');
@@ -262,8 +306,8 @@ export function brancherAccesMcp(contexte: ContexteAcces): RubriqueAcces {
       // « L’accès … reste actif » ne vaut plus : la liste dit maintenant la révocation.
       effacer(retourFormulaire);
       await charger();
-      dire(`L’accès ${cite(item.name)} est révoqué.`);
-    }, 'Révocation de l’accès…');
+      dire(expire ? `L’accès expiré ${cite(item.name)} est supprimé.` : `L’accès ${cite(item.name)} est révoqué.`);
+    }, expire ? 'Suppression de l’accès…' : 'Révocation de l’accès…');
   }
 
   async function charger(): Promise<void> {
@@ -273,7 +317,8 @@ export function brancherAccesMcp(contexte: ContexteAcces): RubriqueAcces {
     corps.replaceChildren(...acces.map(ligne));
     table.hidden = acces.length === 0;
     vide.hidden = acces.length > 0;
-    compte.textContent = acces.length ? `${acces.length} accès` : '';
+    const expires = acces.filter(estExpire).length;
+    compte.textContent = acces.length ? `${acces.length} accès${expires ? `, dont ${expires} expiré${expires > 1 ? 's' : ''}` : ''}` : '';
     // Le nom proposé ne double jamais un accès existant ; une saisie en cours reste.
     const ancien = nom.defaultValue;
     nom.defaultValue = nomPropose(acces.map(({ name }) => name));
@@ -295,9 +340,11 @@ export function brancherAccesMcp(contexte: ContexteAcces): RubriqueAcces {
     const name = nom.value.trim();
     const choisi = formulaire.querySelector<HTMLInputElement>('input[name="prereglage"]:checked')?.value as Prereglage | undefined;
     const scopes = permissionsDe(choisi ?? PREREGLAGE_PAR_DEFAUT, demandes.checked);
+    const jours = Number(duree.value);
+    const expires_in_days = DUREES.some((option) => option.jours === jours) ? jours : DUREE_PAR_DEFAUT;
     void contexte.action(formulaire, async (dire) => {
       cacherSecret();
-      const cree = await contexte.api<AccesCree>('/tokens', 'POST', { name, scopes });
+      const cree = await contexte.api<AccesCree>('/tokens', 'POST', { name, scopes, expires_in_days });
       if (!contexte.estConnecte()) return;
       formulaire.reset();
       if (contexte.estVisible()) montrerSecret({ ...cree, scopes: cree.scopes ?? scopes });

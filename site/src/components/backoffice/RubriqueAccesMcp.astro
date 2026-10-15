@@ -16,13 +16,18 @@
  * Le secret n’existe que là : il disparaît à « Terminé », en quittant la
  * rubrique, à la déconnexion ou quand la session expire.
  *
- * À droite, les accès actifs en tableau à filets : nom, permissions en mots,
- * création, dernière utilisation, révocation confirmée.
+ * Chaque accès a une durée, un an au plus (7 jours, 30 jours, 90 jours par
+ * défaut, 1 an) : une mesure de sécurité. Un accès expiré ne se prolonge pas,
+ * on en crée un autre ; la carte du secret dit sa date de fin.
+ *
+ * À droite, les accès créés en tableau à filets : nom, permissions en mots,
+ * création, dernière utilisation, échéance (signalée à moins de 14 jours,
+ * « Expiré le … » ensuite), révocation ou suppression confirmée.
  *
  * Le script : scripts/backoffice-acces.ts.
  */
 import { SITE } from '../../config/site';
-import { ORDRE_PREREGLAGES, PREREGLAGE_PAR_DEFAUT, PREREGLAGES, NOM_PAR_DEFAUT } from '../../lib/acces-mcp';
+import { DUREE_PAR_DEFAUT, DUREES, ORDRE_PREREGLAGES, PREREGLAGE_PAR_DEFAUT, PREREGLAGES, NOM_PAR_DEFAUT } from '../../lib/acces-mcp';
 import EnTeteRubrique from './EnTeteRubrique.astro';
 import Retour from './Retour.astro';
 
@@ -36,10 +41,18 @@ const hoteCanonique = new URL(SITE.url).hostname;
       <form class="bo-carte bo-formulaire" id="bo-token-form" aria-labelledby="bo-token-form-title" data-retour="bo-token-form-retour">
         <h3 id="bo-token-form-title" tabindex="-1">Nouvel accès</h3>
         <fieldset><legend class="sr">Nouvel accès MCP</legend>
-          <div class="bo-champ">
-            <label for="bo-token-name">Nom de l’accès</label>
-            <input id="bo-token-name" name="name" maxlength="100" required value={NOM_PAR_DEFAUT} autocomplete="off" spellcheck="false" aria-describedby="bo-token-name-help" />
-            <p class="bo-help" id="bo-token-name-help">Nommez l’appareil pour reconnaître l’accès dans la liste, par exemple «&nbsp;Claude Code — MacBook&nbsp;».</p>
+          <div class="bo-mcp__identite">
+            <div class="bo-champ">
+              <label for="bo-token-name">Nom de l’accès</label>
+              <input id="bo-token-name" name="name" maxlength="100" required value={NOM_PAR_DEFAUT} autocomplete="off" spellcheck="false" aria-describedby="bo-token-name-help" />
+            </div>
+            <div class="bo-champ">
+              <label for="bo-token-duration">Durée</label>
+              <select id="bo-token-duration" name="duree" aria-describedby="bo-token-duration-help">
+                {DUREES.map(({ jours, libelle }) => <option value={jours} selected={jours === DUREE_PAR_DEFAUT}>{libelle}</option>)}
+              </select>
+            </div>
+            <p class="bo-help" id="bo-token-name-help">Nommez l’appareil pour reconnaître l’accès dans la liste, par exemple «&nbsp;Claude Code — MacBook&nbsp;». <span id="bo-token-duration-help">Un accès dure un an au plus, puis on en crée un autre.</span></p>
           </div>
           <fieldset class="bo-choix">
             <legend>Ce que l’assistant pourra faire</legend>
@@ -64,6 +77,7 @@ const hoteCanonique = new URL(SITE.url).hostname;
         <h3 id="bo-secret-title" tabindex="-1">L’accès est prêt</h3>
         <p>Collez ces deux lignes dans un terminal&nbsp;: la première retire un ancien serveur «&nbsp;<code data-serveur-mcp>portfolio</code>&nbsp;» s’il existe, la seconde ajoute cet accès. Claude Code pourra se servir du portfolio dans tous vos projets.</p>
         <pre class="bo-commande"><code id="bo-token-command"></code></pre>
+        <p class="bo-secret__echeance chiffres" id="bo-token-expiry"></p>
         <div class="bo-actions">
           <button class="bo-button bo-button--primary" id="bo-token-copy" type="button">Copier la commande</button>
           <button class="bo-button" id="bo-token-verify" type="button">Vérifier l’accès</button>
@@ -91,14 +105,14 @@ const hoteCanonique = new URL(SITE.url).hostname;
 
     <div class="bo-mcp__liste" data-retour="bo-tokens-retour">
       <div class="bo-mcp__liste-entete">
-        <h3 id="bo-tokens-title">Accès actifs</h3>
+        <h3 id="bo-tokens-title">Accès créés</h3>
         <p class="bo-muted chiffres" id="bo-tokens-count"></p>
       </div>
       <Retour id="bo-tokens-retour" />
       <div class="bo-table-cadre">
         <table class="bo-table" id="bo-token-table" aria-labelledby="bo-tokens-title" hidden>
           <thead>
-            <tr><th scope="col">Nom</th><th scope="col">Permissions</th><th scope="col">Création</th><th scope="col">Dernière utilisation</th><th scope="col"><span class="sr">Action</span></th></tr>
+            <tr><th scope="col">Nom</th><th scope="col">Permissions</th><th scope="col">Création</th><th scope="col">Dernière utilisation</th><th scope="col">Échéance</th><th scope="col"><span class="sr">Action</span></th></tr>
           </thead>
           <tbody id="bo-token-list"></tbody>
         </table>

@@ -5,6 +5,10 @@ import {
   commandeRetrait,
   lignesCommande,
   depuis,
+  DUREE_PAR_DEFAUT,
+  DUREES,
+  echeance,
+  libelleEcheance,
   libellesPermissions,
   nomPropose,
   nomServeur,
@@ -106,5 +110,28 @@ describe('dernière utilisation', () => {
     expect(depuis('2026-10-13T10:00:00Z', maintenant)).toBe('Hier');
     expect(depuis('2026-09-30T10:00:00Z', maintenant)).toMatch(/^Le 30 sept\. 2026$/);
     expect(depuis('pas une date', maintenant)).toBe('Date inconnue');
+  });
+});
+
+describe('échéance des accès MCP', () => {
+  const maintenant = Date.parse('2026-10-15T10:00:00Z');
+  it('propose 7 jours, 30 jours, 90 jours par défaut et un an au plus', () => {
+    expect(DUREES.map(({ jours }) => jours)).toEqual([7, 30, 90, 365]);
+    expect(DUREE_PAR_DEFAUT).toBe(90);
+    expect(Math.max(...DUREES.map(({ jours }) => jours))).toBeLessThanOrEqual(365);
+  });
+
+  it('dit la date, et le nombre de jours en deçà de 14', () => {
+    expect(libelleEcheance('2027-01-13T10:00:00Z', maintenant)).toBe('Expire le 13 janv. 2027');
+    expect(echeance('2026-10-29T10:00:01Z', maintenant).etat).toBe('loin');
+    expect(echeance('2026-10-29T09:59:59Z', maintenant)).toMatchObject({ etat: 'proche', jours: 14 });
+    expect(libelleEcheance('2026-10-24T08:00:00Z', maintenant)).toBe('Expire le 24 oct. 2026, dans 9 jours');
+    expect(libelleEcheance('2026-10-15T12:00:00Z', maintenant)).toBe('Expire le 15 oct. 2026, dans 1 jour');
+  });
+
+  it('dit « Expiré le » dès l’échéance passée', () => {
+    expect(libelleEcheance('2026-10-15T10:00:00Z', maintenant)).toBe('Expiré le 15 oct. 2026');
+    expect(libelleEcheance('2026-01-01T00:00:00Z', maintenant)).toBe('Expiré le 1 janv. 2026');
+    expect(echeance('pas une date', maintenant).etat).toBe('expire');
   });
 });
