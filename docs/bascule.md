@@ -6,7 +6,7 @@ la V1 en archive sur `yharnam.charles-lindecker.com`. Il liste, dans l’ordre, 
 `ci/bascule-v2-production` doit faire. Tout se passe sur l’hôte d’`infra-vps`, celui qui sert
 déjà la V1.
 
-Décisions prises le 2026-10-14 ([`questions.md`](questions.md), bloc F) :
+Décisions prises le 2026-10-14 ([`questions.md`](prive/questions.md), bloc F) :
 
 - **Sous-domaine de l’archive** : `yharnam.charles-lindecker.com`.
 - **Version archivée** : la refonte d’août (autel, reliquaire, chronique et lanterne), celle de

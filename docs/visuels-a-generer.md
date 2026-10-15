@@ -1182,7 +1182,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Masters** : jour `design/assets/visuels/parcours/PRO-05.png` ; nuit `design/assets/visuels/parcours/PRO-05.nuit.png`, en édition depuis le jour, même cadrage au pixel près
 - **Rendus** : `npm run visuels:rendre PRO-05` écrit le jour `PRO-05_1800x1200.webp` et la nuit `PRO-05_1800x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un formulaire de suivi des temps posé sur un bureau, à côté d’un sablier dont le sable a baissé. »
-- **Note** : Posé dans la fiche (components/parcours/FicheExperience.astro) ; décoratif à l’usage (alt vide), la fiche dit tout. Série « Parcours » : trois quarts en légère plongée, horizon aux deux tiers, trait gravé, deux ou trois aplats, la lanterne seule source de lumière ; aucun texte, aucun chiffre, aucune marque dans l’image. Fait sourcé : −30 % de temps de traitement administratif (docs/matiere-premiere.md) ; l’image ne chiffre rien.
+- **Note** : Posé dans la fiche (components/parcours/FicheExperience.astro) ; décoratif à l’usage (alt vide), la fiche dit tout. Série « Parcours » : trois quarts en légère plongée, horizon aux deux tiers, trait gravé, deux ou trois aplats, la lanterne seule source de lumière ; aucun texte, aucun chiffre, aucune marque dans l’image. Fait sourcé : −30 % de temps de traitement administratif (docs/prive/matiere-premiere.md) ; l’image ne chiffre rien.
 
 #### PRO-06 · Sur mesure
 
@@ -1705,7 +1705,7 @@ Rien ici n’est à générer : les dessins vectoriels s’écrivent à la main,
 - **Emplacement** : `/` · 01, de l’autre côté du bureau _(contexte : ne pas le recopier dans un prompt)_
 - **Élargi, non posé** : la figure reste à coder.
 - **Sujet** : « Une dizaine, tous titrés »
-- **Composition** : Rangée d’une dizaine de silhouettes cochées, environ moitié DWWM, moitié CDA (docs/matiere-premiere.md) ; légende « schéma : une dizaine »
+- **Composition** : Rangée d’une dizaine de silhouettes cochées, environ moitié DWWM, moitié CDA (docs/prive/matiere-premiere.md) ; légende « schéma : une dizaine »
 - **Format** : 4:1
 - **Composant** : aucun, figure à coder
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une rangée d’une dizaine de silhouettes, toutes cochées. »
@@ -1729,7 +1729,7 @@ Rien ici n’est à générer : les dessins vectoriels s’écrivent à la main,
 - **Priorité** : élargi · **Méthode** : CAP, capture réelle, rien à générer
 - **Produit par** : équipe PvZ Fusion
 - **Emplacement** : `/projets/pvz-fusion` · Section de l’équipe ou de la semaine type, près de la trace « La PR #110 et ses huit crédits » _(contexte : ne pas le recopier dans un prompt)_
-- **Élargi, non posé** : la page renvoie à la PR #110 par un lien (trace de la carte « Livrer ») ; ce renvoi est retenu tel quel, tranché le 15/10/2026 (Q7, docs/questions.md, J).
+- **Élargi, non posé** : la page renvoie à la PR #110 par un lien (trace de la carte « Livrer ») ; ce renvoi est retenu tel quel, tranché le 15/10/2026 (Q7, docs/prive/questions.md, J).
 - **Sujet** : L’en-tête de la PR #110 et ses huit crédits
 - **Composition** : Capture réelle de la page publique de la pull request #110 du dépôt amont : titre, auteur, état et la liste des huit crédits, sans retouche ; pseudonymes publics tels qu’affichés
 - **Format** : 16:10, 1600 × 1000, densité 2
@@ -2308,7 +2308,7 @@ Fiches pour mémoire : rien à produire.
 - **Emplacement** : `/projets/pvz-fusion` · § 4 _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/pages/projets/pvz-fusion.astro`
 - **Sujet** : Courbe du rattrapage
-- **Composition** : Huit relevés de l’historique public, du 16/10/2025 au 12/10/2026 (docs/matiere-premiere.md) : entrées anglaises (la ligne), part traduite en encre, manquant en hachures, août 2026 marqué à la lanterne
+- **Composition** : Huit relevés de l’historique public, du 16/10/2025 au 12/10/2026 (docs/prive/matiere-premiere.md) : entrées anglaises (la ligne), part traduite en encre, manquant en hachures, août 2026 marqué à la lanterne
 - **Format** : 16:9 ; 4:5 mobile (recadrage mobile 4:5)
 - **Composant** : `site/src/components/projets/pvz/FigureRattrapage.astro`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Courbe des entrées anglaises et de la part traduite, en huit relevés du 16/10/2025 au 12/10/2026. »
@@ -2496,7 +2496,7 @@ Fiches pour mémoire : rien à produire.
 - **Format** : —
 - **Composant** : `site/src/components/projets/league/ComparaisonAhri.astro`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Ahri au patch 3.6.14 et au patch 16.20.1, côte à côte »
-- **Note** : Codée en HTML, depuis config/league-of-database.ts (COMPARAISON). Relevés dans docs/matiere-premiere.md.
+- **Note** : Codée en HTML, depuis config/league-of-database.ts (COMPARAISON). Relevés dans docs/prive/matiere-premiere.md.
 
 #### LOD-F2 · Le trafic
 
