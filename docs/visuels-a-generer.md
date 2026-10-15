@@ -9,7 +9,7 @@ Tu produis **uniquement les images générées (IMG)** de la refonte du portfoli
 **Ce document est la seule référence de la série.** Il porte les retours de Charles sur la planche d’essai du 13 octobre 2026 (moins « image générée », une vraie version de nuit) et remplace toute consigne antérieure. Lis-le de haut en bas avant la première image.
 
 - **Deux masters par image**, dessinés au même cadrage au pixel près, dans les trois mêmes couleurs de clé : le jour `<ID>.png`, puis la nuit `<ID>.nuit.png`, faite **en édition depuis le master de jour** (section « Version de nuit »). Le site affiche l’un ou l’autre selon le thème.
-- Le registre recense **182 emplacements** (129 « socle », 53 « élargi »), dont **74 images à générer** : 0 restent à livrer, dont 0 « socle ».
+- Le registre recense **182 emplacements** (126 « socle », 56 « élargi »), dont **74 images à générer** : 0 restent à livrer, dont 0 « socle ».
 - **Socle** : posé sur une page du site, qui affiche un cadre hachuré tant que le fichier manque. À produire d’abord.
 - **Élargi** : aucune page ne l’attend encore ; chaque fiche dit pourquoi. Peut suivre.
 - **Le prompt de jour** se rédige en anglais : le bloc de style, la phrase de fond, puis la traduction des seuls champs **Sujet** et **Composition** de la fiche, le calage de la lanterne quand la fiche la place, enfin le prompt négatif. Le champ **Emplacement** donne le contexte et peut nommer une marque ou un jeu : il ne va jamais dans un prompt.
@@ -174,10 +174,10 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 |---|---|---|---|
 | Identité et éléments globaux | 13 | 6 | IMG 0 · SVG 11 · FIG 0 · CAP 0 · PHO 0 · OG 2 |
 | Accueil | 23 | 17 | IMG 15 · SVG 3 · FIG 3 · CAP 1 · PHO 1 · OG 0 |
-| Projets (vitrine) | 12 | 11 | IMG 10 · SVG 0 · FIG 0 · CAP 2 · PHO 0 · OG 0 |
+| Projets (vitrine) | 12 | 9 | IMG 10 · SVG 0 · FIG 0 · CAP 2 · PHO 0 · OG 0 |
 | PvZ Fusion | 26 | 17 | IMG 13 · SVG 0 · FIG 6 · CAP 6 · PHO 0 · OG 1 |
 | League Of Data Base | 24 | 16 | IMG 3 · SVG 9 · FIG 6 · CAP 6 · PHO 0 · OG 0 |
-| Omnicard | 13 | 5 | IMG 2 · SVG 2 · FIG 3 · CAP 5 · PHO 0 · OG 1 |
+| Omnicard | 13 | 4 | IMG 2 · SVG 2 · FIG 3 · CAP 5 · PHO 0 · OG 1 |
 | Bloodborne Legendary Run | 16 | 8 | IMG 4 · SVG 6 · FIG 1 · CAP 4 · PHO 0 · OG 1 |
 | gup | 7 | 6 | IMG 2 · SVG 1 · FIG 3 · CAP 1 · PHO 0 · OG 0 |
 | GitHealth | 1 | 1 | IMG 0 · SVG 0 · FIG 0 · CAP 1 · PHO 0 · OG 0 |
@@ -188,7 +188,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 | Contact | 4 | 4 | IMG 3 · SVG 0 · FIG 0 · CAP 0 · PHO 1 · OG 0 |
 | Blog | 2 | 1 | IMG 2 · SVG 0 · FIG 0 · CAP 0 · PHO 0 · OG 0 |
 | États : 404 et hors ligne | 3 | 2 | IMG 1 · SVG 1 · FIG 0 · CAP 0 · PHO 1 · OG 0 |
-| **Total** | **182** | **129** | IMG 79 · SVG 37 · FIG 27 · CAP 30 · PHO 4 · OG 5 |
+| **Total** | **182** | **126** | IMG 79 · SVG 37 · FIG 27 · CAP 30 · PHO 4 · OG 5 |
 
 ## Partie 1 — Commande Codex : les images à générer
 
@@ -215,9 +215,9 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 #### PRJ-03 · Du papier au jeu en ligne
 
-- **Priorité** : socle · **Méthode** : IMG, rien à produire, le fichier est celui d’un autre emplacement
+- **Priorité** : élargi · **Méthode** : IMG, rien à produire, le fichier est celui d’un autre emplacement
 - **Emplacement** : `/projets` · Carte Omnicard _(contexte : ne pas le recopier dans un prompt)_
-- **Posé dans** : `src/pages/projets/index.astro`
+- **Élargi, non posé** : depuis le 15/10/2026, la carte Omnicard de la vitrine montre la vraie page d’accueil du jeu (src/assets/projets/omnicard/accueil.webp), à la demande de Charles ; le recadrage d’OMN-01 reste prêt à reposer.
 - **Sujet** : Du papier au jeu en ligne
 - **Composition** : Recadrage d’OMN-01, sans nouvelle image : la carte plastifiée à la main (pochette visible, coin corné) à cheval sur le bord d’une fenêtre de navigateur, moitié papier, moitié numérique
 - **Cadrage (pour vérifier)** : Le recadrage garde au centre le bord de la fenêtre qui traverse la carte, les deux moitiés de la carte entières et la lumière de la lanterne sur la moitié papier ; il coupe d’abord le fond de la fenêtre et la table. Deux cadres : 16:10 sur mobile, portrait 2:3 (environ 300 × 450 px) sur ordinateur, où la carte, droite, doit tenir entière en hauteur.
@@ -531,10 +531,10 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 #### PRJ-02 · Une archive versionnée
 
-- **Priorité** : socle · **Méthode** : IMG, à générer (image) · **Série** : Vitrine des projets
+- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Vitrine des projets
 - **Produit par** : Codex
 - **Emplacement** : `/projets` · Carte LoD (et LOD-01) _(contexte : ne pas le recopier dans un prompt)_
-- **Posé dans** : `src/pages/projets/index.astro`
+- **Élargi, non posé** : depuis le 15/10/2026, la carte de League Of Data Base montre une vraie capture de l’application (retour de Charles : une capture est « plus vendeur » pour les jeux vidéo) ; l’image livrée reste la source de LOD-01, prête à reposer.
 - **Sujet** : Une archive versionnée
 - **Composition (pour le prompt)** : Un registre relié, ouvert sur un pupitre, vu de trois quarts : ses pages sont des couches minces superposées qui s’éventaillent vers la droite comme un éventail de cartes, chacune avec une tranche marquée de simples traits, sans chiffre ni lettre ; un marque-page de tissu glissé loin dans les pages anciennes ; la lanterne, à gauche (vers 30 % de la largeur et 50 % de la hauteur), éclaire la page marquée, les couches récentes s’estompent dans l’ombre ; aucun personnage
 - **Lanterne : 30 % × 50 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
@@ -545,7 +545,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Masters** : jour `design/assets/visuels/projets/PRJ-02.png` ; nuit `design/assets/visuels/projets/PRJ-02.nuit.png`, en édition depuis le jour, même cadrage au pixel près
 - **Rendus** : `npm run visuels:rendre PRJ-02` écrit le jour `PRJ-02_1600x1000.webp` et la nuit `PRJ-02_1600x1000.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Un registre ouvert sur un pupitre, éclairé par une lanterne, un marque-page de tissu glissé entre ses pages. »
-- **Note** : Dans la carte de la vitrine, le visuel remplit tout son panneau : en 16:10 sur mobile, recadré en portrait sur ordinateur ; décoratif (alt vide), le nom de la carte dit le reste. LOD-01 (partage) le reprend, non posé.
+- **Note** : Posé sur la carte de la vitrine jusqu’au 15/10/2026 (en 16:10 sur mobile, recadré en portrait à 29 % de la largeur sur ordinateur ; décoratif, alt vide). LOD-01 (partage) le reprend, non posé.
 
 #### PRJ-06 · Décider quoi faire d’une branche
 
@@ -920,10 +920,10 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 #### OMN-01 · Du papier au jeu en ligne
 
-- **Priorité** : socle · **Méthode** : IMG, à générer (image) · **Série** : Pages de projet
+- **Priorité** : élargi · **Méthode** : IMG, à générer (image) · **Série** : Pages de projet
 - **Produit par** : Codex
 - **Emplacement** : `/projets/omnicard` · En-tête, à droite du titre (et PRJ-03 sur la vitrine) _(contexte : ne pas le recopier dans un prompt)_
-- **Posé dans** : `src/pages/index.astro`, `src/pages/projets/omnicard.astro`
+- **Élargi, non posé** : depuis le 15/10/2026, l’en-tête de la page Omnicard et la carte Omnicard de l’accueil montrent la vraie page d’accueil du jeu (src/assets/projets/omnicard/accueil.webp), que Charles trouve « très bien vieillie » ; l’image livrée, jour et nuit, reste prête à reposer.
 - **Sujet** : Du papier au jeu en ligne
 - **Composition (pour le prompt)** : Une carte à jouer plastifiée à la main, pochette visible et coin corné, posée à cheval sur le bord d’une fenêtre de navigateur générique : la moitié hors de la fenêtre reste papier (bords de découpe aux ciseaux, reflet du plastique), la moitié dans la fenêtre devient une carte numérique nette. Face générique : cadre, losange central, pastille de coût et deux pastilles de statistiques vides, sans chiffre ni lettre. Sur la table, deux ou trois cartes papier éparses. La lanterne, posée hors champ à gauche (sa lumière entre vers 0 % de la largeur et 45 % de la hauteur), éclaire la carte seule ; la fenêtre et la table restent dans l’ombre. Aucun personnage, aucune illustration de carte reconnaissable, aucun texte
 - **Lanterne : 0 % × 45 %** (largeur × hauteur, depuis le coin haut gauche), à 3 % près, vérifiée en calquant le jour et la nuit avant de livrer.
@@ -934,7 +934,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Masters** : jour `design/assets/visuels/omnicard/OMN-01.png` ; nuit `design/assets/visuels/omnicard/OMN-01.nuit.png`, en édition depuis le jour, même cadrage au pixel près
 - **Rendus** : `npm run visuels:rendre OMN-01` écrit le jour `OMN-01_1600x1200.webp` et la nuit `OMN-01_1600x1200.nuit.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Une carte plastifiée à la main qui devient numérique en passant dans une fenêtre de navigateur. »
-- **Note** : En tête de la page Omnicard, sur la carte Omnicard de l’accueil, et recadré par PRJ-03.
+- **Note** : Posé en tête de la page Omnicard et sur la carte Omnicard de l’accueil jusqu’au 15/10/2026 ; recadré par PRJ-03.
 
 #### BLR-01 · Quarante trophées, plus de mille objectifs
 
@@ -2636,7 +2636,7 @@ Fiches pour mémoire : rien à produire.
 
 - **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
 - **Produit par** : équipe Bloodborne Legendary Run
-- **Emplacement** : `/projets/bloodborne-legendary-run` · § Comment je l’ai construit, couche « L’interface » (remplace le dessin au trait bleu de l’ancienne page) _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/projets/bloodborne-legendary-run` · § Sous le capot, couche « L’interface » (remplace le dessin au trait bleu de l’ancienne page) _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/components/projets/bloodborne/Fabrication.astro`
 - **Sujet** : Le même ciel, deux écrans
 - **Composition** : Une fenêtre de navigateur et, devant elle à droite, un téléphone tenu droit ; les deux écrans montrent la même petite constellation de quatre étoiles reliées ; la lanterne posée entre eux éclaire l’étoile commune ; aucun texte, aucune marque
@@ -2649,7 +2649,7 @@ Fiches pour mémoire : rien à produire.
 
 - **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
 - **Produit par** : équipe Bloodborne Legendary Run
-- **Emplacement** : `/projets/bloodborne-legendary-run` · § Comment je l’ai construit, couche « L’API » (remplace le dessin au trait bleu de l’ancienne page) _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/projets/bloodborne-legendary-run` · § Sous le capot, couche « L’API » (remplace le dessin au trait bleu de l’ancienne page) _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/components/projets/bloodborne/Fabrication.astro`
 - **Sujet** : Une réussite qui passe par le serveur
 - **Composition** : Trois fiches empilées au centre, comme des requêtes rangées ; une étoile entre par la gauche le long d’une flèche et ressort à droite, rangée ; la lanterne posée au pied de la pile éclaire la fiche du dessus ; aucun texte, aucune marque
@@ -2662,7 +2662,7 @@ Fiches pour mémoire : rien à produire.
 
 - **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
 - **Produit par** : équipe Bloodborne Legendary Run
-- **Emplacement** : `/projets/bloodborne-legendary-run` · § Comment je l’ai construit, couche « La sauvegarde » (remplace le dessin au trait bleu de l’ancienne page) _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/projets/bloodborne-legendary-run` · § Sous le capot, couche « La sauvegarde » (remplace le dessin au trait bleu de l’ancienne page) _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/components/projets/bloodborne/Fabrication.astro`
 - **Sujet** : La partie gardée
 - **Composition** : Une pile de trois disques, comme une base de données, scellée au sommet par une étoile allumée ; la lanterne posée à côté éclaire le sceau, le reste dans l’ombre ; aucun texte, aucune marque
@@ -2703,7 +2703,7 @@ Fiches pour mémoire : rien à produire.
 
 - **Priorité** : socle · **Méthode** : SVG, à dessiner (vectoriel)
 - **Produit par** : équipe gup
-- **Emplacement** : `/projets/gup` · Comment je l’ai construit, au-dessus de l’intertitre « Et deux choix de plus », sous les quatre décisions ; bandeau en pleine mesure jusqu’à 576 px (pleine largeur sur mobile), six pictos de 96 px dans l’ordre des quatre décisions puis des deux choix _(contexte : ne pas le recopier dans un prompt)_
+- **Emplacement** : `/projets/gup` · Sous le capot (anciennement « Comment je l’ai construit »), sous la liste de ses six points ; bandeau en pleine mesure jusqu’à 576 px (pleine largeur sur mobile), six pictos de 96 px dans l’ordre des six points : les quatre décisions, puis les deux garanties _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/components/projets/gup/PictosChoix.astro`, `src/pages/projets/gup.astro`
 - **Sujet** : Les choix d’ingénierie
 - **Composition** : Bandeau de six pictogrammes alignés, de la même main, trait constant en currentColor, un accent lanterne au plus par picto, espacement régulier, sans texte ni filet entre eux. Dans l’ordre : 1. une cloison étanche entre deux compartiments, l’un fissuré, l’autre intact (une source en panne reste dans sa ligne) ; 2. une liste d’arguments en petits blocs séparés, sans coquille de shell autour (aucun shell) ; 3. une file de quatre colis séparés dont un seul est tombé, les autres continuent sur leur tapis (un paquet par appel : un échec ne fait tomber qu’une installation) ; 4. un réveil qui sonne puis s’éteint, sans fil vers rien (rien ne tourne en arrière-plan) ; 5. trois silhouettes génériques d’ordinateurs dont deux grisées en hachures (chaque système voit ses outils) ; 6. un œil devant deux pastilles contrastées (lisible partout). Aucun logo de système d’exploitation ni de gestionnaire de paquets, aucune lettre.
