@@ -1485,7 +1485,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     methode: 'CAP',
     priorite: 'elargi',
     pose: null,
-    raisonNonPose: 'la page renvoie à la PR #110 par un lien (trace de la carte « Livrer ») ; l’affichage des pseudonymes attend la réponse de Charles (Q7).',
+    raisonNonPose: 'la page renvoie à la PR #110 par un lien (trace de la carte « Livrer ») ; ce renvoi est retenu tel quel, tranché le 15/10/2026 (Q7, docs/questions.md, J).',
     alt: 'La pull request #110 du dépôt amont, avec ses huit crédits.',
     fichier: 'src/assets/visuels/pvz-fusion/PVZ-C1_1600x1000.webp',
     note: 'CAP-PVZ-1 du cahier (§ 6.12), page publique : capture à faire par l’équipe.',

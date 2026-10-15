@@ -1729,7 +1729,7 @@ Rien ici n’est à générer : les dessins vectoriels s’écrivent à la main,
 - **Priorité** : élargi · **Méthode** : CAP, capture réelle, rien à générer
 - **Produit par** : équipe PvZ Fusion
 - **Emplacement** : `/projets/pvz-fusion` · Section de l’équipe ou de la semaine type, près de la trace « La PR #110 et ses huit crédits » _(contexte : ne pas le recopier dans un prompt)_
-- **Élargi, non posé** : la page renvoie à la PR #110 par un lien (trace de la carte « Livrer ») ; l’affichage des pseudonymes attend la réponse de Charles (Q7).
+- **Élargi, non posé** : la page renvoie à la PR #110 par un lien (trace de la carte « Livrer ») ; ce renvoi est retenu tel quel, tranché le 15/10/2026 (Q7, docs/questions.md, J).
 - **Sujet** : L’en-tête de la PR #110 et ses huit crédits
 - **Composition** : Capture réelle de la page publique de la pull request #110 du dépôt amont : titre, auteur, état et la liste des huit crédits, sans retouche ; pseudonymes publics tels qu’affichés
 - **Format** : 16:10, 1600 × 1000, densité 2

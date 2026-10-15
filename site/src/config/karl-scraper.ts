@@ -105,7 +105,8 @@ export const FICHE: DonneesFiche = {
   role: 'Conception et développement',
   periode: 'Depuis fin août 2026',
   equipe: 'Projet personnel, seul',
-  // Le service tourne sur mon poste (relevé le 14/10/2026) ; « en usage quotidien » attend Q72.
+  // Le service tourne sur mon poste (relevé le 14/10/2026) ; « en usage quotidien » n’est pas
+  // sourcé : la fiche ne le dit pas (statut validé le 15/10/2026, Q72, docs/questions.md, J).
   statut: { texte: 'Outil personnel, en service sur mon poste' },
   liens: [],
 };
