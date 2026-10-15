@@ -334,7 +334,9 @@ Chaque composant est documenté en tête de son fichier.
   cadre par type (navigateur, téléphone, terminal) ; cible numérotée, loupe éclairée par la
   lanterne et légende au même numéro ; visionneuse plein écran partagée.
 - **Statut** (`ui/Statut.astro`) : une forme et un mot, jamais la couleur seule.
-- **À confirmer** (`ui/AConfirmer.astro`) : la marque d’un fait que Charles n’a pas validé.
+- **À confirmer** : plus aucune marque sur le site depuis le 15/10/2026 ; le composant
+  `ui/AConfirmer.astro` et sa classe `.a-confirmer` sont retirés (ils restent dans l’historique
+  git, si Charles choisit un jour de marquer un fait nouveau plutôt que de le taire).
 - **Visuel** (`ui/Visuel.astro`) : l’image du registre, le dessin SVG inséré en ligne, ou, tant
   que le fichier manque, un cadre neutre en ligne et un cadre hachuré qui porte sa commande en
   développement.
