@@ -94,7 +94,8 @@ test('les chiffres des cartes portent leur date (règle C1)', async ({ page }) =
 test('sur ordinateur, le visuel d’une carte « ligne » remplit son panneau', async ({ page }) => {
   test.skip((page.viewportSize()?.width ?? 0) <= 860, 'ordinateur seulement');
   await page.goto('/projets');
-  for (const [id, cible] of [['league', '[data-visuel="PRJ-02"]'], ['omnicard', '[data-visuel="PRJ-03"]'], ['gup', '.capture__vue']] as const) {
+  // Depuis le 15/10/2026, League Of Data Base et Omnicard montrent une vraie capture, comme gup.
+  for (const [id, cible] of [['league', '.capture__cadre'], ['omnicard', '.capture__cadre'], ['gup', '.capture__vue']] as const) {
     const panneau = carte(page, id).locator('.carte-projet__visuel');
     const { interieur, visuel } = await panneau.evaluate((el, selecteur) => {
       const style = getComputedStyle(el);
@@ -246,8 +247,11 @@ test('des captures réelles dans leurs cadres, et les emplacements de la command
   await expect(telephone).toBeVisible();
   const terminal = carte(page, 'gup').locator('.capture--terminal img');
   await expect(terminal).toHaveAttribute('alt', /gup en français dans un terminal/);
-  for (const [id, visuel] of [['pvz', 'PRJ-01'], ['league', 'PRJ-02'], ['omnicard', 'PRJ-03']] as const) {
-    await expect(carte(page, id).locator(`[data-visuel="${visuel}"]`)).toHaveCount(1);
+  // Les jeux vidéo montrent une vraie capture (15/10/2026) ; seule la vedette garde son illustration.
+  await expect(carte(page, 'pvz').locator('[data-visuel="PRJ-01"]')).toHaveCount(1);
+  for (const [id, alt] of [['league', /catalogue des champions de League Of Data Base/], ['omnicard', /page d’accueil d’Omnicard/]] as const) {
+    await expect(carte(page, id).locator('.capture--navigateur img'), id).toHaveAttribute('alt', alt);
+    await expect(carte(page, id).locator('[data-visuel]'), id).toHaveCount(0);
   }
   for (const visuel of ['PRJ-07', 'PRJ-08', 'PRJ-10', 'PRJ-11', 'PRJ-12']) {
     await expect(page.locator(`[data-visuel="${visuel}"]`)).toHaveCount(1);

@@ -4,10 +4,13 @@
  * canonique et l’étiquette de preuve de chaque projet viennent de VITRINE
  * (config/projets.ts) ; une carte n’y ajoute que ce qu’elle montre : le
  * besoin, un seul chiffre, le rôle, le statut, les liens publics, trois
- * technologies au plus et, pour les projets entrés le 14/10/2026, son visuel.
+ * technologies au plus et, pour les projets entrés le 14/10/2026, League Of
+ * Data Base et Omnicard, son visuel.
  *
  * Les cartes de PvZ Fusion, Omnicard, Bloodborne Legendary Run, League Of Data
- * Base et gup s’écrivent ici. Celles de GitHealth, Karl Scraper, Sillage et
+ * Base et gup s’écrivent ici. Depuis le 15/10/2026, les jeux vidéo montrent
+ * une vraie capture (retour de Charles : « plus vendeur ») ; seule la vedette,
+ * PvZ Fusion, garde son illustration. Celles de GitHealth, Karl Scraper, Sillage et
  * Relais vivent dans le fichier de leur page (config/<projet>.ts, export
  * CARTE), que chaque page tient seule : ce fichier ne fait que les importer.
  *
@@ -27,6 +30,8 @@ import { CARTE as CARTE_GITHEALTH } from './githealth';
 import { CARTE as CARTE_KARL_SCRAPER } from './karl-scraper';
 import { CARTE as CARTE_RELAIS } from './relais';
 import { CARTE as CARTE_SILLAGE } from './sillage';
+import championsLeague from '../assets/projets/league-of-database/champions.webp';
+import accueilOmnicard from '../assets/projets/omnicard/accueil.webp';
 import angular from '../assets/stacks/angular.svg';
 import capacitor from '../assets/stacks/capacitor.svg';
 import csharp from '../assets/stacks/csharp.svg';
@@ -58,6 +63,12 @@ export interface CaptureCarte {
   position?: string;
   /** Largeurs produites (srcset). */
   widths?: number[];
+  /**
+   * Sur ordinateur, la capture remplit tout le panneau de la carte, recadrée
+   * (object-fit: cover, selon `position`), comme le terminal de gup : dans
+   * une famille de trois, le panneau prend la hauteur du plus haut visuel.
+   */
+  remplir?: boolean;
   sizes?: string;
 }
 
@@ -88,7 +99,11 @@ export interface CarteVitrine {
   technos: readonly { src: ImageMetadata; alt: string; mono?: boolean }[];
   /** Ce qui reste à confirmer sur le nom, en info-bulle de la marque. */
   aConfirmer?: string;
-  /** Le visuel de la carte (projets entrés le 14/10/2026) ; les cinq premières gardent le leur, posé par la page. */
+  /**
+   * Le visuel de la carte, quand la carte le décrit : projets entrés le
+   * 14/10/2026, League Of Data Base et Omnicard (15/10/2026). PvZ Fusion,
+   * Bloodborne Legendary Run et gup gardent le leur, posé par la page.
+   */
   visuel?: VisuelCarte;
 }
 
@@ -124,6 +139,21 @@ export const CARTES: Readonly<Record<ProjetVitrine['id'], CarteVitrine>> = {
       { src: angular, alt: 'Angular' },
       { src: postgresql, alt: 'PostgreSQL' },
     ],
+    // Capture réelle de l’application (assets/projets/league-of-database, README de la
+    // page) : le catalogue des champions d’un patch, avec le choix du patch et de la langue
+    // en haut à droite ; recadrée sur la première rangée de champions.
+    visuel: {
+      capture: {
+        type: 'navigateur',
+        src: championsLeague,
+        adresse: 'league-of-data-base.com/fr',
+        alt: 'Le catalogue des champions de League Of Data Base, en français, avec le patch et la langue choisis en haut à droite.',
+        ratio: '16 / 10',
+        remplir: true,
+        position: '50% 0',
+        widths: [480, 960, 1440],
+      },
+    },
   },
   omnicard: {
     // Questions D1 et matière première : jeu papier inventé avec son cousin,
@@ -141,6 +171,20 @@ export const CARTES: Readonly<Record<ProjetVitrine['id'], CarteVitrine>> = {
       { src: angular, alt: 'Angular' },
       { src: postgresql, alt: 'PostgreSQL' },
     ],
+    // La page d’accueil du jeu, capture d’une version précédente conservée par la V1
+    // (docs/assets-omnicard.md) : Charles la trouve « très bien vieillie » (15/10/2026).
+    // Sans adresse : omnicard.fr est hors ligne (liens-publics.ts, DOMAINES_HORS_LIGNE).
+    visuel: {
+      capture: {
+        type: 'navigateur',
+        src: accueilOmnicard,
+        alt: 'La page d’accueil d’Omnicard : des cartes qui flottent au-dessus d’un paysage nocturne, autour du dos de carte du jeu.',
+        ratio: '16 / 10',
+        position: '50% 12%',
+        remplir: true,
+        widths: [480, 960, 1440],
+      },
+    },
   },
   bloodborne: {
     // Matière première, « Bloodborne Legendary Run — vérification du 2026-10-08 » :

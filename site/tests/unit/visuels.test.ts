@@ -47,10 +47,10 @@ const images = VISUELS.filter((v) => v.methode === 'IMG' && !v.reprend?.length);
 const INVENTAIRE = VISUELS.filter((v) => !SERIES_VITRINE_FINALE.includes(v.serie));
 
 describe('registre des visuels : l’inventaire', () => {
-  it('recense les 176 emplacements de l’inventaire, dont 123 « socle » et 53 « élargi »', () => {
+  it('recense les 176 emplacements de l’inventaire, dont 120 « socle » et 56 « élargi »', () => {
     expect(INVENTAIRE).toHaveLength(176);
-    expect(INVENTAIRE.filter((v) => v.priorite === 'socle')).toHaveLength(123);
-    expect(INVENTAIRE.filter((v) => v.priorite === 'elargi')).toHaveLength(53);
+    expect(INVENTAIRE.filter((v) => v.priorite === 'socle')).toHaveLength(120);
+    expect(INVENTAIRE.filter((v) => v.priorite === 'elargi')).toHaveLength(56);
   });
 
   it('répartit les méthodes comme l’inventaire, captures du cahier (§ 6.12) comprises', () => {
