@@ -26,7 +26,7 @@ import CaptureAnnotee from '../../components/ui/CaptureAnnotee.astro';
 import Visionneuse from '../../components/ui/Visionneuse.astro';
 import { SITE } from '../../config/site';
 import { typo } from '../../lib/typo';
-import { CAPOT, CAPTURES, EN_TETE, FICHE, LIENS_SORTIE, PREUVES, SECTIONS, type NomCapture } from '../../config/relais';
+import { CAPOT, CAPTURES, EN_TETE, FICHE, FONCTIONS, LIENS_SORTIE, PREUVES, SECTIONS, type NomCapture } from '../../config/relais';
 
 // ≤ 45 caractères avant « — Charles Lindecker » (titre ≤ 65 au total).
 const titre = `Relais, un point d’accès aux agents IA — ${SITE.nom}`;
@@ -147,7 +147,9 @@ const analyse = capture('analyse');
       />
     </SectionProjet>
 
-    <SousLeCapot points={CAPOT} chapeau="Quatre choix qui ne se voient pas à l’écran ; le dernier est né d’un incident." />
+    <SousLeCapot id="fonctions" titre="Toutes ses fonctions, une ligne chacune" points={FONCTIONS} chapeau="De la session à l’analyse : un clic déplie chaque fonction." />
+
+    <SousLeCapot points={CAPOT} chapeau="L’architecture, puis quatre choix qui ne se voient pas à l’écran, le dernier né d’un incident, et ses limites. Le code est privé : les extraits sont des formes simplifiées, écrites pour cette page." />
 
     <SortieProjet projet="relais" titre="En une phrase" liens={LIENS_SORTIE}>
       <p>Un seul point d’accès où les agents de ma machine sont lancés, encadrés et relus&nbsp;: Sillage et Karl Scraper y confient les leurs, et tout outil qui a la clé peut en faire autant.</p>
@@ -158,6 +160,7 @@ const analyse = capture('analyse');
       <p><b>Chiffres.</b> Les 1&nbsp;011&nbsp;décisions de permission, et les 69&nbsp;refus de lecture et de recherche parmi elles, viennent du registre des correctifs du dépôt&nbsp;: la base de l’instance en service après trois jours, du 21 au 23/09/2026. Les 52&nbsp;cas et le défaut des liens physiques viennent de l’audit des permissions du 20/09/2026&nbsp;; les 69&nbsp;refus ont été recoupés avec les paramètres des appels, pas rejoués un à un sur la base en service. Le frein des lancements et l’incident du 27/09/2026 viennent de son code et du correctif du 05/10/2026. Le seuil de 95&nbsp;% et la suppression des conversations après 90&nbsp;jours sont des valeurs par défaut, réglables.</p>
       <p><b>Captures.</b> Relais 0.2.0 lancé en local le 14/10/2026, avec des données de démonstration&nbsp;: trois abonnements, des projets et des conversations inventés, aucun compte réel. Un agent de démonstration remplace Claude Code&nbsp;: il rejoue des tours écrits à l’avance, sans inférence ni appel réseau. Les décisions de permission, refus compris, sont celles de Relais. Les chiffres des écrans (tokens, coûts, durées, quotas) sont calculés par Relais sur ces données et ne décrivent aucun usage réel. Aucune retouche&nbsp;; la vignette de la vitrine recadre le panneau de pilotage de la conversation.</p>
       <p><b>Limites.</b> Le mode strict contrôle chaque appel d’outil&nbsp;; ce n’est pas un bac à sable imposé par le système. Relais n’écoute que la machine locale&nbsp;: l’accès distant et le multi-utilisateur sont hors de son périmètre.</p>
+      <p><b>Fonctions et sous le capot.</b> Relus le 15/10/2026 à la même révision&nbsp;: l’architecture, le contrat de l’API, les serveurs MCP par session, la conversation, les diagnostics et le code. Les extraits sont des formes simplifiées, écrites pour cette page. 54&nbsp;scripts de vérification et les faux agents des tests sont comptés à la même révision.</p>
     </SourcesProjet>
   </CorpsProjet>
 

@@ -40,7 +40,7 @@ test('le nom canonique, l’étiquette de preuve et « Sous le capot »', async 
   await expect(construit).toHaveAttribute('href', '#construit');
   await construit.click();
   await expect(page.locator('#construit')).toBeInViewport();
-  await expect(page.locator('#construit .point-capot')).toHaveCount(4);
+  await expect(page.locator('#construit .point-capot')).toHaveCount(10);
 });
 
 test('la fiche technique : sept cases, statut à forme et mot, dépôt privé sans aucun lien', async ({ page }) => {
@@ -199,7 +199,7 @@ test('une seule navigation de page, sans la note de sources ; la note dit d’o�
   const navigation = page.locator('nav[aria-label="Dans cette page"]');
   await expect(navigation).toHaveCount(1);
   if ((page.viewportSize()?.width ?? 0) > 1100) await expect(navigation).toBeVisible();
-  const attendus = ['#principe', '#composer', '#reprendre', '#resultat', '#construit', '#retiens'];
+  const attendus = ['#principe', '#composer', '#reprendre', '#resultat', '#fonctions', '#construit', '#retiens'];
   expect(await navigation.locator('a').evaluateAll((liens) => liens.map((lien) => lien.getAttribute('href')))).toEqual(attendus);
   for (const ancre of attendus) await expect(page.locator(ancre)).toHaveCount(1);
   const sources = page.locator('#sources');
@@ -228,7 +228,7 @@ for (const theme of ['jour', 'nuit'] as const) {
     test('en-tête, écrans, décisions et sortie restent accessibles', async ({ page }) => {
       await page.goto(CHEMIN);
       await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
-      for (const zone of ['.projet-tete', '#principe', '#composer', '#reprendre', '#resultat', '#construit', '#retiens']) {
+      for (const zone of ['.projet-tete', '#principe', '#composer', '#reprendre', '#resultat', '#fonctions', '#construit', '#retiens']) {
         const resultats = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice']).include(zone).analyze();
         expect(resultats.violations.map((v) => ({ id: v.id, cibles: v.nodes.slice(0, 3).map((n) => n.target) })), zone).toEqual([]);
       }

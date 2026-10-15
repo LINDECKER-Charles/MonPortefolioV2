@@ -117,6 +117,7 @@ export const SECTIONS: readonly EntreeSommaire[] = [
   { id: 'galaxie', titre: 'La Galaxie' },
   { id: 'agent', titre: 'Ce que l’agent lit' },
   { id: 'chaine', titre: 'Du ticket à la pull request' },
+  { id: 'fonctions', titre: 'Ses fonctions' },
   { id: 'construit', titre: 'Sous le capot' },
   { id: 'retiens', titre: 'Où il en est' },
 ];
@@ -182,10 +183,124 @@ export const CHAINE: readonly EtapeChaine[] = [
 /* Sous le capot (gabarit E5 · 4)                                      */
 /* ------------------------------------------------------------------ */
 
+/**
+ * Relus le 15/10/2026 à la même révision 6615950 : docs/PLAN-*.md, AGENTS.md,
+ * docs/invariants/*.md, docs/API-publique.md, le code cité à côté de chaque
+ * point. Les extraits sont écrits pour la page (dépôt privé) : aucune ligne
+ * de code recopiée, aucun nom interne, aucun chemin de la machine.
+ */
+
+/** Ce que fait l’outil, fonction par fonction (section « fonctions »). */
+export const FONCTIONS: readonly PointCapot[] = [
+  {
+    // docs/PLAN-sync-*.md ; README ; Core/Settings (heures creuses).
+    titre: 'Synchroniser mes tâches assignées',
+    texte: 'Un navigateur piloté par Playwright garde ma session ouverte sur l’outil de gestion de tâches. Le service relit mes tâches assignées, avec leur détail, leurs commentaires, leurs listes à cocher, leur historique, leurs images et leurs catégories, dans une base SQLite sur mon poste. Les passages se planifient, heures creuses comprises.',
+  },
+  {
+    // docs/PLAN-snapshots-detail.md ; docs/AVANCEMENT.md:607 et 755.
+    titre: 'Sceller une observation à chaque passage',
+    texte: 'Chaque passage scelle une observation qui ne bougera plus. On en épingle une, on lit l’écart entre deux. Une empreinte évite de relire en détail ce qui n’a pas bougé : un passage sans changement côté source ne fait aucune requête d’enrichissement ; sinon, deux par tâche.',
+  },
+  {
+    // Écrans Tâches, Tableau de bord, Métriques, Galaxie (frontend/src/app/app.routes.ts) ; FTS5.
+    titre: 'Lire, chercher et voir où tout en est',
+    texte: 'La liste des tâches se filtre avec des préréglages et se cherche en plein texte (FTS5 de SQLite). Le tableau de bord agrège par projet et par statut, les métriques suivent le poids des données locales et la tendance de l’arriéré, et la Galaxie met le tout en scène.',
+  },
+  {
+    // docs/PLAN-preparation.md ; PLAN-chaine-de-travail.md § 2.
+    titre: 'Préparer : un agent lit chaque nouvelle tâche',
+    texte: 'Après un passage, un agent lit chaque nouvelle tâche, explore les dépôts en lecture et rend une compréhension courte : le dépôt et le worktree où la faire. Je la retiens, je l’écarte, je la précise ou je pose une question ; une précision relance l’agent.',
+  },
+  {
+    // docs/PLAN-realisation.md.
+    titre: 'Réaliser : un agent ouvre la pull request',
+    texte: 'Confiée à Relais, une tâche retenue part chez le seul agent qui écrit : il travaille dans un worktree, sur une branche cible choisie parmi celles du dépôt, et ouvre une pull request par dépôt touché. Le service relit l’état des pull requests chez GitHub. Une réalisation se reprend, se relance ou se programme, par exemple pour le soir même.',
+  },
+  {
+    // docs/PLAN-mode-plan.md ; PLAN-orchestrateur.md § 2.
+    titre: 'Planifier une tâche complexe',
+    texte: 'On y joint des ressources, du texte ou un PDF. Un agent propose une résolution, que je relis pas à pas ; elle s’exécute ensuite par Relais, ou part dans Sillage, où l’assistant compose le graphe d’agents au périmètre du plan.',
+  },
+  {
+    // Core/Automation/AutomationTrigger.cs (14) et AutomationAction.cs (18) ; PLAN-enchainements.md § 0.
+    titre: 'Enchaîner les gestes par des règles',
+    texte: 'Des règles « quand…, alors… », écrites et activées dans les réglages, font les gestes à la place d’un clic. Le moteur passe une fois par minute, fait une étape par tâche, et un quota quotidien borne les lancements d’agent. Aucune règle n’est livrée.',
+    extrait: {
+      ecrit: true,
+      langage: 'Règles',
+      code: `quand  lecture-proposee      alors  retenir
+quand  lecture-retenue       alors  confier-a-relais
+quand  realisation-reussie   alors  passer-en-relecture`,
+    },
+  },
+  {
+    // docs/API-publique.md ; Api/Notifications (macOS).
+    titre: 'Une API locale en lecture seule, et des notifications',
+    texte: 'Un script ou un tableau de bord lit les tâches par une API HTTP locale, ouverte par une clé révocable : des lectures seulement, et toute autre méthode refusée avant même le routage. Des notifications macOS disent ce que les agents ont fini.',
+    extrait: {
+      ecrit: true,
+      langage: 'HTTP',
+      code: `GET /api/public/v1/tasks
+GET /api/public/v1/tasks/overview
+GET /api/public/v1/status
+Authorization: Bearer <clé révocable>
+
+POST, PUT, DELETE…  → 405, avant le routage`,
+    },
+  },
+];
+
 export const CAPOT: readonly PointCapot[] = [
+  {
+    // Projets de la solution : Api, Core, Sync, Mcp, Tests ; backend/Directory.Build.props (net10.0),
+    // Directory.Packages.props (EF Core et SQLite 10.0.11, Playwright 1.62.0, MCP 2.2.0) ; frontend Angular 22.
+    groupe: 'Architecture',
+    titre: 'Un service .NET 10, cinq projets, une interface Angular',
+    texte: 'Un service ASP.NET Core en API minimale tient la synchronisation, les agents et l’interface ; la synchronisation, le cœur métier, le serveur MCP et les tests vivent chacun dans leur projet. Les données : SQLite par EF Core, recherche plein texte FTS5, et des magasins JSON écrits d’un bloc pour ce qui ne doit jamais se perdre. L’interface Angular 22 suit le travail des agents en direct par SignalR.',
+    extrait: {
+      ecrit: true,
+      langage: 'Schéma',
+      code: `navigateur piloté (Playwright) ──▶ outil de gestion de tâches
+          │  lectures, et une seule écriture : le statut
+service .NET 10 ── SQLite (EF Core, FTS5) · magasins JSON
+   ├─ SignalR ─▶ interface Angular 22
+   └─ HTTP ────▶ Relais (agents) · Sillage (plans) · gh (pull requests)
+serveur MCP, processus à part ── base en lecture seule ──▶ agent IA`,
+    },
+  },
+  {
+    // Api/Hosting/LoopbackBinding.cs ; scripts/start.sh (agent launchd).
+    groupe: 'Architecture',
+    titre: 'N’écouter que la machine, par le code',
+    texte: 'L’adresse d’écoute n’est pas un réglage : un appel explicite à la boucle locale l’emporte sur toute variable d’environnement, et seul le port se change. Le service tourne en natif sur macOS, lancé par launchd, sans conteneur ni exposition.',
+    extrait: {
+      ecrit: true,
+      langage: 'C#',
+      code: `// L’adresse est dans le code ; seul le port se règle
+builder.WebHost.ConfigureKestrel(serveur =>
+    serveur.Listen(IPAddress.Loopback, port)); // l’emporte sur --urls et ASPNETCORE_URLS`,
+    },
+  },
+  {
+    // Projet Mcp, Tools/*.cs : 13 McpServerTool, dont 10 ReadOnly = true ; serveur stdio.
+    groupe: 'Architecture',
+    titre: 'Un serveur MCP de treize outils, dix en lecture seule',
+    texte: 'Le serveur MCP parle à l’agent sur l’entrée et la sortie standard. Sa source se choisit à son lancement : le cache vivant, une observation scellée ou un espace de travail, et chaque réponse dit d’où elle vient. Trois outils seulement ne sont pas en lecture seule : deux déposent une analyse, le troisième demande un passage au service, qui seul lit la source.',
+    extrait: {
+      ecrit: true,
+      langage: 'Outils MCP',
+      code: `lecture   list_my_tasks · get_task · search_tasks · tasks_overview
+          get_task_attachment · list_snapshots · list_workspaces
+          sync_status · analysis_progress · get_group_plan
+dépôt     submit_task_understanding · submit_task_fix_plan
+passage   trigger_sync`,
+    },
+  },
   {
     // docs/invariants/securite.md:10-26 ; garde du client HTTP vers l’outil source, sur liste blanche @ 6615950.
     // Les appels vers Relais, Sillage et GitHub n’y passent pas.
+    groupe: 'Décisions',
     titre: 'Des lectures, et une seule écriture vers l’outil source',
     contrainte: 'L’outil garde une session complète sur une application en production.',
     choix: 'Chaque appel vers l’outil source passe par une liste blanche : des lectures, plus une seule écriture, le statut d’une tâche, relu dans la source juste avant.',
@@ -202,6 +317,7 @@ tout le reste                        → refusé, avant le réseau`,
     // Core/StorageServiceCollectionExtensions.cs:68-71 (Mode=ReadOnly) ; Tests/Architecture/McpIsolationTests.cs.
     // trigger_sync (Mcp/Tools/SyncTools.cs:50-66) demande un passage au service, qui seul lit la source.
     // Aucune CI à 6615950 : le test tourne avec la suite de tests, pas « à chaque build ».
+    groupe: 'Décisions',
     titre: 'Le serveur MCP n’a pas de plume',
     contrainte: 'Un agent doit lire les tâches sans appeler lui-même la source ni écrire dans la copie locale.',
     choix: 'Le serveur MCP tourne dans un processus à part, ouvre la base en lecture seule et ne connaît ni la synchronisation ni le navigateur.',
@@ -221,6 +337,7 @@ Assert.DoesNotContain(clientDeLaSource, fermeture);
     // AGENTS.md (Stockage) ; docs/invariants/stockage.md:26-47 (magasin illisible en quarantaine, lecture seule) ;
     // docs/PLAN-snapshots-detail.md:296-301 (source `live` par défaut, `latest` ou un run ; pas de `pin_snapshot` ;
     // chaque réponse porte sa source).
+    groupe: 'Décisions',
     titre: 'Une source figée au lancement, rien qui se perde',
     contrainte: 'Un agent doit pouvoir raisonner sur un état figé, et aucune de mes décisions ne doit se perdre.',
     choix: 'Chaque passage scelle une observation, et le serveur MCP fixe sa source à son lancement, le cache vivant ou une observation scellée, jamais en cours de session ; chaque réponse dit d’où elle vient. Un fichier de décisions illisible reste intact, en lecture seule, au lieu d’être lu vide puis écrasé.',
@@ -228,10 +345,29 @@ Assert.DoesNotContain(clientDeLaSource, fermeture);
   },
   {
     // PLAN-enchainements.md § 0, points 2-3 et 6-8 ; Core/Automation/AutomationHost.cs:32-40.
+    groupe: 'Décisions',
     titre: 'Des règles qui ont les gardes d’un clic',
     contrainte: 'Enchaîner les gestes d’un ticket sans qu’une règle fasse ce que je n’aurais pas validé.',
     choix: 'Les déclencheurs et les actions vivent dans le code, les règles dans mes réglages. Une règle a les gardes d’un clic, relit la tâche dans la source et la pull request chez GitHub, cède au geste qui la contredit et ne défait jamais rien. Son journal s’écrit avant d’agir : une action à l’issue inconnue n’est jamais rejouée à l’aveugle.',
     effet: 'Sans règle, l’outil se comporte comme avant, et un test le vérifie.',
+  },
+  {
+    // AGENTS.md (Agents, Réalisation) ; docs/invariants/agents.md:10 (un seul plafond) et 84-90 ; RelaisReadOnlyGuard.
+    groupe: 'Garde-fous, tests et limites',
+    titre: 'Les agents qui lisent n’ont que Read, Glob et Grep',
+    texte: 'Cinq métiers d’agent (préparer, répartir, rédiger, planifier, réaliser) partagent un seul plafond de sessions simultanées. Ceux qui lisent tournent dans une session Relais en lecture seule, relue après coup ; un seul métier écrit, et seulement dans un worktree, jamais dans le dépôt principal.',
+  },
+  {
+    // git grep à 6615950 : 1 345 [Fact]/[Theory] dans 231 fichiers C#, 718 it( dans 114 fichiers spec.
+    groupe: 'Garde-fous, tests et limites',
+    titre: 'Plus de deux mille cas de test déclarés',
+    texte: '1 345 cas de test côté serveur (xUnit v3) et 718 côté interface (Vitest), comptés dans le code à la révision lue, sans les exécuter. Il n’y a pas d’intégration continue : les tests tournent sur mon poste.',
+  },
+  {
+    // docs/AVANCEMENT.md:44 ; PLAN-enchainements.md:3 (dossier de tâche : lot 0 seul) ; macOS (launchd, notifications).
+    groupe: 'Garde-fous, tests et limites',
+    titre: 'Ce qui n’est pas encore là',
+    texte: 'Le « dossier de tâche » unifié, écrit dans les plans, n’a livré que son premier lot. L’outil ne tourne que sur macOS, n’est ni déployé ni partagé, et son interface attend une refonte graphique.',
   },
 ];
 

@@ -115,6 +115,7 @@ export const SECTIONS: readonly EntreeSommaire[] = [
   { id: 'composer', titre: 'Composer une tâche' },
   { id: 'reprendre', titre: 'Reprendre après une coupure' },
   { id: 'resultat', titre: 'Le résultat' },
+  { id: 'fonctions', titre: 'Ses fonctions' },
   { id: 'construit', titre: 'Sous le capot' },
   { id: 'retiens', titre: 'Aujourd’hui' },
 ];
@@ -160,9 +161,111 @@ export const ECRANS = {
 /* Sous le capot (gabarit E5 · 4)                                      */
 /* ------------------------------------------------------------------ */
 
+/**
+ * Relus le 15/10/2026 à la même révision c256e76 : README (« Utiliser
+ * l’orchestrateur », « Permissions et fonctionnement »), docs/api.md,
+ * docs/context-contracts.md et le code cité à côté de chaque point. Les
+ * extraits sont écrits pour la page (dépôt privé) : formes simplifiées, sans
+ * code recopié ni chemin de la machine.
+ */
+
+/** Ce que fait Sillage, fonction par fonction (section « fonctions »). */
+export const FONCTIONS: readonly PointCapot[] = [
+  {
+    // README, « Utiliser l’orchestrateur », 1 et 2.
+    titre: 'Des projets, et les dossiers qu’ils confient',
+    texte: 'Un projet donne ses permissions globales : les dossiers en lecture et en écriture que recevront toutes ses tâches, choisis avec le sélecteur du système. Une tâche peut ajouter ses propres dossiers, jamais en retirer, et ils ne changent pas pendant qu’elle s’exécute.',
+  },
+  {
+    // README, « Utiliser l’orchestrateur », 3 et 4 ; agents dynamiques.
+    titre: 'Composer un graphe d’agents',
+    texte: 'Chaque agent a sa mission, ses ressources, son livrable, son modèle et son effort. Un agent déterministe garde une place fixe ; un agent dynamique répartit son travail entre des sous-agents qu’il crée en cours de route. Les liaisons vont d’une sortie à une entrée, et les cycles sont refusés. Un contexte commun et une méthode de travail s’ajoutent au message de chaque agent.',
+  },
+  {
+    // docs/estimation-duree.md.
+    titre: 'Estimer la durée avant de lancer',
+    texte: 'À chaque agent, effort ou liaison changé, l’éditeur rejoue le graphe avec la session typique de chaque modèle et de chaque effort, tirée des exécutions passées, sous les limites de parallélisme : une durée typique et sa fourchette.',
+  },
+  {
+    // README l. 229-272 ; docs/task-creation.md.
+    titre: 'Créer ou planifier avec un agent',
+    texte: 'Un assistant compose la tâche par les outils MCP que Sillage lui ouvre, un agent par appel, dans un brouillon visible en direct. Un autre écrit un plan dans le dépôt du projet ; plan, création et exécution peuvent s’enchaîner sans moi.',
+  },
+  {
+    // README, 5 ; docs/DESIGN-NOTES.md (Supervision).
+    titre: 'Suivre une exécution en direct',
+    texte: 'Le graphe montre les agents actifs et les sous-agents dès leur création, avec leur consommation. Le suivi distingue les sessions, les attentes datées et leurs causes ; le journal des erreurs réunit ce qui a échoué ; les échanges montrent, dans l’ordre, le message exact reçu par chaque agent et sa réponse.',
+  },
+  {
+    // README, « Navigateur des agents » ; docs/retours-visuels.md.
+    titre: 'Donner un navigateur aux agents',
+    texte: 'Un agent dont la mission parle de navigateur reçoit un Chromium sans interface, à lui seul, par les outils de Playwright MCP : il ouvre les pages du projet, clique, saisit et capture l’écran. Les retours visuels montrent l’exécution en images, étape par étape.',
+  },
+  {
+    // README, 6 (« Reprendre »).
+    titre: 'Reprendre, relancer, restaurer',
+    texte: 'Après une coupure, un arrêt ou un échec, la reprise relance les étapes non abouties et se rattache aux sessions restées actives chez Relais. « Relancer depuis cet agent » repart de n’importe quelle étape ; « Voir ce qui a changé » compare la tâche à son exécution, et une définition exécutée se restaure.',
+  },
+  {
+    // README, 5 (Récapitulatif, Exécutions) ; docs/historique-projet.md.
+    titre: 'Retrouver le résultat et l’historique',
+    texte: 'Le récapitulatif désigne le résultat final, worktree, branche et commit, puis ce que chaque agent a fait, et se copie en Markdown pour une pull request. Les exécutions se comparent et se regroupent en sprint ; l’historique du projet donne la durée, les tokens et l’équivalent API de chaque action.',
+  },
+  {
+    // docs/assistant-projet.md.
+    titre: 'Un assistant pour chaque projet',
+    texte: 'Une conversation gardée par projet : il répond sur le projet, ses tâches et ses exécutions, et ses actions s’affichent en cartes, une idée notée, un fait retenu, un plan ou une exécution lancés.',
+  },
+  {
+    // README, « Permissions et fonctionnement » (veille, worktrees, stockage).
+    titre: 'Garder la machine éveillée, nettoyer derrière',
+    texte: 'Tant qu’un agent travaille, Sillage empêche la mise en veille et le dit. À la fin d’une exécution aboutie, il supprime les worktrees propres et fusionnés, jamais les branches ; un panneau liste les autres, avec ce qui les retient.',
+  },
+];
+
 export const CAPOT: readonly PointCapot[] = [
   {
+    // backend/Cargo.toml (Axum 0.8, Tokio, rusqlite 0.38 bundled) ; docs/api.md l. 1-30 et 2504 (SSE, quatre envois par seconde au plus).
+    groupe: 'Architecture',
+    titre: 'Un serveur Rust, une interface Angular, un flux SSE',
+    texte: 'Le serveur, en Rust (Axum et Tokio), garde l’état en mémoire et le persiste dans un SQLite embarqué. Il n’écoute que la boucle locale : toutes les routes de l’API demandent un jeton, et les en-têtes Host et Origin doivent être locaux. L’interface Angular reçoit l’état par un flux SSE, un instantané après chaque modification enregistrée, quatre envois par seconde au plus.',
+    extrait: {
+      ecrit: true,
+      langage: 'Schéma',
+      code: `interface Angular 22 ── HTTP + jeton ──▶ serveur Rust (Axum, Tokio)
+        ◀──── SSE : l’état, ≤ 4 envois par seconde ────┘     │
+                                          SQLite embarqué ◀───┤
+                       Relais ◀── HTTP + jeton ───────────────┤
+    assistants ◀── outils MCP (création, plan) ───────────────┘
+    agents ◀── Playwright MCP : un navigateur chacun`,
+    },
+  },
+  {
+    // README, agents dynamiques ; backend/src/delegation.rs, group.rs.
+    groupe: 'Architecture',
+    titre: 'Un coordinateur planifie, le serveur vérifie',
+    texte: 'Un agent dynamique inventorie les unités de travail de sa mission et les répartit entre le plus petit nombre de sous-agents utile. Avant d’en lancer un seul, le serveur contrôle le plafond, la couverture des unités, les champs délégués et les couples modèle et effort autorisés ; un plan refusé revient au coordinateur, dans la même session, deux fois au plus. Un sous-agent perdu rend le groupe partiel, sans perdre le travail des autres.',
+  },
+  {
+    // backend/src/provider.rs l. 600-610 (client_session_id) ; contrat de Relais (création idempotente).
+    groupe: 'Architecture',
+    titre: 'Une session ne part jamais deux fois',
+    texte: 'Chaque demande de session à Relais porte un identifiant choisi par Sillage. Si la réponse se perd, Sillage renvoie la même demande, et Relais rend la session déjà créée au lieu d’en lancer une seconde.',
+    extrait: {
+      ecrit: true,
+      langage: 'HTTP',
+      code: `POST /api/sessions                      (chez Relais)
+{ "client_session_id": "<UUID v4>", "application_name": "Sillage",
+  "model": "…", "effort": "…", "workspace": "…", "ttl_seconds": … }
+
+→ 201  la première fois
+→ 200  la même session, quand la demande est rejouée à l’identique
+→ 409  le même identifiant pour une autre demande`,
+    },
+  },
+  {
     // docs/context-contracts.md l. 1-60 et 195-215 ; README l. 172-197 ; backend/src/short_result.rs:11 (MAX_REPAIRS = 2).
+    groupe: 'Décisions',
     titre: 'Un résultat court, corrigé dans la même session',
     contrainte: 'Les agents rendent de 10 000 à 27 000 caractères, quelle que soit la cible qu’on leur annonce, et une seule réponse mal formée peut casser la chaîne.',
     choix: 'Chaque agent rend un résultat court et structuré : résumé, décisions, contrôles, blocages, suite. Une réponse hors du format attendu lui revient dans la même session, avec l’erreur, deux fois au plus.',
@@ -183,6 +286,7 @@ export const CAPOT: readonly PointCapot[] = [
   },
   {
     // docs/blocages-agents.md:25-35 (révision 9b4533a) ; backend/src/session/worktree.rs:1-5 ; README l. 392-410.
+    groupe: 'Décisions',
     titre: 'Sillage crée lui-même le worktree de l’agent',
     contrainte: 'Des agents en parallèle dans un même dossier se gênaient : 26 commandes Git bloquées sur un verrou, des commits réécrits par un autre agent. Enfermés dans leur bac à sable, d’autres agents ne pouvaient ni committer, ni ouvrir un navigateur, ni joindre le réseau : 39 blocages en trois exécutions.',
     choix: 'Quand un agent en a besoin (sa mission le demande, ou un autre agent écrit en même temps dans le même dossier), Sillage crée lui-même son worktree avant sa première session, le garde pour les suivantes, committe pour l’agent si besoin, puis fusionne.',
@@ -190,6 +294,7 @@ export const CAPOT: readonly PointCapot[] = [
   },
   {
     // docs/plan-contexte-agents.md:8-34 (révision ae2efd8) ; backend/src/models.rs:725-729 (300 000) ; README l. 450-458.
+    groupe: 'Décisions',
     titre: 'Une fenêtre de compaction pour chaque session',
     contrainte: 'À chaque appel, toute la conversation de l’agent était relue : 2,19 milliards de tokens, les unités de texte que lit le modèle, sur 79 sessions de trois tâches, et rien ne bornait une session.',
     choix: 'Chaque session demande à Relais une fenêtre de compaction, de 300 000 tokens par défaut, réglable ou désactivable : au-delà, sa conversation est résumée.',
@@ -203,6 +308,7 @@ export const CAPOT: readonly PointCapot[] = [
   },
   {
     // docs/architecture-report.md (révision ed4080b) ; README l. 47-50 ; capacités annoncées par Relais.
+    groupe: 'Décisions',
     titre: 'Relais n’expose que des capacités génériques',
     contrainte: 'Des notions propres à Sillage étaient entrées dans Relais, et Sillage allait lire le jeton de Relais dans son dossier : trois lectures dans le code exécuté.',
     choix: 'Relais n’expose que des capacités génériques. Sillage garde son schéma de création de tâche et ses validations, et reçoit le jeton par ses paramètres.',
@@ -216,6 +322,25 @@ export const CAPOT: readonly PointCapot[] = [
     "working_context": true, "filesystem_scope": true,
     "idempotent_session_creation": true, "mcp_http": true, "mcp_http_auto": true } }`,
     },
+  },
+  {
+    // README, « Permissions et fonctionnement ».
+    groupe: 'Garde-fous, tests et limites',
+    titre: 'Des consignes et des contrôles, pas une isolation',
+    texte: 'Une tâche qui écrit donne aux agents un terminal, dont chaque commande passe par le classificateur de l’agent ; une tâche sans dossier d’écriture reste en lecture seule stricte, chaque lecture contrôlée par Relais. Les sous-agents héritent des permissions sans pouvoir les élargir. Aucun de ces modes n’isole le système des autres processus de la machine : c’est écrit.',
+  },
+  {
+    // README (erreurs temporaires, authentification, quotas) ; backend/src/models.rs:720-723 (240 s).
+    groupe: 'Garde-fous, tests et limites',
+    titre: 'Une panne du fournisseur ne fait pas échouer l’agent',
+    texte: 'Sur une erreur temporaire de l’API (529, 5xx), l’agent attend 30 s, puis le double, sans dépasser 240 s par défaut, et reprend dans la même session si elle le permet. Une authentification expirée ou un quota atteint met ses agents en attente : l’exécution repart seule à la reconnexion ou à la réinitialisation.',
+  },
+  {
+    // git grep à c256e76 : 643 tests Rust, 206 tests Node, 22 parcours UI, 14 scénarios E2E ;
+    // .github/workflows/compatibility.yml (windows-latest, macos-15, macos-15-intel).
+    groupe: 'Garde-fous, tests et limites',
+    titre: '643 tests du serveur, et des parcours complets',
+    texte: '643 tests en Rust, 206 tests des scripts, 22 parcours d’interface Playwright et 14 scénarios de bout en bout, tous contre un faux fournisseur : aucun abonnement consommé. L’intégration continue les joue sous Windows et sous macOS, sur processeurs Apple et Intel.',
   },
 ];
 

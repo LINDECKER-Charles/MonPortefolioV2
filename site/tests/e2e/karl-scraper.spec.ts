@@ -52,7 +52,7 @@ test('le nom canonique, l’étiquette de preuve et « Sous le capot »', async 
   await expect(entete.locator('[data-pli="action"] a')).toHaveCount(1);
   await construit.click();
   await expect(page.locator('#construit')).toBeInViewport();
-  await expect(page.locator('#construit .point-capot')).toHaveCount(4);
+  await expect(page.locator('#construit .point-capot')).toHaveCount(10);
 });
 
 test('la fiche technique : sept cases, statut à forme et mot, dépôt privé sans aucun lien', async ({ page }) => {
@@ -231,7 +231,7 @@ test('une seule navigation de page, sans la note de sources', async ({ page }) =
   const navigation = page.locator('nav[aria-label="Dans cette page"]');
   await expect(navigation).toHaveCount(1);
   if ((page.viewportSize()?.width ?? 0) > 1100) await expect(navigation).toBeVisible();
-  const attendus = ['#copie', '#galaxie', '#agent', '#chaine', '#construit', '#retiens'];
+  const attendus = ['#copie', '#galaxie', '#agent', '#chaine', '#fonctions', '#construit', '#retiens'];
   expect(await navigation.locator('a').evaluateAll((liens) => liens.map((lien) => lien.getAttribute('href')))).toEqual(attendus);
   for (const ancre of attendus) await expect(page.locator(ancre)).toHaveCount(1);
 });
@@ -244,7 +244,7 @@ for (const theme of ['jour', 'nuit'] as const) {
       await page.goto(CHEMIN);
       await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
       await page.locator('#sources summary').click();
-      for (const zone of ['.projet-tete', '#copie', '#galaxie', '#agent', '#chaine', '#construit', '#retiens', '#sources']) {
+      for (const zone of ['.projet-tete', '#copie', '#galaxie', '#agent', '#chaine', '#fonctions', '#construit', '#retiens', '#sources']) {
         // En haut de page : l’en-tête collant ne recouvre aucune cible (règle target-size).
         await page.evaluate(() => window.scrollTo(0, 0));
         const resultats = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice']).include(zone).analyze();

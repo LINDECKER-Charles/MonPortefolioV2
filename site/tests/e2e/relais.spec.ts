@@ -41,7 +41,7 @@ test('le nom canonique, l’étiquette de preuve et « Sous le capot »', async 
   await expect(construit).toHaveAttribute('href', '#construit');
   await construit.click();
   await expect(page.locator('#construit')).toBeInViewport();
-  await expect(page.locator('#construit .point-capot')).toHaveCount(4);
+  await expect(page.locator('#construit .point-capot')).toHaveCount(10);
 });
 
 test('la fiche technique : sept cases, statut à forme et mot, aucun lien public mais le dépôt privé dit', async ({ page }) => {
@@ -170,7 +170,7 @@ test('une seule navigation de page, sans la note de sources', async ({ page }) =
   const navigation = page.locator('nav[aria-label="Dans cette page"]');
   await expect(navigation).toHaveCount(1);
   if ((page.viewportSize()?.width ?? 0) > 1100) await expect(navigation).toBeVisible();
-  const attendus = ['#acces', '#perimetre', '#capacite', '#analyse', '#construit', '#retiens'];
+  const attendus = ['#acces', '#perimetre', '#capacite', '#analyse', '#fonctions', '#construit', '#retiens'];
   expect(await navigation.locator('a').evaluateAll((liens) => liens.map((lien) => lien.getAttribute('href')))).toEqual(attendus);
   for (const ancre of attendus) await expect(page.locator(ancre)).toHaveCount(1);
 });
@@ -207,7 +207,7 @@ for (const theme of ['jour', 'nuit'] as const) {
         const resultats = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice']).include(zone).analyze();
         expect(resultats.violations.map((v) => ({ id: v.id, cibles: v.nodes.slice(0, 3).map((n) => n.target) })), zone).toEqual([]);
       };
-      for (const zone of ['.projet-tete', '#acces', '#perimetre', '#capacite', '#analyse', '#construit', '#retiens']) await analyser(zone);
+      for (const zone of ['.projet-tete', '#acces', '#perimetre', '#capacite', '#analyse', '#fonctions', '#construit', '#retiens']) await analyser(zone);
       // La note de sources, ouverte.
       await page.locator('#sources summary').click();
       await analyser('#sources');
@@ -225,7 +225,7 @@ test.describe('sans JavaScript', () => {
     await expect(page.locator('.rel-entete-capture img')).toBeVisible();
     await expect(page.locator('figure[data-visuel="REL-F1"]')).toBeVisible();
     await expect(page.locator('main .capture-annotee img').first()).toBeAttached();
-    await expect(page.locator('#construit .point-capot')).toHaveCount(4);
+    await expect(page.locator('#construit .point-capot')).toHaveCount(10);
     // La note de sources se lit sans script : le résumé l’ouvre.
     await page.locator('#sources summary').click();
     await expect(page.locator('#sources')).toContainText('260');
