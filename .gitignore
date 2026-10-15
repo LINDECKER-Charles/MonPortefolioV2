@@ -5,6 +5,10 @@
 !.env.example
 !.env.*.example
 
+# Cadrage privé : clone de LINDECKER-Charles/MonPortefolioV2-cadrage (README,
+# « Dossier privé »). Ce dépôt est public, ce dossier ne l’est pas.
+/docs/prive/
+
 # Système et éditeurs.
 .DS_Store
 Thumbs.db

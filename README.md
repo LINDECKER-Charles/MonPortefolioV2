@@ -12,6 +12,22 @@ sont rendues à la demande à partir des contenus persistés, sans reconstructio
 
 Node 24 ou plus récent ; Rust 1.88 ou plus récent pour l’API.
 
+### Dossier privé
+
+Le dépôt est public ; le cadrage du site ne l’est pas (entretien, brief, matière première,
+règles de confidentialité et listes que lisent certains garde-fous). Il vit dans le dépôt privé
+`LINDECKER-Charles/MonPortefolioV2-cadrage`, à cloner dans `docs/prive/`, que git ignore :
+
+```bash
+git clone https://github.com/LINDECKER-Charles/MonPortefolioV2-cadrage.git docs/prive
+```
+
+Sans lui, les garde-fous de confidentialité et de citations échouent (`site/tests/support/prive.ts`) ;
+un worktree utilise celui du dépôt principal. La CI le clone en lecture seule avec une clé de
+déploiement (secret `CADRAGE_DEPLOY_KEY`).
+
+### Lancer
+
 Depuis la racine, copier le modèle d’environnement puis lancer le backend dans un terminal :
 
 ```bash
