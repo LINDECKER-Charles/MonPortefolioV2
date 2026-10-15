@@ -314,6 +314,7 @@ proxy_cache_path /var/cache/nginx/archive levels=1:2 use_temp_path=off
     extrait: {
       fichier: 'docs/reecriture/rapports/parite-lot-1.md',
       langage: 'Markdown',
+      prose: true,
       code: `**Résultat** : 12 260 écarts, tous classés. Aucun n'est un défaut de la nouvelle stack.
 Trois règles couvrent 328 défauts de l'ancienne stack que la nouvelle corrige
 volontairement ; trois règles couvrent 11 932 écarts attendus, tous dus au stockage

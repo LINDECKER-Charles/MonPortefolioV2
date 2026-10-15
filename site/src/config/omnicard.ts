@@ -286,6 +286,7 @@ public async Task JouerCarte(DemandeCarte demande)
     extrait: {
       fichier: 'docs/keywords.md',
       langage: 'Markdown',
+      prose: true,
       code: `### Délai(N)
 Effet programmé pour s'exécuter **N tours plus tard**. Le compteur décrémente uniquement à la fin du tour du joueur qui a programmé l'effet. Si l'unité émettrice meurt, l'effet est annulé.
 

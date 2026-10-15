@@ -69,6 +69,11 @@ export type Extrait = {
   code: string;
   /** Le langage, dit dans la légende : « C# », « TypeScript », « JSON »… */
   langage: string;
+  /**
+   * De la prose (un paragraphe de Markdown, pas un tableau ni du code) : ses
+   * lignes se replient à la largeur du cadre au lieu de défiler.
+   */
+  prose?: true;
 } & ({ fichier: string; ecrit?: never } | { ecrit: true; fichier?: never });
 
 /**
