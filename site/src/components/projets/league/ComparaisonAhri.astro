@@ -1,0 +1,218 @@
+---
+/**
+ * LOD-F1 · Ahri entre deux patchs, côte à côte (cahier § 2.4 et § 5.4) : un
+ * tableau HTML des valeurs relevées dans les deux fiches réelles, un seul
+ * surlignage, puis les deux panneaux de statistiques capturés dans
+ * l’application, agrandissables. Données : config/league-of-database.ts
+ * (COMPARAISON, PATCHS), consignées dans docs/prive/matiere-premiere.md.
+ *
+ * Le tableau est la preuve et la zone éclairée de l’écran ; les panneaux en
+ * sont la trace. Sans JavaScript, chaque panneau s’ouvre en grand comme une
+ * image.
+ */
+import type { ImageMetadata } from 'astro';
+import CadreCapture from '../../ui/CadreCapture.astro';
+import LienAction from '../../ui/LienAction.astro';
+import { COMPARAISON, PATCHS } from '../../../config/league-of-database';
+import { typo } from '../../../lib/typo';
+
+const captures = import.meta.glob<ImageMetadata>('/src/assets/projets/league-of-database/*-statistiques.webp', { eager: true, import: 'default' });
+const panneau = (nom: string) => {
+  const image = captures[`/src/assets/projets/league-of-database/${nom}.webp`];
+  if (!image) throw new Error(`Panneau ${nom} absent de src/assets/projets/league-of-database/.`);
+  return image;
+};
+const lignes = COMPARAISON.filter((ligne) => ligne.chiffre);
+const resume = (cle: 'ancien' | 'actuel') => lignes.map((ligne) => `${ligne.libelle.toLowerCase()} ${ligne[cle]}`).join(', ');
+---
+
+<div class="comparaison">
+  <div class="comparaison__tableau foyer">
+    <table>
+      <caption>Ahri au niveau 1, dans deux patchs</caption>
+      <thead>
+        <tr>
+          <td></td>
+          {
+            (['ancien', 'actuel'] as const).map((cle) => (
+              <th scope="col">
+                <span class="comparaison__patch">Patch {PATCHS[cle].numero}</span>
+                <span class="comparaison__precision">{typo(PATCHS[cle].precision)}</span>
+              </th>
+            ))
+          }
+        </tr>
+      </thead>
+      <tbody>
+        {
+          COMPARAISON.map((ligne) => (
+            <tr class:list={{ 'comparaison__ligne--chiffre': ligne.chiffre, 'comparaison__ligne--texte': !ligne.chiffre }}>
+              <th scope="row">{typo(ligne.libelle)}</th>
+              <td>{typo(ligne.ancien)}</td>
+              <td>
+                {ligne.surligne ? (
+                  <mark class="surligneur" data-source="Fiches publiques d’Ahri, patchs 3.6.14 et 16.20.1, relevées le 13/10/2026">{ligne.actuel}</mark>
+                ) : (
+                  typo(ligne.actuel)
+                )}
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+    <div class="actions comparaison__liens">
+      <LienAction href={PATCHS.ancien.href} emplacement="preuves">Ahri au patch {PATCHS.ancien.numero}</LienAction>
+      <LienAction href={PATCHS.actuel.href} emplacement="preuves">Ahri au patch {PATCHS.actuel.numero}</LienAction>
+    </div>
+  </div>
+
+  <div class="comparaison__panneaux" role="group" aria-label="Les deux panneaux de statistiques, capturés dans l’application">
+    {
+      (['ancien', 'actuel'] as const).map((cle) => (
+        <CadreCapture
+          class="comparaison__panneau"
+          type="terminal"
+          src={panneau(PATCHS[cle].capture)}
+          alt={typo(`Le panneau de statistiques d’Ahri au patch ${PATCHS[cle].numero}, niveau 1 : ${resume(cle)}.`)}
+          legende={`Patch ${PATCHS[cle].numero}`}
+          agrandir
+          widths={[336, 672]}
+          sizes="(max-width: 860px) 45vw, 180px"
+        />
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .comparaison {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 384px);
+    gap: var(--s5) var(--s7);
+    align-items: start;
+    margin-top: var(--s6);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  caption {
+    margin-bottom: var(--s3);
+    font-size: var(--t-xs);
+    color: var(--eteint);
+    text-align: left;
+  }
+
+  thead th {
+    padding: 0 var(--s4) var(--s3) 0;
+    border-bottom: 1px solid var(--encre);
+    text-align: left;
+    vertical-align: bottom;
+    font-weight: 400;
+  }
+
+  thead td {
+    border-bottom: 1px solid var(--encre);
+  }
+
+  .comparaison__patch {
+    display: block;
+    font-family: var(--police-titre);
+    font-size: var(--t-xl);
+    line-height: 1.05;
+    color: var(--encre);
+  }
+
+  .comparaison__precision {
+    display: block;
+    margin-top: var(--s1);
+    font-size: var(--t-xs);
+    line-height: 1.4;
+    color: var(--eteint);
+  }
+
+  tbody th,
+  tbody td {
+    padding: var(--s3) var(--s4) var(--s3) 0;
+    border-bottom: 1px solid var(--filet);
+    text-align: left;
+    vertical-align: baseline;
+  }
+
+  tbody th {
+    width: 9.5rem;
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: var(--ls-petit);
+    color: var(--eteint);
+  }
+
+  .comparaison__ligne--chiffre th,
+  .comparaison__ligne--chiffre td {
+    padding-block: var(--s2);
+  }
+
+  .comparaison__ligne--chiffre td {
+    font-size: var(--t-xl);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: var(--ls-titre);
+    color: var(--encre);
+  }
+
+  .comparaison__ligne--chiffre td:nth-child(2) {
+    color: var(--eteint);
+  }
+
+  .comparaison__ligne--texte td {
+    font-size: var(--t-s);
+    line-height: 1.45;
+  }
+
+  .comparaison__ligne--texte td:nth-child(2) {
+    color: var(--eteint);
+  }
+
+  .comparaison__liens {
+    margin-top: var(--s3);
+  }
+
+  .comparaison__panneaux {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s4);
+  }
+
+  .comparaison__panneaux :global(.capture__vue img) {
+    border-radius: var(--r2);
+  }
+
+  @media (max-width: 1100px) {
+    .comparaison {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .comparaison__panneaux {
+      max-width: 340px;
+    }
+  }
+
+  @media (max-width: 520px) {
+    tbody th {
+      width: auto;
+      padding-right: var(--s3);
+    }
+
+    tbody td {
+      padding-right: var(--s3);
+    }
+
+    .comparaison__ligne--chiffre td {
+      font-size: var(--t-l);
+    }
+  }
+</style>

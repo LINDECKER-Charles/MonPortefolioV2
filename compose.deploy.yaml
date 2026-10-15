@@ -1,0 +1,134 @@
+# Calque de deploiement, applique PAR-DESSUS compose.yaml sur tout environnement
+# servi (test comme prod), explicitement et SANS compose.override.yaml. Le script
+# de deploiement selectionne les fichiers par COMPOSE_FILE :
+#
+#   COMPOSE_FILE=compose.yaml:compose.deploy.yaml docker compose up -d
+#
+# auquel il ajoute le calque de mesure d'audience (compose.umami.yaml) quand le
+# .env de l'hote le demande.
+#
+# L'hote est mutualise : le point d'entree TLS public est un edge Caddy UNIQUE
+# (caddy-docker-proxy) qui possede 80/443 pour tous les projets de la machine. Il
+# est deploye une fois par hote depuis le depot infra-vps, jamais par ce projet.
+# Cette pile ne publie donc aucun port : elle se contente de declarer ses
+# domaines en etiquettes et de rejoindre le reseau externe `edge`. Caddy lit les
+# etiquettes, obtient les certificats Let's Encrypt et relaie vers web:4000.
+#
+# test et prod ne different que par le .env de l'hote :
+#   COMPOSE_PROJECT_NAME  portfolio-test | portfolio-prod   (projets Compose
+#                         distincts, donc aucun ecrasement croise sur la meme
+#                         machine)
+#   CADDY_DOMAINS         test.v2.charles-lindecker.com
+#                         | charles-lindecker.com, www.charles-lindecker.com
+#   IMAGE_TAG             staging | prod
+#   ROBOTS_TAG            noindex | all
+#   REDIRECT_HOSTS        (vide) | www.charles-lindecker.com
+#   CANONICAL_ORIGIN      (vide) | https://charles-lindecker.com
+#
+# Un domaine n'appartient qu'a UN projet de l'hote : l'edge reunit dans un meme
+# bloc de site tout ce que les conteneurs declarent pour un meme domaine. Tant
+# que la V1 (piles monportfolio-*) declare charles-lindecker.com, la production
+# de la V2 ne se deploie pas — scripts/deploy-remote.sh le refuse.
+#
+# Invariant : ce calque ne doit JAMAIS redefinir le bloc `logging:` que
+# compose.yaml attache au service. Le collecteur de l'hote rejoue la sortie des
+# conteneurs par l'API Docker, qui ne connait que les pilotes json-file, local et
+# journald — y glisser un pilote de transfert rendrait la pile invisible dans
+# Grafana sans qu'aucune erreur n'apparaisse nulle part.
+
+services:
+  web:
+    # Joignable par l'edge partage via `edge`. `{{upstreams 4000}}` resout l'IP
+    # de CE conteneur sur ce reseau (CADDY_INGRESS_NETWORKS=edge cote edge) :
+    # aucun port n'est publie sur l'hote, donc aucune collision possible entre
+    # les piles portfolio-test et portfolio-prod co-localisees.
+    networks:
+      - default
+      - edge
+    environment:
+      CONTACT_EMAIL: ${CONTACT_EMAIL:-}
+      BACKEND_PROXY_TOKEN: ${BACKEND_PROXY_TOKEN:?BACKEND_PROXY_TOKEN est obligatoire}
+      # Caddy ajoute l'adresse du client ; Node ignore toute autre identité
+      # fournie par le navigateur avant de la transmettre avec le jeton privé.
+      TRUST_PROXY: "1"
+      # Hote secondaire -> hote canonique, en 301, par le serveur du site (voir
+      # docs/deploiement.md). Vides par defaut, et c'est sans risque : sans eux,
+      # rien n'est redirige. Une seule des deux posee, ou une valeur invalide,
+      # et le conteneur refuse de demarrer — le deploiement echoue au lieu de
+      # mettre en ligne une redirection a moitie configuree.
+      REDIRECT_HOSTS: ${REDIRECT_HOSTS:-}
+      CANONICAL_ORIGIN: ${CANONICAL_ORIGIN:-}
+    labels:
+      caddy: ${CADDY_DOMAINS:?CADDY_DOMAINS est obligatoire (ex. "charles-lindecker.com, www.charles-lindecker.com")}
+      caddy.reverse_proxy: "{{upstreams 4000}}"
+      # Le serveur Node du site ne compresse rien : sans cette directive, le HTML
+      # et les feuilles de style partent en clair sur le reseau. La compression
+      # est faite ici plutot que dans l'application parce que l'edge est deja le
+      # seul a voir la requete finale, et qu'il sait negocier zstd.
+      caddy.encode: zstd gzip
+      # Defaut volontairement restrictif : un environnement qui oublie de se
+      # declarer n'est PAS indexe. Seule la prod pose ROBOTS_TAG=all dans son
+      # .env. Sans ca, l'environnement de test se retrouverait dans Google en
+      # doublon exact de la prod — une meme image sert les deux, et ses balises
+      # canoniques ne suffisent pas a empecher l'exploration.
+      caddy.header.X-Robots-Tag: ${ROBOTS_TAG:-noindex}
+    deploy:
+      resources:
+        limits:
+          # Regle infra-vps : limite = 2x le pic observe en fonctionnement
+          # normal. Ce site n'a pas encore d'historique : 256m est une valeur
+          # de depart, pas une mesure. Ordre de grandeur connu : le meme serveur
+          # (repris du site L.I.S) y a ete mesure a 17 Mio au repos et 57 Mio au
+          # pic sous 400 requetes concurrentes (poste arm64, Node 22), soit
+          # ~128m a 2x. 256m garde la marge en attendant la mesure de cette
+          # image-ci, en production.
+          #
+          # Sans limite, cAdvisor publie container_spec_memory_limit_bytes = 0,
+          # que le garde `> 0` des regles d'alerte de infra-vps ecarte : deux
+          # alertes (ConteneurProcheDeSaLimiteMemoire, ConteneurMemoireSaturationPrevue)
+          # sont structurellement inertes tant que cette valeur n'existe pas.
+          # Rederiver apres une semaine d'historique :
+          #   max_over_time(container_memory_working_set_bytes{stack=~"portfolio-.*"}[7d])
+          memory: 256m
+    # Volontairement AUCUN plafond `cpus` : trop bas, il bride en silence et
+    # declenche ConteneurCpuBride — des lenteurs qu'aucun graphe de charge de
+    # l'hote ne montre.
+
+  backend:
+    environment:
+      # Tout environnement servi conserve la 2FA ; development est réservé au poste.
+      APP_ENV: ${APP_ENV:-production}
+      BACKOFFICE_COOKIE_SECURE: "true"
+      CONTACT_EMAIL: ${CONTACT_EMAIL:-}
+      BACKEND_PROXY_TOKEN: ${BACKEND_PROXY_TOKEN:?BACKEND_PROXY_TOKEN est obligatoire}
+    deploy:
+      resources:
+        limits:
+          # Le pic du backend est l'import d'une image du blog, borne par le
+          # code (backend/src/blog_media.rs) : 25 Mpx, 150 Mo au plus tenus par
+          # le decodage (tampons propres a chaque decodeur compris ; au-dela,
+          # l'import est refuse), une image decodee a la fois. Mesures
+          # (memory.peak du cgroup, Linux, conteneur neuf limite sans swap,
+          # allocateur regle par backend/Dockerfile, 28 Mio au repos compris) :
+          # 144 Mio pour un PNG RGBA de 2 500 x 10 000, 150 a 163 Mio au seuil
+          # du decodage, et 168 Mio au pire, pour une photo d'iPhone de
+          # 24,5 Mpx en JPEG progressif. 320m laissent 1,9 fois ce pire pic.
+          # Les imports (backend/src/upload_queue.rs) attendent leur tour,
+          # deux a la fois, 10 s au plus avant une reponse 503 ; un gros corps
+          # attend sans etre lu. Une image lourde et 8 a 48 imports de 4 Mio a
+          # la fois montent a 171 Mio de memoire anonyme, 48 clients qui
+          # enchainent leurs imports pendant 30 s a 175 Mio (la limite vaut
+          # 1,8 fois ce pic), sans OOM. Sans la file, 8 imports simultanes
+          # tuaient le conteneur, a 256m comme a 320m, et le formulaire de
+          # contact avec lui ; sans les reglages de l'allocateur, des imports
+          # enchaines montaient a 313 Mio. Pour baisser cette limite, baisser
+          # d'abord MAX_DECODING, puis la remesurer.
+          memory: 320m
+
+networks:
+  # Tissu d'ingress partage, cree une fois par hote par le depot infra-vps. Il
+  # n'appartient a aucune pile : le job de deploiement se contente de verifier
+  # qu'il existe, il ne le cree jamais.
+  edge:
+    external: true
+    name: edge

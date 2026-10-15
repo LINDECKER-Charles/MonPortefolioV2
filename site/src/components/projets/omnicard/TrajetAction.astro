@@ -1,0 +1,117 @@
+---
+/**
+ * Le trajet d’une action de jeu : le joueur choisit dans le navigateur, le
+ * moteur de règles tranche sur le serveur, la partie se met à jour chez les
+ * deux joueurs. Une liste ordonnée, lisible sans styles ; les logos officiels
+ * (assets/stacks) sont décoratifs, la technologie est dite en texte.
+ *
+ *   <TrajetAction />
+ *
+ * Données : TRAJET (config/omnicard.ts).
+ */
+import type { ImageMetadata } from 'astro';
+import angular from '../../../assets/stacks/angular.svg';
+import csharp from '../../../assets/stacks/csharp.svg';
+import dotnet from '../../../assets/stacks/dotnet.svg';
+import postgresql from '../../../assets/stacks/postgresql.svg';
+import { TRAJET } from '../../../config/omnicard';
+import { typo } from '../../../lib/typo';
+
+const LOGOS: Record<(typeof TRAJET)[number]['logo'], ImageMetadata> = { angular, csharp, dotnet };
+---
+
+<div class="trajet">
+  <ol class="trajet__etapes" aria-label="Le trajet d’une action de jeu">
+    {
+      TRAJET.map((etape, index) => (
+        <li class="trajet__etape">
+          <span class="trajet__rang" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+          <img class="trajet__logo" src={LOGOS[etape.logo].src} alt="" width="32" height="32" loading="lazy" decoding="async" />
+          <h4 class="trajet__titre">{etape.titre}</h4>
+          <p class="trajet__detail">{typo(etape.detail)}</p>
+        </li>
+      ))
+    }
+  </ol>
+  <p class="trajet__stockage">
+    <img src={postgresql.src} alt="" width="24" height="24" loading="lazy" decoding="async" />
+    Collections et decks conservés dans PostgreSQL.
+  </p>
+</div>
+
+<style>
+  /* Les trois étapes en pile, reliées par un fil vertical et une flèche. */
+  .trajet__etapes {
+    display: grid;
+    gap: var(--s5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .trajet__etape {
+    position: relative;
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: var(--s1) var(--s4);
+    align-items: center;
+  }
+
+  .trajet__etape:not(:last-child)::after {
+    content: '↓';
+    position: absolute;
+    left: 16px;
+    bottom: calc(-1 * var(--s5));
+    translate: -50% 15%;
+    color: var(--trait);
+    font-size: var(--t-s);
+    line-height: 1;
+  }
+
+  .trajet__rang {
+    grid-row: 1;
+    grid-column: 2;
+    font-size: var(--t-xs);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--eteint);
+  }
+
+  .trajet__logo {
+    grid-row: 1 / span 2;
+    grid-column: 1;
+    width: 32px;
+    height: 32px;
+  }
+
+  .trajet__titre {
+    grid-row: 2;
+    grid-column: 2;
+    font-family: var(--police-texte);
+    font-size: var(--t-m);
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .trajet__detail {
+    grid-column: 2;
+    font-size: var(--t-s);
+    line-height: 1.5;
+    color: var(--eteint);
+  }
+
+  .trajet__stockage {
+    display: flex;
+    align-items: center;
+    gap: var(--s3);
+    margin-top: var(--s5);
+    padding-top: var(--s4);
+    border-top: 1px solid var(--filet);
+    font-size: var(--t-s);
+    color: var(--eteint);
+  }
+
+  .trajet__stockage img {
+    flex: none;
+  }
+</style>

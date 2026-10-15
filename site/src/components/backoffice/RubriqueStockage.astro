@@ -1,0 +1,85 @@
+---
+/**
+ * Stockage : ce qui prend de la place sur le serveur, pour ne pas être pris
+ * de court. Une page de consultation : des intitulés, des chiffres et des
+ * listes courtes (GET /api/backoffice/storage, session seulement).
+ *
+ * En haut, deux cartes côte à côte (empilées sous 860 px) :
+ *   - le disque : l’espace libre sur l’espace total, une barre de l’occupé, et
+ *     « Le disque se remplit » (région `status`, un mot et une forme, jamais la
+ *     couleur seule) sous 10 % ou 2 Go libres ; disque inconnu pour une base
+ *     en mémoire ;
+ *   - la base : sa place sur le disque (fichier + journal), puis sa
+ *     répartition en barre empilée, légendée et chiffrée ; la barre est
+ *     décorative, la légende dit tout.
+ * Puis les images, de la plus lourde à la plus légère, en fiches empilées :
+ * vignette, nom, dimensions, poids (détail original + variantes), articles qui
+ * l’utilisent (lien vers l’atelier) ou « Inutilisée » et Supprimer, confirmé.
+ * Enfin les articles du plus lourd au plus léger, et les demandes de contact.
+ *
+ * Aucune zone éclairée : rien n’y est plus important que le reste.
+ * Le script, chargé à la première visite : scripts/backoffice-stockage.ts ;
+ * les tailles : lib/octets.ts.
+ */
+import EnTeteRubrique from './EnTeteRubrique.astro';
+import Retour from './Retour.astro';
+---
+
+<section class="bo-rubrique" id="bo-panel-storage" aria-labelledby="bo-titre-storage" data-retour="bo-storage-retour" hidden>
+  <EnTeteRubrique id="bo-titre-storage" titre="Stockage" description="Ce qui prend de la place sur le serveur, pour ne pas être pris de court.">
+    <button slot="actions" class="bo-button" id="bo-storage-refresh" type="button">Actualiser</button>
+  </EnTeteRubrique>
+  <Retour id="bo-storage-retour" class="bo-stockage__retour" />
+
+  <div class="bo-stockage" id="bo-storage" hidden>
+    <div class="bo-stockage__resume">
+      <section class="bo-carte bo-jauge" aria-labelledby="bo-storage-disk-title">
+        <h3 id="bo-storage-disk-title">Le disque</h3>
+        <div class="bo-jauge__corps" id="bo-storage-disk">
+          <p class="bo-jauge__chiffre chiffres"><strong id="bo-storage-disk-free"></strong> libres <span class="bo-muted">sur <span id="bo-storage-disk-total"></span></span></p>
+          <div class="bo-barre-stock" aria-hidden="true"><span class="bo-barre-stock__occupe" id="bo-storage-disk-bar"></span></div>
+          <p class="bo-help chiffres" id="bo-storage-disk-used"></p>
+          <p class="bo-alerte" id="bo-storage-disk-alert" role="status"></p>
+        </div>
+        <p class="bo-muted" id="bo-storage-disk-unknown" hidden>Disque inconnu&nbsp;: la base est en mémoire.</p>
+      </section>
+
+      <section class="bo-carte bo-jauge" aria-labelledby="bo-storage-db-title">
+        <h3 id="bo-storage-db-title">La base</h3>
+        <p class="bo-jauge__chiffre chiffres"><strong id="bo-storage-db-total"></strong> <span class="bo-muted">sur le disque</span></p>
+        <p class="bo-help chiffres" id="bo-storage-db-files"></p>
+        <div class="bo-barre-stock bo-barre-stock--empilee" id="bo-storage-db-bar" aria-hidden="true"></div>
+        <ul class="bo-legende chiffres" id="bo-storage-db-legend" aria-label="Répartition de la base"></ul>
+        <p class="bo-help">Espace libéré&nbsp;: réutilisé par les prochains imports, le fichier ne rétrécit pas.</p>
+      </section>
+    </div>
+
+    <section class="bo-stockage__bloc" aria-labelledby="bo-storage-media-title" data-retour="bo-storage-media-retour">
+      <div class="bo-stockage__entete">
+        <h3 id="bo-storage-media-title" tabindex="-1">Images</h3>
+        <p class="bo-muted chiffres" id="bo-storage-media-count"></p>
+      </div>
+      <Retour id="bo-storage-media-retour" />
+      <ul class="bo-fiches" id="bo-storage-media" aria-labelledby="bo-storage-media-title"></ul>
+      <p class="bo-empty" id="bo-storage-media-empty" hidden>Aucune image dans la bibliothèque.</p>
+    </section>
+
+    <div class="bo-stockage__suite">
+      <section class="bo-stockage__bloc" aria-labelledby="bo-storage-posts-title">
+        <div class="bo-stockage__entete">
+          <h3 id="bo-storage-posts-title">Articles</h3>
+          <p class="bo-muted chiffres" id="bo-storage-posts-count"></p>
+        </div>
+        <ul class="bo-fiches" id="bo-storage-posts" aria-labelledby="bo-storage-posts-title"></ul>
+        <p class="bo-empty" id="bo-storage-posts-empty" hidden>Aucun article.</p>
+      </section>
+
+      <section class="bo-stockage__bloc" aria-labelledby="bo-storage-contacts-title">
+        <div class="bo-stockage__entete">
+          <h3 id="bo-storage-contacts-title">Demandes de contact</h3>
+        </div>
+        <p class="bo-stockage__ligne chiffres"><span id="bo-storage-contacts-count"></span><strong id="bo-storage-contacts-size"></strong></p>
+      </section>
+    </div>
+  </div>
+</section>

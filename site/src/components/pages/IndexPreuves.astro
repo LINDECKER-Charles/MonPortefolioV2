@@ -1,0 +1,194 @@
+---
+/**
+ * L’index des étiquettes de preuve, en tête de la vitrine : ce que chaque
+ * projet prouve, famille par famille, dans l’ordre des cartes, chaque entrée
+ * menant à sa carte.
+ *
+ *   <IndexPreuves familles={[
+ *     { id: 'equipe', titre: 'Lead et équipe', entrees: [{ id: 'pvz', rang: 1, preuve: 'Une équipe formée et menée' }] },
+ *     { id: 'jeu', titre: 'Jeu vidéo', entrees: [{ id: 'omnicard', rang: 2, preuve: 'Réinventer' }, …] },
+ *   ]} />
+ *
+ * Les numéros reprennent le `rang` des CarteProjet (global, d’une famille à
+ * l’autre), sur deux chiffres. Liens d’ancre (↓), la flèche collée au dernier
+ * mot. Sur ordinateur, une bande à filets sous le titre, une colonne par
+ * famille (deux sous 1 100 px). Sous 860 px, l’index se replie : le titre de
+ * chaque famille, puis le numéro de chacun de ses projets en pastille, comme
+ * sur sa carte ; l’étiquette reste dans le nom du lien, lue par les lecteurs
+ * d’écran, et sur la carte, juste en dessous. Les familles passent à la ligne,
+ * entières : rien ne défile, et le chiffre de la carte vedette reste au
+ * premier écran (E1). Les cibles gardent au moins 24 px (WCAG 2.5.8).
+ */
+import { typo } from '../../lib/typo';
+
+interface Entree {
+  id: string;
+  rang: number;
+  preuve: string;
+}
+
+interface Props {
+  familles: readonly { id: string; titre: string; entrees: readonly Entree[] }[];
+  label?: string;
+}
+
+const { familles, label = 'Ce que prouve chaque projet' } = Astro.props;
+const deuxChiffres = (rang: number) => String(rang).padStart(2, '0');
+---
+
+<nav class="index-preuves" aria-label={label}>
+  <ul class="index-preuves__familles">
+    {
+      familles.map((famille) => (
+        <li class="index-preuves__famille">
+          <p class="index-preuves__titre" id={`index-preuves-${famille.id}`}>{typo(famille.titre)}</p>
+          <ol aria-labelledby={`index-preuves-${famille.id}`}>
+            {famille.entrees.map(({ id, rang, preuve }) => (
+              <li>
+                <a href={`#${id}`}>
+                  <span class="index-preuves__rang">{deuxChiffres(rang)}</span>
+                  <span class="index-preuves__preuve">{typo(preuve)}</span><span class="fleche" aria-hidden="true">&nbsp;↓</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  ul,
+  ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Une colonne par famille, sous un filet d’encre. */
+  .index-preuves__familles {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0 var(--s5);
+    border-top: 1px solid var(--trait);
+  }
+
+  .index-preuves__famille {
+    min-width: 0;
+  }
+
+  .index-preuves__titre {
+    padding: var(--s2) 0 var(--s1);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: var(--ls-petit);
+    line-height: 1.4;
+    color: var(--eteint);
+  }
+
+  ol li {
+    border-top: 1px solid var(--filet);
+  }
+
+  /* En bloc, pas en flex : la flèche reste collée au dernier mot. */
+  a {
+    display: block;
+    min-height: 40px;
+    padding: var(--s2) 0;
+    color: var(--encre);
+    font-family: var(--police-titre);
+    font-style: italic;
+    font-size: var(--t-m);
+    line-height: 1.2;
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--accent);
+  }
+
+  .index-preuves__rang {
+    margin-right: var(--s2);
+    font-family: var(--police-texte);
+    font-style: normal;
+    font-size: var(--t-xs);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--eteint);
+  }
+
+  .fleche {
+    font-size: var(--t-xs);
+    color: var(--accent);
+  }
+
+  @media (max-width: 1100px) {
+    .index-preuves__familles {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  /* Sous 860 px : le titre de chaque famille, puis ses numéros en pastilles,
+     comme le rang des cartes ; les familles passent à la ligne, entières.
+     L’étiquette sort de la vue, pas du nom du lien. */
+  @media (max-width: 860px) {
+    .index-preuves__familles {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--s1) var(--s5);
+      padding-block: var(--s1);
+      border-bottom: 1px solid var(--filet);
+    }
+
+    .index-preuves__famille {
+      display: flex;
+      align-items: center;
+      gap: var(--s2);
+    }
+
+    .index-preuves__titre {
+      padding: 0;
+      white-space: nowrap;
+    }
+
+    ol {
+      display: flex;
+      gap: var(--s1);
+    }
+
+    ol li {
+      border-top: 0;
+    }
+
+    a {
+      position: relative;
+      display: inline-grid;
+      place-items: center;
+      width: 30px;
+      min-height: 30px;
+      padding: 0;
+      border: 1px solid var(--trait);
+      border-radius: 50%;
+    }
+
+    a:hover {
+      border-color: var(--accent);
+    }
+
+    .index-preuves__rang {
+      margin: 0;
+      color: var(--encre);
+    }
+
+    .index-preuves__preuve,
+    .fleche {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
+</style>

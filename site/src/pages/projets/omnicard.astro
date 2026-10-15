@@ -1,0 +1,191 @@
+---
+/**
+ * Omnicard : la preuve de « réinventer ». Page bâtie sur le gabarit commun
+ * des pages de projet (components/projets/gabarit, règle E5) : en-tête et
+ * fiche, corps libre (le jeu papier, le rééquilibrage, une partie, le jeu en
+ * images, le moteur de règles), « Sous le capot », sortie et
+ * note de sources. Données et sources : config/omnicard.ts.
+ *
+ * Ordre du récit (cahier, § 5.5) : l’origine, la créativité ; comment on
+ * joue ; ce que j’ai dû construire, le dépassement. Chaque étape a une chose
+ * à voir ou à manipuler, sans JavaScript compris.
+ */
+import Base from '../../layouts/Base.astro';
+import CorpsProjet from '../../components/projets/gabarit/CorpsProjet.astro';
+import EnTeteProjet from '../../components/projets/gabarit/EnTeteProjet.astro';
+import SectionProjet from '../../components/projets/gabarit/SectionProjet.astro';
+import SortieProjet from '../../components/projets/gabarit/SortieProjet.astro';
+import SourcesProjet from '../../components/projets/gabarit/SourcesProjet.astro';
+import SousLeCapot from '../../components/projets/gabarit/SousLeCapot.astro';
+import ComparateurCartes from '../../components/projets/omnicard/ComparateurCartes.astro';
+import CompteARebours from '../../components/projets/omnicard/CompteARebours.astro';
+import EventailCartes from '../../components/projets/omnicard/EventailCartes.astro';
+import GalerieEcrans from '../../components/projets/omnicard/GalerieEcrans.astro';
+import PlateauPartie from '../../components/projets/omnicard/PlateauPartie.astro';
+import ReperesPartie from '../../components/projets/omnicard/ReperesPartie.astro';
+import ServeurArbitre from '../../components/projets/omnicard/ServeurArbitre.astro';
+import TrajetAction from '../../components/projets/omnicard/TrajetAction.astro';
+import CadreCapture from '../../components/ui/CadreCapture.astro';
+import Visionneuse from '../../components/ui/Visionneuse.astro';
+import Visuel from '../../components/ui/Visuel.astro';
+import accueil from '../../assets/projets/omnicard/accueil.webp';
+import { SITE } from '../../config/site';
+import { CAPOT, EN_TETE, FICHE, LIENS, LIENS_SORTIE, PREUVES, SECTIONS } from '../../config/omnicard';
+import { attributsMesure } from '../../lib/liens';
+import '../../styles/omnicard.css';
+
+const titre = `Omnicard, du jeu papier au jeu en ligne — ${SITE.nom}`;
+const description = 'Omnicard : le jeu de cartes inventé sur papier avec mon cousin, devenu un jeu en ligne avec son moteur de règles en C#, écrit seul, côté serveur.';
+const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(href, { emplacement: 'preuves' }) });
+---
+
+<Base titre={titre} description={description} chemin="/projets/omnicard" sommaire={SECTIONS}>
+  <EnTeteProjet projet="omnicard" titre={EN_TETE.titre} chapeau={EN_TETE.chapeau} liens={EN_TETE.liens} preuves={PREUVES} fiche={FICHE}>
+    <!-- La page d’accueil du jeu, qui a « très bien vieilli » (Charles, 15/10/2026) : capture d’une version précédente, entière d’un clic. -->
+    <CadreCapture
+      slot="visuel"
+      type="navigateur"
+      src={accueil}
+      alt="La page d’accueil d’Omnicard : des cartes qui flottent au-dessus d’un paysage nocturne, autour du dos de carte du jeu."
+      legende="La page d’accueil du jeu, dans une version précédente."
+      ratio="3 / 2"
+      ratioMobile="16 / 11"
+      position="50% 0"
+      widths={[640, 1040, 1440]}
+      sizes="(max-width: 1100px) 100vw, 520px"
+      loading="eager"
+      agrandir
+    />
+  </EnTeteProjet>
+
+  <CorpsProjet sections={SECTIONS}>
+    <SectionProjet id="papier" titre="Au départ, on plastifiait nos idées" alignement="centre">
+      <Fragment slot="texte">
+        <p>Adolescents, avec mon cousin, on invente un jeu de cartes. On imprime, on plastifie, on recommence, des après-midi entières pendant les vacances. On en sortira <span data-citation>«&nbsp;un nombre incalculable d’éditions&nbsp;»</span>.</p>
+        <p>Le passage au jeu vidéo traîne. Alors je reprends le projet, seul, et je me lance avec les outils que je connais&nbsp;: Angular et .NET.</p>
+        <blockquote class="citation foyer oc-citation"><p>«&nbsp;Je voulais me lancer direct et pas perdre de temps.&nbsp;»</p></blockquote>
+      </Fragment>
+      <div slot="figure" class="oc-papier">
+        <Visuel id="OMN-02" sizes="(max-width: 1100px) 100vw, 480px" />
+        <p class="oc-papier__note">Du papier au navigateur, la même envie d’inventer.</p>
+      </div>
+    </SectionProjet>
+
+    <SectionProjet id="reequilibrer" titre="Rééquilibrer mes propres cartes" alignement="haut">
+      <Fragment slot="texte">
+        <p>Avant le code, il y a eu les cartes. Je les reprends une à une pour le passage au numérique&nbsp;: un coût qui baisse ou qui monte, des statistiques revues.</p>
+        <p>L’archive publique garde la saison&nbsp;1&nbsp;; on y voit, carte par carte, ce qui a changé.</p>
+      </Fragment>
+      <ComparateurCartes slot="figure" />
+    </SectionProjet>
+
+    <div class="oc-acte acte-teinte">
+    <SectionProjet id="partie" titre="Une partie en trente secondes" alignement="centre">
+      <Fragment slot="texte">
+        <p>Deux joueurs s’affrontent au tour par tour. Chacun pioche dans un deck de 40&nbsp;cartes, pose ses unités sur deux lignes, joue sorts, équipements, terrains et pièges, et tente de faire tomber à zéro les points de vie adverses.</p>
+        <p>À chaque tour, la réserve de mana grandit&nbsp;; ce qui n’est pas dépensé devient des cristaux, à garder pour plus tard.</p>
+        <ReperesPartie />
+      </Fragment>
+      <PlateauPartie slot="figure" />
+      <EventailCartes />
+    </SectionProjet>
+    </div>
+
+    <SectionProjet id="jeu" titre="L’idée devient un jeu" chapeau="Une collection à explorer, un deck à préparer, des boosters à ouvrir, puis des duels en temps réel.">
+      <GalerieEcrans />
+    </SectionProjet>
+
+    <SectionProjet id="moteur" titre="D’une phrase à une règle">
+      <Fragment slot="texte">
+        <p>Les outils existaient&nbsp;; le jeu restait à construire. J’ai écrit le moteur de règles sans moteur de jeu existant. En C#, côté serveur, il démarre la partie, mélange, fait piocher, déroule les tours et résout chaque effet&nbsp;; le navigateur affiche l’interface Angular.</p>
+        <p>Les cartes s’appuient sur des effets et des conditions que l’on peut combiner. Sur une carte, une phrase suffit. Le moteur, lui, doit savoir de quels tours elle parle.</p>
+      </Fragment>
+      <CompteARebours />
+      <div class="oc-arbitre">
+        <h3 class="oc-arbitre__titre">Le serveur arbitre, chaque joueur voit sa partie</h3>
+        <div class="oc-arbitre__grille">
+          <ServeurArbitre class="oc-arbitre__visuel" />
+          <TrajetAction />
+        </div>
+      </div>
+    </SectionProjet>
+
+    <SousLeCapot points={CAPOT} chapeau="Apprendre en dépassant ce que je savais faire : une stack que je maîtrisais, un jeu qu’elle n’était pas faite pour porter." />
+
+    <SortieProjet projet="omnicard" liens={LIENS_SORTIE}>
+      <p data-citation>«&nbsp;Le projet qui m’a fait le plus apprendre.&nbsp;»</p>
+      <p>L’un de mes premiers gros projets techniques, avec beaucoup de choses codées de zéro. Le jeu est aujourd’hui hors ligne, en attente de refonte.</p>
+    </SortieProjet>
+
+    <SourcesProjet>
+      <p><b>Le projet.</b> Le jeu papier, les éditions, la reprise du projet seul, les trois mois de travail cumulé et le choix d’Angular et de .NET viennent de mon témoignage (questionnaire du portfolio, D1 et D2)&nbsp;; le statut hors ligne, en attente de refonte, est confirmé au 13/10/2026. Le moteur de règles en C# déroule les parties côté serveur&nbsp;: mélange, pioche et tours.</p>
+      <p><b>Cartes.</b> Les cartes de la saison&nbsp;1 sont celles de <a {...sortant(LIENS.archive)}>l’archive du dépôt de présentation<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. À droite, les exports de l’outil du projet faits le 13/10/2026&nbsp;; le catalogue public 1.2.0 affiche encore 4/8 pour Gehrman et 0/4 pour Floppa&nbsp;: Mage. Les effets cités viennent du <a {...sortant(LIENS.galerie)}>catalogue public, version 1.2.0<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>, qui compte 181&nbsp;cartes&nbsp;: 114 Bloodborne, 51 JoJo et 16 WTF.</p>
+      <p><b>Règles.</b> Points de vie, deck, mana, cristaux, lignes et types de cartes&nbsp;: <a {...sortant(LIENS.regles)}>version joueur des règles du moteur<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. Le compte à rebours de GitGud suit le mot-clé Délai du <a {...sortant(LIENS.motsCles)}>glossaire<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>&nbsp;: le compteur ne baisse qu’à la fin du tour du joueur qui a programmé l’effet, et l’effet est annulé si l’unité qui l’a programmé meurt. Relevés le 13/10/2026.</p>
+      <p><b>Captures.</b> Page d’accueil, collection, deck et booster&nbsp;: captures d’une version précédente du jeu, conservées par la première version de ce portfolio&nbsp;; leur date n’est pas documentée et leurs compteurs ne sont pas des chiffres actuels.</p>
+      <p><b>Univers.</b> Omnicard est un projet de fan, non commercial. Les univers, les personnages et les illustrations des cartes appartiennent à leurs ayants droit&nbsp;; je n’en suis pas l’auteur.</p>
+      <p><b>Sous le capot.</b> Le mot-clé Délai vient du glossaire public, à la révision 8be9cbb. Le hub de partie est une forme simplifiée, écrite pour cette page d’après le code privé du jeu, relu le 15/10/2026&nbsp;: chaque action passe par le serveur, qui renvoie à chaque joueur sa propre vue de la partie.</p>
+    </SourcesProjet>
+  </CorpsProjet>
+
+  <Visionneuse />
+</Base>
+
+<script>
+  import { brancherAnimationsFigures } from '../../scripts/figure-animations';
+  brancherAnimationsFigures();
+</script>
+
+<style>
+  .oc-citation {
+    margin: var(--s5) 0 0;
+    font-size: var(--t-xl);
+  }
+
+  .oc-papier__note {
+    margin-top: var(--s3);
+    font-family: var(--police-titre);
+    font-style: italic;
+    font-size: var(--t-m);
+    line-height: 1.3;
+    color: var(--eteint);
+  }
+
+  /* « Une partie » : un changement d’acte, la lumière teintée de la table de
+     jeu (règle B6), sans toucher au gabarit. */
+  .oc-acte {
+    margin-top: var(--s8);
+    padding: 0 clamp(16px, 3.4vw, 40px) clamp(24px, 3.4vw, 40px);
+    border-radius: var(--r2);
+  }
+
+  .oc-acte :global(.section-projet) {
+    padding-top: clamp(24px, 3.4vw, 40px);
+  }
+
+  .oc-arbitre {
+    margin-top: var(--s8);
+  }
+
+  .oc-arbitre__titre {
+    font-size: var(--t-xl);
+    line-height: 1.1;
+  }
+
+  .oc-arbitre__grille {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--s6) var(--s7);
+    align-items: center;
+    margin-top: var(--s5);
+  }
+
+  @media (max-width: 1100px) {
+    .oc-arbitre__grille {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .oc-arbitre__grille :global(.oc-arbitre__visuel) {
+      max-width: 40rem;
+    }
+  }
+</style>

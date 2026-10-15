@@ -1,0 +1,95 @@
+---
+/**
+ * La suite, à plusieurs : le chapitre 03 de l’accueil, dans l’acte bleu
+ * nuit. Les trois règles en synthèse, qui apparaissent de 1 à 3 et renvoient
+ * chacune là où le récit les prouve ; puis l’aplat bleu roi derrière
+ * « Discutons → » (/contact, mesuré `contact-page` · `discutons`) ; enfin
+ * l’invitation à contribuer aux projets open source, qui mène au bloc
+ * « Contribuer » de la vitrine (/projets#contribuer), où ses liens portent
+ * l’objectif O3 du plan de marquage. Le CV apparaît le jour où `CV` cesse de
+ * valoir null.
+ */
+import Regles from './Regles.astro';
+import AppelDiscutons from '../pages/AppelDiscutons.astro';
+import LienAction from '../ui/LienAction.astro';
+import { CV } from '../../config/site';
+---
+
+<div class="suite__regles" id="regles">
+  <h3>Les trois règles</h3>
+  <p class="suite__sens">Trois verbes résument ma façon de travailler. On les retrouve dans le jeu, en formation et dans mes projets.</p>
+  <Regles />
+</div>
+
+<div class="suite__appel">
+  <AppelDiscutons variante="aplat" emplacement="discutons">
+    Une idée à confronter, une équipe à faire grandir, un sujet technique à creuser&nbsp;: la discussion commence ici.
+    {
+      CV && (
+        <a slot="suite" class="lien-action" href={CV} download data-cv-telechargement="discutons">
+          Télécharger mon CV<span class="fleche" aria-hidden="true">&nbsp;↓</span>
+        </a>
+      )
+    }
+  </AppelDiscutons>
+</div>
+
+<div class="contribution">
+  <h3>Ou faisons avancer un projet open source.</h3>
+  <div>
+    <p>Code, traduction, documentation&nbsp;: il y a plusieurs façons de contribuer. Mes projets sont aussi des endroits où l’on peut apprendre et construire à plusieurs.</p>
+    <LienAction href="/projets#contribuer">Contribuer à mes projets open source</LienAction>
+  </div>
+</div>
+
+<script>
+  import { brancherCv } from '../../scripts/cv';
+  brancherCv();
+</script>
+
+<style>
+  .suite__regles h3 {
+    font-size: var(--t-2xl);
+  }
+
+  .suite__sens {
+    max-width: 40rem;
+    margin-top: var(--s3);
+    color: var(--eteint);
+  }
+
+  .suite__appel {
+    margin-top: var(--entre-sections);
+  }
+
+  .suite__appel :global(.appel) {
+    box-shadow: 0 0 80px -24px var(--lanterne-eclat);
+  }
+
+  .contribution {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: var(--s3) var(--s7);
+    align-items: start;
+    margin-top: var(--s7);
+    padding-top: var(--s5);
+    border-top: 1px solid var(--filet);
+  }
+
+  .contribution h3 {
+    font-size: var(--t-xl);
+    line-height: 1.1;
+  }
+
+  .contribution p {
+    max-width: 38rem;
+    font-size: var(--t-s);
+    color: var(--eteint);
+  }
+
+  @media (max-width: 860px) {
+    .contribution {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

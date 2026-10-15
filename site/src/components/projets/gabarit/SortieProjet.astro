@@ -1,0 +1,216 @@
+---
+/**
+ * La sortie commune des pages de projet (gabarit E5 · 5) : ce que j’en
+ * retiens (le slot), l’appel « Discutons → » vers /contact, les liens
+ * publics du projet, puis le projet précédent et le suivant dans l’ordre de
+ * la vitrine (config/projets.ts) et le retour à la vitrine. La flèche dit le
+ * sens de lecture : « Projet suivant → », « ← Projet précédent ». Le dernier
+ * projet de la vitrine n’a pas de suivant : sa sortie mène aux projets
+ * archivés (/projets#projets-archives), s’il y en a, puis à la vitrine.
+ *
+ *   <SortieProjet projet="pvz" liens={LIENS_SORTIE}>
+ *     <p>Ce dont je suis le plus fier : …</p>
+ *   </SortieProjet>
+ *
+ * Un seul bloc de suite par page (cahier, § 4.3). « Discutons » est l’action
+ * principale de l’écran : mesurée en `contact-page`, emplacement
+ * `discutons`. Les liens publics sont des sorties mesurées (`preuves`).
+ */
+import Bouton from '../../ui/Bouton.astro';
+import { PROJETS_ARCHIVES, projetDeLaVitrine, type ProjetVitrine } from '../../../config/projets';
+import { attributsMesure, FLECHES, sorteDeLien, type Emplacement } from '../../../lib/liens';
+import { typo } from '../../../lib/typo';
+import type { LienProjet } from './types';
+
+interface Props {
+  projet: ProjetVitrine['id'];
+  liens?: readonly LienProjet[];
+  id?: string;
+  titre?: string;
+  emplacement?: Emplacement;
+}
+
+const { projet: id, liens = [], id: ancre = 'retiens', titre = 'Ce que j’en retiens', emplacement = 'preuves' } = Astro.props;
+const { precedent, suivant } = projetDeLaVitrine(id);
+interface Voisin {
+  sens: string;
+  nom: string;
+  href: string;
+  preuve: string;
+  retour?: boolean;
+}
+const voisins: Voisin[] = [];
+if (suivant) voisins.push({ sens: 'Projet suivant', nom: suivant.nom, href: suivant.href, preuve: suivant.preuve });
+else if (PROJETS_ARCHIVES.length > 0) voisins.push({ sens: 'Projets archivés', nom: 'Les autres projets publics', href: '/projets#projets-archives', preuve: 'Des projets publics, sans page dédiée' });
+if (precedent) voisins.push({ sens: 'Projet précédent', nom: precedent.nom, href: precedent.href, preuve: precedent.preuve, retour: true });
+---
+
+<section id={ancre} class="sortie-projet" aria-labelledby={`${ancre}-titre`}>
+  <div class="sortie-projet__retiens">
+    <h2 class="sortie-projet__titre" id={`${ancre}-titre`}>{typo(titre)}</h2>
+    <div class="sortie-projet__phrase foyer">
+      <slot />
+    </div>
+    <div class="actions sortie-projet__actions">
+      <Bouton href="/contact" evenement="contact-page" emplacement="discutons">Discutons</Bouton>
+    </div>
+  </div>
+  <div class="sortie-projet__suite">
+    {
+      liens.length > 0 && (
+        <ul class="sortie-projet__liens" aria-label="Liens publics du projet">
+          {liens.map((lien) => {
+            const sorte = sorteDeLien(lien.href);
+            return (
+              <li>
+                <a href={lien.href} rel={sorte === 'externe' ? 'external' : undefined} {...attributsMesure(lien.href, { emplacement })}>
+                  <span>{typo(lien.libelle)}</span><span class="fleche" aria-hidden="true">{FLECHES[sorte]}</span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      )
+    }
+    <nav class="sortie-projet__voisins" aria-label="Autres projets">
+      {
+        voisins.map(({ sens, nom, href, preuve, retour }) => (
+          <a class:list={['voisin', { 'voisin--retour': retour }]} href={href}>
+            <span class="voisin__sens">{sens}</span>
+            {retour ? (
+              <span class="voisin__nom"><span class="fleche" aria-hidden="true">←&nbsp;</span>{nom}</span>
+            ) : (
+              <span class="voisin__nom">{nom}<span class="fleche" aria-hidden="true">&nbsp;→</span></span>
+            )}
+            <span class="voisin__preuve">{typo(preuve)}</span>
+          </a>
+        ))
+      }
+      <a class="lien-action sortie-projet__vitrine" href="/projets">Tous les projets<span class="fleche" aria-hidden="true">&nbsp;→</span></a>
+    </nav>
+  </div>
+</section>
+
+<style>
+  .sortie-projet {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--s6) var(--s8);
+    align-items: start;
+    margin-top: var(--entre-sections);
+    padding-top: var(--s7);
+    border-top: 1px solid var(--trait);
+  }
+
+  .sortie-projet__titre {
+    font-size: var(--t-2xl);
+    line-height: 1.02;
+  }
+
+  .sortie-projet__phrase {
+    margin-top: var(--s4);
+    max-width: 30em;
+  }
+
+  .sortie-projet__phrase > :global(p) {
+    font-family: var(--police-titre);
+    font-style: italic;
+    font-size: var(--t-xl);
+    line-height: 1.2;
+    color: var(--encre);
+  }
+
+  .sortie-projet__phrase > :global(p + p) {
+    margin-top: var(--s3);
+  }
+
+  .sortie-projet__actions {
+    margin-top: var(--s5);
+  }
+
+  .sortie-projet__liens {
+    margin: 0 0 var(--s5);
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--filet);
+  }
+
+  .sortie-projet__liens li {
+    border-bottom: 1px solid var(--filet);
+  }
+
+  .sortie-projet__liens a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s4);
+    min-height: 48px;
+    text-decoration: none;
+  }
+
+  .sortie-projet__liens a:hover span:first-child {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+  }
+
+  .sortie-projet__voisins {
+    display: grid;
+    gap: var(--s3);
+  }
+
+  .voisin {
+    display: grid;
+    gap: var(--s1);
+    padding: var(--s4) var(--s5);
+    border: 1px solid var(--trait);
+    border-radius: var(--r2);
+    background: var(--surface);
+    color: var(--encre);
+    text-decoration: none;
+    transition: border-color var(--d-ui) var(--courbe), box-shadow var(--d-ui) var(--courbe);
+  }
+
+  .voisin:hover {
+    border-color: var(--accent);
+    box-shadow: var(--ombre-2);
+    color: var(--encre);
+  }
+
+  .voisin__sens,
+  .voisin__preuve {
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  .voisin__nom {
+    font-family: var(--police-titre);
+    font-size: var(--t-xl);
+    line-height: 1.1;
+  }
+
+  .voisin__nom .fleche {
+    font-size: var(--t-s);
+    color: var(--accent);
+  }
+
+  .voisin:hover .voisin__nom {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.14em;
+  }
+
+  .sortie-projet__vitrine {
+    justify-self: start;
+  }
+
+  @media (max-width: 860px) {
+    .sortie-projet {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .sortie-projet__actions :global(.bouton) {
+      flex: 1 1 auto;
+    }
+  }
+</style>

@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PvZ Fusion, pôle francophone — Charles Lindecker</title>
+  <meta name="description" content="Lead du pôle francophone de PvZ Fusion : rattraper la traduction d’un jeu qui change sans cesse, avec une équipe de bénévoles recrutée et formée.">
+  <link rel="icon" href="../../assets/marque/favicon.png">
+  <link rel="stylesheet" href="style.css">
+  <script src="theme.js"></script>
+</head>
+<body>
+<a class="evitement" href="#contenu">Aller au contenu</a>
+
+<header class="entete">
+  <div class="conteneur entete__barre">
+    <a class="marque" href="accueil.html" aria-label="Charles Lindecker, accueil">
+      <span class="marque__embleme" aria-hidden="true">
+        <img class="jour-seulement" src="../../../site/src/assets/marque/logo-symbole.webp" alt="" width="352" height="245">
+        <img class="nuit-seulement" src="../../assets/marque/logo-symbole-nuit.png" alt="" width="352" height="245">
+      </span>
+      <img class="marque__nom" src="../../../site/src/assets/marque/logo-nom.webp" alt="" width="756" height="118">
+    </a>
+    <nav class="nav-principale" aria-label="Navigation principale">
+      <ul>
+        <li><a href="projets.html" aria-current="page">Projets</a></li>
+        <li><a href="competences.html">Parcours</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <details class="deroulant entete__sommaire">
+      <summary>Sommaire</summary>
+      <div class="deroulant__panneau">
+        <nav aria-label="Sommaire de la page">
+          <ul>
+            <li><a href="#depart">Le point de départ&nbsp;<span class="fleche" aria-hidden="true">↓</span></a></li>
+            <li><a href="#equipe">L’équipe&nbsp;<span class="fleche" aria-hidden="true">↓</span></a></li>
+            <li><a href="#semaine">La semaine type&nbsp;<span class="fleche" aria-hidden="true">↓</span></a></li>
+            <li><a href="#resultat">Le résultat&nbsp;<span class="fleche" aria-hidden="true">↓</span></a></li>
+            <li><a href="#construit">Comment je l’ai construit&nbsp;<span class="fleche" aria-hidden="true">↓</span></a></li>
+            <li><a href="#retiens">Ce que j’en retiens&nbsp;<span class="fleche" aria-hidden="true">↓</span></a></li>
+          </ul>
+        </nav>
+      </div>
+    </details>
+    <div class="entete__mobile">
+      <a class="lien-entete" href="contact.html">Contact</a>
+      <details class="deroulant">
+        <summary>Menu</summary>
+        <div class="deroulant__panneau">
+          <nav aria-label="Menu">
+            <ul>
+              <li><a href="accueil.html">Accueil</a></li>
+              <li><a href="projets.html" aria-current="page">Projets&nbsp;<span class="fleche" aria-hidden="true">→</span></a></li>
+              <li><a href="competences.html">Parcours&nbsp;<span class="fleche" aria-hidden="true">→</span></a></li>
+              <li><a href="contact.html">Contact&nbsp;<span class="fleche" aria-hidden="true">→</span></a></li>
+            </ul>
+          </nav>
+        </div>
+      </details>
+    </div>
+    <button class="bascule" type="button" data-theme-bascule aria-pressed="false" aria-label="Mode nuit">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <circle class="lt-halo" cx="12" cy="14.5" r="11.5"/>
+        <path class="lt-trait" d="M10.3 4.4a1.7 1.7 0 0 1 3.4 0M12 4.4v1.4M7.9 9.3 12 5.8l4.1 3.5ZM8.8 9.3v8.4M15.2 9.3v8.4M7.4 17.7h9.2M9.2 20.3h5.6"/>
+        <path class="lt-flamme" d="M12 11c1.6 1.7 2.2 3 2.2 4.1a2.2 2.2 0 0 1-4.4 0c0-1.1.6-2.4 2.2-4.1Z"/>
+      </svg>
+    </button>
+  </div>
+  <div class="progression" aria-hidden="true"></div>
+</header>
+
+<main id="contenu" tabindex="-1">
+  <div class="conteneur">
+    <nav class="ariane" aria-label="Fil d’Ariane">
+      <ol>
+        <li><a href="projets.html">Projets</a></li>
+        <li><span aria-current="page">PvZ Fusion, pôle francophone</span></li>
+      </ol>
+    </nav>
+  </div>
+
+  <!-- E5 · 1 — En-tête commun aux cinq pages de projet -->
+  <header class="projet-tete conteneur" data-scene>
+    <p class="note-maquette"><b>Gabarit E5 · 1</b> <span class="note-maquette__detail">En-tête commun : nom, besoin, ce que j’ai fait, fiche, visuel</span></p>
+    <div class="projet-tete__grille">
+      <div class="foyer">
+        <p class="projet-tete__nom">PvZ Fusion, pôle francophone</p>
+        <h1 data-pli="titre">Traduire un jeu. Faire grandir une équipe.</h1>
+        <p class="chapeau" data-pli="identite">PvZ Fusion change toutes les deux ou trois semaines. Quand je suis arrivé, la traduction française avait plusieurs versions de retard. Dix mois plus tard, avec l’équipe que j’ai recrutée et formée, il ne manquait plus une seule entrée.</p>
+        <p class="fait-moi"><b>Ce que j’ai fait&nbsp;:</b> recruter et former l’équipe, outiller sa semaine de travail et livrer chaque semaine au projet officiel en créditant chacun.</p>
+        <div class="actions projet-tete__actions" data-pli="action">
+          <a class="lien-action" href="#construit">Comment je l’ai construit&nbsp;<span class="fleche" aria-hidden="true">↓</span></a>
+          <a class="lien-action" href="https://github.com/Teyliu/PVZF-Translation" rel="external">Le projet multilingue&nbsp;<span class="fleche" aria-hidden="true">↗</span></a>
+        </div>
+        <p class="note-maquette note-maquette--dans"><b>Gabarit E5 · 2</b> <span class="note-maquette__detail">Trois chiffres au plus, sourcés et datés</span></p>
+        <ul class="reperes reperes--tete" style="list-style:none" aria-label="Trois repères chiffrés" data-pli="preuve">
+      <li class="repere">
+        <span class="repere__valeur">20</span>
+        <span class="repere__texte">personnes formées, jusqu’à dix en même temps</span>
+        <span class="repere__source">Témoignage, confirmé le 13/10/2026</span>
+      </li>
+      <li class="repere">
+        <span class="repere__valeur"><mark>0</mark></span>
+        <span class="repere__texte">entrée manquante en août 2026, contre 1&nbsp;335 sur 2&nbsp;415 à mon arrivée</span>
+        <span class="repere__source">Historique public du dépôt, relevé du 13/10/2026<span class="a-confirmer" title="Relevé de l’audit à consigner dans la matière première (C1)">à consigner</span></span>
+      </li>
+      <li class="repere">
+        <span class="repere__valeur">35</span>
+        <span class="repere__texte">pull requests fusionnées dans le projet officiel</span>
+        <span class="repere__source"><a href="https://github.com/Teyliu/PVZF-Translation/pulls?q=is%3Apr+author%3ALINDECKER-Charles+is%3Amerged" rel="external">GitHub, au 13/10/2026&nbsp;<span class="fleche" aria-hidden="true">↗</span></a></span>
+      </li>
+    </ul>
+      </div>
+      <div class="projet-tete__droite">
+        <figure class="emplacement" style="--ratio: 4 / 3">
+          <div class="emplacement__contenu">
+            <span class="emplacement__id">PVZ-01 <span>Image à générer · socle</span></span>
+            <p class="emplacement__sujet">Traduction et équipe</p>
+            <p class="emplacement__compo">Jardin-plateau en coupe, plantes génériques stylisées ; de petites silhouettes posent des étiquettes, une seule à gauche, un groupe à droite ; derrière, une pile de fiches qui grossit. Aucun personnage du jeu.</p>
+            <p class="emplacement__format">4:3 · 1600 × 1200 · recadrage 1:1 sur mobile</p>
+          </div>
+        </figure>
+        <dl class="fiche fiche--colonne">
+          <div><dt>Rôle</dt><dd>Traducteur, puis lead du pôle francophone<span class="a-confirmer" title="Date du titre de lead : 05/12/2025 selon le journal public, « plutôt six mois » selon l’entretien (Q7)">date à confirmer</span>, puis mainteneur du projet multilingue</dd></div>
+          <div><dt>Période</dt><dd>Depuis octobre 2025</dd></div>
+          <div><dt>Équipe</dt><dd>Bénévoles, jusqu’à dix en même temps</dd></div>
+          <div><dt>Statut</dt><dd><span class="statut">En cours, bénévole</span></dd></div>
+          <div><dt>Liens publics</dt><dd class="fiche__liens"><a href="https://github.com/Teyliu/PVZF-Translation" rel="external">Projet multilingue&nbsp;<span class="fleche" aria-hidden="true">↗</span></a> <a href="https://github.com/Teyliu/PVZF-Translation/blob/main/Docs/french-contributions.md" rel="external">Bilan du pôle&nbsp;<span class="fleche" aria-hidden="true">↗</span></a></dd></div>
+        </dl>
+      </div>
+    </div>
+
+  </header>
+
+  
+
+  <div class="conteneur avec-sommaire corps-page">
+    <nav class="sommaire-page" aria-label="Dans cette page" data-sommaire>
+      <p class="sommaire-page__titre">Dans cette page</p>
+      <ol>
+        <li><a href="#depart">Le point de départ</a></li>
+        <li><a href="#equipe">L’équipe</a></li>
+        <li><a href="#semaine">La semaine type</a></li>
+        <li><a href="#resultat">Le résultat</a></li>
+        <li><a href="#construit">Comment je l’ai construit</a></li>
+        <li><a href="#retiens">Ce que j’en retiens</a></li>
+      </ol>
+    </nav>
+
+    <div class="corps-projet">
+      <p class="note-maquette"><b>Gabarit E5 · 3</b> <span class="note-maquette__detail">Corps libre : trois à cinq sections, propres à chaque projet</span></p>
+
+      <section id="depart" class="scene scene--egale scene--haut" data-scene aria-labelledby="t-depart">
+        <div class="texte">
+          <h2 class="titre-section" id="t-depart">Un jeu qui ne s’arrête jamais</h2>
+          <p style="margin-top:var(--s4)">PvZ Fusion est un jeu amateur dérivé de Plants vs. Zombies, traduit par des bénévoles du monde entier. Chaque mise à jour ajoute des plantes et réécrit des règles. En octobre 2025, la traduction française en était à la version 2.3.1&nbsp;; le jeu, à la 3.0.1.</p>
+        </div>
+        <figure class="figure foyer">
+          <figcaption class="figure__titre">Entrées anglaises sans équivalent français, le 16 octobre 2025</figcaption>
+          <ul class="barres">
+            <li>
+              <p class="barre__libelle"><b>Plantes</b><span>218 sur 477 · 46&nbsp;%</span></p>
+              <div class="barre__piste" aria-hidden="true"><div class="barre__fait" style="width:54.3%"></div></div>
+            </li>
+            <li>
+              <p class="barre__libelle"><b>Zombies</b><span>76 sur 162 · 47&nbsp;%</span></p>
+              <div class="barre__piste" aria-hidden="true"><div class="barre__fait" style="width:53.1%"></div></div>
+            </li>
+            <li>
+              <p class="barre__libelle"><b>Textes d’interface</b><span>1&nbsp;041 sur 1&nbsp;776 · 59&nbsp;%</span></p>
+              <div class="barre__piste" aria-hidden="true"><div class="barre__fait" style="width:41.4%"></div></div>
+            </li>
+          </ul>
+          <ul class="legende-fig">
+            <li><span class="pastille pastille--fait"></span>Traduit</li>
+            <li><span class="pastille pastille--manque"></span>Manquant</li>
+          </ul>
+          <figcaption>Historique public du dépôt, relevé du 13/10/2026<span class="a-confirmer" title="Relevé à consigner (C1)">à consigner</span></figcaption>
+        </figure>
+      </section>
+
+      <section id="equipe" data-scene aria-labelledby="t-equipe">
+        <div class="scene scene--egale scene--haut">
+          <div class="texte">
+            <h2 class="titre-section" id="t-equipe">Accueillir, former, faire confiance</h2>
+            <p style="margin-top:var(--s4)">Je suis arrivé pour traduire, le 21 octobre 2025. Le 5 décembre, on m’a confié le pôle<span class="a-confirmer" title="Date du titre de lead (Q7)">date à confirmer</span>&nbsp;; trois jours plus tard, les deux premières recrues arrivaient. En tout, j’ai formé 20 personnes, jusqu’à dix en même temps. Certaines sont arrivées sans compétences&nbsp;; à la fin, certaines étaient ancrées dans la communauté et brillantes sur la technique.</p>
+            <blockquote class="citation foyer" style="margin-top:var(--s5)"><p>«&nbsp;La seule chose qui a changé, c’est le titre.&nbsp;»</p></blockquote>
+          </div>
+          <div class="pile-l">
+          <figure class="emplacement emplacement--triptyque" style="--ratio: 3 / 1">
+            <div class="emplacement__contenu">
+              <span class="emplacement__id">PVZ-02 <span>Image à générer · socle</span></span>
+              <p class="emplacement__sujet">Accueillir, former, faire confiance</p>
+              <p class="emplacement__compo">Triptyque dans le même décor : une personne montre une fiche annotée à une nouvelle venue ; la nouvelle venue travaille ; elle relit seule la fiche d’un troisième. Trois cases 4:3 sur mobile.</p>
+              <p class="emplacement__format">3:1 · 2400 × 800</p>
+            </div>
+          </figure>
+          <figure class="figure frise">
+<svg class="version-large" viewBox="0 0 560 214" role="img" aria-labelledby="fr-t fr-d">
+<title id="fr-t">Mes rôles et les arrivées dans le pôle</title>
+<desc id="fr-d">Traducteur le 21 octobre 2025, lead du pôle le 5 décembre 2025, mainteneur au plus tard le 26 septembre 2026. Neuf arrivées consignées dans le journal public, du 8 décembre 2025 au 23 mars 2026, sur vingt personnes formées.</desc>
+<line class="fr-ligne" x1="34" y1="104" x2="526" y2="104"/>
+<line class="fr-ligne" x1="34.0" y1="100" x2="34.0" y2="108"/><text class="fr-mois" x="34.0" y="126" text-anchor="middle">oct. 2025</text>
+<line class="fr-ligne" x1="148.6" y1="100" x2="148.6" y2="108"/><text class="fr-mois" x="148.6" y="126" text-anchor="middle">janv.</text>
+<line class="fr-ligne" x1="260.7" y1="100" x2="260.7" y2="108"/><text class="fr-mois" x="260.7" y="126" text-anchor="middle">avr.</text>
+<line class="fr-ligne" x1="374.0" y1="100" x2="374.0" y2="108"/><text class="fr-mois" x="374.0" y="126" text-anchor="middle">juil.</text>
+<line class="fr-ligne" x1="488.6" y1="100" x2="488.6" y2="108"/><text class="fr-mois" x="488.6" y="126" text-anchor="middle">oct. 2026</text>
+<line class="fr-ligne" x1="58.9" y1="38" x2="58.9" y2="96" stroke-dasharray="2 3"/>
+<circle class="fr-jalon" cx="58.9" cy="104" r="7"/>
+<text class="fr-titre" x="52.9" y="20" text-anchor="start">Traducteur</text><text class="fr-date" x="52.9" y="35" text-anchor="start">21/10/2025</text>
+<line class="fr-ligne" x1="115.0" y1="74" x2="115.0" y2="96" stroke-dasharray="2 3"/>
+<circle class="fr-jalon fr-jalon--lead" cx="115.0" cy="104" r="7"/>
+<text class="fr-titre" x="109.0" y="56" text-anchor="start">Lead du pôle</text><text class="fr-date" x="109.0" y="71" text-anchor="start">05/12/2025</text>
+<line class="fr-ligne" x1="482.4" y1="38" x2="482.4" y2="96" stroke-dasharray="2 3"/>
+<circle class="fr-jalon" cx="482.4" cy="104" r="7"/>
+<text class="fr-titre" x="488.4" y="20" text-anchor="end">Mainteneur</text><text class="fr-date" x="488.4" y="35" text-anchor="end">au plus tard le 26/09/2026</text>
+<g class="fr-arrivee"><circle cx="118.7" cy="150" r="4.4"/><path d="M112.5 166c0-4.2 2.8-7.1 6.2-7.1s6.2 2.9 6.2 7.1z"/></g>
+<g class="fr-arrivee"><circle cx="130.7" cy="150" r="4.4"/><path d="M124.5 166c0-4.2 2.8-7.1 6.2-7.1s6.2 2.9 6.2 7.1z"/></g>
+<g class="fr-arrivee"><circle cx="127.4" cy="150" r="4.4"/><path d="M121.2 166c0-4.2 2.8-7.1 6.2-7.1s6.2 2.9 6.2 7.1z"/></g>
+<g class="fr-arrivee"><circle cx="136.1" cy="150" r="4.4"/><path d="M129.9 166c0-4.2 2.8-7.1 6.2-7.1s6.2 2.9 6.2 7.1z"/></g>
+<g class="fr-arrivee"><circle cx="205.9" cy="150" r="4.4"/><path d="M199.7 166c0-4.2 2.8-7.1 6.2-7.1s6.2 2.9 6.2 7.1z"/></g>
+<g class="fr-arrivee"><circle cx="210.9" cy="150" r="4.4"/><path d="M204.7 166c0-4.2 2.8-7.1 6.2-7.1s6.2 2.9 6.2 7.1z"/></g>
+<g class="fr-arrivee"><circle cx="223.3" cy="150" r="4.4"/><path d="M217.1 166c0-4.2 2.8-7.1 6.2-7.1s6.2 2.9 6.2 7.1z"/></g>
+<g class="fr-arrivee"><circle cx="249.5" cy="150" r="4.4"/><path d="M243.3 166c0-4.2 2.8-7.1 6.2-7.1s6.2 2.9 6.2 7.1z"/></g>
+<g class="fr-arrivee"><circle cx="261.5" cy="150" r="4.4"/><path d="M255.3 166c0-4.2 2.8-7.1 6.2-7.1s6.2 2.9 6.2 7.1z"/></g>
+<text class="fr-date" x="34" y="190">9 arrivées consignées dans le journal public,</text>
+<text class="fr-date" x="34" y="206">sur 20 personnes formées en tout</text>
+</svg>
+<svg class="version-compacte" viewBox="0 0 360 214" role="img" aria-labelledby="frc-t frc-d">
+<title id="frc-t">Mes rôles et les arrivées dans le pôle</title>
+<desc id="frc-d">Traducteur le 21 octobre 2025, lead du pôle le 5 décembre 2025, mainteneur au plus tard le 26 septembre 2026. Neuf arrivées consignées dans le journal public, du 8 décembre 2025 au 23 mars 2026, sur vingt personnes formées.</desc>
+<line class="fr-ligne" x1="24" y1="104" x2="336" y2="104"/>
+<line class="fr-ligne" x1="24.0" y1="100" x2="24.0" y2="108"/><text class="fr-mois" x="24.0" y="126" text-anchor="middle">oct. 25</text>
+<line class="fr-ligne" x1="167.8" y1="100" x2="167.8" y2="108"/><text class="fr-mois" x="167.8" y="126" text-anchor="middle">avr. 26</text>
+<line class="fr-ligne" x1="312.3" y1="100" x2="312.3" y2="108"/><text class="fr-mois" x="312.3" y="126" text-anchor="middle">oct. 26</text>
+<line class="fr-ligne" x1="39.8" y1="38" x2="39.8" y2="96" stroke-dasharray="2 3"/>
+<circle class="fr-jalon" cx="39.8" cy="104" r="7"/>
+<text class="fr-titre" x="33.8" y="20" text-anchor="start">Traducteur</text><text class="fr-date" x="33.8" y="35" text-anchor="start">21/10/2025</text>
+<line class="fr-ligne" x1="75.3" y1="74" x2="75.3" y2="96" stroke-dasharray="2 3"/>
+<circle class="fr-jalon fr-jalon--lead" cx="75.3" cy="104" r="7"/>
+<text class="fr-titre" x="69.3" y="56" text-anchor="start">Lead du pôle</text><text class="fr-date" x="69.3" y="71" text-anchor="start">05/12/2025</text>
+<line class="fr-ligne" x1="308.4" y1="38" x2="308.4" y2="96" stroke-dasharray="2 3"/>
+<circle class="fr-jalon" cx="308.4" cy="104" r="7"/>
+<text class="fr-titre" x="314.4" y="20" text-anchor="end">Mainteneur</text><text class="fr-date" x="314.4" y="35" text-anchor="end">au plus tard le 26/09/2026</text>
+<g class="fr-arrivee"><circle cx="77.7" cy="150" r="4.4"/><path d="M71.5 166c0-4.2 2.8-7.1 6.2-7.1s6.2 2.9 6.2 7.1z"/></g>
+<g class="fr-arrivee"><circle cx="89.7" cy="150" r="4.4"/><path d="M83.5 166c0-4.2 2.8-7.1 6.2-7.1s6.2 2.9 6.2 7.1z"/></g>
+<g class="fr-arrivee"><circle cx="83.2" cy="150" r="4.4"/><path d="M77.0 166c0-4.2 2.8-7.1 6.2-7.1s6.2 2.9 6.2 7.1z"/></g>
+<g class="fr-arrivee"><circle cx="88.8" cy="150" r="4.4"/><path d="M82.6 166c0-4.2 2.8-7.1 6.2-7.1s6.2 2.9 6.2 7.1z"/></g>
+<g class="fr-arrivee"><circle cx="133.0" cy="150" r="4.4"/><path d="M126.8 166c0-4.2 2.8-7.1 6.2-7.1s6.2 2.9 6.2 7.1z"/></g>
+<g class="fr-arrivee"><circle cx="136.2" cy="150" r="4.4"/><path d="M130.0 166c0-4.2 2.8-7.1 6.2-7.1s6.2 2.9 6.2 7.1z"/></g>
+<g class="fr-arrivee"><circle cx="144.1" cy="150" r="4.4"/><path d="M137.9 166c0-4.2 2.8-7.1 6.2-7.1s6.2 2.9 6.2 7.1z"/></g>
+<g class="fr-arrivee"><circle cx="160.6" cy="150" r="4.4"/><path d="M154.4 166c0-4.2 2.8-7.1 6.2-7.1s6.2 2.9 6.2 7.1z"/></g>
+<g class="fr-arrivee"><circle cx="172.6" cy="150" r="4.4"/><path d="M166.4 166c0-4.2 2.8-7.1 6.2-7.1s6.2 2.9 6.2 7.1z"/></g>
+<text class="fr-date" x="24" y="190">9 arrivées consignées dans le journal public,</text>
+<text class="fr-date" x="24" y="206">sur 20 personnes formées en tout</text>
+</svg>
+            <figcaption>Dates du journal public du pôle. Silhouettes anonymes&nbsp;: aucun pseudonyme sans accord<span class="a-confirmer" title="Pseudonymes publics affichables ? (Q7)">à confirmer</span></figcaption>
+          </figure>
+          </div>
+        </div>
+        
+      </section>
+
+      <section id="semaine" data-scene aria-labelledby="t-semaine">
+        <div class="section-tete">
+          <h2 class="titre-section" id="t-semaine">Une semaine que tout le monde peut suivre</h2>
+        </div>
+        <div class="boucle">
+          <figure class="figure foyer">
+<svg class="boucle__dessin" viewBox="0 0 420 420" role="img" aria-labelledby="bo-t bo-d">
+<title id="bo-t">La semaine type du pôle, en boucle</title>
+<desc id="bo-d">Cinq étapes qui se répètent chaque semaine : repérer, distribuer, traduire, relire et tester, livrer, reconnaître, puis on recommence.</desc>
+<defs><marker id="bo-pointe" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 8 5 1 9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<circle class="bo-cercle" cx="210" cy="205" r="138" stroke-dasharray="2 6"/>
+<path class="bo-fleche" d="M254.9 74.5A138 138 0 0 1 320.2 121.9" marker-end="url(#bo-pointe)"/>
+<path class="bo-fleche" d="M348.0 207.4A138 138 0 0 1 323.0 284.2" marker-end="url(#bo-pointe)"/>
+<path class="bo-fleche" d="M250.3 337.0A138 138 0 0 1 169.7 337.0" marker-end="url(#bo-pointe)"/>
+<path class="bo-fleche" d="M97.0 284.2A138 138 0 0 1 72.0 207.4" marker-end="url(#bo-pointe)"/>
+<path class="bo-fleche" d="M99.8 121.9A138 138 0 0 1 165.1 74.5" marker-end="url(#bo-pointe)"/>
+<g class="bo-station bo-station--lit">
+<circle class="bo-noeud" cx="210.0" cy="67.0" r="36"/>
+<text class="bo-num" x="210.0" y="65.0" text-anchor="middle">1</text>
+<text class="bo-id" x="210.0" y="81.0" text-anchor="middle">PVZ-04</text>
+<text class="bo-nom" x="210.0" y="17.0" text-anchor="middle">Repérer</text>
+</g>
+<g class="bo-station">
+<circle class="bo-noeud" cx="341.2" cy="162.4" r="36"/>
+<text class="bo-num" x="341.2" y="160.4" text-anchor="middle">2</text>
+<text class="bo-id" x="341.2" y="176.4" text-anchor="middle">PVZ-05</text>
+<text class="bo-nom" x="341.2" y="220.4" text-anchor="middle">Distribuer</text>
+</g>
+<g class="bo-station">
+<circle class="bo-noeud" cx="291.1" cy="316.6" r="36"/>
+<text class="bo-num" x="291.1" y="314.6" text-anchor="middle">3</text>
+<text class="bo-id" x="291.1" y="330.6" text-anchor="middle">PVZ-06</text>
+<text class="bo-nom" x="291.1" y="374.6" text-anchor="middle">Traduire, relire, tester</text>
+</g>
+<g class="bo-station">
+<circle class="bo-noeud" cx="128.9" cy="316.6" r="36"/>
+<text class="bo-num" x="128.9" y="314.6" text-anchor="middle">4</text>
+<text class="bo-id" x="128.9" y="330.6" text-anchor="middle">PVZ-07</text>
+<text class="bo-nom" x="128.9" y="374.6" text-anchor="middle">Livrer</text>
+</g>
+<g class="bo-station">
+<circle class="bo-noeud" cx="78.8" cy="162.4" r="36"/>
+<text class="bo-num" x="78.8" y="160.4" text-anchor="middle">5</text>
+<text class="bo-id" x="78.8" y="176.4" text-anchor="middle">PVZ-08</text>
+<text class="bo-nom" x="78.8" y="220.4" text-anchor="middle">Reconnaître</text>
+</g>
+<text class="bo-centre" x="210" y="203" text-anchor="middle">une semaine</text>
+<text class="bo-sous" x="210" y="225" text-anchor="middle">puis on recommence</text>
+</svg>
+            <figcaption class="annotation-maquette">Dans les cercles, les vignettes PVZ-04 à PVZ-08, à générer (1:1, 480&nbsp;px).</figcaption>
+          </figure>
+          <ol class="boucle__stations">
+            <li><b>Repérer</b><p>Une version sort&nbsp;; mon outil compare le français à l’anglais et liste chaque entrée manquante.</p></li>
+            <li><b>Distribuer</b><p>Il crée une carte Trello par entrée. Chacun prend ce qu’il peut traduire.</p></li>
+            <li><b>Traduire, relire, tester</b><p>Je relis tout&nbsp;; un testeur vérifie en jeu.</p></li>
+            <li><b>Livrer</b><p>Chaque semaine, une pull request porte le travail de tous au projet officiel et cite chacun. <a href="https://github.com/Teyliu/PVZF-Translation/pull/110" rel="external">La PR #110 et ses huit crédits&nbsp;<span class="fleche" aria-hidden="true">↗</span></a></p></li>
+            <li><b>Reconnaître</b><p>L’outil en tire le bilan de chacun&nbsp;; j’y ajoute un mot personnel et le classement de la semaine.</p></li>
+          </ol>
+        </div>
+        <div class="outil acte-veille">
+          <div class="pile">
+            <h3 class="titre-scene">L’outil derrière la boucle</h3>
+            <p>J’ai construit le Console Manager pour le pôle français&nbsp;; il sert aujourd’hui aux 19&nbsp;langues du projet, intégré au dépôt officiel.<span class="a-confirmer" title="Le Console Manager comme instrument de gestion de projet (Q7)">à confirmer</span></p>
+            <div class="actions">
+              <a class="lien-action" href="https://lindecker-charles.github.io/PVZ-Fuzion-ConsolManager/" rel="external">Son site&nbsp;<span class="fleche" aria-hidden="true">↗</span></a>
+              <a class="lien-action" href="https://github.com/LINDECKER-Charles/PVZ-Fuzion-ConsolManager" rel="external">Le code&nbsp;<span class="fleche" aria-hidden="true">↗</span></a>
+              <a class="lien-action" href="https://www.npmjs.com/package/@charles_lindecker/pvzf-console" rel="external">npm&nbsp;<span class="fleche" aria-hidden="true">↗</span></a>
+            </div>
+          </div>
+          <figure class="emplacement emplacement--capture">
+            <div class="emplacement__contenu">
+              <span class="emplacement__id">CAP-PVZ-2 <span>Capture réelle à faire</span></span>
+              <p class="emplacement__sujet">Le Console Manager en vrai</p>
+              <p class="emplacement__compo">Enregistrement de terminal : le menu, puis le rapport des entrées françaises manquantes sur une révision ancienne du dépôt. Image fixe en repli.</p>
+              <p class="emplacement__format">Vidéo 16:9 · 10 à 15 s</p>
+            </div>
+          </figure>
+        </div>
+      </section>
+
+      <section id="resultat" data-scene aria-labelledby="t-resultat">
+        <div class="scene scene--egale" style="align-items:end">
+          <div class="texte">
+            <h2 class="titre-section" id="t-resultat">Rattraper, puis ne plus décrocher</h2>
+            <p style="margin-top:var(--s4)">En dix mois, le retard a disparu, alors que le jeu avait gagné près de 200 plantes. Aujourd’hui, une version majeure est traduite avant même sa sortie multilingue.</p>
+          </div>
+          <ol class="quatre-zero" aria-label="La version 4.0 en six jours">
+            <li><b>20/09/2026</b>Textes chinois de la 4.0 ajoutés</li>
+            <li><b>26/09</b>Pull request française fusionnée</li>
+            <li><b>01/10</b>Version multilingue publiée</li>
+          </ol>
+        </div>
+        <figure class="figure figure--rattrapage foyer" style="margin-top:var(--s6)">
+<svg class="version-large" viewBox="0 0 1000 340" role="img" aria-labelledby="rt-t rt-d">
+<title id="rt-t">Le rattrapage de la traduction française</title>
+<desc id="rt-d">Entrées anglaises du jeu et entrées sans équivalent français, une mesure par mois. Octobre 2025 : 1&nbsp;335 manquantes sur 2&nbsp;415. Mars 2026 : 1&nbsp;603 sur 2&nbsp;922. Juin 2026 : 344 sur 3&nbsp;875. Août 2026 : 0 sur 4&nbsp;368. Octobre 2026, version 4.0.5 : 29 sur 4&nbsp;657.</desc>
+<defs><pattern id="hachure-manque" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><line class="hachure-trait" x1="0" y1="0" x2="0" y2="6"/></pattern></defs>
+<line class="fig-grille" x1="70" y1="304.0" x2="980" y2="304.0"/><text class="fig-texte" x="60" y="308.0" text-anchor="end">0</text>
+<line class="fig-grille" x1="70" y1="254.0" x2="980" y2="254.0"/><text class="fig-texte" x="60" y="258.0" text-anchor="end">1 000</text>
+<line class="fig-grille" x1="70" y1="204.0" x2="980" y2="204.0"/><text class="fig-texte" x="60" y="208.0" text-anchor="end">2 000</text>
+<line class="fig-grille" x1="70" y1="154.0" x2="980" y2="154.0"/><text class="fig-texte" x="60" y="158.0" text-anchor="end">3 000</text>
+<line class="fig-grille" x1="70" y1="104.0" x2="980" y2="104.0"/><text class="fig-texte" x="60" y="108.0" text-anchor="end">4 000</text>
+<line class="fig-grille" x1="70" y1="54.0" x2="980" y2="54.0"/><text class="fig-texte" x="60" y="58.0" text-anchor="end">5 000</text>
+<text class="fig-texte" x="70.0" y="328" text-anchor="middle">oct. 2025</text>
+<text class="fig-texte" x="281.9" y="328" text-anchor="middle">janv. 2026</text>
+<text class="fig-texte" x="489.3" y="328" text-anchor="middle">avr.</text>
+<text class="fig-texte" x="698.9" y="328" text-anchor="middle">juil.</text>
+<text class="fig-texte" x="910.9" y="328" text-anchor="middle">oct. 2026</text>
+<polygon class="rat-manque" fill="url(#hachure-manque)" points="104.6,183.2 242.8,186.2 385.6,161.2 450.1,157.9 662.1,110.2 731.2,87.0 802.6,85.6 936.2,71.2 936.2,72.6 802.6,85.6 731.2,87.6 662.1,127.4 450.1,238.1 385.6,242.3 242.8,248.7 104.6,250.0"/>
+<polygon class="rat-fait" points="104.6,304.0 104.6,250.0 242.8,248.7 385.6,242.3 450.1,238.1 662.1,127.4 731.2,87.6 802.6,85.6 936.2,72.6 936.2,304.0"/>
+<polyline class="rat-ligne" points="104.6,183.2 242.8,186.2 385.6,161.2 450.1,157.9 662.1,110.2 731.2,87.0 802.6,85.6 936.2,71.2"/>
+<circle class="rat-point" cx="104.6" cy="183.2" r="3.5"/>
+<circle class="rat-point" cx="242.8" cy="186.2" r="3.5"/>
+<circle class="rat-point" cx="385.6" cy="161.2" r="3.5"/>
+<circle class="rat-point" cx="450.1" cy="157.9" r="3.5"/>
+<circle class="rat-point" cx="662.1" cy="110.2" r="3.5"/>
+<circle class="rat-point" cx="731.2" cy="87.0" r="3.5"/>
+<circle class="rat-point rat-point--atteint" cx="802.6" cy="85.6" r="6"/>
+<circle class="rat-point" cx="936.2" cy="71.2" r="3.5"/>
+<line class="fig-axe" x1="70" y1="304" x2="980" y2="304"/>
+<text class="fig-note" x="110.6" y="143.2">À mon arrivée</text><text class="fig-texte" x="110.6" y="163.2">1&nbsp;335 entrées manquantes sur 2&nbsp;415</text>
+<text class="fig-note" x="802.6" y="21.6" text-anchor="middle">Août 2026</text><text class="fig-texte fig-texte--fort" x="802.6" y="41.6" text-anchor="middle">0 manquante sur 4&nbsp;368</text>
+<line class="fig-accolade" x1="802.6" y1="49.6" x2="802.6" y2="77.6"/>
+</svg>
+<svg class="version-compacte" viewBox="0 0 360 320" role="img" aria-labelledby="rtc-t rtc-d">
+<title id="rtc-t">Le rattrapage de la traduction française</title>
+<desc id="rtc-d">Octobre 2025 : 1&nbsp;335 entrées manquantes sur 2&nbsp;415. Août 2026 : 0 sur 4&nbsp;368. Octobre 2026, version 4.0.5 : 29 sur 4&nbsp;657.</desc>
+<defs><pattern id="hachure-manque-c" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><line class="hachure-trait" x1="0" y1="0" x2="0" y2="6"/></pattern></defs>
+<line class="fig-grille" x1="50" y1="276.0" x2="350" y2="276.0"/><text class="fig-texte" x="40" y="280.0" text-anchor="end">0</text>
+<line class="fig-grille" x1="50" y1="225.6" x2="350" y2="225.6"/><text class="fig-texte" x="40" y="229.6" text-anchor="end">1 000</text>
+<line class="fig-grille" x1="50" y1="175.2" x2="350" y2="175.2"/><text class="fig-texte" x="40" y="179.2" text-anchor="end">2 000</text>
+<line class="fig-grille" x1="50" y1="124.8" x2="350" y2="124.8"/><text class="fig-texte" x="40" y="128.8" text-anchor="end">3 000</text>
+<line class="fig-grille" x1="50" y1="74.4" x2="350" y2="74.4"/><text class="fig-texte" x="40" y="78.4" text-anchor="end">4 000</text>
+<line class="fig-grille" x1="50" y1="24.0" x2="350" y2="24.0"/><text class="fig-texte" x="40" y="28.0" text-anchor="end">5 000</text>
+<text class="fig-texte" x="60.6" y="300" text-anchor="middle">oct. 25</text>
+<text class="fig-texte" x="188.2" y="300" text-anchor="middle">avr. 26</text>
+<text class="fig-texte" x="327.2" y="300" text-anchor="middle">oct. 26</text>
+<polygon class="rat-manque" fill="url(#hachure-manque-c)" points="61.4,154.3 107.0,157.3 154.1,132.0 175.3,128.7 245.2,80.7 268.0,57.3 291.5,55.9 335.6,41.3 335.6,42.7 291.5,55.9 268.0,57.9 245.2,98.0 175.3,209.5 154.1,213.8 107.0,220.3 61.4,221.6"/>
+<polygon class="rat-fait" points="61.4,276.0 61.4,221.6 107.0,220.3 154.1,213.8 175.3,209.5 245.2,98.0 268.0,57.9 291.5,55.9 335.6,42.7 335.6,276.0"/>
+<polyline class="rat-ligne" points="61.4,154.3 107.0,157.3 154.1,132.0 175.3,128.7 245.2,80.7 268.0,57.3 291.5,55.9 335.6,41.3"/>
+<circle class="rat-point" cx="61.4" cy="154.3" r="3.5"/>
+<circle class="rat-point" cx="107.0" cy="157.3" r="3.5"/>
+<circle class="rat-point" cx="154.1" cy="132.0" r="3.5"/>
+<circle class="rat-point" cx="175.3" cy="128.7" r="3.5"/>
+<circle class="rat-point" cx="245.2" cy="80.7" r="3.5"/>
+<circle class="rat-point" cx="268.0" cy="57.3" r="3.5"/>
+<circle class="rat-point rat-point--atteint" cx="291.5" cy="55.9" r="6"/>
+<circle class="rat-point" cx="335.6" cy="41.3" r="3.5"/>
+<line class="fig-axe" x1="50" y1="276" x2="350" y2="276"/>
+<text class="fig-texte fig-texte--fort" x="65.4" y="140.3">1&nbsp;335 / 2&nbsp;415</text>
+<text class="fig-texte fig-texte--fort" x="291.5" y="41.9" text-anchor="end">0 / 4&nbsp;368</text>
+</svg>
+          <ul class="legende-fig">
+            <li><span class="pastille pastille--fait"></span>Entrées traduites en français</li>
+            <li><span class="pastille pastille--manque"></span>Entrées anglaises sans équivalent français</li>
+          </ul>
+          <figcaption>Une mesure par mois sur l’historique public, relevé du 13/10/2026<span class="a-confirmer" title="Relevé à consigner (C1)">à consigner</span>. Méthode dans les sources, en bas de page.</figcaption>
+        </figure>
+        <div class="scene scene--egale scene--haut" style="margin-top:var(--s6)">
+          <p class="volume foyer">En tout, 5&nbsp;179 nouvelles entrées françaises, dont l’essentiel traduit par moi et le reste par douze contributeurs crédités.<span class="a-confirmer" title="Part personnelle affichée ? 4 862 sur 5 179 (Q7)">à confirmer</span></p>
+          <table class="corrections">
+            <caption>Traduire, c’est aussi suivre des règles qui changent. Trois corrections de mon journal public, semaine du 21/09/2026.</caption>
+            <thead><tr><th scope="col">Entrée</th><th scope="col">Avant</th><th scope="col">Après</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Four Polaire, recharge</th><td><del>7,5&nbsp;s</del></td><td><ins>30&nbsp;s</ins></td></tr>
+              <tr><th scope="row">Four Épicéa, retour</th><td><del>210&nbsp;s</del></td><td><ins>125&nbsp;s</ins></td></tr>
+              <tr><th scope="row">Contresens</th><td><del>à portée infinie</del></td><td><ins>à perforation infinie</ins></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- E5 · 4 — Comment je l’ai construit -->
+      <section id="construit" data-scene aria-labelledby="t-construit">
+        <p class="note-maquette"><b>Gabarit E5 · 4</b> <span class="note-maquette__detail">Deux à quatre décisions : contrainte, choix, effet</span></p>
+        <div class="section-tete">
+          <h2 class="titre-section" id="t-construit">Comment je l’ai construit</h2>
+        </div>
+        <ol class="decisions" aria-label="Trois décisions">
+          <li class="decision">
+            <dl>
+              <dt>Contrainte</dt><dd>Une version sort toutes les deux ou trois semaines, et personne ne sait ce qui manque.</dd>
+              <dt>Choix</dt><dd>Un outil qui compare chaque langue à l’anglais et écrit le bloc exact à traduire.</dd>
+              <dt class="effet-t">Effet</dt><dd class="effet">Il sert aux 19&nbsp;langues du projet officiel.</dd>
+            </dl>
+          </li>
+          <li class="decision">
+            <dl>
+              <dt>Contrainte</dt><dd>Des bénévoles qui arrivent sans savoir par où commencer.</dd>
+              <dt>Choix</dt><dd>Une carte de tâche par entrée manquante&nbsp;: chacun prend ce qu’il peut traduire.</dd>
+              <dt class="effet-t">Effet</dt><dd class="effet">Jusqu’à dix contributeurs en même temps.</dd>
+            </dl>
+          </li>
+          <li class="decision">
+            <dl>
+              <dt>Contrainte</dt><dd>Un travail bénévole reste invisible si personne ne le nomme.</dd>
+              <dt>Choix</dt><dd>Une pull request par semaine qui crédite chacun, et un bilan individuel tiré de l’outil.</dd>
+              <dt class="effet-t">Effet</dt><dd class="effet">Jusqu’à huit personnes créditées dans une même PR.</dd>
+            </dl>
+          </li>
+        </ol>
+      </section>
+
+      <!-- E5 · 5 — Sortie commune -->
+      <section id="retiens" data-scene aria-labelledby="t-retiens">
+        <p class="note-maquette"><b>Gabarit E5 · 5</b> <span class="note-maquette__detail">Sortie commune : ce que j’en retiens, liens, projet suivant, Discutons</span></p>
+        <div class="sortie">
+          <div>
+            <h2 class="titre-section" id="t-retiens">Ce que j’en retiens</h2>
+            <blockquote class="citation foyer" style="margin-top:var(--s4)"><p>«&nbsp;Seul on va vite, à plusieurs on va loin&nbsp;: la qualité et la sincérité des échanges démultiplient les résultats.&nbsp;»</p></blockquote>
+            <div class="actions" style="margin-top:var(--s5)">
+              <a class="bouton" href="contact.html">Discutons&nbsp;<span class="fleche" aria-hidden="true">→</span></a>
+            </div>
+          </div>
+          <div>
+            <ul class="sortie__liens">
+              <li><a href="https://github.com/Teyliu/PVZF-Translation" rel="external">Le projet multilingue&nbsp;<span class="fleche" aria-hidden="true">↗</span></a></li>
+              <li><a href="https://github.com/Teyliu/PVZF-Translation/blob/main/Docs/french-contributions.md" rel="external">Le bilan du pôle&nbsp;<span class="fleche" aria-hidden="true">↗</span></a></li>
+              <li><a href="https://github.com/Teyliu/PVZF-Translation/pulls?q=is%3Apr+author%3ALINDECKER-Charles+is%3Amerged" rel="external">Les 35 pull requests fusionnées&nbsp;<span class="fleche" aria-hidden="true">↗</span></a></li>
+              <li><a href="https://github.com/LINDECKER-Charles/PVZ-Fuzion-ConsolManager" rel="external">Le Console Manager&nbsp;<span class="fleche" aria-hidden="true">↗</span></a></li>
+            </ul>
+            <a class="suivant" href="league-of-database.html">
+              <span>Projet suivant</span>
+              <b>League Of Data Base&nbsp;<span class="fleche" aria-hidden="true">→</span></b>
+              <span>Un système en production</span>
+            </a>
+          </div>
+        </div>
+        <div class="sources">
+          <p><b>Sources.</b> Couverture mesurée par clé sur la branche principale du dépôt <a href="https://github.com/Teyliu/PVZF-Translation" rel="external">Teyliu/PVZF-Translation&nbsp;<span class="fleche" aria-hidden="true">↗</span></a>, une révision par mois, de c623790 (16/10/2025) à 13d63b1 (12/10/2026) ; une entrée présente mais obsolète n’est pas comptée. Dates des rôles et des arrivées&nbsp;: journal public du pôle (Docs/french-contributor). Pull requests et crédits&nbsp;: GitHub, relevés le 13/10/2026.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<footer class="pied">
+  <div class="conteneur">
+    <div class="pied__grille">
+      <div class="pied__marque">
+        <a class="marque" href="accueil.html" aria-label="Charles Lindecker, accueil">
+          <span class="marque__embleme" aria-hidden="true">
+            <img class="jour-seulement" src="../../../site/src/assets/marque/logo-symbole.webp" alt="" width="352" height="245">
+            <img class="nuit-seulement" src="../../assets/marque/logo-symbole-nuit.png" alt="" width="352" height="245">
+          </span>
+          <img class="marque__nom" src="../../../site/src/assets/marque/logo-nom.webp" alt="" width="756" height="118">
+        </a>
+        <p class="pied__devise">Je maîtrise d’abord les règles du jeu. Ensuite, je les réinvente.</p>
+      </div>
+      <div class="pied__pages">
+        <h2>Pages</h2>
+        <ul>
+          <li><a href="accueil.html">Accueil</a></li>
+          <li><a href="projets.html">Projets</a></li>
+          <li><a href="competences.html">Parcours</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Me trouver</h2>
+        <ul>
+          <li class="pied__courriel"><a href="mailto:charles.lindecker@outlook.fr" data-umami-event="contact-email" data-umami-event-emplacement="pied">charles.lindecker@outlook.fr</a><button class="copier" type="button" data-copier="charles.lindecker@outlook.fr" hidden><span data-etiquette>Copier</span></button></li>
+          <li><a href="https://www.linkedin.com/in/charles-lindecker/" rel="external">LinkedIn&nbsp;<span class="fleche" aria-hidden="true">↗</span></a></li>
+          <li><a href="https://github.com/LINDECKER-Charles" rel="external">GitHub&nbsp;<span class="fleche" aria-hidden="true">↗</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Le site</h2>
+        <ul>
+          <li><a href="mentions-legales.html">Mentions légales</a></li>
+        </ul>
+        <p class="petit" style="margin-top:var(--s2)">Composé en Instrument Serif et Instrument Sans.</p>
+      </div>
+    </div>
+    <div class="pied__bas">
+      <span>© 2026 Charles Lindecker, à Mulhouse</span>
+      <span>Maquette de la direction « Lanterne » <button class="annotations" type="button" data-annotations aria-pressed="false" hidden>Afficher les annotations du gabarit</button></span>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

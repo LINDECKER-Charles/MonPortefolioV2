@@ -1,0 +1,22 @@
+Outil : ImageGen intégré ; transformation du logo illustré de référence ; fond transparent demandé.
+Fichier : logo-gothique.png, RGBA, 1536 × 1024 px.
+
+Prompt utilisé :
+
+Use case: logo-brand, style-transfer.
+Edit the attached logo into a much more minimal, distinctive personal brand identity with a subtle Gothic / Victorian character.
+Reference image: existing illustrated logo. Retain the essential idea of an open book, a lantern in its central gutter and the exact name "Charles Lindecker". Redesign the visual style and typography substantially.
+
+Creative direction: a sophisticated contemporary emblem informed by the silhouette of Gothic architecture and antique printers' marks. Quiet, dark, elegant, memorable. The Gothic character must come from deliberate pointed shapes and strong negative spaces. It remains a professional personal logo, readable by someone unfamiliar with fantasy.
+
+Emblem: ONE cohesive original design, compact and balanced. Broad shallow open book with two sweeping page shapes and only two or three visible page divisions on each side. A slim upright antique hand lantern in the centre. Give its roof a distinctive pointed Gothic silhouette, a small elongated pointed-arch handle, and its glass chamber a restrained lancet-arch shape. Use only essential structural bars. The flame is a single confidently drawn warm-gold shape in the negative space of the lantern. Book and lamp should feel integrated rather than two stock icons placed together. Use thoughtful large solid shapes with some sharp elegant tapering edges, controlled curves and generous negative space. No circle around the emblem, no shield, no decorative frame.
+
+Style: finished bespoke minimal graphic logo, expert bold silhouette design, flat inks, visually rich through composition and shape rather than rendering. Confident large solid areas with a few carefully placed cuts. Avoid uniform rounded strokes or the generic thin outline pictogram style. Remove all painterly texture, realistic paper texture, photorealism, metallic gloss, shading, gradients, broad halo, ornamental balls, elaborate brass fittings, dense page lines and visual clutter. This is a high-quality raster logo image, not an SVG deliverable or a mockup.
+
+Palette: dominant deep midnight ink #0E1424, subtle controlled royal-blue #1F4FD1 accents if needed, muted warm gold #D9B45B solely for the lantern's light. Keep all spaces outside the design genuinely transparent; no white rectangular background. Limited palette, no faux 3D.
+
+Wordmark: the exact text "Charles Lindecker" once below the emblem. Design a refined, original Gothic-influenced serif wordmark with tall elegant proportions, sharp wedge serifs and a few restrained angular terminals. Strong typographic character and excellent kerning, but clear modern legibility, not dense blackletter and not ornamental fantasy lettering. Use the same midnight ink. It should feel designed together with the emblem. No tagline or extra text.
+
+Composition: one complete emblem-plus-name logo, centered with ample breathing room, both objects completely visible, stable and understated. A moderate gap between emblem and name. The name occupies about one fifth of the logo height. Preserve the book as knowledge and the lantern as a light to progress through darkness. All ornament must serve this exact theme.
+Output: high-resolution transparent-background PNG. One polished logo, no concept sheet, no captions, no watermark.
+

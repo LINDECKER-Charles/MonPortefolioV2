@@ -1,0 +1,42 @@
+{
+  "cadrages": {
+    "symbole": {
+      "left": 180,
+      "top": 0,
+      "width": 1176,
+      "height": 820
+    },
+    "nom": {
+      "left": 140,
+      "top": 822,
+      "width": 1260,
+      "height": 196
+    },
+    "complet": {
+      "left": 140,
+      "top": 0,
+      "width": 1260,
+      "height": 1018
+    }
+  },
+  "lumieres": [
+    {
+      "left": 670,
+      "top": 347,
+      "width": 9,
+      "height": 229
+    },
+    {
+      "left": 720,
+      "top": 325,
+      "width": 96,
+      "height": 232
+    },
+    {
+      "left": 857,
+      "top": 347,
+      "width": 10,
+      "height": 229
+    }
+  ]
+}

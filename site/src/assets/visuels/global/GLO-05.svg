@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 414 130" width="414" height="130" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+  <title>Trois cadres d’appareil neutres : navigateur, téléphone, terminal</title>
+  <defs>
+    <symbol id="GLO-05-points" viewBox="0 0 34 8">
+      <circle cx="4" cy="4" r="3.5" fill="currentColor" stroke="none"/>
+      <circle cx="17" cy="4" r="3.5" fill="currentColor" stroke="none"/>
+      <circle cx="30" cy="4" r="3.5" fill="currentColor" stroke="none"/>
+    </symbol>
+    <symbol id="GLO-05-navigateur" viewBox="0 0 160 100">
+      <rect x=".5" y=".5" width="159" height="99" rx="6"/>
+      <path d="M.5 14.5h159"/>
+      <use href="#GLO-05-points" x="7" y="4" width="17" height="4"/>
+      <rect x="32" y="3.5" width="96" height="7" rx="3.5"/>
+    </symbol>
+    <symbol id="GLO-05-telephone" viewBox="0 0 54 117">
+      <rect x=".5" y=".5" width="53" height="116" rx="9"/>
+      <rect x="3.5" y="3.5" width="47" height="110" rx="6.5"/>
+      <rect x="21" y="6" width="12" height="2.5" rx="1.25" fill="currentColor" stroke="none"/>
+    </symbol>
+    <symbol id="GLO-05-terminal" viewBox="0 0 160 100">
+      <rect x=".5" y=".5" width="159" height="99" rx="6"/>
+      <path d="M.5 14.5h159"/>
+      <use href="#GLO-05-points" x="7" y="4" width="17" height="4"/>
+      <path d="M9 26l5 4-5 4M18 34h9"/>
+    </symbol>
+  </defs>
+  <use href="#GLO-05-navigateur" x="10" y="15" width="160" height="100"/>
+  <use href="#GLO-05-telephone" x="180" y="6.5" width="54" height="117"/>
+  <use href="#GLO-05-terminal" x="244" y="15" width="160" height="100"/>
+</svg>

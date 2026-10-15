@@ -1,0 +1,42 @@
+---
+/**
+ * En-tête du backoffice : l’emblème et le nom (retour au portfolio), la
+ * navigation entre rubriques, la lanterne du thème et la déconnexion.
+ *
+ * Même contrat de thème que le site (/theme.js, `data-theme`,
+ * `localStorage['cl-theme']`, BasculeLanterne), sans mesure d’audience.
+ * La navigation et la déconnexion n’apparaissent qu’une fois la session
+ * ouverte (scripts/backoffice.ts) ; une rubrique est un lien, la rubrique lue
+ * porte `aria-current="page"`.
+ *
+ * Pas collant : l’atelier du blog garde sa propre barre d’enregistrement
+ * collante (styles/blog-editor.css). Sous 1 100 px, la navigation passe sous
+ * l’identité et revient à la ligne : rien ne déborde à 390 px.
+ */
+import BasculeLanterne from '../layout/BasculeLanterne.astro';
+import Logo from '../ui/Logo.astro';
+import { RUBRIQUES } from './rubriques';
+---
+
+<header class="bo-entete">
+  <div class="bo-cadre bo-entete__barre">
+    <a class="bo-marque" href="/" aria-label="Charles Lindecker, revenir au portfolio">
+      <Logo nom={false} />
+      <span class="bo-marque__texte">Charles Lindecker<span class="bo-marque__lieu">Le portfolio, côté atelier</span></span>
+    </a>
+    <nav class="bo-navigation" id="bo-navigation" aria-label="Rubriques du backoffice" hidden>
+      <ul>
+        {RUBRIQUES.map(({ id, lien, titreCourt }) => (
+          <li>
+            {/* Le compte visible est décoratif ; le nom accessible dit « Demandes (2 nouvelles demandes) ». */}
+            <a href={lien} id={`bo-tab-${id}`} data-panel={id}>{titreCourt}{id === 'contacts' && <span class="sr" id="bo-new-count-label"> (aucune nouvelle demande)</span>}{id === 'contacts' && <span class="bo-compte" id="bo-new-count" data-nombre="0" aria-hidden="true">0</span>}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    <div class="bo-entete__outils">
+      <BasculeLanterne mesure={false} />
+      <button class="bo-button bo-button--quiet" id="bo-logout" type="button" hidden>Se déconnecter</button>
+    </div>
+  </div>
+</header>

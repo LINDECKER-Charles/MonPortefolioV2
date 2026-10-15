@@ -1,0 +1,150 @@
+---
+/**
+ * PVZ-F5 · Le point de départ : entrées anglaises sans équivalent français,
+ * par catégorie, au premier relevé (16/10/2025). Figure codée depuis
+ * RELEVES (config/pvz-fusion.ts) : la part traduite en encre, la part
+ * manquante en hachures (jamais la couleur seule), les nombres en texte.
+ */
+import { RELEVES } from '../../../config/pvz-fusion';
+
+interface Props {
+  class?: string;
+}
+
+const { class: classe } = Astro.props;
+const depart = RELEVES[0];
+const nombre = (n: number) => n.toLocaleString('fr-FR').replace(/\s/g, ' ');
+const lignes = [
+  { nom: 'Plantes', valeurs: depart.plantes },
+  { nom: 'Zombies', valeurs: depart.zombies },
+  { nom: 'Textes d’interface', valeurs: depart.textes },
+].map(({ nom, valeurs: [manque, total] }) => ({
+  nom,
+  manque,
+  total,
+  part: Math.round((manque / total) * 100),
+  traduit: (((total - manque) / total) * 100).toFixed(1),
+}));
+---
+
+<figure class:list={['depart', classe]}>
+  <figcaption class="depart__titre">Entrées anglaises sans équivalent français, le 16&nbsp;octobre 2025</figcaption>
+  <ul class="depart__barres">
+    {
+      lignes.map((ligne) => (
+        <li>
+          <p class="depart__libelle">
+            <b>{ligne.nom}</b>
+            <span class="chiffres">{nombre(ligne.manque)} sur {nombre(ligne.total)} · {ligne.part}&nbsp;%</span>
+          </p>
+          <div class="depart__piste" aria-hidden="true">
+            <div class="depart__fait" style={`width:${ligne.traduit}%`} />
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+  <ul class="depart__legende" aria-hidden="true">
+    <li><span class="pastille pastille--fait" />Traduit</li>
+    <li><span class="pastille pastille--manque" />Manquant</li>
+  </ul>
+  <p class="depart__source">Historique public du dépôt, révision c623790, relevé le 13/10/2026.</p>
+</figure>
+
+<style>
+  .depart {
+    display: grid;
+    gap: var(--s4);
+  }
+
+  .depart__titre {
+    font-size: var(--t-s);
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .depart__barres {
+    display: grid;
+    gap: var(--s4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .depart__libelle {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0 var(--s3);
+    margin-bottom: var(--s2);
+    font-size: var(--t-s);
+  }
+
+  .depart__libelle span {
+    color: var(--eteint);
+  }
+
+  .depart__piste,
+  .pastille--manque {
+    border: 1px solid var(--trait);
+    background: repeating-linear-gradient(-45deg, var(--trait) 0 1px, transparent 1px 6px);
+  }
+
+  .depart__piste {
+    height: 18px;
+    border-radius: var(--r1);
+    overflow: hidden;
+  }
+
+  .depart__fait,
+  .pastille--fait {
+    background: var(--encre);
+  }
+
+  .depart__fait {
+    height: 100%;
+  }
+
+  .depart__legende {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2) var(--s5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  .depart__legende li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s2);
+  }
+
+  .pastille {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 2px;
+  }
+
+  .depart__source {
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  /* La nuit, la part traduite : un clair bleuté tiré des jetons, comme la
+     courbe du rattrapage. */
+  :global(:root[data-theme='nuit']) .depart__fait,
+  :global(:root[data-theme='nuit']) .pastille--fait {
+    background: color-mix(in oklab, var(--encre) 72%, var(--fond));
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme])) .depart__fait,
+    :global(:root:not([data-theme])) .pastille--fait {
+      background: color-mix(in oklab, var(--encre) 72%, var(--fond));
+    }
+  }
+</style>

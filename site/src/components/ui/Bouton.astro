@@ -1,0 +1,52 @@
+---
+/**
+ * Bouton en pilule : l’action principale d’un écran (une seule par écran,
+ * règle E2). Bleu roi le jour, lumière de lanterne la nuit et dans les actes
+ * sombres, blanc sur l’aplat bleu roi.
+ *
+ *   <Bouton href="/contact" evenement="contact-page" emplacement="discutons">Discutons</Bouton>
+ *   <Bouton href="https://github.com/…" emplacement="preuves" variante="contour">Le code</Bouton>
+ *   <Bouton type="submit">Envoyer le message</Bouton>      (sans href : un <button>)
+ *
+ * La flèche suit la grammaire du site (lib/liens.ts) : → page interne,
+ * ↓ ancre, ↗ sortie du site ou e-mail ; `fleche={false}` la retire. Un lien
+ * externe ou un mailto: exige `emplacement` (mesure `lien-sortant` ou
+ * `contact-email`) : sans lui, le build échoue.
+ *
+ * Classes : `.bouton`, `.bouton--contour` (global.css).
+ */
+import { attributsMesure, FLECHES, sorteDeLien, type Emplacement } from '../../lib/liens';
+
+interface Props {
+  href?: string;
+  variante?: 'plein' | 'contour';
+  /** Affiche la flèche de la grammaire (vrai par défaut pour un lien). */
+  fleche?: boolean;
+  emplacement?: Emplacement;
+  evenement?: 'contact-page';
+  /** Pour un <button> : submit, button ou reset. */
+  type?: 'button' | 'submit' | 'reset';
+  download?: boolean;
+  class?: string;
+  /** Attributs supplémentaires (data-*, aria-*), passés tels quels. */
+  attributs?: Record<`data-${string}` | `aria-${string}`, string | boolean | undefined>;
+}
+
+const { href, variante = 'plein', fleche = true, emplacement, evenement, type = 'button', download = false, class: classe, attributs = {} } = Astro.props;
+const classes = ['bouton', variante === 'contour' && 'bouton--contour', classe];
+const sorte = href ? sorteDeLien(href) : undefined;
+const mesure = href ? attributsMesure(href, { emplacement, evenement }) : {};
+const signe = sorte && fleche ? ` ${FLECHES[sorte]}` : '';
+---
+
+{
+  href ? (
+    <a class:list={classes} href={href} rel={sorte === 'externe' ? 'external' : undefined} download={download || undefined} {...mesure} {...attributs}>
+      <slot />{signe && <span class="fleche" aria-hidden="true">{signe}</span>}
+    </a>
+  ) : (
+    <button class:list={classes} type={type} {...attributs}>
+      <slot />
+    </button>
+  )
+}

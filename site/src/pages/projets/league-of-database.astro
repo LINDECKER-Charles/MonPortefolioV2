@@ -1,0 +1,389 @@
+---
+/**
+ * League Of Data Base : la preuve d’« un système en production », sur le
+ * gabarit commun des pages de projet (components/projets/gabarit, règle E5).
+ * Ce que l’application permet (Ahri d’un patch à l’autre, tout un état du
+ * jeu, les fiches, l’encyclopédie autour), puis ce qui était difficile (les
+ * pièges des données, la réécriture, l’exploitation), les décisions et la
+ * sortie commune. Données et relevés : config/league-of-database.ts.
+ *
+ * Captures réelles de l’application (src/assets/projets/league-of-database),
+ * en cadre de navigateur sur ordinateur et de téléphone sur mobile, toutes
+ * agrandissables dans la visionneuse partagée.
+ */
+import Base from '../../layouts/Base.astro';
+import CorpsProjet from '../../components/projets/gabarit/CorpsProjet.astro';
+import EnTeteProjet from '../../components/projets/gabarit/EnTeteProjet.astro';
+import SectionProjet from '../../components/projets/gabarit/SectionProjet.astro';
+import SortieProjet from '../../components/projets/gabarit/SortieProjet.astro';
+import SourcesProjet from '../../components/projets/gabarit/SourcesProjet.astro';
+import SousLeCapot from '../../components/projets/gabarit/SousLeCapot.astro';
+import CaptureLeague from '../../components/projets/league/CaptureLeague.astro';
+import ComparaisonAhri from '../../components/projets/league/ComparaisonAhri.astro';
+import Fabrication from '../../components/projets/league/Fabrication.astro';
+import FriseReecriture from '../../components/projets/league/FriseReecriture.astro';
+import OngletsCaptures from '../../components/projets/league/OngletsCaptures.astro';
+import PiegesDonnees from '../../components/projets/league/PiegesDonnees.astro';
+import LienAction from '../../components/ui/LienAction.astro';
+import Visionneuse from '../../components/ui/Visionneuse.astro';
+import Visuel from '../../components/ui/Visuel.astro';
+import { SITE } from '../../config/site';
+import { CAPOT, EN_TETE, FICHE, FICHES, LANGUES, LIENS, LIENS_SORTIE, lienLangue, PLATEFORME, PREUVES, SECTIONS } from '../../config/league-of-database';
+import { attributsMesure } from '../../lib/liens';
+import { typo } from '../../lib/typo';
+
+const titre = `League Of Data Base — ${SITE.nom}`;
+const description = typo('League Of Data Base : retrouver les valeurs d’un ancien patch de League of Legends, en 21 langues. Conçu, exploité puis réécrit seul, sans perdre un compte.');
+const sortant = (href: string) => ({ href, rel: 'external', ...attributsMesure(href, { emplacement: 'preuves' }) });
+const ADRESSE = 'league-of-data-base.com';
+---
+
+<Base titre={titre} description={description} chemin="/projets/league-of-database" sommaire={SECTIONS}>
+  <EnTeteProjet projet="league" titre={EN_TETE.titre} chapeau={EN_TETE.chapeau} liens={EN_TETE.liens} preuves={PREUVES} fiche={FICHE}>
+    <CaptureLeague
+      slot="visuel"
+      nom="histoire-version"
+      adresse={`${ADRESSE}/fr/3.6.14/champions`}
+      alt="Le menu « Patch & langue » de League Of Data Base, ouvert sur le patch 3.6.14 en français, au-dessus du catalogue de ses 113 champions."
+      legende="Choisir un patch et une langue, puis lire le jeu tel qu’il était : ici le 3.6.14, en français."
+      cible={{ x: 87, y: 17 }}
+      loupe={{ x: 86.5, y: 17, zoom: 4, coin: 'bas-gauche', largeur: 50 }}
+      mobile={{ ratio: '4 / 3' }}
+      loading="eager"
+      sizes="(max-width: 1100px) 100vw, 520px"
+    />
+  </EnTeteProjet>
+
+  <CorpsProjet sections={SECTIONS}>
+    <SectionProjet id="versions" titre="Ce n’était pas la même Ahri" chapeau="Une même fiche, deux patchs : son titre, ses valeurs et même son passif ont changé.">
+      <ComparaisonAhri />
+      <div class="ahri-suite">
+        <div class="ahri-suite__texte">
+          <h3>Remonter le temps d’un clic</h3>
+          <p>Chaque patch a sa propre adresse, et chaque fiche se termine par ses six patchs précédents&nbsp;: un clic, et la même fiche s’ouvre telle qu’elle était.</p>
+          <p class="petit">Comparaison faite pour cette page&nbsp;; dans l’application, chaque patch a sa propre fiche. La vitesse d’attaque n’est pas comparée&nbsp;: au patch 3.6.14, le panneau l’affiche à 0.</p>
+        </div>
+        <CaptureLeague
+          nom="histoire-navigation"
+          adresse={`${ADRESSE}/fr/3.6.14/champions/Ahri`}
+          alt="Le bas de la fiche d’Ahri au patch 3.6.14 : « Dans les patchs précédents » ouvre la même fiche aux patchs 0.154.3, 0.154.2, 0.153.2, 0.152.115, 0.152.108 et 0.152.107."
+          legende="Au bas de la fiche, les six patchs précédents."
+          ratio="16 / 7"
+          cible={{ x: 24, y: 37 }}
+          loupe={{ x: 24, y: 24, zoom: 2.3, coin: 'bas-droite', ratio: '2 / 1', largeur: 60 }}
+          mobile={{ ratio: '3 / 2' }}
+          sizes="(max-width: 860px) 100vw, 640px"
+        />
+      </div>
+    </SectionProjet>
+
+    <SectionProjet id="anciennes-fiches" titre="Tout un état du jeu" chapeau="Le patch fixe aussi le contenu : les champions, les apparences et les textes de chaque fiche.">
+      <div class="paire" role="group" aria-label="Le catalogue des champions, dans deux patchs">
+        <CaptureLeague
+          nom="histoire-champions"
+          adresse={`${ADRESSE}/fr/3.6.14/champions`}
+          alt="Le catalogue du patch 3.6.14 : 113 champions, dont Ahri, « Renard à neuf queues »."
+          legende="Patch 3.6.14 : 113 champions."
+          cible={{ x: 93, y: 17 }}
+          loupe={{ x: 89, y: 15.7, zoom: 5, coin: 'bas-gauche', ratio: '2 / 1', largeur: 44 }}
+          mobile={false}
+          sizes="(max-width: 860px) 100vw, 560px"
+        />
+        <CaptureLeague
+          nom="champions"
+          adresse={`${ADRESSE}/fr/champions`}
+          alt="Le catalogue du patch 16.20.1 : 173 champions, dont Ahri, désormais « Renarde à neuf queues »."
+          legende="Patch 16.20.1 : 173 champions."
+          cible={{ x: 93, y: 17 }}
+          loupe={{ x: 89, y: 15.7, zoom: 5, coin: 'bas-gauche', ratio: '2 / 1', largeur: 44 }}
+          mobile={false}
+          sizes="(max-width: 860px) 100vw, 560px"
+        />
+      </div>
+      <div class="actions">
+        <LienAction href={LIENS.catalogueAncien} emplacement="preuves">Le catalogue du patch 3.6.14</LienAction>
+      </div>
+
+      <div class="bloc-capture">
+        <div class="bloc-capture__texte">
+          <h3>Les apparences de l’époque</h3>
+          <p>Au patch 3.6.14, Ahri en a trois. La liste suit le patch&nbsp;; les illustrations, elles, sont celles d’aujourd’hui.</p>
+        </div>
+        <CaptureLeague
+          nom="histoire-skins"
+          adresse={`${ADRESSE}/fr/3.6.14/champions/Ahri`}
+          alt="La galerie des trois apparences d’Ahri répertoriées au patch 3.6.14 : Ahri dynastique, Ahri de minuit et Ahri renard du feu."
+          legende="Les trois apparences répertoriées au patch 3.6.14."
+          ratio="16 / 7"
+          cible={{ x: 15, y: 29 }}
+          loupe={{ x: 20, y: 21, zoom: 3.3, coin: 'bas-droite', ratio: '2 / 1', largeur: 50 }}
+          mobile={{ ratio: '1 / 1' }}
+          sizes="(max-width: 860px) 100vw, 680px"
+        />
+      </div>
+
+      <div class="langues" id="langues">
+        <OngletsCaptures
+          nom="langue-ahri"
+          legende="Choisir la langue de la fiche d’Ahri au patch 16.20.1"
+          disposition="cote"
+          largeur="720px"
+          onglets={LANGUES.map((langue) => ({
+            id: langue.id,
+            libelle: langue.nom,
+            accessible: langue.accessible,
+            lang: langue.id,
+            detail: { titre: langue.titre, sousTitre: langue.sousTitre },
+            capture: {
+              nom: langue.capture,
+              adresse: `${ADRESSE}/${langue.id}/champions/Ahri`,
+              alt: `La fiche d’Ahri au patch 16.20.1 dans la version ${langue.adjectif} de League Of Data Base.`,
+              legende: `Ahri au patch 16.20.1, en ${langue.langue}.`,
+              ratio: '2 / 1',
+              mobile: '1 / 1',
+            },
+            lien: { href: lienLangue(langue.id), libelle: `Consulter cette fiche en ${langue.langue}` },
+          }))}
+        >
+          <div slot="intro" class="langues__tete">
+            <h3>La même fiche, dans sa langue</h3>
+            <p>Les noms et les descriptions viennent des traductions de Riot, au même patch. Quand une langue manque à un ancien patch, la fiche se replie sur l’anglais.</p>
+          </div>
+        </OngletsCaptures>
+      </div>
+    </SectionProjet>
+
+    <SectionProjet id="champions" titre="Les fiches à explorer" chapeau="Des fiches d’aujourd’hui, au patch 16.20.1 : Ahri, ses capacités et ses apparences, puis un objet et les runes.">
+      <div class="atelier acte-veille">
+        <OngletsCaptures
+          nom="fiche"
+          legende="Explorer les fiches du patch 16.20.1"
+          onglets={FICHES.map((fiche) => ({
+            id: fiche.nom,
+            libelle: fiche.titre,
+            capture: { nom: fiche.nom, alt: fiche.alt, legende: fiche.legende, adresse: `${ADRESSE}/${fiche.adresse}` },
+            lien: 'lien' in fiche ? fiche.lien : undefined,
+          }))}
+        />
+      </div>
+    </SectionProjet>
+
+    <SectionProjet id="plateforme" titre="Autour de l’encyclopédie" chapeau="Des fonctions construites et en ligne. Aucun chiffre d’usage n’est publié.">
+      <ul class="plateforme" aria-label="Ce que l’application propose en plus des fiches">
+        {
+          PLATEFORME.map((fonction) => (
+            <li>
+              <h3>{typo(fonction.titre)}</h3>
+              <p>{typo(fonction.texte)}</p>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="actions">
+        <LienAction href={LIENS.aPropos} emplacement="preuves">Ce que l’application propose</LienAction>
+      </div>
+    </SectionProjet>
+
+    <SectionProjet id="donnees" titre="Ce que les données ne disent pas" alignement="centre">
+      <Fragment slot="texte">
+        <p>Riot publie ses données telles quelles. Sur des centaines de versions, il manque des fichiers, des langues, des champs&nbsp;; certains objets existent deux fois. Chaque piège est devenu une règle et un test.</p>
+        <div class="actions">
+          <LienAction href={LIENS.heritage} emplacement="preuves">Les pièges, dans le dépôt</LienAction>
+        </div>
+      </Fragment>
+      <CaptureLeague
+        slot="figure"
+        nom="histoire-ahri"
+        adresse={`${ADRESSE}/fr/3.6.14/champions/Ahri`}
+        alt="La fiche d’Ahri au patch 3.6.14 : le titre « Renard à neuf queues » est celui du patch, l’illustration celle d’aujourd’hui."
+        legende="Au patch 3.6.14, le titre est celui du patch, l’illustration celle d’aujourd’hui."
+        loupe={{ x: 16, y: 64, zoom: 3, coin: 'haut-droite', ratio: '3 / 1', largeur: 45 }}
+        mobile={{ ratio: '1 / 1', position: '50% 30%' }}
+        sizes="(max-width: 1100px) 100vw, 540px"
+      />
+      <PiegesDonnees />
+    </SectionProjet>
+
+    <SectionProjet id="reecriture" titre="Changer de moteur sans perdre personne" alignement="centre">
+      <Fragment slot="texte">
+        <p>La première version a livré le produit, mais elle ne pouvait pas devenir une application de bureau ou Android, et son état restait sur le disque d’un seul serveur. J’ai tout réécrit en .NET et Angular&nbsp;: deux langages au lieu de trois.</p>
+        <p>Avant de basculer, j’ai comparé les deux versions sur 75 couples (version, langue)&nbsp;: 12&nbsp;260 écarts, tous classés. Le jour de la bascule, chacun s’est reconnecté une fois&nbsp;; comptes, builds, favoris, clés d’API et anciens liens ont suivi.</p>
+        <div class="actions">
+          <LienAction href={LIENS.adr1} emplacement="preuves">Pourquoi réécrire</LienAction>
+          <LienAction href={LIENS.parite} emplacement="preuves">Le rapport de parité</LienAction>
+        </div>
+      </Fragment>
+      <Visuel slot="figure" id="LOD-04" ratio="21 / 9" sizes="(max-width: 1100px) 100vw, 540px" />
+      <FriseReecriture />
+    </SectionProjet>
+
+    <SectionProjet id="fabrication" titre="En production" chapeau="Conserver les patchs, préparer les suivants et servir les fiches sans tout recalculer.">
+      <div class="production acte-teinte">
+        <Fabrication />
+      </div>
+    </SectionProjet>
+
+    <SousLeCapot points={CAPOT} chapeau="Trois décisions, chacune avec sa trace dans le code public." />
+
+    <SortieProjet projet="league" liens={LIENS_SORTIE}>
+      <p>League Of Data Base est en ligne&nbsp;: 403 patchs, 21 langues, et depuis le 4 octobre 2026 un moteur entièrement neuf, sans qu’un compte ni un ancien lien ne se perde.</p>
+    </SortieProjet>
+
+    <SourcesProjet>
+      <p><b>Ampleur.</b> 403 patchs, du 0.151.2 au 16.20.1, comptés sur l’<a {...sortant(LIENS.patchs)}>historique public de l’application<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>&nbsp;; 21 langues et un projet «&nbsp;conçu et maintenu par un développeur seul&nbsp;», d’après sa <a {...sortant(LIENS.aPropos)}>page À propos<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. Relevés le 13/10/2026. Le périmètre est celui des versions et des langues publiées dans Data Dragon, la source de données de Riot&nbsp;; aucune date n’y est attachée aux patchs.</p>
+      <p><b>Ahri.</b> Valeurs de base au niveau 1, titre, passif et recharge de l’ultime relevés dans les fiches publiques des patchs 3.6.14 et 16.20.1, le 13/10/2026. Les captures viennent de la production v3.0.0, les 12 et 13 octobre 2026, sans compte connecté ni retouche. Les illustrations et les vidéos de Riot ne sont pas versionnées&nbsp;: elles ne prouvent rien d’historique, et l’application le signale.</p>
+      <p><b>Réécriture.</b> Dix décisions d’architecture acceptées le 24/09/2026, rapport de parité du 26/09/2026 (75 couples version et langue, 12&nbsp;260 écarts tous classés, 328 défauts de l’ancienne version corrigés volontairement), note publique de la version 3.0.0 du 04/10/2026. Permaliens figés à la <a {...sortant(LIENS.decisions)}>révision publique du 12/10/2026<span class="fleche" aria-hidden="true">&nbsp;↗</span></a>. Le README et la description du dépôt décrivent encore la période de bascule.</p>
+      <p><b>Exploitation.</b> Caches, ingestion, mesure, sauvegardes et livraison sont décrits dans le dépôt public, à la même révision. Les fréquences des sauvegardes sont celles du dispositif qu’il décrit. Aucun chiffre d’audience n’est publié&nbsp;: le tableau Umami est privé.</p>
+      <p><b>Nom.</b> League Of Data Base, le nom que porte l’application.</p>
+      <p><b>Riot Games.</b> Les données et les illustrations du jeu proviennent de Riot Games. Projet indépendant, sans affiliation à Riot Games.</p>
+      <p><b>Sous le capot.</b> Extraits du dépôt public, à la révision auditée 1c9b447, relus le 15/10/2026.</p>
+    </SourcesProjet>
+  </CorpsProjet>
+
+  <Visionneuse />
+</Base>
+
+<style>
+  .ahri-suite,
+  .bloc-capture {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+    gap: var(--s5) var(--s7);
+    align-items: center;
+    margin-top: var(--s7);
+  }
+
+  .ahri-suite h3,
+  .bloc-capture h3,
+  .langues__tete h3 {
+    font-size: var(--t-xl);
+    line-height: 1.1;
+  }
+
+  .ahri-suite p,
+  .bloc-capture p,
+  .langues__tete p {
+    margin-top: var(--s3);
+    max-width: var(--mesure);
+  }
+
+  .ahri-suite .petit {
+    margin-top: var(--s4);
+  }
+
+  .paire {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s5);
+    margin-top: var(--s6);
+  }
+
+  .paire + .actions {
+    margin-top: var(--s1);
+  }
+
+  .langues {
+    margin-top: var(--s8);
+    scroll-margin-top: calc(var(--entete) + var(--s5));
+  }
+
+  .langues__tete p {
+    font-size: var(--t-s);
+  }
+
+  /* L’atelier des fiches : la nuit dans le jour, là où les captures attendent. */
+  .atelier {
+    margin-top: var(--s6);
+    padding: clamp(16px, 3vw, 32px);
+    border-radius: var(--r2);
+  }
+
+  .plateforme {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: var(--s4);
+    margin: var(--s6) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* La carte standard du système : surface, rayon de 6 px, ombre douce. */
+  .plateforme li {
+    padding: var(--s4) var(--s5) var(--s5);
+    background: var(--surface);
+    border-radius: var(--r2);
+    box-shadow: var(--ombre-1);
+  }
+
+  .plateforme h3 {
+    font-size: var(--t-l);
+    line-height: 1.15;
+  }
+
+  .plateforme p {
+    margin-top: var(--s2);
+    font-size: var(--t-s);
+    line-height: 1.5;
+    color: var(--eteint);
+  }
+
+  .plateforme + .actions {
+    margin-top: var(--s2);
+  }
+
+  .production {
+    margin-top: var(--s6);
+    padding: clamp(16px, 3vw, 40px);
+    border-radius: var(--r2);
+  }
+
+  .production :global(.fabrication) {
+    margin-top: 0;
+  }
+
+  @media (max-width: 1100px) {
+    .ahri-suite,
+    .bloc-capture {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 860px) {
+    /* Les repères de l’en-tête : « 12 260 » est bien plus large que 403 et
+       21. Chaque chiffre prend sa propre largeur, collé à sa légende, au lieu
+       d’une colonne commune qui laisserait les petits flotter. */
+    :global([data-projet='league'] .projet-tete__preuves .preuve-chiffree) {
+      grid-template-columns: max-content minmax(0, 1fr);
+      column-gap: var(--s3);
+    }
+
+    /* Les trois liens de l’en-tête passent sur deux lignes : des cibles de
+       44 px (règle E7) plutôt que 48, pour un interligne plus serré. */
+    :global([data-projet='league'] .projet-tete__actions .lien-action) {
+      padding-block: 10px;
+    }
+
+    .paire {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .langues {
+      margin-top: var(--s7);
+    }
+
+    .atelier,
+    .production {
+      margin-inline: calc(-1 * var(--gouttiere));
+      border-radius: 0;
+    }
+
+    .plateforme {
+      gap: var(--s3);
+      margin-top: var(--s5);
+    }
+
+    .plateforme li {
+      padding: var(--s3) var(--s4) var(--s4);
+    }
+  }
+</style>

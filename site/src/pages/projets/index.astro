@@ -1,0 +1,335 @@
+---
+/**
+ * La vitrine des projets (cahier des charges, § 5.2 ; décision de Charles du
+ * 14/10/2026) : un titre, une phrase, l’index des étiquettes de preuve, puis
+ * une section par famille, dans l’ordre de VITRINE_PAR_FAMILLE — « Lead et
+ * équipe » (PvZ Fusion, en vedette), « Jeu vidéo », « Outils », « IA ».
+ * Chaque carte mène à sa page (« Voir le projet → ») et porte son rang
+ * global (01 à 09), un chiffre sourcé, un rôle, un statut et ses liens
+ * publics. Suivent la ligne des relevés, les projets archivés (repliés,
+ * avec les vignettes de l’ancienne rangée « Aussi »), « Contribuer » et
+ * l’appel « Discutons ».
+ *
+ * Ordre, familles et noms : config/projets.ts (VITRINE) ; contenu des cartes :
+ * config/vitrine.ts (CARTES). PvZ Fusion (son illustration), Bloodborne
+ * Legendary Run et gup gardent ici leur visuel ; les autres cartes décrivent
+ * le leur (`visuel` : une capture, ou un emplacement du registre), rendu de
+ * la même façon pour toutes. Depuis le 15/10/2026, les trois jeux vidéo
+ * montrent une vraie capture. Page complète sans JavaScript.
+ */
+import Base from '../../layouts/Base.astro';
+import AppelDiscutons from '../../components/pages/AppelDiscutons.astro';
+import CarteProjet from '../../components/pages/CarteProjet.astro';
+import FilAriane from '../../components/pages/FilAriane.astro';
+import IndexPreuves from '../../components/pages/IndexPreuves.astro';
+import Vitrine from '../../components/pages/Vitrine.astro';
+import CadreCapture from '../../components/ui/CadreCapture.astro';
+import Visuel from '../../components/ui/Visuel.astro';
+import ArchivesProjets from '../../components/vitrine/ArchivesProjets.astro';
+import BlocContribuer from '../../components/vitrine/BlocContribuer.astro';
+import atlas from '../../assets/projets/bloodborne/atlas.webp';
+import gup from '../../assets/projets/gup-selection.webp';
+import { SITE } from '../../config/site';
+import { projetDeLaVitrine, VEDETTE, VITRINE_PAR_FAMILLE } from '../../config/projets';
+import { visuelParId } from '../../config/visuels';
+import { CARTES, RELEVE } from '../../config/vitrine';
+import { typo } from '../../lib/typo';
+
+const titre = `Projets — ${SITE.nom}`;
+const description = 'Des projets menés au bout, rangés en quatre familles : une équipe bénévole, des jeux vidéo, des outils publiés et des agents IA encadrés.';
+const rang = (id: Parameters<typeof projetDeLaVitrine>[0]) => projetDeLaVitrine(id).rang;
+const familles = VITRINE_PAR_FAMILLE.filter((famille) => famille.projets.length > 0);
+/** Une image du registre à fond transparent se montre entière dans le panneau ; une gravure à fond rempli le remplit. */
+const contenue = (id: string) => visuelParId(id)?.fond === 'transparent';
+---
+
+<Base titre={titre} description={description} chemin="/projets">
+  <header class="vitrine-tete conteneur">
+    <FilAriane courant="Projets" />
+    <div class="vitrine-tete__texte foyer">
+      <h1 data-pli="titre">Projets</h1>
+      <p class="chapeau" data-pli="identite">Des projets menés au bout&nbsp;: une équipe, des systèmes en production, des outils publiés, des agents IA encadrés.</p>
+    </div>
+    <IndexPreuves familles={familles.map(({ id, titre, projets }) => ({ id, titre, entrees: projets.map((projet) => ({ id: projet.id, rang: rang(projet.id), preuve: projet.preuve })) }))} />
+  </header>
+
+  <div class="conteneur vitrine-corps">
+    {
+      familles.map((famille) => (
+        <section class="vitrine-famille" id={`famille-${famille.id}`} aria-labelledby={`famille-${famille.id}-titre`}>
+          <h2 class="vitrine-famille__titre" id={`famille-${famille.id}-titre`}>{typo(famille.titre)}</h2>
+          <Vitrine labelledby={`famille-${famille.id}-titre`} colonnes={famille.projets.length === 3 ? 3 : 2}>
+            {famille.projets.map((projet) => {
+              const carte = CARTES[projet.id];
+              const vedette = projet.id === VEDETTE;
+              return (
+                <CarteProjet
+                  variante={vedette ? 'vedette' : 'ligne'}
+                  niveau={3}
+                  id={projet.id}
+                  rang={rang(projet.id)}
+                  href={projet.href}
+                  nom={projet.nom}
+                  preuve={projet.preuve}
+                  besoin={carte.besoin}
+                  chiffre={carte.chiffre}
+                  role={carte.role}
+                  statut={carte.statut}
+                  liens={[...carte.liens]}
+                  prive={projet.prive}
+                  technos={[...carte.technos]}
+                  pli={vedette ? 'preuve' : undefined}
+                >
+                  {/* La vedette garde le 16:10 sur mobile : son chiffre reste au premier écran. */}
+                  {projet.id === 'pvz' && <Visuel slot="visuel" id="PRJ-01" ratioMobile="16 / 10" loading="eager" acte sizes="(max-width: 860px) 100vw, 760px" class="vitrine-visuel vitrine-visuel--vedette" />}
+                  {
+                    projet.id === 'bloodborne' && (
+                      <CadreCapture
+                        slot="visuel"
+                        type="telephone"
+                        src={atlas}
+                        alt="L’atlas de Bloodborne Legendary Run sur téléphone : chaque constellation d’objectifs avec sa progression, et la chasse à reprendre en tête."
+                        ratioMobile="4 / 5"
+                        widths={[390, 780]}
+                        sizes="(max-width: 860px) 200px, 150px"
+                        class="vitrine-telephone"
+                      />
+                    )
+                  }
+                  {
+                    projet.id === 'gup' && (
+                      <CadreCapture
+                        slot="visuel"
+                        type="terminal"
+                        src={gup}
+                        alt="gup en français dans un terminal : les mises à jour classées par source, et une source en échec qui ne bloque pas les autres."
+                        widths={[640, 1280]}
+                        sizes="(max-width: 860px) 100vw, 300px"
+                        class="vitrine-terminal"
+                      />
+                    )
+                  }
+                  {/* Le visuel décrit par la carte : cartes entrées le 14/10/2026 (config/<projet>.ts), League Of Data Base et Omnicard (config/vitrine.ts). */}
+                  {
+                    carte.visuel?.visuel && (
+                      <Visuel
+                        slot="visuel"
+                        id={carte.visuel.visuel}
+                        alt={carte.visuel.alt ?? ''}
+                        ratioMobile={carte.visuel.ratioMobile}
+                        acte
+                        sizes="(max-width: 860px) 100vw, 610px"
+                        class:list={['vitrine-visuel', contenue(carte.visuel.visuel) ? 'vitrine-visuel--contenu' : 'vitrine-visuel--ligne']}
+                      />
+                    )
+                  }
+                  {
+                    carte.visuel?.capture && (
+                      <CadreCapture
+                        slot="visuel"
+                        {...carte.visuel.capture}
+                        sizes={carte.visuel.capture.sizes ?? (carte.visuel.capture.type === 'telephone' ? '(max-width: 860px) 200px, 150px' : '(max-width: 860px) 100vw, 400px')}
+                        class:list={['vitrine-capture', `vitrine-capture--${carte.visuel.capture.type}`, { 'vitrine-capture--remplie': carte.visuel.capture.remplir }]}
+                        style={carte.visuel.capture.hauteurUtile ? `--hauteur-utile:${carte.visuel.capture.hauteurUtile}` : undefined}
+                      />
+                    )
+                  }
+                </CarteProjet>
+              );
+            })}
+          </Vitrine>
+        </section>
+      ))
+    }
+    <p class="petit vitrine-releve">{typo(RELEVE)}</p>
+  </div>
+
+  <ArchivesProjets />
+  <BlocContribuer />
+
+  <div class="conteneur vitrine-fin">
+    <AppelDiscutons emplacement="discutons">Un projet commence souvent par une discussion.</AppelDiscutons>
+  </div>
+</Base>
+
+<style>
+  .vitrine-tete {
+    padding-bottom: var(--s5);
+  }
+
+  /* Le titre et sa phrase, puis l’index des preuves en bande, une colonne par famille (greffe de B). */
+  .vitrine-tete__texte {
+    max-width: 52rem;
+    padding: var(--s3) 0 var(--s5);
+  }
+
+  h1 {
+    font-size: var(--t-3xl);
+    line-height: 0.98;
+    letter-spacing: var(--ls-affiche);
+  }
+
+  .chapeau {
+    max-width: 34em;
+    margin-top: var(--s4);
+    color: var(--eteint);
+  }
+
+  /* Une section par famille : son titre, puis ses cartes. */
+  .vitrine-famille + .vitrine-famille {
+    margin-top: var(--s7);
+  }
+
+  .vitrine-famille__titre {
+    margin-bottom: var(--s4);
+    font-size: var(--t-xl);
+    line-height: 1.1;
+  }
+
+  /* Les visuels des cartes : à la taille de leur cadre. */
+  .vitrine-corps :global(.vitrine-visuel) {
+    width: 100%;
+  }
+
+  /* Une image à fond transparent, entière dans son panneau : rien de rogné. */
+  .vitrine-corps :global(.vitrine-visuel--contenu img) {
+    object-fit: contain;
+  }
+
+  /* Le téléphone entier sur ordinateur, à la hauteur de la carte. */
+  .vitrine-corps :global(.vitrine-telephone),
+  .vitrine-corps :global(.vitrine-capture--telephone) {
+    justify-self: center;
+    width: min(150px, 100%);
+  }
+
+  .vitrine-corps :global(.vitrine-terminal),
+  .vitrine-corps :global(.vitrine-capture) {
+    width: 100%;
+  }
+
+  .vitrine-releve {
+    margin-top: var(--s5);
+    color: var(--eteint);
+  }
+
+  /* Sur ordinateur, le visuel d’une carte « ligne » remplit tout son panneau
+     (portrait) au lieu d’un 16:10 perdu au milieu du noir ; la composition
+     du registre se lit recadrée au centre. Dans une famille de trois, au-delà
+     de 1 100 px, le panneau est au-dessus du texte, à la hauteur commune de
+     la ligne : le visuel la remplit aussi. */
+  @media (min-width: 861px) {
+    .vitrine-corps :global(.carte-projet--ligne .carte-projet__visuel:has(.vitrine-visuel--ligne)) {
+      align-items: stretch;
+    }
+
+    .vitrine-corps :global(.vitrine-visuel--ligne) {
+      height: 100%;
+      min-height: 240px;
+      aspect-ratio: auto;
+    }
+
+    /* gup : le terminal remplit le panneau, recadré sur la liste des paquets
+       (sources, versions, et Scoop en échec) ; entier sur mobile. */
+    .vitrine-corps :global(.carte-projet__visuel:has(.vitrine-terminal)) {
+      align-items: stretch;
+      padding: var(--s3);
+    }
+
+    .vitrine-corps :global(.vitrine-terminal),
+    .vitrine-corps :global(.vitrine-terminal .capture__cadre) {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .vitrine-corps :global(.vitrine-terminal .capture__cadre),
+    .vitrine-corps :global(.vitrine-terminal .capture__vue) {
+      flex: 1;
+    }
+
+    .vitrine-corps :global(.vitrine-terminal .capture__vue) {
+      min-height: 240px;
+      overflow: hidden;
+    }
+
+    .vitrine-corps :global(.vitrine-terminal .capture__vue img) {
+      position: absolute;
+      inset: 0;
+      height: 100%;
+      object-fit: cover;
+      object-position: 56% 0;
+    }
+
+    /* Les captures de navigateur des jeux vidéo remplissent aussi leur panneau,
+       recadrées selon leur position, à la hauteur commune de la famille. */
+    .vitrine-corps :global(.carte-projet__visuel:has(.vitrine-capture--remplie)) {
+      align-items: stretch;
+    }
+
+    .vitrine-corps :global(.vitrine-capture--remplie),
+    .vitrine-corps :global(.vitrine-capture--remplie .capture__cadre) {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .vitrine-corps :global(.vitrine-capture--remplie .capture__cadre),
+    .vitrine-corps :global(.vitrine-capture--remplie .capture__vue) {
+      flex: 1;
+    }
+
+    .vitrine-corps :global(.vitrine-capture--remplie .capture__vue) {
+      min-height: 200px;
+      aspect-ratio: auto;
+    }
+
+    .vitrine-corps :global(.vitrine-capture--remplie .capture__vue img) {
+      position: absolute;
+      inset: 0;
+    }
+
+    /* `--hauteur-utile` (config/vitrine.ts, `hauteurUtile`) : l’image déborde
+       la vue par le bas, d’autant qu’il faut pour que sa part basse n’y entre
+       jamais ; la vue, recadrée, la coupe (overflow: hidden). Le sélecteur
+       l’emporte sur la hauteur du recadrage de CadreCapture. */
+    .vitrine-corps :global(.vitrine-capture--remplie.capture--recadree .capture__vue picture img) {
+      bottom: auto;
+      height: calc(100% * 100 / var(--hauteur-utile, 100));
+    }
+  }
+
+  .vitrine-fin {
+    padding-bottom: var(--s8);
+  }
+
+  /* Sous 860 px, chaque pixel du premier écran compte : le chiffre de la
+     vedette doit y tenir entier à 390 × 844 (E1), sous le titre de sa famille. */
+  @media (max-width: 860px) {
+    .vitrine-tete {
+      padding-bottom: var(--s3);
+    }
+
+    .vitrine-tete__texte {
+      padding: var(--s2) 0 var(--s3);
+    }
+
+    .chapeau {
+      margin-top: var(--s3);
+    }
+
+    .vitrine-famille + .vitrine-famille {
+      margin-top: var(--s6);
+    }
+
+    .vitrine-famille__titre {
+      margin-bottom: var(--s2);
+      font-size: var(--t-m);
+    }
+
+    .vitrine-corps :global(.vitrine-telephone),
+    .vitrine-corps :global(.vitrine-capture--telephone) {
+      width: min(200px, 70%);
+    }
+  }
+</style>

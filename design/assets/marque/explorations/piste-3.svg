@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <title>Livre fermé avec une fenêtre en forme de lanterne</title>
+  <path d="M17 8h35v41H17ZM17 49a5 5 0 0 0 0 10h35M52 49v10M22 8v41M17 54h35"/>
+  <circle cx="35" cy="17" r="3"/>
+  <path d="m26 26 9-6 9 6ZM28 26v17h14V26M26 45h18"/>
+  <path class="flamme" fill="var(--flamme, none)" d="M35 40c-2.5 0-4-2-4-4 0-3 3-5 4-8 1 3 4 5 4 8 0 2-1.5 4-4 4Z"/>
+</svg>

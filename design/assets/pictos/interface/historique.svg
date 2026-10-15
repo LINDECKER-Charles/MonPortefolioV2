@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <title>Livre et horloge</title>
+  <path d="M15 6V3H6a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h9v-3M6 3v14.5M3 18a2.5 2.5 0 0 1 2.5-2.5H10M17 9v3l2 1"/>
+  <circle cx="17" cy="12" r="5"/>
+</svg>

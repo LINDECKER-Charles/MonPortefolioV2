@@ -1,0 +1,95 @@
+---
+/**
+ * La coque du backoffice : toutes les pages /backoffice et /backoffice/blog/*.
+ *
+ * Page autonome, pas Base.astro : ni /mesure.js, ni en-tête ni pied du site
+ * public, hors index (`noindex`, aucun canonical ; le serveur ajoute
+ * `X-Robots-Tag` et `Cache-Control: no-store`). Même système que le site :
+ * styles/global.css (jetons jour et nuit), Instrument Serif et Sans, thème
+ * posé avant le rendu par /theme.js (un fichier : la CSP refuse tout script
+ * en ligne), bascule lanterne sans mesure.
+ *
+ * Structure : en-tête (EnteteBackoffice), sur-titre `h1` « Backoffice », retour
+ * de session (#bo-notice : vérification, expiration, déconnexion), entrée
+ * (ConnexionBackoffice), puis #bo-workspace : une <section class="bo-rubrique">
+ * par rubrique (rubriques.ts), chacune avec son EnTeteRubrique et ses retours
+ * locaux (Retour). Styles : styles/backoffice.css, et styles/blog-editor.css
+ * pour l’atelier du blog (BlogWorkspace, blog/*), sur les mêmes primitives.
+ *
+ * Une nouvelle rubrique : l’ajouter à rubriques.ts, poser sa section
+ * `id="bo-panel-<id>"` ici, et son chargement dans scripts/backoffice.ts.
+ */
+import { Font } from 'astro:assets';
+import Favicons from '../layout/Favicons.astro';
+import { SITE } from '../../config/site';
+import '../../styles/global.css';
+import '../../styles/backoffice.css';
+import '../../styles/blog-editor.css';
+import EnteteBackoffice from './EnteteBackoffice.astro';
+import ConnexionBackoffice from './ConnexionBackoffice.astro';
+import RubriqueDemandes from './RubriqueDemandes.astro';
+import RubriqueEmails from './RubriqueEmails.astro';
+import RubriqueOutils from './RubriqueOutils.astro';
+import RubriqueAccesMcp from './RubriqueAccesMcp.astro';
+import RubriqueStockage from './RubriqueStockage.astro';
+import BlogWorkspace from './BlogWorkspace.astro';
+import DialoguesBlog from './blog/DialoguesBlog.astro';
+
+interface Props { blogSection?: 'list' | 'redaction' | 'medias' | 'seo' | 'publication' }
+const { blogSection } = Astro.props;
+const titres = { list: 'Articles', redaction: 'Rédaction', medias: 'Images', seo: 'Référencement', publication: 'Publication' };
+const titre = `${blogSection ? titres[blogSection] + ' du blog' : 'Backoffice'} — Charles Lindecker`;
+const description = 'L’espace privé du portfolio de Charles Lindecker pour consulter les demandes de contact, régler leur envoi par e-mail, retrouver ses outils et suivre le stockage.';
+/** La barre du navigateur mobile, comme Base.astro : bleu roi le jour, suie la nuit. */
+const COULEUR_NUIT = '#0b0d12';
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="referrer" content="same-origin" />
+    <title>{titre}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={titre} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://charles-lindecker.com/og/accueil.png" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="theme-color" content={SITE.couleurTheme} media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content={COULEUR_NUIT} media="(prefers-color-scheme: dark)" />
+    <Favicons />
+    {/* Synchrone, avant les styles : le thème est posé avant le premier rendu. */}
+    <script is:inline src="/theme.js"></script>
+    <Font cssVariable="--police-texte" preload />
+    <Font cssVariable="--police-titre" preload={[{ style: 'normal' }]} />
+  </head>
+  <body class="bo" data-backoffice-page={blogSection ? 'blog' : 'home'} data-blog-section={blogSection ?? 'list'}>
+    <a class="evitement bo-skip" href="#contenu">Aller au contenu</a>
+    <EnteteBackoffice />
+    <main class="bo-main bo-cadre" id="contenu" tabindex="-1">
+      <h1 class="bo-surtitre">Backoffice</h1>
+      <p class="bo-notice" id="bo-notice" role="status" aria-live="polite">Vérification de la session…</p>
+      <ConnexionBackoffice />
+      <noscript><p class="bo-notice">Activez JavaScript pour ouvrir et utiliser le backoffice.</p></noscript>
+
+      <div class="bo-workspace" id="bo-workspace" hidden>
+        <RubriqueDemandes />
+        <RubriqueEmails />
+        <RubriqueOutils />
+        <RubriqueAccesMcp />
+        <BlogWorkspace />
+        <RubriqueStockage />
+      </div>
+    </main>
+    <footer class="bo-pied bo-cadre"><a href="/">Revenir au portfolio</a><span>Espace privé, hors index</span></footer>
+    <dialog class="bo-dialog" id="bo-confirm" aria-labelledby="bo-confirm-title" aria-describedby="bo-confirm-message bo-confirm-code"><form method="dialog"><h2 id="bo-confirm-title">Confirmer la suppression</h2><p id="bo-confirm-message"></p><pre class="bo-commande bo-dialog__commande" hidden><code id="bo-confirm-code"></code></pre><div class="bo-actions"><button class="bo-button" value="cancel" autofocus>Annuler</button><button class="bo-button bo-button--danger" id="bo-confirm-submit" value="confirm">Supprimer</button></div></form></dialog>
+    <DialoguesBlog />
+    <script>
+      import { brancherBackoffice } from '../../scripts/backoffice';
+      brancherBackoffice();
+    </script>
+  </body>
+</html>

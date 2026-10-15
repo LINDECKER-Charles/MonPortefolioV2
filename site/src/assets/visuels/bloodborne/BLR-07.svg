@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" class="v-blr">
+  <title>Le ciel dans un téléphone</title>
+  <style>
+    svg:root{color:#141312;--trait:#7b7368;--filet:#d2ccc1;--surface:#fbfaf7;--laiton:#7a4f10;--lanterne:#f0b24a}
+    @media (prefers-color-scheme:dark){svg:root{color:#e4e7ee;--trait:#687083;--filet:#262b37;--surface:#1a1e29;--laiton:#f0b24a}}
+    .v-blr .t{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+    .v-blr .f{stroke-width:1}
+    .v-blr .h{fill:none;stroke:var(--trait);stroke-width:.7;stroke-linecap:round}
+    .v-blr .a{fill:var(--filet)}
+    .v-blr .v{fill:var(--surface)}
+    .v-blr .halo{fill:var(--lanterne);opacity:.22}
+    .v-blr .rayon{fill:none;stroke:color-mix(in srgb,var(--lanterne) 70%,var(--laiton));stroke-width:.9;stroke-linecap:round;stroke-dasharray:.1 3.2}
+    .v-blr .on{fill:var(--lanterne);stroke:var(--laiton);stroke-width:1;stroke-linejoin:round}
+    .v-blr .flamme{fill:var(--lanterne);stroke:var(--laiton);stroke-width:.6;stroke-linejoin:round}
+  </style>
+  <g>
+  <path class="t f" d="M6 104H114"/>
+  <path class="h" d="M12 108h9M30 108h9M48 108h9M66 108h9M84 108h9M102 108h9"/>
+  <path class="t a" d="M37 21a7 7 0 0 1 7-7h28a7 7 0 0 1 7 7v76a7 7 0 0 1-7 7H44a7 7 0 0 1-7-7z"/>
+  <path class="t v" d="M41 26h34v68H41z"/>
+  <path class="t f" d="M53 19.5h10"/>
+  <path class="h" d="M41 30L45 26M41 34L49 26M41 38L51 28M41 42L51 32M41 46L51 36M41 50L51 40M41 54L51 44M41 58L51 48M41 62L51 52M41 66L51 56M41 70L51 60M41 74L51 64M41 78L51 68M41 82L51 72M41 86L51 76M41 90L51 80M41 94L51 84M45 94L51 88M49 94L51 92"/>
+  <path class="rayon" d="M93 86 67 46"/>
+  <path class="t f" d="M51 80L57 62L64 42"/>
+  <path class="t f v" d="M51 77L51.9 79.1L54 80L51.9 80.9L51 83L50.1 80.9L48 80L50.1 79.1Z"/>
+  <path class="t f v" d="M57 59L57.9 61.1L60 62L57.9 62.9L57 65L56.1 62.9L54 62L56.1 61.1Z"/>
+  <circle class="halo" cx="64" cy="42" r="8.16"/>
+    <path class="on" d="M64 37.2L65.44 40.56L68.8 42L65.44 43.44L64 46.8L62.56 43.44L59.2 42L62.56 40.56Z"/>
+  <ellipse class="halo" cx="97" cy="94.4" rx="14.4" ry="16"/>
+  <g transform="translate(77.8 71.52) scale(1.6)">
+    <path class="a" d="M8.8 9.3h6.4v8.4H8.8z"/>
+    <path class="flamme" d="M12 11c1.6 1.7 2.2 3 2.2 4.1a2.2 2.2 0 0 1-4.4 0c0-1.1.6-2.4 2.2-4.1Z" stroke-width="0.52"/>
+    <path class="t" style="stroke-width:1" d="M10.3 4.4a1.7 1.7 0 0 1 3.4 0M12 4.4v1.4M7.9 9.3 12 5.8l4.1 3.5ZM8.8 9.3v8.4M15.2 9.3v8.4M7.4 17.7h9.2M9.2 20.3h5.6M10.2 17.7l-.6 2.6M13.8 17.7l.6 2.6"/>
+  </g>
+  </g>
+</svg>

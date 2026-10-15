@@ -1,0 +1,47 @@
+---
+/**
+ * Un chapitre du récit de l’accueil : `section[data-chapitre]`, que lisent la
+ * navigation de page, le sommaire de l’en-tête et la mesure de lecture
+ * (scripts/lecture.ts : l’événement `lecture` part quand son titre h2 entre
+ * dans l’écran). Les identifiants `origine`, `aujourdhui` et `discutons` sont
+ * ceux de la série statistique : ne pas les changer.
+ *
+ *   <Chapitre id="origine">              pierre, le fond du jour
+ *   <Chapitre id="discutons" ton="bleu"> un acte entier (panneau bleu nuit)
+ *
+ * Le titre se pose avec <TeteChapitre id="…" /> : en tête du chapitre, ou en
+ * tête du premier acte qu’il contient (« Aujourd’hui » ouvre dans l’acte de
+ * veille).
+ */
+import { chapitre, type Chapitre } from '../../config/chapitres';
+
+interface Props {
+  id: Chapitre['id'];
+  ton?: 'pierre' | 'teinte' | 'veille' | 'bleu';
+  class?: string;
+}
+
+const { id, ton = 'pierre', class: classe } = Astro.props;
+const c = chapitre(id);
+---
+
+<section
+  id={c.id}
+  class:list={['chapitre', { [`acte-${ton} panneau`]: ton !== 'pierre' }, classe]}
+  aria-labelledby={`${c.id}-titre`}
+  data-chapitre={c.id}
+>
+  <slot />
+</section>
+
+<style>
+  .chapitre {
+    position: relative;
+  }
+
+  /* D’un chapitre au suivant, l’écart d’une section de page : le titre du
+     chapitre, grand et filé, suffit à marquer la coupure. */
+  .chapitre + :global(.chapitre) {
+    margin-top: var(--entre-sections);
+  }
+</style>

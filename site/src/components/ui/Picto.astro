@@ -1,0 +1,56 @@
+---
+/**
+ * Pictogramme au trait, inséré dans la page (aucune requête, et il suit la
+ * couleur du texte : bleu le jour, bleu de lune la nuit).
+ *
+ * `nom` est le chemin du fichier sous src/assets/pictos/, sans extension :
+ * 'cartes', 'interface/copier'… Décoratif par défaut (aria-hidden) ; passer
+ * `label` quand le pictogramme porte seul une information.
+ */
+interface Props {
+  nom: string;
+  class?: string;
+  label?: string;
+  taille?: number;
+}
+
+const fichiers = import.meta.glob<string>('../../assets/pictos/**/*.svg', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+});
+
+const { nom, class: classe, label, taille } = Astro.props;
+const brut = fichiers[`../../assets/pictos/${nom}.svg`];
+if (!brut) throw new Error(`Pictogramme introuvable : ${nom}`);
+
+// Le <title> des fichiers sert aux planches de contrôle ; dans la page, c'est
+// `label` (ou rien, si décoratif) qui parle.
+const corps = brut
+  .replace(/<svg\b[^>]*>/, '')
+  .replace(/<\/svg>\s*$/, '')
+  .replace(/<title>[\s\S]*?<\/title>/, '')
+  .trim();
+const ouverture = brut.match(/<svg\b[^>]*>/)?.[0] ?? '<svg>';
+const attribut = (cle: string) => ouverture.match(new RegExp(`\\s${cle}="([^"]*)"`))?.[1];
+type Extremite = 'butt' | 'round' | 'square' | 'inherit';
+type Jointure = 'miter' | 'round' | 'bevel' | 'inherit';
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox={attribut('viewBox')}
+  fill={attribut('fill') ?? 'none'}
+  stroke={attribut('stroke') ?? 'currentColor'}
+  stroke-width={attribut('stroke-width')}
+  stroke-linecap={attribut('stroke-linecap') as Extremite | undefined}
+  stroke-linejoin={attribut('stroke-linejoin') as Jointure | undefined}
+  class:list={['picto', classe]}
+  width={taille}
+  height={taille}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  focusable="false"
+  set:html={corps}
+/>

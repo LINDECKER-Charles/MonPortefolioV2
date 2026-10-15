@@ -1,0 +1,126 @@
+---
+interface Props {
+  geste: 'organiser' | 'motiver' | 'remercier' | 'livrer';
+}
+
+const { geste } = Astro.props;
+---
+
+<svg class="geste-collectif" viewBox="0 0 320 150" width="320" height="150" aria-hidden="true" focusable="false">
+  {geste === 'organiser' && (
+    <>
+      <path class="repere" d="M26 136h268M38 14v7m-3-3h6M284 34v7m-3-3h6" />
+      <rect class="papier" x="43" y="24" width="234" height="103" rx="5" />
+      <path class="doux" d="M43 45h234M121 45v82m78-82v82" />
+      <path class="trait" d="M55 35h34m44 0h34m44 0h34" />
+      <circle class="plein" cx="263" cy="35" r="2" />
+      <rect class="surface" x="53" y="56" width="58" height="28" rx="3" />
+      <path class="doux" d="M62 65h36m-36 9h24" />
+      <rect class="surface" x="53" y="92" width="58" height="24" rx="3" />
+      <path class="doux" d="M62 101h28m-28 7h18" />
+      <rect class="accent" x="131" y="57" width="58" height="42" rx="3" />
+      <path class="trait" d="M141 67h33m-33 8h24" />
+      <circle class="papier" cx="145" cy="88" r="4" />
+      <circle class="papier" cx="156" cy="88" r="4" />
+      <rect class="surface" x="209" y="56" width="58" height="28" rx="3" />
+      <path class="trait" d="m219 69 4 4 8-10" />
+      <path class="doux" d="M239 66h17m-17 8h10" />
+      <rect class="surface" x="209" y="92" width="58" height="24" rx="3" />
+      <path class="trait" d="m219 103 4 4 8-10" />
+      <path class="doux" d="M239 102h17m-17 7h10" />
+      <path class="trait" d="M152 115h22m-5-5 5 5-5 5" />
+    </>
+  )}
+
+  {geste === 'motiver' && (
+    <>
+      <path class="repere" d="M30 137h260M39 48v7m-3-3h6M280 103v7m-3-3h6" />
+      <rect class="accent" x="55" y="21" width="214" height="32" rx="4" />
+      <rect class="surface" x="55" y="62" width="197" height="29" rx="4" />
+      <rect class="surface" x="55" y="100" width="181" height="29" rx="4" />
+      <circle class="papier" cx="55" cy="37" r="15" />
+      <circle class="surface" cx="55" cy="76.5" r="13" />
+      <circle class="surface" cx="55" cy="114.5" r="13" />
+      <text class="rang" x="55" y="43">1</text>
+      <text class="rang rang--secondaire" x="55" y="82.5">2</text>
+      <text class="rang rang--secondaire" x="55" y="120.5">3</text>
+      <circle class="papier" cx="93" cy="33" r="4" />
+      <path class="trait" d="M85 45v-2a8 8 0 0 1 16 0v2M115 32h69m-69 10h46" />
+      <circle class="surface" cx="93" cy="73" r="4" />
+      <path class="doux" d="M85 84v-2a8 8 0 0 1 16 0v2M115 72h69m-69 9h46" />
+      <circle class="surface" cx="93" cy="111" r="4" />
+      <path class="doux" d="M85 122v-2a8 8 0 0 1 16 0v2M115 110h69m-69 9h46" />
+      <path class="papier" d="m235 27 3 7 8 1-6 5 2 8-7-4-7 4 2-8-6-5 8-1Z" />
+      <path class="trait" d="M235 14V9m17 11 4-4m-38 4-4-4" />
+    </>
+  )}
+
+  {geste === 'remercier' && (
+    <>
+      <path class="repere" d="M30 137h260M36 70v7m-3-3h6M279 39v7m-3-3h6" />
+      <path class="accent" d="M55 134v-24c0-13 10-21 25-21s25 8 25 21v24" />
+      <circle class="papier" cx="80" cy="70" r="14" />
+      <path class="doux" d="M74 68h1m10 0h1m-11 9q5 4 10-1" />
+      <path class="trait" d="M65 110v24m30-24v24m9-19 14 7 15-8" />
+      <path class="papier" d="M104 17h79a5 5 0 0 1 5 5v30a5 5 0 0 1-5 5h-62l-13 12V57h-4a5 5 0 0 1-5-5V22a5 5 0 0 1 5-5Z" />
+      <path class="trait" d="m117 34 4 4 8-9M139 30h34m-34 10h24" />
+      <path class="surface" d="M166 47h70l17 18v65h-87Z" />
+      <path class="papier" d="M159 40h70l17 18v65h-87Z" />
+      <path class="doux" d="M229 40v18h17M174 55h33M193 75h35m-35 18h29m-29 18h36" />
+      <path class="trait" d="m172 74 4 4 8-9m-12 23 4 4 8-9m-12 23 4 4 8-9" />
+      <circle class="papier" cx="258" cy="111" r="16" />
+      <path class="accent" d="m258 100 3 7 7 1-5 5 1 7-6-4-6 4 1-7-5-5 7-1Z" />
+    </>
+  )}
+
+  {geste === 'livrer' && (
+    <>
+      <path class="repere" d="M29 138h264M278 25v7m-3-3h6M173 127v7m-3-3h6" />
+      <path class="doux" d="M87 33h32c18 0 27 12 27 27v1c0 8 8 14 19 14M87 117h32c18 0 27-12 27-27v-1c0-8 8-14 19-14" />
+      <path class="trait" d="M87 75h122m-8-7 8 7-8 7" />
+      <path class="surface" d="M53 14h25l10 10v27H53Z" />
+      <path class="doux" d="M78 14v10h10M61 32h17m-17 8h12" />
+      <path class="surface" d="M53 56h25l10 10v27H53Z" />
+      <path class="doux" d="M78 56v10h10M61 74h17m-17 8h12" />
+      <path class="surface" d="M53 98h25l10 10v27H53Z" />
+      <path class="doux" d="M78 98v10h10M61 116h17m-17 8h12" />
+      <circle class="papier" cx="112" cy="33" r="4" />
+      <circle class="papier" cx="112" cy="75" r="4" />
+      <circle class="papier" cx="112" cy="117" r="4" />
+      <circle class="accent" cx="165" cy="75" r="7" />
+      <path class="surface" d="M222 37h44l16 17v67h-60Z" />
+      <path class="papier" d="M214 29h44l16 17v67h-60Z" />
+      <path class="doux" d="M258 29v17h16M227 56h33m-33 9h24" />
+      <circle class="accent" cx="244" cy="91" r="14" />
+      <path class="trait" d="m237 91 5 5 10-11" />
+      <path class="trait" d="M237 17v-5m12 5 2-5m-27 8-2-5" />
+    </>
+  )}
+</svg>
+
+<style>
+  .geste-collectif {
+    display: block;
+    width: 100%;
+    height: auto;
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .papier { fill: var(--surface); }
+  .surface { fill: var(--fond); stroke: var(--trait); }
+  .accent { fill: color-mix(in srgb, var(--accent) 9%, var(--surface)); }
+  .trait { stroke: var(--accent); }
+  .doux { stroke: var(--trait); stroke-width: 1.3; }
+  .repere { stroke: var(--filet); stroke-width: 1; }
+  .plein { fill: var(--accent); stroke: none; }
+  .rang {
+    fill: var(--accent);
+    stroke: none;
+    text-anchor: middle;
+    font: 700 18px var(--police-texte);
+  }
+  .rang--secondaire { fill: var(--encre); font-size: 16px; }
+</style>

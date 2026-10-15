@@ -1,0 +1,228 @@
+---
+/**
+ * Le jeu en images : trois captures réelles d’une version précédente
+ * d’Omnicard (collection, deck, ouverture d’un booster), dans un acte de
+ * veille, la nuit dans le jour, là où les interfaces sombres s’éclairent.
+ *
+ *   <GalerieEcrans />
+ *
+ * Un écran à la fois, choisi par boutons radio natifs (clic, flèches), sans
+ * JavaScript. Chaque capture, entière dans son cadre de navigateur, s’ouvre
+ * dans la visionneuse partagée (<Visionneuse />, posée par la page) ; sans
+ * JavaScript, le lien ouvre l’image. Le cadre garde la même hauteur d’un
+ * écran à l’autre : rien ne bouge sous le lecteur. Données : ECRANS.
+ */
+import type { ImageMetadata } from 'astro';
+import CadreCapture from '../../ui/CadreCapture.astro';
+import collection from '../../../assets/projets/omnicard/collection.webp';
+import deck from '../../../assets/projets/omnicard/deck.webp';
+import ouverture from '../../../assets/projets/omnicard/ouverture.webp';
+import { ECRANS, type Ecran } from '../../../config/omnicard';
+import { typo } from '../../../lib/typo';
+
+const IMAGES: Record<Ecran['id'], ImageMetadata> = { collection, deck, ouverture };
+---
+
+<div class="galerie acte-veille">
+  <fieldset class="galerie__jeu">
+    <legend class="sr">Choisir un écran d’Omnicard</legend>
+    <div class="galerie__menu">
+      <div class="galerie__choix">
+        {
+          ECRANS.map((ecran, index) => (
+            <label class="onglet">
+              <input class="onglet__radio" type="radio" name="ecran" value={ecran.id} checked={index === 0} />
+              <span class="onglet__titre">{ecran.titre}</span>
+              <span class="onglet__detail">{typo(ecran.sousTitre)}</span>
+            </label>
+          ))
+        }
+      </div>
+      <p class="galerie__note">Captures d’une version précédente du jeu. Omnicard est aujourd’hui hors ligne, en attente de refonte.</p>
+    </div>
+    <div class="galerie__ecrans">
+      {
+        ECRANS.map((ecran) => (
+          <CadreCapture
+            class="galerie__ecran"
+            type="navigateur"
+            src={IMAGES[ecran.id]}
+            alt={typo(ecran.alt)}
+            legende={ecran.detail}
+            ratio="16 / 15"
+            position="50% 50%"
+            sizes="(max-width: 1100px) calc(100vw - 32px), 640px"
+            agrandir
+          />
+        ))
+      }
+    </div>
+  </fieldset>
+</div>
+
+<style>
+  .galerie {
+    margin-top: var(--s6);
+    padding: clamp(20px, 3.4vw, 40px);
+    border-radius: var(--r2);
+  }
+
+  .galerie__jeu {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: var(--s5) var(--s7);
+    align-items: start;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .galerie__choix {
+    display: grid;
+    border-top: 1px solid var(--filet);
+  }
+
+  /* Un onglet par écran : l’écran montré porte un filet de lune à gauche. */
+  .onglet {
+    position: relative;
+    display: grid;
+    gap: var(--s1);
+    padding: var(--s4) var(--s4) var(--s4) var(--s5);
+    border-bottom: 1px solid var(--filet);
+    color: var(--eteint);
+    cursor: pointer;
+    transition: background-color var(--d-ui) var(--courbe), color var(--d-ui) var(--courbe);
+  }
+
+  .onglet:hover {
+    background: var(--surface);
+    color: var(--encre);
+  }
+
+  .onglet:has(:checked) {
+    background: var(--surface);
+    box-shadow: inset 3px 0 0 var(--accent);
+    color: var(--encre);
+  }
+
+  .onglet:has(:focus-visible) {
+    outline: 2px solid var(--focus);
+    outline-offset: -2px;
+  }
+
+  /* Le focus natif reste au centre de l’onglet : changer d’écran ne fait pas défiler la page. */
+  .onglet__radio {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .onglet__titre {
+    font-size: var(--t-l);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  .onglet__detail {
+    font-size: var(--t-xs);
+    line-height: 1.45;
+  }
+
+  .galerie__note {
+    margin-top: var(--s4);
+    font-size: var(--t-xs);
+    line-height: 1.5;
+    color: var(--eteint);
+  }
+
+  .galerie__ecrans > :global(.galerie__ecran) {
+    display: none;
+  }
+
+  .galerie__jeu:has(.onglet:nth-child(1) :checked) .galerie__ecrans > :global(.galerie__ecran:nth-child(1)),
+  .galerie__jeu:has(.onglet:nth-child(2) :checked) .galerie__ecrans > :global(.galerie__ecran:nth-child(2)),
+  .galerie__jeu:has(.onglet:nth-child(3) :checked) .galerie__ecrans > :global(.galerie__ecran:nth-child(3)) {
+    display: block;
+  }
+
+  /* Capture entière dans un cadre de hauteur fixe : les bandes se fondent dans le cadre sombre. */
+  .galerie .galerie__ecrans :global(.capture--recadree .capture__vue img) {
+    object-fit: contain;
+    background: var(--cadre);
+  }
+
+  @media (max-width: 1100px) {
+    .galerie__jeu {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .galerie__choix {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--s2);
+      border-top: 0;
+    }
+
+    .onglet {
+      align-content: center;
+      min-height: 56px;
+      padding: var(--s2) var(--s3);
+      border: 1px solid var(--filet);
+      border-radius: var(--r2);
+      text-align: center;
+    }
+
+    .onglet:has(:checked) {
+      box-shadow: inset 0 -3px 0 var(--accent);
+    }
+
+    .onglet__titre {
+      font-size: var(--t-s);
+    }
+
+    .onglet__detail {
+      display: none;
+    }
+
+    .galerie__note {
+      margin-top: var(--s3);
+    }
+  }
+
+  /* Sur téléphone, les trois onglets en pile : aucun intitulé ne déborde. */
+  @media (max-width: 560px) {
+    .galerie__choix {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+      border-top: 1px solid var(--filet);
+    }
+
+    .onglet {
+      min-height: 48px;
+      padding: var(--s2) var(--s4);
+      border-width: 0 0 1px;
+      border-radius: 0;
+      text-align: left;
+    }
+
+    .onglet:has(:checked) {
+      box-shadow: inset 3px 0 0 var(--accent);
+    }
+  }
+
+  @media print {
+    .galerie__choix {
+      display: none;
+    }
+
+    .galerie__ecrans > :global(.galerie__ecran) {
+      display: block;
+      margin-bottom: var(--s5);
+    }
+  }
+</style>

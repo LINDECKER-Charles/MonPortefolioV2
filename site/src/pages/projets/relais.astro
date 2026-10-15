@@ -1,0 +1,220 @@
+---
+/**
+ * Relais : la preuve d’« Encadrer des agents IA ». Page bâtie sur le gabarit
+ * commun des pages de projet (components/projets/gabarit, règle E5) : en-tête
+ * et fiche, corps libre (le point d’accès, le périmètre, la capacité,
+ * l’analyse), « Sous le capot », sortie et note de sources.
+ * Données et sources : config/relais.ts, que cette page tient seule (sa carte
+ * de la vitrine comprise).
+ *
+ * Dépôt privé : aucun lien, aucun nom de dépôt. Les captures sont de vraies
+ * vues de Relais 0.2.0 lancé en local avec des données de démonstration et un
+ * agent de démonstration (src/assets/projets/relais/README.md). Relais est le
+ * dernier projet de la vitrine : sa sortie mène aux projets archivés.
+ */
+import type { ImageMetadata } from 'astro';
+import Base from '../../layouts/Base.astro';
+import CorpsProjet from '../../components/projets/gabarit/CorpsProjet.astro';
+import EnTeteProjet from '../../components/projets/gabarit/EnTeteProjet.astro';
+import SectionProjet from '../../components/projets/gabarit/SectionProjet.astro';
+import SortieProjet from '../../components/projets/gabarit/SortieProjet.astro';
+import SourcesProjet from '../../components/projets/gabarit/SourcesProjet.astro';
+import SousLeCapot from '../../components/projets/gabarit/SousLeCapot.astro';
+import FigurePointAcces from '../../components/projets/relais/FigurePointAcces.astro';
+import CadreCapture from '../../components/ui/CadreCapture.astro';
+import CaptureAnnotee from '../../components/ui/CaptureAnnotee.astro';
+import Visionneuse from '../../components/ui/Visionneuse.astro';
+import { SITE } from '../../config/site';
+import { typo } from '../../lib/typo';
+import { CAPOT, CAPTURES, EN_TETE, FICHE, FONCTIONS, LIENS_SORTIE, PREUVES, SECTIONS, type NomCapture } from '../../config/relais';
+
+// ≤ 45 caractères avant « — Charles Lindecker » (titre ≤ 65 au total).
+const titre = `Relais, un point d’accès aux agents IA — ${SITE.nom}`;
+// 110 à 165 caractères.
+const description = typo('Relais : un seul point d’accès local aux agents Claude Code et Codex pour les outils de ma machine, avec des comptes isolés et chaque permission décidée.');
+
+/** Les vraies vues de Relais : dashboard, conversation-perimetre, capacite, garde-fous, analyse (README.md du dossier). */
+const fichiers = import.meta.glob<ImageMetadata>('../../assets/projets/relais/*.webp', { eager: true, import: 'default' });
+const capture = (nom: NomCapture) => {
+  const image = fichiers[`../../assets/projets/relais/${nom}.webp`];
+  if (!image) throw new Error(`Capture de Relais introuvable : ${nom}.webp`);
+  return { src: image, ...CAPTURES[nom] };
+};
+const dashboard = capture('dashboard');
+const perimetre = capture('conversation-perimetre');
+const capacite = capture('capacite');
+const gardeFous = capture('garde-fous');
+const analyse = capture('analyse');
+---
+
+<Base titre={titre} description={description} chemin="/projets/relais" sommaire={SECTIONS}>
+  <EnTeteProjet projet="relais" titre={EN_TETE.titre} chapeau={EN_TETE.chapeau} liens={EN_TETE.liens} preuves={PREUVES} fiche={FICHE}>
+    <CadreCapture
+      slot="visuel"
+      type="navigateur"
+      src={dashboard.src}
+      alt={dashboard.alt}
+      legende={dashboard.legende}
+      class="rel-entete-capture"
+      sizes="(max-width: 860px) 100vw, (max-width: 1100px) 640px, 560px"
+      widths={[640, 1200, 1600, 2400]}
+      loading="eager"
+      agrandir
+    />
+  </EnTeteProjet>
+
+  <CorpsProjet sections={SECTIONS}>
+    <SectionProjet id="acces" titre="Un seul point d’accès pour tous mes outils" alignement="centre">
+      <Fragment slot="texte">
+        <p>Sur ma machine, plusieurs outils confient du travail à des agents IA&nbsp;: <a href="/projets/sillage">Sillage</a> orchestre des équipes d’agents, <a href="/projets/karl-scraper">Karl Scraper</a> automatise des tâches. Sans point commun, chacun lancerait et surveillerait lui-même son agent, avec ses propres comptes et ses propres droits.</p>
+        <p>Relais leur ouvre une seule porte&nbsp;: une API qui n’écoute que la machine, derrière une clé d’accès. Il lance lui-même Claude Code et Codex, dans des versions qu’il fixe, et garde les conversations dans SQLite.</p>
+      </Fragment>
+      <FigurePointAcces slot="figure" />
+    </SectionProjet>
+
+    <SectionProjet id="perimetre" titre="Chaque lecture et chaque écriture passent par Relais" alignement="centre">
+      <Fragment slot="texte">
+        <p>Un outil peut confier à l’agent un dossier où écrire et d’autres à lire seulement. En mode strict, l’agent n’a pas de terminal&nbsp;: Relais décide de chaque lecture et de chaque écriture. Sur ses trois premiers jours de service, il a pris 1&nbsp;011&nbsp;décisions de permission.</p>
+        <p>Ici, l’agent demande à lire un fichier d’un autre projet. Relais refuse, et le refus revient à l’agent avec son motif. C’est un contrôle de chaque appel d’outil, pas un bac à sable du système.</p>
+      </Fragment>
+      <CaptureAnnotee
+        slot="figure"
+        type="navigateur"
+        src={perimetre.src}
+        alt={perimetre.alt}
+        legende={perimetre.legende}
+        cible={perimetre.cible}
+        loupe={perimetre.loupe}
+        sizes="(max-width: 1100px) 100vw, 560px"
+        agrandir
+      />
+    </SectionProjet>
+
+    <SectionProjet id="capacite" titre="La capacité de chaque abonnement, avant chaque session" chapeau="Relais ne devine pas ce qu’il reste : il lit les quotas que communique le fournisseur, jamais déduits du nom de la formule.">
+      <ol class="rel-capacite">
+        <li class="rel-capacite__etape">
+          <div class="rel-capacite__texte">
+            <span class="rel-capacite__rang" aria-hidden="true">01</span>
+            <h3>Voir</h3>
+            <p>Chaque abonnement montre sa fenêtre de cinq heures et celle de sept jours, leur réinitialisation et le repère de son seuil de protection.</p>
+          </div>
+          <CaptureAnnotee
+            type="navigateur"
+            src={capacite.src}
+            alt={capacite.alt}
+            legende={capacite.legende}
+            cible={capacite.cible}
+            loupe={capacite.loupe}
+            sizes="(max-width: 860px) 100vw, (max-width: 1100px) 50vw, 520px"
+            agrandir
+          />
+        </li>
+        <li class="rel-capacite__etape">
+          <div class="rel-capacite__texte">
+            <span class="rel-capacite__rang" aria-hidden="true">02</span>
+            <h3>Admettre</h3>
+            <p>Avant d’ouvrir une session, Relais ajoute au quota ce que consommeront celles qui tournent déjà&nbsp;; si le total dépasse le seuil, 95&nbsp;% par défaut, la nouvelle session est refusée. Une session ouverte n’est jamais coupée.</p>
+          </div>
+          <CaptureAnnotee
+            type="navigateur"
+            src={gardeFous.src}
+            alt={gardeFous.alt}
+            legende={gardeFous.legende}
+            cible={gardeFous.cible}
+            loupe={gardeFous.loupe}
+            sizes="(max-width: 860px) 100vw, (max-width: 1100px) 50vw, 520px"
+            agrandir
+          />
+        </li>
+      </ol>
+    </SectionProjet>
+
+    <SectionProjet id="analyse" titre="Relire chaque appel" alignement="centre">
+      <Fragment slot="texte">
+        <p>Relais garde les conversations, 90&nbsp;jours par défaut après leur fin&nbsp;: le fil horodaté à la seconde, les outils et leurs résultats, les décisions de permission. Chacune s’exporte en Markdown ou en JSON, et ses métriques restent après sa suppression.</p>
+        <p>L’analyse mesure, pour les agents et la période choisis, la durée des tours, leur débit et leurs erreurs, et s’exporte en CSV ou en JSON.</p>
+      </Fragment>
+      <CaptureAnnotee
+        slot="figure"
+        type="navigateur"
+        src={analyse.src}
+        alt={analyse.alt}
+        legende={analyse.legende}
+        cible={analyse.cible}
+        loupe={analyse.loupe}
+        sizes="(max-width: 1100px) 100vw, 560px"
+        agrandir
+      />
+    </SectionProjet>
+
+    <SousLeCapot id="fonctions" titre="Toutes ses fonctions, une ligne chacune" points={FONCTIONS} chapeau="De la session à l’analyse : un clic déplie chaque fonction." />
+
+    <SousLeCapot points={CAPOT} chapeau="L’architecture, puis quatre choix qui ne se voient pas à l’écran, le dernier né d’un incident, et ses limites. Le code est privé : les extraits sont des formes simplifiées, écrites pour cette page." />
+
+    <SortieProjet projet="relais" titre="En une phrase" liens={LIENS_SORTIE}>
+      <p>Un seul point d’accès où les agents de ma machine sont lancés, encadrés et relus&nbsp;: Sillage et Karl Scraper y confient les leurs, et tout outil qui a la clé peut en faire autant.</p>
+    </SortieProjet>
+
+    <SourcesProjet>
+      <p><b>Le projet.</b> Dépôt privé, présenté sans lien. Relu le 14/10/2026 à la révision bdf041f de sa branche de développement&nbsp;: version 0.2.0, 260&nbsp;commits du 18/09 au 14/10/2026, tous de ma main, et 373&nbsp;tests du serveur en Rust. Versions fixées par Relais&nbsp;: Claude Code 2.1.281 et Codex 0.157.1.</p>
+      <p><b>Chiffres.</b> Les 1&nbsp;011&nbsp;décisions de permission, et les 69&nbsp;refus de lecture et de recherche parmi elles, viennent du registre des correctifs du dépôt&nbsp;: la base de l’instance en service après trois jours, du 21 au 23/09/2026. Les 52&nbsp;cas et le défaut des liens physiques viennent de l’audit des permissions du 20/09/2026&nbsp;; les 69&nbsp;refus ont été recoupés avec les paramètres des appels, pas rejoués un à un sur la base en service. Le frein des lancements et l’incident du 27/09/2026 viennent de son code et du correctif du 05/10/2026. Le seuil de 95&nbsp;% et la suppression des conversations après 90&nbsp;jours sont des valeurs par défaut, réglables.</p>
+      <p><b>Captures.</b> Relais 0.2.0 lancé en local le 14/10/2026, avec des données de démonstration&nbsp;: trois abonnements, des projets et des conversations inventés, aucun compte réel. Un agent de démonstration remplace Claude Code&nbsp;: il rejoue des tours écrits à l’avance, sans inférence ni appel réseau. Les décisions de permission, refus compris, sont celles de Relais. Les chiffres des écrans (tokens, coûts, durées, quotas) sont calculés par Relais sur ces données et ne décrivent aucun usage réel. Aucune retouche&nbsp;; la vignette de la vitrine recadre le panneau de pilotage de la conversation.</p>
+      <p><b>Limites.</b> Le mode strict contrôle chaque appel d’outil&nbsp;; ce n’est pas un bac à sable imposé par le système. Relais n’écoute que la machine locale&nbsp;: l’accès distant et le multi-utilisateur sont hors de son périmètre.</p>
+      <p><b>Fonctions et sous le capot.</b> Relus le 15/10/2026 à la même révision&nbsp;: l’architecture, le contrat de l’API, les serveurs MCP par session, la conversation, les diagnostics et le code. Les extraits sont des formes simplifiées, écrites pour cette page. 54&nbsp;scripts de vérification et les faux agents des tests sont comptés à la même révision.</p>
+    </SourcesProjet>
+  </CorpsProjet>
+
+  <Visionneuse />
+</Base>
+
+<style>
+  .rel-capacite {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s7) var(--s6);
+    margin: var(--s6) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .rel-capacite__etape {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: var(--s4);
+    align-content: start;
+  }
+
+  .rel-capacite__texte {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: var(--s3);
+    align-items: baseline;
+  }
+
+  .rel-capacite__rang {
+    font-size: var(--t-xs);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--eteint);
+  }
+
+  .rel-capacite h3 {
+    font-size: var(--t-xl);
+  }
+
+  .rel-capacite__texte p {
+    grid-column: 2;
+    margin-top: var(--s2);
+    max-width: 34em;
+    font-size: var(--t-s);
+    line-height: 1.55;
+    color: var(--eteint);
+  }
+
+  @media (max-width: 860px) {
+    .rel-capacite {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s6);
+    }
+  }
+</style>

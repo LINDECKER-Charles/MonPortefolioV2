@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144 48">
+  <title>GLO-04 : pictogrammes des trois verbes (maîtriser, réinventer, emmener)</title>
+  <!--
+    Trois pictogrammes au trait sur une grille de 48, dessinés à la main
+    d’après la maquette « Lanterne ». Classes recolorées par la page
+    (components/ui/PictoVerbe.astro) : p-trait (encre), p-doux (filet),
+    p-pointille, p-plein (laiton, la lumière), p-creux (fond).
+  -->
+  <style>
+    .p-trait, .p-doux, .p-creux { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .p-trait { stroke: #141312; stroke-width: 1.6; }
+    .p-doux { stroke: #7b7368; stroke-width: 1.2; }
+    .p-pointille { stroke-dasharray: 1.5 3; }
+    .p-plein { fill: #7a4f10; }
+    .p-creux { stroke: #ece9e3; stroke-width: 1.4; }
+  </style>
+  <symbol id="maitriser" viewBox="-4 -4 48 48">
+    <path class="p-trait" d="M20 11.5c-3.2-2.2-8.2-2.8-13.5-2.1v19.8c5.3-.7 10.3-.1 13.5 2.1 3.2-2.2 8.2-2.8 13.5-2.1V9.4c-5.3-.7-10.3-.1-13.5 2.1ZM20 11.5v19.8" />
+    <path class="p-doux" d="M10.2 15h6.2M10.2 19h6.2M10.2 23h4.4M23.6 19h6.2M23.6 23h6.2" />
+    <path class="p-plein" d="M24.2 8.7h4.6v7.6l-2.3-1.7-2.3 1.7Z" />
+  </symbol>
+  <symbol id="reinventer" viewBox="-4 -4 48 48">
+    <rect class="p-trait" x="7.5" y="11" width="12" height="17.5" rx="1.6" transform="rotate(-17 13.5 28.5)" />
+    <rect class="p-trait" x="20.5" y="11" width="12" height="17.5" rx="1.6" transform="rotate(17 26.5 28.5)" />
+    <rect class="p-plein" x="14" y="8.5" width="12" height="17.5" rx="1.6" />
+    <path class="p-creux" d="M17.5 13.5h5M17.5 17h3" />
+  </symbol>
+  <symbol id="emmener" viewBox="-4 -4 48 48">
+    <path class="p-trait" d="M4.5 16.5 9 12.6l4.5 3.9ZM5.5 16.5v9.5M12.5 16.5v9.5M4 26h10M9 12.6v-2" />
+    <path class="p-plein" d="M9 18.6c1.2 1.2 1.6 2.2 1.6 3a1.6 1.6 0 0 1-3.2 0c0-.8.4-1.8 1.6-3Z" />
+    <path class="p-trait" d="M25.5 19.5 30 15.6l4.5 3.9ZM26.5 19.5v9.5M33.5 19.5v9.5M25 29h10M30 15.6v-2" />
+    <path class="p-plein" d="M30 21.6c1.2 1.2 1.6 2.2 1.6 3a1.6 1.6 0 0 1-3.2 0c0-.8.4-1.8 1.6-3Z" />
+    <path class="p-doux p-pointille" d="M13.5 12c3.5-4.5 9-5 13.5-1" />
+  </symbol>
+  <use href="#maitriser" x="0" y="0" width="48" height="48" />
+  <use href="#reinventer" x="48" y="0" width="48" height="48" />
+  <use href="#emmener" x="96" y="0" width="48" height="48" />
+</svg>

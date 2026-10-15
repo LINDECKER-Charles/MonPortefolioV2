@@ -1,0 +1,261 @@
+---
+/**
+ * OMN-05 · Le compte à rebours de GitGud : d’une phrase de carte à une règle
+ * que le moteur sait tenir. Figure codée en HTML et CSS depuis la carte 9
+ * (docs/cards/wtf.md : « Dans 5 tours, la partie se termine par une
+ * égalité. ») et le mot-clé Délai (docs/keywords.md : le compteur ne
+ * décrémente qu’à la fin du tour du joueur qui a programmé l’effet).
+ *
+ *   <CompteARebours />
+ *
+ * Le glossaire ne dit pas si la fin du tour où la carte est jouée compte :
+ * la frise part de l’effet programmé et ne montre que les fins de tour qui
+ * décomptent ; la légende ne dit que ce que le glossaire établit.
+ *
+ * Scène rejouable : les fins de tour s’allument une à une à l’arrivée, puis
+ * au clic sur la frise (scripts/figure-animations.ts). Sans JavaScript, le
+ * bouton reste `disabled`, hors de la tabulation, et la frise est entière ;
+ * le script le réactive. En mouvement réduit aussi, la frise est entière ; la
+ * légende dit tout en texte.
+ */
+import { Picture } from 'astro:assets';
+import gitgud from '../../../assets/projets/omnicard/carte-gitgud.webp';
+import { GITGUD } from '../../../config/omnicard';
+
+/** Neuf fins de tour : cinq du lanceur, qui décomptent, et quatre adverses entre elles. */
+const etapes = Array.from({ length: GITGUD.delai * 2 - 1 }, (_, index) => {
+  const lanceur = index % 2 === 0;
+  return { lanceur, compte: GITGUD.delai - Math.floor(index / 2) - 1 };
+});
+---
+
+<figure class="rebours" data-figure="OMN-05">
+  <div class="rebours__carte">
+    <Picture
+      src={gitgud}
+      formats={['avif']}
+      fallbackFormat="webp"
+      widths={[240, 400]}
+      sizes="(max-width: 860px) 34vw, 180px"
+      alt="La carte GitGud, un sort de l’univers WTF, coût 10."
+      loading="lazy"
+      decoding="async"
+    />
+    <p class="rebours__clin">Même «&nbsp;GitGud&nbsp;» a sa carte.</p>
+  </div>
+  <div class="rebours__corps">
+    <p class="rebours__effet">
+      <span class="rebours__etiquette">L’effet, écrit sur la carte</span>
+      <span class="rebours__phrase">«&nbsp;{GITGUD.effet}&nbsp;»</span>
+    </p>
+    <button type="button" class="scene rebours__frise" data-scene="omnicard-rebours" data-rejouer data-figure-animation disabled aria-label="Rejouer l’animation : le compte à rebours de GitGud">
+      <span class="etape etape--depart" style="--rang:0">
+        <span class="etape__qui">Délai lancé</span>
+        <span class="etape__compte">{GITGUD.delai}</span>
+      </span>
+      {
+        etapes.map((etape, index) => (
+          <span class:list={['etape', etape.lanceur ? 'etape--lanceur' : 'etape--adverse', { 'etape--fin': index === etapes.length - 1 }]} style={`--rang:${index + 1}`}>
+            <span class="etape__qui">{etape.lanceur ? 'Fin de mon tour' : 'Fin du tour adverse'}</span>
+            <span class="etape__compte">{etape.compte}</span>
+            {index === etapes.length - 1 && <span class="etape__issue">Égalité</span>}
+          </span>
+        ))
+      }
+    </button>
+    <figcaption class="rebours__legende">
+      Le compteur ne baisse qu’à la fin du tour du joueur qui a programmé l’effet, jamais à la fin du tour adverse. «&nbsp;Dans 5&nbsp;tours&nbsp;», ce sont donc cinq de mes fins de tour, avec quatre tours adverses entre elles&nbsp;: neuf fins de tour, puis la partie s’arrête sur une égalité. Le moteur tient ce compte pour chaque effet différé, et l’annule si l’unité qui l’a programmé meurt.
+    </figcaption>
+  </div>
+</figure>
+
+<style>
+  .rebours {
+    display: grid;
+    grid-template-columns: minmax(120px, 180px) minmax(0, 1fr);
+    gap: var(--s5) var(--s6);
+    align-items: start;
+    margin: var(--s6) 0 0;
+  }
+
+  .rebours__carte :global(picture) {
+    display: block;
+  }
+
+  .rebours__carte :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 4.5% / 2.9%;
+    box-shadow: var(--ombre-2);
+    rotate: -4deg;
+  }
+
+  .rebours__clin {
+    margin-top: var(--s4);
+    font-family: var(--police-titre);
+    font-style: italic;
+    font-size: var(--t-m);
+    line-height: 1.3;
+    color: var(--eteint);
+  }
+
+  .rebours__effet {
+    display: grid;
+    gap: var(--s1);
+  }
+
+  .rebours__etiquette {
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: var(--ls-petit);
+    color: var(--eteint);
+  }
+
+  .rebours__phrase {
+    font-family: var(--police-titre);
+    font-size: var(--t-xl);
+    line-height: 1.15;
+    color: var(--encre);
+  }
+
+  /* La frise : la carte jouée, puis neuf fins de tour. */
+  .scene {
+    display: grid;
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+    gap: var(--s2);
+    width: 100%;
+    margin-top: var(--s5);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--encre);
+    text-align: inherit;
+  }
+
+  .etape {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    align-content: start;
+    gap: var(--s2);
+    min-height: 7.5rem;
+    padding: var(--s2);
+    border: 1.5px solid var(--encre);
+    border-radius: var(--r2);
+    background: var(--surface);
+  }
+
+  .etape--adverse {
+    border: 1px dashed var(--trait);
+    background: transparent;
+  }
+
+  .etape--depart {
+    border-color: var(--trait);
+  }
+
+  .etape--fin {
+    border: 2px solid var(--laiton);
+    box-shadow: 0 0 0 3px var(--voile-cible), 0 0 22px 0 var(--lanterne-eclat);
+  }
+
+  .etape__qui {
+    font-size: var(--t-xs);
+    line-height: 1.25;
+    color: var(--eteint);
+  }
+
+  .etape--lanceur .etape__qui {
+    color: var(--encre);
+  }
+
+  .etape__compte {
+    align-self: end;
+    font-size: var(--t-xl);
+    font-weight: 600;
+    line-height: 1;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  .etape--adverse .etape__compte {
+    color: var(--eteint);
+  }
+
+  .etape__issue {
+    font-family: var(--police-titre);
+    font-style: italic;
+    font-size: var(--t-m);
+    line-height: 1;
+  }
+
+  .rebours__legende {
+    max-width: var(--mesure);
+    margin-top: var(--s4);
+    font-size: var(--t-s);
+    line-height: 1.55;
+    color: var(--eteint);
+  }
+
+  /* Les fins de tour s’allument une à une. */
+  .animation-en-cours .etape {
+    animation: rebours-etape var(--d-scene) var(--courbe) both;
+    animation-delay: calc(var(--rang) * var(--d-scene) * 0.425);
+  }
+
+  .animation-en-cours .etape--fin {
+    animation-name: rebours-fin;
+    animation-duration: calc(var(--d-scene) * 2);
+  }
+
+  @keyframes rebours-etape {
+    from {
+      opacity: 0.12;
+      translate: 0 8px;
+    }
+  }
+
+  @keyframes rebours-fin {
+    from {
+      opacity: 0.12;
+      box-shadow: none;
+    }
+
+    50% {
+      opacity: 1;
+      box-shadow: none;
+    }
+  }
+
+  @media (max-width: 1100px) {
+    .scene {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .rebours {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .rebours__carte {
+      display: flex;
+      gap: var(--s4);
+      align-items: center;
+    }
+
+    .rebours__carte :global(picture) {
+      flex: none;
+      width: 120px;
+    }
+
+    .rebours__clin {
+      margin-top: 0;
+    }
+
+    .etape {
+      min-height: 6.5rem;
+      padding: var(--s2) 6px;
+    }
+  }
+</style>

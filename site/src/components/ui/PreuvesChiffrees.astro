@@ -1,0 +1,102 @@
+---
+/**
+ * Un groupe de preuves chiffrées (PreuveChiffree), séparées par des filets.
+ *
+ *   bandeau  en ligne, jusqu’à quatre côte à côte, en pile sur mobile
+ *   pile     les unes sous les autres, chiffre à gauche (la zone éclairée
+ *            d’une scène, par exemple « À plusieurs » sur l’accueil)
+ *
+ *   <PreuvesChiffrees label="…" disposition="bandeau">…</PreuvesChiffrees>
+ *
+ * Sous 860 px, chiffre à gauche dans une colonne commune au groupe (sous-
+ * grille, chiffres tabulaires) : les libellés commencent tous au même
+ * endroit, et chaque chiffre se cale sur la première ligne de son libellé.
+ */
+interface Props {
+  /** Nom accessible de la liste. */
+  label: string;
+  disposition?: 'bandeau' | 'pile';
+  class?: string;
+}
+
+const { label, disposition = 'bandeau', class: classe } = Astro.props;
+---
+
+<ul class:list={['preuves-chiffrees', `preuves-chiffrees--${disposition}`, classe]} aria-label={label}>
+  <slot />
+</ul>
+
+<style>
+  .preuves-chiffrees {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--trait);
+  }
+
+  .preuves-chiffrees--bandeau {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    border-bottom: 1px solid var(--filet);
+  }
+
+  .preuves-chiffrees--bandeau > :global(*) {
+    padding: var(--s5) var(--s5) var(--s5) 0;
+  }
+
+  .preuves-chiffrees--bandeau > :global(* + *) {
+    padding-left: var(--s5);
+    border-left: 1px solid var(--filet);
+  }
+
+  .preuves-chiffrees--pile > :global(*) {
+    grid-template-columns: minmax(5.25rem, max-content) minmax(0, 1fr);
+    column-gap: var(--s4);
+    row-gap: var(--s1);
+    padding: var(--s4) 0;
+  }
+
+  .preuves-chiffrees--pile > :global(* + *) {
+    border-top: 1px solid var(--filet);
+  }
+
+  .preuves-chiffrees--pile :global(.preuve-chiffree__valeur) {
+    grid-row: span 2;
+    align-self: center;
+  }
+
+  .preuves-chiffrees--pile :global(.preuve-chiffree__libelle) {
+    font-size: var(--t-m);
+  }
+
+  @media (max-width: 860px) {
+    .preuves-chiffrees,
+    .preuves-chiffrees--bandeau {
+      grid-template-columns: max-content minmax(0, 1fr);
+      column-gap: var(--s3);
+    }
+
+    .preuves-chiffrees > :global(*),
+    .preuves-chiffrees--bandeau > :global(* + *) {
+      grid-column: 1 / -1;
+      grid-template-columns: subgrid;
+      row-gap: var(--s1);
+      padding: var(--s3) 0;
+      border-left: 0;
+    }
+
+    .preuves-chiffrees > :global(* + *) {
+      border-top: 1px solid var(--filet);
+    }
+
+    .preuves-chiffrees :global(.preuve-chiffree__valeur) {
+      grid-row: span 2;
+      align-self: start;
+      margin-top: calc((var(--t-s) * 1.45 - var(--t-2xl)) / 2);
+    }
+
+    .preuves-chiffrees--pile :global(.preuve-chiffree__valeur) {
+      margin-top: calc((var(--t-m) * 1.45 - var(--t-2xl)) / 2);
+    }
+  }
+</style>

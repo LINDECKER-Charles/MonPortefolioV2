@@ -1,0 +1,40 @@
+---
+/**
+ * Un acte : un changement de partie, un changement de lumière (règle B6).
+ * Bord à bord, il porte son propre jeu de jetons ; son contenu se place dans
+ * un `.conteneur`.
+ *
+ *   <Acte ton="veille" id="aujourdhui" titre="titre-aujourdhui">…</Acte>
+ *
+ *   pierre  le fond du jour (aucune classe)
+ *   teinte  l’acte teinté, pierre plus soutenue (`.acte-teinte`)
+ *   veille  la nuit dans le jour, là où les captures attendent (`.acte-veille`)
+ *   bleu    le bleu nuit de « La suite » (`.acte-bleu`)
+ *
+ * Les jetons des actes sombres sont dans styles/jetons.css : tout ce qui est
+ * dedans (texte, liens, bouton lanterne, captures) suit sans rien ajouter.
+ * Pour l’aplat bleu roi derrière « Discutons », voir AppelDiscutons.
+ */
+interface Props {
+  ton?: 'pierre' | 'teinte' | 'veille' | 'bleu';
+  as?: 'section' | 'div' | 'aside';
+  id?: string;
+  /** Identifiant du titre de l’acte (aria-labelledby). */
+  titre?: string;
+  /** Marges verticales de section (vrai par défaut). */
+  espace?: boolean;
+  class?: string;
+}
+
+const { ton = 'pierre', as: Element = 'section', id, titre, espace = true, class: classe } = Astro.props;
+---
+
+<Element id={id} aria-labelledby={titre} class:list={['acte', ton !== 'pierre' && `acte-${ton}`, { 'acte--espace': espace }, classe]}>
+  <slot />
+</Element>
+
+<style>
+  .acte--espace {
+    padding-block: var(--section);
+  }
+</style>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <title>Livre ouvert debout avec une lanterne au centre</title>
+  <path d="m8 13 17-6 7 4 7-4 17 6v46l-17-6-7 4-7-4-17 6ZM25 7v15m0 28v3M39 7v15m0 28v3M32 11v4m0 35v7"/>
+  <circle cx="32" cy="19" r="3"/>
+  <path d="m24 28 8-6 8 6ZM26 28v18h12V28M24 48h16"/>
+  <path class="flamme" fill="var(--flamme, none)" d="M32 43c-3 0-5-2-5-5 0-4 4-6 5-10 1 4 5 6 5 10 0 3-2 5-5 5Z"/>
+</svg>

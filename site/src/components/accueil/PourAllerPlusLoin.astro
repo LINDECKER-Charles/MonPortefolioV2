@@ -1,0 +1,111 @@
+---
+/**
+ * « Pour aller plus loin » : la sortie du récit vers les trois pages où le
+ * poursuivre (gardée le 13/10/2026, Blog compris). Navigations ordinaires,
+ * sans événement de mesure (docs/mesure-audience.md).
+ */
+const liens = [
+  { href: '/projets', titre: 'Projets', detail: 'Ce que je construis et les choix derrière.' },
+  { href: '/parcours', titre: 'Parcours', detail: 'Mes expériences, mes compétences et mes formations.' },
+  { href: '/blog', titre: 'Blog', detail: 'Ce que j’apprends et ce que je partage.' },
+];
+---
+
+<nav class="plus-loin conteneur" aria-labelledby="plus-loin-titre">
+  <h2 id="plus-loin-titre">Pour aller plus loin</h2>
+  <ul>
+    {
+      liens.map((lien) => (
+        <li>
+          <a href={lien.href}>
+            <span class="plus-loin__titre">{lien.titre}<span class="fleche" aria-hidden="true">&nbsp;→</span></span>
+            <span class="plus-loin__detail">{lien.detail}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  .plus-loin {
+    padding-block: var(--s7) var(--s8);
+  }
+
+  h2 {
+    padding-bottom: var(--s3);
+    border-bottom: 1px solid var(--trait);
+    font-family: var(--police-texte);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: var(--ls-petit);
+    color: var(--eteint);
+  }
+
+  ul {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  a {
+    display: block;
+    min-height: 76px;
+    padding-top: var(--s4);
+    color: var(--encre);
+    text-decoration: none;
+  }
+
+  .plus-loin__titre {
+    display: block;
+    font-family: var(--police-titre);
+    font-size: var(--t-2xl);
+    line-height: 1.05;
+  }
+
+  .fleche {
+    font-size: var(--t-m);
+    color: var(--accent);
+  }
+
+  .plus-loin__detail {
+    display: block;
+    max-width: 30ch;
+    margin-top: var(--s2);
+    font-size: var(--t-s);
+    color: var(--eteint);
+  }
+
+  a:hover .plus-loin__titre {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.12em;
+  }
+
+  @media (max-width: 860px) {
+    .plus-loin {
+      padding-block: var(--s6) var(--s7);
+    }
+
+    ul {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+    }
+
+    li + li {
+      border-top: 1px solid var(--filet);
+    }
+
+    a {
+      min-height: 0;
+      padding-block: var(--s4);
+    }
+
+    .plus-loin__titre {
+      font-size: var(--t-xl);
+    }
+  }
+</style>

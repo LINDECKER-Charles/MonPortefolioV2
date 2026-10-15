@@ -1,0 +1,63 @@
+---
+/**
+ * Demandes de contact : le filtre (nouvelles, lues, archivées, toutes), la
+ * liste et le détail de la demande choisie. Le détail devient la zone
+ * éclairée de l’écran quand une demande est ouverte (scripts/backoffice.ts).
+ *
+ * Le texte des visiteurs est toujours inséré comme texte (`textContent`).
+ * Sous la liste, une ligne discrète dit la conservation : le backend supprime
+ * une demande 3 ans après sa réception (backend/src/contact.rs).
+ */
+import EnTeteRubrique from './EnTeteRubrique.astro';
+import Retour from './Retour.astro';
+---
+
+<section class="bo-rubrique" id="bo-panel-contacts" aria-labelledby="bo-titre-contacts">
+  <EnTeteRubrique id="bo-titre-contacts" titre="Demandes de contact" description="Un message reste ici, même si sa notification par e-mail échoue." />
+  <div class="bo-barre" data-retour="bo-inbox-retour">
+    <div class="bo-champ bo-champ--ligne">
+      <label for="bo-filter">Afficher les demandes</label>
+      <select id="bo-filter">
+        <option value="new">Nouvelles</option>
+        <option value="read">Lues</option>
+        <option value="archived">Archivées</option>
+        <option value="all">Toutes</option>
+      </select>
+    </div>
+    <p id="bo-total" class="bo-muted chiffres"></p>
+    <button class="bo-button" id="bo-refresh" type="button">Actualiser</button>
+    <Retour id="bo-inbox-retour" class="bo-barre__retour" />
+  </div>
+  <div class="bo-inbox">
+    <div class="bo-list-column" data-retour="bo-inbox-retour">
+      <ul class="bo-contact-list" id="bo-contact-list" aria-label="Demandes de contact"></ul>
+      <p class="bo-empty" id="bo-contact-empty" hidden>Aucune nouvelle demande. Les autres messages restent accessibles dans les filtres.</p>
+      <div class="bo-pagination" id="bo-pagination" hidden>
+        <button class="bo-button" id="bo-previous" type="button">Précédentes</button>
+        <span class="bo-muted chiffres" id="bo-page"></span>
+        <button class="bo-button" id="bo-next" type="button">Suivantes</button>
+      </div>
+      <p class="bo-help bo-conservation">Les demandes sont supprimées automatiquement 3&nbsp;ans après leur réception.</p>
+    </div>
+    <article class="bo-carte bo-detail" id="bo-contact-article" aria-labelledby="bo-contact-title" data-retour="bo-contact-retour">
+      <h3 id="bo-contact-title">Choisissez une demande</h3>
+      <p id="bo-detail-placeholder" class="bo-muted">Son message et ses coordonnées s’afficheront ici.</p>
+      <div id="bo-contact-detail" hidden>
+        <p class="bo-contact-byline"><strong id="bo-contact-name"></strong><a id="bo-contact-email"></a></p>
+        <dl class="bo-metadata">
+          <div><dt>Reçue le</dt><dd id="bo-contact-date"></dd></div>
+          <div><dt>Statut</dt><dd id="bo-contact-state"></dd></div>
+          <div><dt>Notification e-mail</dt><dd id="bo-contact-delivery"></dd></div>
+        </dl>
+        <p class="bo-message" id="bo-contact-message"></p>
+        <div class="bo-actions">
+          <button class="bo-button" id="bo-contact-read" type="button">Marquer comme lue</button>
+          <button class="bo-button" id="bo-contact-new" type="button">Marquer comme nouvelle</button>
+          <button class="bo-button" id="bo-contact-archive" type="button">Archiver</button>
+          <button class="bo-button bo-button--danger" id="bo-contact-delete" type="button">Supprimer la demande</button>
+        </div>
+      </div>
+      <Retour id="bo-contact-retour" />
+    </article>
+  </div>
+</section>

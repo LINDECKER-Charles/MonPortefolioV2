@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <title>Le reliquaire d’Oedon</title>
+  <g stroke="currentColor" stroke-width="1.5" stroke-linejoin="miter">
+    <path d="M14 53V29l7-5v-7L32 8l11 9v7l7 5v24M19 50V32l7-6v-7l6-5 6 5v7l7 6v18"/>
+    <path d="M25 49V34c0-7 7-11 7-11s7 4 7 11v15m-18 4h22m-31 5h40"/>
+    <path d="M14 28V18m36 10V18M28 37h8m-4-8v20"/>
+  </g>
+  <g fill="currentColor">
+    <path d="M32 2l3 4-3 3-3-3ZM14 12l3 4-3 3-3-3Zm36 0 3 4-3 3-3-3ZM9 56h46v3H9Z"/>
+    <path d="M29 44h6l2 6H27Z"/>
+  </g>
+</svg>

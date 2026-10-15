@@ -1,0 +1,514 @@
+---
+/**
+ * La fabrication, sous les décisions de « Sous le capot » : le
+ * trajet d’une réussite en trois couches (interface, API, sauvegarde),
+ * explorables au clavier et sans JavaScript (boutons radio et :checked),
+ * puis la livraison construite une fois et promue telle quelle.
+ *
+ * Les dessins des couches sont des emplacements du registre (BLR-08 à
+ * BLR-10) ; les pictogrammes de la livraison (assets/pictos/bloodborne/)
+ * suivent la grille de 24 et le trait de 1,4 de la lanterne (GLO-03) ; les
+ * logos sont les SVG officiels (assets/projets/README.md).
+ */
+import Picto from '../../ui/Picto.astro';
+import Visuel from '../../ui/Visuel.astro';
+import angular from '../../../assets/projets/bloodborne/technos/angular.svg?url';
+import ionic from '../../../assets/projets/bloodborne/technos/ionic.svg?url';
+import capacitor from '../../../assets/projets/bloodborne/technos/capacitor.svg?url';
+import dotnet from '../../../assets/projets/bloodborne/technos/dotnet.svg?url';
+import postgresql from '../../../assets/projets/bloodborne/technos/postgresql.svg?url';
+import docker from '../../../assets/projets/bloodborne/technos/docker.svg?url';
+import github from '../../../assets/projets/bloodborne/technos/github.svg?url';
+
+const id = 'blr-fabrication';
+const couches = [
+  {
+    cle: 'interface',
+    visuel: 'BLR-08',
+    nom: 'L’interface',
+    fonction: 'Le joueur allume l’étoile',
+    logos: [{ src: angular, nom: 'Angular' }, { src: ionic, nom: 'Ionic' }, { src: capacitor, nom: 'Capacitor' }],
+    titre: 'Le même ciel, deux formats.',
+    texte: 'La navigation et les gestes sont partagés entre le navigateur et l’application Android.',
+    roles: [['Angular', 'Le ciel et ses gestes'], ['Ionic', 'Les écrans sur mobile'], ['Capacitor', 'L’enveloppe Android']],
+  },
+  {
+    cle: 'api',
+    visuel: 'BLR-09',
+    nom: 'L’API',
+    fonction: 'Elle traite la progression',
+    logos: [{ src: dotnet, nom: 'ASP.NET Core' }],
+    titre: 'Une réussite pour le bon personnage.',
+    texte: 'L’API associe l’objectif au personnage actif et enregistre les souvenirs que le joueur lui ajoute.',
+    roles: [['Compte', 'Identifier le joueur'], ['Personnage', 'Associer l’avancement'], ['Objectif', 'Garder la réussite']],
+  },
+  {
+    cle: 'donnees',
+    visuel: 'BLR-10',
+    nom: 'La sauvegarde',
+    fonction: 'Le joueur retrouve son parcours',
+    logos: [{ src: postgresql, nom: 'PostgreSQL' }],
+    titre: 'La partie attend le retour du joueur.',
+    texte: 'PostgreSQL conserve les comptes, les personnages et leur progression, au-delà de la session en cours.',
+    roles: [['Personnages', 'Chaque partie à part'], ['Progression', 'Les étoiles allumées'], ['Souvenirs', 'Les notes et les morts']],
+  },
+];
+const liaisons = ['HTTPS', 'Écriture'];
+const etapes = [
+  { titre: 'Construire', detail: 'Les images de l’application', picto: 'bloodborne/construire' },
+  { titre: 'Valider en test', detail: 'La version à livrer', picto: 'bloodborne/valider' },
+  { titre: 'Promouvoir', detail: 'Les mêmes images en production', picto: 'bloodborne/promouvoir' },
+];
+---
+
+<div class="blr-fab" data-blr-fabrication>
+  <div class="blr-fab__tete">
+    <h3>D’une étoile à sa sauvegarde</h3>
+    <p>Le trajet d’une réussite, sur le web comme sur Android.</p>
+  </div>
+
+  <fieldset class="blr-fab__explorateur">
+    <legend class="sr">Les trois couches de l’application</legend>
+    {couches.map((couche, index) => <input class="sr blr-fab__choix" type="radio" name={`${id}-couche`} id={`${id}-${couche.cle}`} value={couche.cle} aria-controls={`${id}-detail-${couche.cle}`} checked={index === 0} />)}
+
+    <div class="blr-fab__couches">
+      {
+        couches.map((couche, index) => (
+          <>
+            {index > 0 && (
+              <div class="blr-fab__liaison" aria-hidden="true">
+                <span>{liaisons[index - 1]}</span>
+                <span class="blr-fab__fleche">→</span>
+              </div>
+            )}
+            <label class:list={['blr-fab__couche', `blr-fab__couche--${couche.cle}`]} for={`${id}-${couche.cle}`}>
+              <Visuel id={couche.visuel} alt="" class="blr-fab__dessin" sizes="220px" />
+              <span class="blr-fab__nom">{couche.nom}</span>
+              <span class="blr-fab__fonction">{couche.fonction}</span>
+              <span class="blr-fab__logos">
+                {couche.logos.map((logo) => (
+                  <span>
+                    <img src={logo.src} alt="" width="24" height="24" loading="lazy" />
+                    {logo.nom}
+                  </span>
+                ))}
+              </span>
+              <span class="blr-fab__voir" aria-hidden="true">Voir cette couche<span class="blr-fab__puce"></span></span>
+            </label>
+          </>
+        ))
+      }
+    </div>
+
+    <div class="blr-fab__details">
+      {
+        couches.map((couche) => (
+          <div class:list={['blr-fab__detail', `blr-fab__detail--${couche.cle}`]} id={`${id}-detail-${couche.cle}`}>
+            <div>
+              <h4>{couche.titre}</h4>
+              <p>{couche.texte}</p>
+            </div>
+            <dl>
+              {couche.roles.map(([terme, role]) => (
+                <div>
+                  <dt>{terme}</dt>
+                  <dd>{role}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        ))
+      }
+    </div>
+  </fieldset>
+
+  <div class="blr-fab__livraison">
+    <div class="blr-fab__livraison-tete">
+      <div>
+        <h3>Construire une fois, livrer la même version</h3>
+        <p>Les images validées en test passent en production sans être reconstruites.</p>
+      </div>
+      <p class="blr-fab__outils">
+        <span><img src={docker} alt="" width="32" height="24" loading="lazy" />Docker</span>
+        <span><img src={github} alt="" width="24" height="24" loading="lazy" />GitHub Actions</span>
+      </p>
+    </div>
+    <ol class="blr-fab__etapes">
+      {
+        etapes.map((etape, index) => (
+          <li>
+            <span class="blr-fab__rang" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+            <span class="blr-fab__etape">
+              <strong>{etape.titre}</strong>
+              <span>{etape.detail}</span>
+            </span>
+            <Picto nom={etape.picto} class="blr-fab__picto" />
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</div>
+
+<style>
+  .blr-fab {
+    margin-top: var(--s7);
+  }
+
+  .blr-fab__tete {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s2) var(--s6);
+  }
+
+  .blr-fab h3 {
+    font-size: var(--t-xl);
+    line-height: 1.1;
+  }
+
+  .blr-fab__tete p,
+  .blr-fab__livraison-tete p:not(.blr-fab__outils) {
+    font-size: var(--t-s);
+    color: var(--eteint);
+  }
+
+  .blr-fab__explorateur {
+    min-width: 0;
+    margin: var(--s5) 0 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .blr-fab__couches {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr) 64px minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .blr-fab__couche {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: var(--s4);
+    border: 1px solid var(--filet);
+    border-radius: var(--r2);
+    background: var(--surface);
+    cursor: pointer;
+    transition: border-color var(--d-ui) var(--courbe), box-shadow var(--d-ui) var(--courbe);
+  }
+
+  .blr-fab__couche:hover {
+    border-color: var(--trait);
+  }
+
+  .blr-fab__couche :global(.blr-fab__dessin) {
+    width: 100%;
+    margin-bottom: var(--s4);
+  }
+
+  .blr-fab__nom {
+    font-family: var(--police-titre);
+    font-size: var(--t-xl);
+    line-height: 1.1;
+  }
+
+  .blr-fab__fonction {
+    margin-top: var(--s1);
+    min-height: 2.9em;
+    font-size: var(--t-s);
+    line-height: 1.45;
+    color: var(--eteint);
+  }
+
+  .blr-fab__logos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2) var(--s4);
+    margin-top: var(--s3);
+    font-size: var(--t-xs);
+    font-weight: 600;
+  }
+
+  .blr-fab__logos > span,
+  .blr-fab__outils > span {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s2);
+  }
+
+  .blr-fab__logos img,
+  .blr-fab__outils img {
+    flex: none;
+    padding: 2px;
+    border-radius: var(--r1);
+    background: var(--papier-logo);
+    object-fit: contain;
+  }
+
+  .blr-fab__voir {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s2);
+    margin-top: auto;
+    padding-top: var(--s4);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .blr-fab__puce {
+    position: relative;
+    flex: none;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+  }
+
+  .blr-fab__liaison {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s1);
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  .blr-fab__fleche {
+    font-size: var(--t-l);
+    color: var(--encre);
+  }
+
+  .blr-fab__details {
+    margin-top: var(--s4);
+  }
+
+  .blr-fab__detail {
+    display: none;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+    gap: var(--s4) var(--s6);
+    align-items: start;
+    padding-top: var(--s4);
+    border-top: 1px solid var(--trait);
+  }
+
+  .blr-fab__detail h4 {
+    font-size: var(--t-l);
+    line-height: 1.2;
+  }
+
+  .blr-fab__detail p {
+    margin-top: var(--s2);
+    font-size: var(--t-s);
+    color: var(--eteint);
+  }
+
+  .blr-fab__detail dl {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s3);
+    margin: 0;
+  }
+
+  .blr-fab__detail dl > div {
+    padding-left: var(--s3);
+    border-left: 2px solid var(--trait);
+  }
+
+  .blr-fab__detail dt {
+    font-size: var(--t-s);
+    font-weight: 600;
+  }
+
+  .blr-fab__detail dd {
+    margin-top: var(--s1);
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  /* La couche choisie : sa carte s’éclaire, son détail s’ouvre. */
+  .blr-fab__choix[value='interface']:checked ~ .blr-fab__couches .blr-fab__couche--interface,
+  .blr-fab__choix[value='api']:checked ~ .blr-fab__couches .blr-fab__couche--api,
+  .blr-fab__choix[value='donnees']:checked ~ .blr-fab__couches .blr-fab__couche--donnees {
+    border-color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent), var(--ombre-2);
+  }
+
+  .blr-fab__choix[value='interface']:checked ~ .blr-fab__couches .blr-fab__couche--interface .blr-fab__puce::after,
+  .blr-fab__choix[value='api']:checked ~ .blr-fab__couches .blr-fab__couche--api .blr-fab__puce::after,
+  .blr-fab__choix[value='donnees']:checked ~ .blr-fab__couches .blr-fab__couche--donnees .blr-fab__puce::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .blr-fab__choix[value='interface']:focus-visible ~ .blr-fab__couches .blr-fab__couche--interface,
+  .blr-fab__choix[value='api']:focus-visible ~ .blr-fab__couches .blr-fab__couche--api,
+  .blr-fab__choix[value='donnees']:focus-visible ~ .blr-fab__couches .blr-fab__couche--donnees {
+    outline: 2px solid var(--focus);
+    outline-offset: 4px;
+  }
+
+  .blr-fab__choix[value='interface']:checked ~ .blr-fab__details .blr-fab__detail--interface,
+  .blr-fab__choix[value='api']:checked ~ .blr-fab__details .blr-fab__detail--api,
+  .blr-fab__choix[value='donnees']:checked ~ .blr-fab__details .blr-fab__detail--donnees {
+    display: grid;
+  }
+
+  .blr-fab__livraison {
+    margin-top: var(--s7);
+  }
+
+  .blr-fab__livraison-tete {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--s3) var(--s6);
+  }
+
+  .blr-fab__livraison-tete p:not(.blr-fab__outils) {
+    margin-top: var(--s2);
+  }
+
+  .blr-fab__outils {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s4);
+    font-size: var(--t-s);
+    font-weight: 600;
+  }
+
+  .blr-fab__etapes {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: var(--s4) 0 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--encre);
+    border-bottom: 1px solid var(--trait);
+  }
+
+  .blr-fab__etapes li {
+    display: flex;
+    align-items: center;
+    gap: var(--s3);
+    padding: var(--s4);
+  }
+
+  .blr-fab__etapes li + li {
+    border-left: 1px solid var(--filet);
+  }
+
+  .blr-fab__rang {
+    font-size: var(--t-xs);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--eteint);
+  }
+
+  .blr-fab__etape {
+    display: grid;
+    gap: 2px;
+  }
+
+  .blr-fab__etape strong {
+    font-weight: 600;
+  }
+
+  .blr-fab__etape span {
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  .blr-fab__etapes :global(.blr-fab__picto) {
+    flex: none;
+    width: 28px;
+    height: 28px;
+    margin-left: auto;
+    color: var(--encre);
+  }
+
+  @media (max-width: 1100px) {
+    .blr-fab__couches {
+      grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr) 40px minmax(0, 1fr);
+    }
+
+    .blr-fab__detail {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 860px) {
+    .blr-fab__couches {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .blr-fab__couche {
+      display: grid;
+      grid-template-columns: 96px minmax(0, 1fr);
+      column-gap: var(--s4);
+    }
+
+    .blr-fab__couche :global(.blr-fab__dessin) {
+      grid-row: 1 / 4;
+      margin-bottom: 0;
+      align-self: start;
+    }
+
+    .blr-fab__nom,
+    .blr-fab__fonction,
+    .blr-fab__logos {
+      grid-column: 2;
+    }
+
+    .blr-fab__fonction {
+      min-height: 0;
+    }
+
+    .blr-fab__voir {
+      grid-column: 1 / -1;
+    }
+
+    .blr-fab__liaison {
+      flex-direction: row;
+      justify-content: flex-start;
+      gap: var(--s2);
+      min-height: 40px;
+      padding-left: var(--s6);
+    }
+
+    .blr-fab__fleche {
+      transform: rotate(90deg);
+    }
+
+    .blr-fab__detail dl {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .blr-fab__etapes {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .blr-fab__etapes li + li {
+      border-left: 0;
+      border-top: 1px solid var(--filet);
+    }
+  }
+
+  @media print {
+    .blr-fab__voir {
+      display: none;
+    }
+
+    .blr-fab__detail {
+      display: grid !important;
+    }
+  }
+</style>

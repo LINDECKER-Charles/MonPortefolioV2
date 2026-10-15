@@ -1,0 +1,367 @@
+---
+/**
+ * CMP-F1 : la chaîne de livraison « build-once » de ce site, figure codée
+ * depuis sa CI (.github/workflows/ci.yml, _tests, _build, _promote). Vérifier
+ * (un build de contrôle compris), puis construire une seule fois les images du
+ * site et de l’API ; la même empreinte passe par l’environnement de test, la
+ * porte humaine et la production, sans jamais être reconstruite.
+ *
+ * Le rail est une scène : à son arrivée dans l’écran, le sceau de l’image
+ * (laiton) glisse de la construction à la production, environ 400 ms par
+ * étape (signature M2) ; il se rejoue d’un clic
+ * sur le rail ou au clavier (scripts/figure-animations.ts). Sans JavaScript ou
+ * en mouvement réduit, le sceau est posé à l’arrivée. Les étapes et la mention
+ * « même empreinte » restent en texte : le rail n’ajoute rien d’indispensable.
+ * Sous 860 px, le rail s’efface et la liste se lit à la verticale.
+ */
+import LogoStack from './LogoStack.astro';
+import { typo } from '../../lib/typo';
+
+interface Etape {
+  titre: string;
+  texte: string;
+  outils?: string[];
+  empreinte?: boolean;
+  /** Étiquettes des images ; `suite` : la seconde remplace la première (›, lu « puis »). */
+  etiquettes?: { noms: [string, string]; suite?: boolean };
+  porte?: boolean;
+}
+
+const ETAPES: Etape[] = [
+  { titre: 'Vérifier', texte: 'Types, tests unitaires et tests de bout en bout, avant de construire l’image publiée.', outils: ['Vitest', 'Playwright'] },
+  { titre: 'Construire une fois', texte: 'Les images du site et de l’API, construites une seule fois par révision et publiées sur le registre.', outils: ['GitHub Actions', 'Docker'], empreinte: true, etiquettes: { noms: ['sha', 'staging'] } },
+  { titre: 'Déployer en test', texte: 'Ces images tournent d’abord sur l’environnement de test.', empreinte: true },
+  { titre: 'Ouvrir la porte', texte: 'Une fusion faite à la main, et seulement elle, mène à la production.', empreinte: true, porte: true },
+  { titre: 'Promouvoir', texte: 'La production reçoit les images testées, réétiquetées, sans jamais les reconstruire.', empreinte: true, etiquettes: { noms: ['staging', 'prod'], suite: true } },
+];
+---
+
+<figure class="chaine" aria-labelledby="chaine-legende">
+  <button type="button" class="scene chaine__rail" data-rejouer data-figure-animation aria-label="Rejouer l’animation : les mêmes images, de la construction à la production">
+    <span class="chaine__ligne" aria-hidden="true"></span>
+    <span class="chaine__trace" aria-hidden="true"></span>
+    {ETAPES.map((etape, index) => (
+      <span class:list={['chaine__noeud', { 'chaine__noeud--porte': etape.porte, 'chaine__noeud--empreinte': etape.empreinte }]} style={`--rang:${index}`} aria-hidden="true"></span>
+    ))}
+    <span class="chaine__sceau" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" focusable="false">
+        <path d="M8 5.5a7 7 0 0 1 11 5.7M5.2 9.5a7 7 0 0 0-.2 1.7c0 2.3.6 4.5 1.7 6.3M12 8.2a3 3 0 0 1 3 3c0 3-.6 5.6-1.7 7.8M9 11.2c0 2.6-.5 5.1-1.4 7.2M12 11.2c0 3.4-.7 6.6-2 9.3M18.8 14.3c-.2 1.7-.6 3.4-1.2 4.9" />
+      </svg>
+    </span>
+  </button>
+
+  <ol class="chaine__etapes">
+    {ETAPES.map((etape, index) => (
+      <li class:list={['chaine__etape', { 'chaine__etape--porte': etape.porte }]} style={`--rang:${index}`}>
+        <h3 class="chaine__titre">{etape.titre}</h3>
+        <p class="chaine__texte">{typo(etape.texte)}</p>
+        <p class="chaine__outils">
+          {etape.outils?.map((outil) => <span class="chaine__outil"><LogoStack nom={outil} taille="petit" />{outil}</span>)}
+        </p>
+        <p class="chaine__pied">
+          {etape.empreinte && <span class="chaine__empreinte">même empreinte</span>}
+          {etape.etiquettes && (
+            <span class="chaine__etiquettes">
+              {etape.etiquettes.noms[0]}
+              {etape.etiquettes.suite ? <><span class="chaine__suite" aria-hidden="true">›</span><span class="sr"> puis </span></> : ' · '}
+              {etape.etiquettes.noms[1]}
+            </span>
+          )}
+        </p>
+      </li>
+    ))}
+  </ol>
+
+  <figcaption id="chaine-legende" class="chaine__legende">La chaîne de livraison de ce site, telle que sa CI la code&nbsp;: construire une fois, puis promouvoir exactement les images testées.</figcaption>
+</figure>
+
+<script>
+  import { brancherAnimationsFigures } from '../../scripts/figure-animations';
+  brancherAnimationsFigures();
+</script>
+
+<style>
+  .chaine {
+    --colonnes: 5;
+    --noeud: 14px;
+  }
+
+  /* Le rail : une ligne, cinq nœuds alignés sur les colonnes des étapes. */
+  .chaine__rail {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(var(--colonnes), minmax(0, 1fr));
+    width: 100%;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--encre);
+    cursor: pointer;
+  }
+
+  .chaine__ligne,
+  .chaine__trace {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 2px;
+    margin-top: -1px;
+    background: var(--trait);
+  }
+
+  /* Le parcours de l’empreinte, de la construction à la production. */
+  .chaine__trace {
+    left: calc(20% + 7px);
+    right: auto;
+    width: 60%;
+    background: var(--laiton);
+    transform-origin: left center;
+  }
+
+  .chaine__noeud {
+    position: relative;
+    z-index: 1;
+    align-self: center;
+    width: var(--noeud);
+    height: var(--noeud);
+    border: 2px solid var(--encre);
+    border-radius: 50%;
+    background: var(--fond);
+  }
+
+  .chaine__noeud--empreinte {
+    border-color: var(--laiton);
+  }
+
+  /* La porte humaine : un losange, pas un cercle. */
+  .chaine__noeud--porte {
+    border-radius: 2px;
+    transform: rotate(45deg);
+    background: var(--laiton);
+  }
+
+  .chaine__sceau {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    left: 80%;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    margin: -16px 0 0 -9px;
+    border-radius: var(--r1);
+    background: var(--laiton);
+    color: var(--suie);
+    box-shadow: 0 0 0 4px var(--fond);
+  }
+
+  .chaine__sceau svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .animation-en-cours .chaine__sceau {
+    animation: chaine-glisse calc(var(--d-scene) * 4) cubic-bezier(.4, 0, .2, 1) both;
+  }
+
+  .animation-en-cours .chaine__trace {
+    animation: chaine-trace calc(var(--d-scene) * 4) cubic-bezier(.4, 0, .2, 1) both;
+  }
+
+  @keyframes chaine-glisse {
+    0%, 12% { left: 20%; }
+    32%, 42% { left: 40%; }
+    62%, 72% { left: 60%; }
+    92%, 100% { left: 80%; }
+  }
+
+  @keyframes chaine-trace {
+    0%, 12% { transform: scaleX(0); }
+    32%, 42% { transform: scaleX(.3333); }
+    62%, 72% { transform: scaleX(.6667); }
+    92%, 100% { transform: scaleX(1); }
+  }
+
+  /* Les étapes, sur les mêmes colonnes. */
+  .chaine__etapes {
+    display: grid;
+    grid-template-columns: repeat(var(--colonnes), minmax(0, 1fr));
+    grid-template-rows: repeat(4, auto);
+    gap: 0;
+    margin: var(--s3) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Titres, textes et empreintes alignés d’une étape à l’autre (sous-grille). */
+  .chaine__etape {
+    display: grid;
+    grid-row: span 4;
+    grid-template-rows: subgrid;
+    align-content: start;
+    row-gap: var(--s2);
+    min-width: 0;
+    padding-right: var(--s5);
+  }
+
+  .chaine__titre {
+    align-self: start;
+    font-size: var(--t-xl);
+    line-height: 1.1;
+  }
+
+  .chaine__texte {
+    color: var(--eteint);
+    font-size: var(--t-xs);
+    line-height: 1.5;
+  }
+
+  .chaine__pied {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    align-self: start;
+    gap: var(--s2);
+    padding-top: var(--s1);
+  }
+
+  .chaine__outils {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: start;
+    gap: var(--s1) var(--s3);
+  }
+
+
+  .chaine__outil {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--eteint);
+    font-size: var(--t-xs);
+    line-height: 1.4;
+  }
+
+  .chaine__outils :global(.logo-stack) {
+    --gris: 0;
+  }
+
+  .chaine__empreinte,
+  .chaine__etiquettes {
+    display: inline-flex;
+    padding: 2px var(--s2);
+    border-radius: var(--r1);
+    font-size: var(--t-xs);
+    line-height: 1.4;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .chaine__empreinte {
+    border: 1px solid var(--laiton);
+    color: var(--encre);
+  }
+
+  /* Un filet plein : le pointillé reste aux emplacements à générer. La flèche
+     → étant réservée aux liens (règle E2), la suite se dit par un chevron. */
+  .chaine__etiquettes {
+    gap: 0.4em;
+    border: 1px solid var(--filet);
+    color: var(--eteint);
+  }
+
+  .chaine__legende {
+    margin-top: var(--s5);
+    color: var(--eteint);
+    font-size: var(--t-xs);
+  }
+
+  /* Sous 860 px : le rail s’efface, la liste se lit à la verticale. */
+  @media (max-width: 860px) {
+    .chaine__rail {
+      display: none;
+    }
+
+    .chaine__etapes {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: none;
+      margin: 0;
+      padding-left: var(--s2);
+    }
+
+    .chaine__etape {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      grid-row: auto;
+      padding: 0 0 var(--s5) var(--s6);
+      border-left: 2px solid var(--trait);
+    }
+
+    .chaine__titre {
+      align-self: auto;
+    }
+
+    .chaine__outils:not(:has(*)),
+    .chaine__pied:not(:has(*)) {
+      display: none;
+    }
+
+    .chaine__etape:last-child {
+      padding-bottom: 0;
+      border-left-color: transparent;
+    }
+
+    .chaine__etape::before {
+      content: '';
+      position: absolute;
+      left: -8px;
+      top: 2px;
+      width: var(--noeud);
+      height: var(--noeud);
+      border: 2px solid var(--encre);
+      border-radius: 50%;
+      background: var(--fond);
+    }
+
+    .chaine__etape:nth-child(n + 2)::before {
+      border-color: var(--laiton);
+    }
+
+    .chaine__etape--porte::before {
+      border-radius: 2px;
+      transform: rotate(45deg);
+      background: var(--laiton);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animation-en-cours .chaine__sceau,
+    .animation-en-cours .chaine__trace {
+      animation: none;
+    }
+  }
+
+  @media print {
+    .chaine__rail {
+      display: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .chaine__ligne,
+    .chaine__trace,
+    .chaine__sceau,
+    .chaine__noeud--porte {
+      background: CanvasText;
+    }
+
+    .chaine__noeud,
+    .chaine__empreinte {
+      border-color: CanvasText;
+    }
+  }
+</style>

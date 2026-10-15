@@ -1,0 +1,70 @@
+/*
+ * Page Omnicard : la seule règle commune à ses composants (éventail des
+ * univers, comparateur des cartes, écrans du jeu). Le reste vit dans les
+ * styles de chaque composant (components/projets/omnicard/) et lit les jetons
+ * de la direction « Lanterne » : aucune couleur ni taille en dur ici.
+ */
+
+/* Un choix en pilule, porté par un bouton radio natif : clic, flèches au
+   clavier, état lisible sans JavaScript. Le choix fait est plein. */
+.oc-pastille {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--s4);
+  border-radius: var(--r3);
+  box-shadow: inset 0 0 0 1px var(--trait);
+  color: var(--encre);
+  font-size: var(--t-s);
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background-color var(--d-ui) var(--courbe), color var(--d-ui) var(--courbe), box-shadow var(--d-ui) var(--courbe);
+}
+
+.oc-pastille:hover {
+  box-shadow: inset 0 0 0 1px var(--accent);
+  color: var(--accent);
+}
+
+.oc-pastille:has(:checked) {
+  background: var(--accent);
+  box-shadow: none;
+  color: var(--accent-texte);
+}
+
+.oc-pastille:has(:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+/* Le bouton radio reste au centre de sa pastille : le focus n’y fait pas
+   défiler la page. */
+.oc-pastille__radio {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Les cibles numérotées des schémas : les mêmes pastilles que sur les
+   captures annotées (CaptureAnnotee), à la lumière de la lanterne. */
+.oc-cible {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--lanterne);
+  color: var(--suie);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}

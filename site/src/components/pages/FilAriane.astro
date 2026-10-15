@@ -1,0 +1,75 @@
+---
+/**
+ * Fil d’Ariane des pages de profondeur : l’accueil, les parents, la page.
+ *
+ *   <FilAriane courant="Contact" />
+ *   <FilAriane courant="gup" projet />                     Accueil / Projets / gup
+ *   <FilAriane courant="Compétences" parents={[{ href: '/parcours', titre: 'Parcours' }]} />
+ *
+ * Liens en gris éteint (ce n’est pas l’action de la page), cibles de 44 px,
+ * page courante en encre avec aria-current="page".
+ */
+interface Props {
+  courant: string;
+  /** Raccourci : la page est une page de projet (parent « Projets »). */
+  projet?: boolean;
+  parents?: { href: string; titre: string }[];
+  class?: string;
+}
+
+const { courant, projet = false, parents, class: classe } = Astro.props;
+const liensParents = parents ?? (projet ? [{ href: '/projets', titre: 'Projets' }] : []);
+---
+
+<nav class:list={['fil-ariane', classe]} aria-label="Fil d’Ariane">
+  <ol>
+    <li><a href="/">Accueil</a></li>
+    {liensParents.map((parent) => <li><a href={parent.href}>{parent.titre}</a></li>)}
+    <li aria-current="page">{courant}</li>
+  </ol>
+</nav>
+
+<style>
+  .fil-ariane {
+    padding-block: var(--s4) var(--s2);
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 var(--s2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  li + li::before {
+    content: '/';
+    margin-right: var(--s2);
+    color: var(--trait);
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--eteint);
+  }
+
+  a:hover {
+    color: var(--accent);
+  }
+
+  [aria-current] {
+    color: var(--encre);
+  }
+</style>

@@ -1,0 +1,150 @@
+---
+/**
+ * GUP-F1 · Le problème : onze commandes de mise à jour, une par outil,
+ * empilées face à `gup`. Figure en HTML (aucune image) : les commandes sont
+ * celles que gup lance, lues dans les fichiers des sources à la release 0.5.3
+ * (COMMANDES, config/gup.ts). Sur mobile, la pile passe au-dessus de gup.
+ */
+import { COMMANDES } from '../../../config/gup';
+
+interface Props {
+  class?: string;
+}
+
+const { class: classe } = Astro.props;
+---
+
+<figure class:list={['commandes', classe]} data-visuel="GUP-F1">
+  <div class="commandes__pile">
+    <ul aria-label={`${COMMANDES.length} commandes, une par outil`}>
+      {
+        COMMANDES.map(({ source, commande }) => (
+          <li>
+            <span class="sr">{source}&nbsp;: </span>
+            <code>{commande}</code>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+  <p class="commandes__lien" aria-hidden="true"><span>→</span></p>
+  <div class="commandes__gup foyer">
+    <code>gup</code>
+    <span>une commande, toutes les sources</span>
+  </div>
+  <figcaption class="commandes__legende">Onze des commandes que gup lance à ma place, avec leurs arguments principaux (release 0.5.3).</figcaption>
+</figure>
+
+<style>
+  .commandes {
+    display: grid;
+    grid-template-columns: max-content auto minmax(0, 1fr);
+    grid-template-areas:
+      'pile lien gup'
+      'legende legende legende';
+    align-items: center;
+    gap: var(--s4) var(--s4);
+    margin: 0;
+  }
+
+  .commandes code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  .commandes__pile {
+    grid-area: pile;
+    min-width: 0;
+    padding: var(--s3) var(--s4);
+    border: 1px solid var(--trait);
+    border-radius: var(--r2);
+    background: var(--surface);
+    box-shadow: var(--ombre-1);
+  }
+
+  .commandes__pile ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .commandes__pile li {
+    padding-block: 5px;
+    border-bottom: 1px solid var(--filet);
+    font-size: var(--t-xs);
+    line-height: 1.4;
+  }
+
+  .commandes__pile li:last-child {
+    border-bottom: 0;
+  }
+
+  .commandes__pile code {
+    min-width: 0;
+    color: var(--encre);
+    white-space: nowrap;
+  }
+
+  .commandes__lien {
+    grid-area: lien;
+    font-size: var(--t-xl);
+    color: var(--eteint);
+  }
+
+  .commandes__gup {
+    grid-area: gup;
+    display: grid;
+    justify-items: start;
+    gap: var(--s2);
+  }
+
+  .commandes__gup code {
+    padding: var(--s3) var(--s5);
+    border-radius: var(--r2);
+    background: var(--cadre);
+    color: var(--lune);
+    font-size: var(--t-2xl);
+    font-weight: 600;
+    line-height: 1;
+    box-shadow: 0 0 0 1px var(--cadre-filet), 0 0 48px -8px var(--lanterne-eclat);
+  }
+
+  .commandes__gup code::before {
+    content: '$ ';
+    color: var(--lanterne);
+  }
+
+  .commandes__gup span {
+    font-size: var(--t-xs);
+    line-height: 1.4;
+    color: var(--eteint);
+  }
+
+  .commandes__legende {
+    grid-area: legende;
+    font-size: var(--t-xs);
+    line-height: 1.5;
+    color: var(--eteint);
+  }
+
+  @media (max-width: 560px) {
+    .commandes {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        'pile'
+        'lien'
+        'gup'
+        'legende';
+      justify-items: start;
+    }
+
+    .commandes__lien span {
+      display: inline-block;
+      rotate: 90deg;
+    }
+
+    .commandes__pile {
+      width: 100%;
+    }
+
+  }
+</style>

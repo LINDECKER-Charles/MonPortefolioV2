@@ -1,0 +1,88 @@
+---
+/**
+ * Gabarit des pages du parcours (Professionnel, Compétences, Formation) :
+ * fil d’Ariane, onglets du parcours, titre et une ligne, le contenu, l’appel
+ * « Discutons », puis la suite de lecture vers les autres pages. Le même
+ * ordre que la sortie des pages de projet : l’action principale ferme le
+ * contenu, la navigation vient ensuite.
+ *
+ *   <Parcours titre description chemin courant introduction sommaire={SECTIONS}>
+ *     …
+ *     <AppelDiscutons slot="fin" emplacement="discutons">Une phrase.</AppelDiscutons>
+ *   </Parcours>
+ *
+ * `sommaire` (facultatif) : les sections de la page pour le bouton
+ * « Sommaire » de l’en-tête sous 1 100 px (la même liste que NavigationPage).
+ * Slots : `tete` sous le titre (raccourcis, preuve), défaut pour le contenu,
+ * `fin` entre le contenu et « Pour continuer » (l’appel « Discutons »).
+ * `compact` est gardé pour compatibilité : l’en-tête est toujours compact.
+ */
+import Base from './Base.astro';
+import FilAriane from '../components/pages/FilAriane.astro';
+import ContinuerLecture from '../components/pages/ContinuerLecture.astro';
+import NavigationParcours from '../components/parcours/NavigationParcours.astro';
+import { PAGES_PARCOURS } from '../config/parcours';
+import type { EntreeSommaire } from '../config/navigation';
+import { typo } from '../lib/typo';
+
+interface Props {
+  titre: string;
+  description: string;
+  chemin: string;
+  courant: string;
+  introduction: string;
+  compact?: boolean;
+  /** Sections de la page, transmises au sommaire de l’en-tête (sous 1 100 px). */
+  sommaire?: readonly EntreeSommaire[];
+}
+
+const { titre, description, chemin, courant, introduction, sommaire } = Astro.props;
+const suite = [
+  { href: '/parcours', titre: 'Vue d’ensemble', detail: 'Le parcours en bref, avec sa frise.' },
+  ...PAGES_PARCOURS.filter((page) => page.href !== chemin).map((page) => ({
+    href: page.href, titre: page.titre, detail: page.description,
+  })),
+];
+---
+
+<Base titre={titre} description={description} chemin={chemin} sommaire={sommaire}>
+  <div class="conteneur parcours-page">
+    <FilAriane courant={courant} parents={[{ href: '/parcours', titre: 'Parcours' }]} />
+    <NavigationParcours chemin={chemin} />
+    <header class="parcours-tete">
+      <h1 data-pli="titre">{courant}</h1>
+      <p class="chapeau" data-pli="identite">{typo(introduction)}</p>
+      <slot name="tete" />
+    </header>
+    <slot />
+    <slot name="fin" />
+    <ContinuerLecture liens={suite} />
+  </div>
+</Base>
+
+<style>
+  .parcours-page {
+    padding-bottom: var(--s7);
+  }
+
+  .parcours-tete {
+    padding-block: clamp(24px, 4vw, 48px) clamp(24px, 3.5vw, 48px);
+  }
+
+  .parcours-tete h1 {
+    font-size: var(--t-3xl);
+    line-height: 1;
+  }
+
+  .parcours-tete .chapeau {
+    max-width: 38rem;
+    margin-top: var(--s4);
+    color: var(--eteint);
+  }
+
+  @media print {
+    .parcours-tete h1 {
+      font-size: var(--t-2xl);
+    }
+  }
+</style>

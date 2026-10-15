@@ -1,0 +1,221 @@
+---
+/**
+ * Le logo d’une technologie, décoratif (le lien qui l’entoure porte le nom).
+ * Logos réels de src/assets/stacks/ (licences : LISEZMOI.md) ; à défaut, un
+ * picto de repli dessiné de la même main (IllustrationStack, CMP-10). Un nom
+ * inconnu fait échouer le build : aucune case vide.
+ *
+ *   <LogoStack nom="Angular" taille="grand" />   en couleur, 56 px (Au quotidien)
+ *   <LogoStack nom="Sass" />                      gris, 28 px, couleur au survol du lien
+ *   <LogoStack nom="Go" taille="petit" />         gris, 18 px (étiquettes)
+ *
+ * Harmonisation (direction « Lanterne ») : hors du premier niveau, les logos
+ * passent en gris et retrouvent leur couleur au survol ou au focus du lien
+ * (`.techno`). Les logos monochromes s’inversent la nuit et dans les actes
+ * sombres ; les logos sombres en couleur s’éclaircissent sans papier blanc.
+ * Les logos réduits à un mot-symbole, illisibles à 18-28 px (Nginx, PHPUnit,
+ * API Platform, Leaflet), cèdent la place à un picto de repli (CMP-10).
+ */
+import angular from '../../assets/stacks/angular.svg?url';
+import typescript from '../../assets/stacks/typescript.svg?url';
+import csharp from '../../assets/stacks/csharp.svg?url';
+import dotnet from '../../assets/stacks/dotnet.svg?url';
+import postgresql from '../../assets/stacks/postgresql.svg?url';
+import mysql from '../../assets/stacks/mysql.svg?url';
+import git from '../../assets/stacks/git.svg?url';
+import githubActions from '../../assets/stacks/github-actions.svg?url';
+import docker from '../../assets/stacks/docker.svg?url';
+import linux from '../../assets/stacks/linux.svg?url';
+import python from '../../assets/stacks/python.svg?url';
+import php from '../../assets/stacks/php.svg?url';
+import symfony from '../../assets/stacks/symfony.svg?url';
+import nodejs from '../../assets/stacks/nodejs.svg?url';
+import tailwindcss from '../../assets/stacks/tailwindcss.svg?url';
+import gsap from '../../assets/stacks/gsap.svg?url';
+import java from '../../assets/stacks/java.svg?url';
+import spring from '../../assets/stacks/spring.svg?url';
+import apache from '../../assets/stacks/apache.svg?url';
+import ionic from '../../assets/stacks/ionic.svg?url';
+import capacitor from '../../assets/stacks/capacitor.svg?url';
+import vitest from '../../assets/stacks/vitest.svg?url';
+import entityframeworkcore from '../../assets/stacks/entityframeworkcore.svg?url';
+import html from '../../assets/stacks/html5.svg?url';
+import css from '../../assets/stacks/css3.svg?url';
+import javascript from '../../assets/stacks/javascript.svg?url';
+import bash from '../../assets/stacks/bash.svg?url';
+import c from '../../assets/stacks/c.svg?url';
+import express from '../../assets/stacks/express.svg?url';
+import sqlite from '../../assets/stacks/sqlite.svg?url';
+import playwright from '../../assets/stacks/playwright.svg?url';
+import eslint from '../../assets/stacks/eslint.svg?url';
+import prettier from '../../assets/stacks/prettier.png?url';
+import twig from '../../assets/stacks/twig.png?url';
+import doctrine from '../../assets/stacks/doctrine.svg?url';
+import caddy from '../../assets/stacks/caddy.png?url';
+import sass from '../../assets/stacks/sass.svg?url';
+import rxjs from '../../assets/stacks/rxjs.svg?url';
+import sharp from '../../assets/stacks/sharp.svg?url';
+import rust from '../../assets/stacks/rust.svg?url';
+import wasm from '../../assets/stacks/wasm.svg?url';
+import tauri from '../../assets/stacks/tauri.svg?url';
+import react from '../../assets/stacks/react.svg?url';
+import vite from '../../assets/stacks/vite.svg?url';
+import go from '../../assets/stacks/go.svg?url';
+import vuejs from '../../assets/stacks/vuejs.svg?url';
+import xunit from '../../assets/stacks/xunit.svg?url';
+import trello from '../../assets/stacks/trello.svg?url';
+import photino from '../../assets/stacks/photino.svg?url';
+import fastapi from '../../assets/stacks/fastapi.svg?url';
+import pytest from '../../assets/stacks/pytest.svg?url';
+import tokio from '../../assets/stacks/tokio.svg?url';
+import opentelemetry from '../../assets/stacks/opentelemetry.svg?url';
+import prometheus from '../../assets/stacks/prometheus.svg?url';
+import karma from '../../assets/stacks/karma.svg?url';
+import jasmine from '../../assets/stacks/jasmine.svg?url';
+import pillow from '../../assets/stacks/pillow.png?url';
+import gcc from '../../assets/stacks/gcc.svg?url';
+import chartjs from '../../assets/stacks/chartjs.svg?url';
+import mcp from '../../assets/stacks/mcp.svg?url';
+import IllustrationStack, { type OutilIllustre } from './IllustrationStack.astro';
+
+interface Props {
+  nom: string;
+  taille?: 'grand' | 'moyen' | 'petit';
+}
+const { nom, taille = 'moyen' } = Astro.props;
+const logos: Record<string, string> = {
+  Angular: angular,
+  TypeScript: typescript,
+  'C#': csharp,
+  '.NET': dotnet,
+  'ASP.NET Core': dotnet,
+  SignalR: dotnet,
+  PostgreSQL: postgresql,
+  MySQL: mysql,
+  Git: git,
+  'GitHub Actions': githubActions,
+  Docker: docker,
+  Linux: linux,
+  Python: python,
+  PHP: php,
+  Symfony: symfony,
+  'Node.js': nodejs,
+  'Tailwind CSS': tailwindcss,
+  GSAP: gsap,
+  Java: java,
+  Spring: spring,
+  Apache: apache,
+  Ionic: ionic,
+  Capacitor: capacitor,
+  Vitest: vitest,
+  'EF Core': entityframeworkcore,
+  HTML: html,
+  CSS: css,
+  JavaScript: javascript,
+  Bash: bash,
+  C: c,
+  Express: express,
+  SQLite: sqlite,
+  Playwright: playwright,
+  ESLint: eslint,
+  Prettier: prettier,
+  Twig: twig,
+  Doctrine: doctrine,
+  Caddy: caddy,
+  Sass: sass,
+  RxJS: rxjs,
+  sharp,
+  Rust: rust,
+  WebAssembly: wasm,
+  Tauri: tauri,
+  React: react,
+  Vite: vite,
+  Go: go,
+  'Vue.js': vuejs,
+  xUnit: xunit,
+  Trello: trello,
+  'Photino.NET': photino,
+  FastAPI: fastapi,
+  pytest,
+  Tokio: tokio,
+  OpenTelemetry: opentelemetry,
+  Prometheus: prometheus,
+  Karma: karma,
+  Jasmine: jasmine,
+  Pillow: pillow,
+  'Spring Boot': spring,
+  GCC: gcc,
+  'Chart.js': chartjs,
+  MCP: mcp,
+};
+const src = logos[nom];
+const outilsIllustres: OutilIllustre[] = ['SQL', 'Axum', 'SQLx', 'Stockage S3 compatible', 'Dompdf', 'OpenTUI', 'Make', 'axe-core', 'Claude', 'Codex', 'Kokoro', 'Piper', 'Nginx', 'PHPUnit', 'API Platform', 'Leaflet'];
+const illustration = outilsIllustres.find((outil) => outil === nom);
+if (!src && !illustration) throw new Error(`Visuel de stack inconnu : ${nom}`);
+const monochrome = ['Linux', 'Symfony', 'Express', 'Rust', 'Tokio', 'xUnit', 'MCP'].includes(nom);
+/** Logos sombres en couleur : éclaircis la nuit (inversés, teinte rétablie), sans papier blanc. */
+const sombre = ['Bash', 'Photino.NET', 'OpenTelemetry'].includes(nom);
+const pixels = { grand: 56, moyen: 28, petit: 18 }[taille];
+---
+
+{illustration ? <IllustrationStack nom={illustration} taille={taille} /> : <img
+  class:list={['logo-stack', `logo-stack--${taille}`, {
+    'logo-stack--monochrome': monochrome,
+    'logo-stack--clair': nom === 'GSAP',
+    'logo-stack--sombre': sombre,
+  }]}
+  src={src}
+  alt=""
+  aria-hidden="true"
+  width={pixels}
+  height={pixels}
+  loading="lazy"
+  decoding="async"
+/>}
+
+<style>
+  /* Un seul filtre, composé de quatre réglages : gris, inversion, teinte, éclat. */
+  .logo-stack {
+    --gris: 1;
+    --inverse: 0;
+    --teinte: 0deg;
+    --eclat: 1;
+    display: block;
+    flex: none;
+    object-fit: contain;
+    filter: grayscale(var(--gris)) invert(var(--inverse)) hue-rotate(var(--teinte)) brightness(var(--eclat));
+    transition: filter var(--d-ui) var(--courbe);
+  }
+  .logo-stack--grand { --gris: 0; width: 56px; height: 56px; }
+  .logo-stack--moyen { width: 28px; height: 28px; }
+  .logo-stack--petit { width: 18px; height: 18px; }
+  /* GSAP est blanc : inversé sur le fond clair du jour. */
+  .logo-stack--clair { --inverse: 1; }
+
+  /* Hors du premier niveau, gris ; la couleur revient au survol ou au focus du lien. */
+  :global(.techno:is(:hover, :focus-visible)) .logo-stack { --gris: 0; }
+
+  /* La nuit et dans les actes sombres : les monochromes s’inversent, GSAP redevient blanc. */
+  :global(.acte-veille) .logo-stack--monochrome { --inverse: 1; }
+  :global(.acte-veille) .logo-stack--clair { --inverse: 0; }
+  :global(.acte-veille) .logo-stack--sombre { --inverse: 1; --teinte: 180deg; }
+  :global(:root[data-theme='nuit']) .logo-stack { --eclat: 1.25; }
+  :global(:root[data-theme='nuit']) .logo-stack--grand { --eclat: 1; }
+  :global(:root[data-theme='nuit']) .logo-stack--monochrome { --inverse: 1; --eclat: 1; }
+  :global(:root[data-theme='nuit']) .logo-stack--clair { --inverse: 0; --eclat: 1; }
+  :global(:root[data-theme='nuit']) .logo-stack--sombre { --inverse: 1; --teinte: 180deg; --eclat: 1; }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme])) .logo-stack { --eclat: 1.25; }
+    :global(:root:not([data-theme])) .logo-stack--grand { --eclat: 1; }
+    :global(:root:not([data-theme])) .logo-stack--monochrome { --inverse: 1; --eclat: 1; }
+    :global(:root:not([data-theme])) .logo-stack--clair { --inverse: 0; --eclat: 1; }
+    :global(:root:not([data-theme])) .logo-stack--sombre { --inverse: 1; --teinte: 180deg; --eclat: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .logo-stack { transition: none; }
+  }
+  @media print {
+    .logo-stack { --gris: 0 !important; --inverse: 0 !important; --eclat: 1 !important; }
+    .logo-stack--clair { --inverse: 1 !important; }
+  }
+</style>

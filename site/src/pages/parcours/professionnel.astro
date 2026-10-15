@@ -1,0 +1,68 @@
+---
+/**
+ * Parcours professionnel (cahier, § 5.9) : la chronologie en durées (PRO-F1),
+ * puis une fiche par rôle, du plus récent au plus ancien. Navigation de page
+ * collante sur ordinateur, sommaire de l’en-tête en dessous. Données :
+ * config/parcours.ts.
+ */
+import Parcours from '../../layouts/Parcours.astro';
+import AppelDiscutons from '../../components/pages/AppelDiscutons.astro';
+import NavigationPage from '../../components/pages/NavigationPage.astro';
+import FicheExperience from '../../components/parcours/FicheExperience.astro';
+import Frise from '../../components/parcours/Frise.astro';
+import { EXPERIENCES, ligneDeFrise } from '../../config/parcours';
+import { SITE } from '../../config/site';
+
+const titre = `Parcours professionnel — ${SITE.nom}`;
+const description = 'Les expériences de Charles Lindecker, de son poste actuel aux premières missions, entre architecture logicielle, développement web et transmission.';
+const sommaire = EXPERIENCES.map((experience) => ({ id: experience.id, titre: experience.repere }));
+const chronologie = [{ lignes: EXPERIENCES.map((experience) => ligneDeFrise(experience, '')) }];
+---
+
+<Parcours
+  titre={titre}
+  description={description}
+  chemin="/parcours/professionnel"
+  courant="Parcours professionnel"
+  introduction="Architecture logicielle, développement web et transmission. Voici mes expériences, en commençant par les plus récentes."
+  sommaire={sommaire}
+  compact
+>
+  <NavigationPage entrees={sommaire}>
+    <section class="pro-chronologie" aria-label="Chronologie">
+      <Frise id="chronologie" titre="D’août 2025 à aujourd’hui" debut="2025-08" couloirs={chronologie} trimestres />
+    </section>
+
+    <section class="experiences" aria-labelledby="experiences-titre">
+      <h2 id="experiences-titre" class="sr">Expériences</h2>
+      <ol class="chronologie" role="list" aria-label="Expériences de la plus récente à la plus ancienne">
+        {EXPERIENCES.map((experience, index) => <FicheExperience experience={experience} actuelle={index === 0} />)}
+      </ol>
+    </section>
+  </NavigationPage>
+
+  <AppelDiscutons slot="fin" emplacement="discutons">Une équipe à faire grandir, un sujet technique à creuser&nbsp;?</AppelDiscutons>
+</Parcours>
+
+<style>
+  .pro-chronologie {
+    margin-bottom: var(--entre-sections);
+    padding: var(--s5) clamp(16px, 2.4vw, 32px) var(--s4);
+    border-radius: var(--r2);
+    background: var(--surface);
+    box-shadow: var(--ombre-1);
+  }
+
+  .chronologie {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (max-width: 760px) {
+    .pro-chronologie {
+      margin-inline: calc(-1 * var(--s2));
+      padding-inline: var(--s3);
+    }
+  }
+</style>

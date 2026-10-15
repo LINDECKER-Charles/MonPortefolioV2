@@ -1,0 +1,13 @@
+# Sorties de build et caches d'Astro.
+dist/
+.astro/
+node_modules/
+
+# Rapports des tests de bout en bout.
+test-results/
+playwright-report/
+
+# Système.
+.DS_Store
+Thumbs.db
+npm-debug.log*

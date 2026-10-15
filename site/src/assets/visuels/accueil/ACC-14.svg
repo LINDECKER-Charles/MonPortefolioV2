@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" width="320" height="240" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <title>Trois lanternes qui se transmettent la flamme</title>
+
+  <g class="lt-scene" transform="translate(-24 -22.9) scale(1.15)">
+  <path class="lt-sol" d="M24 206h272M32 201v10m256-10v10" stroke-width="1"/>
+  <path class="lt-trajet" d="M66 138c26-46 62-46 88 0M166 138c26-46 62-46 88 0" stroke-width="1" stroke-dasharray="2 5"/>
+
+  <g class="lt-objet lt-objet--source" transform="translate(20 0)">
+    <g class="lt-lumiere lt-lumiere--source">
+      <path class="lt-rayons" d="M13 152H5m62 0h8M14 135l-7-5m59 5 7-5M14 169l-7 5m59-5 7 5" stroke="#a8742a"/>
+    </g>
+    <g class="lt-modele">
+      <circle class="lt-trait" cx="40" cy="58" r="7"/>
+      <path class="lt-trait" d="M40 65v11"/>
+      <path class="lt-aplat" d="M19 96 40 76l21 20z" fill="#ffffff"/>
+      <path class="lt-aplat" d="M15 96h50v7H15zM20 103h40v85H20zM15 188h50v8H15zM22 196l5 10h26l5-10z" fill="#ffffff"/>
+      <path class="lt-montant" d="M31 103v85m18-85v85"/>
+      <path class="lt-trait" d="M33 188v-8h14v8M40 180v-8"/>
+    </g>
+    <g class="lt-lumiere lt-lumiere--source">
+      <path class="lt-flamme" d="M40 128c7 10 13 18 13 27a13 13 0 0 1-26 0c0-9 6-17 13-27z" fill="#f0b24a" stroke="none"/>
+    </g>
+  </g>
+  <g class="lt-objet lt-objet--relais" transform="translate(120 0)">
+    <g class="lt-lumiere lt-lumiere--relais">
+      <path class="lt-rayons" d="M13 152H5m62 0h8M14 135l-7-5m59 5 7-5M14 169l-7 5m59-5 7 5" stroke="#a8742a"/>
+    </g>
+    <g class="lt-modele">
+      <circle class="lt-trait" cx="40" cy="58" r="7"/>
+      <path class="lt-trait" d="M40 65v11"/>
+      <path class="lt-aplat" d="M19 96 40 76l21 20z" fill="#ffffff"/>
+      <path class="lt-aplat" d="M15 96h50v7H15zM20 103h40v85H20zM15 188h50v8H15zM22 196l5 10h26l5-10z" fill="#ffffff"/>
+      <path class="lt-montant" d="M31 103v85m18-85v85"/>
+      <path class="lt-trait" d="M33 188v-8h14v8M40 180v-8"/>
+    </g>
+    <g class="lt-lumiere lt-lumiere--relais">
+      <path class="lt-flamme" d="M40 128c7 10 13 18 13 27a13 13 0 0 1-26 0c0-9 6-17 13-27z" fill="#f0b24a" stroke="none"/>
+    </g>
+  </g>
+  <g class="lt-objet lt-objet--suite" transform="translate(220 0)">
+    <g class="lt-lumiere lt-lumiere--suite">
+      <path class="lt-rayons" d="M13 152H5m62 0h8M14 135l-7-5m59 5 7-5M14 169l-7 5m59-5 7 5" stroke="#a8742a"/>
+    </g>
+    <g class="lt-modele">
+      <circle class="lt-trait" cx="40" cy="58" r="7"/>
+      <path class="lt-trait" d="M40 65v11"/>
+      <path class="lt-aplat" d="M19 96 40 76l21 20z" fill="#ffffff"/>
+      <path class="lt-aplat" d="M15 96h50v7H15zM20 103h40v85H20zM15 188h50v8H15zM22 196l5 10h26l5-10z" fill="#ffffff"/>
+      <path class="lt-montant" d="M31 103v85m18-85v85"/>
+      <path class="lt-trait" d="M33 188v-8h14v8M40 180v-8"/>
+    </g>
+    <g class="lt-lumiere lt-lumiere--suite">
+      <path class="lt-flamme" d="M40 128c7 10 13 18 13 27a13 13 0 0 1-26 0c0-9 6-17 13-27z" fill="#f0b24a" stroke="none"/>
+    </g>
+  </g>
+
+  <circle class="lt-particule lt-particule--premiere" r="2.6" fill="#f0b24a" stroke="none" opacity="0"/>
+  <circle class="lt-particule lt-particule--seconde" r="2.6" fill="#f0b24a" stroke="none" opacity="0"/>
+  </g>
+</svg>

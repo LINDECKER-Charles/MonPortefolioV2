@@ -1,0 +1,1814 @@
+/*
+ * Le backoffice dans la direction « Lanterne » : le même système que le site
+ * (jetons.css, chargé par global.css), réglé pour un outil de travail dense.
+ * Aucune valeur en dur : couleurs, tailles de texte, rayons, ombres et durées
+ * viennent des jetons, jour et nuit (tests/unit/styles.test.ts).
+ *
+ * Principes :
+ *   - une seule zone éclairée par écran (.foyer) : la carte de connexion, la
+ *     demande ouverte, ou la carte du secret d’un accès MCP ;
+ *   - le bleu roi (la lune, la nuit) ne porte que ce qui se clique ;
+ *   - un retour par action, posé à côté d’elle (.bo-retour) ;
+ *   - cibles de 44 px, focus visible, rien ne déborde à 390 px.
+ *
+ * Primitives réutilisables (l’atelier du blog s’y appuie) :
+ *   .bo-cadre                      largeur et gouttières de la page
+ *   .bo-rubrique, .bo-rubrique__*  une rubrique et son en-tête (EnTeteRubrique)
+ *   .bo-carte                      surface à filet, rayon de carte
+ *   .bo-formulaire, .bo-champ      formulaire et champ (étiquette, saisie, aide)
+ *   .bo-choix, .bo-case            options en cartes (radio) et case à cocher
+ *   .bo-button(--primary|--quiet|--danger|--petit)  pilules de 44 px
+ *   .bo-retour, .bo-notice, .bo-avis  retours locaux, retour de session, avis
+ *   .bo-table, .bo-etiquette       tableau à filets, étiquette de permission
+ *   .bo-state[data-state]          statut : une forme et un mot
+ *   .bo-details, .bo-dialog        repli et dialogue
+ *   .bo-fiches, .bo-fiche          liste à filets en fiches (Stockage)
+ *   .bo-barre-stock, .bo-legende   jauge, barre empilée et sa légende
+ *
+ * Mise en page : en-tête non collant (la barre d’enregistrement de l’atelier
+ * du blog l’est), navigation sous l’identité sous 1 100 px, tableau en
+ * fiches sous 860 px, fiches d’images empilées sous 600 px. L’atelier du
+ * blog : styles/blog-editor.css.
+ */
+
+/* ===== Base ===== */
+.bo [hidden] {
+  display: none !important;
+}
+
+.bo {
+  font-size: var(--t-s);
+  line-height: 1.55;
+}
+
+.bo h2,
+.bo h3,
+.bo h4 {
+  line-height: 1.1;
+}
+
+.bo p {
+  max-width: 72ch;
+}
+
+.bo :is(h2, h3)[tabindex='-1']:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.bo code,
+.bo pre,
+.bo-code {
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: var(--t-xs);
+}
+
+.bo code {
+  overflow-wrap: anywhere;
+}
+
+.bo-sr {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.bo-muted {
+  color: var(--eteint);
+  font-weight: 400;
+}
+
+/* Largeur de page : le contenu tient dans --largeur, avec la gouttière du
+   site en marge intérieure. */
+.bo-cadre {
+  width: 100%;
+  max-width: calc(var(--largeur) + 2 * var(--gouttiere));
+  margin-inline: auto;
+  padding-inline: var(--gouttiere);
+}
+
+.bo-main {
+  padding-block: var(--s5) var(--s8);
+}
+
+.bo-main:focus {
+  outline: none;
+}
+
+.bo-surtitre {
+  margin-bottom: var(--s3);
+  font-family: var(--police-texte);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-petit);
+  line-height: 1.4;
+  color: var(--eteint);
+}
+
+.bo-pied {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s2) var(--s4);
+  padding-block: var(--s4);
+  border-top: 1px solid var(--filet);
+  color: var(--eteint);
+  font-size: var(--t-xs);
+}
+
+.bo-pied a {
+  display: inline-block;
+  padding-block: var(--s3);
+  font-weight: 600;
+}
+
+/* ===== En-tête ===== */
+.bo-entete {
+  background: var(--fond);
+  border-bottom: 1px solid var(--filet);
+}
+
+.bo-entete__barre {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2) var(--s5);
+  min-height: var(--entete);
+  padding-block: var(--s2);
+}
+
+.bo-marque {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s3);
+  min-height: 44px;
+  color: var(--encre);
+  text-decoration: none;
+  border-radius: var(--r1);
+}
+
+.bo-marque:hover {
+  color: var(--encre);
+}
+
+.bo-marque__texte {
+  display: grid;
+  font-size: var(--t-s);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.bo-marque__lieu {
+  font-size: var(--t-xs);
+  font-weight: 400;
+  color: var(--eteint);
+}
+
+.bo-navigation {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.bo-navigation ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bo-navigation a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  min-height: 44px;
+  padding-inline: var(--s3);
+  color: var(--encre);
+  font-size: var(--t-s);
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: var(--r1);
+}
+
+.bo-navigation a:hover {
+  color: var(--accent);
+}
+
+/* La rubrique lue : un trait d’encre sous le libellé, et la graisse. */
+.bo-navigation a[aria-current='page'] {
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--encre);
+  border-radius: 0;
+}
+
+.bo-compte {
+  min-width: 24px;
+  padding: 0 var(--s1);
+  border: 1px solid var(--trait);
+  border-radius: var(--r1);
+  color: var(--eteint);
+  font-size: var(--t-xs);
+  font-variant-numeric: tabular-nums lining-nums;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.bo-compte:not([data-nombre='0']) {
+  border-color: var(--encre);
+  background: var(--encre);
+  color: var(--fond);
+  font-weight: 600;
+}
+
+.bo-entete__outils {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  margin-left: auto;
+}
+
+/* ===== Rubriques ===== */
+.bo-rubrique__entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--s4) var(--s5);
+  margin-bottom: var(--s5);
+}
+
+.bo-rubrique__intitule {
+  min-width: 0;
+}
+
+.bo-rubrique h2 {
+  font-size: var(--t-2xl);
+  overflow-wrap: anywhere;
+}
+
+.bo-rubrique__description {
+  margin-top: var(--s2);
+  color: var(--eteint);
+}
+
+.bo-rubrique__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+}
+
+.bo-rubrique h3,
+.bo-connexion h2,
+.bo-dialog h2 {
+  font-size: var(--t-xl);
+}
+
+.bo-carte {
+  min-width: 0;
+  padding: var(--s5);
+  background: var(--surface);
+  border: 1px solid var(--filet);
+  border-radius: var(--r2);
+}
+
+.bo-colonnes {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: var(--s6);
+  align-items: start;
+}
+
+.bo-colonnes__principale {
+  min-width: 0;
+}
+
+/* ===== Formulaires ===== */
+.bo fieldset {
+  display: grid;
+  gap: 0;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.bo label,
+.bo legend {
+  display: block;
+  margin-bottom: var(--s2);
+  padding: 0;
+  font-size: var(--t-s);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* Les formulaires de l’atelier du blog enchaînent étiquettes et champs. */
+.bo fieldset > label:not(:first-of-type) {
+  margin-top: var(--s5);
+}
+
+.bo fieldset > button,
+.bo fieldset > .bo-actions {
+  margin-top: var(--s5);
+}
+
+/* Spécificité nulle : les champs particuliers du blog gardent la main. */
+:where(.bo) :where(input:not([type='checkbox'], [type='radio']), select, textarea) {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: var(--s2) var(--s3);
+  border: 1px solid var(--trait);
+  border-radius: var(--r1);
+  background: var(--surface);
+  color: var(--encre);
+  font: inherit;
+  font-size: var(--t-s);
+}
+
+:where(.bo) :where(input[readonly]) {
+  background: var(--fond);
+}
+
+:where(.bo) :where(input, select, textarea, summary):focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+:where(.bo) :where(input[type='checkbox'], input[type='radio']) {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.bo-formulaire > fieldset {
+  gap: var(--s5);
+}
+
+.bo-formulaire > fieldset > .bo-actions {
+  margin-top: 0;
+}
+
+.bo-formulaire > h3 {
+  margin-bottom: var(--s4);
+}
+
+.bo-formulaire > h3 + .bo-suggestions {
+  margin-bottom: var(--s5);
+}
+
+.bo-champ {
+  min-width: 0;
+}
+
+.bo-help {
+  margin-top: var(--s2);
+  color: var(--eteint);
+  font-size: var(--t-xs);
+  line-height: 1.5;
+}
+
+.bo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s3);
+}
+
+/* Options en cartes : toute la carte choisit (l’étiquette la couvre). */
+.bo fieldset.bo-choix {
+  gap: var(--s2);
+}
+
+.bo-choix > legend {
+  margin-bottom: var(--s2);
+}
+
+.bo-choix__option,
+.bo-case {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: var(--s1) var(--s3);
+  padding: var(--s3) var(--s4);
+  border: 1px solid var(--trait);
+  border-radius: var(--r2);
+  background: var(--surface);
+}
+
+.bo-choix__option > input,
+.bo-case > input {
+  position: relative;
+  z-index: 1;
+  grid-row: 1 / span 2;
+  margin-top: 2px;
+}
+
+.bo-choix__option > label,
+.bo-case > label {
+  margin: 0;
+  cursor: pointer;
+}
+
+.bo-choix__option > label::after,
+.bo-case > label::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.bo-choix__aide {
+  grid-column: 2;
+  color: var(--eteint);
+  font-size: var(--t-xs);
+  line-height: 1.5;
+}
+
+/* Une option en une phrase serrée : l’intitulé, puis sa description à la
+   suite (accès MCP). La carte entière reste la cible. */
+.bo-option-ligne {
+  grid-template-columns: auto minmax(0, 1fr);
+  padding-block: var(--s2);
+}
+
+.bo-option-ligne > input {
+  grid-row: 1;
+  margin-top: var(--s1);
+}
+
+.bo-option-ligne__texte {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.bo-option-ligne__texte > label {
+  display: inline;
+  margin: 0 var(--s1) 0 0;
+  cursor: pointer;
+}
+
+.bo-option-ligne__texte > label::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--r2);
+}
+
+.bo-option-ligne__texte > .bo-choix__aide {
+  display: inline;
+}
+
+.bo-choix__option:has(input:checked),
+.bo-case:has(input:checked) {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.bo-choix__option:hover,
+.bo-case:hover {
+  border-color: var(--accent);
+}
+
+.bo-choix__option > input:focus-visible,
+.bo-case > input:focus-visible {
+  outline: none;
+}
+
+.bo-choix__option:has(input:focus-visible),
+.bo-case:has(input:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* ===== Boutons : pilules de 44 px =====
+   Contour par défaut ; une seule action principale par écran (--primary :
+   bleu roi le jour, lanterne la nuit). */
+.bo-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s2);
+  width: fit-content;
+  max-width: 100%;
+  min-height: 44px;
+  padding: var(--s2) var(--s4);
+  border: 0;
+  border-radius: var(--r3);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--trait);
+  color: var(--accent);
+  font: inherit;
+  font-size: var(--t-s);
+  font-weight: 600;
+  letter-spacing: var(--ls-petit);
+  line-height: 1.25;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--d-ui) var(--courbe), box-shadow var(--d-ui) var(--courbe), color var(--d-ui) var(--courbe);
+}
+
+.bo-button:hover {
+  color: var(--accent-survol);
+  box-shadow: inset 0 0 0 1px var(--accent);
+  text-decoration: none;
+}
+
+.bo-button--primary,
+.bo-button--primary:hover {
+  box-shadow: none;
+  color: var(--bouton-texte);
+}
+
+.bo-button--primary {
+  background: var(--bouton);
+}
+
+.bo-button--primary:hover {
+  background: var(--bouton-survol);
+}
+
+.bo-button--quiet,
+.bo-button--quiet:hover {
+  box-shadow: none;
+  padding-inline: var(--s3);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+
+.bo-button--quiet:hover {
+  text-decoration-thickness: 2px;
+}
+
+.bo-button--danger,
+.bo-button--danger:hover {
+  color: var(--erreur);
+}
+
+.bo-button--danger:hover {
+  box-shadow: inset 0 0 0 1px var(--erreur);
+}
+
+.bo-button--petit {
+  padding-inline: var(--s3);
+  font-size: var(--t-xs);
+}
+
+.bo-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.bo-button[aria-busy='true'],
+.bo [aria-busy='true'] .bo-button {
+  cursor: progress;
+}
+
+/* ===== Retours ===== */
+.bo-retour {
+  margin: 0;
+  font-size: var(--t-s);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.bo-retour:not(:empty) {
+  margin-top: var(--s4);
+  padding: var(--s1) 0 var(--s1) var(--s3);
+  border-left: 2px solid var(--trait);
+  color: var(--eteint);
+}
+
+.bo-retour[data-state='success']:not(:empty) {
+  border-left-color: var(--encre);
+  color: var(--encre);
+}
+
+.bo-retour[data-state='error']:not(:empty) {
+  border-left-color: var(--erreur);
+  color: var(--erreur);
+}
+
+.bo-notice,
+.bo-avis {
+  max-width: var(--mesure);
+  margin-bottom: var(--s5);
+  padding: var(--s3) var(--s4);
+  border-left: 2px solid var(--trait);
+  background: var(--surface);
+  border-radius: 0 var(--r1) var(--r1) 0;
+  overflow-wrap: anywhere;
+}
+
+.bo-notice[data-state='error'] {
+  border-left-color: var(--erreur);
+  color: var(--erreur);
+}
+
+.bo-notice[data-state='success'] {
+  border-left-color: var(--encre);
+}
+
+.bo-empty {
+  padding: var(--s5) var(--s4);
+  color: var(--eteint);
+  border-bottom: 1px solid var(--filet);
+}
+
+.bo-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s3);
+  padding-block: var(--s4);
+}
+
+/* Statut : une forme et un mot, jamais la couleur seule (ui/Statut.astro).
+   Disque plein : nouvelle, publié ; cercle vide : lue, brouillon ; trait :
+   archivée ; losange : programmé. */
+.bo-state {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  width: fit-content;
+  padding: 0 var(--s2) 0 0;
+  border: 1px solid transparent;
+  border-radius: var(--r1);
+  color: var(--encre);
+  font-size: var(--t-xs);
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.bo-state::before {
+  content: '';
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.bo-state:is([data-state='new'], [data-state='published']) {
+  font-weight: 600;
+}
+
+.bo-state:is([data-state='read'], [data-state='draft'], [data-state='archived']) {
+  color: var(--eteint);
+}
+
+.bo-state:is([data-state='read'], [data-state='draft'])::before {
+  background: transparent;
+  border: 1.5px solid currentColor;
+}
+
+.bo-state[data-state='archived']::before {
+  height: 2px;
+  border-radius: 1px;
+}
+
+.bo-state[data-state='scheduled']::before {
+  width: 7px;
+  height: 7px;
+  border-radius: 1px;
+  rotate: 45deg;
+}
+
+/* ===== Entrée : connexion, vérification, codes de secours ===== */
+.bo-connexion {
+  max-width: 30rem;
+  margin-top: var(--s4);
+}
+
+.bo-connexion--large {
+  max-width: 38rem;
+}
+
+.bo-connexion__texte {
+  margin-block: var(--s2) var(--s5);
+  color: var(--eteint);
+}
+
+.bo-connexion form fieldset {
+  gap: var(--s4);
+}
+
+.bo-connexion fieldset > .bo-actions {
+  margin-top: var(--s2);
+}
+
+.bo-enrollment {
+  margin-bottom: var(--s5);
+}
+
+.bo-enrollment ol {
+  margin: 0 0 var(--s4);
+  padding-left: var(--s5);
+}
+
+.bo-enrollment li + li {
+  margin-top: var(--s2);
+}
+
+.bo-enrollment img {
+  width: 240px;
+  max-width: 100%;
+  height: auto;
+  margin-block: var(--s4);
+  padding: var(--s2);
+  background: var(--papier-logo);
+  border: 1px solid var(--filet);
+  border-radius: var(--r1);
+}
+
+.bo-recovery-codes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s2);
+  margin: 0 0 var(--s5);
+  padding: 0;
+  list-style: none;
+}
+
+.bo-recovery-codes li {
+  padding: var(--s2) var(--s3);
+  border: 1px solid var(--filet);
+  border-radius: var(--r1);
+  background: var(--fond);
+}
+
+.bo-recovery-codes code {
+  user-select: all;
+}
+
+/* ===== Demandes de contact ===== */
+.bo-barre {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s3) var(--s5);
+  margin-bottom: var(--s4);
+}
+
+.bo-champ--ligne {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2) var(--s3);
+}
+
+.bo-champ--ligne > label {
+  margin: 0;
+}
+
+.bo-champ--ligne > select {
+  width: auto;
+  min-width: 10rem;
+}
+
+.bo-barre #bo-total {
+  margin-right: auto;
+}
+
+.bo-barre__retour {
+  flex-basis: 100%;
+}
+
+.bo-barre__retour:not(:empty) {
+  margin-top: 0;
+}
+
+.bo-inbox {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  gap: var(--s5);
+  align-items: start;
+}
+
+.bo-list-column {
+  min-width: 0;
+  border-top: 1px solid var(--encre);
+}
+
+.bo-contact-list,
+.bo-tools,
+.bo-outils-mcp,
+.bo-etiquettes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bo-contact-list li {
+  border-bottom: 1px solid var(--filet);
+}
+
+.bo-contact-row {
+  display: grid;
+  gap: var(--s1);
+  width: 100%;
+  min-height: 44px;
+  padding: var(--s3) var(--s4) var(--s3) var(--s3);
+  border: 0;
+  border-left: 3px solid transparent;
+  background: transparent;
+  color: var(--encre);
+  font: inherit;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.bo-contact-row:hover {
+  background: var(--surface);
+}
+
+.bo-contact-row[aria-pressed='true'] {
+  border-left-color: var(--accent);
+  background: var(--surface);
+}
+
+.bo-contact-row strong {
+  font-weight: 600;
+}
+
+.bo-row-person {
+  color: var(--eteint);
+}
+
+.bo-row-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s1) var(--s3);
+  font-size: var(--t-xs);
+}
+
+.bo-row-date {
+  color: var(--eteint);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.bo-detail h3 {
+  overflow-wrap: anywhere;
+}
+
+.bo-detail > .bo-muted {
+  margin-top: var(--s3);
+}
+
+.bo-contact-byline {
+  display: grid;
+  gap: var(--s1);
+  margin-top: var(--s4);
+  overflow-wrap: anywhere;
+}
+
+.bo-contact-byline a {
+  width: fit-content;
+}
+
+.bo-metadata {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s3) var(--s6);
+  margin-block: var(--s5);
+  padding-top: var(--s3);
+  border-top: 1px solid var(--encre);
+}
+
+.bo-metadata dt,
+.bo-reference dt {
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-petit);
+  color: var(--eteint);
+}
+
+.bo-metadata dd,
+.bo-reference dd {
+  margin: 0;
+}
+
+.bo-message {
+  padding-top: var(--s4);
+  border-top: 1px solid var(--filet);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.bo-detail .bo-actions {
+  margin-top: var(--s5);
+}
+
+/* ===== E-mails et boîte à outils ===== */
+.bo-formulaire {
+  max-width: 40rem;
+}
+
+.bo-colonnes .bo-formulaire {
+  max-width: none;
+}
+
+.bo-tools {
+  border-top: 1px solid var(--encre);
+}
+
+.bo-tool {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s1) var(--s4);
+  padding-block: var(--s3);
+  border-bottom: 1px solid var(--filet);
+}
+
+.bo-tool h3 {
+  font-family: var(--police-texte);
+  font-size: var(--t-m);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: var(--ls-0);
+  overflow-wrap: anywhere;
+}
+
+.bo-tool p {
+  grid-column: 1;
+  color: var(--eteint);
+  overflow-wrap: anywhere;
+}
+
+.bo-tool .bo-actions {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  gap: var(--s2);
+}
+
+.bo-suggestions {
+  display: grid;
+  gap: var(--s2);
+}
+
+.bo-suggestions > p {
+  color: var(--eteint);
+  font-size: var(--t-xs);
+  font-weight: 600;
+}
+
+.bo-suggestions__choix {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+}
+
+/* ===== E-mails : destinataire, serveur d’envoi, état ===== */
+.bo-envoi__reglages {
+  display: grid;
+  gap: var(--s6);
+}
+
+.bo-envoi__etat {
+  display: grid;
+  gap: var(--s4);
+}
+
+.bo-envoi__etat > .bo-help,
+.bo-envoi__etat > .bo-retour:not(:empty) {
+  margin-top: 0;
+}
+
+.bo-envoi__probleme {
+  margin: 0;
+  border-left-color: var(--erreur);
+}
+
+.bo-envoi__repli {
+  padding-top: var(--s4);
+  border-top: 1px solid var(--filet);
+}
+
+/* L’indice Hostinger : une ligne de référence et son préremplissage. */
+.bo-indice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2) var(--s4);
+  padding: var(--s3) var(--s4);
+  border-left: 2px solid var(--trait);
+  background: var(--fond);
+  border-radius: 0 var(--r1) var(--r1) 0;
+}
+
+.bo-indice > p {
+  flex: 1 1 20rem;
+  overflow-wrap: anywhere;
+}
+
+.bo-champ--court > input {
+  max-width: 10rem;
+}
+
+/* Le refus d’un champ, sous lui : un trait et des mots, pas la couleur seule. */
+.bo-erreur-champ {
+  margin-top: var(--s2);
+  padding-left: var(--s3);
+  border-left: 2px solid var(--erreur);
+  color: var(--erreur);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+:where(.bo) :where(input[aria-invalid='true']) {
+  border-color: var(--erreur);
+}
+
+.bo-conservation {
+  padding-top: var(--s3);
+}
+
+/* ===== Accès MCP ===== */
+.bo-mcp {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: var(--s6);
+  align-items: start;
+}
+
+.bo-mcp__creation,
+.bo-mcp__liste {
+  min-width: 0;
+}
+
+.bo-formulaire .bo-mcp__garde-fou {
+  margin-top: 0;
+}
+
+/* Le nom et la durée sur une ligne, leur aide dessous : « Créer l’accès »
+   reste visible dès l’arrivée. */
+.bo-mcp__identite {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0 var(--s3);
+}
+
+.bo-mcp__identite > .bo-help {
+  grid-column: 1 / -1;
+}
+
+.bo-secret__echeance {
+  font-weight: 600;
+}
+
+/* L’échéance d’un accès : une forme et des mots, jamais la couleur seule.
+   Proche (moins de 14 jours) : losange et graisse ; expiré : trait, éteint. */
+.bo-echeance {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+}
+
+.bo-echeance:is([data-echeance='proche'], [data-echeance='expire'])::before {
+  content: '';
+  flex: none;
+  background: currentColor;
+}
+
+.bo-echeance[data-echeance='proche'] {
+  font-weight: 600;
+}
+
+/* « Expire le » puis la date, d’un tenant si la place le permet ;
+   « dans 9 jours » dessous. */
+.bo-echeance__texte {
+  display: grid;
+}
+
+.bo-table .bo-echeance time {
+  white-space: normal;
+}
+
+/* Le nom d’un accès se coupe entre ses mots, jamais au milieu d’un mot. */
+.bo-mcp .bo-table th[scope='row'] {
+  min-width: 7rem;
+  overflow-wrap: break-word;
+}
+
+/* L’échéance garde « Expire le 22 oct. 2026 » sur deux lignes au plus. */
+.bo-mcp .bo-table td[data-label='Échéance'] {
+  min-width: 9.5rem;
+}
+
+.bo-echeance[data-echeance='proche']::before {
+  width: 7px;
+  height: 7px;
+  border-radius: 1px;
+  rotate: 45deg;
+}
+
+.bo-echeance[data-echeance='expire'],
+.bo-table tr[data-echeance='expire'] th[scope='row'] {
+  color: var(--eteint);
+}
+
+.bo-echeance[data-echeance='expire']::before {
+  width: 8px;
+  height: 2px;
+  border-radius: 1px;
+}
+
+.bo-mcp__liste-entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s2) var(--s4);
+  margin-bottom: var(--s3);
+}
+
+.bo-secret {
+  display: grid;
+  gap: var(--s4);
+}
+
+.bo-secret > .bo-retour:not(:empty) {
+  margin-top: 0;
+}
+
+/* La commande : la nuit dans le jour, comme un terminal (acte de veille). */
+.bo-commande {
+  margin: 0;
+  padding: var(--s3) var(--s4);
+  background: var(--veille);
+  color: var(--lune);
+  border-radius: var(--r1);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+  user-select: all;
+}
+
+/* Une option, un nom ou une adresse ne se coupent jamais (« --scope »,
+   « portfolio-local ») : la ligne passe entre deux mots, et seul le secret,
+   d’un seul tenant, peut aller à la ligne en son milieu. */
+.bo-commande__mot {
+  white-space: nowrap;
+}
+
+/* Une ligne de la commande par bloc, en retrait suspendu : quand la largeur la
+   coupe, sa suite part en retrait et ne passe pas pour une commande à part
+   (« 2>/dev/null » seul sur sa ligne). */
+.bo-commande__ligne {
+  display: block;
+  padding-left: 2ch;
+  text-indent: -2ch;
+}
+
+.bo-commande__secret {
+  overflow-wrap: anywhere;
+}
+
+:root[data-theme='nuit'] .bo-commande {
+  background: var(--fond);
+  box-shadow: inset 0 0 0 1px var(--trait);
+  color: var(--encre);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .bo-commande {
+    background: var(--fond);
+    box-shadow: inset 0 0 0 1px var(--trait);
+    color: var(--encre);
+  }
+}
+
+.bo-verification {
+  display: grid;
+  gap: var(--s2);
+}
+
+.bo-verification > p {
+  font-weight: 600;
+}
+
+.bo-outils-mcp,
+.bo-etiquettes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s1) var(--s2);
+}
+
+.bo-etiquette,
+.bo-outils-mcp li {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--s2);
+  border: 1px solid var(--trait);
+  border-radius: var(--r1);
+  color: var(--encre);
+  font-size: var(--t-xs);
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.bo-secret__avertissement {
+  padding-top: var(--s3);
+  border-top: 1px solid var(--filet);
+}
+
+.bo-secret__fin {
+  justify-content: flex-end;
+}
+
+/* ===== Tableau à filets (la fiche technique du site) ===== */
+.bo-table-cadre {
+  min-width: 0;
+}
+
+.bo-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-top: 1px solid var(--encre);
+  font-size: var(--t-s);
+}
+
+.bo-table th[scope='col'] {
+  padding: var(--s2) var(--s3);
+  border-bottom: 1px solid var(--trait);
+  color: var(--eteint);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-petit);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.bo-table :is(td, th[scope='row']) {
+  padding: var(--s3);
+  border-bottom: 1px solid var(--filet);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.bo-table th[scope='row'] {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.bo-table :is(th, td):first-child {
+  padding-left: 0;
+}
+
+.bo-table :is(th, td):last-child {
+  padding-right: 0;
+  text-align: right;
+}
+
+.bo-table time {
+  font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+}
+
+.bo-table .bo-jamais {
+  color: var(--eteint);
+}
+
+/* ===== Stockage =====
+   Une page de consultation : deux cartes (le disque, la base), puis des
+   fiches empilées (images, articles). Les barres sont décoratives : les
+   chiffres et la légende disent tout. Les parts de la base se distinguent par
+   la valeur et par la trame, pas par une couleur seule. */
+.bo-stockage {
+  display: grid;
+  gap: var(--s7);
+}
+
+.bo-stockage__retour:not(:empty) {
+  margin: 0 0 var(--s5);
+}
+
+.bo-stockage__resume {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s5);
+  align-items: start;
+}
+
+.bo-jauge,
+.bo-jauge__corps {
+  display: grid;
+  gap: var(--s3);
+  align-content: start;
+}
+
+.bo-jauge .bo-help {
+  margin-top: 0;
+}
+
+.bo-jauge__chiffre {
+  font-size: var(--t-m);
+}
+
+.bo-jauge__chiffre strong {
+  font-size: var(--t-xl);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.bo-barre-stock {
+  display: flex;
+  gap: 2px;
+  height: 12px;
+  overflow: hidden;
+  background: var(--fond);
+  border-radius: var(--r1);
+  box-shadow: inset 0 0 0 1px var(--trait);
+}
+
+.bo-barre-stock__occupe {
+  display: block;
+  background: var(--encre);
+}
+
+[data-plein='true'] .bo-barre-stock__occupe {
+  background: var(--erreur);
+}
+
+.bo-barre-stock--empilee {
+  box-shadow: none;
+}
+
+.bo-barre-stock__part {
+  flex: 0 1 0;
+  min-width: 3px;
+}
+
+/* Les parts : la même trame dans la barre et dans la légende. */
+:is(.bo-barre-stock__part, .bo-legende li)[data-part='media_originals'] {
+  --part: var(--encre);
+}
+
+:is(.bo-barre-stock__part, .bo-legende li)[data-part='media_variants'] {
+  --part: var(--laiton);
+}
+
+:is(.bo-barre-stock__part, .bo-legende li)[data-part='posts'] {
+  --part: var(--eteint);
+}
+
+:is(.bo-barre-stock__part, .bo-legende li)[data-part='contacts'] {
+  --part: repeating-linear-gradient(135deg, var(--encre) 0 2px, transparent 2px 5px);
+}
+
+:is(.bo-barre-stock__part, .bo-legende li)[data-part='system'] {
+  --part: var(--trait);
+}
+
+:is(.bo-barre-stock__part, .bo-legende li)[data-part='free'] {
+  --part: repeating-linear-gradient(90deg, var(--trait) 0 1px, transparent 1px 4px);
+}
+
+.bo-barre-stock__part {
+  background: var(--part);
+}
+
+.bo-legende {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--filet);
+}
+
+.bo-legende li {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) auto 3.5rem;
+  align-items: center;
+  gap: var(--s3);
+  padding-block: var(--s2);
+  border-bottom: 1px solid var(--filet);
+}
+
+.bo-legende li::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  background: var(--part);
+  border-radius: var(--r1);
+  box-shadow: inset 0 0 0 1px var(--trait);
+}
+
+.bo-legende__valeur {
+  font-weight: 600;
+  text-align: right;
+}
+
+.bo-legende__part {
+  color: var(--eteint);
+  font-size: var(--t-xs);
+  text-align: right;
+}
+
+.bo-alerte:empty {
+  display: none;
+}
+
+.bo-alerte {
+  padding: var(--s2) var(--s3);
+  border-left: 2px solid var(--erreur);
+  background: var(--fond);
+  border-radius: 0 var(--r1) var(--r1) 0;
+  color: var(--erreur);
+  font-weight: 600;
+}
+
+.bo-stockage__bloc {
+  min-width: 0;
+}
+
+.bo-stockage__entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s2) var(--s4);
+  margin-bottom: var(--s3);
+}
+
+.bo-stockage__suite {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: var(--s6);
+  align-items: start;
+}
+
+.bo-stockage__ligne {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--s2) var(--s4);
+  max-width: none;
+  padding-block: var(--s3);
+  border-top: 1px solid var(--encre);
+  border-bottom: 1px solid var(--filet);
+}
+
+/* Des fiches à filets : une ligne par image ou par article, du plus lourd au
+   plus léger ; le poids s’aligne à droite, l’action après lui. */
+.bo-fiches {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--encre);
+}
+
+.bo-fiche {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 6rem;
+  grid-template-areas: 'corps poids';
+  align-items: center;
+  gap: var(--s2) var(--s4);
+  padding-block: var(--s3);
+  border-bottom: 1px solid var(--filet);
+}
+
+.bo-fiche--image {
+  grid-template-columns: 96px minmax(0, 1fr) 6rem 7.5rem;
+  grid-template-areas: 'vignette corps poids action';
+}
+
+.bo-fiche__vignette {
+  grid-area: vignette;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+  background: var(--papier-logo);
+  border: 1px solid var(--filet);
+  border-radius: var(--r1);
+}
+
+.bo-fiche__corps {
+  grid-area: corps;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s1) var(--s3);
+  min-width: 0;
+}
+
+.bo-fiche--image .bo-fiche__corps {
+  display: grid;
+  gap: var(--s1);
+}
+
+.bo-fiche__nom {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.bo-fiche__details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--s2);
+  color: var(--eteint);
+  font-size: var(--t-xs);
+}
+
+.bo-fiche__details > span + span::before {
+  content: '·';
+  margin-right: var(--s2);
+}
+
+.bo-fiche__usage {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--s1) var(--s2);
+  margin-top: var(--s1);
+  font-size: var(--t-xs);
+}
+
+.bo-fiche__intitule {
+  color: var(--eteint);
+  font-weight: 600;
+}
+
+.bo-fiche__intitule::after {
+  content: '\00a0:';
+}
+
+.bo-fiche__articles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s1) var(--s4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bo-fiche__articles li {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--s2);
+}
+
+.bo-fiche__inutilisee {
+  padding: 0 var(--s2);
+  border: 1px dashed var(--trait);
+  border-radius: var(--r1);
+  color: var(--eteint);
+  font-weight: 500;
+}
+
+.bo-stockage__article {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.bo-fiche__poids {
+  grid-area: poids;
+  font-weight: 600;
+  text-align: right;
+}
+
+.bo-fiche__action {
+  grid-area: action;
+  justify-self: end;
+}
+
+/* ===== Repli « Autres clients » ===== */
+.bo-details {
+  border-top: 1px solid var(--filet);
+}
+
+.bo-mcp__liste > .bo-details {
+  margin-top: var(--s5);
+}
+
+.bo-details > summary {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  min-height: 44px;
+  color: var(--accent);
+  font-size: var(--t-s);
+  font-weight: 600;
+  list-style: none;
+  cursor: pointer;
+}
+
+.bo-details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.bo-details > summary::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  margin-inline: 2px var(--s1);
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  rotate: -45deg;
+  transition: rotate var(--d-ui) var(--courbe);
+}
+
+.bo-details[open] > summary::before {
+  rotate: 45deg;
+}
+
+.bo-details > summary:hover {
+  color: var(--accent-survol);
+}
+
+.bo-details__contenu {
+  display: grid;
+  gap: var(--s3);
+  padding-block: var(--s2) var(--s3);
+}
+
+.bo-reference {
+  display: grid;
+  gap: var(--s3);
+  margin: 0;
+  padding-block: var(--s2) var(--s4);
+}
+
+/* ===== Dialogues ===== */
+.bo-dialog {
+  width: min(34rem, calc(100vw - 2 * var(--s4)));
+  max-height: calc(100dvh - 2 * var(--s4));
+  margin: auto;
+  padding: var(--s6);
+  border: 1px solid var(--trait);
+  border-radius: var(--r2);
+  background: var(--surface);
+  box-shadow: var(--ombre-2);
+  color: var(--encre);
+}
+
+.bo-dialog::backdrop {
+  background: color-mix(in srgb, var(--suie) 62%, transparent);
+}
+
+.bo-dialog p {
+  margin-block: var(--s4) var(--s5);
+  overflow-wrap: anywhere;
+}
+
+/* La commande à recopier, seule sur sa ligne, sans ponctuation collée. */
+.bo-dialog p:has(+ .bo-dialog__commande:not([hidden])) {
+  margin-bottom: var(--s3);
+}
+
+.bo-dialog__commande {
+  margin-bottom: var(--s5);
+}
+
+/* ===== Points de rupture ===== */
+@media (max-width: 1100px) {
+  .bo-navigation {
+    order: 3;
+    flex-basis: 100%;
+    margin-inline: calc(-1 * var(--s3));
+  }
+
+  /* Les libellés s’alignent sur la gouttière ; le trait de la rubrique lue
+     reste sous le texte, sans entrer dans la marge. */
+  .bo-navigation a[aria-current='page'] {
+    box-shadow: none;
+    background: linear-gradient(var(--encre), var(--encre)) center bottom / calc(100% - 2 * var(--s3)) 2px no-repeat;
+  }
+
+  .bo-inbox,
+  .bo-colonnes,
+  .bo-mcp,
+  .bo-stockage__suite {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Sous 860 px, une fiche par accès : nom et révocation, puis les détails. */
+@media (max-width: 860px) {
+  .bo-stockage__resume {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .bo-table,
+  .bo-table :is(tbody, tr, th, td) {
+    display: block;
+  }
+
+  .bo-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .bo-table tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--s1) var(--s3);
+    padding-block: var(--s3);
+    border-bottom: 1px solid var(--filet);
+  }
+
+  .bo-table :is(td, th[scope='row']) {
+    grid-column: 1;
+    padding: 0;
+    border: 0;
+    text-align: left;
+  }
+
+  .bo-table td:last-child {
+    grid-column: 2;
+    grid-row: 1 / span 5;
+    align-self: start;
+  }
+
+  .bo-table td[data-label] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s1) var(--s2);
+  }
+
+  .bo-table td[data-label]::before {
+    content: attr(data-label) '\00a0:';
+    color: var(--eteint);
+    font-size: var(--t-xs);
+    font-weight: 600;
+  }
+}
+
+@media (max-width: 600px) {
+  .bo-marque__texte {
+    display: none;
+  }
+
+  .bo-carte,
+  .bo-dialog {
+    padding: var(--s4);
+  }
+
+  .bo-tool {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .bo-tool .bo-actions {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .bo-recovery-codes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Une image : la vignette à gauche, puis le nom, l’usage, le poids et l’action empilés. */
+  .bo-fiche--image {
+    grid-template-columns: 72px minmax(0, 1fr);
+    grid-template-areas:
+      'vignette corps'
+      'vignette poids'
+      'vignette action';
+    align-items: start;
+  }
+
+  .bo-fiche--image .bo-fiche__poids,
+  .bo-fiche--image .bo-fiche__action {
+    justify-self: start;
+    text-align: left;
+  }
+
+  /* Dimensions, puis le détail du poids : une ligne chacun, sans séparateur orphelin. */
+  .bo-fiche__details {
+    display: grid;
+  }
+
+  .bo-fiche__details > span + span::before {
+    content: none;
+  }
+}
+
+@media print {
+  .bo-entete,
+  .bo-pied,
+  .bo-actions {
+    display: none;
+  }
+}

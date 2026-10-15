@@ -1,0 +1,1321 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charles Lindecker — Proposition B : Clair de lune</title>
+<meta name="description" content="Proposition B pour le portfolio V2 de Charles Lindecker : une interface de nuit moderne, éclairée par la lune, où le parcours se dessine comme une constellation.">
+<meta name="theme-color" content="#0D1424">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   Proposition B — Clair de lune
+   Une seule lumière (la lune, en haut à droite) ; le bleu roi de Charles ;
+   la constellation comme unique moment de mouvement.
+   ========================================================================== */
+:root{
+  /* Couleurs */
+  --nuit:#0D1424;          /* fond : le bleu roi assombri */
+  --nuit-2:#141D33;        /* surfaces */
+  --nuit-3:#1B2744;        /* surfaces au survol, lumière cendrée */
+  --lune:#E8EDF5;          /* titres, texte fort */
+  --texte:#CDD5E3;         /* texte courant (moins éblouissant que la lune) */
+  --brume:#9AA8BF;         /* texte secondaire */
+  --clair:#BFD6F2;         /* clair de lune : étoiles, liens, accents */
+  --eteint:#6F86B8;        /* étoile pas encore allumée */
+  --bleu-roi:#2F5BEA;      /* action principale */
+  --bleu-roi-fonce:#2A52D6;
+  --fleur:#F4F2EC;         /* fleurs de l'illustration, uniquement */
+  --filet:rgba(191,214,242,.14);
+  --filet-fort:rgba(191,214,242,.28);
+  /* Lumière : liseré côté lune (haut droit), ombre portée vers le bas gauche */
+  --reflet:inset -1px 1px 0 rgba(191,214,242,.42);
+  --ombre:-18px 26px 56px rgba(2,6,16,.55);
+  /* Typographie */
+  --f-titre:"Jost",ui-sans-serif,system-ui,sans-serif;
+  --f-texte:"Literata",Georgia,"Times New Roman",serif;
+  --f-code:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --t-display:clamp(2.625rem,5vw,4.5rem);
+  --t-h2:clamp(2.25rem,3.6vw,3.75rem);
+  --t-h3:clamp(1.5rem,2.2vw,2.25rem);
+  --t-chiffre:clamp(2.75rem,4vw,3.75rem);
+  --t-cta:clamp(3.5rem,10vw,7.5rem);
+  --t-chapeau:1.3125rem;
+  --t-corps:1.125rem;
+  --t-petit:1rem;
+  --t-etiquette:.875rem;
+  /* Espacement */
+  --e1:4px;--e2:8px;--e3:12px;--e4:16px;--e5:24px;--e6:32px;--e7:48px;--e8:64px;--e9:96px;--e10:128px;
+  --mesure:34em;
+  --large:1240px;
+  --gouttiere:clamp(16px,5vw,64px);
+  /* Formes */
+  --r-cadre:6px;
+  --r-pilule:999px;
+  /* Mouvement */
+  --duree-trace:900ms;
+  --duree-astre:450ms;
+  --duree-ui:180ms;
+  --courbe:cubic-bezier(.22,.61,.36,1);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--nuit);color:var(--texte);font:400 var(--t-corps)/1.65 var(--f-texte);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:hidden}
+img{display:block;max-width:100%;height:auto}
+svg{overflow:visible}
+a{color:var(--clair);text-decoration-thickness:1px;text-underline-offset:.24em;transition:color var(--duree-ui) ease,text-decoration-color var(--duree-ui) ease}
+a:hover{color:var(--lune);text-decoration-thickness:2px}
+:focus-visible{outline:2px solid var(--clair);outline-offset:3px;border-radius:4px}
+::selection{background:rgba(47,91,234,.6);color:#fff}
+h1,h2,h3{margin:0;font-family:var(--f-titre);font-weight:300;color:var(--lune);letter-spacing:-.01em}
+p{margin:0 0 1em}
+p:last-child{margin-bottom:0}
+.sans-transition *,.sans-transition *::before,.sans-transition *::after{transition:none!important}
+.visuellement-cache{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.evitement{position:absolute;left:var(--gouttiere);top:-60px;z-index:100;padding:12px 18px;border-radius:var(--r-pilule);background:var(--lune);color:var(--nuit);font:500 1rem/1 var(--f-titre);text-decoration:none}
+.evitement:focus{top:12px}
+.wrap{max-width:var(--large);margin-inline:auto;padding-inline:var(--gouttiere)}
+
+/* ---------- Boutons, liens, étiquettes ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;white-space:nowrap;min-height:48px;padding:0 26px;border:1px solid transparent;border-radius:var(--r-pilule);font:500 1.0625rem/1 var(--f-titre);letter-spacing:.005em;text-decoration:none;cursor:pointer;transition:background-color var(--duree-ui) ease,border-color var(--duree-ui) ease,box-shadow var(--duree-ui) ease,color var(--duree-ui) ease}
+.btn--plein{background:var(--bleu-roi);color:#fff;box-shadow:inset -1px 1px 0 rgba(255,255,255,.34),-10px 16px 34px rgba(2,6,16,.5)}
+.btn--plein:hover,.btn--plein.is-hover{background:var(--bleu-roi-fonce);color:#fff;text-decoration:none;box-shadow:inset -1px 1px 0 rgba(255,255,255,.55),0 0 0 1px rgba(191,214,242,.3),10px -10px 30px rgba(191,214,242,.14),-10px 16px 34px rgba(2,6,16,.5)}
+.btn--contour{background:transparent;color:var(--lune);border-color:rgba(232,237,245,.42)}
+.btn--contour:hover,.btn--contour.is-hover{color:var(--lune);border-color:var(--lune);background:rgba(191,214,242,.07);text-decoration:none;box-shadow:var(--reflet)}
+.btn--petit{min-height:44px;padding:0 18px;font-size:1rem}
+.btn.is-focus{outline:2px solid var(--clair);outline-offset:3px}
+.btn[aria-disabled="true"]{background:transparent;border-color:rgba(125,139,163,.38);color:#7D8BA3;box-shadow:none;cursor:not-allowed}
+.lien-fort{font:500 1.0625rem/1.4 var(--f-titre);color:var(--clair)}
+.lien-fort.is-hover{color:var(--lune);text-decoration-thickness:2px}
+.lien-fort.is-focus{outline:2px solid var(--clair);outline-offset:3px;border-radius:4px}
+.actions{display:flex;flex-wrap:wrap;gap:var(--e4)}
+.etiquette{display:inline-flex;align-items:center;gap:7px;min-height:30px;padding:0 12px 0 10px;border:1px solid var(--filet-fort);border-radius:var(--r-pilule);font:500 var(--t-etiquette)/1 var(--f-titre);color:var(--clair);box-shadow:var(--reflet)}
+.etiquette svg{width:11px;height:11px;fill:currentColor}
+
+/* ---------- Phases de lune (repère de progression du récit) ---------- */
+.phase{display:inline-block;width:.4em;height:.4em;margin-right:.32em;vertical-align:.1em}
+.phase__disque{fill:rgba(191,214,242,.1);stroke:rgba(191,214,242,.5);stroke-width:.9}
+.phase__eclaire{fill:var(--clair)}
+
+/* ---------- En-tête ---------- */
+.entete{position:sticky;top:0;z-index:50;background:rgba(13,20,36,.94);border-bottom:1px solid var(--filet)}
+.entete__barre{display:flex;align-items:center;justify-content:space-between;gap:var(--e5);min-height:72px}
+.marque{display:inline-flex;align-items:center;gap:11px;min-height:44px;color:var(--lune);text-decoration:none;font:500 1.0625rem/1 var(--f-titre);letter-spacing:.01em}
+.marque:hover{color:var(--lune);text-decoration:none}
+.marque svg{width:22px;height:22px;color:var(--clair)}
+.nav{display:flex;align-items:center;gap:var(--e1)}
+.nav ul{display:flex;gap:var(--e1);margin:0;padding:0;list-style:none}
+.nav ul a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border-radius:var(--r-pilule);font:500 1rem/1 var(--f-titre);color:var(--brume);text-decoration:none}
+.nav ul a:hover{color:var(--lune);background:rgba(191,214,242,.07)}
+.nav .btn{margin-left:var(--e3)}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;isolation:isolate;overflow:hidden;display:flex;align-items:center;min-height:min(calc(100svh - 72px),940px);padding-block:clamp(96px,13vh,150px) clamp(200px,24vw,300px)}
+.hero__ciel{position:absolute;inset:0;z-index:-4;background:radial-gradient(90% 70% at 84% 10%,#1C2C55 0%,rgba(13,20,36,0) 62%),linear-gradient(180deg,#0A1120 0%,#0D1424 64%,#0F172B 100%)}
+.hero__etoiles{position:absolute;inset:0;z-index:-4;width:100%;height:100%;fill:var(--lune)}
+.hero__lune{position:absolute;z-index:-3;top:clamp(-150px,-8vw,-60px);right:clamp(-170px,-8vw,-60px);width:clamp(340px,50vw,780px);height:auto;aspect-ratio:1}
+.brume{position:absolute;inset:0;z-index:-2;pointer-events:none}
+.brume span{position:absolute;border-radius:50%;filter:blur(38px);background:radial-gradient(closest-side,rgba(191,214,242,.17),rgba(191,214,242,0))}
+.hero .brume span:nth-child(1){left:38%;top:30%;width:80%;height:150px}
+.hero .brume span:nth-child(2){left:-12%;top:56%;width:78%;height:170px;opacity:.75}
+.hero .brume span:nth-child(3){left:26%;top:70%;width:96%;height:190px}
+.hero__pre{position:absolute;z-index:-1;left:0;right:0;bottom:-2px;width:100%;height:clamp(170px,22vw,300px)}
+.pre-loin{filter:blur(1.1px)}
+.hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:64px;z-index:-1;pointer-events:none;background:linear-gradient(rgba(13,20,36,0),var(--nuit))}
+.hero__texte{position:relative;max-width:min(64%,800px)}
+.hero__nom{display:flex;align-items:center;gap:10px;margin:0 0 var(--e5);font:500 1.0625rem/1.2 var(--f-titre);color:var(--clair)}
+.hero__nom svg{width:18px;height:18px;fill:currentColor}
+.hero h1{font-size:var(--t-display);line-height:1.04;letter-spacing:-.018em;margin:0 0 var(--e6);text-wrap:balance}
+.hero h1 span{display:block}
+.hero__chapeau{max-width:31em;margin:0 0 var(--e7);font-size:var(--t-chapeau);line-height:1.55;color:var(--brume)}
+
+/* ---------- Sections ---------- */
+.section{position:relative;padding-block:clamp(88px,11vw,152px)}
+.section + .section{border-top:1px solid var(--filet)}
+.titre-section{font-size:var(--t-h2);line-height:1.08;margin-bottom:var(--e5)}
+.intro{max-width:31em;margin-bottom:clamp(48px,7vw,88px);font-size:var(--t-chapeau);line-height:1.55;color:var(--brume)}
+
+/* ---------- L'origine : rail constellation + étapes ---------- */
+.origine__grille{display:grid;grid-template-columns:minmax(220px,300px) minmax(0,1fr);gap:clamp(40px,7vw,112px);align-items:start}
+.rail{position:sticky;top:calc(72px + 5vh)}
+.rail svg{display:block;width:100%;height:min(640px,calc(100vh - 150px))}
+.rail .seg{fill:none;stroke:var(--clair);stroke-width:1.2;stroke-opacity:.6;stroke-dasharray:1;stroke-dashoffset:0;transition:stroke-dashoffset var(--duree-trace) var(--courbe) var(--delai,0ms)}
+.rail .seg.is-armed{stroke-dashoffset:1}
+.rail .seg-suite{fill:none;stroke:var(--clair);stroke-width:1;stroke-opacity:.38;stroke-dasharray:3 6;transition:opacity 600ms ease}
+.rail .seg-suite.is-armed{opacity:0}
+.astre-rail__halo{fill:url(#halo-astre);transition:opacity var(--duree-astre) ease calc(var(--delai,0ms) + 600ms)}
+.astre-rail__point{fill:var(--eteint)}
+.astre-rail__eclat{fill:var(--lune);transform-box:fill-box;transform-origin:center;transition:opacity var(--duree-astre) ease calc(var(--delai,0ms) + 600ms),transform var(--duree-astre) var(--courbe) calc(var(--delai,0ms) + 600ms)}
+.astre-rail__nom{font:500 14px/1 var(--f-titre);fill:var(--clair);transition:fill var(--duree-astre) ease calc(var(--delai,0ms) + 600ms)}
+.astre-rail.is-armed .astre-rail__halo{opacity:0}
+.astre-rail.is-armed .astre-rail__eclat{opacity:0;transform:scale(.3)}
+.astre-rail.is-armed .astre-rail__nom{fill:var(--eteint)}
+.etapes{list-style:none;margin:0;padding:0;display:grid;gap:clamp(56px,7vw,96px);max-width:var(--mesure)}
+.etape{position:relative}
+.etape__quand{margin:0 0 var(--e3);font:500 1rem/1.2 var(--f-titre);color:var(--clair);transition:color var(--duree-astre) ease calc(var(--delai,0ms) + 600ms)}
+.etape.is-armed .etape__quand{color:var(--brume)}
+.etape h3{font-size:var(--t-h3);font-weight:400;line-height:1.2;margin:0 0 var(--e4)}
+.etape p{color:var(--texte)}
+.citation{margin:var(--e7) 0 0;padding:0}
+.citation svg{display:block;width:22px;height:22px;margin-bottom:var(--e4);fill:var(--lune);filter:drop-shadow(0 0 8px rgba(191,214,242,.75))}
+.citation p{margin:0;font:italic 400 clamp(1.5rem,2.4vw,2rem)/1.35 var(--f-texte);color:var(--lune);text-wrap:balance}
+
+/* ---------- Aujourd'hui ---------- */
+.aujourdhui__haut{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,320px);gap:clamp(40px,7vw,112px);align-items:start;margin-bottom:clamp(64px,8vw,104px)}
+.aujourdhui__haut .chapeau-section{max-width:30em;font-size:var(--t-chapeau);line-height:1.55;color:var(--texte)}
+.portrait{position:relative;margin:0;border-radius:var(--r-cadre);overflow:hidden;background:var(--clair);box-shadow:var(--ombre)}
+.portrait img{width:100%;aspect-ratio:4/5;object-fit:cover;object-position:50% 30%;filter:grayscale(1) contrast(1.12) brightness(1.04);mix-blend-mode:multiply}
+.portrait::before{content:"";position:absolute;inset:0;background:var(--nuit);mix-blend-mode:lighten;z-index:1}
+.portrait::after{content:"";position:absolute;inset:0;z-index:2;border-radius:inherit;background:radial-gradient(70% 55% at 100% 0%,rgba(191,214,242,.28),rgba(191,214,242,0) 70%);box-shadow:var(--reflet);mix-blend-mode:screen}
+.portrait .pp-gen{z-index:4}
+.verbes{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(32px,4vw,64px)}
+.verbe{padding-top:var(--e5);border-top:1px solid var(--filet-fort)}
+.verbe__ordre{display:flex;align-items:center;gap:8px;margin:0 0 var(--e4);font:500 1rem/1 var(--f-titre);color:var(--clair)}
+.verbe__ordre svg{width:12px;height:12px;fill:currentColor}
+.verbe h3{font-size:clamp(2.25rem,3.4vw,3rem);line-height:1.05;margin:0 0 var(--e3)}
+.verbe__sens{margin:0 0 var(--e5);font-style:italic;color:var(--brume)}
+.verbe__preuves{list-style:none;margin:0;padding:0;display:grid;gap:var(--e4);font-size:1.0625rem;line-height:1.6}
+.verbe__preuves li{position:relative;padding-left:22px}
+.verbe__preuves li::before{content:"";position:absolute;left:2px;top:.62em;width:7px;height:7px;border-radius:50%;background:var(--clair);box-shadow:0 0 8px rgba(191,214,242,.6)}
+.amas{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,6vw,96px);align-items:center;margin:clamp(88px,10vw,136px) 0 0;padding-top:clamp(48px,6vw,72px);border-top:1px solid var(--filet)}
+.amas h3{font-size:var(--t-h3);font-weight:400;line-height:1.2;margin:0 0 var(--e4)}
+.amas figcaption p{color:var(--texte);max-width:26em}
+.amas__cle{display:grid;gap:10px;margin-top:var(--e5);font:500 .9375rem/1.3 var(--f-titre);color:var(--brume)}
+.amas__cle span{display:flex;align-items:center;gap:12px}
+.amas__cle svg{width:16px;height:16px;flex:none}
+.amas__svg{width:100%;height:auto}
+.amas__liens path{fill:none;stroke:var(--clair);stroke-width:1;stroke-opacity:.42;stroke-dasharray:1;stroke-dashoffset:0;transition:stroke-dashoffset 760ms var(--courbe) calc(var(--i) * 45ms)}
+.astre{transition:opacity 420ms ease calc(320ms + var(--i) * 45ms)}
+.astre--vif{fill:var(--lune)}
+.astre--pale{fill:var(--clair);opacity:.55}
+.amas__centre{transition:opacity 500ms ease}
+.amas.is-armed .amas__liens path{stroke-dashoffset:1}
+.amas.is-armed .astre{opacity:0}
+
+/* ---------- Les preuves ---------- */
+.preuves{display:grid;gap:clamp(96px,12vw,168px)}
+.preuve{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(36px,6vw,96px);align-items:start}
+.preuve:nth-child(even){grid-template-columns:minmax(0,5fr) minmax(0,7fr)}
+.preuve:nth-child(even) .preuve__visuel{order:2}
+.preuve__visuel{position:sticky;top:104px;margin:0;padding-bottom:var(--e7)}
+.cadre{position:relative;border-radius:var(--r-cadre);overflow:hidden;background:var(--nuit-2);box-shadow:var(--ombre)}
+.cadre::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(191,214,242,.12),var(--reflet);background:radial-gradient(60% 50% at 100% 0%,rgba(191,214,242,.12),rgba(191,214,242,0) 70%)}
+.cadre img{width:100%}
+.cadre--incruste{position:absolute;left:clamp(-24px,-2vw,-8px);bottom:0;width:46%;box-shadow:-14px 22px 44px rgba(2,6,16,.7)}
+.preuve:nth-child(even) .cadre--incruste{left:auto;right:clamp(-24px,-2vw,-8px)}
+.preuve__meta{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin:0 0 var(--e5);font:500 .9375rem/1.2 var(--f-titre);color:var(--brume)}
+.preuve h3{font-size:clamp(1.75rem,2.6vw,2.375rem);font-weight:300;line-height:1.12;margin:0 0 var(--e6);text-wrap:balance}
+.pdr{list-style:none;margin:0 0 var(--e6);padding:0;position:relative}
+.pdr::before{content:"";position:absolute;left:5px;top:10px;bottom:28px;width:1px;background:linear-gradient(var(--filet-fort),rgba(191,214,242,.5))}
+.pdr li{position:relative;padding:0 0 var(--e5) 34px}
+.pdr li:last-child{padding-bottom:0}
+.pdr li::before{content:"";position:absolute;left:1px;top:7px;width:9px;height:9px;border-radius:50%;background:var(--nuit);border:1px solid var(--clair)}
+.pdr__nom{display:block;margin-bottom:4px;font:500 .9375rem/1.3 var(--f-titre);color:var(--clair)}
+.pdr li p{margin:0;font-size:1.0625rem;line-height:1.62}
+.pdr .pdr__resultat::before{left:-4px;top:2px;width:19px;height:19px;border:0;border-radius:0;background:var(--lune);-webkit-mask:var(--masque-etoile) center/contain no-repeat;mask:var(--masque-etoile) center/contain no-repeat;filter:drop-shadow(0 0 6px rgba(191,214,242,.8))}
+.pdr .pdr__resultat p{color:var(--lune)}
+.chiffres{display:grid;grid-template-columns:repeat(auto-fill,minmax(7.25rem,1fr));gap:var(--e5) 20px;margin:0 0 var(--e6);padding:var(--e5) 0 0;border-top:1px solid var(--filet)}
+.chiffres div{display:flex;flex-direction:column-reverse;justify-content:flex-end;gap:8px}
+.chiffres dd{margin:0;font:300 clamp(2.5rem,3.2vw,3.25rem)/1 var(--f-titre);color:var(--lune);letter-spacing:-.02em;font-variant-numeric:lining-nums}
+.chiffres dt{font:400 .9375rem/1.4 var(--f-texte);color:var(--brume)}
+.preuve__citation{margin:0 0 var(--e5);padding:0}
+.preuve__citation p{margin:0;font:italic 400 1.25rem/1.5 var(--f-texte);color:var(--lune)}
+.liens{display:flex;flex-wrap:wrap;gap:var(--e2) var(--e5);margin:0}
+.liens a{display:inline-flex;align-items:center;min-height:44px;font:500 1.0625rem/1.2 var(--f-titre)}
+
+/* ---------- En dehors du code ---------- */
+.ailleurs{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 clamp(32px,6vw,96px)}
+.ailleurs > li{padding:var(--e6) 0 var(--e7);border-top:1px solid var(--filet-fort)}
+.ailleurs h3{font-size:1.625rem;font-weight:400;line-height:1.2;margin:0 0 var(--e3)}
+.ailleurs p{max-width:28em;color:var(--texte)}
+.ailleurs a{display:inline-flex;align-items:center;min-height:44px;font:500 1rem/1.2 var(--f-titre)}
+.ailleurs__bb{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--e5);align-items:start}
+.telephone{width:116px;margin:0;padding:5px;border-radius:20px;background:#0A101D;box-shadow:inset 0 0 0 1px rgba(191,214,242,.18),var(--reflet),var(--ombre)}
+.telephone img{border-radius:15px}
+.clin{display:flex;align-items:center;gap:12px;margin:var(--e6) 0 0;font-style:italic;color:var(--brume)}
+.clin svg{width:18px;height:18px;flex:none;color:var(--clair)}
+
+/* ---------- Discutons ---------- */
+.discutons{overflow:hidden;isolation:isolate;text-align:center;padding-block:clamp(72px,9vw,120px) clamp(104px,12vw,168px)}
+.discutons .brume span:nth-child(1){left:10%;top:18%;width:80%;height:200px}
+.discutons .brume span:nth-child(2){left:30%;top:42%;width:60%;height:160px;opacity:.7}
+.discutons__etoiles{position:absolute;inset:0;z-index:-3;width:100%;height:100%;fill:var(--lune);opacity:.6}
+.discutons__lune{display:block;width:clamp(200px,24vw,320px);height:auto;margin:0 auto clamp(24px,3vw,40px)}
+.discutons h2{font-size:var(--t-cta);line-height:1;letter-spacing:-.025em;margin:0 0 var(--e5)}
+.discutons__texte{max-width:28em;margin:0 auto var(--e7);font-size:var(--t-chapeau);line-height:1.55;color:var(--texte)}
+.discutons .actions{justify-content:center}
+.discutons__liens{display:flex;justify-content:center;gap:var(--e6);margin:var(--e6) 0 0}
+.discutons__liens a{display:inline-flex;align-items:center;min-height:44px;font:500 1.0625rem/1 var(--f-titre)}
+
+/* ---------- Pied de page ---------- */
+.pied{border-top:1px solid var(--filet);padding-block:var(--e7) var(--e9);font:400 .9375rem/1.5 var(--f-titre);color:var(--brume)}
+.pied__grille{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--e4) var(--e6)}
+.pied p{margin:0}
+.pied ul{display:flex;flex-wrap:wrap;gap:0 var(--e5);margin:0;padding:0;list-style:none}
+.pied a{display:inline-flex;align-items:center;min-height:44px;color:var(--brume);text-decoration-color:rgba(154,168,191,.45)}
+.pied a:hover{color:var(--lune)}
+.langues{display:flex;gap:var(--e2)}
+.langues a{padding:0 10px;border-radius:var(--r-pilule);text-decoration:none}
+.langues a[aria-current="true"]{color:var(--lune);box-shadow:inset 0 0 0 1px var(--filet-fort)}
+
+/* ---------- Mobile ---------- */
+@media (max-width:900px){
+  .hero__texte{max-width:100%}
+  .origine__grille{grid-template-columns:minmax(0,1fr)}
+  .rail{display:none}
+  .etapes{padding-left:40px}
+  .etape::before{content:"";position:absolute;left:-41px;top:0;width:20px;height:20px;background:var(--lune);-webkit-mask:var(--masque-etoile) center/contain no-repeat;mask:var(--masque-etoile) center/contain no-repeat;filter:drop-shadow(0 0 7px rgba(191,214,242,.75));transition:background-color var(--duree-astre) ease calc(var(--delai,0ms) + 300ms),filter var(--duree-astre) ease calc(var(--delai,0ms) + 300ms)}
+  .etape::after{content:"";position:absolute;left:-31.5px;top:30px;bottom:calc(-1 * clamp(56px,7vw,96px) + 8px);width:1px;background:linear-gradient(rgba(191,214,242,.55),rgba(191,214,242,.12))}
+  .etape:last-child::after{display:none}
+  .etape.is-armed::before{background:var(--eteint);filter:none}
+  .aujourdhui__haut{grid-template-columns:minmax(0,1fr);align-items:start}
+  .portrait{max-width:300px}
+  .verbes{grid-template-columns:minmax(0,1fr)}
+  .amas{grid-template-columns:minmax(0,1fr)}
+  .preuve,.preuve:nth-child(even){grid-template-columns:minmax(0,1fr)}
+  .preuve:nth-child(even) .preuve__visuel{order:0}
+  .preuve__visuel{position:relative;top:auto}
+  .ailleurs{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:720px){
+  .entete{position:static}
+  .entete__barre{flex-wrap:wrap;gap:0 var(--e4);padding-block:var(--e2)}
+  .nav{width:100%;justify-content:space-between}
+  .nav ul{margin-left:-14px}
+  .nav ul a{padding:0 12px}
+  .nav .btn{margin-left:0}
+  .hero{min-height:0;padding-top:clamp(200px,58vw,260px)}
+  .hero__lune{top:-120px;right:-150px;width:400px}
+  .cadre--incruste{width:52%;left:-6px}
+  .preuve:nth-child(even) .cadre--incruste{left:-6px;right:auto}
+  .pied__grille{flex-direction:column;align-items:flex-start}
+}
+@media (max-width:400px){
+  .nav ul a{padding:0 9px}
+  .btn{padding:0 20px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition-duration:.01ms!important;transition-delay:0s!important;animation-duration:.01ms!important}
+}
+
+/* ==========================================================================
+   Design system et « Pourquoi » (même langage visuel)
+   ========================================================================== */
+.ds,.pq{position:relative;padding-block:clamp(88px,10vw,140px);background:linear-gradient(180deg,#0B1120 0%,var(--nuit) 30%)}
+.pq{border-top:1px solid var(--filet)}
+.ds__tete{max-width:46rem;margin-bottom:clamp(56px,7vw,96px)}
+.ds__surtitre{margin:0 0 var(--e4);font:500 1rem/1.2 var(--f-titre);color:var(--clair)}
+.ds h2.ds__titre{font-size:clamp(2.5rem,5vw,4.5rem);line-height:1.04;margin:0 0 var(--e5)}
+.ds__tete p{font-size:var(--t-chapeau);line-height:1.55;color:var(--brume)}
+.bloc{padding-block:clamp(48px,6vw,80px);border-top:1px solid var(--filet-fort)}
+.bloc > h2{font-size:clamp(1.875rem,3vw,2.75rem);line-height:1.1;margin:0 0 var(--e4)}
+.bloc > .bloc__intro{max-width:40em;margin:0 0 var(--e7);color:var(--brume)}
+.bloc h3{font-size:1.375rem;font-weight:400;line-height:1.25;margin:0 0 var(--e4)}
+.sous-bloc + .sous-bloc{margin-top:clamp(40px,5vw,64px)}
+.note{font-size:.9375rem;line-height:1.55;color:var(--brume)}
+.ds code,.pq code{font:400 .875em/1.4 var(--f-code);color:var(--clair);background:rgba(191,214,242,.08);padding:.1em .4em;border-radius:4px}
+
+.principes{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--e7) clamp(32px,5vw,80px)}
+.principes li{max-width:30em}
+.principes strong{display:block;margin-bottom:6px;font:400 1.5rem/1.2 var(--f-titre);color:var(--lune)}
+
+.nuancier{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:var(--e7) var(--e6)}
+.nuance__disque{width:96px;height:96px;margin-bottom:var(--e4);border-radius:50%;box-shadow:inset 0 0 0 1px rgba(191,214,242,.22),var(--reflet),-10px 16px 30px rgba(2,6,16,.45)}
+.nuance h3{margin:0 0 4px;font:400 1.25rem/1.2 var(--f-titre);color:var(--lune)}
+.nuance p{margin:0;font-size:.9375rem;line-height:1.5;color:var(--brume)}
+.nuance .ratio{display:inline-block;margin-top:6px;font:500 .875rem/1.3 var(--f-titre);color:var(--clair)}
+
+.familles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--e6);margin-bottom:var(--e8)}
+.famille{padding:var(--e6);border-radius:var(--r-cadre);background:var(--nuit-2);box-shadow:var(--reflet)}
+.famille .famille__aa{margin:0 0 var(--e4);font-size:clamp(4rem,8vw,6.5rem);line-height:.9;color:var(--lune)}
+.famille h3{margin:0 0 var(--e2)}
+.famille p{margin:0;font-size:1rem;color:var(--brume)}
+.echelle{width:100%;border-collapse:collapse}
+.echelle th,.echelle td{text-align:left;vertical-align:baseline;padding:var(--e5) var(--e4) var(--e5) 0;border-top:1px solid var(--filet)}
+.echelle th{width:22%;font:500 .9375rem/1.4 var(--f-titre);color:var(--clair)}
+.echelle th span{display:block;font:400 .875rem/1.4 var(--f-texte);color:var(--brume)}
+.echelle td{color:var(--lune)}
+
+.reglettes{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.reglettes li{display:grid;grid-template-columns:64px minmax(0,1fr);align-items:center;gap:var(--e4);font:500 .875rem/1 var(--f-titre);color:var(--brume)}
+.reglettes span{display:block;height:12px;border-radius:2px;background:linear-gradient(90deg,var(--bleu-roi),#5B7DF0);box-shadow:var(--reflet)}
+.grille-ds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(32px,5vw,72px)}
+.formes{display:flex;flex-wrap:wrap;gap:var(--e6);align-items:flex-end}
+.forme{display:grid;gap:10px;justify-items:start;font:500 .875rem/1.3 var(--f-titre);color:var(--brume)}
+.forme__ex{width:120px;height:80px;background:var(--nuit-2);box-shadow:inset 0 0 0 1px rgba(191,214,242,.16),var(--reflet)}
+.lumiere-regle{position:relative;width:min(100%,360px);height:220px;border-radius:var(--r-cadre);background:radial-gradient(70% 70% at 100% 0%,rgba(191,214,242,.16),rgba(191,214,242,0) 60%),var(--nuit-2);box-shadow:inset 0 0 0 1px rgba(191,214,242,.12),var(--reflet)}
+.lumiere-regle__objet{position:absolute;left:28%;top:34%;width:44%;height:36%;border-radius:var(--r-cadre);background:var(--nuit-3);box-shadow:inset -1px 1px 0 rgba(191,214,242,.6),-18px 24px 30px rgba(2,6,16,.6)}
+.lumiere-regle__lune{position:absolute;right:16px;top:16px;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 62% 38%,#fff,#C9D6E8 60%,#9FB2CC);box-shadow:0 0 24px rgba(191,214,242,.55)}
+
+.nav-ex{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;font:500 1rem/1 var(--f-titre);color:var(--brume)}
+.ex-etapes{display:grid;gap:var(--e5)}
+.ex-etape{display:grid;grid-template-columns:40px minmax(0,1fr);gap:var(--e4);align-items:start}
+.ex-etape svg{width:40px;height:40px}
+.ex-etape__titre{margin:0 0 4px;font:400 1.375rem/1.2 var(--f-titre);color:var(--lune)}
+.composants{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(40px,5vw,64px)}
+.etats{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:var(--e5);align-items:center}
+.etat{display:grid;gap:var(--e3);justify-items:start}
+.etat__nom{font:500 .8125rem/1.2 var(--f-titre);color:var(--brume)}
+.planche{padding:var(--e6);border-radius:var(--r-cadre);background:var(--nuit-2);box-shadow:inset 0 0 0 1px rgba(191,214,242,.1),var(--reflet)}
+.planche--nav{padding:0 var(--e5)}
+.planche--nav .entete__barre{min-height:64px;flex-wrap:wrap;row-gap:0}
+.planche--nav .nav{flex-wrap:wrap}
+.planche .etape{max-width:30em}
+.mini-cta{text-align:center;padding:var(--e7) var(--e5)}
+.mini-cta h3{font-size:3rem;font-weight:300;margin:0 0 var(--e3)}
+.mini-cta p{color:var(--texte);margin:0 auto var(--e5);max-width:24em}
+
+.glyphes{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:var(--e6) var(--e5);margin:0;padding:0;list-style:none}
+.glyphe{display:grid;gap:var(--e3);justify-items:start;font-size:.9375rem;color:var(--brume)}
+.glyphe svg{width:56px;height:56px}
+.glyphe strong{font:500 .9375rem/1.3 var(--f-titre);color:var(--lune)}
+.placeholder{position:relative;display:grid;place-items:center;min-height:180px;border-radius:var(--r-cadre);background:var(--nuit-2);box-shadow:inset 0 0 0 1px rgba(191,214,242,.14);overflow:hidden}
+.placeholder svg{width:72px;height:72px}
+.placeholder--brume{background:radial-gradient(40% 30% at 30% 50%,rgba(191,214,242,.22),transparent),radial-gradient(45% 25% at 70% 60%,rgba(191,214,242,.18),transparent),var(--nuit-2)}
+.avant-apres{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--e5);max-width:620px}
+.avant-apres figure{margin:0}
+.avant-apres figcaption{margin-top:var(--e3);font:500 .875rem/1.3 var(--f-titre);color:var(--brume)}
+.avant-apres .brut{border-radius:var(--r-cadre);aspect-ratio:2/3;object-fit:cover;object-position:50% 30%}
+.demo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,5vw,72px);align-items:center}
+.demo-trace{width:100%;max-width:420px;height:auto}
+.demo-trace .seg{fill:none;stroke:var(--clair);stroke-width:1.2;stroke-opacity:.6;stroke-dasharray:1;stroke-dashoffset:0;transition:stroke-dashoffset var(--duree-trace) var(--courbe) var(--delai,0ms)}
+.demo-trace .eclat{fill:var(--lune);transform-box:fill-box;transform-origin:center;transition:opacity var(--duree-astre) ease calc(var(--delai,0ms) + 600ms),transform var(--duree-astre) var(--courbe) calc(var(--delai,0ms) + 600ms)}
+.demo-trace .halo{fill:url(#halo-astre);transition:opacity var(--duree-astre) ease calc(var(--delai,0ms) + 600ms)}
+.demo-trace.is-armed .seg{stroke-dashoffset:1}
+.demo-trace.is-armed .eclat{opacity:0;transform:scale(.3)}
+.demo-trace.is-armed .halo{opacity:0}
+.demo-trace.fige *{transition:none!important}
+.specs{margin:0;padding:0;list-style:none;display:grid;gap:var(--e4)}
+.specs li{padding-left:22px;position:relative}
+.specs li::before{content:"";position:absolute;left:2px;top:.6em;width:7px;height:7px;border-radius:50%;background:var(--clair)}
+.tableau{width:100%;border-collapse:collapse;font-size:1rem}
+.tableau th,.tableau td{text-align:left;padding:14px 16px 14px 0;border-top:1px solid var(--filet);vertical-align:middle}
+.tableau thead th{font:500 .875rem/1.3 var(--f-titre);color:var(--brume);border-top:0}
+.tableau .pastille{display:inline-block;width:26px;height:26px;border-radius:50%;vertical-align:middle;margin-right:10px;box-shadow:inset 0 0 0 1px rgba(191,214,242,.25)}
+.tableau .ok{font:500 .875rem/1 var(--f-titre);color:var(--clair)}
+.code{margin:0;padding:var(--e6);overflow-x:auto;border-radius:var(--r-cadre);background:#0A101D;box-shadow:inset 0 0 0 1px rgba(191,214,242,.12),var(--reflet);font:400 .875rem/1.7 var(--f-code);color:var(--texte);tab-size:2}
+.code .c{color:var(--brume)}
+.code code{background:none;padding:0;border-radius:0;font:inherit;color:inherit}
+.avant-apres .portrait img{aspect-ratio:2/3}
+
+.pq__corps{max-width:44rem}
+.pq h2{font-size:clamp(2.5rem,5vw,4.5rem);line-height:1.04;margin:0 0 var(--e7)}
+.pq h3{font-size:1.75rem;font-weight:400;line-height:1.2;margin:var(--e8) 0 var(--e4)}
+.pq p,.pq li{color:var(--texte)}
+.pq ul{margin:0;padding:0;list-style:none;display:grid;gap:var(--e4)}
+.pq li{position:relative;padding-left:26px}
+.pq li::before{content:"";position:absolute;left:3px;top:.55em;width:9px;height:9px;background:var(--clair);-webkit-mask:var(--masque-etoile) center/contain no-repeat;mask:var(--masque-etoile) center/contain no-repeat}
+.pq strong{color:var(--lune);font-weight:500}
+.pq .ids li strong{font-family:var(--f-titre)}
+
+@media (max-width:900px){
+  .principes,.familles,.grille-ds,.demo{grid-template-columns:minmax(0,1fr)}
+  .planche--nav{padding:0 var(--e4)}
+  .echelle th{width:auto}
+  .echelle,.echelle tbody,.echelle tr,.echelle th,.echelle td{display:block}
+  .echelle th{padding-bottom:4px}
+  .echelle td{border-top:0;padding-top:0}
+}
+:root{--masque-etoile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-12 -12 24 24'%3E%3Cpath d='M0-12C.8-4.8 4.8-.8 12 0 4.8.8.8 4.8 0 12-.8 4.8-4.8.8-12 0-4.8-.8-.8-4.8 0-12Z'/%3E%3C/svg%3E")}
+
+/* Outillage des propositions — neutre, hors design system */
+.pp-switch{position:fixed;left:12px;bottom:12px;z-index:9999;display:flex;flex-wrap:wrap;gap:2px;max-width:calc(100vw - 24px);padding:4px;border-radius:10px;background:rgba(18,18,20,.88);backdrop-filter:blur(6px);font:500 12px/1.2 system-ui,-apple-system,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.35)}
+.pp-switch a{color:#e8e8ea;text-decoration:none;padding:6px 9px;border-radius:7px}
+.pp-switch a:hover{background:rgba(255,255,255,.12)}
+.pp-switch a[aria-current="page"]{background:#e8e8ea;color:#121214}
+.pp-switch a:focus-visible{outline:2px solid #8ab4ff;outline-offset:1px}
+.pp-divider{margin:0;padding:28px 16px;background:repeating-linear-gradient(-45deg,#e9e9ec 0 12px,#dcdce1 12px 24px);color:#16161a;font:15px/1.5 system-ui,-apple-system,sans-serif;text-align:center}
+.pp-divider p{margin:0 auto;max-width:60ch}
+.pp-gen{position:absolute;top:8px;right:8px;z-index:3;padding:3px 7px;border:1px dashed currentColor;border-radius:6px;background:rgba(255,255,255,.88);color:#3a3a40;font:600 11px/1.2 system-ui,-apple-system,sans-serif;letter-spacing:0}
+@media (max-width:640px){.pp-switch a[href^="#"]{display:none}}
+.pp-note{display:inline-block;margin-top:var(--e5);padding:6px 10px;border:1px dashed #9a9aa4;border-radius:6px;background:rgba(255,255,255,.9);color:#3a3a40;font:500 12px/1.4 system-ui,-apple-system,sans-serif}
+</style>
+</head>
+<body>
+<nav class="pp-switch" aria-label="Propositions de design">
+  <a href="index.html">Comparatif</a>
+  <a href="a-nocturne.html"><b>A</b> Nocturne</a>
+  <a href="b-clair-de-lune.html" aria-current="page"><b>B</b> Clair de lune</a>
+  <a href="c-contre-jeu.html"><b>C</b> Contre-jeu</a>
+  <a href="d-mode-d-emploi.html"><b>D</b> Mode d'emploi</a>
+  <a href="#design-system">Design system</a>
+  <a href="#pourquoi">Pourquoi</a>
+</nav>
+
+<!-- Définitions partagées : étoile, fleur, lune -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <path id="etoile" d="M0-12C.8-4.8 4.8-.8 12 0 4.8.8.8 4.8 0 12-.8 4.8-4.8.8-12 0-4.8-.8-.8-4.8 0-12Z"/>
+    <g id="fleur">
+      <g fill="#F4F2EC">
+        <ellipse cy="-7" rx="4.3" ry="7.2"/>
+        <ellipse cy="-7" rx="4.3" ry="7.2" transform="rotate(72)"/>
+        <ellipse cy="-7" rx="4.3" ry="7.2" transform="rotate(144)"/>
+        <ellipse cy="-7" rx="4.3" ry="7.2" transform="rotate(216)"/>
+        <ellipse cy="-7" rx="4.3" ry="7.2" transform="rotate(288)"/>
+      </g>
+      <circle r="2.5" fill="#E4DCBC"/>
+    </g>
+    <radialGradient id="halo-astre">
+      <stop offset="0" stop-color="#BFD6F2" stop-opacity=".55"/>
+      <stop offset=".45" stop-color="#BFD6F2" stop-opacity=".14"/>
+      <stop offset="1" stop-color="#BFD6F2" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="halo-lune" cx="300" cy="300" r="300" gradientUnits="userSpaceOnUse">
+      <stop offset=".6" stop-color="#BFD6F2" stop-opacity=".34"/>
+      <stop offset=".7" stop-color="#BFD6F2" stop-opacity=".16"/>
+      <stop offset="1" stop-color="#BFD6F2" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="lune-modele" cx="372" cy="226" r="300" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FDFDFE"/>
+      <stop offset=".42" stop-color="#E6ECF5"/>
+      <stop offset=".78" stop-color="#BCC9DC"/>
+      <stop offset="1" stop-color="#93A6C2"/>
+    </radialGradient>
+    <mask id="croissant" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><rect width="24" height="24" fill="#fff"/><circle cx="7.4" cy="10.2" r="8.3" fill="#000"/></mask>
+    <clipPath id="disque"><circle cx="300" cy="300" r="200"/></clipPath>
+    <clipPath id="partie-eclairee"><path d="M300 100A200 200 0 0 1 300 500A112 200 0 0 1 300 100Z"/></clipPath>
+    <filter id="terminateur" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="2.4"/></filter>
+    <filter id="mers" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3.2"/></filter>
+    <filter id="grain-lune" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="4" result="b"/>
+      <feColorMatrix in="b" values="0 0 0 0 .4  0 0 0 0 .47  0 0 0 0 .6  0 0 0 2.6 -1.18"/>
+    </filter>
+    <g id="mers-lune" fill="#8193B2" opacity=".8"><path d="M459.4 244C459.5 249.1 459.3 255.3 457.4 259.7C455.5 264.1 451.5 269.1 448 270.4C444.4 271.7 439.8 267.9 436 267.5C432.2 267 428.3 269.2 425.3 267.5C422.3 265.8 419.3 261.1 418 257.2C416.7 253.3 418 248.9 417.4 244C416.7 239.1 412.9 232.3 414 227.8C415.1 223.3 420.1 219.3 423.8 217C427.4 214.8 432.2 213.6 436 214.4C439.8 215.1 442.9 218.9 446.3 221.3C449.7 223.7 454.5 225.1 456.6 228.8C458.8 232.6 459.2 238.9 459.4 244Z" opacity="0.5"/><path d="M435 328C434.3 334.1 431.7 338.7 429.8 344.2C427.9 349.8 426.9 359.9 423.6 361.3C420.3 362.7 414.5 352.8 410 352.8C405.5 352.8 400.5 362.1 396.5 361.2C392.5 360.4 388.5 353.2 386 347.7C383.4 342.1 380 333.7 381 328C382 322.3 389.5 319.2 391.9 313.2C394.3 307.2 392.3 296.2 395.3 291.8C398.3 287.5 405.2 286.9 410 287.2C414.8 287.5 419.9 290.3 424 293.7C428.1 297.2 432.7 302.2 434.6 307.9C436.4 313.6 435.8 321.9 435 328Z" opacity="0.38"/><path d="M390.1 360C389.7 363.9 386.9 367.7 384.8 370.8C382.7 373.9 380.4 377.7 377.6 378.5C374.8 379.3 370.9 376 368 375.3C365.1 374.7 362.7 375.6 360.5 374.5C358.3 373.3 357 370.8 354.9 368.4C352.9 366 348.3 362.9 348.2 360C348 357.1 352.2 353.7 354.1 351.1C356.1 348.5 357.7 346.7 360 344.6C362.3 342.5 365.1 338.8 368 338.3C370.9 337.7 374.4 339.8 377.7 341.4C380.9 342.9 385.3 344.5 387.4 347.6C389.4 350.7 390.5 356.1 390.1 360Z" opacity="0.34"/><path d="M405.3 296C406.5 301.4 403.2 308.7 399.5 314C395.9 319.3 390 326.5 383.4 328C376.8 329.5 366.8 324.3 360 323C353.2 321.7 347.4 322.3 342.3 320.2C337.3 318 331.3 313.9 329.6 309.9C327.8 305.8 333.4 301.3 331.8 296C330.3 290.7 318 281 320.5 278C322.9 274.9 340 279.4 346.6 277.7C353.2 276 355.5 267.8 360 267.7C364.5 267.6 368.5 274.8 373.8 277.1C379.1 279.4 386.7 278.3 391.9 281.5C397.2 284.6 404 290.6 405.3 296Z" opacity="0.46"/><path d="M366.3 228C367.5 232.5 365.8 239.5 362.8 243.5C359.9 247.5 353.7 249.6 348.9 251.9C344.1 254.2 338.8 257.5 334 257.3C329.2 257.1 323.6 253.7 319.8 250.9C315.9 248 312.5 244.2 310.9 240.4C309.2 236.6 310.8 232.6 309.9 228C309 223.4 303.9 216.7 305.3 212.6C306.8 208.5 314 206 318.7 203.5C323.5 200.9 328.8 197.3 334 197.2C339.2 197.1 346.1 199.5 349.8 202.6C353.4 205.8 353.3 212 356 216.2C358.8 220.4 365.2 223.5 366.3 228Z" opacity="0.48"/><path d="M312.5 264C312 266.1 308.8 267.6 307.5 269.7C306.1 271.8 306.5 275.3 304.6 276.7C302.6 278.1 298.9 278.1 296 278.1C293.1 278.2 289.2 278.4 287.2 277C285.2 275.6 284.8 272.1 284.1 269.9C283.4 267.7 283.6 266.2 283.1 264C282.6 261.8 280 258.1 281.2 256.7C282.4 255.2 287.7 256.4 290.2 255.3C292.6 254.2 293.9 250.2 296 250C298.1 249.8 300.1 253.2 302.5 254.4C304.9 255.5 308.7 255.3 310.4 256.9C312 258.5 313 261.9 312.5 264Z" opacity="0.32"/><path d="M281.4 216C282.4 223.8 294.8 235.8 291.4 240.9C288.1 246.1 269.8 243 261.3 246.9C252.7 250.8 247.8 263.3 240 264.3C232.2 265.3 223.2 256.8 214.6 252.9C206 249 192.5 247.2 188.4 241C184.4 234.9 188.9 223.6 190.4 216C191.9 208.4 193.2 201.3 197.4 195.3C201.5 189.3 208.1 183 215.2 179.9C222.3 176.9 232.4 176.1 240 177.1C247.6 178.1 253.3 182.9 260.8 185.7C268.3 188.6 281.8 189 285.3 194.1C288.7 199.1 280.4 208.2 281.4 216Z" opacity="0.46"/><path d="M370.6 154C372.8 156.1 368.4 159 362.3 161.1C356.2 163.1 345.1 164.9 334 166.1C323 167.4 307.7 168.8 296 168.5C284.3 168.1 275.2 165.4 264 164.2C252.9 163 238.7 162.8 229 161.1C219.3 159.4 205.4 156.3 205.7 154C206.1 151.7 222.5 149.1 231.3 147.1C240.2 145.1 248.1 143.7 258.9 142.2C269.7 140.6 283.2 138 296 137.9C308.8 137.8 326.7 139.6 335.6 141.4C344.4 143.1 343.3 146.2 349.2 148.3C355 150.4 368.5 151.9 370.6 154Z" opacity="0.3"/><path d="M226.6 300C224.3 313.5 218.8 318.8 216.4 334C214 349.1 218.5 383.6 212.4 390.8C206.4 398 188.5 383.6 180 377.2C171.5 370.8 168.1 358.8 161.3 352.2C154.6 345.6 145.6 346.5 139.5 337.8C133.4 329.1 125 313 124.6 300C124.1 287 131.6 271.1 136.8 259.7C141.9 248.2 148.3 235.3 155.5 231.3C162.7 227.3 172.7 233.3 180 235.8C187.3 238.2 190.9 243.1 199.3 245.9C207.7 248.8 226 243.9 230.5 252.9C235.1 261.9 229 286.5 226.6 300Z" opacity="0.42"/><path d="M289.8 380C289.5 384.3 289.6 389.1 287.1 392.5C284.5 395.9 279.1 398.6 274.6 400.2C270.1 401.9 265.6 401.4 260 402.4C254.4 403.4 245.7 407.9 241 406.3C236.4 404.7 234 397.2 232.2 392.8C230.5 388.5 229.8 384 230.5 380C231.2 376 234.6 373.5 236.4 369.1C238.2 364.7 237.2 356.4 241.1 353.8C245 351.2 255.1 351.4 260 353.3C264.9 355.3 265.8 363.1 270.6 365.4C275.3 367.6 285.5 364.3 288.7 366.7C291.9 369.2 290.1 375.7 289.8 380Z" opacity="0.36"/><path d="M215.9 380C216.1 383.3 218.8 387.6 217.7 390.2C216.5 392.8 211.9 394 209 395.5C206 397.1 202.9 399.6 200 399.5C197.1 399.4 193.7 396.9 191.3 395C189 393.1 187 390.7 185.9 388.2C184.7 385.7 184.6 382.9 184.3 380C183.9 377.1 182.5 372.8 183.9 370.7C185.2 368.5 189.9 368 192.6 367.2C195.3 366.3 197.2 366.1 200 365.5C202.8 364.8 206.9 362.5 209.6 363.4C212.3 364.2 215.3 367.8 216.3 370.6C217.4 373.3 215.7 376.7 215.9 380Z" opacity="0.36"/></g>
+    <g id="crateres-lune"><g stroke="#FFFFFF" stroke-width="1.6" stroke-opacity=".16" fill="none"><path d="M280 444l23.5 143.8"/><path d="M280 444l14.4 -95"/><path d="M280 444l42.8 3.8"/><path d="M280 444l-1.8 70.8"/><path d="M280 444l-53.1 -35.8"/><path d="M280 444l126.3 -95.1"/><path d="M280 444l-69.4 42.4"/><path d="M280 444l-157.1 15.6"/><path d="M280 444l58.3 89.8"/><path d="M280 444l-84.2 74.5"/><path d="M280 444l-15.1 -129"/><path d="M280 444l-19.7 46.3"/><path d="M280 444l-56.5 -1.8"/><path d="M280 444l-138.8 12.4"/></g><circle cx="280" cy="444" r="5" fill="#FFFFFF" opacity=".85"/><circle cx="260" cy="276" r="3.4" fill="#FFFFFF" opacity=".6"/><circle cx="316" cy="400" r="2.4" fill="#FFFFFF" opacity=".45"/></g>
+  </defs>
+</svg>
+
+<div class="site">
+<a class="evitement" href="#contenu">Aller au contenu</a>
+<header class="entete">
+  <div class="wrap entete__barre">
+    <a class="marque" href="#">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="currentColor" mask="url(#croissant)"/></svg>
+      Charles Lindecker
+    </a>
+    <nav class="nav" aria-label="Navigation principale">
+      <ul>
+        <li><a href="#">Parcours</a></li>
+        <li><a href="#">Projets</a></li>
+        <li><a href="#">CV</a></li>
+      </ul>
+      <a class="btn btn--contour btn--petit" href="mailto:charles.lindecker@outlook.fr">M'écrire</a>
+    </nav>
+  </div>
+</header>
+
+<main id="contenu">
+  <!-- Accroche -->
+  <section class="hero" aria-labelledby="accroche">
+    <div class="hero__ciel" aria-hidden="true"></div>
+    <svg class="hero__etoiles" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMin slice" aria-hidden="true" focusable="false"><circle cx="18.7" cy="9.6" r="1.8" opacity="0.6"/><circle cx="834.3" cy="160.1" r="0.6" opacity="0.3"/><circle cx="885.3" cy="386.6" r="0.5" opacity="0.3"/><circle cx="315.4" cy="138.4" r="0.5" opacity="0.5"/><circle cx="474.1" cy="599.6" r="0.5" opacity="0.7"/><circle cx="305.3" cy="33.8" r="0.5" opacity="0.3"/><circle cx="876.6" cy="412.3" r="0.5" opacity="0.7"/><circle cx="885.9" cy="303.9" r="0.9" opacity="0.7"/><circle cx="999" cy="548.2" r="1.3" opacity="0.2"/><circle cx="279.9" cy="132.2" r="0.6" opacity="0.2"/><circle cx="141" cy="417.3" r="0.6" opacity="0.4"/><circle cx="749.9" cy="570.7" r="1" opacity="0.6"/><circle cx="529" cy="131.9" r="0.5" opacity="0.3"/><circle cx="304.6" cy="311.7" r="0.6" opacity="0.2"/><circle cx="1094.8" cy="548.3" r="0.7" opacity="0.6"/><circle cx="1048.4" cy="547" r="0.5" opacity="0.5"/><circle cx="1038.7" cy="521.5" r="1.7" opacity="0.6"/><circle cx="950.8" cy="586.7" r="1.8" opacity="0.5"/><circle cx="825.7" cy="116.5" r="1" opacity="0.5"/><circle cx="1208.7" cy="598.7" r="0.7" opacity="0.6"/><circle cx="688" cy="319.2" r="1.1" opacity="0.5"/><circle cx="499.8" cy="71.5" r="0.5" opacity="0.2"/><circle cx="1509.4" cy="471.7" r="0.9" opacity="0.2"/><circle cx="1147" cy="615.2" r="0.5" opacity="0.7"/><circle cx="1040" cy="447.7" r="0.8" opacity="0.6"/><circle cx="222.5" cy="614.6" r="0.7" opacity="0.5"/><circle cx="257.4" cy="154.6" r="0.5" opacity="0.6"/><circle cx="1053.5" cy="610.9" r="0.8" opacity="0.6"/><circle cx="367.6" cy="276.7" r="1.2" opacity="0.6"/><circle cx="303.9" cy="256.3" r="0.7" opacity="0.5"/><circle cx="288.3" cy="77.8" r="0.6" opacity="0.4"/><circle cx="273.3" cy="0.1" r="0.5" opacity="0.2"/><circle cx="171.6" cy="508.6" r="1.8" opacity="0.2"/><circle cx="279.1" cy="159.8" r="0.7" opacity="0.6"/><circle cx="589.2" cy="133.9" r="1.2" opacity="0.6"/><circle cx="900.2" cy="98.2" r="0.7" opacity="0.6"/><circle cx="128" cy="78.5" r="1.3" opacity="0.6"/><circle cx="571.1" cy="547.4" r="0.5" opacity="0.4"/><circle cx="763.1" cy="469.1" r="0.6" opacity="0.7"/><circle cx="882.1" cy="178.7" r="0.6" opacity="0.5"/><circle cx="469.2" cy="515.5" r="0.8" opacity="0.7"/><circle cx="698.9" cy="361.3" r="1.6" opacity="0.5"/><circle cx="975.5" cy="491" r="0.6" opacity="0.3"/><circle cx="144.8" cy="350.3" r="1" opacity="0.7"/><circle cx="507.9" cy="82" r="0.5" opacity="0.6"/><circle cx="1326.1" cy="585.7" r="0.5" opacity="0.7"/><circle cx="452.1" cy="245" r="0.6" opacity="0.6"/><circle cx="950.7" cy="87.9" r="1.3" opacity="0.4"/><circle cx="223.7" cy="380.8" r="0.6" opacity="0.5"/><circle cx="882.1" cy="518.8" r="1.7" opacity="0.3"/><circle cx="162.8" cy="95.3" r="0.7" opacity="0.4"/><circle cx="1456.1" cy="492.1" r="0.7" opacity="0.7"/><circle cx="446" cy="214.7" r="1.6" opacity="0.6"/><circle cx="1455.3" cy="592" r="1.3" opacity="0.2"/><circle cx="268" cy="404.8" r="0.5" opacity="0.2"/><circle cx="942.9" cy="83.2" r="1.2" opacity="0.6"/><circle cx="92" cy="185.1" r="1.8" opacity="0.2"/><circle cx="136.7" cy="145.9" r="1.2" opacity="0.6"/><circle cx="435.1" cy="217.6" r="0.5" opacity="0.4"/><circle cx="699.4" cy="248.9" r="0.5" opacity="0.6"/><circle cx="485.1" cy="356.8" r="1.3" opacity="0.2"/><circle cx="291.3" cy="376.6" r="1.5" opacity="0.3"/><circle cx="515.9" cy="18.1" r="0.5" opacity="0.7"/><circle cx="828.7" cy="11.7" r="0.7" opacity="0.4"/><circle cx="382.2" cy="57.4" r="1.5" opacity="0.2"/><circle cx="53.5" cy="565.3" r="1.6" opacity="0.4"/><circle cx="921" cy="367.1" r="0.5" opacity="0.5"/><circle cx="119.2" cy="284.7" r="1" opacity="0.6"/><circle cx="111.6" cy="266.9" r="0.6" opacity="0.2"/></svg>
+    <svg class="hero__lune" viewBox="0 0 600 600" aria-hidden="true" focusable="false">
+      <circle cx="300" cy="300" r="300" fill="url(#halo-lune)"/>
+      <circle cx="300" cy="300" r="200" fill="#131C35"/>
+      <g clip-path="url(#disque)">
+        <g filter="url(#terminateur)">
+          <path d="M300 100A200 200 0 0 1 300 500A112 200 0 0 1 300 100Z" fill="url(#lune-modele)"/>
+          <g clip-path="url(#partie-eclairee)">
+            <use href="#mers-lune" filter="url(#mers)"/>
+            <use href="#crateres-lune"/>
+            <rect x="100" y="100" width="400" height="400" filter="url(#grain-lune)" opacity=".55"/>
+          </g>
+        </g>
+      </g>
+    </svg>
+    <div class="brume" aria-hidden="true"><span></span><span></span><span></span></div>
+    <svg class="hero__pre" viewBox="0 0 1600 300" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false"><g class="pre-loin"><path d="M816.2 300Q820.4 229.6 823.9 186.4Q821.8 231.8 820.8 300Z" fill="#16224A"/><path d="M1359.1 300Q1353.9 229 1340.2 185.4Q1355.2 231.3 1363.4 300Z" fill="#16224A"/><path d="M969.5 300Q972 235.5 971.4 196Q973.7 237.6 975.2 300Z" fill="#16224A"/><path d="M670.6 300Q675.1 219.1 681 169.6Q676 221.7 673.3 300Z" fill="#16224A"/><path d="M283.8 300Q283.8 248.5 280.4 216.9Q284.9 250.1 287.5 300Z" fill="#16224A"/><path d="M929.7 300Q933.7 259.5 936.9 234.7Q935.1 260.8 934.3 300Z" fill="#16224A"/><path d="M666.8 300Q674.8 206.2 684.7 148.7Q676.4 209.2 672.2 300Z" fill="#16224A"/><path d="M507.1 300Q503.8 222.6 495.8 175.2Q504.5 225.1 509.3 300Z" fill="#16224A"/><path d="M1184.1 300Q1181.9 196.3 1175.3 132.7Q1182.7 199.6 1186.8 300Z" fill="#16224A"/><path d="M1187.4 300Q1190.6 243.2 1192.4 208.3Q1192 245 1192 300Z" fill="#16224A"/><path d="M1350 300Q1358.9 258.3 1370.3 232.8Q1360.6 259.7 1355.6 300Z" fill="#16224A"/><path d="M612.7 300Q608.1 267.1 594.4 247Q609.8 268.2 618.4 300Z" fill="#16224A"/><path d="M793.5 300Q791.6 229.9 784.1 186.9Q792.9 232.1 797.7 300Z" fill="#16224A"/><path d="M1173.7 300Q1177.3 262.4 1182 239.3Q1177.9 263.6 1175.9 300Z" fill="#16224A"/><path d="M709.3 300Q719.7 221.8 735.5 173.8Q720.9 224.3 713.2 300Z" fill="#16224A"/><path d="M743.3 300Q738 242.7 723.3 207.7Q739.5 244.6 748.5 300Z" fill="#16224A"/><path d="M668.9 300Q667.6 212.5 661.1 158.9Q668.9 215.3 673.3 300Z" fill="#16224A"/><path d="M555.3 300Q550.6 206.3 539.5 148.9Q551.3 209.3 557.8 300Z" fill="#16224A"/><path d="M1006.6 300Q1001.8 222.6 989.6 175.2Q1002.9 225.1 1010.2 300Z" fill="#16224A"/><path d="M601.8 300Q610.4 199.3 621.8 137.5Q611.8 202.5 606.6 300Z" fill="#16224A"/><path d="M655.4 300Q658.9 200.6 661.8 139.7Q660.1 203.8 659.4 300Z" fill="#16224A"/><path d="M489.6 300Q484 230.7 468 188.3Q485.7 233 495.5 300Z" fill="#16224A"/><path d="M481.4 300Q476 238.6 463.7 201Q476.7 240.6 483.7 300Z" fill="#16224A"/><path d="M1190.9 300Q1192.4 228.5 1192.9 184.7Q1193.1 230.8 1193.4 300Z" fill="#16224A"/><path d="M892.4 300Q902.2 222.7 914.7 175.4Q904.1 225.2 898.6 300Z" fill="#16224A"/><path d="M955 300Q958.4 224.1 960.8 177.6Q959.6 226.5 959.2 300Z" fill="#16224A"/><path d="M147.9 300Q153.7 220.5 158.6 171.8Q155.6 223.1 154.3 300Z" fill="#16224A"/><path d="M1134.4 300Q1130.5 259 1118.7 233.8Q1132 260.3 1139.3 300Z" fill="#16224A"/><path d="M1553.5 300Q1562.8 243.4 1576.6 208.8Q1563.9 245.3 1557.2 300Z" fill="#16224A"/><path d="M1215.5 300Q1209.6 220.4 1195.7 171.5Q1210.6 222.9 1218.7 300Z" fill="#16224A"/><path d="M1060.9 300Q1064.7 232.4 1068.8 190.9Q1065.6 234.5 1063.9 300Z" fill="#16224A"/><path d="M1146.8 300Q1141.8 245.6 1128.6 212.2Q1143.2 247.3 1151.2 300Z" fill="#16224A"/><path d="M606.4 300Q615 255.5 625.3 228.3Q616.8 257 612.5 300Z" fill="#16224A"/><path d="M1198.1 300Q1199.8 268.6 1197.6 249.4Q1201.5 269.6 1203.8 300Z" fill="#16224A"/><path d="M909.8 300Q913.1 216.9 917.3 166Q913.7 219.6 911.8 300Z" fill="#16224A"/><path d="M790.9 300Q787.8 232.5 776.9 191.1Q789.5 234.6 796.5 300Z" fill="#16224A"/><path d="M99.6 300Q110.6 262.7 126.8 239.8Q112 263.9 104.3 300Z" fill="#16224A"/><path d="M1123.1 300Q1133.6 206.9 1147.2 149.8Q1135.5 209.9 1129.5 300Z" fill="#16224A"/><path d="M79.1 300Q82.7 256.5 85.8 229.8Q83.8 257.9 82.9 300Z" fill="#16224A"/><path d="M666.6 300Q659.9 229.3 645.2 186Q660.5 231.6 668.9 300Z" fill="#16224A"/><path d="M737.5 300Q738.7 248.9 736 217.5Q740.2 250.5 742.7 300Z" fill="#16224A"/><path d="M660.3 300Q663.7 243.8 666.5 209.4Q664.8 245.7 663.9 300Z" fill="#16224A"/><path d="M1559 300Q1559.5 246.9 1557.8 214.4Q1560.5 248.6 1562 300Z" fill="#16224A"/><path d="M1092 300Q1095.5 245.4 1097.6 211.9Q1097 247.2 1096.9 300Z" fill="#16224A"/><path d="M1.7 300Q-1.4 259.3 -12.3 234.3Q0.3 260.6 7.3 300Z" fill="#16224A"/><path d="M214.7 300Q211.7 208.2 201.7 152Q213.1 211.2 219.5 300Z" fill="#16224A"/><path d="M1319.7 300Q1326.4 214 1336.6 161.3Q1327.1 216.8 1322.2 300Z" fill="#16224A"/><path d="M140.4 300Q136.7 213.6 127.5 160.7Q137.5 216.4 142.9 300Z" fill="#16224A"/><path d="M546 300Q555.1 261.8 567.5 238.3Q556.5 263 550.8 300Z" fill="#16224A"/><path d="M1150.5 300Q1157.5 226 1165.9 180.7Q1159.1 228.4 1155.6 300Z" fill="#16224A"/><path d="M612.5 300Q609.2 212.2 600.3 158.3Q610.1 215 615.4 300Z" fill="#16224A"/><path d="M219.5 300Q213.1 222.5 197.1 175Q214.5 225 224 300Z" fill="#16224A"/><path d="M1542.6 300Q1545.8 204.6 1546.5 146.1Q1547.6 207.7 1548.4 300Z" fill="#16224A"/><path d="M88.1 300Q94.4 229.7 103.1 186.6Q95.3 232 91.2 300Z" fill="#16224A"/><path d="M1570.4 300Q1579 258.7 1591.2 233.3Q1580.2 260 1574.5 300Z" fill="#16224A"/><path d="M1481.2 300Q1481.2 195.3 1477.6 131.1Q1482.4 198.7 1485.2 300Z" fill="#16224A"/><path d="M695.9 300Q691.6 261.6 681.5 238.1Q692.4 262.9 698.3 300Z" fill="#16224A"/><path d="M139.1 300Q142.3 199.3 143.9 137.6Q143.6 202.5 143.7 300Z" fill="#16224A"/><path d="M367.6 300Q363.1 199.5 349.3 137.9Q364.8 202.7 373.3 300Z" fill="#16224A"/><path d="M432.6 300Q433.4 264.3 431.5 242.4Q434.5 265.5 436.3 300Z" fill="#16224A"/><path d="M221.2 300Q217.8 241.3 205.8 205.3Q219.6 243.2 227.2 300Z" fill="#16224A"/><path d="M924.6 300Q935 234.7 951 194.7Q936.1 236.8 928.1 300Z" fill="#16224A"/><path d="M908.5 300Q906.4 228.6 898.6 184.8Q907.7 230.9 912.7 300Z" fill="#16224A"/><path d="M1510.7 300Q1512.2 246.6 1511.3 213.8Q1513.3 248.3 1514.5 300Z" fill="#16224A"/><path d="M202.8 300Q206.2 251.4 210.5 221.6Q206.8 252.9 204.9 300Z" fill="#16224A"/><path d="M146.1 300Q141.6 213.9 130.5 161Q142.5 216.6 149 300Z" fill="#16224A"/><path d="M688.8 300Q692.9 210.8 696.2 156.1Q694.3 213.6 693.5 300Z" fill="#16224A"/><path d="M1077.7 300Q1085.2 240.9 1093.6 204.7Q1087 242.8 1083.7 300Z" fill="#16224A"/><path d="M525.1 300Q519.1 216.1 505.7 164.7Q519.9 218.8 527.7 300Z" fill="#16224A"/><path d="M833.6 300Q829.6 218.3 816.6 168.2Q831.4 220.9 839.6 300Z" fill="#16224A"/><path d="M1457.2 300Q1466 259.1 1478.9 234Q1467.1 260.4 1460.9 300Z" fill="#16224A"/><path d="M1135.6 300Q1143.7 226.6 1152.9 181.6Q1145.6 228.9 1141.9 300Z" fill="#16224A"/><path d="M707.2 300Q706.7 252.3 700.8 223Q708.2 253.8 712.4 300Z" fill="#16224A"/><path d="M1124.7 300Q1129.8 265.3 1136.8 244.1Q1130.5 266.4 1127.2 300Z" fill="#16224A"/><path d="M681.7 300Q683.6 212.7 681.3 159.2Q685.4 215.5 687.9 300Z" fill="#16224A"/><path d="M1184.3 300Q1178.6 259.9 1165.4 235.3Q1179.4 261.2 1187 300Z" fill="#16224A"/><path d="M24.2 300Q22.2 198.8 14.2 136.8Q23.7 202.1 29 300Z" fill="#16224A"/><path d="M464.6 300Q471.1 245 478.1 211.2Q472.7 246.7 469.9 300Z" fill="#16224A"/><path d="M973.7 300Q977.4 196.5 979 133.1Q979 199.9 979.2 300Z" fill="#16224A"/><path d="M873.8 300Q873.1 239.8 866.2 202.9Q874.9 241.7 879.8 300Z" fill="#16224A"/><path d="M157 300Q158.5 228.4 156.6 184.5Q160 230.7 162 300Z" fill="#16224A"/><path d="M844.1 300Q848.7 254.9 854.2 227.2Q849.6 256.3 847.3 300Z" fill="#16224A"/><path d="M478.2 300Q486.8 261.7 499.4 238.2Q487.9 262.9 481.9 300Z" fill="#16224A"/><path d="M156.2 300Q156.8 226.5 155.1 181.5Q157.6 228.9 159.1 300Z" fill="#16224A"/><path d="M99.2 300Q100.3 264.6 96.8 242.9Q102.1 265.7 105.2 300Z" fill="#16224A"/><path d="M667.3 300Q666.4 201.6 661.3 141.3Q667.4 204.8 670.9 300Z" fill="#16224A"/><path d="M972.3 300Q972.2 268.5 968 249.2Q973.5 269.5 976.7 300Z" fill="#16224A"/><path d="M1266.2 300Q1271.5 216.3 1275.7 165Q1273.4 219 1272.4 300Z" fill="#16224A"/><path d="M999.9 300Q994 256.8 980.7 230.3Q994.8 258.2 1002.5 300Z" fill="#16224A"/><path d="M346.7 300Q342 205.7 330.8 148Q342.8 208.8 349.3 300Z" fill="#16224A"/><path d="M104.2 300Q109.6 206.8 117.6 149.6Q110.2 209.8 106.3 300Z" fill="#16224A"/><path d="M589.8 300Q587.8 268.1 578.9 248.5Q589.4 269.1 595.3 300Z" fill="#16224A"/><path d="M754.1 300Q747.2 268.6 732.4 249.4Q747.8 269.6 756.2 300Z" fill="#16224A"/><path d="M601.6 300Q596.1 231.7 580.3 189.9Q597.8 233.9 607.4 300Z" fill="#16224A"/><path d="M1457.6 300Q1456.2 250.8 1451.3 220.6Q1456.9 252.4 1460.1 300Z" fill="#16224A"/><path d="M246.8 300Q248 266.6 245.2 246.1Q249.6 267.7 252.1 300Z" fill="#16224A"/><path d="M1234 300Q1242.3 239.6 1254 202.6Q1243.6 241.5 1238.1 300Z" fill="#16224A"/><path d="M495.2 300Q500.3 222.8 505.3 175.6Q501.8 225.3 500.1 300Z" fill="#16224A"/><path d="M628 300Q629.3 216.7 628.1 165.6Q630.4 219.4 631.8 300Z" fill="#16224A"/><path d="M671.8 300Q670.9 197.1 664.6 134.1Q672.3 200.5 676.6 300Z" fill="#16224A"/><path d="M102.2 300Q98.1 221.9 85.9 174Q99.5 224.4 107 300Z" fill="#16224A"/><path d="M353.8 300Q359.3 209 366.8 153.2Q360.2 211.9 356.7 300Z" fill="#16224A"/><path d="M1537 300Q1535.9 238.3 1531.3 200.4Q1536.8 240.3 1539.9 300Z" fill="#16224A"/><path d="M17.8 300Q13.6 203.4 1.6 144.1Q14.8 206.5 22.1 300Z" fill="#16224A"/><path d="M1367.7 300Q1364.5 203.3 1353.2 144.1Q1366.3 206.4 1373.7 300Z" fill="#16224A"/><path d="M637.4 300Q636.6 227.7 631.8 183.4Q637.7 230 640.9 300Z" fill="#16224A"/><path d="M152.2 300Q149.1 266.9 141.4 246.6Q149.8 267.9 154.4 300Z" fill="#16224A"/><path d="M474.2 300Q475.1 223.6 474 176.7Q476.1 226 477.3 300Z" fill="#16224A"/><path d="M832.4 300Q840 222.5 848.4 175Q841.8 225 838.5 300Z" fill="#16224A"/><path d="M304.8 300Q300.6 236.5 288.2 197.6Q302.2 238.6 309.9 300Z" fill="#16224A"/><path d="M500.5 300Q504.6 257.3 509.1 231.1Q505.5 258.6 503.7 300Z" fill="#16224A"/><path d="M257.6 300Q253.8 220 243.9 170.9Q254.7 222.6 260.6 300Z" fill="#16224A"/><path d="M372.2 300Q366.2 268.1 352.9 248.5Q366.9 269.1 374.5 300Z" fill="#16224A"/><path d="M514 300Q514.1 230.5 508.4 187.9Q516 232.7 520.3 300Z" fill="#16224A"/><path d="M1149.5 300Q1148.2 215.8 1141.3 164.3Q1149.7 218.6 1154.4 300Z" fill="#16224A"/><path d="M669.1 300Q669.9 202.6 666.3 142.9Q671.5 205.7 674.5 300Z" fill="#16224A"/><path d="M276.4 300Q285.6 251 299.6 221Q286.6 252.6 279.7 300Z" fill="#16224A"/><path d="M108.7 300Q116.7 204.7 128.6 146.3Q117.6 207.8 111.8 300Z" fill="#16224A"/><path d="M-0.1 300Q0.8 257.9 0.5 232.2Q1.5 259.3 2.1 300Z" fill="#16224A"/><path d="M1079.5 300Q1084.7 216.5 1090.3 165.3Q1085.9 219.2 1083.8 300Z" fill="#16224A"/><path d="M334.1 300Q344.6 199.7 359.8 138.2Q346.1 202.9 338.9 300Z" fill="#16224A"/><path d="M184.3 300Q183.1 244.6 176.9 210.6Q184.4 246.4 188.5 300Z" fill="#16224A"/><path d="M1289.7 300Q1283.5 198.3 1269.1 136Q1284.5 201.6 1292.9 300Z" fill="#16224A"/><path d="M626.2 300Q629.9 198.6 633.1 136.5Q631.1 201.9 630.2 300Z" fill="#16224A"/><path d="M233.9 300Q237 221.4 239.1 173.2Q238.1 223.9 237.7 300Z" fill="#16224A"/><path d="M1438.2 300Q1447.4 234.5 1462.1 194.4Q1448.2 236.6 1440.9 300Z" fill="#16224A"/><path d="M380.9 300Q387.7 224.1 397.3 177.6Q388.8 226.6 384.3 300Z" fill="#16224A"/><path d="M436.3 300Q436.3 265 431.1 243.5Q438 266.1 441.9 300Z" fill="#16224A"/><path d="M1426.9 300Q1427.8 247.6 1425.8 215.4Q1428.9 249.3 1430.8 300Z" fill="#16224A"/><path d="M636.6 300Q641.8 238.6 649.2 201Q642.5 240.6 639 300Z" fill="#16224A"/><path d="M519.6 300Q528.9 251.9 543.5 222.4Q529.7 253.5 522.3 300Z" fill="#16224A"/><path d="M15.9 300Q12.2 226.1 3.4 180.8Q12.8 228.5 17.9 300Z" fill="#16224A"/><path d="M1318.5 300Q1315.1 217.5 1303.8 166.9Q1316.7 220.1 1323.8 300Z" fill="#16224A"/><path d="M8 300Q3.5 263.7 -6.9 241.4Q4.1 264.9 10.2 300Z" fill="#16224A"/><path d="M12.1 300Q21.2 199.5 33.1 137.9Q22.8 202.7 17.5 300Z" fill="#16224A"/><path d="M1033.2 300Q1039.5 224.4 1048.3 178Q1040.4 226.8 1036.3 300Z" fill="#16224A"/><path d="M78.2 300Q73.1 240.2 60.7 203.5Q74.1 242.1 81.4 300Z" fill="#16224A"/><path d="M650 300Q646.4 248 634.4 216.1Q648.2 249.7 655.8 300Z" fill="#16224A"/><path d="M763.7 300Q768.9 203.7 776.1 144.7Q769.7 206.8 766.3 300Z" fill="#16224A"/><path d="M826.2 300Q819.6 219.5 803.9 170.1Q820.7 222.1 829.9 300Z" fill="#16224A"/><path d="M1122.2 300Q1122.5 207.6 1118.5 151Q1123.9 210.6 1127 300Z" fill="#16224A"/><path d="M706.2 300Q710.6 253.1 712.9 224.4Q712.5 254.6 712.5 300Z" fill="#16224A"/><path d="M324.1 300Q323.2 263.3 317.5 240.8Q324.4 264.5 328.3 300Z" fill="#16224A"/><path d="M486.4 300Q496.6 212.7 511.9 159.1Q497.7 215.5 490.2 300Z" fill="#16224A"/><path d="M586.4 300Q591.7 259.9 598.1 235.3Q592.9 261.2 590.3 300Z" fill="#16224A"/><path d="M400.8 300Q394.7 260 379.1 235.4Q396 261.3 405.3 300Z" fill="#16224A"/><path d="M313.9 300Q314.5 224.2 310.3 177.8Q316.2 226.7 319.6 300Z" fill="#16224A"/><path d="M1347.9 300Q1347.3 260.9 1342.6 236.9Q1348.4 262.1 1351.7 300Z" fill="#16224A"/><path d="M441.3 300Q448.3 257.6 458.5 231.6Q449.2 258.9 444.3 300Z" fill="#16224A"/><path d="M904.5 300Q907.1 262.4 907.6 239.4Q908.5 263.6 909.2 300Z" fill="#16224A"/><g stroke="#2A3A66" stroke-width="1" fill="none"><path d="M323.3 149.9Q324.1 224 325.8 300"/><path d="M783 160.2Q781.4 229 777.8 300"/><path d="M932 183Q930 240.4 925.4 300"/><path d="M530.1 177.7Q529.9 237.7 529.5 300"/><path d="M567.8 172.7Q567.3 235.5 566.1 300"/><path d="M1465.7 193.9Q1464.7 245.8 1462.5 300"/><path d="M29.9 189.7Q32.3 243.9 37.7 300"/><path d="M132 176.3Q130.2 237.2 125.9 300"/><path d="M1089.4 185.7Q1088 241.9 1084.8 300"/><path d="M1183 197.2Q1180.6 247.5 1175.1 300"/><path d="M334.5 158.2Q336.6 228.2 341.3 300"/><path d="M1142.7 150.7Q1144.6 224.2 1149 300"/><path d="M277.6 144.9Q278.7 221.2 281.4 300"/><path d="M532.8 186Q533 241.9 533.3 300"/><path d="M653.3 174Q654.8 236 658.1 300"/><path d="M844.2 188.4Q842.1 243.1 837.3 300"/><path d="M581.4 151.5Q583.9 224.8 589.7 300"/><path d="M915.3 180.5Q917.8 239.2 923.7 300"/><path d="M716.7 177.7Q717.1 237.9 718 300"/><path d="M1307.8 194.2Q1308.4 245.8 1309.9 300"/><path d="M804.5 178.5Q804.8 238.4 805.5 300"/><path d="M855.3 165.1Q854.1 231.7 851.2 300"/><path d="M897.6 196.8Q895.6 247.5 890.8 300"/><path d="M1251.7 190Q1253.9 243.8 1259 300"/><path d="M983.8 197.4Q982.7 247.8 980.1 300"/><path d="M1435.5 147.8Q1437.8 223 1443.4 300"/><path d="M146.1 190.8Q148.3 244.2 153.6 300"/><path d="M1529.5 194.6Q1530.9 246.4 1534.3 300"/><path d="M467.5 155.3Q466.8 226.6 465.2 300"/><path d="M1355.4 171.8Q1356.6 234.8 1359.3 300"/><path d="M298.9 151.2Q296.4 224.5 290.5 300"/><path d="M676.5 168.9Q676.5 233.3 676.6 300"/><path d="M592.3 180Q590.6 239.1 586.8 300"/><path d="M1593.6 170.8Q1595.6 234.5 1600.4 300"/><path d="M1509.1 182Q1508 240 1505.4 300"/><path d="M1196.9 182Q1197.6 239.9 1199.1 300"/><path d="M1490.2 179.1Q1488.1 238.5 1483 300"/><path d="M898.7 148.5Q900.1 223 903.3 300"/><path d="M857.2 150.8Q858 224.4 859.7 300"/><path d="M104.8 177.4Q105.1 237.7 106 300"/><path d="M1360.3 170.9Q1358.6 234.3 1354.8 300"/><path d="M324.4 154.6Q326.9 226.4 332.8 300"/><path d="M1305.3 164.2Q1304.8 231 1303.7 300"/><path d="M592.7 171.9Q592.3 235.1 591.5 300"/></g><use href="#fleur" transform="translate(323.3 148) scale(0.473 0.293) rotate(37.2)" opacity="0.47600000000000003"/><use href="#fleur" transform="translate(783 158) scale(0.539 0.33399999999999996) rotate(66.5)" opacity="0.40399999999999997"/><use href="#fleur" transform="translate(932 180.8) scale(0.561 0.348) rotate(30.6)" opacity="0.449"/><use href="#fleur" transform="translate(530.1 175.4) scale(0.573 0.355) rotate(52.5)" opacity="0.327"/><use href="#fleur" transform="translate(567.8 171) scale(0.424 0.263) rotate(4.4)" opacity="0.39299999999999996"/><use href="#fleur" transform="translate(1465.7 191.5) scale(0.584 0.36200000000000004) rotate(56)" opacity="0.34700000000000003"/><use href="#fleur" transform="translate(29.9 187.8) scale(0.479 0.297) rotate(3.3)" opacity="0.5379999999999999"/><use href="#fleur" transform="translate(132 174.3) scale(0.484 0.3) rotate(56.4)" opacity="0.5429999999999999"/><use href="#fleur" transform="translate(1089.4 183.8) scale(0.484 0.3) rotate(60.9)" opacity="0.537"/><use href="#fleur" transform="translate(1183 194.9) scale(0.5660000000000001 0.35100000000000003) rotate(14.7)" opacity="0.48"/><use href="#fleur" transform="translate(334.5 156.5) scale(0.43200000000000005 0.268) rotate(58.4)" opacity="0.371"/><use href="#fleur" transform="translate(1142.7 148.5) scale(0.551 0.342) rotate(71.5)" opacity="0.342"/><use href="#fleur" transform="translate(277.6 142.4) scale(0.606 0.376) rotate(54.2)" opacity="0.537"/><use href="#fleur" transform="translate(532.8 183.7) scale(0.5770000000000001 0.358) rotate(67.2)" opacity="0.516"/><use href="#fleur" transform="translate(653.3 172.1) scale(0.478 0.29600000000000004) rotate(66.5)" opacity="0.374"/><use href="#fleur" transform="translate(844.2 186.2) scale(0.527 0.327) rotate(7.9)" opacity="0.418"/><use href="#fleur" transform="translate(581.4 149.6) scale(0.484 0.3) rotate(67.3)" opacity="0.385"/><use href="#fleur" transform="translate(915.3 178.5) scale(0.493 0.306) rotate(7.8)" opacity="0.49"/><use href="#fleur" transform="translate(716.7 175.8) scale(0.47700000000000004 0.29600000000000004) rotate(44)" opacity="0.519"/><use href="#fleur" transform="translate(1307.8 191.6) scale(0.643 0.39899999999999997) rotate(12.4)" opacity="0.547"/><use href="#fleur" transform="translate(804.5 176.7) scale(0.439 0.272) rotate(69.2)" opacity="0.483"/><use href="#fleur" transform="translate(855.3 163.3) scale(0.45799999999999996 0.284) rotate(2.4)" opacity="0.425"/><use href="#fleur" transform="translate(897.6 195) scale(0.433 0.268) rotate(37.8)" opacity="0.39299999999999996"/><use href="#fleur" transform="translate(1251.7 187.6) scale(0.586 0.363) rotate(66.3)" opacity="0.546"/><use href="#fleur" transform="translate(983.8 195.6) scale(0.45399999999999996 0.282) rotate(63.6)" opacity="0.354"/><use href="#fleur" transform="translate(1435.5 146) scale(0.452 0.28) rotate(1.6)" opacity="0.467"/><use href="#fleur" transform="translate(146.1 188.3) scale(0.602 0.373) rotate(20)" opacity="0.518"/><use href="#fleur" transform="translate(1529.5 192.9) scale(0.43200000000000005 0.268) rotate(44.3)" opacity="0.478"/><use href="#fleur" transform="translate(467.5 153.2) scale(0.511 0.317) rotate(31.3)" opacity="0.358"/><use href="#fleur" transform="translate(1355.4 169.6) scale(0.552 0.342) rotate(17.2)" opacity="0.531"/><use href="#fleur" transform="translate(298.9 149) scale(0.56 0.34700000000000003) rotate(54.8)" opacity="0.43200000000000005"/><use href="#fleur" transform="translate(676.5 166.5) scale(0.605 0.375) rotate(15.3)" opacity="0.528"/><use href="#fleur" transform="translate(592.3 178.3) scale(0.44 0.273) rotate(23.3)" opacity="0.527"/><use href="#fleur" transform="translate(1593.6 168.9) scale(0.46 0.285) rotate(33.8)" opacity="0.384"/><use href="#fleur" transform="translate(1509.1 180) scale(0.506 0.314) rotate(32.2)" opacity="0.348"/><use href="#fleur" transform="translate(1196.9 179.7) scale(0.5710000000000001 0.354) rotate(37.9)" opacity="0.326"/><use href="#fleur" transform="translate(1490.2 177) scale(0.53 0.32899999999999996) rotate(31.7)" opacity="0.544"/><use href="#fleur" transform="translate(898.7 146.1) scale(0.596 0.37) rotate(41.3)" opacity="0.37200000000000005"/><use href="#fleur" transform="translate(857.2 148.9) scale(0.478 0.29600000000000004) rotate(53.4)" opacity="0.486"/><use href="#fleur" transform="translate(104.8 175.3) scale(0.521 0.32299999999999995) rotate(14)" opacity="0.435"/><use href="#fleur" transform="translate(1360.3 168.5) scale(0.6 0.37200000000000005) rotate(9.6)" opacity="0.47700000000000004"/><use href="#fleur" transform="translate(324.4 152.8) scale(0.444 0.275) rotate(2.4)" opacity="0.35200000000000004"/><use href="#fleur" transform="translate(1305.3 162.1) scale(0.522 0.324) rotate(41.4)" opacity="0.527"/><use href="#fleur" transform="translate(592.7 170.1) scale(0.434 0.26899999999999996) rotate(40.6)" opacity="0.489"/></g><g class="pre-milieu"><g stroke="#33467A" stroke-width="1.2" fill="none"><path d="M159.3 209.8Q157.2 253.3 152.2 300"/><path d="M1080.3 180.9Q1079.5 238.9 1077.6 300"/><path d="M1263.3 191.4Q1265.8 244.2 1271.4 300"/><path d="M971.7 231.5Q974.2 263.7 980.1 300"/><path d="M29.4 190.4Q32 243.4 38 300"/><path d="M1541.7 211.7Q1543.8 254.3 1548.5 300"/><path d="M154.4 185.2Q156 240.8 159.8 300"/><path d="M114.7 232.4Q113.8 264.4 111.8 300"/><path d="M673.5 226.3Q671.8 261.7 667.7 300"/><path d="M799.6 215Q800.7 255.8 803.1 300"/><path d="M1267.3 203.1Q1267.6 249.8 1268.1 300"/><path d="M1555.8 213.3Q1557.4 254.9 1561.3 300"/><path d="M530 173.5Q531.3 235 534.3 300"/><path d="M504.6 176.1Q506.5 236.1 510.9 300"/><path d="M1320 217.4Q1317.7 256.9 1312.2 300"/><path d="M550.7 191.8Q551.8 244.4 554.5 300"/><path d="M666 231.9Q665.4 264 663.8 300"/><path d="M1250.4 184.5Q1250.7 240.4 1251.5 300"/><path d="M298.5 231.3Q298.6 264.1 298.8 300"/><path d="M1440.3 210Q1441.4 253.3 1444 300"/><path d="M958.6 205.6Q961.1 251 966.7 300"/><path d="M1486.4 199.1Q1485.1 247.7 1481.9 300"/><path d="M1450.9 192.8Q1451.9 244.7 1454.3 300"/><path d="M312.8 193.7Q311.4 245.1 308.3 300"/><path d="M341.4 184.6Q339.3 240.8 334.5 300"/><path d="M1359.2 184.1Q1360.5 240.1 1363.5 300"/><path d="M867.4 178.6Q865.7 237.6 861.7 300"/><path d="M634.6 232.3Q634.6 264.5 634.5 300"/><path d="M1485.5 187.1Q1485.2 241.7 1484.5 300"/><path d="M1461.8 196.7Q1463.1 246.3 1465.9 300"/></g><use href="#fleur" transform="translate(159.3 206.6) scale(0.8009999999999999 0.496) rotate(24.3)" opacity="0.8290000000000001"/><use href="#fleur" transform="translate(1080.3 177.9) scale(0.768 0.47600000000000003) rotate(52.7)" opacity="0.754"/><use href="#fleur" transform="translate(1263.3 188.5) scale(0.727 0.451) rotate(31.2)" opacity="0.815"/><use href="#fleur" transform="translate(971.7 227.4) scale(1.0190000000000001 0.632) rotate(48.6)" opacity="0.7490000000000001"/><use href="#fleur" transform="translate(29.4 186.8) scale(0.883 0.5479999999999999) rotate(65.8)" opacity="0.732"/><use href="#fleur" transform="translate(1541.7 208.6) scale(0.7659999999999999 0.475) rotate(65.2)" opacity="0.8340000000000001"/><use href="#fleur" transform="translate(154.4 181.7) scale(0.882 0.547) rotate(35.3)" opacity="0.807"/><use href="#fleur" transform="translate(114.7 228.9) scale(0.879 0.545) rotate(4.2)" opacity="0.853"/><use href="#fleur" transform="translate(673.5 223.3) scale(0.747 0.46299999999999997) rotate(19.3)" opacity="0.623"/><use href="#fleur" transform="translate(799.6 211.6) scale(0.858 0.532) rotate(64.7)" opacity="0.743"/><use href="#fleur" transform="translate(1267.3 199.6) scale(0.855 0.53) rotate(28.2)" opacity="0.851"/><use href="#fleur" transform="translate(1555.8 209.8) scale(0.862 0.534) rotate(5.4)" opacity="0.758"/><use href="#fleur" transform="translate(530 170.1) scale(0.8740000000000001 0.542) rotate(53)" opacity="0.855"/><use href="#fleur" transform="translate(504.6 172.2) scale(0.971 0.602) rotate(49.8)" opacity="0.688"/><use href="#fleur" transform="translate(1320 213.8) scale(0.9 0.5579999999999999) rotate(4.4)" opacity="0.836"/><use href="#fleur" transform="translate(550.7 188.8) scale(0.76 0.47100000000000003) rotate(21.4)" opacity="0.626"/><use href="#fleur" transform="translate(666 228) scale(0.9890000000000001 0.613) rotate(40.7)" opacity="0.7759999999999999"/><use href="#fleur" transform="translate(1250.4 180.8) scale(0.932 0.578) rotate(16.4)" opacity="0.843"/><use href="#fleur" transform="translate(298.5 228.2) scale(0.755 0.46799999999999997) rotate(39)" opacity="0.638"/><use href="#fleur" transform="translate(1440.3 206.6) scale(0.86 0.5329999999999999) rotate(58.8)" opacity="0.8109999999999999"/><use href="#fleur" transform="translate(958.6 202) scale(0.903 0.56) rotate(12.1)" opacity="0.73"/><use href="#fleur" transform="translate(1486.4 195.3) scale(0.9520000000000001 0.59) rotate(27.3)" opacity="0.8320000000000001"/><use href="#fleur" transform="translate(1450.9 189.3) scale(0.855 0.53) rotate(13)" opacity="0.8420000000000001"/><use href="#fleur" transform="translate(312.8 190.2) scale(0.857 0.532) rotate(34.8)" opacity="0.779"/><use href="#fleur" transform="translate(341.4 181.6) scale(0.752 0.467) rotate(37.2)" opacity="0.7490000000000001"/><use href="#fleur" transform="translate(1359.2 180.2) scale(0.973 0.603) rotate(11.2)" opacity="0.6990000000000001"/><use href="#fleur" transform="translate(867.4 175.1) scale(0.86 0.5329999999999999) rotate(20.2)" opacity="0.746"/><use href="#fleur" transform="translate(634.6 229.1) scale(0.805 0.499) rotate(3.8)" opacity="0.725"/><use href="#fleur" transform="translate(1485.5 183.3) scale(0.938 0.581) rotate(18.9)" opacity="0.63"/><use href="#fleur" transform="translate(1461.8 192.6) scale(1.012 0.627) rotate(60.5)" opacity="0.675"/></g><g class="pre-pres"><path d="M1166.6 300Q1169.8 254.9 1168.9 227.2Q1172 256.3 1173.9 300Z" fill="#09101F"/><path d="M221.2 300Q222.4 240.4 218.8 203.8Q224.3 242.3 227.5 300Z" fill="#09101F"/><path d="M962.4 300Q965.6 239.5 966 202.4Q967.4 241.4 968.4 300Z" fill="#09101F"/><path d="M18.4 300Q19.6 266.1 16.2 245.3Q21.3 267.2 24.3 300Z" fill="#09101F"/><path d="M609.5 300Q614.3 244.5 617.8 210.5Q616.1 246.3 615.3 300Z" fill="#09101F"/><path d="M1315 300Q1324.2 283.4 1335.2 273.3Q1326.1 284 1321.5 300Z" fill="#09101F"/><path d="M882.8 300Q876.6 249.3 862.3 218.2Q877.6 250.9 886 300Z" fill="#09101F"/><path d="M860.7 300Q861.5 274 858.8 258.1Q862.9 274.8 865.2 300Z" fill="#09101F"/><path d="M322 300Q320.9 278.2 312.9 264.8Q322.8 278.9 328.4 300Z" fill="#09101F"/><path d="M1051.5 300Q1043.7 234.3 1026.3 194Q1044.7 236.4 1054.7 300Z" fill="#09101F"/><path d="M49.4 300Q63.5 249.3 84.1 218.2Q65.3 250.9 55.3 300Z" fill="#09101F"/><path d="M292.7 300Q293.4 264.8 292.1 243.2Q294.3 265.9 295.5 300Z" fill="#09101F"/><path d="M765.2 300Q767.4 229.4 767.3 186.1Q768.8 231.7 769.8 300Z" fill="#09101F"/><path d="M126 300Q129.1 245.2 127.9 211.6Q131.4 246.9 133.6 300Z" fill="#09101F"/><path d="M556.9 300Q570 274 589.4 258.1Q571.5 274.8 562.1 300Z" fill="#09101F"/><path d="M366.6 300Q364.6 271.8 356.1 254.6Q366.2 272.7 371.8 300Z" fill="#09101F"/><path d="M1231.4 300Q1226.7 225.6 1213 180Q1228.3 228 1236.8 300Z" fill="#09101F"/><path d="M1172 300Q1185.7 248.7 1206.5 217.3Q1187.3 250.4 1177.1 300Z" fill="#09101F"/><path d="M1357.9 300Q1351 263.1 1331.2 240.5Q1353.2 264.3 1365.3 300Z" fill="#09101F"/><path d="M1012 300Q1003.6 277.3 985.1 263.3Q1004.5 278 1015.1 300Z" fill="#09101F"/><path d="M504 300Q510.7 243.1 518.9 208.2Q512 244.9 508.4 300Z" fill="#09101F"/><path d="M896.2 300Q903.1 245.9 911.6 212.7Q904.4 247.6 900.7 300Z" fill="#09101F"/><path d="M129.9 300Q124.1 236.2 108.4 197Q125.7 238.2 135.2 300Z" fill="#09101F"/><path d="M1491.6 300Q1506.2 232.6 1528.8 191.3Q1507.6 234.8 1496.3 300Z" fill="#09101F"/><path d="M545.3 300Q554.4 228.3 565.4 184.3Q556.3 230.6 551.6 300Z" fill="#09101F"/><path d="M1395.3 300Q1392.5 273.3 1381.9 257Q1394.3 274.2 1401.2 300Z" fill="#09101F"/><path d="M437.2 300Q444.1 256.3 452 229.5Q445.7 257.7 442.4 300Z" fill="#09101F"/><path d="M1447.7 300Q1438.5 271.9 1416 254.7Q1440.3 272.8 1453.6 300Z" fill="#09101F"/><path d="M1080.6 300Q1093.5 245.4 1114.2 211.9Q1094.5 247.1 1084 300Z" fill="#09101F"/><path d="M228.7 300Q234.1 224.4 240.5 178Q235.2 226.8 232.5 300Z" fill="#09101F"/><path d="M466.1 300Q474.4 240.8 482.9 204.6Q476.6 242.7 473.5 300Z" fill="#09101F"/><path d="M521.5 300Q512.8 264.9 494.1 243.3Q513.6 266 524.2 300Z" fill="#09101F"/><path d="M932.4 300Q942.3 275.3 955.2 260.1Q944.1 276.1 938.4 300Z" fill="#09101F"/><path d="M1203.6 300Q1197.9 260 1181.8 235.5Q1199.7 261.3 1209.6 300Z" fill="#09101F"/><path d="M1590.5 300Q1587.2 239.3 1577.4 202.2Q1588.3 241.3 1594.4 300Z" fill="#09101F"/><path d="M230 300Q236.5 262.5 246.4 239.5Q237.3 263.7 232.4 300Z" fill="#09101F"/><path d="M834.5 300Q839.9 276.8 843.5 262.6Q842 277.6 841.4 300Z" fill="#09101F"/><path d="M1536.5 300Q1535 225.6 1525.9 180.1Q1537 228 1543.2 300Z" fill="#09101F"/><path d="M803.2 300Q814 256.1 831.3 229.3Q814.9 257.6 806.1 300Z" fill="#09101F"/><path d="M1183 300Q1193.4 248.2 1209.2 216.4Q1194.6 249.9 1186.9 300Z" fill="#09101F"/><path d="M279.1 300Q286.7 279.7 295.5 267.2Q288.3 280.3 284.7 300Z" fill="#09101F"/><path d="M1575.2 300Q1568 263.9 1550.4 241.8Q1569.5 265.1 1580 300Z" fill="#09101F"/><path d="M1438.7 300Q1445.4 250.2 1451.2 219.6Q1447.5 251.8 1445.7 300Z" fill="#09101F"/><path d="M889.9 300Q892.2 281.2 893.5 269.7Q893.2 281.8 893.2 300Z" fill="#09101F"/><path d="M342.6 300Q348.4 253.8 354.8 225.5Q349.9 255.3 347.4 300Z" fill="#09101F"/><path d="M264.3 300Q261.4 283.5 252.9 273.3Q262.3 284 267.4 300Z" fill="#09101F"/><path d="M970.5 300Q974.1 237.6 978.1 199.3Q975 239.6 973.4 300Z" fill="#09101F"/><path d="M1041.9 300Q1037.3 280.1 1025.4 267.9Q1038.5 280.7 1045.6 300Z" fill="#09101F"/><path d="M725.6 300Q719 274.1 699.8 258.3Q721.2 275 733 300Z" fill="#09101F"/><path d="M263.8 300Q275.3 277.2 293.8 263.2Q276.3 277.9 266.9 300Z" fill="#09101F"/><path d="M167.7 300Q162.3 224.7 149 178.6Q163.4 227.2 171.3 300Z" fill="#09101F"/><path d="M1345.4 300Q1352.8 242 1360.4 206.5Q1354.7 243.9 1351.9 300Z" fill="#09101F"/><path d="M1210.6 300Q1219.9 225.7 1233.7 180.1Q1220.9 228.1 1214.2 300Z" fill="#09101F"/><path d="M653 300Q663.4 263.5 679.4 241.2Q664.4 264.7 656.5 300Z" fill="#09101F"/><path d="M30.9 300Q32.2 241.5 31 205.6Q33.3 243.4 34.6 300Z" fill="#09101F"/><path d="M68.9 300Q74.2 255.1 81.3 227.6Q75.1 256.6 71.8 300Z" fill="#09101F"/><path d="M1420.2 300Q1411.5 257.9 1391.6 232.1Q1412.7 259.3 1424.2 300Z" fill="#09101F"/><path d="M246.1 300Q240.1 229.1 224 185.7Q241.8 231.4 251.6 300Z" fill="#09101F"/><path d="M716 300Q725.9 235.5 741.8 196Q726.7 237.6 718.7 300Z" fill="#09101F"/><path d="M1562.9 300Q1564.6 283.2 1560.9 272.9Q1566.8 283.8 1570.3 300Z" fill="#09101F"/><path d="M367.4 300Q378.4 283.8 394.3 273.9Q379.9 284.4 372.4 300Z" fill="#09101F"/><path d="M839.1 300Q845.5 249.8 853.5 219Q846.7 251.4 843.3 300Z" fill="#09101F"/><path d="M859.9 300Q874.4 236 896.6 196.7Q875.8 238 864.8 300Z" fill="#09101F"/><path d="M1279.9 300Q1272.7 225.5 1256 179.9Q1273.8 227.9 1283.5 300Z" fill="#09101F"/><path d="M1124.2 300Q1135.1 282.1 1150 271.1Q1136.7 282.7 1129.8 300Z" fill="#09101F"/><path d="M1085.9 300Q1087.5 248.8 1084.4 217.4Q1089.6 250.4 1092.6 300Z" fill="#09101F"/><path d="M1485.6 300Q1497.8 255.2 1518.2 227.7Q1498.6 256.6 1488.2 300Z" fill="#09101F"/><path d="M97.9 300Q98.3 274.4 93.3 258.6Q100.1 275.2 104.1 300Z" fill="#09101F"/><path d="M422.2 300Q429.5 269.6 437.6 251Q431.3 270.6 428.1 300Z" fill="#09101F"/><path d="M1516.4 300Q1526.1 257.5 1541.9 231.5Q1526.9 258.9 1518.9 300Z" fill="#09101F"/><path d="M1461.5 300Q1458.1 273.6 1446 257.5Q1459.9 274.5 1467.7 300Z" fill="#09101F"/><path d="M596 300Q608.3 225 625.1 179.1Q610.2 227.4 602.5 300Z" fill="#09101F"/><path d="M898.5 300Q908.5 233.9 924.6 193.4Q909.3 236.1 901.2 300Z" fill="#09101F"/><path d="M1571.8 300Q1572.9 233.9 1569.2 193.5Q1574.7 236.1 1577.9 300Z" fill="#09101F"/><path d="M1131.4 300Q1130 234.5 1121.5 194.3Q1131.9 236.6 1137.7 300Z" fill="#09101F"/><path d="M515.2 300Q511.7 246 499.1 212.9Q513.8 247.7 521.9 300Z" fill="#09101F"/><path d="M369.4 300Q360.9 225.2 342.4 179.4Q361.8 227.6 372.4 300Z" fill="#09101F"/><path d="M797.5 300Q804.8 275.9 812.5 261.1Q806.8 276.7 804 300Z" fill="#09101F"/><path d="M1286.7 300Q1289.7 229.3 1288.8 186Q1291.7 231.6 1293.6 300Z" fill="#09101F"/><path d="M1464.6 300Q1472.1 241.8 1481.6 206.1Q1473.5 243.7 1469.3 300Z" fill="#09101F"/><path d="M785.4 300Q788 248.7 787.2 217.2Q789.7 250.3 791.3 300Z" fill="#09101F"/><path d="M1207.8 300Q1205.4 272.4 1195.6 255.5Q1207.1 273.3 1213.5 300Z" fill="#09101F"/><path d="M660.8 300Q670.9 257.9 686.1 232.1Q672 259.2 664.6 300Z" fill="#09101F"/><path d="M1302.1 300Q1302.5 248.8 1300.1 217.4Q1303.6 250.4 1305.6 300Z" fill="#09101F"/><path d="M219.2 300Q212.2 228 195.6 183.8Q213.4 230.3 223.2 300Z" fill="#09101F"/><path d="M1263.1 300Q1274.1 248.6 1290.8 217.1Q1275.2 250.3 1267 300Z" fill="#09101F"/><path d="M839.8 300Q845.1 231.3 849.5 189.2Q847 233.5 845.8 300Z" fill="#09101F"/><path d="M377.2 300Q375.5 245.7 369.3 212.4Q376.5 247.5 380.5 300Z" fill="#09101F"/><path d="M743.3 300Q758.1 264.3 780.8 242.5Q759.7 265.5 748.5 300Z" fill="#09101F"/><path d="M386.2 300Q398 263.3 414.5 240.7Q399.8 264.4 392.1 300Z" fill="#09101F"/><path d="M460.3 300Q459 254.9 450 227.3Q461 256.4 467.2 300Z" fill="#09101F"/><path d="M1319.1 300Q1316.9 255.7 1308.9 228.6Q1318.1 257.1 1323.3 300Z" fill="#09101F"/><path d="M773.9 300Q775.9 276.6 776.8 262.3Q776.7 277.4 776.8 300Z" fill="#09101F"/><path d="M154.5 300Q155.2 251.6 152.8 222Q156.4 253.2 158.4 300Z" fill="#09101F"/><path d="M1021 300Q1034 259 1051.4 233.9Q1036.2 260.4 1028.3 300Z" fill="#09101F"/><path d="M1471 300Q1479.5 258.7 1488.5 233.4Q1481.7 260.1 1478.3 300Z" fill="#09101F"/><path d="M766.4 300Q757.4 263.3 735.3 240.8Q759.1 264.5 772.1 300Z" fill="#09101F"/><path d="M859 300Q857.7 233.1 851.6 192.1Q859 235.2 863.1 300Z" fill="#09101F"/><path d="M795.3 300Q786.7 256.3 764.7 229.5Q788.7 257.7 801.9 300Z" fill="#09101F"/><path d="M1498.6 300Q1496.5 283.1 1488.3 272.7Q1497.9 283.6 1503.2 300Z" fill="#09101F"/><path d="M1285.2 300Q1295.5 257.3 1308.3 231.1Q1297.5 258.7 1291.9 300Z" fill="#09101F"/><path d="M130.6 300Q130.9 254.6 128 226.7Q131.9 256 134.1 300Z" fill="#09101F"/><path d="M182.2 300Q176.2 275.5 162.7 260.5Q177.1 276.3 184.9 300Z" fill="#09101F"/><path d="M617.7 300Q629 275.4 647.5 260.3Q629.7 276.2 620.3 300Z" fill="#09101F"/><path d="M454.3 300Q450.2 244.1 439.2 209.9Q451.3 245.9 458 300Z" fill="#09101F"/><path d="M1410.8 300Q1414.9 267.3 1417.8 247.2Q1416.5 268.3 1416 300Z" fill="#09101F"/><path d="M562.1 300Q568.6 252.2 573.9 222.8Q570.7 253.7 569.2 300Z" fill="#09101F"/><path d="M379.2 300Q391.3 227.2 408.8 182.6Q392.9 229.6 384.5 300Z" fill="#09101F"/><path d="M91.7 300Q81 225.3 58.7 179.5Q81.7 227.7 94.2 300Z" fill="#09101F"/><path d="M1375.7 300Q1374.8 271.1 1366.3 253.5Q1377 272.1 1383.1 300Z" fill="#09101F"/><path d="M976.7 300Q972.5 230.3 957.6 187.6Q974.7 232.5 984.2 300Z" fill="#09101F"/><path d="M238.9 300Q250.4 247.3 268.2 215Q251.4 249 242.5 300Z" fill="#09101F"/><path d="M1384.8 300Q1383.7 226.7 1377.3 181.8Q1385.2 229.1 1389.7 300Z" fill="#09101F"/><path d="M1293.4 300Q1289.7 241.3 1277.1 205.3Q1291.5 243.2 1299.5 300Z" fill="#09101F"/><path d="M622.6 300Q617.4 235.1 601.9 195.3Q619.3 237.2 629 300Z" fill="#09101F"/><path d="M1390.8 300Q1396.9 230.2 1404.5 187.4Q1398.2 232.4 1395 300Z" fill="#09101F"/><path d="M1263.8 300Q1276.9 257.3 1297.8 231.2Q1278 258.7 1267.5 300Z" fill="#09101F"/><path d="M686 300Q679.2 259 662.1 233.9Q680.7 260.4 690.9 300Z" fill="#09101F"/><path d="M302.8 300Q301 249.1 291.9 217.9Q302.9 250.7 309.1 300Z" fill="#09101F"/><path d="M31.2 300Q20.3 231.3 -2.4 189.2Q21 233.5 33.7 300Z" fill="#09101F"/><path d="M653.3 300Q642.5 236.5 620 197.5Q643.3 238.5 656 300Z" fill="#09101F"/><path d="M989.9 300Q998.4 282 1011.6 271Q999.2 282.6 992.7 300Z" fill="#09101F"/><path d="M753.3 300Q762.2 232.3 774.1 190.8Q763.8 234.5 758.4 300Z" fill="#09101F"/><path d="M311.1 300Q323.5 238.1 343.7 200.1Q324.5 240.1 314.2 300Z" fill="#09101F"/><path d="M1511.5 300Q1505 246.1 1489.9 213.1Q1506 247.9 1514.7 300Z" fill="#09101F"/><path d="M1553.3 300Q1555.3 242.1 1552.1 206.6Q1557.6 243.9 1560.8 300Z" fill="#09101F"/><path d="M315.8 300Q313.8 273 305.6 256.5Q315.4 273.9 320.8 300Z" fill="#09101F"/><path d="M755 300Q752.9 245.5 745.6 212.1Q753.9 247.3 758.6 300Z" fill="#09101F"/><path d="M477.4 300Q476.9 262.4 472.8 239.4Q477.9 263.6 480.7 300Z" fill="#09101F"/><path d="M646.7 300Q658.7 257.8 677.5 231.9Q659.9 259.1 650.5 300Z" fill="#09101F"/><path d="M1581 300Q1585.9 278.5 1590.4 265.3Q1587.3 279.2 1585.8 300Z" fill="#09101F"/><path d="M1077.1 300Q1081.4 248.1 1083.2 216.2Q1083.3 249.7 1083.5 300Z" fill="#09101F"/><path d="M418.8 300Q423.3 226.4 428.5 181.3Q424.3 228.8 422.2 300Z" fill="#09101F"/><path d="M1439.6 300Q1452.2 258.5 1471.4 233.1Q1453.5 259.8 1444 300Z" fill="#09101F"/><path d="M146 300Q145.8 269 140.7 250Q147.4 270 151.2 300Z" fill="#09101F"/><path d="M1140 300Q1152.3 280.8 1172.6 269.1Q1153.2 281.4 1142.8 300Z" fill="#09101F"/><path d="M388.2 300Q400.1 251.2 416.5 221.3Q402 252.8 394.5 300Z" fill="#09101F"/><path d="M1080.2 300Q1073.7 283.5 1059.1 273.3Q1074.6 284 1083 300Z" fill="#09101F"/><path d="M270.7 300Q261.8 238.7 242.9 201.1Q262.5 240.7 273.2 300Z" fill="#09101F"/><path d="M1581.9 300Q1596.2 238 1617.9 199.9Q1597.8 240 1587.1 300Z" fill="#09101F"/><path d="M527.2 300Q539.8 251 557.4 220.9Q541.7 252.5 533.4 300Z" fill="#09101F"/><path d="M823 300Q831.1 261.9 839.7 238.6Q833.2 263.2 829.9 300Z" fill="#09101F"/><path d="M1205.7 300Q1219.3 245.8 1237.9 212.7Q1221.5 247.6 1212.9 300Z" fill="#09101F"/><path d="M1526.2 300Q1536.6 242.1 1553.2 206.7Q1537.5 244 1529.2 300Z" fill="#09101F"/><path d="M287.8 300Q298 278.9 314 265.9Q299 279.6 291 300Z" fill="#09101F"/><path d="M251.2 300Q252.7 263.4 250.9 241Q254.2 264.6 256.2 300Z" fill="#09101F"/><path d="M946.8 300Q944 227.2 935.5 182.6Q945 229.5 950.3 300Z" fill="#09101F"/><path d="M0.1 300Q-2.3 255 -13.5 227.4Q-0.2 256.4 7.3 300Z" fill="#09101F"/><path d="M1297.9 300Q1302.6 248.5 1308.4 216.9Q1303.6 250.2 1301.2 300Z" fill="#09101F"/><path d="M837.3 300Q849.2 258.6 866 233.3Q850.9 260 842.9 300Z" fill="#09101F"/><path d="M74.3 300Q74.8 230.2 72.8 187.4Q75.8 232.4 77.5 300Z" fill="#09101F"/><path d="M1081.1 300Q1077.4 260.8 1067.5 236.7Q1078.4 262 1084.4 300Z" fill="#09101F"/><path d="M251.4 300Q265 262.6 285.8 239.7Q266.5 263.8 256.2 300Z" fill="#09101F"/><path d="M838.2 300Q852.5 245.2 873 211.7Q854.4 247 844.6 300Z" fill="#09101F"/><path d="M1462 300Q1470.9 266.1 1483.3 245.3Q1472.2 267.2 1466.3 300Z" fill="#09101F"/><path d="M1393.8 300Q1400.8 264.5 1409 242.8Q1402.4 265.7 1399.1 300Z" fill="#09101F"/><path d="M141.7 300Q151.4 267.1 166.8 246.9Q152.2 268.2 144.4 300Z" fill="#09101F"/><path d="M85.3 300Q99.8 231.4 120 189.4Q102.1 233.7 92.7 300Z" fill="#09101F"/><path d="M521.4 300Q517.9 274.8 504.9 259.3Q520 275.6 528.4 300Z" fill="#09101F"/><path d="M1356.6 300Q1354.8 241 1346.5 204.8Q1356.4 242.9 1362 300Z" fill="#09101F"/><path d="M1096.9 300Q1108.6 231.4 1125.1 189.3Q1110.3 233.6 1102.6 300Z" fill="#09101F"/><path d="M475.5 300Q468.1 282.9 448.3 272.4Q470 283.4 482 300Z" fill="#09101F"/><path d="M986.6 300Q979.1 246.7 958.6 214Q981.3 248.4 993.7 300Z" fill="#09101F"/><path d="M175.8 300Q176 262.8 170.5 240Q178 264 182.2 300Z" fill="#09101F"/><path d="M1457.3 300Q1449.1 281.7 1431.3 270.5Q1450 282.3 1460.1 300Z" fill="#09101F"/><path d="M228.1 300Q236.6 276.6 248.4 262.3Q237.9 277.4 232.4 300Z" fill="#09101F"/><path d="M834.9 300Q846.6 252.3 864.5 223.1Q847.8 253.8 839 300Z" fill="#09101F"/><path d="M1373.7 300Q1378.1 275.8 1380.4 260.9Q1380 276.5 1380 300Z" fill="#09101F"/><path d="M919.8 300Q926.3 231.4 934.7 189.3Q927.5 233.6 923.8 300Z" fill="#09101F"/><path d="M573.1 300Q587.6 273.1 608.8 256.6Q589.3 273.9 579.1 300Z" fill="#09101F"/><g stroke="#3B5088" stroke-width="1.4" fill="none"><path d="M506.3 215Q508.1 255.2 512.3 300"/><path d="M1438.8 241.3Q1436.4 267.6 1430.9 300"/><path d="M826.2 256.5Q824.1 276 819 300"/><path d="M1468.7 258.5Q1467.9 276.9 1465.9 300"/><path d="M1211.5 219.7Q1211.8 257.3 1212.3 300"/><path d="M213.8 242Q215.6 268.1 219.6 300"/><path d="M1491 247.2Q1492.3 271.2 1495.5 300"/><path d="M1546.1 241.4Q1544.8 267.7 1541.8 300"/><path d="M247 233.1Q244.6 263.8 239 300"/><path d="M623.2 246.4Q624.4 270.3 627.2 300"/><path d="M1347.5 213.7Q1349.5 254.4 1354.1 300"/><path d="M1115.1 225.6Q1114.1 259.9 1111.6 300"/><path d="M1069.2 258.1Q1068.3 276 1066 300"/></g><use href="#fleur" transform="translate(506.3 210.3) scale(1.175 0.728) rotate(48.7)" opacity="0.9229999999999999"/><use href="#fleur" transform="translate(1438.8 235.3) scale(1.5119999999999998 0.938) rotate(7.5)" opacity="0.937"/><use href="#fleur" transform="translate(826.2 252) scale(1.145 0.71) rotate(43.4)" opacity="0.99"/><use href="#fleur" transform="translate(1468.7 253.8) scale(1.172 0.727) rotate(63.1)" opacity="0.903"/><use href="#fleur" transform="translate(1211.5 214.6) scale(1.288 0.799) rotate(14.8)" opacity="0.9059999999999999"/><use href="#fleur" transform="translate(213.8 236.2) scale(1.45 0.899) rotate(34.4)" opacity="0.9620000000000001"/><use href="#fleur" transform="translate(1491 242.4) scale(1.186 0.736) rotate(4.1)" opacity="0.982"/><use href="#fleur" transform="translate(1546.1 235.4) scale(1.5030000000000001 0.932) rotate(27.6)" opacity="0.9540000000000001"/><use href="#fleur" transform="translate(247 227.7) scale(1.361 0.8440000000000001) rotate(12.6)" opacity="0.963"/><use href="#fleur" transform="translate(623.2 240.6) scale(1.465 0.9079999999999999) rotate(63)" opacity="0.99"/><use href="#fleur" transform="translate(1347.5 208.7) scale(1.252 0.7759999999999999) rotate(59.3)" opacity="0.922"/><use href="#fleur" transform="translate(1115.1 219.9) scale(1.43 0.887) rotate(35.5)" opacity="0.946"/><use href="#fleur" transform="translate(1069.2 252) scale(1.545 0.958) rotate(29.5)" opacity="0.94"/></g></svg>
+    <span class="pp-gen" title="Asset à générer — voir docs/assets-a-generer.md">À générer : B-01</span>
+
+    <div class="wrap" style="width:100%">
+      <div class="hero__texte">
+        <p class="hero__nom"><svg viewBox="-12 -12 24 24" aria-hidden="true"><use href="#etoile"/></svg>Charles Lindecker</p>
+        <h1 id="accroche"><span>Je maîtrise d’abord les règles du jeu.</span> <span>Ensuite, je les réinvente.</span></h1>
+        <p class="hero__chapeau">Architecte logiciel, je code depuis mes 13&nbsp;ans. J’ai formé des développeurs jusqu’à leur titre, et je mène aujourd’hui le pôle francophone d’un projet open source.</p>
+        <div class="actions">
+          <a class="btn btn--plein" href="#discutons">Discutons</a>
+          <a class="btn btn--contour" href="#">Télécharger mon CV</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- L'origine -->
+  <section class="section" id="origine" aria-labelledby="origine-titre">
+    <div class="wrap">
+      <h2 class="titre-section" id="origine-titre"><svg class="phase" viewBox="0 0 20 20" aria-hidden="true"><circle class="phase__disque" cx="10" cy="10" r="9"/><path class="phase__eclaire" d="M10 1A9 9 0 0 1 10 19A5.6 9 0 0 0 10 1Z"/></svg>L’origine</h2>
+      <p class="intro">Mon parcours n’a rien d’une ligne droite. C’est en chemin que ma méthode s’est forgée.</p>
+      <div class="origine__grille">
+        <div class="rail" aria-hidden="true">
+          <svg viewBox="0 0 280 600" focusable="false">
+            <path class="seg" pathLength="1" d="M52 540L118 400"/>
+            <path class="seg" pathLength="1" d="M118 400L160 452"/>
+            <path class="seg" pathLength="1" d="M160 452L206 250"/>
+            <path class="seg" pathLength="1" d="M206 250L238 92"/>
+            <path class="seg-suite" d="M238 92L262 14"/>
+            <g class="astre-rail" transform="translate(52 540)">
+              <circle class="astre-rail__halo" r="26"/><circle class="astre-rail__point" r="2.6"/>
+              <use class="astre-rail__eclat" href="#etoile" transform="scale(.72)"/>
+              <text class="astre-rail__nom" x="18" y="5">Vers 10 ans</text>
+            </g>
+            <g class="astre-rail" transform="translate(118 400)">
+              <circle class="astre-rail__halo" r="26"/><circle class="astre-rail__point" r="2.6"/>
+              <use class="astre-rail__eclat" href="#etoile" transform="scale(.72)"/>
+              <text class="astre-rail__nom" x="-18" y="5" text-anchor="end">Vers 17 ans</text>
+            </g>
+            <g class="astre-rail" transform="translate(160 452)">
+              <circle class="astre-rail__halo" r="26"/><circle class="astre-rail__point" r="2.6"/>
+              <use class="astre-rail__eclat" href="#etoile" transform="scale(.72)"/>
+              <text class="astre-rail__nom" x="18" y="22">Avant 2025</text>
+            </g>
+            <g class="astre-rail" transform="translate(206 250)">
+              <circle class="astre-rail__halo" r="26"/><circle class="astre-rail__point" r="2.6"/>
+              <use class="astre-rail__eclat" href="#etoile" transform="scale(.72)"/>
+              <text class="astre-rail__nom" x="-18" y="5" text-anchor="end">2025</text>
+            </g>
+            <g class="astre-rail" transform="translate(238 92)">
+              <circle class="astre-rail__halo" r="26"/><circle class="astre-rail__point" r="2.6"/>
+              <use class="astre-rail__eclat" href="#etoile" transform="scale(.72)"/>
+              <text class="astre-rail__nom" x="-18" y="5" text-anchor="end">Fin 2025</text>
+            </g>
+          </svg>
+        </div>
+        <ol class="etapes">
+          <li class="etape">
+            <p class="etape__quand">Vers 10&nbsp;ans</p>
+            <h3>Le terrain de jeu</h3>
+            <p>Avec mon père, informaticien, je démonte de vieux PC hors service. À 13&nbsp;ans, j’apprends le C sur OpenClassrooms avec une idée fixe&nbsp;: coder mes propres jeux sur Unreal Engine. Avec mon cousin, on invente un jeu de cartes sur papier, dont on sort des éditions sans fin. On passe des après-midi entiers à plastifier les cartes à la main.</p>
+          </li>
+          <li class="etape">
+            <p class="etape__quand">Vers 17&nbsp;ans</p>
+            <h3>Gwent, la méthode</h3>
+            <p>Je découvre Gwent, un jeu de cartes en ligne. Pas d’excuse en cas de défaite pour jeter la faute sur un autre&nbsp;: juste moi et mes propres décisions. Je teste un deck, puis un deuxième, puis un troisième. Quand c’est un flop, j’apprends de ce flop et je comprends où mon instinct m’a trompé, ce qui l’aiguise.</p>
+            <p>En un an, j’approche du classement mondial, puis je plafonne pendant quatre mois. Copier ce que jouent les meilleurs ne suffit plus. Alors je fais l’inverse&nbsp;: je construis un deck à contre-courant, et c’est lui qui me fait entrer dans le classement mondial.</p>
+            <blockquote class="citation">
+              <svg viewBox="-12 -12 24 24" aria-hidden="true"><use href="#etoile"/></svg>
+              <p>«&nbsp;Juste moi et mes propres décisions.&nbsp;»</p>
+            </blockquote>
+          </li>
+          <li class="etape">
+            <p class="etape__quand">Avant 2025</p>
+            <h3>Les portes qui ne s’ouvrent pas</h3>
+            <p>BUT Informatique, fac de physique-chimie, BUT Réseaux &amp; Télécoms&nbsp;: trois années de filières classiques, une chacune. Puis la piscine de 42, sans admission. Ça n’a pas vraiment marché, mais je n’ai pas abandonné&nbsp;: j’ai recommencé jusqu’à réussir, et je me suis réorienté autant que nécessaire.</p>
+          </li>
+          <li class="etape">
+            <p class="etape__quand">2025</p>
+            <h3>La voie qui marche</h3>
+            <p>Je passe le titre de Développeur web et web mobile chez Elan Formation. Je boucle le programme en un mois, je mène des projets en parallèle et je couvre en bonus l’essentiel du niveau supérieur, Concepteur développeur d’applications. En stage chez ATIS, mes modules réduisent de 30&nbsp;% le temps de traitement administratif.</p>
+          </li>
+          <li class="etape">
+            <p class="etape__quand">Fin 2025</p>
+            <h3>De l’autre côté du bureau</h3>
+            <p>Deux mois après mon titre, l’école perd son formateur en fin de promotion. Des étudiants croisés pendant mon cursus donnent mon nom. Je reprends une dizaine d’apprenants, dont la moitié prépare le CDA, un niveau au-dessus de mon propre titre. Tous obtiennent leur titre.</p>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Aujourd'hui -->
+  <section class="section" id="aujourdhui" aria-labelledby="aujourdhui-titre">
+    <div class="wrap">
+      <div class="aujourdhui__haut">
+        <div>
+          <h2 class="titre-section" id="aujourdhui-titre"><svg class="phase" viewBox="0 0 20 20" aria-hidden="true"><circle class="phase__disque" cx="10" cy="10" r="9"/><path class="phase__eclaire" d="M10 1A9 9 0 0 1 10 19Z"/></svg>Aujourd’hui</h2>
+          <p class="chapeau-section">Je suis architecte logiciel&nbsp;: développement web et DevOps. À côté, je suis lead et mainteneur du pôle francophone de PvZ Fusion, et je construis mes propres outils. Trois verbes résument ma façon de travailler.</p>
+        </div>
+        <figure class="portrait">
+          <img src="assets/photos/charles-1.webp" width="768" height="1152" alt="Portrait de Charles Lindecker de profil, en chemise et cravate, éclairé comme par la lune." loading="lazy">
+          <span class="pp-gen" title="Asset à générer — voir docs/assets-a-generer.md">À générer : B-04</span>
+        </figure>
+      </div>
+
+      <ol class="verbes">
+        <li class="verbe">
+          <p class="verbe__ordre"><svg viewBox="-12 -12 24 24" aria-hidden="true"><use href="#etoile"/></svg>D’abord</p>
+          <h3>Maîtriser</h3>
+          <p class="verbe__sens">S’approprier vite ce qui se fait.</p>
+          <ul class="verbe__preuves">
+            <li>Le programme de développeur web bouclé en un mois.</li>
+            <li>À chaque mise à jour de Gwent, deux jours pour maîtriser ce que jouent les autres.</li>
+          </ul>
+        </li>
+        <li class="verbe">
+          <p class="verbe__ordre"><svg viewBox="-12 -12 24 24" aria-hidden="true"><use href="#etoile"/></svg>Ensuite</p>
+          <h3>Réinventer</h3>
+          <p class="verbe__sens">Sortir des sentiers battus.</p>
+          <ul class="verbe__preuves">
+            <li>Un deck à contre-courant pour percer le plafond du classement mondial.</li>
+            <li>Un moteur de jeu maison pour Omnicard, optimisé pour le navigateur.</li>
+          </ul>
+        </li>
+        <li class="verbe">
+          <p class="verbe__ordre"><svg viewBox="-12 -12 24 24" aria-hidden="true"><use href="#etoile"/></svg>Puis</p>
+          <h3>Emmener</h3>
+          <p class="verbe__sens">Faire progresser les autres.</p>
+          <ul class="verbe__preuves">
+            <li>Une vingtaine de contributeurs formés sur PvZ Fusion, dix au plus fort.</li>
+            <li>Une promotion reprise en urgence&nbsp;: tous titrés.</li>
+          </ul>
+        </li>
+      </ol>
+
+      <figure class="amas" aria-labelledby="amas-titre">
+        <figcaption>
+          <h3 id="amas-titre">Du solo au collectif</h3>
+          <p>Gwent m’a appris à décider seul. PvZ Fusion m’a appris à faire grandir les autres&nbsp;: une vingtaine de contributeurs formés, dont certains arrivés sans compétences et devenus des piliers de la communauté.</p>
+          <div class="amas__cle">
+            <span><svg viewBox="-12 -12 24 24" aria-hidden="true"><use href="#etoile" fill="#E8EDF5"/></svg>Une étoile vive, reliée&nbsp;: l’équipe au plus fort, dix personnes</span>
+            <span><svg viewBox="-12 -12 24 24" aria-hidden="true"><circle r="4" fill="#BFD6F2" opacity=".6"/></svg>Une étoile pâle&nbsp;: un autre contributeur formé</span>
+          </div>
+        </figcaption>
+        <svg class="amas__svg" viewBox="0 0 560 380" role="img" aria-label="Schéma&nbsp;: au centre, l’étoile de Charles. Autour, une vingtaine d’étoiles, une par contributeur formé sur PvZ Fusion&nbsp;; les dix plus vives, reliées à lui, forment l’équipe au plus fort." focusable="false">
+          <g class="amas__liens"><path class="lien" style="--i:0" pathLength="1" d="M262 192L35.6 174.7"/><path class="lien" style="--i:1" pathLength="1" d="M262 192L120.7 104"/><path class="lien" style="--i:2" pathLength="1" d="M262 192L169.3 67.2"/><path class="lien" style="--i:3" pathLength="1" d="M262 192L316.1 41.2"/><path class="lien" style="--i:4" pathLength="1" d="M262 192L359.8 96.6"/><path class="lien" style="--i:5" pathLength="1" d="M262 192L376.1 226.1"/><path class="lien" style="--i:6" pathLength="1" d="M262 192L317.3 339.3"/><path class="lien" style="--i:7" pathLength="1" d="M262 192L243.2 342.8"/><path class="lien" style="--i:8" pathLength="1" d="M262 192L167.2 301.6"/><path class="lien" style="--i:9" pathLength="1" d="M262 192L148.1 240.7"/></g>
+          <g class="amas__astres"><use class="astre astre--vif" style="--i:0" href="#etoile" transform="translate(35.6 174.7) scale(.46)"/><circle class="astre astre--pale" style="--i:1" cx="130.3" cy="173.2" r="1.8"/><use class="astre astre--vif" style="--i:2" href="#etoile" transform="translate(120.7 104) scale(.46)"/><circle class="astre astre--pale" style="--i:3" cx="212.4" cy="141.7" r="2"/><use class="astre astre--vif" style="--i:4" href="#etoile" transform="translate(169.3 67.2) scale(.46)"/><circle class="astre astre--pale" style="--i:5" cx="260.5" cy="131.9" r="2.2"/><use class="astre astre--vif" style="--i:6" href="#etoile" transform="translate(316.1 41.2) scale(.46)"/><circle class="astre astre--pale" style="--i:7" cx="313.9" cy="128.8" r="2.2"/><use class="astre astre--vif" style="--i:8" href="#etoile" transform="translate(359.8 96.6) scale(.46)"/><circle class="astre astre--pale" style="--i:9" cx="399.9" cy="144.4" r="2.6"/><use class="astre astre--vif" style="--i:10" href="#etoile" transform="translate(376.1 226.1) scale(.46)"/><circle class="astre astre--pale" style="--i:11" cx="448" cy="254.9" r="2.9"/><use class="astre astre--vif" style="--i:12" href="#etoile" transform="translate(317.3 339.3) scale(.46)"/><circle class="astre astre--pale" style="--i:13" cx="268.7" cy="243" r="2.5"/><use class="astre astre--vif" style="--i:14" href="#etoile" transform="translate(243.2 342.8) scale(.46)"/><circle class="astre astre--pale" style="--i:15" cx="242.2" cy="280.9" r="2.8"/><use class="astre astre--vif" style="--i:16" href="#etoile" transform="translate(167.2 301.6) scale(.46)"/><circle class="astre astre--pale" style="--i:17" cx="114.3" cy="301.1" r="2.7"/><use class="astre astre--vif" style="--i:18" href="#etoile" transform="translate(148.1 240.7) scale(.46)"/><circle class="astre astre--pale" style="--i:19" cx="47.2" cy="271.6" r="2.1"/></g>
+          <ellipse class="amas__nebuleuse" cx="262" cy="192" rx="250" ry="150" fill="url(#halo-astre)" opacity=".35"/>
+          <g class="amas__centre" transform="translate(262 192)">
+            <circle r="46" fill="url(#halo-astre)"/>
+            <use href="#etoile" fill="#FFFFFF" transform="scale(1.2)"/>
+          </g>
+        </svg>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Les preuves -->
+  <section class="section" id="preuves" aria-labelledby="preuves-titre">
+    <div class="wrap">
+      <h2 class="titre-section" id="preuves-titre"><svg class="phase" viewBox="0 0 20 20" aria-hidden="true"><circle class="phase__disque" cx="10" cy="10" r="9"/><path class="phase__eclaire" d="M10 1A9 9 0 0 1 10 19A3.6 9 0 0 1 10 1Z"/></svg>Les preuves</h2>
+      <p class="intro">Trois projets menés au bout, racontés comme ils se sont passés&nbsp;: le problème, la décision, le résultat.</p>
+
+      <div class="preuves">
+        <article class="preuve" aria-labelledby="preuve-pvz">
+          <figure class="preuve__visuel">
+            <div class="cadre"><img src="assets/projets/pvzf-contributions.webp" width="1024" height="848" alt="Document « Détail des contributions » de Charles sur le dépôt du pôle francophone de PvZ Fusion." loading="lazy"></div>
+            <div class="cadre cadre--incruste"><img src="assets/projets/pvzf-jeu.webp" width="1024" height="576" alt="Capture du jeu Plants vs Zombies Fusion, dont le pôle francophone assure la traduction." loading="lazy"></div>
+          </figure>
+          <div class="preuve__texte">
+            <p class="preuve__meta"><span class="etiquette"><svg viewBox="-12 -12 24 24" aria-hidden="true"><use href="#etoile"/></svg>Emmener</span><span>Open source, bénévole</span></p>
+            <h3 id="preuve-pvz">PvZ Fusion, le&nbsp;pôle francophone</h3>
+            <ol class="pdr">
+              <li><span class="pdr__nom">Problème</span><p>Une traduction française en retard de plusieurs années, pleine d’erreurs, et des bénévoles qui arrivent sans méthode.</p></li>
+              <li><span class="pdr__nom">Décision</span><p>Structurer le pôle&nbsp;: accueil et formation des nouveaux, revues systématiques, documentation, et des outils en Python pour repérer ce qui manque à chaque version.</p></li>
+              <li class="pdr__resultat"><span class="pdr__nom">Résultat</span><p>En dix mois, une version à jour et propre. Une vingtaine de contributeurs formés, dix au plus fort, et une nomination comme mainteneur du projet multilingue.</p></li>
+            </ol>
+            <dl class="chiffres">
+              <div><dt>contributeurs formés</dt><dd>≈&nbsp;20</dd></div>
+              <div><dt>mois pour une version à jour</dt><dd>10</dd></div>
+              <div><dt>commits sur le dépôt public</dt><dd>317</dd></div>
+            </dl>
+            <blockquote class="preuve__citation"><p>«&nbsp;La qualité et la sincérité des échanges démultiplient les résultats.&nbsp;»</p></blockquote>
+            <p class="liens"><a href="https://github.com/LINDECKER-Charles/PVZF-Translation-fr">Voir le dépôt</a><a href="#">Lire l’étude de cas</a></p>
+          </div>
+        </article>
+
+        <article class="preuve" aria-labelledby="preuve-omnicard">
+          <figure class="preuve__visuel">
+            <div class="cadre"><img src="assets/projets/omnicard-accueil.webp" width="1024" height="878" alt="Accueil d’Omnicard&nbsp;: des cartes à dos doré flottent sur un fond cosmique violet." loading="lazy"></div>
+          </figure>
+          <div class="preuve__texte">
+            <p class="preuve__meta"><span class="etiquette"><svg viewBox="-12 -12 24 24" aria-hidden="true"><use href="#etoile"/></svg>Réinventer</span><span>Projet personnel</span></p>
+            <h3 id="preuve-omnicard">Omnicard, du jeu papier au moteur maison</h3>
+            <ol class="pdr">
+              <li><span class="pdr__nom">Problème</span><p>Le jeu de cartes inventé avec mon cousin attend depuis des années de devenir un jeu vidéo. Le projet traîne.</p></li>
+              <li><span class="pdr__nom">Décision</span><p>Un moment, j’en ai eu marre&nbsp;: j’ai repris le projet seul. J’ai rééquilibré nos cartes et codé mon propre moteur de jeu sur une stack que je maîtrisais déjà, .NET et Angular, pour me lancer tout de suite.</p></li>
+              <li class="pdr__resultat"><span class="pdr__nom">Résultat</span><p>Un moteur de règles en temps réel qui tourne dans le navigateur, environ trois mois de travail cumulé. Ses limites m’ont forcé à apprendre SignalR, le cache, l’optimisation DevOps et le prérendu serveur.</p></li>
+            </ol>
+            <dl class="chiffres">
+              <div><dt>mois de travail cumulé</dt><dd>≈&nbsp;3</dd></div>
+              <div><dt>techniques apprises sous la contrainte</dt><dd>4</dd></div>
+            </dl>
+            <blockquote class="preuve__citation"><p>«&nbsp;Le projet qui m’a fait le plus apprendre.&nbsp;»</p></blockquote>
+            <p class="liens"><a href="https://test.omnicard.fr">Essayer la démo</a><a href="#">Lire l’étude de cas</a></p>
+          </div>
+        </article>
+
+        <article class="preuve" aria-labelledby="preuve-gup">
+          <figure class="preuve__visuel">
+            <div class="cadre"><img src="assets/projets/gup-cli.webp" width="1051" height="625" alt="La CLI gup dans un terminal&nbsp;: 21 sources détectées, 19 mises à jour disponibles." loading="lazy"></div>
+          </figure>
+          <div class="preuve__texte">
+            <p class="preuve__meta"><span class="etiquette"><svg viewBox="-12 -12 24 24" aria-hidden="true"><use href="#etoile"/></svg>Maîtriser</span><span>Open source</span></p>
+            <h3 id="preuve-gup">gup, une commande pour tout mettre à jour</h3>
+            <ol class="pdr">
+              <li><span class="pdr__nom">Problème</span><p>Une machine de développeur accumule des dizaines de gestionnaires de paquets, chacun avec sa propre commande de mise à jour.</p></li>
+              <li><span class="pdr__nom">Décision</span><p>Une seule CLI qui détecte ce qui est installé et met tout à jour, sur Windows, macOS et Linux.</p></li>
+              <li class="pdr__resultat"><span class="pdr__nom">Résultat</span><p>153 sources prises en charge, et 447 téléchargements npm en un mois, du 5 septembre au 4 octobre 2026.</p></li>
+            </ol>
+            <dl class="chiffres">
+              <div><dt>sources prises en charge</dt><dd>153</dd></div>
+              <div><dt>téléchargements en un mois</dt><dd>447</dd></div>
+              <div><dt>systèmes&nbsp;: Windows, macOS, Linux</dt><dd>3</dd></div>
+            </dl>
+            <p class="liens"><a href="https://www.npmjs.com/package/@charles_lindecker/gup">Voir sur npm</a><a href="https://github.com/LINDECKER-Charles/gup">Voir le dépôt</a></p>
+            <p class="pp-note">Note de cadrage&nbsp;: la troisième étude reste à arbitrer, gup ou le portfolio V1.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- En dehors du code -->
+  <section class="section" id="ailleurs" aria-labelledby="ailleurs-titre">
+    <div class="wrap">
+      <h2 class="titre-section" id="ailleurs-titre"><svg class="phase" viewBox="0 0 20 20" aria-hidden="true"><circle class="phase__disque" cx="10" cy="10" r="9"/><path class="phase__eclaire" d="M10 1A9 9 0 0 1 10 19A7 9 0 0 1 10 1Z"/></svg>En dehors du code</h2>
+      <ul class="ailleurs">
+        <li>
+          <h3>Gwent</h3>
+          <p>Entré au classement mondial avec un deck à contre-courant, puis plusieurs passages dans le top 500.</p>
+        </li>
+        <li class="ailleurs__bb">
+          <div>
+            <h3>Bloodborne</h3>
+            <p>Mon jeu préféré. Au point de lui coder une application compagnon&nbsp;: une API .NET, une appli Android et une constellation de succès à débloquer.</p>
+          </div>
+          <figure class="telephone"><img src="assets/projets/blr-constellation.webp" width="390" height="844" alt="Écran de Bloodborne Legendary Run&nbsp;: la constellation de succès et la progression par galaxie." loading="lazy"></figure>
+        </li>
+        <li>
+          <h3>Shreksophone</h3>
+          <p>Un clic, et l’interface laisse place à Shrek au saxophone. Volontairement absurde.</p>
+          <a href="https://shrek.charles-lindecker.com">Ouvrir Shreksophone</a>
+        </li>
+        <li>
+          <h3>Root Me</h3>
+          <p>Des challenges de sécurité offensive, en loisir.</p>
+        </li>
+      </ul>
+      <p class="clin"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="currentColor" mask="url(#croissant)"/></svg>Je ne sais toujours pas ce qu’est le sommeil.</p>
+    </div>
+  </section>
+
+  <!-- Discutons -->
+  <section class="section discutons" id="discutons" aria-labelledby="discutons-titre">
+    <svg class="discutons__etoiles" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><circle cx="18.7" cy="9.6" r="1.8" opacity="0.6"/><circle cx="834.3" cy="160.1" r="0.6" opacity="0.3"/><circle cx="885.3" cy="386.6" r="0.5" opacity="0.3"/><circle cx="315.4" cy="138.4" r="0.5" opacity="0.5"/><circle cx="474.1" cy="599.6" r="0.5" opacity="0.7"/><circle cx="305.3" cy="33.8" r="0.5" opacity="0.3"/><circle cx="876.6" cy="412.3" r="0.5" opacity="0.7"/><circle cx="885.9" cy="303.9" r="0.9" opacity="0.7"/><circle cx="999" cy="548.2" r="1.3" opacity="0.2"/><circle cx="279.9" cy="132.2" r="0.6" opacity="0.2"/><circle cx="141" cy="417.3" r="0.6" opacity="0.4"/><circle cx="749.9" cy="570.7" r="1" opacity="0.6"/><circle cx="529" cy="131.9" r="0.5" opacity="0.3"/><circle cx="304.6" cy="311.7" r="0.6" opacity="0.2"/><circle cx="1094.8" cy="548.3" r="0.7" opacity="0.6"/><circle cx="1048.4" cy="547" r="0.5" opacity="0.5"/><circle cx="1038.7" cy="521.5" r="1.7" opacity="0.6"/><circle cx="950.8" cy="586.7" r="1.8" opacity="0.5"/><circle cx="825.7" cy="116.5" r="1" opacity="0.5"/><circle cx="1208.7" cy="598.7" r="0.7" opacity="0.6"/><circle cx="688" cy="319.2" r="1.1" opacity="0.5"/><circle cx="499.8" cy="71.5" r="0.5" opacity="0.2"/><circle cx="1509.4" cy="471.7" r="0.9" opacity="0.2"/><circle cx="1147" cy="615.2" r="0.5" opacity="0.7"/><circle cx="1040" cy="447.7" r="0.8" opacity="0.6"/><circle cx="222.5" cy="614.6" r="0.7" opacity="0.5"/><circle cx="257.4" cy="154.6" r="0.5" opacity="0.6"/><circle cx="1053.5" cy="610.9" r="0.8" opacity="0.6"/><circle cx="367.6" cy="276.7" r="1.2" opacity="0.6"/><circle cx="303.9" cy="256.3" r="0.7" opacity="0.5"/><circle cx="288.3" cy="77.8" r="0.6" opacity="0.4"/><circle cx="273.3" cy="0.1" r="0.5" opacity="0.2"/><circle cx="171.6" cy="508.6" r="1.8" opacity="0.2"/><circle cx="279.1" cy="159.8" r="0.7" opacity="0.6"/><circle cx="589.2" cy="133.9" r="1.2" opacity="0.6"/><circle cx="900.2" cy="98.2" r="0.7" opacity="0.6"/><circle cx="128" cy="78.5" r="1.3" opacity="0.6"/><circle cx="571.1" cy="547.4" r="0.5" opacity="0.4"/><circle cx="763.1" cy="469.1" r="0.6" opacity="0.7"/><circle cx="882.1" cy="178.7" r="0.6" opacity="0.5"/><circle cx="469.2" cy="515.5" r="0.8" opacity="0.7"/><circle cx="698.9" cy="361.3" r="1.6" opacity="0.5"/><circle cx="975.5" cy="491" r="0.6" opacity="0.3"/><circle cx="144.8" cy="350.3" r="1" opacity="0.7"/><circle cx="507.9" cy="82" r="0.5" opacity="0.6"/><circle cx="1326.1" cy="585.7" r="0.5" opacity="0.7"/><circle cx="452.1" cy="245" r="0.6" opacity="0.6"/><circle cx="950.7" cy="87.9" r="1.3" opacity="0.4"/><circle cx="223.7" cy="380.8" r="0.6" opacity="0.5"/><circle cx="882.1" cy="518.8" r="1.7" opacity="0.3"/><circle cx="162.8" cy="95.3" r="0.7" opacity="0.4"/><circle cx="1456.1" cy="492.1" r="0.7" opacity="0.7"/><circle cx="446" cy="214.7" r="1.6" opacity="0.6"/><circle cx="1455.3" cy="592" r="1.3" opacity="0.2"/><circle cx="268" cy="404.8" r="0.5" opacity="0.2"/><circle cx="942.9" cy="83.2" r="1.2" opacity="0.6"/><circle cx="92" cy="185.1" r="1.8" opacity="0.2"/><circle cx="136.7" cy="145.9" r="1.2" opacity="0.6"/><circle cx="435.1" cy="217.6" r="0.5" opacity="0.4"/><circle cx="699.4" cy="248.9" r="0.5" opacity="0.6"/><circle cx="485.1" cy="356.8" r="1.3" opacity="0.2"/><circle cx="291.3" cy="376.6" r="1.5" opacity="0.3"/><circle cx="515.9" cy="18.1" r="0.5" opacity="0.7"/><circle cx="828.7" cy="11.7" r="0.7" opacity="0.4"/><circle cx="382.2" cy="57.4" r="1.5" opacity="0.2"/><circle cx="53.5" cy="565.3" r="1.6" opacity="0.4"/><circle cx="921" cy="367.1" r="0.5" opacity="0.5"/><circle cx="119.2" cy="284.7" r="1" opacity="0.6"/><circle cx="111.6" cy="266.9" r="0.6" opacity="0.2"/></svg>
+    <div class="brume" aria-hidden="true"><span></span><span></span></div>
+    <svg class="discutons__lune" viewBox="0 0 600 600" aria-hidden="true" focusable="false">
+      <circle cx="300" cy="300" r="300" fill="url(#halo-lune)"/>
+      <g clip-path="url(#disque)">
+        <circle cx="300" cy="300" r="200" fill="url(#lune-modele)"/>
+        <use href="#mers-lune" filter="url(#mers)"/>
+        <use href="#crateres-lune"/>
+        <rect x="100" y="100" width="400" height="400" filter="url(#grain-lune)" opacity=".55"/>
+      </g>
+    </svg>
+    <div class="wrap">
+      <h2 id="discutons-titre"><svg class="phase visuellement-cache" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9"/></svg>Discutons</h2>
+      <p class="discutons__texte">Une équipe à faire progresser, un problème qui résiste aux solutions habituelles&nbsp;: parlons-en.</p>
+      <div class="actions">
+        <a class="btn btn--plein" href="mailto:charles.lindecker@outlook.fr">M’écrire</a>
+        <a class="btn btn--contour" href="#">Télécharger mon CV</a>
+      </div>
+      <p class="discutons__liens"><a href="https://www.linkedin.com/in/charles-lindecker/">LinkedIn</a><a href="https://github.com/LINDECKER-Charles">GitHub</a></p>
+    </div>
+  </section>
+</main>
+
+<footer class="pied">
+  <div class="wrap pied__grille">
+    <p>Charles Lindecker, près de Mulhouse</p>
+    <ul>
+      <li><a href="https://www.linkedin.com/in/charles-lindecker/">LinkedIn</a></li>
+      <li><a href="https://github.com/LINDECKER-Charles">GitHub</a></li>
+      <li><a href="https://charles-lindecker.com">La première version de ce site</a></li>
+      <li><a href="#">Mentions légales</a></li>
+    </ul>
+    <nav class="langues" aria-label="Langue du site">
+      <a href="#" aria-current="true">Français</a>
+      <a href="#" lang="en">English</a>
+      <a href="#" title="Une fausse langue, comme dans la première version du site">regex</a>
+    </nav>
+  </div>
+</footer>
+</div>
+
+<div class="pp-divider" role="note">
+  <p><strong>Fin de la maquette.</strong> Ci-dessous : le design system de la proposition, puis pourquoi cette direction.</p>
+</div>
+
+<section id="design-system" class="ds" aria-labelledby="ds-titre">
+  <div class="wrap">
+    <header class="ds__tete">
+      <h2 class="ds__titre" id="ds-titre">Le design system de Clair de lune</h2>
+      <p>Une nuit moderne, éclairée par une seule source&nbsp;: la lune. Tout ce qui suit en découle&nbsp;: la palette, les liserés, les ombres et le seul moment de mouvement.</p>
+    </header>
+
+    <div class="bloc" aria-labelledby="ds-principes">
+      <h2 id="ds-principes">Principes</h2>
+      <ul class="principes">
+        <li><strong>Une seule lumière</strong>La lune, en haut à droite. Chaque liseré s’éclaire de ce côté, chaque ombre tombe à l’opposé.</li>
+        <li><strong>Familier d’abord, poétique ensuite</strong>L’interface se lit comme celle d’un produit. L’atmosphère se découvre en second, pour qui prend le temps.</li>
+        <li><strong>Un seul spectacle</strong>La constellation est le seul élément qui bouge sans qu’on le lui demande. Tout le reste est calme.</li>
+        <li><strong>Le bleu, c’est Charles</strong>Le bleu roi de ses chemises sert à agir, le clair de lune sert à éclairer. Un seul accent par écran.</li>
+      </ul>
+    </div>
+
+    <div class="bloc" aria-labelledby="ds-couleurs">
+      <h2 id="ds-couleurs">Couleurs</h2>
+      <p class="bloc__intro">Une nuit bleue plutôt qu’un noir neutre&nbsp;: c’est le bleu roi, assombri. Ratios calculés sur le fond <code>--nuit</code>, sauf mention.</p>
+      <ul class="nuancier">
+        <li class="nuance"><div class="nuance__disque" style="background:#0D1424"></div><h3>Nuit</h3><p><code>--nuit</code> #0D1424</p><p>Fond de page.</p></li>
+        <li class="nuance"><div class="nuance__disque" style="background:#141D33"></div><h3>Nuit 2</h3><p><code>--nuit-2</code> #141D33</p><p>Surfaces, planches, cadres.</p></li>
+        <li class="nuance"><div class="nuance__disque" style="background:#E8EDF5"></div><h3>Lune</h3><p><code>--lune</code> #E8EDF5</p><p>Titres et texte fort.</p><span class="ratio">15,6:1, AAA</span></li>
+        <li class="nuance"><div class="nuance__disque" style="background:#CDD5E3"></div><h3>Texte</h3><p><code>--texte</code> #CDD5E3</p><p>Texte courant, moins éblouissant que la lune.</p><span class="ratio">12,5:1, AAA</span></li>
+        <li class="nuance"><div class="nuance__disque" style="background:#9AA8BF"></div><h3>Brume</h3><p><code>--brume</code> #9AA8BF</p><p>Texte secondaire, légendes.</p><span class="ratio">7,6:1, AAA</span></li>
+        <li class="nuance"><div class="nuance__disque" style="background:#BFD6F2"></div><h3>Clair de lune</h3><p><code>--clair</code> #BFD6F2</p><p>Liens, étoiles, focus, repères.</p><span class="ratio">12,4:1, AAA</span></li>
+        <li class="nuance"><div class="nuance__disque" style="background:#2F5BEA"></div><h3>Bleu roi</h3><p><code>--bleu-roi</code> #2F5BEA</p><p>L’action principale, et elle seule.</p><span class="ratio">Blanc dessus&nbsp;: 5,5:1, AA</span></li>
+        <li class="nuance"><div class="nuance__disque" style="background:#6F86B8"></div><h3>Étoile éteinte</h3><p><code>--eteint</code> #6F86B8</p><p>Ce qui n’est pas encore lu.</p><span class="ratio">5,1:1, AA</span></li>
+        <li class="nuance"><div class="nuance__disque" style="background:#F4F2EC"></div><h3>Fleur</h3><p><code>--fleur</code> #F4F2EC</p><p>Illustration uniquement, jamais dans l’interface.</p></li>
+      </ul>
+    </div>
+
+    <div class="bloc" aria-labelledby="ds-typo">
+      <h2 id="ds-typo">Typographie</h2>
+      <div class="familles">
+        <div class="famille">
+          <p class="famille__aa" style="font-family:var(--f-titre);font-weight:300" aria-hidden="true">Aa</p>
+          <h3>Jost</h3>
+          <p>Géométrique, dans la lignée de Futura, la police de la plaque déposée sur la Lune par Apollo&nbsp;11. Titres en 300, interface en 500, jamais de capitales espacées.</p>
+        </div>
+        <div class="famille">
+          <p class="famille__aa" style="font-family:var(--f-texte)" aria-hidden="true">Aa</p>
+          <h3>Literata</h3>
+          <p>Dessinée pour lire longtemps sur écran, avec un axe de taille optique. Corps à 18&nbsp;px, interlignage 1,65&nbsp;; l’italique porte les citations.</p>
+        </div>
+      </div>
+      <table class="echelle">
+        <caption class="visuellement-cache">Échelle typographique</caption>
+        <tbody>
+          <tr><th scope="row">Accroche<span>Jost 300, 42 → 72&nbsp;px, interligne 1,04</span></th><td style="font:300 var(--t-display)/1.04 var(--f-titre);letter-spacing:-.018em">Je maîtrise d’abord les règles du jeu.</td></tr>
+          <tr><th scope="row">Titre de section<span>Jost 300, 36 → 60&nbsp;px, 1,08</span></th><td style="font:300 var(--t-h2)/1.08 var(--f-titre)">L’origine</td></tr>
+          <tr><th scope="row">Titre d’étape<span>Jost 400, 24 → 36&nbsp;px, 1,2</span></th><td style="font:400 var(--t-h3)/1.2 var(--f-titre)">Gwent, la méthode</td></tr>
+          <tr><th scope="row">Chiffre clé<span>Jost 300, 44 → 60&nbsp;px, 1</span></th><td style="font:300 var(--t-chiffre)/1 var(--f-titre)">447</td></tr>
+          <tr><th scope="row">Chapeau<span>Literata 400, 21&nbsp;px, 1,55</span></th><td style="font:400 var(--t-chapeau)/1.55 var(--f-texte);color:var(--brume)">Architecte logiciel, je code depuis mes 13&nbsp;ans.</td></tr>
+          <tr><th scope="row">Corps<span>Literata 400, 18&nbsp;px, 1,65</span></th><td style="color:var(--texte)">Je teste un deck, puis un deuxième, puis un troisième. Quand c’est un flop, j’apprends de ce flop et je comprends où mon instinct m’a trompé.</td></tr>
+          <tr><th scope="row">Citation<span>Literata italique, 24 → 32&nbsp;px, 1,35</span></th><td style="font:italic 400 clamp(1.5rem,2.4vw,2rem)/1.35 var(--f-texte)">«&nbsp;Juste moi et mes propres décisions.&nbsp;»</td></tr>
+          <tr><th scope="row">Petit<span>Literata 400, 16&nbsp;px, 1,5</span></th><td style="font-size:1rem;line-height:1.5;color:var(--brume)">commits sur le dépôt public</td></tr>
+          <tr><th scope="row">Interface<span>Jost 500, 14 → 17&nbsp;px, 1,2</span></th><td style="font:500 1.0625rem/1.2 var(--f-titre);color:var(--clair)">Voir le dépôt</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="bloc" aria-labelledby="ds-espace">
+      <h2 id="ds-espace">Espacement, grille, formes</h2>
+      <div class="grille-ds">
+        <div class="sous-bloc">
+          <h3>Échelle d’espacement</h3>
+          <ul class="reglettes">
+            <li>4&nbsp;px<span style="width:4px"></span></li>
+            <li>8&nbsp;px<span style="width:8px"></span></li>
+            <li>12&nbsp;px<span style="width:12px"></span></li>
+            <li>16&nbsp;px<span style="width:16px"></span></li>
+            <li>24&nbsp;px<span style="width:24px"></span></li>
+            <li>32&nbsp;px<span style="width:32px"></span></li>
+            <li>48&nbsp;px<span style="width:48px"></span></li>
+            <li>64&nbsp;px<span style="width:64px"></span></li>
+            <li>96&nbsp;px<span style="width:96px"></span></li>
+            <li>128&nbsp;px<span style="width:128px"></span></li>
+          </ul>
+          <p class="note" style="margin-top:var(--e5)">Conteneur de 1&nbsp;240&nbsp;px, gouttière de 16 à 64&nbsp;px. Colonne de lecture&nbsp;: 34&nbsp;em, environ 68 caractères. Sections espacées de 88 à 152&nbsp;px.</p>
+        </div>
+        <div class="sous-bloc">
+          <h3>Formes</h3>
+          <div class="formes">
+            <div class="forme"><div class="forme__ex" style="border-radius:6px"></div>Cadre, rayon 6&nbsp;px</div>
+            <div class="forme"><div class="forme__ex" style="width:150px;height:48px;border-radius:999px"></div>Pilule&nbsp;: boutons, étiquettes</div>
+            <div class="forme"><div style="width:120px;height:1px;background:var(--filet-fort)"></div>Filet 1&nbsp;px</div>
+          </div>
+          <h3 style="margin-top:var(--e7)">La règle de lumière</h3>
+          <div class="lumiere-regle" role="img" aria-label="Schéma&nbsp;: la lune en haut à droite éclaire le bord supérieur droit d’un objet, son ombre tombe vers le bas à gauche.">
+            <div class="lumiere-regle__lune"></div>
+            <div class="lumiere-regle__objet"></div>
+          </div>
+          <p class="note" style="margin-top:var(--e4)">Liseré clair sur le bord haut droit (<code>--reflet</code>), ombre portée vers le bas gauche (<code>--ombre</code>). Valable pour les boutons, les cadres et les captures.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bloc" aria-labelledby="ds-composants">
+      <h2 id="ds-composants">Composants</h2>
+      <div class="composants">
+        <div class="sous-bloc">
+          <h3>Bouton principal</h3>
+          <div class="etats">
+            <div class="etat"><a class="btn btn--plein" href="#discutons">Discutons</a><span class="etat__nom">Repos</span></div>
+            <div class="etat"><span class="btn btn--plein is-hover">Discutons</span><span class="etat__nom">Survol</span></div>
+            <div class="etat"><span class="btn btn--plein is-focus">Discutons</span><span class="etat__nom">Focus clavier</span></div>
+            <div class="etat"><span class="btn" aria-disabled="true">Discutons</span><span class="etat__nom">Désactivé</span></div>
+          </div>
+        </div>
+        <div class="sous-bloc">
+          <h3>Bouton secondaire</h3>
+          <div class="etats">
+            <div class="etat"><a class="btn btn--contour" href="#">Télécharger mon CV</a><span class="etat__nom">Repos</span></div>
+            <div class="etat"><span class="btn btn--contour is-hover">Télécharger mon CV</span><span class="etat__nom">Survol</span></div>
+            <div class="etat"><span class="btn btn--contour is-focus">Télécharger mon CV</span><span class="etat__nom">Focus clavier</span></div>
+            <div class="etat"><span class="btn" aria-disabled="true">Télécharger mon CV</span><span class="etat__nom">Désactivé</span></div>
+          </div>
+        </div>
+        <div class="sous-bloc">
+          <h3>Lien</h3>
+          <div class="etats">
+            <div class="etat"><a class="lien-fort" href="#">Voir le dépôt</a><span class="etat__nom">Repos</span></div>
+            <div class="etat"><span class="lien-fort is-hover" style="text-decoration:underline;text-underline-offset:.24em">Voir le dépôt</span><span class="etat__nom">Survol</span></div>
+            <div class="etat"><span class="lien-fort is-focus" style="text-decoration:underline;text-underline-offset:.24em">Voir le dépôt</span><span class="etat__nom">Focus clavier</span></div>
+            <div class="etat"><span class="lien-fort" style="color:#7D8BA3">Lire l’étude de cas</span><span class="etat__nom">Indisponible</span></div>
+          </div>
+        </div>
+        <div class="sous-bloc">
+          <h3>Navigation</h3>
+          <div class="planche planche--nav">
+            <div class="entete__barre">
+              <span class="marque"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="currentColor" mask="url(#croissant)"/></svg>Charles Lindecker</span>
+              <span class="nav"><span style="display:flex;gap:4px"><span class="nav-ex">Parcours</span><span class="nav-ex">Projets</span><span class="nav-ex">CV</span></span><span class="btn btn--contour btn--petit">M’écrire</span></span>
+            </div>
+          </div>
+          <p class="note" style="margin-top:var(--e4)">Barre collante sur bureau, toujours à un clic du contact. Le bouton du haut reste en contour&nbsp;: le seul aplat bleu de l’écran est celui de l’accroche.</p>
+        </div>
+        <div class="sous-bloc grille-ds">
+          <div>
+            <h3>Étiquette de verbe</h3>
+            <p style="display:flex;flex-wrap:wrap;gap:10px">
+              <span class="etiquette"><svg viewBox="-12 -12 24 24" aria-hidden="true"><use href="#etoile"/></svg>Maîtriser</span>
+              <span class="etiquette"><svg viewBox="-12 -12 24 24" aria-hidden="true"><use href="#etoile"/></svg>Réinventer</span>
+              <span class="etiquette"><svg viewBox="-12 -12 24 24" aria-hidden="true"><use href="#etoile"/></svg>Emmener</span>
+            </p>
+            <p class="note">Relie chaque preuve au verbe qu’elle démontre. Casse de phrase, jamais de capitales.</p>
+          </div>
+          <div>
+            <h3>Chiffre clé</h3>
+            <dl class="chiffres" style="border:0;padding:0;margin:0">
+              <div><dt>téléchargements en un mois</dt><dd>447</dd></div>
+              <div><dt>contributeurs formés</dt><dd>≈&nbsp;20</dd></div>
+            </dl>
+            <p class="note" style="margin-top:var(--e4)">Toujours un chiffre sourcé et son libellé en clair, jamais seul.</p>
+          </div>
+        </div>
+        <div class="sous-bloc grille-ds">
+          <div>
+            <h3>Citation</h3>
+            <blockquote class="citation" style="margin:0">
+              <svg viewBox="-12 -12 24 24" aria-hidden="true"><use href="#etoile"/></svg>
+              <p>«&nbsp;Juste moi et mes propres décisions.&nbsp;»</p>
+            </blockquote>
+            <p class="note" style="margin-top:var(--e4)">Seulement ses propres mots. L’étoile seule rappelle le point de départ de l’arc.</p>
+          </div>
+          <div>
+            <h3>Étape de parcours</h3>
+            <div class="ex-etapes">
+              <div class="ex-etape"><svg viewBox="-12 -12 24 24" aria-hidden="true"><circle r="11" fill="url(#halo-astre)"/><use href="#etoile" fill="#E8EDF5" transform="scale(.6)"/></svg><div><p class="etape__quand" style="margin-bottom:4px">2025</p><p class="ex-etape__titre">La voie qui marche</p><p class="note" style="margin:0">Lue&nbsp;: l’étoile est allumée.</p></div></div>
+              <div class="ex-etape"><svg viewBox="-12 -12 24 24" aria-hidden="true"><circle r="2.6" fill="#6F86B8"/></svg><div><p class="etape__quand" style="margin-bottom:4px;color:var(--brume)">Fin 2025</p><p class="ex-etape__titre">De l’autre côté du bureau</p><p class="note" style="margin:0">Pas encore lue&nbsp;: un simple point.</p></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="sous-bloc grille-ds">
+          <div>
+            <h3>Bloc d’étude de cas</h3>
+            <div class="planche">
+              <p class="preuve__meta" style="margin-bottom:var(--e4)"><span class="etiquette"><svg viewBox="-12 -12 24 24" aria-hidden="true"><use href="#etoile"/></svg>Réinventer</span><span>Projet personnel</span></p>
+              <ol class="pdr" style="margin:0">
+                <li><span class="pdr__nom">Problème</span><p>Le projet traîne.</p></li>
+                <li><span class="pdr__nom">Décision</span><p>Reprendre le projet seul, sur une stack déjà maîtrisée.</p></li>
+                <li class="pdr__resultat"><span class="pdr__nom">Résultat</span><p>Un moteur de règles en temps réel dans le navigateur.</p></li>
+              </ol>
+            </div>
+            <p class="note" style="margin-top:var(--e4)">Problème, décision, résultat&nbsp;: un ordre causal, relié par un fil. Le résultat porte l’étoile.</p>
+          </div>
+          <div>
+            <h3>Appel à l’action</h3>
+            <div class="planche mini-cta">
+              <h3>Discutons</h3>
+              <p>Une équipe à faire progresser, un problème qui résiste aux solutions habituelles&nbsp;: parlons-en.</p>
+              <div class="actions" style="justify-content:center"><span class="btn btn--plein">M’écrire</span><span class="btn btn--contour">Télécharger mon CV</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bloc" aria-labelledby="ds-icones">
+      <h2 id="ds-icones">Iconographie et ornements</h2>
+      <p class="bloc__intro">Ni icônes de jeu, ni ornements gothiques&nbsp;: des étoiles, des traits de constellation et des phases de lune, en aplat clair. Tout est codé en SVG (B-03), rien n’est à générer.</p>
+      <ul class="glyphes">
+        <li class="glyphe"><svg viewBox="-24 -24 48 48" aria-hidden="true"><circle r="22" fill="url(#halo-astre)"/><use href="#etoile" fill="#E8EDF5" transform="scale(.9)"/></svg><strong>Étoile allumée</strong>Une étape lue, un résultat.</li>
+        <li class="glyphe"><svg viewBox="-24 -24 48 48" aria-hidden="true"><circle r="3" fill="#6F86B8"/></svg><strong>Étoile éteinte</strong>Ce qui reste à lire.</li>
+        <li class="glyphe"><svg viewBox="-24 -24 48 48" aria-hidden="true"><circle r="24" fill="url(#halo-astre)"/><use href="#etoile" fill="#FFFFFF" transform="scale(1.4)"/></svg><strong>Étoile de Charles</strong>Le centre de l’amas.</li>
+        <li class="glyphe"><svg viewBox="-24 -24 48 48" aria-hidden="true"><use href="#etoile" fill="#E8EDF5" transform="translate(-9 0) scale(.5)"/><circle cx="11" r="2.6" fill="#BFD6F2" opacity=".6"/></svg><strong>Contributeurs</strong>Vif&nbsp;: au plus fort. Pâle&nbsp;: les autres.</li>
+        <li class="glyphe"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 40L42 8" stroke="#BFD6F2" stroke-opacity=".6" stroke-width="1.2" fill="none"/><path d="M6 46L42 14" stroke="#BFD6F2" stroke-opacity=".38" stroke-width="1" stroke-dasharray="3 6" fill="none"/></svg><strong>Traits</strong>Plein&nbsp;: parcouru. Pointillé&nbsp;: la suite.</li>
+      </ul>
+      <h3 style="margin-top:var(--e8)">Les phases de la lune indiquent où l’on en est du récit</h3>
+      <ul class="glyphes">
+        <li class="glyphe"><svg viewBox="0 0 20 20" aria-hidden="true"><circle class="phase__disque" cx="10" cy="10" r="9"/><path class="phase__eclaire" d="M10 1A9 9 0 0 1 10 19A5.6 9 0 0 0 10 1Z"/></svg><strong>Croissant</strong>L’origine</li>
+        <li class="glyphe"><svg viewBox="0 0 20 20" aria-hidden="true"><circle class="phase__disque" cx="10" cy="10" r="9"/><path class="phase__eclaire" d="M10 1A9 9 0 0 1 10 19Z"/></svg><strong>Premier quartier</strong>Aujourd’hui</li>
+        <li class="glyphe"><svg viewBox="0 0 20 20" aria-hidden="true"><circle class="phase__disque" cx="10" cy="10" r="9"/><path class="phase__eclaire" d="M10 1A9 9 0 0 1 10 19A3.6 9 0 0 1 10 1Z"/></svg><strong>Gibbeuse</strong>Les preuves</li>
+        <li class="glyphe"><svg viewBox="0 0 20 20" aria-hidden="true"><circle class="phase__disque" cx="10" cy="10" r="9"/><path class="phase__eclaire" d="M10 1A9 9 0 0 1 10 19A7 9 0 0 1 10 1Z"/></svg><strong>Presque pleine</strong>En dehors du code</li>
+        <li class="glyphe"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#E8EDF5"/></svg><strong>Pleine lune</strong>Discutons</li>
+      </ul>
+      <div class="grille-ds" style="margin-top:var(--e8)">
+        <div>
+          <h3>Monogramme</h3>
+          <div class="placeholder"><svg viewBox="0 0 24 24" aria-hidden="true" style="color:var(--clair)"><circle cx="12" cy="12" r="9.5" fill="currentColor" mask="url(#croissant)"/></svg><span class="pp-gen" title="Asset à générer — voir docs/assets-a-generer.md">À générer : B-02</span></div>
+          <p class="note" style="margin-top:var(--e3)">Provisoire&nbsp;: un croissant seul. Le monogramme final associe «&nbsp;CL&nbsp;» et le croissant, en une couleur.</p>
+        </div>
+        <div>
+          <h3>Fleurs et brume</h3>
+          <div class="grille-ds" style="gap:var(--e4)">
+            <div class="placeholder"><svg viewBox="-16 -16 32 32" aria-hidden="true"><use href="#fleur" transform="scale(1.3)"/></svg><span class="pp-gen" title="Asset à générer — voir docs/assets-a-generer.md">À générer : B-05</span></div>
+            <div class="placeholder placeholder--brume"><span class="pp-gen" title="Asset à générer — voir docs/assets-a-generer.md">À générer : B-06</span></div>
+          </div>
+          <p class="note" style="margin-top:var(--e3)">Fleurs blanches isolées pour les transitions de section&nbsp;; brume transparente et raccordable pour le hero et «&nbsp;Discutons&nbsp;».</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bloc" aria-labelledby="ds-images">
+      <h2 id="ds-images">Images</h2>
+      <div class="grille-ds">
+        <div>
+          <h3>Portrait au clair de lune</h3>
+          <div class="avant-apres">
+            <figure><img class="brut" src="assets/photos/charles-1.webp" width="768" height="1152" alt="Photo d’origine&nbsp;: Charles de profil dans un sous-bois lumineux." loading="lazy"><figcaption>Avant</figcaption></figure>
+            <figure><div class="portrait" style="box-shadow:none"><img src="assets/photos/charles-1.webp" width="768" height="1152" alt="La même photo en duotone nuit et clair de lune." loading="lazy"></div><figcaption>Après</figcaption></figure>
+          </div>
+          <p class="note" style="margin-top:var(--e4)">Duotone de la nuit au clair de lune, en CSS&nbsp;: niveaux de gris, multiplication, éclaircissement, puis un reflet en haut à droite. La version finale, retouchée à la main, est l’asset B-04. Toujours une vraie photo, jamais une image inventée.</p>
+        </div>
+        <div>
+          <h3>Captures de projets</h3>
+          <div class="cadre"><img src="assets/projets/gup-cli.webp" width="1051" height="625" alt="Exemple de cadrage&nbsp;: la capture de gup dans son cadre." loading="lazy"></div>
+          <p class="note" style="margin-top:var(--e4)">Cadre à rayon de 6&nbsp;px, liseré éclairé côté lune, ombre portée vers le bas à gauche. Les captures ne sont jamais recolorées&nbsp;: une preuve reste telle quelle.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bloc" aria-labelledby="ds-mouvement">
+      <h2 id="ds-mouvement">Mouvement</h2>
+      <div class="demo">
+        <div>
+          <svg class="demo-trace" viewBox="0 0 420 220" role="img" aria-label="Démonstration&nbsp;: trois étoiles reliées par des traits.">
+            <path class="seg" pathLength="1" d="M40 180L190 120"/>
+            <path class="seg" pathLength="1" d="M190 120L380 40" style="--delai:280ms"/>
+            <g transform="translate(40 180)"><circle class="halo" r="26"/><use class="eclat" href="#etoile" transform="scale(.8)"/></g>
+            <g transform="translate(190 120)" style="--delai:0ms"><circle class="halo" r="26"/><use class="eclat" href="#etoile" transform="scale(.8)"/></g>
+            <g transform="translate(380 40)" style="--delai:280ms"><circle class="halo" r="26"/><use class="eclat" href="#etoile" transform="scale(.8)"/></g>
+          </svg>
+          <button class="btn btn--contour btn--petit demo-rejouer" type="button" style="margin-top:var(--e5)">Rejouer le tracé</button>
+        </div>
+        <ul class="specs">
+          <li><strong style="color:var(--lune);font-weight:500">Le moment orchestré.</strong> Quand une étape entre dans la zone de lecture, le trait depuis l’étoile précédente se dessine en 900&nbsp;ms (<code>cubic-bezier(.22,.61,.36,1)</code>), puis l’étoile s’allume en 450&nbsp;ms. L’amas d’«&nbsp;Aujourd’hui&nbsp;» suit&nbsp;: les liens en cascade de 45&nbsp;ms, les étoiles juste après.</li>
+          <li><strong style="color:var(--lune);font-weight:500">Micro-interactions.</strong> 180&nbsp;ms, couleur et liseré seulement&nbsp;: rien ne se déplace. Le bouton principal capte un peu plus de lune au survol.</li>
+          <li><strong style="color:var(--lune);font-weight:500">Mouvement réduit.</strong> La constellation et l’amas sont affichés d’emblée, entièrement tracés&nbsp;; aucune transition.</li>
+          <li><strong style="color:var(--lune);font-weight:500">Sans JavaScript.</strong> L’état final est l’état par défaut&nbsp;: le script n’arme que ce qui est encore sous le pli au chargement.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bloc" aria-labelledby="ds-a11y">
+      <h2 id="ds-a11y">Accessibilité</h2>
+      <table class="tableau">
+        <caption class="visuellement-cache">Paires de contraste</caption>
+        <thead><tr><th scope="col">Paire</th><th scope="col">Ratio</th><th scope="col">Niveau</th></tr></thead>
+        <tbody>
+          <tr><td><span class="pastille" style="background:#E8EDF5"></span>Lune sur nuit</td><td>15,63:1</td><td class="ok">AAA</td></tr>
+          <tr><td><span class="pastille" style="background:#CDD5E3"></span>Texte sur nuit</td><td>12,45:1</td><td class="ok">AAA</td></tr>
+          <tr><td><span class="pastille" style="background:#BFD6F2"></span>Clair de lune sur nuit</td><td>12,35:1</td><td class="ok">AAA</td></tr>
+          <tr><td><span class="pastille" style="background:#9AA8BF"></span>Brume sur nuit</td><td>7,64:1</td><td class="ok">AAA</td></tr>
+          <tr><td><span class="pastille" style="background:#9AA8BF"></span>Brume sur nuit 2</td><td>6,96:1</td><td class="ok">AA</td></tr>
+          <tr><td><span class="pastille" style="background:#6F86B8"></span>Étoile éteinte sur nuit</td><td>5,06:1</td><td class="ok">AA</td></tr>
+          <tr><td><span class="pastille" style="background:#2F5BEA"></span>Blanc sur bleu roi</td><td>5,52:1</td><td class="ok">AA</td></tr>
+          <tr><td><span class="pastille" style="background:#2A52D6"></span>Blanc sur bleu roi, survol</td><td>6,41:1</td><td class="ok">AA</td></tr>
+          <tr><td><span class="pastille" style="background:#2F5BEA"></span>Bouton bleu roi sur nuit (forme)</td><td>3,33:1</td><td class="ok">Interface ≥&nbsp;3:1</td></tr>
+        </tbody>
+      </table>
+      <ul class="specs" style="margin-top:var(--e7)">
+        <li>Focus clavier&nbsp;: contour de 2&nbsp;px en clair de lune, décalé de 3&nbsp;px, visible sur la nuit comme sur le bleu roi.</li>
+        <li>Cibles&nbsp;: boutons de 48&nbsp;px de haut, liens de navigation et liens de preuve de 44&nbsp;px.</li>
+        <li>La constellation du parcours est masquée aux lecteurs d’écran (le texte dit tout)&nbsp;; l’amas, lui, porte une description, car il apporte une donnée.</li>
+        <li>Texte courant en <code>--texte</code> plutôt qu’en blanc pur, pour limiter l’éblouissement sur fond sombre.</li>
+        <li>Lien d’évitement «&nbsp;Aller au contenu&nbsp;», titres hiérarchisés, <code>lang="fr"</code>, la fausse langue <code>regex</code> annoncée par un titre.</li>
+      </ul>
+    </div>
+
+    <div class="bloc" aria-labelledby="ds-tokens">
+      <h2 id="ds-tokens">Tokens</h2>
+<pre class="code"><code><span class="c">/* Clair de lune — tokens */</span>
+:root {
+  <span class="c">/* Couleurs */</span>
+  --nuit: #0D1424;       --nuit-2: #141D33;    --nuit-3: #1B2744;
+  --lune: #E8EDF5;       --texte: #CDD5E3;     --brume: #9AA8BF;
+  --clair: #BFD6F2;      --eteint: #6F86B8;
+  --bleu-roi: #2F5BEA;   --bleu-roi-fonce: #2A52D6;
+  --fleur: #F4F2EC;
+  --filet: rgba(191, 214, 242, .14);
+  --filet-fort: rgba(191, 214, 242, .28);
+
+  <span class="c">/* Lumière : la lune est en haut à droite */</span>
+  --reflet: inset -1px 1px 0 rgba(191, 214, 242, .42);
+  --ombre: -18px 26px 56px rgba(2, 6, 16, .55);
+
+  <span class="c">/* Typographie */</span>
+  --f-titre: "Jost", ui-sans-serif, system-ui, sans-serif;
+  --f-texte: "Literata", Georgia, serif;
+  --t-display: clamp(2.625rem, 5vw, 4.5rem);
+  --t-h2: clamp(2.25rem, 3.6vw, 3.75rem);
+  --t-h3: clamp(1.5rem, 2.2vw, 2.25rem);
+  --t-chiffre: clamp(2.75rem, 4vw, 3.75rem);
+  --t-chapeau: 1.3125rem;  --t-corps: 1.125rem;
+  --t-petit: 1rem;         --t-etiquette: .875rem;
+
+  <span class="c">/* Espacement, grille, formes */</span>
+  --e1: 4px;  --e2: 8px;  --e3: 12px; --e4: 16px; --e5: 24px;
+  --e6: 32px; --e7: 48px; --e8: 64px; --e9: 96px; --e10: 128px;
+  --mesure: 34em;  --large: 1240px;  --gouttiere: clamp(16px, 5vw, 64px);
+  --r-cadre: 6px;  --r-pilule: 999px;
+
+  <span class="c">/* Mouvement */</span>
+  --duree-trace: 900ms;  --duree-astre: 450ms;  --duree-ui: 180ms;
+  --courbe: cubic-bezier(.22, .61, .36, 1);
+}</code></pre>
+    </div>
+  </div>
+</section>
+
+<section id="pourquoi" class="pq" aria-labelledby="pq-titre">
+  <div class="wrap">
+    <div class="pq__corps">
+      <h2 id="pq-titre">Pourquoi cette direction</h2>
+
+      <h3>Ce qu’elle raconte</h3>
+      <p>Clair de lune raconte ton parcours comme une nuit qu’on traverse. On part d’une étoile seule, on bute sur des portes fermées, puis la constellation se dessine jusqu’à un amas d’une vingtaine d’étoiles&nbsp;: l’arc du solo au collectif, rendu visible sans un mot de jeu vidéo. L’interface, elle, reste celle d’un produit sérieux&nbsp;: lisible, calme, rapide à parcourir. L’atmosphère se lit en second, pour qui prend le temps.</p>
+
+      <h3>Pourquoi elle te ressemble</h3>
+      <ul>
+        <li><strong>Le bleu de la nuit, c’est le tien.</strong> Tu portes une chemise bleu roi sur tes quatre photos. Ici, le bleu roi est la couleur de l’action («&nbsp;Discutons&nbsp;»), et la nuit en est la version assombrie.</li>
+        <li><strong>La constellation, c’est ta fonctionnalité phare</strong> dans Bloodborne Legendary Run. Elle change de rôle&nbsp;: elle ne range plus des projets, elle raconte une trajectoire, et elle compte des personnes. Une étoile, un contributeur formé.</li>
+        <li><strong>Le tracé n’est pas décoratif.</strong> La petite chute au troisième point, ce sont les portes qui ne s’ouvrent pas&nbsp;; la remontée, la voie qui marche. C’est ta «&nbsp;courbe exponentielle&nbsp;», plus lente au départ.</li>
+        <li><strong>Jost descend de Futura</strong>, la police de la plaque qu’Apollo&nbsp;11 a laissée sur la Lune. Presque personne ne le remarquera, et c’est exactement le genre de détail que tu soignes.</li>
+        <li><strong>Literata est faite pour lire longtemps.</strong> Ton récit est long et écrit à la première personne&nbsp;: il mérite une police de lecture, pas une police d’affiche.</li>
+      </ul>
+
+      <h3>Le dosage du jeu</h3>
+      <ul>
+        <li>Pour qui connaît Bloodborne, la lune, la brume et les fleurs blanches évoquent le rêve du chasseur, l’endroit où l’on revient pour progresser. Pour un recruteur, c’est une nuit claire et calme, rien de plus.</li>
+        <li>Aucun mot du jeu dans l’interface, aucune image du jeu, aucun symbole officiel. Le seul visuel lié à Bloodborne est une capture de ta propre appli, dans «&nbsp;En dehors du code&nbsp;».</li>
+        <li>Les phases de la lune, à côté des titres, indiquent où l’on en est du récit&nbsp;: du croissant de «&nbsp;L’origine&nbsp;» à la pleine lune de «&nbsp;Discutons&nbsp;».</li>
+      </ul>
+
+      <h3>Ce qui change par rapport à la V1</h3>
+      <ul>
+        <li>Un récit qui se lit de haut en bas, au lieu d’un hall à cinq portes de même poids.</li>
+        <li>Plus de verre ni de panneaux translucides arrondis, plus d’icônes du jeu, plus de lexique&nbsp;: une interface sobre, éclairée par une seule lumière.</li>
+        <li>Plus d’intro&nbsp;: l’accroche est la première chose qu’on lit.</li>
+        <li>La constellation de la V1 rangeait quatorze projets sans hiérarchie. Ici, elle porte un seul fil, et chaque étoile a un sens.</li>
+      </ul>
+
+      <h3>Risques et parades</h3>
+      <ul>
+        <li><strong>Sans l’illustration finale, l’ensemble peut ressembler à une page d’accueil SaaS sombre.</strong> Parade&nbsp;: soigner B-01, la dépense prioritaire de cette direction. Lune, brume et fleurs doivent avoir une vraie profondeur picturale, pas l’aspect d’un dégradé.</li>
+        <li><strong>La lune est un motif courant des thèmes sombres.</strong> Parade&nbsp;: elle n’est pas un logo mais la source de lumière. Elle décide des liserés et des ombres, et ses phases racontent la progression.</li>
+        <li><strong>Doublon possible avec les constellations de la V1 et de BLR.</strong> Parade&nbsp;: la réserver au récit, avec des données honnêtes (une étoile, une personne), et ne jamais en refaire un catalogue de projets.</li>
+        <li><strong>Lire longtemps sur fond sombre fatigue.</strong> Parade&nbsp;: texte courant en #CDD5E3 plutôt qu’en blanc pur, Literata à 18&nbsp;px, interlignage de 1,65, lignes de moins de 70 caractères.</li>
+        <li><strong>Une animation au défilement peut agacer.</strong> Parade&nbsp;: un seul moment, l’état final visible sans JavaScript, le mouvement réduit respecté.</li>
+        <li><strong>La troisième étude de cas reste à arbitrer</strong>&nbsp;: gup (usage public chiffré) ou le portfolio V1 (souci du détail). La maquette montre gup.</li>
+      </ul>
+
+      <h3>Assets à générer</h3>
+      <p>Le détail (formats, prompts) est dans <code>docs/assets-a-generer.md</code>.</p>
+      <ul class="ids">
+        <li><strong>B-01</strong>&nbsp;: illustration du hero, lune, brume et fleurs blanches, paysage nocturne original en calques séparés (21:9 et 4:5).</li>
+        <li><strong>B-02</strong>&nbsp;: monogramme «&nbsp;CL&nbsp;» avec un croissant de lune, vectoriel, une couleur.</li>
+        <li><strong>B-03</strong>&nbsp;: glyphes d’étoiles et de constellation, à coder en SVG, rien à générer.</li>
+        <li><strong>B-04</strong>&nbsp;: portrait étalonné au clair de lune d’après la photo de profil (retouche d’une vraie photo).</li>
+        <li><strong>B-05</strong>&nbsp;: fleurs blanches isolées sur fond transparent, pour les transitions de section.</li>
+        <li><strong>B-06</strong>&nbsp;: texture de brume transparente et raccordable.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script>
+/* Le seul mouvement automatique : la constellation se trace au fil de la lecture.
+   État final par défaut (sans JS, mouvement réduit, capture) ; le JS n'arme que ce qui
+   est encore sous le pli au chargement. */
+(function () {
+  var root = document.documentElement;
+  var reduit = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* Outillage de capture : ?static fige l'état final, &y= décale la page pour capturer une tranche. */
+  var q = window.location.search;
+  var statique = /[?&]static\b/.test(q) || navigator.webdriver === true;
+  if (statique) {
+    window.addEventListener('load', function () {
+      root.setAttribute('data-hauteur', root.scrollHeight);
+      var m = /[?&]y=(\d+)/.exec(q);
+      if (m) document.body.style.marginTop = (-m[1]) + 'px';
+    });
+  }
+  var demo = document.querySelector('.demo-trace');
+  var rejouer = document.querySelector('.demo-rejouer');
+  if (rejouer && demo) {
+    rejouer.addEventListener('click', function () {
+      demo.classList.add('fige', 'is-armed');
+      void demo.getBoundingClientRect();
+      requestAnimationFrame(function () { requestAnimationFrame(function () { demo.classList.remove('fige', 'is-armed'); }); });
+    });
+  }
+  if (reduit || statique || !('IntersectionObserver' in window)) return;
+
+  var etapes = [].slice.call(document.querySelectorAll('.etape'));
+  var astres = [].slice.call(document.querySelectorAll('.astre-rail'));
+  var segs = [].slice.call(document.querySelectorAll('.rail .seg'));
+  var suite = document.querySelector('.rail .seg-suite');
+  var amas = document.querySelector('.amas');
+  var sousLePli = function (el) { return el.getBoundingClientRect().top > window.innerHeight * 0.85; };
+  var armees = {};
+  var reste = 0;
+
+  root.classList.add('sans-transition');
+  etapes.forEach(function (el, i) {
+    if (!sousLePli(el)) return;
+    armees[i] = true; reste++;
+    [el, astres[i], segs[i - 1]].forEach(function (x) { if (x) x.classList.add('is-armed'); });
+  });
+  if (reste && suite) suite.classList.add('is-armed');
+  var amasArme = amas && sousLePli(amas);
+  if (amasArme) amas.classList.add('is-armed');
+  void document.body.offsetHeight;
+  requestAnimationFrame(function () { requestAnimationFrame(function () { root.classList.remove('sans-transition'); }); });
+
+  function allumer(i) {
+    var delai = 0;
+    for (var k = 0; k <= i; k++) {
+      if (!armees[k]) continue;
+      delete armees[k]; reste--;
+      [etapes[k], astres[k], segs[k - 1]].forEach(function (x) {
+        if (!x) return;
+        x.style.setProperty('--delai', delai + 'ms');
+        x.classList.remove('is-armed');
+      });
+      delai += 280;
+    }
+    if (!reste && suite) suite.classList.remove('is-armed');
+  }
+  var io = new IntersectionObserver(function (entrees) {
+    entrees.forEach(function (e) {
+      if (e.isIntersecting) { allumer(etapes.indexOf(e.target)); io.unobserve(e.target); }
+    });
+  }, { rootMargin: '0px 0px -38% 0px' });
+  etapes.forEach(function (el, i) { if (armees[i]) io.observe(el); });
+
+  if (amasArme) {
+    var io2 = new IntersectionObserver(function (entrees) {
+      if (entrees.some(function (e) { return e.isIntersecting; })) { amas.classList.remove('is-armed'); io2.disconnect(); }
+    }, { rootMargin: '0px 0px -30% 0px' });
+    io2.observe(amas);
+  }
+})();
+</script>
+</body>
+</html>

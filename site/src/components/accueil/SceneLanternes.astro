@@ -1,0 +1,154 @@
+---
+/**
+ * Une lanterne allumée en allume d’autres (ACC-14,
+ * src/assets/visuels/accueil/ACC-14.svg) : la première lanterne vacille,
+ * une étincelle allume la deuxième, puis la troisième. Gardée le 13/10/2026 ;
+ * la lanterne du logo devient le motif du collectif. La scène se joue à son
+ * arrivée dans l’écran, puis se rejoue au clic ou au clavier
+ * (scripts/figure-animations.ts). Au repos, et sans mouvement : les trois
+ * lanternes allumées.
+ *
+ * Même main que la lanterne de la bascule (GLO-03) et que le plan « Un petit
+ * système » (ACC-17) : un contour d’encre de 1,5 px quelle que soit la taille
+ * du dessin, un aplat unique, la flamme en lanterne, ses rayons en laiton ;
+ * ni dégradé, ni flou, ni ombre portée.
+ *
+ * Le dessin est le fichier du registre, inséré dans la page : ses calques
+ * (`lt-aplat`, `lt-lumiere`, `lt-particule`…) suivent les jetons.
+ */
+import dessin from '../../assets/visuels/accueil/ACC-14.svg?raw';
+
+const legende = 'Une lanterne allumée en allume d’autres.';
+const svg = dessin
+  .replace(/<title>[\s\S]*?<\/title>/, '')
+  .replace(/<svg\b[^>]*>/, '<svg class="lanternes__dessin" viewBox="0 0 320 240" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">');
+---
+
+<figure class="lanternes" data-scene="lanternes">
+  <button type="button" class="lanternes__plan" data-rejouer data-figure-animation disabled aria-label={`Rejouer l’animation : ${legende}`}>
+    <Fragment set:html={svg} />
+  </button>
+  <figcaption class="lanternes__legende">{legende}</figcaption>
+</figure>
+
+<style>
+  .lanternes {
+    margin: 0;
+  }
+
+  .lanternes__plan {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: var(--r2);
+    background: transparent;
+    color: var(--encre);
+  }
+
+  .lanternes__plan :global(.lanternes__dessin) {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  /* Le trait garde 1,5 px d’encre à toutes les tailles du dessin. */
+  .lanternes__plan :global(.lanternes__dessin :is(path, circle)) {
+    vector-effect: non-scaling-stroke;
+  }
+
+  .lanternes__plan :global(.lt-aplat) {
+    fill: var(--surface);
+  }
+
+  .lanternes__plan :global(.lt-montant) {
+    stroke-width: 1;
+  }
+
+  .lanternes__plan :global(.lt-sol),
+  .lanternes__plan :global(.lt-trajet) {
+    stroke: var(--trait);
+  }
+
+  .lanternes__plan :global(.lt-rayons) {
+    stroke: var(--laiton);
+    stroke-width: 1.25;
+  }
+
+  .lanternes__plan :global(.lt-flamme) {
+    fill: var(--lanterne);
+  }
+
+  .lanternes__plan :global(.lt-particule) {
+    fill: var(--lanterne);
+    opacity: 0;
+  }
+
+  .lanternes__legende {
+    margin-top: var(--s2);
+    font-family: var(--police-titre);
+    font-style: italic;
+    font-size: var(--t-m);
+    color: var(--eteint);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .lanternes__plan:global(.animation-en-cours) :global(.lt-lumiere--source) {
+      animation: lanternes-source calc(var(--d-scene) * 6.75) ease both;
+    }
+
+    .lanternes__plan:global(.animation-en-cours) :global(.lt-lumiere--relais) {
+      animation: lanternes-allumer calc(var(--d-scene) * 2.5) calc(var(--d-scene) * 2) ease both;
+    }
+
+    .lanternes__plan:global(.animation-en-cours) :global(.lt-lumiere--suite) {
+      animation: lanternes-allumer calc(var(--d-scene) * 2.5) calc(var(--d-scene) * 4.25) ease both;
+    }
+
+    .lanternes__plan:global(.animation-en-cours) :global(.lt-particule--premiere) {
+      animation: lanternes-transmettre-premiere calc(var(--d-scene) * 2.5) calc(var(--d-scene) * 0.375) ease-in-out both;
+    }
+
+    .lanternes__plan:global(.animation-en-cours) :global(.lt-particule--seconde) {
+      animation: lanternes-transmettre-seconde calc(var(--d-scene) * 2.5) calc(var(--d-scene) * 2.625) ease-in-out both;
+    }
+
+    @keyframes lanternes-source {
+      0% { opacity: 0.55; }
+      18%, 100% { opacity: 1; }
+    }
+
+    @keyframes lanternes-allumer {
+      0%, 10% { opacity: 0; }
+      50% { opacity: 0.8; }
+      70% { opacity: 0.6; }
+      100% { opacity: 1; }
+    }
+
+    /* L’étincelle suit le trajet en pointillé, d’une flamme à la suivante. */
+    @keyframes lanternes-transmettre-premiere {
+      0% { opacity: 0; transform: translate(64px, 142px); }
+      15% { opacity: 1; }
+      38% { transform: translate(99px, 105px); }
+      65% { transform: translate(124px, 107px); }
+      85% { opacity: 1; }
+      100% { opacity: 0; transform: translate(158px, 146px); }
+    }
+
+    @keyframes lanternes-transmettre-seconde {
+      0% { opacity: 0; transform: translate(164px, 142px); }
+      15% { opacity: 1; }
+      38% { transform: translate(199px, 105px); }
+      65% { transform: translate(224px, 107px); }
+      85% { opacity: 1; }
+      100% { opacity: 0; transform: translate(258px, 146px); }
+    }
+  }
+
+  @media print {
+    .lanternes__plan :global(.lt-particule) {
+      display: none;
+    }
+  }
+</style>

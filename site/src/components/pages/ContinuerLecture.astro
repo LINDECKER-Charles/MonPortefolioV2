@@ -1,0 +1,94 @@
+---
+/**
+ * « Pour continuer » : deux ou trois pages où poursuivre, en fin de page.
+ * Un seul bloc de suite par page (cahier, § 4.3).
+ *
+ *   <ContinuerLecture liens={[{ href: '/projets', titre: 'Les projets', detail: '…' }]} />
+ */
+interface Lien {
+  href: string;
+  titre: string;
+  detail: string;
+}
+
+interface Props {
+  liens: Lien[];
+}
+
+const { liens } = Astro.props;
+---
+
+<nav class="suite-lecture" aria-label="Continuer la lecture">
+  <p class="suite-lecture__titre">Pour continuer</p>
+  <ul>
+    {liens.map((lien) => <li>
+      <a href={lien.href}>
+        <span class="suite-lecture__nom">{lien.titre}<span class="fleche" aria-hidden="true">&nbsp;→</span></span>
+        <span class="suite-lecture__detail">{lien.detail}</span>
+      </a>
+    </li>)}
+  </ul>
+</nav>
+
+<style>
+  .suite-lecture {
+    padding-block: var(--s7) var(--s8);
+    margin-top: var(--entre-sections);
+    border-top: 1px solid var(--trait);
+  }
+
+  .suite-lecture__titre {
+    color: var(--eteint);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: var(--ls-petit);
+    margin-bottom: var(--s4);
+  }
+
+  ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    gap: var(--s4) var(--s6);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  li {
+    border-top: 1px solid var(--filet);
+  }
+
+  a {
+    display: block;
+    min-height: 68px;
+    padding-top: var(--s3);
+    color: var(--encre);
+    text-decoration: none;
+  }
+
+  .suite-lecture__nom {
+    display: block;
+    font-family: var(--police-titre);
+    font-size: var(--t-xl);
+    line-height: 1.1;
+  }
+
+  .fleche {
+    color: var(--accent);
+    font-size: var(--t-s);
+  }
+
+  .suite-lecture__detail {
+    display: block;
+    margin-top: var(--s2);
+    font-size: var(--t-s);
+    color: var(--eteint);
+    max-width: 35ch;
+  }
+
+  a:hover .suite-lecture__nom {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.14em;
+  }
+</style>

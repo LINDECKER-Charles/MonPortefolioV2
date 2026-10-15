@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+  <title>Livre ouvert debout et flamme, version simplifiée</title>
+  <path d="m8 13 17-6 7 4 7-4 17 6v46l-17-6-7 4-7-4-17 6ZM32 11v7m0 28v11"/>
+  <path class="flamme" fill="var(--flamme, none)" d="M32 44c-5 0-8-3-8-7 0-5 6-9 8-15 1 6 8 10 8 15 0 4-3 7-8 7Z"/>
+</svg>

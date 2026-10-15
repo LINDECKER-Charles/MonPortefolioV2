@@ -1,0 +1,358 @@
+---
+/**
+ * Des onglets de captures, sans script : un groupe de boutons radio (chacun
+ * dans son étiquette) dont chaque choix montre sa capture (CaptureLeague),
+ * par `:has()`. Les flèches du clavier passent d’un onglet à l’autre, comme
+ * dans tout groupe radio ; sans JavaScript, tout fonctionne de même. Sert aux
+ * « fiches à explorer » (six vues du patch 16.20.1) et aux trois langues de
+ * la même fiche.
+ *
+ *   <OngletsCaptures nom="fiche" legende="Explorer les fiches du patch 16.20.1"
+ *     onglets={[{ id: 'ahri', libelle: 'Le champion', capture: { nom: 'ahri', alt, legende } }]} />
+ *
+ * Sur mobile, en pile, les onglets défilent en une rangée (règle E7), avec
+ * un fondu sur le bord qui cache encore des onglets ; le script ramène
+ * l’onglet choisi dans la rangée.
+ *
+ * Chaque onglet peut porter un détail sous son libellé (titre et
+ * sous-titre, dans sa langue) et un lien sortant sous sa capture. La hauteur des captures suit celle de
+ * l’écran : la capture entière, les onglets et la légende tiennent ensemble
+ * (retour de Charles du 12/10/2026). Les vues sont des `.onglets__vue`, la
+ * vue choisie seule affichée ; à l’impression, toutes.
+ */
+import CaptureLeague from './CaptureLeague.astro';
+import LienAction from '../../ui/LienAction.astro';
+import { typo } from '../../../lib/typo';
+
+interface Onglet {
+  id: string;
+  libelle: string;
+  /** Nom accessible du bouton radio, s’il diffère du libellé (langue étrangère). */
+  accessible?: string;
+  /** Langue du détail (titre écrit dans la langue de l’onglet). */
+  lang?: string;
+  /** Un titre et un sous-titre sous le libellé (la fiche dans sa langue). */
+  detail?: { titre: string; sousTitre: string };
+  /** `mobile` : recadrage du téléphone (« 1 / 1 ») ; la capture entière sans lui. */
+  capture: { nom: string; alt: string; legende: string; adresse?: string; ratio?: string; mobile?: string };
+  lien?: { href: string; libelle: string };
+}
+
+interface Props {
+  nom: string;
+  legende: string;
+  /** La légende du groupe reste visible (sinon, réservée aux lecteurs d’écran). */
+  legendeVisible?: boolean;
+  onglets: readonly Onglet[];
+  /** `pile` : onglets au-dessus de la capture ; `cote` : en colonne à gauche, au-delà de 860 px. */
+  disposition?: 'pile' | 'cote';
+  /** Largeur maximale de la capture d’ordinateur. */
+  largeur?: string;
+  class?: string;
+}
+
+const { nom, legende, legendeVisible = false, onglets, disposition = 'pile', largeur = '760px', class: classe } = Astro.props;
+if (onglets.length < 2 || onglets.length > 6) throw new Error(`<OngletsCaptures nom="${nom}"> : deux à six onglets.`);
+---
+
+<fieldset class:list={['onglets', `onglets--${disposition}`, classe]} data-onglets={nom} style={`--onglets-largeur:${largeur}`}>
+  <legend class:list={[legendeVisible ? 'onglets__legende' : 'sr']}>{typo(legende)}</legend>
+  {Astro.slots.has('intro') && <div class="onglets__intro"><slot name="intro" /></div>}
+  <div class="onglets__choix">
+    {
+      onglets.map((onglet, index) => (
+        <label class:list={{ 'onglets__choix--detail': onglet.detail }} for={`${nom}-${onglet.id}`}>
+          <input class="onglets__radio" type="radio" name={nom} id={`${nom}-${onglet.id}`} value={onglet.id} checked={index === 0} aria-label={onglet.accessible} />
+          <span class="onglets__libelle">{typo(onglet.libelle)}</span>
+          {onglet.detail && (
+            <span class="onglets__detail" lang={onglet.lang}>
+              <strong>{onglet.detail.titre}</strong>
+              <span class="onglets__sous">{onglet.detail.sousTitre}</span>
+            </span>
+          )}
+        </label>
+      ))
+    }
+  </div>
+  <div class="onglets__vues">
+    {
+      onglets.map((onglet) => (
+        <div class:list={['onglets__vue', `onglets__vue--${onglet.id}`]}>
+          <CaptureLeague
+            nom={onglet.capture.nom}
+            alt={onglet.capture.alt}
+            legende={onglet.capture.legende}
+            adresse={onglet.capture.adresse}
+            ratio={onglet.capture.ratio}
+            mobile={onglet.capture.mobile ? { ratio: onglet.capture.mobile } : {}}
+            sizes="(max-width: 860px) 300px, (max-width: 1440px) 70vw, 960px"
+          />
+          {onglet.lien && <LienAction class="onglets__lien" href={onglet.lien.href} emplacement="preuves">{typo(onglet.lien.libelle)}</LienAction>}
+        </div>
+      ))
+    }
+  </div>
+</fieldset>
+
+<script>
+  // Sur mobile, la rangée d’onglets défile : ses fondus de bord disent de
+  // quel côté il reste des onglets (début, milieu ou fin du défilement).
+  for (const rangee of document.querySelectorAll<HTMLElement>('.onglets--pile .onglets__choix')) {
+    const marquer = () => {
+      const reste = rangee.scrollWidth - rangee.clientWidth - rangee.scrollLeft;
+      rangee.dataset.defile = rangee.scrollLeft <= 4 ? 'debut' : reste <= 4 ? 'fin' : 'milieu';
+    };
+    rangee.addEventListener('scroll', marquer, { passive: true });
+    window.addEventListener('resize', marquer, { passive: true });
+    marquer();
+  }
+
+  // Sur mobile, la rangée d’onglets défile : l’onglet choisi y revient en entier.
+  for (const groupe of document.querySelectorAll<HTMLElement>('.onglets--pile')) {
+    groupe.addEventListener('change', (evenement) => {
+      const etiquette = (evenement.target as HTMLElement).closest('label');
+      const rangee = etiquette?.parentElement;
+      if (!etiquette || !rangee || rangee.scrollWidth <= rangee.clientWidth) return;
+      const cadre = rangee.getBoundingClientRect();
+      const onglet = etiquette.getBoundingClientRect();
+      // Les fondus masquent ce qui les traverse : 72 px à droite, 40 px à
+      // gauche dès que la rangée a défilé. L’onglet doit tenir entre les deux.
+      const gauche = rangee.scrollLeft > 0 ? 40 : 0;
+      if (onglet.left >= cadre.left + gauche && onglet.right <= cadre.right - 72) return;
+      // Aligné après le fondu de gauche, l’onglet tombe sur un point d’accroche du défilement.
+      rangee.scrollTo({ left: rangee.scrollLeft + onglet.left - cadre.left - 48, behavior: 'instant' });
+    });
+  }
+</script>
+
+<style>
+  .onglets {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .onglets__legende {
+    float: left;
+    width: 100%;
+    margin-bottom: var(--s3);
+    padding: 0;
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  .onglets__choix {
+    clear: both;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2);
+    margin-bottom: var(--s4);
+  }
+
+  .onglets__choix label {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s2);
+    min-height: 44px;
+    padding: var(--s2) var(--s4);
+    border: 1px solid var(--trait);
+    border-radius: var(--r3);
+    font-size: var(--t-s);
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--encre);
+    cursor: pointer;
+    transition: background-color var(--d-ui) var(--courbe), border-color var(--d-ui) var(--courbe), color var(--d-ui) var(--courbe);
+  }
+
+  .onglets__choix label:hover {
+    border-color: var(--accent);
+  }
+
+  .onglets__choix label.onglets__choix--detail {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding-block: var(--s2);
+    border-radius: var(--r2);
+    text-align: left;
+  }
+
+  .onglets__libelle {
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: var(--ls-petit);
+  }
+
+  /* Le nom en titre, le titre du champion sur sa ligne, plus discret. */
+  .onglets__detail {
+    display: grid;
+    gap: 2px;
+  }
+
+  .onglets__detail strong {
+    font-family: var(--police-titre);
+    font-size: var(--t-l);
+    font-weight: 400;
+    font-style: normal;
+    line-height: 1.15;
+  }
+
+  .onglets__sous {
+    font-size: var(--t-s);
+    line-height: 1.3;
+    color: var(--eteint);
+  }
+
+  .onglets__choix label:has(input:checked) .onglets__sous {
+    color: inherit;
+  }
+
+  .onglets__vue {
+    display: none;
+  }
+
+  /* Le bouton radio, invisible et focalisable, dans son étiquette. */
+  .onglets__radio {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .onglets__choix label:has(input:checked) {
+    background: var(--bouton);
+    border-color: var(--bouton);
+    color: var(--bouton-texte);
+  }
+
+  .onglets__choix label:has(input:focus-visible) {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+  }
+
+  /* La vue de l’onglet choisi, par son rang : six au plus. */
+  .onglets:has(.onglets__choix label:nth-child(1) input:checked) .onglets__vue:nth-child(1),
+  .onglets:has(.onglets__choix label:nth-child(2) input:checked) .onglets__vue:nth-child(2),
+  .onglets:has(.onglets__choix label:nth-child(3) input:checked) .onglets__vue:nth-child(3),
+  .onglets:has(.onglets__choix label:nth-child(4) input:checked) .onglets__vue:nth-child(4),
+  .onglets:has(.onglets__choix label:nth-child(5) input:checked) .onglets__vue:nth-child(5),
+  .onglets:has(.onglets__choix label:nth-child(6) input:checked) .onglets__vue:nth-child(6) {
+    display: block;
+  }
+
+
+  /* La capture entière tient dans l’écran avec les onglets et sa légende. */
+  .onglets__vue :global(.capture-league__bureau) {
+    width: min(100%, var(--onglets-largeur), calc((100svh - var(--entete) - 13.5rem) * 1.44));
+    margin-inline: auto;
+  }
+
+  /* Côte à côte : l’intro et les onglets en colonne, la capture à droite. */
+  @media (min-width: 861px) {
+    .onglets--cote {
+      display: grid;
+      grid-template-columns: minmax(0, 17rem) minmax(0, 1fr);
+      grid-template-rows: auto 1fr;
+      column-gap: var(--s7);
+      align-items: start;
+    }
+
+    .onglets--cote .onglets__intro {
+      grid-column: 1;
+    }
+
+    .onglets--cote .onglets__choix {
+      grid-column: 1;
+      flex-direction: column;
+      align-items: stretch;
+      margin-top: var(--s4);
+    }
+
+    .onglets--cote .onglets__vues {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+    }
+
+    .onglets--cote .onglets__vue :global(.capture-league__bureau) {
+      margin-inline: 0;
+    }
+  }
+
+  .onglets__vue :global(.onglets__lien) {
+    margin-top: var(--s1);
+  }
+
+  @media (max-width: 860px) {
+    .onglets__choix label {
+      flex: 1 1 auto;
+      justify-content: center;
+      padding-inline: var(--s3);
+      font-size: var(--t-xs);
+    }
+
+    /* En pile, une seule rangée d’onglets qui défile (règle E7) : un fondu
+       de bord dit qu’il en reste, à droite tant que la rangée n’est pas au
+       bout, à gauche dès qu’elle a défilé (le script pose `data-defile`) ;
+       la marge de fin laisse le dernier sortir du fondu. Sans script, le
+       fondu de droite reste seul, toujours. */
+    .onglets--pile .onglets__choix {
+      --fondu-debut: 0px;
+      --fondu-fin: 72px;
+
+      flex-wrap: nowrap;
+      margin-inline: calc(-1 * var(--s4));
+      padding: 2px var(--s7) 4px var(--s4);
+      overflow-x: auto;
+      scroll-snap-type: x proximity;
+      scroll-padding-inline: var(--s7) var(--s4);
+      scrollbar-width: none;
+      -webkit-mask-image: linear-gradient(to right, transparent, var(--encre) var(--fondu-debut), var(--encre) calc(100% - var(--fondu-fin)), transparent);
+      mask-image: linear-gradient(to right, transparent, var(--encre) var(--fondu-debut), var(--encre) calc(100% - var(--fondu-fin)), transparent);
+    }
+
+    .onglets--pile .onglets__choix[data-defile='milieu'] {
+      --fondu-debut: 40px;
+    }
+
+    .onglets--pile .onglets__choix[data-defile='fin'] {
+      --fondu-debut: 40px;
+      --fondu-fin: 0px;
+    }
+
+    .onglets--pile .onglets__choix::-webkit-scrollbar {
+      display: none;
+    }
+
+    .onglets--pile .onglets__choix label {
+      flex: none;
+      scroll-snap-align: start;
+    }
+
+    .onglets__vue :global(.capture-league__mobile) {
+      width: min(100%, 340px, calc((100svh - var(--entete) - 15rem) * 0.4614));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .onglets__choix label {
+      transition: none;
+    }
+  }
+
+  @media print {
+    .onglets__choix {
+      display: none;
+    }
+
+    .onglets__vue {
+      display: block !important;
+      margin-bottom: var(--s5);
+    }
+  }
+</style>

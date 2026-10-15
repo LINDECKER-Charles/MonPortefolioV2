@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+  <title>Saxophone</title>
+  <path d="m32 9 5-3 2 2-4.5 3M32 9c-3 2-3 4-3 8v12c0 6-3 10-8 10-4.6 0-7.8-3-9-8M34.5 11C33 12 33 14 33 17v12c0 8-4.5 13-12 13-6.5 0-10.6-4-11.3-10.2M29 17h-4m4 5h-4m4 5h-4"/>
+  <ellipse cx="10.7" cy="29.4" rx="5.6" ry="2.6" transform="rotate(-20 10.7 29.4)"/>
+</svg>

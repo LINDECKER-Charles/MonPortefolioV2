@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 220" width="440" height="220" class="v-blr">
+  <title>Une réussite qui passe par le serveur</title>
+  <style>
+    svg:root{color:#141312;--trait:#7b7368;--filet:#d2ccc1;--surface:#fbfaf7;--laiton:#7a4f10;--lanterne:#f0b24a}
+    @media (prefers-color-scheme:dark){svg:root{color:#e4e7ee;--trait:#687083;--filet:#262b37;--surface:#1a1e29;--laiton:#f0b24a}}
+    .v-blr .t{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+    .v-blr .f{stroke-width:1}
+    .v-blr .h{fill:none;stroke:var(--trait);stroke-width:.7;stroke-linecap:round}
+    .v-blr .a{fill:var(--filet)}
+    .v-blr .v{fill:var(--surface)}
+    .v-blr .halo{fill:var(--lanterne);opacity:.22}
+    .v-blr .rayon{fill:none;stroke:color-mix(in srgb,var(--lanterne) 70%,var(--laiton));stroke-width:.9;stroke-linecap:round;stroke-dasharray:.1 3.2}
+    .v-blr .on{fill:var(--lanterne);stroke:var(--laiton);stroke-width:1;stroke-linejoin:round}
+    .v-blr .flamme{fill:var(--lanterne);stroke:var(--laiton);stroke-width:.6;stroke-linejoin:round}
+  </style>
+  <g transform="scale(2)">
+  <path class="t f" d="M12 100H208"/>
+  <path class="h" d="M18 104h9M36 104h9M54 104h9M72 104h9M90 104h9M108 104h9M126 104h9M144 104h9M162 104h9M180 104h9M198 104h9"/>
+  <path class="t a" d="M98 30h46v70H98z"/>
+  <path class="t a" d="M90 38h46v62H90z"/>
+  <path class="t v" d="M82 46h46v54H82z"/>
+  <path class="t f" d="M89 57h28M89 65h20M89 73h24M89 81h16"/>
+  <path class="h" d="M82 90L86 86M82 94L90 86M82 98L94 86M84 100L98 86M88 100L102 86M92 100L106 86M96 100L110 86M100 100L114 86M104 100L118 86M108 100L122 86M112 100L126 86M116 100L128 88M120 100L128 92M124 100L128 96"/>
+  <path class="t f" d="M22 60h48M64 55l6 5-6 5"/>
+  <path class="t f v" d="M28 42.8L29.26 45.74L32.2 47L29.26 48.26L28 51.2L26.74 48.26L23.8 47L26.74 45.74Z"/>
+  <path class="t f" d="M144 40h40M178 35l6 5-6 5M186 30h22"/>
+  <circle class="halo" cx="196" cy="22" r="7.82"/>
+    <path class="on" d="M196 17.4L197.38 20.62L200.6 22L197.38 23.38L196 26.6L194.62 23.38L191.4 22L194.62 20.62Z"/>
+  <path class="rayon" d="M154 84 133 52"/>
+  <ellipse class="halo" cx="160" cy="90.4" rx="14.4" ry="16"/>
+  <g transform="translate(140.8 67.52) scale(1.6)">
+    <path class="a" d="M8.8 9.3h6.4v8.4H8.8z"/>
+    <path class="flamme" d="M12 11c1.6 1.7 2.2 3 2.2 4.1a2.2 2.2 0 0 1-4.4 0c0-1.1.6-2.4 2.2-4.1Z" stroke-width="0.52"/>
+    <path class="t" style="stroke-width:1" d="M10.3 4.4a1.7 1.7 0 0 1 3.4 0M12 4.4v1.4M7.9 9.3 12 5.8l4.1 3.5ZM8.8 9.3v8.4M15.2 9.3v8.4M7.4 17.7h9.2M9.2 20.3h5.6M10.2 17.7l-.6 2.6M13.8 17.7l.6 2.6"/>
+  </g>
+  </g>
+</svg>

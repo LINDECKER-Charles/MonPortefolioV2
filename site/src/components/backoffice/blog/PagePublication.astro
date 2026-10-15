@@ -1,0 +1,57 @@
+---
+/**
+ * Publication : à gauche, les deux gestes explicites (publier maintenant,
+ * programmer une date) puis la suppression, repliée ; à droite, la version
+ * à publier en fiche à filets (adresse, visibilité, version de travail) :
+ * la zone éclairée de l’écran. Publier et programmer restent désactivés
+ * tant qu’une modification n’est pas enregistrée (scripts/blog-editor.ts).
+ */
+---
+
+<section class="blog-page blog-publication" data-blog-page="publication" aria-labelledby="blog-publication-title" hidden>
+  <div class="blog-publication-layout">
+    <div class="blog-publication-actions">
+      <div class="bo-carte blog-carte">
+        <h3 id="blog-publication-title">Choisir le moment</h3>
+        <p class="blog-section-intro">Enregistrez votre version et relisez son aperçu avant de la mettre en ligne.</p>
+        <div class="blog-publish-now">
+          <h4>Publier dès maintenant</h4>
+          <p>La version enregistrée devient visible sur le blog.</p>
+          <div class="bo-actions">
+            <button class="bo-button bo-button--primary" id="blog-publish" type="button" disabled>Publier maintenant</button>
+            <button class="bo-button" id="blog-unpublish" type="button" hidden>Revenir en brouillon</button>
+          </div>
+        </div>
+        <form id="blog-schedule-form">
+          <fieldset><legend class="bo-sr">Programmer l’article</legend>
+            <h4>Programmer une publication</h4>
+            <label for="blog-scheduled-at">Date et heure de publication</label>
+            <input id="blog-scheduled-at" type="datetime-local" required aria-describedby="blog-timezone blog-schedule-help" />
+            <p class="bo-help" id="blog-timezone"></p>
+            <p class="bo-help" id="blog-schedule-help">La programmation fige cette version. Si vous la retouchez ensuite, reprogrammez pour inclure vos retouches.</p>
+            <button class="bo-button" id="blog-schedule" type="submit" disabled>Programmer la publication</button>
+          </fieldset>
+        </form>
+      </div>
+      <details class="bo-details blog-danger-zone">
+        <summary>Supprimer l’article</summary>
+        <div class="bo-details__contenu">
+          <p>Cette action supprime le brouillon, la version publiée et sa programmation éventuelle.</p>
+          <button class="bo-button bo-button--danger" id="blog-delete" type="button" hidden>Supprimer l’article</button>
+        </div>
+      </details>
+    </div>
+
+    <aside class="bo-carte blog-publication-review foyer" aria-labelledby="blog-review-heading">
+      <h3 id="blog-review-heading">La version à publier</h3>
+      <strong id="blog-review-title">Nouvel article</strong>
+      <p id="blog-review-excerpt"></p>
+      <dl>
+        <div><dt>Adresse après publication</dt><dd id="blog-review-url"></dd></div>
+        <div><dt>Visibilité</dt><dd id="blog-review-visibility"></dd></div>
+        <div><dt>Version de travail</dt><dd id="blog-review-changes"></dd></div>
+      </dl>
+      <p class="bo-help">La Rédaction reste votre espace de travail&nbsp;: seule une publication explicite met vos retouches en ligne.</p>
+    </aside>
+  </div>
+</section>

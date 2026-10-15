@@ -1,0 +1,83 @@
+---
+/**
+ * Un picto au trait de League Of Data Base (LOD-03, LOD-05 à LOD-12), inséré
+ * dans la page depuis src/assets/visuels/league-of-database/<id>.svg : aucune
+ * requête, et il suit les jetons du thème, jour et nuit. Même main que les
+ * pictos des verbes (GLO-04) : grille de 48, trait de 1,75 en currentColor.
+ *
+ * Classes des fichiers, recolorées ici : p-doux (filet), p-pointille,
+ * p-aplat (encre très diluée), p-plein (encre), p-creux et p-fond (trait ou
+ * aplat à la couleur du fond qui porte le picto, `--picto-fond`), p-lumiere
+ * (la lanterne, réservée au jalon atteint, LOD-12). Décoratif : le titre de
+ * la carte ou du jalon dit le reste.
+ *
+ *   <PictoLeague id="LOD-03" class="piege__picto" />
+ *
+ * Un identifiant absent du registre (config/visuels.ts) ou sans fichier fait
+ * échouer le build. `data-visuel` garde la trace de l’emplacement.
+ */
+import { visuelParId } from '../../../config/visuels';
+
+interface Props {
+  id: string;
+  class?: string;
+}
+
+const { id, class: classe } = Astro.props;
+const visuel = visuelParId(id);
+if (!visuel || visuel.methode !== 'SVG' || !visuel.fichier) throw new Error(`<PictoLeague id="${id}"> : dessin SVG absent du registre.`);
+
+const fichiers = import.meta.glob<string>('/src/assets/visuels/league-of-database/*.svg', { query: '?raw', import: 'default', eager: true });
+const brut = fichiers[`/${visuel.fichier}`];
+if (!brut) throw new Error(`<PictoLeague id="${id}"> : ${visuel.fichier} manquant.`);
+
+const viewBox = brut.match(/<svg\b[^>]*\sviewBox="([^"]+)"/)?.[1] ?? '0 0 48 48';
+// Le <title> sert à qui ouvre le fichier seul ; dans la page, le picto est décoratif.
+const corps = brut
+  .replace(/^[\s\S]*?<svg\b[^>]*>/, '')
+  .replace(/<\/svg>\s*$/, '')
+  .replace(/<title>[\s\S]*?<\/title>/, '')
+  .trim();
+---
+
+<svg
+  class:list={['picto-league', classe]}
+  viewBox={viewBox}
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.75"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+  data-visuel={id}
+  set:html={corps}
+/>
+
+<style>
+  .picto-league {
+    display: block;
+    width: 96px;
+    height: auto;
+    aspect-ratio: 1;
+    color: var(--encre);
+  }
+
+  .picto-league :global(.p-doux) {
+    stroke: var(--trait);
+    stroke-opacity: 1;
+  }
+
+  .picto-league :global(.p-creux) {
+    stroke: var(--picto-fond, var(--surface));
+  }
+
+  .picto-league :global(.p-fond) {
+    fill: var(--picto-fond, var(--surface));
+  }
+
+  .picto-league :global(.p-lumiere) {
+    fill: var(--lanterne);
+    fill-opacity: 0.7;
+  }
+</style>

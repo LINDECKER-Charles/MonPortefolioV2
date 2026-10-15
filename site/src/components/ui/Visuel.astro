@@ -1,0 +1,501 @@
+---
+/**
+ * Un emplacement de visuel de l’inventaire de la refonte (config/visuels.ts).
+ *
+ * Le fichier attendu existe : l’image s’affiche, au ratio du registre, avec
+ * l’alt prévu. Un dessin vectoriel (SVG) est inséré en ligne, et non par un
+ * <img> : son trait en `currentColor` suit la couleur du texte et les jetons
+ * (lune la nuit, encre le jour, clair dans un acte de veille) ; son alt
+ * devient son nom accessible, ou il est décoratif.
+ *
+ * Une image générée a deux rendus dessinés, le jour (`fichier`) et la nuit
+ * (`<ID>_<l>x<h>.nuit.webp`, `fichierNuitAffiche`, qui suit aussi une reprise
+ * comme PRJ-03) : les deux sont posés, avec le même alt et les mêmes tailles,
+ * et un seul s’affiche, selon les trois portes de la nuit de
+ * styles/jetons.css : le jour par défaut, la nuit sous
+ * `:root[data-theme='nuit']`, dans un acte sombre (`.acte-veille`,
+ * `.acte-bleu`) et, sans JavaScript, sous `prefers-color-scheme: dark` ;
+ * l’impression repasse au jour. L’autre est en `display: none` : hors de
+ * l’arbre d’accessibilité, il n’est lu par aucun lecteur d’écran. Pas de
+ * fondu entre les deux : la bascule de thème (View Transitions, ou couleurs
+ * qui glissent) ne montre jamais deux images ; scripts/theme.ts charge et
+ * décode la version visée des images proches de l’écran avant la bascule.
+ *
+ * Seule la version affichée part sur le réseau :
+ *   - avec JavaScript, les deux versions sont chargées à la demande
+ *     (`loading="lazy"`), toujours : une image différée en `display: none`
+ *     n’est jamais téléchargée, et celle qui s’affiche dans l’écran part dès
+ *     la première mise en page. Une page qui demande `loading="eager"`
+ *     obtient `fetchpriority="high"` sur les deux, pas un chargement
+ *     immédiat, qui téléchargerait aussi la version masquée ;
+ *   - sans JavaScript, le navigateur ignore le chargement différé : une source
+ *     neutre (`ImageAdaptative`, `(scripting: none)`) remplace la version que
+ *     `prefers-color-scheme` masque ;
+ *   - `acte` : l’emplacement vit toujours dans un acte sombre, où la nuit
+ *     s’affiche dans les deux thèmes. La nuit y garde le chargement demandé ;
+ *     le jour, qui ne sert qu’à l’impression, ne part jamais à l’écran.
+ *
+ * Le fichier manque : deux rendus, selon le moment.
+ *   - En ligne (le build de production, par défaut) : un cadre neutre au bon
+ *     ratio, l’aplat des emplacements de la direction « Lanterne » et, dès
+ *     qu’il est assez grand, l’emblème en filigrane. Il porte l’alt du
+ *     registre (role="img"), ou reste décoratif. Le visiteur ne voit jamais la
+ *     commande de production.
+ *   - En brouillon (`astro dev`, ou `VISUELS_BROUILLON=1` au build : voir
+ *     lib/visuels.ts) : un cadre hachuré porte la commande, identifiant,
+ *     méthode et priorité, sujet, composition, format. La page garde sa mise
+ *     en page avant que l’image arrive, et `npm run visuels` liste ce qu’il
+ *     reste à produire.
+ *
+ *   <Visuel id="PRJ-01" sizes="(max-width: 860px) 100vw, 50vw" />
+ *   <Visuel id="ACC-03" foyer />          la zone éclairée de l’écran
+ *
+ *   <Visuel id="GUP-01" largeur="320px" />    largeur d’affichage (bornée à 100 %)
+ *   <Visuel id="PRJ-01" ratioMobile="16 / 10" />   remplace le ratio du registre
+ *   <Visuel id="PVZ-04" acte />           posé dans un acte sombre (la nuit à l’écran)
+ *   <Visuel id="GUP-01" masqueSous={860} />   masqué en CSS sous 860 px : rien à télécharger
+ *   <Visuel id="CON-02" masqueSansScript />   affiché par un script seulement
+ *
+ * Le ton vient de l’acte qui contient l’emplacement, par les jetons : clair
+ * sur la pierre de la page, sombre dans un acte de veille (`.acte-veille`) ou
+ * l’acte bleu. Le composant n’a pas de variante de ton, et une page ne pose
+ * pas d’acte autour d’un seul emplacement pour le teinter : une même série
+ * garde le même traitement d’une page à l’autre.
+ *
+ * Une seule lumière par écran : seul l’emplacement marqué `foyer` reçoit la
+ * flaque de jour ou le halo de la lanterne. Un emplacement ordinaire n’a
+ * aucune lueur, de jour comme de nuit. Une image générée porte sa lanterne
+ * dessinée, qui est la lumière de l’écran : elle ne reçoit pas le halo du
+ * foyer, qui doublerait la source et que le cadre rognerait en rectangle.
+ *
+ * Un identifiant absent du registre fait échouer le build : pas de faute de
+ * frappe silencieuse. En brouillon, le cadre s’adapte à sa taille (requêtes de
+ * conteneur sur la largeur et la hauteur) : la consigne s’arrête net après
+ * quatre lignes, deux dans un cadre bas, et disparaît sous 260 px de large ou
+ * 190 px de haut ; le format tient sur une ligne ; sous 140 px, il ne reste
+ * que l’identifiant, en petit et sans pastille, sur les hachures. Aucun texte
+ * ne déborde du cadre : la page n’a rien à corriger.
+ *
+ * Les règles de base du composant ont une spécificité nulle
+ * (`:global(:where(…))`, hors de la portée d’Astro, qui leur ajouterait son
+ * attribut) : la classe qu’une page passe par `class` l’emporte toujours,
+ * même posée avec `:global(.ma-classe)`.
+ */
+import type { ImageMetadata } from 'astro';
+import ImageAdaptative from './ImageAdaptative.astro';
+import { fichierNuitAffiche, fichiersAttendus, visuelParId } from '../../config/visuels';
+import { typo } from '../../lib/typo';
+import { svgEnLigne, visuelsEnBrouillon } from '../../lib/visuels';
+
+interface Props {
+  id: string;
+  /** Remplace l’alt prévu du registre (par exemple une légende propre à la page). */
+  alt?: string;
+  /** Attribut `sizes` de l’image : largeur d’affichage selon la fenêtre. */
+  sizes?: string;
+  loading?: 'lazy' | 'eager';
+  /** La zone éclairée de l’écran (une seule par écran). */
+  foyer?: boolean;
+  /** Ratio d’affichage, s’il diffère du registre (« 16 / 10 »). */
+  ratio?: string;
+  /** Ratio sous 860 px, s’il diffère du registre. */
+  ratioMobile?: string;
+  /** Largeur d’affichage (longueur CSS : « 320px », « 60% »), bornée à 100 %. */
+  largeur?: string;
+  /** Posé dans un acte sombre (`.acte-veille`, `.acte-bleu`) : la nuit s’y affiche dans les deux thèmes. */
+  acte?: boolean;
+  /** Largeur (px) sous laquelle la page masque l’emplacement en CSS : sans JavaScript, rien n’y est téléchargé. */
+  masqueSous?: number;
+  /** L’emplacement ne s’affiche qu’avec JavaScript (un état posé par un script) : sans lui, rien n’est téléchargé. */
+  masqueSansScript?: boolean;
+  class?: string;
+}
+
+const { id, alt: altPropre, sizes = '100vw', loading = 'lazy', foyer = false, ratio: ratioPropre, ratioMobile: ratioMobilePropre, largeur, acte = false, masqueSous, masqueSansScript = false, class: classe } = Astro.props;
+
+const visuel = visuelParId(id);
+if (!visuel) throw new Error(`<Visuel id="${id}"> : identifiant absent de src/config/visuels.ts`);
+
+/** Fichiers déjà livrés : le dossier des visuels et les photos de Charles. */
+const images = import.meta.glob<ImageMetadata>(
+  ['/src/assets/visuels/**/*.{webp,png,jpg,jpeg,avif}', '/src/assets/photos/*.webp'],
+  { eager: true, import: 'default' },
+);
+/** Les dessins vectoriels, insérés en ligne : ils suivent `currentColor`. */
+const dessins = import.meta.glob<string>('/src/assets/visuels/**/*.svg', { eager: true, query: '?raw', import: 'default' });
+/** L’emblème seul (GLO-01), en filigrane des cadres en attente, dès qu’il est livré. */
+const emblemes = import.meta.glob<string>('/src/assets/visuels/global/GLO-01.svg', { eager: true, query: '?url&no-inline', import: 'default' });
+const embleme = emblemes['/src/assets/visuels/global/GLO-01.svg'];
+
+const attendus = fichiersAttendus(visuel);
+// Un emplacement qui reprend plusieurs fichiers (ACC-15) se compose de plusieurs <Visuel>.
+const fichier = attendus.length === 1 ? attendus[0] : undefined;
+const image = fichier ? images[`/${fichier}`] : undefined;
+const dessin = fichier ? dessins[`/${fichier}`] : undefined;
+// Le rendu de nuit d’une image générée (la sienne, ou celle qu’il reprend), s’il est livré.
+const nuit = image ? fichierNuitAffiche(visuel) : null;
+const imageNuit = nuit ? images[`/${nuit}`] : undefined;
+
+const alt = altPropre ?? visuel.alt;
+const ratio = ratioPropre ?? visuel.ratio ?? '16 / 10';
+const ratioMobile = ratioMobilePropre ?? visuel.ratioMobile;
+const brouillon = visuelsEnBrouillon();
+const style = [`--visuel-ratio:${ratio}`, !brouillon && embleme && `--visuel-embleme:url("${embleme}")`, ratioMobile && `--visuel-ratio-mobile:${ratioMobile}`, largeur && `--visuel-largeur:${largeur}`].filter(Boolean).join(';');
+// Un palier étroit (480) pour les vignettes et les colonnes de 320 à 360 px, puis la moitié et la pleine largeur.
+const largeurs = image ? [...new Set([480, Math.round(image.width / 2), image.width])].filter((l) => (l >= 320 && l <= image.width) || l === image.width).sort((a, b) => a - b) : [];
+
+/**
+ * Le chargement des deux rendus d’une image générée (voir l’en-tête) : différé
+ * pour les deux, sauf la nuit d’un acte sombre ; la priorité demandée par la
+ * page passe en `fetchpriority`. Sans JavaScript, la source neutre écarte la
+ * version que la page masque.
+ */
+const SANS_SCRIPT = 'screen and (scripting: none)';
+const masque = masqueSansScript ? SANS_SCRIPT : masqueSous ? `${SANS_SCRIPT} and (max-width: ${masqueSous}px)` : undefined;
+const priorite: 'high' | undefined = loading === 'eager' ? 'high' : undefined;
+const rendus = imageNuit
+  ? {
+      jour: { loading: 'lazy' as const, fetchpriority: acte ? undefined : priorite, neutre: acte ? SANS_SCRIPT : `${SANS_SCRIPT} and (prefers-color-scheme: dark)` },
+      nuit: { loading: acte ? loading : ('lazy' as const), fetchpriority: priorite, neutre: acte ? undefined : `${SANS_SCRIPT} and (prefers-color-scheme: light)` },
+    }
+  : { jour: { loading, fetchpriority: priorite, neutre: undefined }, nuit: undefined };
+/** La source neutre d’un rendu : celle du thème qu’il ne montre pas, ou celle de l’emplacement masqué. */
+const neutre = (propre: string | undefined) => [propre, masque].filter(Boolean).join(', ') || undefined;
+
+const NATURE = { IMG: 'Image à générer', SVG: 'Dessin à faire', FIG: 'Figure à coder', CAP: 'Capture à faire', PHO: 'Photo réelle', OG: 'Image de partage' } as const;
+const reprise = visuel.reprend?.length ? `reprend ${visuel.reprend.join(', ')}` : '';
+const mobile = ratioMobile && !/mobile/.test(visuel.format) ? `${ratioMobile.replace(' / ', ':')} sur mobile` : '';
+const format = [visuel.format, mobile, reprise].filter(Boolean).join(' · ');
+---
+
+{
+  dessin ? (
+    <figure class:list={['visuel', 'visuel--dessin', { foyer }, classe]} style={style} data-visuel={id} set:html={svgEnLigne(dessin, { alt })} />
+  ) : image ? (
+    <figure class:list={['visuel', { foyer, 'visuel--jour-nuit': imageNuit }, classe]} style={style} data-visuel={id} data-acte={acte ? '' : undefined}>
+      <ImageAdaptative
+        src={image}
+        widths={largeurs}
+        sizes={sizes}
+        alt={alt}
+        loading={rendus.jour.loading}
+        fetchpriority={rendus.jour.fetchpriority}
+        neutre={neutre(rendus.jour.neutre)}
+        pictureAttributes={imageNuit ? { class: 'visuel__jour', 'data-rendu': 'jour' } : {}}
+      />
+      {
+        imageNuit && rendus.nuit && (
+          <ImageAdaptative
+            src={imageNuit}
+            widths={largeurs}
+            sizes={sizes}
+            alt={alt}
+            loading={rendus.nuit.loading}
+            fetchpriority={rendus.nuit.fetchpriority}
+            neutre={neutre(rendus.nuit.neutre)}
+            pictureAttributes={{ class: 'visuel__nuit', 'data-rendu': 'nuit' }}
+          />
+        )
+      }
+    </figure>
+  ) : !brouillon ? (
+    <figure
+      class:list={['visuel', 'visuel--attente', { 'visuel--foyer': foyer, 'visuel--embleme': embleme }, classe]}
+      style={style}
+      data-visuel={id}
+      data-manquant
+      {...(alt ? { role: 'img', 'aria-label': alt } : { 'aria-hidden': 'true' })}
+    />
+  ) : (
+    <figure class:list={['visuel', 'visuel--manquant', { 'visuel--foyer': foyer, 'visuel--capture': visuel.methode === 'CAP' }, classe]} style={style} data-visuel={id} data-manquant>
+      <div class="visuel__contenu">
+        <p class="visuel__id">
+          <strong>{id}</strong>
+          <span>{NATURE[visuel.methode]} · {visuel.priorite === 'socle' ? 'socle' : 'élargi'}</span>
+        </p>
+        <p class="visuel__sujet">{typo(visuel.sujet)}</p>
+        <p class="visuel__consigne">{typo(visuel.composition)}</p>
+        <p class="visuel__format">{typo(format)}</p>
+      </div>
+    </figure>
+  )
+}
+
+<style>
+  /* Spécificité nulle, hors de la portée d’Astro : la classe d’une page l’emporte. */
+  :global(:where(.visuel)) {
+    width: var(--visuel-largeur, auto);
+    max-width: 100%;
+    margin: 0;
+    aspect-ratio: var(--visuel-ratio);
+    border-radius: var(--r2);
+    overflow: hidden;
+  }
+
+  .visuel :global(img),
+  .visuel :global(picture) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Une image générée porte sa lanterne dessinée : pas de halo de foyer en plus. */
+  .visuel--jour-nuit.foyer::before {
+    content: none;
+  }
+
+  /* Deux rendus d’une image générée : un seul s’affiche, l’autre n’existe ni
+     pour la page, ni pour les lecteurs d’écran, ni pour le réseau tant qu’il
+     reste caché (chargement à la demande). Les trois portes de la nuit de
+     styles/jetons.css, puis l’impression, qui repasse au jour. */
+  .visuel > :global(.visuel__nuit) {
+    display: none;
+  }
+
+  :global(:root[data-theme='nuit']) .visuel > :global(.visuel__jour),
+  :global(.acte-veille) .visuel > :global(.visuel__jour),
+  :global(.acte-bleu) .visuel > :global(.visuel__jour) {
+    display: none;
+  }
+
+  :global(:root[data-theme='nuit']) .visuel > :global(.visuel__nuit),
+  :global(.acte-veille) .visuel > :global(.visuel__nuit),
+  :global(.acte-bleu) .visuel > :global(.visuel__nuit) {
+    display: block;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme])) .visuel > :global(.visuel__jour) {
+      display: none;
+    }
+
+    :global(:root:not([data-theme])) .visuel > :global(.visuel__nuit) {
+      display: block;
+    }
+  }
+
+  @media print {
+    .visuel > :global(.visuel__jour),
+    :global(:root[data-theme='nuit']) .visuel > :global(.visuel__jour),
+    :global(:root:not([data-theme])) .visuel > :global(.visuel__jour),
+    :global(.acte-veille) .visuel > :global(.visuel__jour),
+    :global(.acte-bleu) .visuel > :global(.visuel__jour) {
+      display: block;
+    }
+
+    .visuel > :global(.visuel__nuit),
+    :global(:root[data-theme='nuit']) .visuel > :global(.visuel__nuit),
+    :global(:root:not([data-theme])) .visuel > :global(.visuel__nuit),
+    :global(.acte-veille) .visuel > :global(.visuel__nuit),
+    :global(.acte-bleu) .visuel > :global(.visuel__nuit) {
+      display: none;
+    }
+  }
+
+  /* Un dessin vectoriel, en ligne : son trait suit la couleur du texte. */
+  .visuel--dessin {
+    color: var(--encre);
+  }
+
+  .visuel--dessin > :global(svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* L’image manquante : un cadre hachuré qui ne se prend pas pour une image.
+     Conteneur en largeur et en hauteur : la commande s’adapte au cadre. */
+  :global(:where(.visuel--manquant)) {
+    position: relative;
+    isolation: isolate;
+    container-type: size;
+    border: 1px dashed var(--trait);
+    background:
+      repeating-linear-gradient(-45deg, var(--hachure) 0 1px, transparent 1px 7px),
+      var(--emplacement);
+    color: var(--encre);
+  }
+
+  /* En ligne : un aplat neutre au bon ratio, l’emblème en filigrane. */
+  :global(:where(.visuel--attente)) {
+    position: relative;
+    isolation: isolate;
+    background: var(--emplacement);
+    box-shadow: inset 0 0 0 1px var(--filet);
+  }
+
+  .visuel--embleme::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: clamp(32px, 22%, 88px);
+    margin: auto;
+    aspect-ratio: 1;
+    background: var(--trait);
+    opacity: 0.3;
+    -webkit-mask: var(--visuel-embleme) center / contain no-repeat;
+    mask: var(--visuel-embleme) center / contain no-repeat;
+  }
+
+  /* La lumière de la scène, seulement sur l’emplacement qui en est le foyer :
+     une seule lumière par écran. */
+  .visuel--foyer::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(55% 65% at 60% 45%, var(--lumiere), transparent 72%);
+  }
+
+  .visuel__contenu {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+    padding: clamp(10px, 5cqi, 24px);
+    overflow: hidden;
+  }
+
+  .visuel__contenu p {
+    margin: 0;
+  }
+
+  .visuel__id {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s2);
+    align-self: flex-start;
+    max-width: 100%;
+    padding: 2px var(--s2);
+    border-radius: var(--r1);
+    background: var(--encre);
+    color: var(--fond);
+    font-size: var(--t-xs);
+    line-height: 1.5;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: var(--ls-petit);
+    white-space: nowrap;
+  }
+
+  .visuel__id strong {
+    font-weight: 600;
+  }
+
+  .visuel__id span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0.82;
+  }
+
+  .visuel--capture .visuel__id {
+    background: var(--accent);
+    color: var(--accent-texte);
+  }
+
+  /* Le texte s’arrête net (points de suspension), jamais tranché par le cadre. */
+  .visuel__sujet,
+  .visuel__consigne {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .visuel__sujet {
+    flex: none;
+    margin-top: auto !important;
+    font-family: var(--police-titre);
+    font-style: italic;
+    font-size: var(--t-l);
+    line-height: 1.1;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+  }
+
+  .visuel__consigne,
+  .visuel__format {
+    flex: none;
+    max-width: 44ch;
+    font-size: var(--t-xs);
+    line-height: 1.4;
+    color: var(--eteint);
+  }
+
+  .visuel__consigne {
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+  }
+
+  .visuel__format {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-variant-numeric: tabular-nums;
+  }
+
+  @container (min-width: 520px) {
+    .visuel__sujet {
+      font-size: var(--t-xl);
+    }
+  }
+
+  @container (max-height: 250px) {
+    .visuel__consigne {
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+    }
+  }
+
+  @container (max-width: 260px) or (max-height: 190px) {
+    .visuel__consigne,
+    .visuel__id span {
+      display: none;
+    }
+  }
+
+  @container (max-width: 150px) or (max-height: 140px) {
+    .visuel__format {
+      display: none;
+    }
+
+    .visuel__sujet {
+      font-size: var(--t-xs);
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+    }
+  }
+
+  /* Vignette, sous 140 px : l’identifiant seul, en petit, sans pastille, sur
+     les hachures ; au besoin sur deux lignes. */
+  @container (max-width: 140px) or (max-height: 100px) {
+    .visuel__sujet,
+    .visuel__format {
+      display: none;
+    }
+
+    .visuel__contenu {
+      justify-content: flex-end;
+      padding: var(--s2);
+    }
+
+    .visuel__id,
+    .visuel--capture .visuel__id {
+      padding: 0;
+      background: none;
+      color: var(--eteint);
+    }
+  }
+
+  @container (max-width: 90px) {
+    .visuel__contenu {
+      padding: var(--s1);
+    }
+  }
+
+  @media (max-width: 860px) {
+    :global(:where(.visuel)) {
+      aspect-ratio: var(--visuel-ratio-mobile, var(--visuel-ratio));
+    }
+  }
+</style>

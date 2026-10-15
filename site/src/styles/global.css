@@ -1,0 +1,449 @@
+/*
+ * Socle du site, direction « Lanterne » : base typographique, mise en page,
+ * actes, zone éclairée et les primitives employées partout (bouton, lien
+ * d’action, flèches, surligneur). Les jetons vivent
+ * dans jetons.css ; un composant garde ses propres styles (src/components/ui,
+ * src/components/pages), payés seulement par les pages qui l’emploient.
+ *
+ * Trois principes :
+ *   - une seule lumière par écran : la zone éclairée (.foyer) ;
+ *   - le bleu roi (la lune, la nuit) ne porte que ce qui se clique ;
+ *   - le colza ne surligne qu’un chiffre sourcé, un seul par preuve.
+ */
+@import './jetons.css';
+
+/* ===== Base ===== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Une ancre ne disparaît jamais sous l’en-tête collant. */
+  scroll-padding-top: calc(var(--entete) + var(--s5));
+  scroll-behavior: smooth;
+  background: var(--fond);
+  /* La Serif n’a qu’une graisse : jamais de faux gras. */
+  font-synthesis: style small-caps;
+}
+
+body {
+  margin: 0;
+  background: var(--fond);
+  color: var(--encre);
+  font-family: var(--police-texte);
+  font-size: var(--t-m);
+  line-height: 1.6;
+  font-weight: 400;
+  font-variant-numeric: lining-nums proportional-nums;
+  -webkit-font-smoothing: antialiased;
+  font-kerning: normal;
+  overflow-x: clip;
+}
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+/* Les halos (foyer, captures) débordent de leur bloc : jamais de la page. */
+main,
+footer {
+  overflow-x: clip;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-family: var(--police-titre);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: var(--ls-titre);
+  text-wrap: balance;
+}
+
+p,
+blockquote,
+figure,
+dl,
+dd {
+  margin: 0;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+
+a:hover {
+  color: var(--accent-survol);
+  text-decoration-thickness: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: var(--r1);
+}
+
+/* Un titre atteint par le sommaire reçoit le focus pour les lecteurs d’écran
+   (scripts/entete.ts) : il n’est pas une commande, pas de contour. */
+.cible-sommaire:focus {
+  outline: none;
+}
+
+::selection {
+  background: var(--surligneur);
+  color: var(--sur-surligneur);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+/* ===== Utilitaires ===== */
+.sr {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.evitement {
+  position: absolute;
+  left: var(--s4);
+  top: -100px;
+  z-index: 100;
+  padding: var(--s3) var(--s4);
+  border-radius: var(--r1);
+  background: var(--bouton);
+  color: var(--bouton-texte);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.evitement:focus {
+  top: var(--s3);
+}
+
+.insecable {
+  white-space: nowrap;
+}
+
+/* Chiffres tabulaires : tableaux, identifiants, compteurs. */
+.chiffres {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.petit {
+  font-size: var(--t-xs);
+  line-height: 1.5;
+  color: var(--eteint);
+}
+
+.chapeau {
+  font-size: var(--t-l);
+  line-height: 1.5;
+}
+
+/* La voix de Charles : l’italique d’Instrument Serif. */
+.citation {
+  font-family: var(--police-titre);
+  font-style: italic;
+  font-size: var(--t-xl);
+  line-height: 1.22;
+  letter-spacing: var(--ls-0);
+  color: var(--encre);
+}
+
+.citation:where(blockquote) {
+  margin: var(--s6) 0 0;
+  max-width: 24ch;
+}
+
+.citation cite {
+  display: block;
+  margin-top: var(--s3);
+  font-family: var(--police-texte);
+  font-style: normal;
+  font-size: var(--t-xs);
+  color: var(--eteint);
+}
+
+/* ===== Mise en page ===== */
+.conteneur {
+  width: min(100% - 2 * var(--gouttiere), var(--largeur));
+  margin-inline: auto;
+}
+
+.mesure {
+  max-width: var(--mesure);
+}
+
+/* Actes : un changement de partie, un changement de lumière (règle B6). Les
+   jetons des actes sombres sont dans jetons.css ; leur contenu en hérite. */
+.acte-teinte {
+  background: var(--acte);
+  color: var(--encre);
+}
+
+.acte-veille {
+  background: var(--veille);
+  color: var(--encre);
+}
+
+.acte-bleu,
+.aplat-roi {
+  background: var(--fond);
+  color: var(--encre);
+}
+
+/* La nuit, les actes restent une rupture : proches de la suie, chacun est
+   cerné du filet porteur (--trait, 3,9:1 contre la suie, règle B6). L’acte de
+   veille passe au bleu nuit franc, et la lanterne l’éclaire de l’intérieur,
+   côté visuel (--veille-foyer, à droite par défaut). */
+:root[data-theme='nuit'] :is(.acte-teinte, .acte-bleu, .acte-veille) {
+  box-shadow: inset 0 0 0 1px var(--trait);
+}
+
+:root[data-theme='nuit'] .acte-veille {
+  background:
+    radial-gradient(40% 60% at var(--veille-foyer, 85% 40%), var(--veille-lueur), transparent),
+    var(--veille-nuit);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) :is(.acte-teinte, .acte-bleu, .acte-veille) {
+    box-shadow: inset 0 0 0 1px var(--trait);
+  }
+
+  :root:not([data-theme]) .acte-veille {
+    background:
+      radial-gradient(40% 60% at var(--veille-foyer, 85% 40%), var(--veille-lueur), transparent),
+      var(--veille-nuit);
+  }
+}
+
+/* La zone éclairée : une par écran. Le jour, une flaque de lumière douce ;
+   la nuit, le halo chaud de la lanterne. */
+.foyer {
+  position: relative;
+  isolation: isolate;
+}
+
+.foyer::before {
+  content: '';
+  position: absolute;
+  inset: -18% -14%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(closest-side, var(--lumiere), transparent);
+}
+
+/* ===== Actions : une action principale, un libellé, une destination =====
+   Grammaire des flèches (règle E2) : → page interne, ↓ ancre, ↗ sortie du
+   site. Composants : ui/Bouton.astro et ui/LienAction.astro. */
+.bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s2);
+  min-height: 48px;
+  padding: 0 var(--s5);
+  border: 0;
+  border-radius: var(--r3);
+  background: var(--bouton);
+  color: var(--bouton-texte);
+  font-size: var(--t-s);
+  font-weight: 600;
+  letter-spacing: var(--ls-petit);
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--d-ui) var(--courbe), box-shadow var(--d-ui) var(--courbe);
+}
+
+.bouton:hover {
+  background: var(--bouton-survol);
+  color: var(--bouton-texte);
+  text-decoration: none;
+}
+
+:root[data-theme='nuit'] .bouton,
+.acte-veille .bouton,
+.acte-bleu .bouton {
+  box-shadow: 0 0 32px -6px var(--lanterne-eclat);
+}
+
+.bouton--contour {
+  background: transparent;
+  color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--trait);
+}
+
+.bouton--contour:hover {
+  background: transparent;
+  color: var(--accent-survol);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+:root[data-theme='nuit'] .bouton--contour,
+.acte-veille .bouton--contour,
+.acte-bleu .bouton--contour {
+  box-shadow: inset 0 0 0 1px var(--trait);
+}
+
+/* En ligne, pas en flex : sur deux lignes, la flèche reste collée au dernier
+   mot (espace insécable) au lieu de partir au bord du bloc. Cible de 48 px. */
+.lien-action {
+  display: inline-block;
+  padding-block: var(--s3);
+  font-size: var(--t-s);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* Liens de preuve empilés sous un bloc : 36 px de haut sur ordinateur, la
+   cible de 44 px sous 860 px (règle E7). */
+.lien-action--compact {
+  padding-block: 6px;
+}
+
+@media (max-width: 860px) {
+  .lien-action--compact {
+    padding-block: 10px;
+  }
+}
+
+.fleche {
+  font-family: var(--police-texte);
+  font-weight: 400;
+  font-style: normal;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s3) var(--s5);
+}
+
+/* Le surligneur colza : un seul chiffre sourcé par preuve (règle C1). */
+mark,
+.surligneur {
+  background: var(--surligneur);
+  color: var(--sur-surligneur);
+  padding: 0.02em 0.18em;
+  border-radius: var(--r1);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* Sans JavaScript, une commande qui ne ferait rien ne s’affiche pas. */
+html:not(.js) [data-js-seulement] {
+  display: none !important;
+}
+
+/* ===== Mouvement réduit : tout arrive à l’état final =====
+   Aucune transition (0 s, pas 0,01 ms : la propriété par défaut vaut `all`,
+   et un élément qui change de taille serait mesuré dans son ancien état
+   pendant une image). Les animations, elles, finissent tout de suite. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* ===== Impression : encre sur papier ===== */
+@media print {
+  html,
+  body {
+    background: var(--fond);
+    font-size: var(--t-impression);
+  }
+
+  .ne-pas-imprimer,
+  [data-js-seulement] {
+    display: none !important;
+  }
+
+  .foyer::before {
+    display: none;
+  }
+
+  a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: var(--t-xs);
+    color: var(--eteint);
+    word-break: break-all;
+  }
+
+  figure,
+  .fiche,
+  .etape,
+  .regle {
+    break-inside: avoid;
+  }
+
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  mark,
+  .surligneur {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
+
+/* ===== Scènes et figures ===== */
+/* Les scènes sont leurs propres commandes ; le contour n’apparaît qu’au clavier. */
+.js [data-rejouer] {
+  cursor: pointer;
+}
+
+[data-rejouer]:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 5px;
+  border-radius: var(--r2);
+}
+
+.picto {
+  display: block;
+  flex-shrink: 0;
+}
+
+@media print {
+  [data-figure-animation] * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

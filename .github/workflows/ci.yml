@@ -1,0 +1,137 @@
+name: CI/CD
+
+# Orchestrateur uniquement — cablage et gardes de branches. Tout le travail reel
+# vit dans les workflows reutilisables (_tests, _build, _promote, _deploy), un par
+# responsabilite. Aucune valeur sensible ici : hotes, chemins, domaines et
+# reglages par environnement vivent dans les secrets du depot et dans le ENV_FILE
+# propre a chaque hote.
+#
+# Promotion en deux temps (construire une fois, promouvoir le meme artefact) :
+#   push dev  -> _tests -> fusion dev->test -> _build (:sha + :staging) -> _deploy TEST
+#   push main -> _promote (:staging -> :prod, :latest)                  -> _deploy PROD
+#
+# `test` ne declenche jamais ce workflow : c'est la CI elle-meme qui y pousse.
+# `main` n'est atteinte que par une fusion test->main faite a la main — cette
+# porte humaine est ce qui promeut en production, et la production ne
+# reconstruit jamais l'image.
+#
+# Tant que la V1 du portfolio occupe charles-lindecker.com, une fusion dans main
+# ne met rien en ligne : le deploiement de production refuse de demarrer sur un
+# domaine qu'un autre projet de l'hote declare deja. L'ordre de la bascule est
+# dans docs/bascule.md.
+on:
+  push:
+    branches: [dev, main]
+  # Une PR vers dev (Dependabot compris) ne joue que les tests : les jobs
+  # suivants sont gardes sur refs/heads/dev, et la ref d'une PR est
+  # refs/pull/<n>/merge.
+  pull_request:
+    branches: [dev]
+  # Rejouer la chaine sans nouveau commit : indispensable apres une rotation de
+  # secret, puisqu'un secret change ne parvient sur l'hote qu'au deploiement
+  # suivant. Les gardes `if` ci-dessous restent valides — un declenchement
+  # manuel sur dev suit le chemin dev, sur main le chemin main.
+  #
+  # GitHub n'expose ce declencheur que si le workflow le porte sur la branche
+  # PAR DEFAUT : `gh workflow run` ne repondra qu'une fois cette version fusionnee
+  # dans main.
+  workflow_dispatch:
+
+# Moindre privilege : le jeton par defaut ne peut que lire, et chaque job qui a
+# besoin de plus le declare pour lui seul. Un workflow reutilisable appele ne
+# peut que REDUIRE les permissions de son appelant, jamais les etendre : c'est
+# pourquoi `packages: write` est pose sur les jobs `build` et `promote` ici, et
+# pas seulement a l'interieur de _build.yml et _promote.yml.
+permissions:
+  contents: read
+
+# Deux poussees rapprochees sur dev lanceraient deux pipelines en parallele : la
+# fusion dev->test des deux, puis deux deploiements concurrents dans le MEME
+# repertoire de l'hote. On serialise par branche.
+# `cancel-in-progress: false` : interrompre un deploiement deja commence
+# laisserait le serveur a moitie mis a jour, ce qui est pire que d'attendre.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # ─────────────────────────────── chemin dev ────────────────────────────────
+  tests:
+    if: github.ref == 'refs/heads/dev' || github.event_name == 'pull_request'
+    uses: ./.github/workflows/_tests.yml
+    secrets:
+      CADRAGE_DEPLOY_KEY: ${{ secrets.CADRAGE_DEPLOY_KEY }}
+
+  merge-to-test:
+    needs: tests
+    if: github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # seul job du depot qui pousse un commit (sur la branche test)
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Fusion dev -> test (creee depuis main si absente)
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch --all --prune
+          if git show-ref --verify --quiet refs/remotes/origin/test; then
+            git checkout -B test origin/test
+          else
+            git checkout -B test origin/main
+          fi
+          git merge --no-ff --no-edit "${GITHUB_SHA}"
+          git push origin HEAD:test
+
+  build:
+    needs: merge-to-test
+    if: github.ref == 'refs/heads/dev'
+    permissions:
+      contents: read
+      packages: write   # publication de l'image sur GHCR
+    uses: ./.github/workflows/_build.yml
+    with:
+      ref: test
+      moving_tag: staging
+
+  deploy-test:
+    needs: build
+    if: github.ref == 'refs/heads/dev'
+    uses: ./.github/workflows/_deploy.yml
+    with:
+      branch: test
+    secrets:
+      SSH_KEY: ${{ secrets.TEST_SSH_KEY }}
+      SSH_HOST: ${{ secrets.TEST_HOST }}
+      SSH_USER: ${{ secrets.TEST_SSH_USER }}
+      DEPLOY_PATH: ${{ secrets.TEST_PATH }}
+      ENV_FILE: ${{ secrets.ENV_TEST }}
+
+  # ─────────────────────────────── chemin main ───────────────────────────────
+  promote:
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write   # re-etiquetage de l'image existante sur GHCR
+    uses: ./.github/workflows/_promote.yml
+    with:
+      source_tag: staging
+      target_tags: prod latest
+
+  deploy-prod:
+    needs: promote
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/_deploy.yml
+    with:
+      branch: main
+    secrets:
+      SSH_KEY: ${{ secrets.PROD_SSH_KEY }}
+      SSH_HOST: ${{ secrets.PROD_HOST }}
+      SSH_USER: ${{ secrets.PROD_SSH_USER }}
+      DEPLOY_PATH: ${{ secrets.PROD_PATH }}
+      ENV_FILE: ${{ secrets.ENV_PROD }}

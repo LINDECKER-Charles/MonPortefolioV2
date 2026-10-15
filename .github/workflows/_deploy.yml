@@ -1,0 +1,107 @@
+name: _deploy
+
+# Reutilisable : mettre la pile en ligne sur UN hote, par SSH. Meme logique pour
+# le test et la production. L'environnement est entierement parametre par les
+# entrees et les secrets de l'appelant : aucune valeur specifique a un
+# environnement n'est ecrite ici. Ce qui distingue les deux hotes (domaines,
+# etiquette d'image, indexation, mesure d'audience) vit dans ENV_FILE, pousse
+# sur l'hote en .env.
+#
+# L'hote ne clone pas le depot. Il recoit par scp les seuls fichiers dont il a
+# besoin — les fichiers Compose servis et le script de mise en ligne —, que ce
+# job a deja sous la main apres son checkout. Le VPS n'a ainsi besoin d'aucun
+# acces au depot (ni cle de deploiement, ni jeton), et compose.override.yaml —
+# qui publie un port et construit l'image localement — n'atterrit jamais sur un
+# environnement servi.
+
+on:
+  workflow_call:
+    inputs:
+      branch:
+        description: Branche dont proviennent les fichiers deployes (test | main).
+        required: true
+        type: string
+    secrets:
+      SSH_KEY:
+        description: Cle privee SSH (PEM) de l'hote cible.
+        required: true
+      SSH_HOST:
+        description: Hote cible (IP ou FQDN).
+        required: true
+      SSH_USER:
+        description: Utilisateur SSH (root par defaut). Doit pouvoir parler au demon Docker.
+        required: false
+      DEPLOY_PATH:
+        description: Chemin absolu du projet sur l'hote (dossier des compose.*.yaml).
+        required: true
+      ENV_FILE:
+        description: Dotenv complet de cet hote, ecrit dans ${DEPLOY_PATH}/.env.
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      SSH_TARGET: ${{ secrets.SSH_USER || 'root' }}@${{ secrets.SSH_HOST }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+    steps:
+      - name: Checkout ${{ inputs.branch }}
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Agent SSH
+        uses: webfactory/ssh-agent@v0.10.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      - name: Empreinte de l'hote
+        run: ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Depot des fichiers sur l'hote
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
+        run: |
+          set -euo pipefail
+          # SC2029 signale que $DEPLOY_PATH est developpe cote runner. C'est
+          # voulu : la valeur vient d'un secret GitHub, elle n'existe pas sur
+          # l'hote distant. Le job `infra` de _tests.yml ignore ce code.
+          ssh -n "$SSH_TARGET" "mkdir -p '$DEPLOY_PATH'"
+
+          # `cat` a le droit de lire stdin : c'est une commande distante unique,
+          # pas un script transmis sur l'entree standard (cf. etape suivante).
+          # `umask 077` AVANT la redirection : un `chmod 600` posterieur laisse
+          # une fenetre pendant laquelle le fichier est lisible par tous.
+          printf '%s\n' "$ENV_FILE" \
+            | ssh "$SSH_TARGET" "umask 077 && cat > '$DEPLOY_PATH/.env'"
+
+          # Cette liste est le miroir exact des calques que
+          # scripts/deploy-remote.sh peut choisir : un fichier compose ajoute au
+          # projet doit etre ajoute ICI aussi, sinon le deploiement echoue sur
+          # l'hote en ne le trouvant pas. Le calque de mesure part meme vers un
+          # environnement qui ne mesure pas : c'est le .env de l'hote, pas cette
+          # liste, qui decide de le charger. Volontairement PAS
+          # compose.override.yaml : les conforts de developpement n'ont rien a
+          # faire sur un environnement servi.
+          #
+          # Le script de deploiement est depose dans DEPLOY_PATH et non dans
+          # /tmp : ce dernier est partage et inscriptible par tous, donc un nom
+          # previsible y serait pre-positionnable par un utilisateur local.
+          scp compose.yaml compose.deploy.yaml compose.umami.yaml \
+            scripts/deploy-remote.sh \
+            "$SSH_TARGET:$DEPLOY_PATH/"
+
+      - name: Mise en ligne
+        run: |
+          set -euo pipefail
+          # Le script est execute DEPUIS UN FICHIER, jamais envoye sur l'entree
+          # standard de ssh. Dans un `ssh hote bash -s <<EOF`, le shell distant
+          # lit le script sur stdin et la premiere commande qui consomme stdin
+          # (`docker compose pull`, `up`, `ps`) en avale un morceau : les
+          # instructions suivantes sautent, sans la moindre erreur. `-n` ferme en
+          # plus l'entree standard des commandes distantes, par ceinture.
+          ssh -n "$SSH_TARGET" \
+            "bash '$DEPLOY_PATH/deploy-remote.sh' '$DEPLOY_PATH' '${GITHUB_SHA}'"

@@ -1,0 +1,60 @@
+---
+/**
+ * L’atelier du blog, dans la coque du backoffice : la liste des articles
+ * (/backoffice/blog) et les quatre pages d’un article (Rédaction, Images,
+ * Référencement, Publication), qui partagent une seule version de travail.
+ *
+ * Contrat avec scripts/blog-editor.ts (sa logique ne change pas ici) : les
+ * identifiants `blog-*`, `[data-blog-page]`, `[data-blog-section-link]`,
+ * `[data-editor]`, et les zones que le script montre ou cache (`hidden`).
+ *
+ * La barre de l’article (blog/BarreArticle) est collante pendant l’édition :
+ * Enregistrer et Aperçu restent à portée, avec le retour de chaque action
+ * (#blog-notice) juste dessous. Une zone éclairée par écran : la feuille de
+ * rédaction, l’aperçu du résultat de recherche, ou la version à publier.
+ *
+ * Styles : styles/blog-editor.css, sur les primitives de styles/backoffice.css.
+ */
+import BarreArticle from './blog/BarreArticle.astro';
+import ListeArticles from './blog/ListeArticles.astro';
+import PageRedaction from './blog/PageRedaction.astro';
+import PageImages from './blog/PageImages.astro';
+import PageReferencement from './blog/PageReferencement.astro';
+import PagePublication from './blog/PagePublication.astro';
+---
+
+<section class="bo-rubrique bo-blog" id="bo-panel-blog" aria-labelledby="blog-workspace-title" hidden>
+  <header class="bo-rubrique__entete">
+    <div class="bo-rubrique__intitule">
+      <h2 id="blog-workspace-title" tabindex="-1">Articles</h2>
+      <p class="bo-rubrique__description" id="blog-workspace-description">Retrouver un article, préparer un brouillon et suivre les publications.</p>
+    </div>
+    <div class="bo-rubrique__actions"><button class="bo-button bo-button--primary" id="blog-new" type="button">Nouvel article</button></div>
+  </header>
+
+  <BarreArticle />
+  <ListeArticles />
+
+  <div class="blog-edition" id="blog-edit-view" hidden>
+    <nav class="blog-article-nav" id="blog-article-nav" aria-label="Pages de l’article">
+      <ul>
+        <li><a href="/backoffice/blog/redaction" data-blog-section-link="redaction" aria-current="page">Rédaction</a></li>
+        <li><a href="/backoffice/blog/medias" data-blog-section-link="medias">Images</a></li>
+        <li><a href="/backoffice/blog/seo" data-blog-section-link="seo">Référencement</a></li>
+        <li><a href="/backoffice/blog/publication" data-blog-section-link="publication">Publication</a></li>
+      </ul>
+    </nav>
+    <p class="bo-help blog-publication-help" id="blog-publication-help">Un brouillon reste privé. L’aperçu utilise la dernière version enregistrée.</p>
+
+    <form id="blog-form" class="blog-form" novalidate>
+      <fieldset id="blog-fields"><legend class="bo-sr">Préparer l’article</legend>
+        <PageRedaction />
+        <PageImages />
+        <PageReferencement />
+      </fieldset>
+    </form>
+
+    <PagePublication />
+    <div class="blog-section-footer"><a class="bo-button" id="blog-next-section" href="/backoffice/blog/medias">Choisir les images</a></div>
+  </div>
+</section>

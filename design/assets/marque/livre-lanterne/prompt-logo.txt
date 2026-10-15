@@ -1,0 +1,17 @@
+Outil : ImageGen intégré ; génération originale ; fond transparent demandé.
+Fichier : logo-illustre.png, RGBA, 1536 × 1024 px.
+
+Prompt utilisé :
+
+Use case: logo-brand.
+Create a finished, original illustrated personal brand logo for Charles Lindecker, a software architect who values knowledge, creative rigour, and helping others progress. Deliver one complete logo, NOT a concept board, NOT an SVG-style thin outline icon, NOT a mockup.
+
+Subject: a substantial open hardcover book with a beautiful small antique Victorian hand lantern standing securely in the centre gutter. The BOOK signifies knowledge; the LANTERN signifies a guiding light advancing through darkness. Both objects must be immediately identifiable and equally considered. The lantern has an elegant forged-metal loop handle, a shaped metal roof, fine structural bars and glass panes, with a bright warm golden flame. The book has a deep royal-blue cover, visibly layered ivory pages, a slight dimensional perspective, and a restrained flowing page silhouette. Unite them as one compact cohesive emblem. No characters, weapons, runes, occult marks or third-party symbols.
+
+Style: bespoke high-end illustrated logo, sophisticated stylised ink illustration with confident filled silhouettes, purposeful fine engraving details, dimensional form suggested by clean limited colour shapes. Distinct artistic character, refined and expressive, with a subtle old-world lantern atmosphere balanced by a contemporary professional visual identity. It should look carefully art-directed and expertly drawn. Strong, clear outer silhouette; avoid tiny excessive ornaments. Neither photorealistic product rendering nor generic clipart. Richer and more complete than a simple pictogram.
+
+Palette: royal blue #1F4FD1 and deep midnight blue #0E1424 for the book and metal; warm ivory pages; golden yellow #F5D33F and restrained brass accents only around the flame and lantern. Convey illumination through well-defined warm colour shapes on the adjacent pages rather than a broad blurry glow. No scenery and no surrounding dark background.
+
+Complete lockup: the emblem above the exact wordmark "Charles Lindecker". Include this exact name once, spelled perfectly, in an elegant contemporary humanist sans serif, moderately bold, exceptionally well-kerned, deep midnight blue. Balanced refined custom typography, one line if it fits naturally. No tagline, subtitle, extra letters or extra labels. Emblem takes about two thirds of the visual height and typography sits below with generous intentional separation. Centre the unified logo with sensible clear margins on all sides.
+
+Output: high-resolution raster PNG with genuine transparent background. Entire illustration and entire wordmark fully visible, no cropping, no frame, no presentation board, no paper texture, no watermark. Make it production-quality as a beautiful complete logo on transparent canvas.

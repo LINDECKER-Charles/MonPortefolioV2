@@ -1,0 +1,151 @@
+name: Archive V1
+
+# Construit l'archive de la V1 et la met en ligne sur son sous-domaine.
+#
+# La V1 (depot public MonPortfolio) est figee sur V1_REF : la refonte d'aout,
+# celle de test.charles-lindecker.com (docs/prive/questions.md, F2). Ce workflow en
+# extrait les sources, y pose le bandeau d'archive (archive-v1/bandeau/), les
+# construit avec le Dockerfile de la V1 et SITE_URL pointe sur l'archive :
+# balises canoniques, sitemap et robots.txt designent alors l'archive, jamais le
+# domaine que la V2 reprend. L'image est publiee sur GHCR puis deployee,
+# epinglee par son digest, dans sa propre pile (archive-v1/compose.yaml).
+#
+# Le depot de la V1 n'est jamais modifie, et sa CI peut etre coupee : l'archive
+# ne depend que de ce depot-ci. Ordre de la bascule : docs/bascule.md.
+#
+# Declenchement : un push sur dev qui touche l'archive (sa premiere mise en
+# ligne a l'integration, puis chaque retouche voulue), ou a la main
+# (`gh workflow run archive-v1.yml --ref main`, une fois ce fichier sur main :
+# GitHub n'expose workflow_dispatch que depuis la branche par defaut).
+on:
+  push:
+    branches: [dev]
+    paths:
+      - archive-v1/**
+      - scripts/deploy-archive-v1.sh
+      - .github/workflows/archive-v1.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Jamais deux mises en ligne de l'archive en meme temps, ni d'annulation d'une
+# mise en ligne commencee.
+concurrency:
+  group: archive-v1
+  cancel-in-progress: false
+
+env:
+  V1_DEPOT: LINDECKER-Charles/MonPortfolio
+  # Pointe de dev le 2026-10-14, ce que sert test.charles-lindecker.com
+  # (build-info.json : bd0f4c0, fusion de ce commit dans test).
+  V1_REF: 216d6b04eff052edfe66857e480eb797e5bd0b30
+  ARCHIVE_DOMAINE: yharnam.charles-lindecker.com
+  ARCHIVE_CHEMIN: /opt/monportfolio-archive
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write   # publication de l'image sur GHCR
+    outputs:
+      image: ${{ steps.reference.outputs.image }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Sources de la V1, figees
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ env.V1_DEPOT }}
+          ref: ${{ env.V1_REF }}
+          path: v1
+          persist-credentials: false
+
+      - name: Bandeau d'archive
+        run: node archive-v1/bandeau/poser.mjs v1/front-portfolio
+
+      - name: Nom de l'image (proprietaire en minuscules)
+        run: echo "IMG=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/monportfolio-archive" >> "$GITHUB_ENV"
+
+      - name: Setup Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Connexion a GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Construction et publication
+        id: publication
+        uses: docker/build-push-action@v7
+        with:
+          context: v1
+          file: v1/docker/front/Dockerfile
+          push: true
+          cache-from: type=gha,scope=archive-v1
+          cache-to: type=gha,scope=archive-v1,mode=max
+          build-args: |
+            SITE_URL=https://${{ env.ARCHIVE_DOMAINE }}
+            GIT_SHA=${{ env.V1_REF }}
+            GIT_REF=archive
+            BUILD_ID=${{ github.run_id }}
+          # Le titre sert au nettoyage des seules images de l'archive sur l'hote.
+          labels: |
+            org.opencontainers.image.title=monportfolio-archive
+            org.opencontainers.image.revision=${{ github.sha }}
+          tags: |
+            ${{ env.IMG }}:${{ github.sha }}
+            ${{ env.IMG }}:archive
+
+      - name: Reference epinglee par digest
+        id: reference
+        env:
+          DIGEST: ${{ steps.publication.outputs.digest }}
+        run: |
+          set -euo pipefail
+          if ! [[ "$DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+            echo "Digest inattendu : ${DIGEST}" >&2
+            exit 1
+          fi
+          echo "image=${IMG}@${DIGEST}" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Meme hote et meme cle que la production de la V2 : l'archive est un site
+    # public de cet hote, et ne demande aucun secret qui lui soit propre.
+    env:
+      SSH_TARGET: ${{ secrets.PROD_SSH_USER || 'root' }}@${{ secrets.PROD_HOST }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Agent SSH
+        uses: webfactory/ssh-agent@v0.10.0
+        with:
+          ssh-private-key: ${{ secrets.PROD_SSH_KEY }}
+
+      - name: Empreinte de l'hote
+        run: ssh-keyscan -H "${{ secrets.PROD_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Depot des fichiers sur l'hote
+        run: |
+          set -euo pipefail
+          ssh -n "$SSH_TARGET" "mkdir -p '$ARCHIVE_CHEMIN'"
+          scp archive-v1/compose.yaml scripts/deploy-archive-v1.sh "$SSH_TARGET:$ARCHIVE_CHEMIN/"
+
+      - name: Mise en ligne
+        env:
+          IMAGE: ${{ needs.build.outputs.image }}
+        run: |
+          set -euo pipefail
+          # Execute depuis le fichier, jamais sur l'entree standard de ssh
+          # (voir _deploy.yml).
+          ssh -n "$SSH_TARGET" \
+            "bash '$ARCHIVE_CHEMIN/deploy-archive-v1.sh' '$ARCHIVE_CHEMIN' '$IMAGE' '$ARCHIVE_DOMAINE'"

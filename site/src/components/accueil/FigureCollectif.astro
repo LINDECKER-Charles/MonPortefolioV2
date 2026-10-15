@@ -1,0 +1,131 @@
+---
+/**
+ * Comment le pôle francophone avance : accueillir, former et relire, puis
+ * laisser contribuer en autonomie (réponses C6 et C7). Trois scènes du
+ * registre (ACC-21 à ACC-23) : chacune s’allume depuis sa lanterne à son
+ * arrivée, puis se rejoue au clic ou au clavier (components/accueil/Scene).
+ * Les scènes sont recadrées en 2:1 à toutes les largeurs (la bande centrale
+ * de leur gravure 3:2, où se tient la lanterne ; calée vers le haut pour
+ * ACC-21, dont la lanterne pend haut au chambranle) : le chapitre
+ * « Emmener » reste ramassé. Sur mobile, les étapes s’empilent, la scène pleine largeur
+ * au-dessus de son titre. Une seule lanterne reste allumée la nuit, au
+ * repos : celle de l’autonomie, où mènent les deux premières.
+ */
+import Scene from './Scene.astro';
+
+const etapes = [
+  { titre: 'Accueillir', resume: 'Donner une place aux nouveaux.', visuel: 'ACC-21', nom: 'pole-accueillir', lumiere: [48, 25], foyer: false, ancrage: 25 },
+  { titre: 'Former et relire', resume: 'Apprendre en contribuant.', visuel: 'ACC-22', nom: 'pole-former', lumiere: [50, 56], foyer: false, ancrage: undefined },
+  { titre: 'Contribuer en autonomie', resume: 'Devenir un pilier du pôle.', visuel: 'ACC-23', nom: 'pole-autonomie', lumiere: [33, 49], foyer: true, ancrage: undefined },
+] as const;
+---
+
+<figure class="collectif" id="fig-2">
+  <p class="collectif__titre">Comment le pôle francophone avance</p>
+  <ol class="collectif__etapes">
+    {etapes.map((etape, i) => (
+      <li class="collectif__etape">
+        <Scene id={etape.visuel} nom={etape.nom} legende={etape.titre} lumiere={etape.lumiere} foyer={etape.foyer} muette recadrage="2 / 1" recadragePetit="2 / 1" ancrage={etape.ancrage} sizes="(max-width: 640px) calc(100vw - 32px), 360px" class="collectif__scene" />
+        <p class="collectif__nom"><span class="collectif__rang" aria-hidden="true">{i + 1}</span>{etape.titre}</p>
+        <p class="collectif__resume">{etape.resume}</p>
+      </li>
+    ))}
+  </ol>
+  <figcaption class="collectif__legende">Accueillir, transmettre, puis laisser contribuer en autonomie&nbsp;: le fonctionnement du pôle.</figcaption>
+</figure>
+
+<style>
+  .collectif {
+    margin: 0;
+  }
+
+  .collectif__titre {
+    font-size: var(--t-s);
+    font-weight: 600;
+    color: var(--encre);
+  }
+
+  .collectif__etapes {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s6);
+    margin: var(--s4) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .collectif__etape {
+    position: relative;
+    min-width: 0;
+  }
+
+  /* La flèche du passage d’une étape à la suivante, entre deux scènes. */
+  .collectif__etape + .collectif__etape::before {
+    content: '→';
+    position: absolute;
+    top: calc((100% - 4.5rem) / 2);
+    left: calc(-1 * var(--s6) / 2 - 0.6rem);
+    width: 1.2rem;
+    font-size: var(--t-l);
+    line-height: 1;
+    text-align: center;
+    color: var(--laiton);
+  }
+
+  .collectif__nom {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s2);
+    margin-top: var(--s3);
+    font-family: var(--police-titre);
+    font-size: var(--t-xl);
+    line-height: 1.1;
+    color: var(--encre);
+  }
+
+  .collectif__rang {
+    font-family: var(--police-texte);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    color: var(--eteint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .collectif__resume {
+    margin-top: var(--s1);
+    font-size: var(--t-s);
+    color: var(--eteint);
+  }
+
+  .collectif__legende {
+    margin-top: var(--s4);
+    font-size: var(--t-xs);
+    color: var(--eteint);
+  }
+
+  @media (max-width: 640px) {
+    .collectif__etapes {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s4);
+    }
+
+    .collectif__nom {
+      font-size: var(--t-l);
+    }
+
+    .collectif__etape + .collectif__etape {
+      padding-top: var(--s4);
+      border-top: 1px solid var(--filet);
+    }
+
+    .collectif__etape + .collectif__etape::before {
+      content: '↓';
+      top: -0.7rem;
+      left: 50%;
+      width: auto;
+      padding-inline: var(--s2);
+      transform: translateX(-50%);
+      background: var(--fond);
+    }
+  }
+</style>

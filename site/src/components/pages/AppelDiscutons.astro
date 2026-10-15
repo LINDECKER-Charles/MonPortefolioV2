@@ -1,0 +1,80 @@
+---
+/**
+ * L’appel de fin de page : une phrase, puis « Discutons → » vers /contact
+ * (règle E2 : une action principale, un libellé, une destination). Mesuré en
+ * `contact-page` avec son emplacement.
+ *
+ *   filet  fin d’une page de consultation : un filet, la phrase, le bouton
+ *   aplat  l’aplat bleu roi (« La suite », dans un acte bleu nuit) : bouton
+ *          blanc le jour, lanterne la nuit
+ *
+ *   <AppelDiscutons variante="aplat" emplacement="discutons">
+ *     Une idée à confronter, une équipe à faire grandir : la discussion commence ici.
+ *   </AppelDiscutons>
+ *
+ * La phrase (slot) vient du récit de la page ; sans elle, le bouton seul. Le
+ * slot « suite » ajoute une action secondaire à côté du bouton.
+ */
+import Bouton from '../ui/Bouton.astro';
+import type { Emplacement } from '../../lib/liens';
+
+interface Props {
+  variante?: 'filet' | 'aplat';
+  emplacement?: Emplacement;
+  class?: string;
+}
+
+const { variante = 'filet', emplacement = 'discutons', class: classe } = Astro.props;
+---
+
+<div class:list={['appel', `appel--${variante}`, { 'aplat-roi': variante === 'aplat' }, classe]}>
+  {Astro.slots.has('default') && <p class="appel__phrase"><slot /></p>}
+  <div class="actions appel__actions">
+    <Bouton href="/contact" evenement="contact-page" emplacement={emplacement}>Discutons</Bouton>
+    <slot name="suite" />
+  </div>
+</div>
+
+<style>
+  .appel {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s4) var(--s6);
+  }
+
+  .appel--filet {
+    margin-top: var(--s6);
+    padding-top: var(--s5);
+    border-top: 1px solid var(--trait);
+  }
+
+  .appel--aplat {
+    padding: clamp(24px, 4vw, 48px);
+    border-radius: var(--r2);
+  }
+
+  .appel__phrase {
+    max-width: 44ch;
+    font-family: var(--police-titre);
+    font-size: var(--t-xl);
+    line-height: 1.15;
+    color: var(--encre);
+  }
+
+  .appel--aplat .appel__phrase {
+    font-size: var(--t-2xl);
+    line-height: 1.08;
+  }
+
+  @media (max-width: 860px) {
+    .appel__actions {
+      flex: 1 1 100%;
+    }
+
+    .appel__actions > :global(.bouton) {
+      flex: 1 1 auto;
+    }
+  }
+</style>

@@ -1,0 +1,210 @@
+---
+/**
+ * Les trois règles : trois verbes, chacun adossé à deux preuves (brief § 4),
+ * qui apparaissent dans l’ordre, de 1 à 3, à leur arrivée dans l’écran
+ * (gardées le 13/10/2026 ; scripts/figure-animations.ts,
+ * `data-revelation-progressive`). Une séquence — d’abord, ensuite, puis —
+ * d’où les pastilles numérotées et le trait qui les relie. En conclusion du
+ * récit : chaque preuve renvoie à l’endroit qui la raconte, une histoire
+ * racontée une fois (cahier, C7). Ni surlignage ni chiffre ici : le chiffre
+ * est surligné dans le bandeau du pli et là où le récit le raconte ; la règle
+ * rappelle le moment, le lien y ramène.
+ */
+---
+
+<ol class="regles" data-revelation-progressive>
+  <li class="regle" id="regle-1">
+    <span class="regle__pastille" aria-hidden="true">1</span>
+    <p class="regle__ordre">Règle&nbsp;1 · d’abord</p>
+    <h4>Maîtriser</h4>
+    <p class="regle__sens">Comprendre ce qui fonctionne avant de prendre mes propres décisions.</p>
+    <ul class="regle__preuves">
+      <li>Chez Elan, <a href="#voie">le programme bouclé au pas de course</a>, puis l’essentiel du niveau supérieur.</li>
+      <li><a href="#gwent">Sur Gwent</a>, la méta jouée d’abord telle quelle, à chaque mise à jour.</li>
+    </ul>
+  </li>
+  <li class="regle" id="regle-2">
+    <span class="regle__pastille" aria-hidden="true">2</span>
+    <p class="regle__ordre">Règle&nbsp;2 · ensuite</p>
+    <h4>Réinventer</h4>
+    <p class="regle__sens">Quand la solution habituelle atteint sa limite, essayer autre chose.</p>
+    <ul class="regle__preuves">
+      <li>Quand je plafonne sur Gwent, <a href="#fig-1">une stratégie à contre-courant</a> m’ouvre le classement mondial.</li>
+      <li>Pour <a href="/projets/omnicard">Omnicard</a>, je construis un moteur de jeu sur une stack web que je connais, puis j’en travaille les limites.</li>
+    </ul>
+  </li>
+  <li class="regle" id="regle-3">
+    <span class="regle__pastille" aria-hidden="true">3</span>
+    <p class="regle__ordre">Règle&nbsp;3 · puis</p>
+    <h4>Emmener</h4>
+    <p class="regle__sens">Partager ce que j’ai compris pour que les autres puissent avancer.</p>
+    <ul class="regle__preuves">
+      <li>Sur <a href="#collectif">PvZ Fusion</a>, des personnes accueillies et formées au pôle, dont certaines sont devenues des piliers du projet.</li>
+      <li>Chez Elan, <a href="#bureau">une promotion reprise en urgence</a>, menée jusqu’au titre.</li>
+    </ul>
+  </li>
+</ol>
+
+<style>
+  .regles {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s6);
+    margin: var(--s6) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Le trait qui relie les trois pastilles, d’un bord à l’autre de la séquence. */
+  .regles::before {
+    content: '';
+    position: absolute;
+    top: 21px;
+    left: 22px;
+    right: calc((100% - 2 * var(--s6)) / 3 - 22px);
+    height: 1px;
+    background: var(--trait);
+  }
+
+  .regle {
+    position: relative;
+  }
+
+  .regle__pastille {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--laiton);
+    border-radius: 50%;
+    background: var(--fond);
+    color: var(--encre);
+    font-weight: 600;
+    font-size: var(--t-m);
+    font-variant-numeric: tabular-nums lining-nums;
+    box-shadow: 0 0 22px -4px var(--lanterne-eclat);
+  }
+
+  .regle__ordre {
+    margin-top: var(--s4);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: var(--ls-petit);
+    color: var(--eteint);
+  }
+
+  h4 {
+    margin-top: var(--s1);
+    font-size: var(--t-2xl);
+  }
+
+  .regle__sens {
+    margin-top: var(--s2);
+    font-size: var(--t-m);
+    line-height: 1.45;
+  }
+
+  .regle__preuves {
+    display: grid;
+    gap: var(--s3);
+    margin: var(--s4) 0 0;
+    padding: var(--s4) 0 0;
+    list-style: none;
+    border-top: 1px solid var(--filet);
+  }
+
+  .regle__preuves li {
+    position: relative;
+    padding-left: var(--s4);
+    font-size: var(--t-s);
+    line-height: 1.5;
+    color: var(--eteint);
+  }
+
+  .regle__preuves li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--laiton);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .regles:global(.revelation-prepare):not(:global(.est-revele)) .regle {
+      opacity: 0;
+    }
+
+    .regles:global(.est-revele) .regle {
+      animation: regle-apparaitre calc(var(--d-scene) * 1.375) ease both;
+    }
+
+    .regles:global(.est-revele) .regle:nth-child(2) {
+      animation-delay: calc(var(--d-scene) * 0.625);
+    }
+
+    .regles:global(.est-revele) .regle:nth-child(3) {
+      animation-delay: calc(var(--d-scene) * 1.25);
+    }
+
+    @keyframes regle-apparaitre {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+  }
+
+  @media print {
+    .regles .regle {
+      opacity: 1 !important;
+      animation: none !important;
+    }
+  }
+
+  @media (max-width: 880px) {
+    .regles {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s6);
+    }
+
+    .regles::before {
+      display: none;
+    }
+
+    .regle {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      column-gap: var(--s4);
+    }
+
+    .regle > :not(.regle__pastille) {
+      grid-column: 2;
+    }
+
+    .regle__pastille {
+      grid-row: 1 / span 4;
+    }
+
+    .regle__ordre {
+      margin-top: var(--s2);
+    }
+
+    .regle:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 21px;
+      top: 44px;
+      bottom: calc(-1 * var(--s6));
+      width: 1px;
+      background: var(--trait);
+    }
+  }
+</style>

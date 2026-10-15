@@ -1,0 +1,75 @@
+---
+/**
+ * L’entrée de l’atelier, trois écrans d’une même carte éclairée (`.foyer`) :
+ * connexion, vérification en deux étapes (inscription avec QR code, puis
+ * code ou code de secours), codes de secours montrés une seule fois.
+ * Chaque écran porte son retour à côté du bouton.
+ *
+ * Identifiants et libellés : contrat de scripts/backoffice.ts et des tests
+ * (tests/e2e/backoffice.spec.ts, scripts/test-backoffice.mjs).
+ */
+import Retour from './Retour.astro';
+---
+
+<section class="bo-carte bo-connexion foyer" id="bo-login" aria-labelledby="bo-login-title" data-retour="bo-login-retour">
+  <h2 id="bo-login-title">Entrer dans l’atelier</h2>
+  <p class="bo-connexion__texte">Cet espace est réservé à l’administration du portfolio.</p>
+  <form id="bo-login-form">
+    <fieldset disabled><legend class="sr">Connexion</legend>
+      <div class="bo-champ">
+        <label for="bo-login-email">Adresse e-mail de connexion</label>
+        <input id="bo-login-email" name="email" type="email" autocomplete="username" maxlength="254" required />
+      </div>
+      <div class="bo-champ">
+        <label for="bo-password">Mot de passe</label>
+        <input id="bo-password" name="password" type="password" autocomplete="current-password" required />
+      </div>
+      <div class="bo-actions"><button class="bo-button bo-button--primary" type="submit">Se connecter</button></div>
+    </fieldset>
+  </form>
+  <Retour id="bo-login-retour" />
+</section>
+
+<section class="bo-carte bo-connexion bo-connexion--large foyer" id="bo-two-factor" aria-labelledby="bo-two-factor-title" data-retour="bo-two-factor-retour" hidden>
+  <h2 id="bo-two-factor-title" tabindex="-1">Vérifier la connexion</h2>
+  <p class="bo-connexion__texte" id="bo-two-factor-help">Saisissez le code de votre application d’authentification ou un code de secours.</p>
+  <div class="bo-enrollment" id="bo-enrollment" hidden>
+    <ol>
+      <li>Ajoutez un compte dans votre application d’authentification en scannant ce QR code.</li>
+      <li>Saisissez ensuite le code à six chiffres pour confirmer l’activation.</li>
+    </ol>
+    <div id="bo-enrollment-details" hidden>
+      <img id="bo-two-factor-qr" width="240" height="240" alt="QR code à scanner dans l’application d’authentification" hidden />
+      <div class="bo-champ">
+        <label for="bo-two-factor-secret">Clé à saisir manuellement</label>
+        <input id="bo-two-factor-secret" class="bo-code" readonly autocomplete="off" spellcheck="false" aria-describedby="bo-two-factor-secret-help" />
+        <p class="bo-help" id="bo-two-factor-secret-help">Si vous ne pouvez pas scanner le QR code, ajoutez cette clé dans l’application, avec un code renouvelé toutes les 30 secondes.</p>
+      </div>
+    </div>
+    <button class="bo-button" id="bo-two-factor-retry" type="button" hidden>Réessayer la configuration</button>
+  </div>
+  <form id="bo-two-factor-form">
+    <fieldset><legend class="sr">Vérification en deux étapes</legend>
+      <div class="bo-champ">
+        <label for="bo-two-factor-code">Code de vérification</label>
+        <input id="bo-two-factor-code" class="bo-code" name="code" type="text" autocomplete="one-time-code" maxlength="64" spellcheck="false" required aria-describedby="bo-two-factor-help" />
+      </div>
+      <div class="bo-actions">
+        <button class="bo-button bo-button--primary" id="bo-two-factor-submit" type="submit">Vérifier le code</button>
+        <button class="bo-button bo-button--quiet" id="bo-two-factor-back" type="button">Revenir à la connexion</button>
+      </div>
+    </fieldset>
+  </form>
+  <Retour id="bo-two-factor-retour" />
+</section>
+
+<section class="bo-carte bo-connexion bo-connexion--large foyer" id="bo-recovery" aria-labelledby="bo-recovery-title" data-retour="bo-recovery-retour" hidden>
+  <h2 id="bo-recovery-title" tabindex="-1">Conservez vos codes de secours</h2>
+  <p class="bo-connexion__texte">La vérification en deux étapes est activée. Chaque code permet une seule connexion si vous perdez l’accès à votre application. Gardez-les dans un endroit sûr&nbsp;: ils ne seront plus affichés après avoir quitté cet écran.</p>
+  <ul class="bo-recovery-codes" id="bo-recovery-codes" aria-label="Codes de secours"></ul>
+  <div class="bo-actions">
+    <button class="bo-button" id="bo-recovery-copy" type="button">Copier les codes</button>
+    <button class="bo-button bo-button--primary" id="bo-recovery-continue" type="button">J’ai conservé mes codes</button>
+  </div>
+  <Retour id="bo-recovery-retour" />
+</section>

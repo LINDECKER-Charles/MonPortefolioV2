@@ -1,0 +1,292 @@
+name: _tests
+
+# Reutilisable : tout ce qui se verifie sans hote. Trois responsabilites
+# separees en trois jobs paralleles — l'application, son comportement dans un
+# navigateur, et ce qui la met en ligne — pour qu'un echec designe tout de suite
+# laquelle des trois est cassee.
+
+on:
+  workflow_call:
+    secrets:
+      CADRAGE_DEPLOY_KEY:
+        # Cle de deploiement, en lecture seule, du depot prive
+        # MonPortefolioV2-cadrage : les garde-fous de confidentialite et de
+        # citations lisent ses listes (site/tests/support/prive.ts). Ce depot
+        # est public, ce dossier ne l'est pas.
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: API (Rust)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Installation Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.98.0
+          components: rustfmt, clippy
+      - name: Formatage
+        run: cargo fmt --all -- --check
+      - name: Analyse statique
+        run: cargo clippy --locked --all-targets --all-features -- -D warnings
+      - name: Tests API et livraison SMTP locale
+        run: cargo test --locked
+
+  front:
+    name: Application (Astro)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Cadrage prive (docs/prive)
+        uses: actions/checkout@v7
+        with:
+          repository: LINDECKER-Charles/MonPortefolioV2-cadrage
+          path: docs/prive
+          ssh-key: ${{ secrets.CADRAGE_DEPLOY_KEY }}
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          # Meme majeure que l'image de production (site/Dockerfile) : tester
+          # sur un moteur different de celui qui servira le site, c'est tester
+          # autre chose.
+          node-version: 24
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Installation des dependances
+        run: npm ci
+
+      - name: Cache des images optimisees par Astro
+        # node_modules/.astro garde les images deja optimisees : sans lui, chaque
+        # build en reencode plus de 1 000 (pres de 7 min a froid). Restaure
+        # apres `npm ci`, qui vide node_modules.
+        uses: actions/cache@v6
+        with:
+          path: site/node_modules/.astro
+          key: astro-${{ hashFiles('site/package-lock.json') }}-${{ hashFiles('site/src/assets/**', 'site/public/**') }}
+          restore-keys: |
+            astro-${{ hashFiles('site/package-lock.json') }}-
+
+      - name: Verification des types (astro check)
+        run: npm run check
+
+      - name: Tests (dont ceux du serveur)
+        # `node --test` pour server/server.mjs : le serveur de production se
+        # teste sans navigateur ni dependance.
+        run: npm test
+
+      - name: Build de production
+        # Ce qui casse ici casse avant la construction de l'image, pas en ligne.
+        run: npm run build
+
+  e2e:
+    name: Navigateur (Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Cadrage prive (docs/prive)
+        uses: actions/checkout@v7
+        with:
+          repository: LINDECKER-Charles/MonPortefolioV2-cadrage
+          path: docs/prive
+          ssh-key: ${{ secrets.CADRAGE_DEPLOY_KEY }}
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Installation des dependances
+        run: npm ci
+
+      - name: Cache des images optimisees par Astro
+        # node_modules/.astro garde les images deja optimisees : sans lui, chaque
+        # build en reencode plus de 1 000 (pres de 7 min a froid). Restaure
+        # apres `npm ci`, qui vide node_modules.
+        uses: actions/cache@v6
+        with:
+          path: site/node_modules/.astro
+          key: astro-${{ hashFiles('site/package-lock.json') }}-${{ hashFiles('site/src/assets/**', 'site/public/**') }}
+          restore-keys: |
+            astro-${{ hashFiles('site/package-lock.json') }}-
+
+      - name: Chromium, Firefox et WebKit
+        # La version suit @playwright/test, epingle dans package-lock.json.
+        # Pas de cache : Playwright le deconseille, restaurer coute autant que
+        # telecharger et les bibliotheques systeme ne se mettent pas en cache.
+        # `--only-shell` : les tests tournent sans fenetre, le Chromium complet
+        # ne serait qu'un telechargement de plus.
+        run: npx playwright install --with-deps --only-shell chromium firefox webkit
+
+      - name: Installation Rust pour le parcours complet
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.98.0
+
+      - name: Backend reel du backoffice
+        run: cargo build --manifest-path ../backend/Cargo.toml --locked
+
+      - name: Tests de bout en bout
+        # Le webServer de playwright.config.ts construit le site puis lance le
+        # serveur de production : c'est ce qui partira en ligne qui est teste,
+        # en-tetes, statuts, redirections et chargeur de mesure compris.
+        run: npx playwright test
+
+      - name: Parcours reel du backoffice et du MCP
+        run: node ../scripts/test-backoffice.mjs
+
+      - name: Rapport en cas d'echec
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: rapport-playwright
+          path: |
+            site/playwright-report/
+            site/test-results/
+          retention-days: 7
+
+  infra:
+    name: Mise en ligne (Docker, Compose, scripts)
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Shellcheck des scripts de deploiement
+        # Ces scripts tournent en `set -euo pipefail` sur le VPS de production :
+        # une variable mal citee y coute un deploiement a moitie applique.
+        run: shellcheck scripts/deploy-remote.sh scripts/deploy-archive-v1.sh
+
+      - name: Outils de la bascule
+        # Le bandeau de l'archive et le verificateur de bascule n'ont besoin
+        # que de Node : aucune installation. Fichiers nommes un par un, pour
+        # que le lanceur ne prenne pas scripts/test-backoffice.mjs, qui attend
+        # un backend construit (job e2e).
+        run: node --test scripts/verifier-bascule.test.mjs archive-v1/bandeau/poser.test.mjs
+
+      - name: Actionlint sur les workflows
+        # Un contrat de workflow reutilisable casse (secret non declare, entree
+        # inexistante, action mal referencee) ne se voit sinon qu'a l'execution,
+        # c'est-a-dire au moment du deploiement. SC2029 est ignore : l'expansion
+        # cote runner des secrets dans les commandes ssh est deliberee.
+        run: |
+          docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:latest \
+            -ignore 'SC2029'
+
+      - name: Validation des fichiers Compose
+        env:
+          # Valeurs factices : `config` resout les substitutions et echouerait
+          # sur les `${VAR:?}` obligatoires. Ce qu'on teste ici, c'est la
+          # structure des fichiers et de leurs combinaisons, pas le contenu du
+          # .env de l'hote.
+          CADDY_DOMAINS: exemple.test
+          COMPOSE_PROJECT_NAME: portfolio-ci
+          CONTACT_EMAIL: contact@example.test
+          BACKEND_PROXY_TOKEN: ci-contact-proxy-token-at-least-thirty-two-characters
+          UMAMI_SITE_DOMAIN: exemple.test
+          UMAMI_SITE_NAME: Portfolio (ci)
+        run: |
+          set -euo pipefail
+          id=00000000-0000-4000-8000-0000000000c1
+          base=(-f compose.yaml -f compose.deploy.yaml)
+          mesure=(-f compose.umami.yaml)
+          echo "— pile servie (base + calque de deploiement)"
+          docker compose "${base[@]}" config --format json > "$RUNNER_TEMP/base.json"
+          # Sans le calque de mesure, aucune etiquette Umami : un import vide
+          # ferait refuser la configuration de tout l'edge. Et un environnement
+          # qui oublie ROBOTS_TAG n'est pas indexe.
+          jq -e '.services.web.labels
+            | (keys | map(select(. == "caddy.import" or startswith("umami."))) | length == 0)
+              and .["caddy.header.X-Robots-Tag"] == "noindex"' "$RUNNER_TEMP/base.json"
+          jq -e '.services.backend
+            | (.ports // [] | length == 0)
+              and (.networks | has("edge") | not)
+              and (.labels // {} | has("caddy") | not)' "$RUNNER_TEMP/base.json"
+          echo "— avec la mesure d'audience"
+          UMAMI_WEBSITE_ID="$id" docker compose "${base[@]}" "${mesure[@]}" \
+            config --format json > "$RUNNER_TEMP/pile.json"
+          # Une etiquette vide ferait refuser la configuration de tout l'edge.
+          jq -e '[.services.web.labels | to_entries[] | select((.value | tostring) == "")] | length == 0' \
+            "$RUNNER_TEMP/pile.json"
+          jq -e --arg id "$id" '.services.web.labels["caddy.import"] == "umami"
+            and .services.web.labels["umami.website"] == $id
+            and (.services.web.labels | has("umami.team") | not)
+            and .services.web.environment.UMAMI_WEBSITE_ID == $id' "$RUNNER_TEMP/pile.json"
+          echo "— garde-fou : calque de mesure sans UMAMI_WEBSITE_ID (doit echouer)"
+          if docker compose "${base[@]}" "${mesure[@]}" config -q 2>/dev/null; then
+            echo "compose.umami.yaml accepte un UMAMI_WEBSITE_ID absent." >&2
+            exit 1
+          fi
+          echo "— pile de developpement (base + override, chargement implicite)"
+          docker compose config -q
+          echo "— le relais joint le backend par son alias, jamais par son nom court"
+          jq -e '.services.backend.networks.default.aliases == ["portfolio-backend"]
+            and .services.web.environment.BACKEND_URL == "http://portfolio-backend:8080"' \
+            "$RUNNER_TEMP/base.json"
+          echo "— pile de l'archive de la V1"
+          ARCHIVE_IMAGE="ghcr.io/exemple/archive@sha256:$(printf '0%.0s' {1..64})" \
+            ARCHIVE_DOMAINE=archive.exemple.test \
+            docker compose -f archive-v1/compose.yaml config --format json > "$RUNNER_TEMP/archive.json"
+          # Hors index, sur son seul domaine, derriere l'edge, sans port publie.
+          jq -e '.services.web
+            | .environment.ROBOTS_NOINDEX == "1"
+              and .environment.NG_ALLOWED_HOSTS == "archive.exemple.test"
+              and .labels.caddy == "archive.exemple.test"
+              and (.networks | has("edge"))
+              and (.ports // [] | length == 0)' "$RUNNER_TEMP/archive.json"
+          echo "— garde-fou : pile de l'archive sans image epinglee (doit echouer)"
+          if ARCHIVE_DOMAINE=archive.exemple.test docker compose -f archive-v1/compose.yaml config -q 2>/dev/null; then
+            echo "archive-v1/compose.yaml accepte une image absente." >&2
+            exit 1
+          fi
+
+      - name: Setup Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Construction de l'image (sans publication)
+        # Le job _build ne tourne que sur la branche dev. Sans cette etape, une
+        # PR pourrait casser le Dockerfile sans que rien ne le voie avant la
+        # fusion — et le premier a s'en apercevoir serait le deploiement.
+        uses: docker/build-push-action@v7
+        with:
+          context: site
+          push: false
+          load: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Construction de l'image Rust (sans publication)
+        uses: docker/build-push-action@v7
+        with:
+          context: backend
+          push: false
+          load: false
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,scope=backend,mode=max

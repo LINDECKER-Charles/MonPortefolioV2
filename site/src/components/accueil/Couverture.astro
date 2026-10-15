@@ -1,0 +1,265 @@
+---
+/**
+ * Le premier écran de l’accueil (cahier, § 5.1 ; règle E1) : l’accroche, seul
+ * grand titre, avec le nom en sur-titre ; l’identité en clair, le métier, à la
+ * taille d’un chapeau ; puis l’histoire en une phrase, dans la voix de
+ * Charles, au corps du texte ; « Discutons » vers /contact et « Lire mon
+ * histoire » ; la photo en couleur ; le bandeau des trois preuves. Titre,
+ * identité, preuve et action portent `data-pli` : ils tiennent dans
+ * 1 440 × 900 et 390 × 844.
+ *
+ * La photo : charles-4 (ACC-01), en couleur, sous le voile de lune la nuit,
+ * la lanterne posée sur la joue éclairée (composant Portrait). Sur mobile,
+ * elle passe après le bandeau des preuves.
+ *
+ * Sous le bandeau (sur mobile, après la photo), hors pli : la ligne de
+ * l’ancienne couverture et l’entrée vers tous les projets, gardées le
+ * 13/10/2026.
+ *
+ * `minutes` : la durée de lecture du récit, comptée sur son texte réel
+ * (Recit.astro).
+ */
+import BandeauPreuves from './BandeauPreuves.astro';
+import Bouton from '../ui/Bouton.astro';
+import LienAction from '../ui/LienAction.astro';
+import Portrait from '../ui/Portrait.astro';
+import photo from '../../assets/photos/charles-4.webp';
+import { SITE } from '../../config/site';
+
+interface Props {
+  minutes: number;
+}
+
+const { minutes } = Astro.props;
+---
+
+<section class="couverture conteneur" aria-labelledby="accroche">
+  <div class="couverture__texte">
+    <h1 id="accroche" data-pli="titre">
+      <span class="couverture__nom">{SITE.nom}</span>
+      <span class="couverture__accroche"><span>Je maîtrise d’abord les&nbsp;règles&nbsp;du&nbsp;jeu.</span> <span>Ensuite, je&nbsp;les&nbsp;réinvente.</span></span>
+    </h1>
+    <p class="couverture__identite" data-pli="identite">
+      <span>Architecte logiciel chez <span class="insecable">B-Hive</span>, à Mulhouse.</span>
+      <span>Lead du pôle francophone de PvZ&nbsp;Fusion et mainteneur de sa traduction multilingue.</span>
+    </p>
+    <p class="couverture__chapeau">
+      Je code depuis mes 13&nbsp;ans. Sur Gwent, j’ai appris qu’il n’y a pas d’excuse en cas de défaite&nbsp;: juste moi et mes propres décisions. Depuis, j’ai formé des développeurs jusqu’à leur titre et je mène une équipe de bénévoles sur un projet open source.
+    </p>
+    <div class="actions couverture__actions" data-pli="action">
+      <Bouton href="/contact" evenement="contact-page" emplacement="hero">Discutons</Bouton>
+      <span class="couverture__lire">
+        <LienAction href="#origine">Lire mon histoire</LienAction>
+        <span class="couverture__duree">{minutes}&nbsp;min de lecture</span>
+      </span>
+    </div>
+  </div>
+
+  <figure class="couverture__photo" id="portrait">
+    <Portrait
+      class="couverture__portrait"
+      src={photo}
+      widths={[360, 540, 720, 1040]}
+      sizes="(max-width: 860px) calc(100vw - 32px), (max-width: 1344px) 38vw, 520px"
+      alt="Charles Lindecker, chemise bleu roi, dans un champ de colza en fleur."
+      loading="eager"
+      fetchpriority="high"
+      cadrage="50% 62%"
+      lueur="54% 39%"
+    />
+  </figure>
+
+  <div class="couverture__preuves">
+    <BandeauPreuves />
+  </div>
+
+  <div class="couverture__suite">
+    <p>Un parcours, une méthode, des réalisations.</p>
+    <LienAction href="/projets">Voir tous mes projets</LienAction>
+  </div>
+</section>
+
+<style>
+  .couverture {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-areas:
+      'texte photo'
+      'preuves preuves'
+      'suite suite';
+    column-gap: clamp(32px, 6vw, 96px);
+    row-gap: clamp(20px, 2.6vh, 32px);
+    padding-top: clamp(28px, 5vh, 52px);
+    padding-bottom: var(--s7);
+  }
+
+  .couverture__texte {
+    grid-area: texte;
+    align-self: center;
+  }
+
+  .couverture__photo {
+    grid-area: photo;
+    margin: 0;
+  }
+
+  .couverture__preuves {
+    grid-area: preuves;
+  }
+
+  .couverture__suite {
+    grid-area: suite;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0 var(--s5);
+    padding-top: var(--s3);
+    border-top: 1px solid var(--filet);
+    font-size: var(--t-s);
+  }
+
+  .couverture__suite p {
+    color: var(--eteint);
+  }
+
+  h1 {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+  }
+
+  .couverture__nom {
+    font-family: var(--police-texte);
+    font-size: var(--t-s);
+    font-weight: 600;
+    letter-spacing: var(--ls-petit);
+    line-height: 1.3;
+    color: var(--encre);
+  }
+
+  .couverture__accroche {
+    font-size: var(--t-4xl);
+    line-height: 0.96;
+    letter-spacing: var(--ls-affiche);
+    text-wrap: initial;
+    /* Retrait optique : le crochet du J ne décale pas la colonne. */
+    margin-left: -0.04em;
+  }
+
+  .couverture__accroche > span {
+    display: block;
+  }
+
+  /* Le métier d’abord, à la taille d’un chapeau ; l’histoire ensuite, au
+     corps du texte. */
+  .couverture__identite {
+    max-width: 44rem;
+    margin-top: var(--s5);
+    font-size: var(--t-l);
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--encre);
+  }
+
+  /* Une phrase par ligne : le poste, puis le rôle de lead. */
+  .couverture__identite > span {
+    display: block;
+    text-wrap: balance;
+  }
+
+  .couverture__chapeau {
+    max-width: 36rem;
+    margin-top: var(--s3);
+    font-size: var(--t-m);
+    line-height: 1.55;
+    color: var(--encre);
+  }
+
+  .couverture__actions {
+    margin-top: var(--s5);
+    column-gap: var(--s6);
+  }
+
+  .couverture__lire {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: var(--s3);
+  }
+
+  .couverture__duree {
+    font-size: var(--t-xs);
+    color: var(--eteint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .couverture__photo :global(.couverture__portrait) {
+    width: 100%;
+    max-height: calc(100vh - var(--entete) - 230px);
+    min-height: 420px;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--r2);
+  }
+
+  @media (max-width: 860px) {
+    .couverture {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        'texte'
+        'preuves'
+        'photo'
+        'suite';
+      row-gap: var(--s4);
+      padding-top: var(--s4);
+      padding-bottom: var(--s7);
+    }
+
+    h1 {
+      gap: var(--s1);
+    }
+
+    .couverture__accroche {
+      font-size: var(--t-3xl);
+      line-height: 0.98;
+    }
+
+    .couverture__identite {
+      margin-top: var(--s3);
+      font-size: var(--t-m);
+      line-height: 1.4;
+    }
+
+    .couverture__chapeau {
+      margin-top: var(--s2);
+      font-size: var(--t-s);
+      line-height: 1.5;
+    }
+
+    .couverture__actions {
+      margin-top: var(--s4);
+      column-gap: var(--s4);
+      row-gap: 0;
+    }
+
+    .couverture__photo {
+      margin-top: var(--s3);
+    }
+
+    .couverture__photo :global(.couverture__portrait) {
+      max-height: none;
+      min-height: 0;
+    }
+  }
+
+  @media print {
+    .couverture {
+      display: block;
+    }
+
+    .couverture__photo {
+      max-width: 8cm;
+      margin-block: 1em;
+    }
+  }
+</style>

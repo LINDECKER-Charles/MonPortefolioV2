@@ -1,0 +1,66 @@
+---
+/**
+ * La tête d’un chapitre : son numéro en sérif italique, son titre (h2, cible
+ * de la mesure de lecture), un filet, puis son chapeau facultatif.
+ *
+ *   <TeteChapitre id="origine" chapeau="Avant d’en faire mon métier…" />
+ */
+import { chapitre, type Chapitre } from '../../config/chapitres';
+import { typo } from '../../lib/typo';
+
+interface Props {
+  id: Chapitre['id'];
+  chapeau?: string;
+}
+
+const { id, chapeau } = Astro.props;
+const c = chapitre(id);
+---
+
+<header class="tete-chapitre">
+  <h2 id={`${c.id}-titre`}><span class="tete-chapitre__num" aria-hidden="true">0{c.num}</span>{c.titre}</h2>
+  {chapeau && <p class="tete-chapitre__chapeau">{typo(chapeau)}</p>}
+</header>
+
+<style>
+  .tete-chapitre {
+    margin-bottom: var(--s7);
+  }
+
+  h2 {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s4);
+    padding-bottom: var(--s4);
+    border-bottom: 1px solid var(--trait);
+    font-size: var(--t-3xl);
+    line-height: 1;
+    letter-spacing: var(--ls-affiche);
+  }
+
+  .tete-chapitre__num {
+    font-style: italic;
+    font-size: var(--t-xl);
+    color: var(--eteint);
+    letter-spacing: var(--ls-0);
+    font-variant-numeric: lining-nums;
+  }
+
+  .tete-chapitre__chapeau {
+    max-width: 44rem;
+    margin-top: var(--s5);
+    font-size: var(--t-l);
+    line-height: 1.5;
+  }
+
+  @media (max-width: 860px) {
+    .tete-chapitre {
+      margin-bottom: var(--s6);
+    }
+
+    h2 {
+      gap: var(--s3);
+      padding-bottom: var(--s3);
+    }
+  }
+</style>

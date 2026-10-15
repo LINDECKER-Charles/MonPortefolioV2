@@ -1,0 +1,20 @@
+---
+/**
+ * Le surligneur colza : sous un chiffre sourcé, un seul par preuve (règle C1).
+ * Le chiffre reste écrit en clair ; le surligneur souligne, il ne remplace pas.
+ *
+ *   <Surligneur source="docs/prive/matiere-premiere.md, PvZ, 2026-10">20 contributeurs</Surligneur>
+ *
+ * `source` (obligatoire) pose data-source : d’où vient le fait, pour la
+ * relecture et les tests. Classe : `mark` / `.surligneur` (global.css).
+ */
+interface Props {
+  /** Où le fait est consigné (document, section, date). */
+  source: string;
+  class?: string;
+}
+
+const { source, class: classe } = Astro.props;
+---
+
+<mark class:list={['surligneur', classe]} data-source={source}><slot /></mark>

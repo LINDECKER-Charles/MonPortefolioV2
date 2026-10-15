@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <title>Lanterne dont les vitres sont les pages d’un livre</title>
+  <circle cx="32" cy="7" r="3.5"/>
+  <path d="m11 22 21-11 21 11ZM14 23c7-2 12 0 18 5 6-5 11-7 18-5v26c-7-2-12 0-18 5-6-5-11-7-18-5ZM11 53l21 7 21-7M19 30c3 0 5 1 7 3m19-3c-3 0-5 1-7 3M32 28v1m0 20v5"/>
+  <path class="flamme" fill="var(--flamme, none)" d="M32 48c-4 0-6-3-6-6 0-5 5-7 6-12 1 5 6 7 6 12 0 3-2 6-6 6Z"/>
+</svg>

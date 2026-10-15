@@ -1,0 +1,113 @@
+name: portfolio
+
+# Pile du portfolio V2. Site statique Astro et API Rust de contact,
+# servi par un petit serveur Node sans dependance (site/server/server.mjs) qui
+# ajoute ce qu'un serveur de fichiers generique ne fait pas : 301 des anciennes
+# routes de la V1, vraie 404, chargeur de mesure d'audience ecrit au demarrage.
+#
+# Ce fichier est la base commune au poste du developpeur et aux environnements
+# servis. Ce qui n'est vrai qu'en ligne vit dans compose.deploy.yaml (etiquettes
+# de l'edge partage, limite memoire) et dans le calque de mesure d'audience
+# compose.umami.yaml ; ce qui n'est vrai qu'en local vit dans
+# compose.override.yaml — charge automatiquement, et volontairement ecarte sur
+# l'hote par COMPOSE_FILE (voir scripts/deploy-remote.sh).
+#
+# Aucun port n'est publie ici, et c'est structurel : sur le VPS le point
+# d'entree TLS est un edge Caddy partage par TOUS les projets de l'hote (depot
+# infra-vps). Il joint ce conteneur par son IP sur le reseau `edge`. Publier un
+# port ferait en outre entrer en collision les piles portfolio-test et
+# portfolio-prod co-localisees sur la meme machine.
+
+x-logging: &default-logging
+  # Le collecteur de l'hote rejoue la sortie des conteneurs par l'API Docker,
+  # qui ne sait lire que les pilotes json-file, local et journald. Un pilote de
+  # transfert pose ici rendrait la pile invisible dans Grafana, sans qu'aucune
+  # erreur ne le signale. Les options bornent le disque de l'hote, partage.
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  web:
+    # Volontairement AUCUNE section `build:` ici — elle vit dans
+    # compose.override.yaml, donc uniquement sur le poste. Sur l'hote, ou seul ce
+    # fichier et les calques de deploiement sont charges, le service n'a pas de
+    # recette de construction : si l'image du registre est introuvable, `up`
+    # echoue au lieu de recompiler le site sur le VPS. Ce serait long, ca
+    # consommerait la RAM d'une machine partagee avec d'autres projets, et
+    # surtout ce ne serait plus l'artefact qui a passe les tests.
+    image: ${WEB_IMAGE:-ghcr.io/lindecker-charles/monportefoliov2}:${IMAGE_TAG:-dev}
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      CONTACT_EMAIL: ${CONTACT_EMAIL:-}
+      # Par l'alias du backend, jamais par son nom court : voir backend.networks.
+      BACKEND_URL: http://portfolio-backend:8080
+      BACKEND_PROXY_TOKEN: ${BACKEND_PROXY_TOKEN:-}
+    # Docker injecte tini comme PID 1. Le serveur gere lui-meme SIGTERM et sort
+    # sans attendre le sursis (verifie par site/server/server.test.mjs). tini
+    # reste comme filet : Node en
+    # PID 1 n'herite d'aucun gestionnaire par defaut, et si celui du serveur
+    # disparaissait un jour, chaque deploiement servirait encore pendant les
+    # 10 s de sursis puis couperait les requetes en vol par un SIGKILL.
+    init: true
+    logging: *default-logging
+    # Durcissement : le serveur n'ecrit aucun fichier, ne change pas d'identite
+    # et ne demande aucune capacite noyau. Lui retirer ce qu'il n'utilise pas
+    # coute zero et reduit ce qu'une faille pourrait faire.
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+  backend:
+    image: ${BACKEND_IMAGE:-ghcr.io/lindecker-charles/monportefoliov2-backend}:${IMAGE_TAG:-dev}
+    restart: unless-stopped
+    init: true
+    logging: *default-logging
+    read_only: true
+    # Le service web rejoint le reseau `edge`, partage par tous les projets de
+    # l'hote, ou chaque service est inscrit sous son nom court. Si un autre
+    # projet y publiait un service `backend`, le DNS de Docker pourrait repondre
+    # pour lui, et le relais lui enverrait les demandes de contact et le jeton
+    # BACKEND_PROXY_TOKEN, sans erreur. D'ou un alias prefixe par le projet, sur
+    # le seul reseau de la pile (infra-vps, docs/APPLICATIONS.md, reseaux).
+    networks:
+      default:
+        aliases: [portfolio-backend]
+    volumes:
+      - portfolio-data:/data
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    # Aucun port ni réseau edge : seule la pile rejoint ce service. Le réseau
+    # bridge conserve la sortie SMTP vers le relais de messagerie.
+    environment:
+      BACKEND_ADDR: 0.0.0.0:8080
+      DATABASE_PATH: /data/portfolio.sqlite3
+      APP_ENV: ${APP_ENV:-production}
+      BACKOFFICE_EMAIL: ${BACKOFFICE_EMAIL:-}
+      BACKOFFICE_PASSWORD: ${BACKOFFICE_PASSWORD:-}
+      BACKOFFICE_TOTP_ENCRYPTION_KEY: ${BACKOFFICE_TOTP_ENCRYPTION_KEY:-}
+      BACKOFFICE_COOKIE_SECURE: ${BACKOFFICE_COOKIE_SECURE:-true}
+      CONTACT_EMAIL: ${CONTACT_EMAIL:-}
+      BACKEND_PROXY_TOKEN: ${BACKEND_PROXY_TOKEN:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_TLS: ${SMTP_TLS:-starttls}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+
+volumes:
+  # Nommé par projet Compose : test et production gardent leurs propres données.
+  portfolio-data:
