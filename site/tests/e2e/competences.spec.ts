@@ -40,7 +40,8 @@ test.describe('sans JavaScript', () => {
     const quotidien = page.getByRole('region', { name: 'Au quotidien', exact: true });
     await expect(quotidien.locator('a.techno--tuile')).toHaveCount(QUOTIDIEN.length);
     await expect(quotidien.getByRole('link', { name: /^Angular/ })).toHaveAttribute('href', 'https://angular.dev/');
-    await expect(quotidien.locator('.a-confirmer')).toHaveText('niveaux à confirmer');
+    // Niveaux et compétences humaines validés le 15/10/2026 : plus aucune marque.
+    await expect(page.locator('main .a-confirmer')).toHaveCount(0);
 
     const pratique = page.getByRole('region', { name: 'Pratiqué', exact: true });
     await expect(pratique.getByRole('link', { name: 'ASP.NET Core', exact: true })).toBeVisible();

@@ -9,7 +9,6 @@ import FilAriane from '../components/pages/FilAriane.astro';
 import AppelDiscutons from '../components/pages/AppelDiscutons.astro';
 import Frise from '../components/parcours/Frise.astro';
 import NavigationParcours from '../components/parcours/NavigationParcours.astro';
-import AConfirmer from '../components/ui/AConfirmer.astro';
 import LienAction from '../components/ui/LienAction.astro';
 import Portrait from '../components/ui/Portrait.astro';
 import Visuel from '../components/ui/Visuel.astro';
@@ -46,8 +45,8 @@ const couloirs = [
 
 /**
  * Le cœur de ma stack : la même liste que « Au quotidien » sur la page
- * Compétences (config/competences.ts, QUOTIDIEN), dans le même ordre. La
- * hiérarchie des technologies reste à confirmer par Charles (Q9).
+ * Compétences (config/competences.ts, QUOTIDIEN), dans le même ordre, gardée
+ * par Charles à sa relecture du 15/10/2026.
  */
 const LOGOS: Record<(typeof QUOTIDIEN)[number]['nom'], string> = {
   'C#': csharp,
@@ -128,7 +127,6 @@ const faits: Record<string, string[]> = {
                     {faits[page.href].map((fait) => (
                       <span class="porte__fait">
                         {fait}
-                        {page.href === '/parcours/competences' && <AConfirmer titre="Hiérarchie des technologies à confirmer (Q9)">niveaux à confirmer</AConfirmer>}
                       </span>
                     ))}
                   </p>
@@ -326,12 +324,6 @@ const faits: Record<string, string[]> = {
 
   .porte__fait {
     display: block;
-  }
-
-  /* La marque suit la liste sur sa ligne : la porte garde sa hauteur. */
-  .porte__faits :global(.a-confirmer) {
-    font-weight: 400;
-    white-space: nowrap;
   }
 
   .porte__action {
