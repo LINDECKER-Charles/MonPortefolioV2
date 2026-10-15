@@ -47,7 +47,14 @@ Coupure du domaine principal : **environ deux minutes**. Écarts avec le déroul
   du texte par Chromium sous Linux (`--font-render-hinting=none`, `site/playwright.config.ts`).
 - **Backoffice** : hors développement, l’inscription 2FA et la déconnexion échouaient en 415
   (mutation sans type JSON) ; corrigé et vérifié en test avant la mise en production.
-- **Silence des alertes** (§ 5.5) : refusé à l’agent, à poser à la main.
+- **Silence des alertes** (§ 5.5) : posé le même jour, 24 h, sur les deux piles de la V1.
+- **Search Console** : sitemap renvoyé (18 pages découvertes, lu le 15/10) et indexation
+  demandée pour 10 pages, jusqu’au quota du jour : `/`, `/projets`, `/parcours`, `/contact`,
+  `/projets/pvz-fusion`, `omnicard`, `bloodborne-legendary-run`, `league-of-database`, `gup`,
+  `githealth`. Restent, le lendemain : `karl-scraper`, `sillage`, `relais`,
+  `/parcours/professionnel`, `/parcours/competences`, `/parcours/formation`, `/blog`,
+  `/mentions-legales` (déjà dans le sitemap). Dépôts `MonPortfolio` et
+  `MonPortefolioV2-private-cadrage` archivés sur GitHub.
 
 ---
 
