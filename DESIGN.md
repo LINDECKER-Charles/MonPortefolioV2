@@ -359,7 +359,9 @@ Chaque composant est documenté en tête de son fichier.
   de 28 px : ce qui se clique), cible de 56 px, focus visible. Déplié : « contrainte, choix, effet »
   (l’effet en Instrument Serif) ou un texte, à la mesure, puis l’extrait sur toute la ligne, sur
   l’acte, rayon de 6 px, pile système à chasse fixe (aucune police de code auto-hébergée),
-  défilement horizontal au clavier ; légende : le chemin du fichier public, ou « forme simplifiée
+  défilement horizontal au clavier, signalé par une ombre (`--trait`) sur le bord d’où il reste du
+  texte, comme le code du blog ; un extrait de prose (`prose`) se replie à la largeur du cadre, et
+  un schéma s’écrit aligné à gauche, en 35 colonnes au plus ; légende : le chemin du fichier public, ou « forme simplifiée
   écrite pour cette page : le code est privé ». Groupes titrés en Instrument Serif. Sans
   JavaScript, tout s’ouvre ; à l’impression, tout est déplié. Le même composant sert la liste des
   fonctions des pages IA.
