@@ -5,7 +5,7 @@ La première version du portfolio (dépôt public
 figée et hors index, sur **`https://yharnam.charles-lindecker.com`**. Elle ne disparaît pas :
 elle sert de preuve, et le pied de page de la V2 y renvoie (`ARCHIVE_V1`, `site/src/config/site.ts`).
 
-Décisions du 2026-10-14 ([`docs/questions.md`](../docs/questions.md), bloc F) : le sous-domaine
+Décisions du 2026-10-14 ([`docs/prive/questions.md`](../docs/prive/questions.md), bloc F) : le sous-domaine
 `yharnam.`, et la refonte d’août plutôt que la version que servait la production. Ordre de mise
 en ligne et gestes manuels : [`docs/bascule.md`](../docs/bascule.md).
 
