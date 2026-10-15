@@ -315,14 +315,18 @@ export const CAPOT: readonly PointCapot[] = [
     extrait: {
       ecrit: true,
       langage: 'Schéma',
-      code: `interface Angular ─┐
-outils de la machine ┴─ clé + JSON ─▶ API Rust (Axum)
-                                        ├─▶ SQLite
-                                        └─▶ sessions et collecteur
-                                              └─▶ adaptateur Claude Code · Codex
-                                                    └─▶ agent fixé par Relais
-                                                          ├─ configuration de l’abonnement A
-                                                          └─ configuration de l’abonnement B`,
+      // Aligné à gauche, branches empilées : tient en 35 colonnes, la largeur d’un téléphone.
+      code: `interface Angular
+outils de la machine
+│ clé + JSON
+▼
+API Rust (Axum)
+├▶ SQLite
+└▶ sessions et collecteur
+  └▶ adaptateur Claude Code · Codex
+    └▶ agent fixé par Relais
+      ├ configuration, abonnement A
+      └ configuration, abonnement B`,
     },
   },
   {

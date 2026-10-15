@@ -233,12 +233,18 @@ export const CAPOT: readonly PointCapot[] = [
     extrait: {
       ecrit: true,
       langage: 'Schéma',
-      code: `interface Angular 22 ── HTTP + jeton ──▶ serveur Rust (Axum, Tokio)
-        ◀──── SSE : l’état, ≤ 4 envois par seconde ────┘     │
-                                          SQLite embarqué ◀───┤
-                       Relais ◀── HTTP + jeton ───────────────┤
-    assistants ◀── outils MCP (création, plan) ───────────────┘
-    agents ◀── Playwright MCP : un navigateur chacun`,
+      // Aligné à gauche, branches empilées : tient en 35 colonnes, la largeur d’un téléphone.
+      code: `interface Angular 22
+ ↓ HTTP + jeton
+ ↑ SSE : l’état,
+   ≤ 4 envois par seconde
+serveur Rust (Axum, Tokio)
+├▶ SQLite embarqué
+├▶ Relais, par HTTP + jeton
+└▶ assistants, par outils MCP
+   (création, plan)
+agents ◀ Playwright MCP :
+   un navigateur chacun`,
     },
   },
   {
