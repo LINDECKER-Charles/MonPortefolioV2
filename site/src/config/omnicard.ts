@@ -89,7 +89,6 @@ export const FICHE: DonneesFiche = {
     { href: LIENS.regles, libelle: 'Règles' },
     { href: LIENS.galerie, libelle: 'Galerie de cartes' },
   ],
-  aConfirmer: { periode: 'Dates de début et de lancement à confirmer par Charles (Q8)' },
 };
 
 /** Les sections du corps : sommaire de l’en-tête et navigation de page. */
@@ -161,8 +160,9 @@ export interface Reequilibrage {
  * Saison 1 : cartes de l’archive publique (Archive/Carte/saison_01). Version
  * actuelle du projet : exports de l’outil du projet, depuis ses données, le
  * 13/10/2026 (docs/assets-omnicard.md). Le catalogue public 1.2.0 affiche
- * encore 4/8 pour Gehrman et 0/4 pour Floppa : Mage ; la version en ligne de
- * ces valeurs reste à confirmer par Charles, d’où la marque « à confirmer ».
+ * encore 4/8 pour Gehrman et 0/4 pour Floppa : Mage ; la page dit « version
+ * actuelle du projet », sans dire que ces valeurs sont celles du jeu en ligne,
+ * et sa note de sources rappelle l’écart.
  */
 export const REEQUILIBRAGES: readonly Reequilibrage[] = [
   { id: 'gehrman', nom: 'Gehrman, Premier Chasseur', court: 'Gehrman', changements: [{ quoi: 'Statistiques', avant: '4/8', apres: '4/15', zones: ['droite'] }] },

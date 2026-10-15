@@ -58,7 +58,7 @@ test('le nom canonique, l’étiquette de preuve et le chemin vers « Sous le ca
   await expect(page.locator('#construit .point-capot')).toHaveCount(4);
 });
 
-test('la fiche : sept cases, statut hors ligne à forme et mot, dates à confirmer, liens mesurés', async ({ page }) => {
+test('la fiche : sept cases, statut hors ligne à forme et mot, sans marque « à confirmer », liens mesurés', async ({ page }) => {
   await page.goto(CHEMIN);
   const fiche = page.getByRole('group', { name: 'Fiche du projet' });
   await expect(fiche.locator('dt')).toHaveText(['Besoin', 'Ma part', 'Rôle', 'Période', 'Équipe', 'Statut', 'Liens publics']);
@@ -66,7 +66,7 @@ test('la fiche : sept cases, statut hors ligne à forme et mot, dates à confirm
   // Un seul rôle : les règles du jeu papier sont co-écrites, le jeu en ligne est fait seul.
   await expect(fiche.locator('.fiche-projet__case--role dd')).toHaveText(`Co-auteur du jeu papier${NBSP}; seul pour le jeu en ligne (équilibrage, moteur, interface)`);
   await expect(fiche.locator('.statut')).toHaveClass(/statut--eteint/);
-  await expect(fiche.locator('.fiche-projet__case--periode .a-confirmer')).toHaveText('à confirmer');
+  await expect(fiche.locator('.a-confirmer')).toHaveCount(0);
   await expect(fiche).toContainText('moteur de règles en C#');
   for (const lien of await fiche.locator('a').all()) {
     expect(await lien.getAttribute('href')).toMatch(new RegExp(`^${DEPOT}`));
@@ -156,7 +156,7 @@ test('le rééquilibrage montre, carte par carte, la saison 1 et la version actu
   await expect(visible.getByRole('img').last()).toHaveAttribute('alt', /version actuelle.*4\/15/);
   // La version en ligne de ces valeurs n’est pas établie : l’étiquette le dit.
   await expect(visible.locator('.comparaison__carte--apres .comparaison__etiquette')).toContainText('Version actuelle du projet');
-  await expect(visible.locator('.comparaison__carte--apres .a-confirmer')).toHaveCount(1);
+  await expect(visible.locator('.comparaison__carte--apres .a-confirmer')).toHaveCount(0);
   await expect(comparateur).not.toContainText('Jeu en ligne');
   await expect(visible.locator('dd')).toHaveText(['4/8 → devient 4/15']);
 

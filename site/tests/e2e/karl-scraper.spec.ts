@@ -62,7 +62,8 @@ test('la fiche technique : sept cases, statut à forme et mot, dépôt privé sa
   // Seul ce qui est sourcé s’affiche sans marque : le service tourne sur le poste ; la présentation
   // en projet personnel attend la réponse de Charles (Q92).
   await expect(fiche.locator('.statut')).toHaveText('Outil personnel, en service sur mon poste');
-  await expect(fiche.locator('.fiche-projet__case--equipe .a-confirmer')).toHaveText('à confirmer');
+  // Plus aucune marque « à confirmer » depuis le 15/10/2026.
+  await expect(fiche.locator('.a-confirmer')).toHaveCount(0);
   await expect(fiche.locator('.fiche-projet__case--part')).toContainText('282 commits');
   await expect(fiche.locator('.fiche-projet__case--liens')).toHaveText(/Aucun\s:\sle code est dans un dépôt privé\./);
   await expect(fiche.locator('a')).toHaveCount(0);

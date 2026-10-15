@@ -92,9 +92,6 @@ export const FICHE: DonneesFiche = {
     { href: LIENS.code, libelle: 'Code' },
     { href: LIENS.patchs, libelle: 'Les patchs' },
   ],
-  aConfirmer: {
-    periode: 'Origine et première mise en ligne à confirmer par Charles : un premier collecteur public date de mai 2025',
-  },
 };
 
 /** Les sections du corps : sommaire de l’en-tête et navigation de page. */
@@ -213,26 +210,21 @@ export const FICHES = [
 export interface FonctionPlateforme {
   titre: string;
   texte: string;
-  /** Affichage non validé par Charles (matiere-premiere.md, « À confirmer par Charles »). */
-  aConfirmer?: string;
 }
 
 export const PLATEFORME: readonly FonctionPlateforme[] = [
   {
     titre: 'Des builds partagés',
     texte: 'Un éditeur pour composer un build d’objets étape par étape, puis le partager par un lien. Les builds se votent, un profil public les rassemble.',
-    aConfirmer: 'Affichage des builds à confirmer par Charles',
   },
   { titre: 'Les tendances', texte: 'Les fiches les plus consultées du site : une mesure de l’attention, pas des statistiques de parties.' },
   {
     titre: 'Une API publique',
     texte: 'Une API REST en JSON pour les profils publics, les builds partagés et les tendances, avec une offre gratuite.',
-    aConfirmer: 'Affichage de l’API à confirmer par Charles',
   },
   {
     titre: 'Gratuit, sans publicité',
     texte: 'Le site vit de dons volontaires et s’installe comme une application web.',
-    aConfirmer: 'Affichage des dons à confirmer par Charles',
   },
 ];
 
@@ -256,12 +248,14 @@ export const JALONS = [
   {
     date: '2025-08-03',
     libelle: 'Août 2025',
-    titre: 'Première version',
+    titre: 'Le dépôt actuel',
     texte: 'Symfony, Go et Vue : trois langages.',
     visuel: 'LOD-05',
     logos: ['symfony', 'go', 'vuejs'],
-    /** Premier commit du dépôt actuel ; un premier collecteur public date de mai 2025. */
-    aConfirmer: 'Date de la première version à confirmer par Charles : août 2025 est la création du dépôt actuel',
+    /**
+     * Premier commit du dépôt actuel. Un premier collecteur public date de mai 2025 :
+     * le jalon dit « le dépôt actuel » plutôt que « première version » (retour du 15/10/2026).
+     */
   },
   { date: '2026-09-24', libelle: '24/09/2026', titre: 'Dix décisions écrites', texte: '.NET 10 et Angular 22 : deux langages au lieu de trois, une seule API.', visuel: 'LOD-10', logos: [] },
   { date: '2026-09-26', libelle: '26/09/2026', titre: 'Parité vérifiée', texte: '75 couples (version, langue) comparés : 12\u00a0260 écarts, tous classés.', visuel: 'LOD-11', logos: [] },

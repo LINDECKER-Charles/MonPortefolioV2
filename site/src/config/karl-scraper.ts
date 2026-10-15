@@ -108,7 +108,6 @@ export const FICHE: DonneesFiche = {
   // Le service tourne sur mon poste (relevé le 14/10/2026) ; « en usage quotidien » attend Q72.
   statut: { texte: 'Outil personnel, en service sur mon poste' },
   liens: [],
-  aConfirmer: { equipe: 'Présentation en projet personnel à confirmer par Charles (Q92)' },
 };
 
 /** Les sections du corps : sommaire de l’en-tête et navigation de page. */

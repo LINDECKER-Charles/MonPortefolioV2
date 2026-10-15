@@ -16,7 +16,6 @@
  * peut passer à la ligne. Aucun chiffre d’usage.
  */
 import type { ImageMetadata } from 'astro';
-import AConfirmer from '../ui/AConfirmer.astro';
 import CaptureAnnotee from '../ui/CaptureAnnotee.astro';
 import league from '../../assets/captures/accueil/league-histoire-version.webp';
 import bloodborne from '../../assets/projets/bloodborne/parcours-desktop.webp';
@@ -39,7 +38,6 @@ interface Construit {
     loupe: { x: number; y: number; zoom: number; largeur?: number; ratio?: string; coin: 'bas-droite' | 'bas-gauche' | 'haut-droite' | 'haut-gauche' };
   };
   besoin: string;
-  aConfirmer?: string;
 }
 
 const CONSTRUITS: readonly Construit[] = [
@@ -94,7 +92,7 @@ const cartes = CONSTRUITS.map((c) => ({ ...c, ...projetDeLaVitrine(c.id), chiffr
 
 <ul class="construits" aria-label="Trois projets que je construis">
   {
-    cartes.map(({ capture, besoin, chiffre, aConfirmer, projet }) => (
+    cartes.map(({ capture, besoin, chiffre, projet }) => (
       <li class="construit">
         <CaptureAnnotee
           class="construit__capture"
@@ -112,7 +110,6 @@ const cartes = CONSTRUITS.map((c) => ({ ...c, ...projetDeLaVitrine(c.id), chiffr
         <p class="construit__preuve">{typo(projet.preuve)}</p>
         <h4 class="construit__nom">
           <a href={projet.href}>{projet.nom}</a>
-          {aConfirmer && <AConfirmer titre={aConfirmer}>nom à confirmer</AConfirmer>}
         </h4>
         <p class="construit__besoin">{typo(besoin)}</p>
         <p class="construit__chiffre"><b>{chiffre.valeur}</b> <span>{typo(chiffre.libelle)}</span></p>
