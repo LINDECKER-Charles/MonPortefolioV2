@@ -173,7 +173,7 @@ test.describe('mentions légales', () => {
     await expect(tableau.locator('tbody tr')).toHaveCount(5);
     // Durées au maximum admis (décision du 15/10/2026) et service d’envoi nommé : plus aucune marque.
     const duree = (ligne: number) => tableau.locator('tbody tr').nth(ligne).locator('td[data-titre="Combien de temps"]');
-    await expect(duree(0)).toHaveText('3 ans au plus après sa réception, puis supprimé automatiquement');
+    await expect(duree(0)).toHaveText('3 ans au plus après sa réception, puis supprimé, automatiquement dans l’espace privé');
     await expect(duree(1)).toHaveText('1 an au plus');
     await expect(tableau.locator('tbody tr').first()).toContainText('la messagerie d’Hostinger');
     await expect(page.locator('main')).not.toContainText('à confirmer');

@@ -13,7 +13,11 @@
  * (12 h) : backend/src/admin.rs. Durées fixées le 15/10/2026, au maximum admis
  * par la CNIL (retour de Charles : « met le max qu’on peut avoir ») :
  *   - messages du formulaire : 3 ans au plus après leur réception, puis
- *     supprimés automatiquement par le backend (contacts entrants) ;
+ *     supprimés (contacts entrants) : automatiquement par le backend dans
+ *     l’espace privé ; la copie de la notification, dans la boîte de Charles,
+ *     n’est purgée par rien : à Charles de la supprimer dans le même délai
+ *     (docs/questions.md, J, point 12). La page ne promet donc l’automatique
+ *     que pour l’espace privé ;
  *   - journal du serveur : 1 an au plus (journaux de sécurité) ; l’infrastructure
  *     en garde aujourd’hui 90 jours, dans la borne.
  * Les notifications partent par la messagerie d’Hostinger, la société qui
@@ -92,7 +96,7 @@ const CNIL = 'https://www.cnil.fr/fr/plaintes';
               <tr>
                 <th scope="row" data-titre="Donnée">Votre message (nom, e-mail, sujet, texte)</th>
                 <td data-titre="Pourquoi">Vous répondre</td>
-                <td data-titre="Combien de temps" class="chiffres">3&nbsp;ans au plus après sa réception, puis supprimé automatiquement</td>
+                <td data-titre="Combien de temps" class="chiffres">3&nbsp;ans au plus après sa réception, puis supprimé, automatiquement dans l’espace privé</td>
                 <td data-titre="Qui la reçoit">L’éditeur, dans un espace privé&nbsp;; la messagerie d’Hostinger, qui lui transmet la notification par e-mail</td>
               </tr>
               <tr>
@@ -125,7 +129,8 @@ const CNIL = 'https://www.cnil.fr/fr/plaintes';
         <ul>
           <li>
             Si vous m’écrivez, vos coordonnées et votre message sont conservés dans un espace privé pour vous répondre,
-            avec une notification par e-mail, puis supprimés automatiquement trois ans après leur réception. Ils ne
+            avec une notification par e-mail, puis supprimés trois ans au plus après leur réception, automatiquement
+            dans l’espace privé. Ils ne
             sont jamais inclus dans les statistiques de visite. Une demande peut être consultée au moyen d’un
             assistant connecté à cet espace privé.
           </li>
