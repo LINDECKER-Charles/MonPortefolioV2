@@ -308,6 +308,23 @@ async fn settings_are_validated_and_the_password_is_never_returned() {
     assert_eq!(status, StatusCode::OK);
     assert_eq!(kept["settings"]["password_set"], true);
 
+    // Le seul mode change, au même port : le mot de passe est à saisir de nouveau.
+    let mut switched = hostinger.clone();
+    switched["security"] = json!("starttls");
+    let (status, refused) = send(
+        &app,
+        request("PUT", "/api/backoffice/mail", switched, Some(&cookie)),
+    )
+    .await;
+    assert_eq!(status, StatusCode::UNPROCESSABLE_ENTITY);
+    assert!(refused["fields"].get("security").is_none());
+    assert!(
+        refused["fields"]["password"]
+            .as_str()
+            .unwrap()
+            .starts_with("Ressaisissez le mot de passe")
+    );
+
     // Sans identifiant, pas d’authentification : le mot de passe part.
     let mut anonymous = hostinger.clone();
     anonymous["username"] = json!("");
