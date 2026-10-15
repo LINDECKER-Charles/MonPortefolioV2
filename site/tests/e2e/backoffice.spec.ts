@@ -129,7 +129,11 @@ async function apiDouble(page: Page, options: { authenticated?: boolean; smtp?: 
       if (method === 'PUT') {
         const corps = body as unknown as { enabled: boolean; host: string; port: number; security: 'tls' | 'starttls' | 'none'; username: string; password?: string; from: string };
         if (corps.host.includes('/')) { await repondre({ code: 'VALIDATION_ERROR', message: 'Vérifiez les champs du formulaire.', fields: { host: 'Indiquez un nom d’hôte, par exemple smtp.hostinger.com, sans https:// ni port.' } }, 422); return; }
-        const motDePasse = Boolean(corps.password) || Boolean(etat.envoi.settings?.password_set && corps.username);
+        // Comme le backend : le mot de passe enregistré ne suit pas un autre serveur ni un autre identifiant.
+        const avant = etat.envoi.settings;
+        const memeServeur = avant !== null && avant.host === corps.host && avant.port === corps.port && avant.security === corps.security && avant.username === corps.username;
+        if (corps.enabled && corps.username && !corps.password && avant?.password_set && !memeServeur) { await repondre({ code: 'VALIDATION_ERROR', message: 'Vérifiez les champs du formulaire.', fields: { password: 'Ressaisissez le mot de passe : le serveur d’envoi ou l’identifiant a changé.' } }, 422); return; }
+        const motDePasse = Boolean(corps.password) || Boolean(avant?.password_set && corps.username && memeServeur);
         etat.envoi = { ...etat.envoi, active: corps.enabled, source: 'settings', settings: { enabled: corps.enabled, host: corps.host, port: corps.port, security: corps.security, username: corps.username, password_set: motDePasse, from: corps.from, updated_at: '2026-10-15T09:00:00Z' } };
       }
       if (method === 'DELETE') etat.envoi = { ...etat.envoi, settings: null, source: etat.envoi.environment ? 'environment' : 'none', active: Boolean(etat.envoi.environment) };
@@ -740,11 +744,21 @@ test('le serveur d’envoi se prépare pour Hostinger, s’enregistre sans renvo
   await expect(page.getByLabel('Mot de passe de la boîte', { exact: true })).toHaveValue('');
   await expect(page.locator('#bo-mail-password-help')).toHaveText('Un mot de passe est enregistré, chiffré. Laissez le champ vide pour le garder.');
   // Laissé vide, le mot de passe n’est pas envoyé : le serveur garde le sien.
-  await page.getByRole('radio', { name: 'STARTTLS', exact: true }).check();
-  await expect(page.getByLabel('Port', { exact: true })).toHaveValue('587');
   await page.getByRole('button', { name: 'Enregistrer le serveur', exact: true }).click();
   await expect(page.locator('#bo-mail-retour')).toHaveAttribute('data-state', 'success');
-  expect(etat.mutations.at(-1)?.body).toEqual({ enabled: true, host: 'smtp.hostinger.com', port: 587, security: 'starttls', username: 'boite@example.test', from: 'boite@example.test' });
+  expect(etat.mutations.at(-1)?.body).toEqual({ enabled: true, host: 'smtp.hostinger.com', port: 465, security: 'tls', username: 'boite@example.test', from: 'boite@example.test' });
+  // Un autre serveur (ici, le mode et le port) : le mot de passe enregistré ne le suit pas.
+  await page.getByRole('radio', { name: 'STARTTLS', exact: true }).check();
+  await expect(page.getByLabel('Port', { exact: true })).toHaveValue('587');
+  await expect(page.locator('#bo-mail-password-help')).toHaveText('Le serveur ou l’identifiant a changé : saisissez de nouveau le mot de passe, il ne suit pas un autre serveur.');
+  await expect(page.getByLabel('Mot de passe de la boîte', { exact: true })).toHaveAttribute('placeholder', '');
+  await page.getByRole('button', { name: 'Enregistrer le serveur', exact: true }).click();
+  await expect(page.locator('#bo-mail-password-erreur')).toHaveText('Ressaisissez le mot de passe : le serveur d’envoi ou l’identifiant a changé.');
+  await expect(page.getByLabel('Mot de passe de la boîte', { exact: true })).toBeFocused();
+  await page.getByLabel('Mot de passe de la boîte', { exact: true }).fill('mot-de-passe-de-la-boite');
+  await page.getByRole('button', { name: 'Enregistrer le serveur', exact: true }).click();
+  await expect(page.locator('#bo-mail-retour')).toHaveAttribute('data-state', 'success');
+  expect(etat.mutations.at(-1)?.body).toEqual({ enabled: true, host: 'smtp.hostinger.com', port: 587, security: 'starttls', username: 'boite@example.test', password: 'mot-de-passe-de-la-boite', from: 'boite@example.test' });
 
   await page.getByRole('button', { name: 'Envoyer un e-mail de test', exact: true }).click();
   await expect(page.locator('#bo-mail-test-retour')).toHaveText('E-mail d’essai accepté par le serveur, pour contact@example.test. Vérifiez la boîte de réception, et les indésirables.');

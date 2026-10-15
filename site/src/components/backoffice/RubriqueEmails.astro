@@ -12,7 +12,8 @@
  *      l’e-mail d’essai et « Revenir aux variables du serveur ».
  *
  * Le mot de passe n’est jamais renvoyé par l’API : le champ reste vide, et
- * vide à l’enregistrement, il garde celui qui est enregistré (chiffré).
+ * vide à l’enregistrement, il garde celui qui est enregistré (chiffré), tant
+ * que l’hôte, le port, la sécurité et l’identifiant ne changent pas.
  * Tout s’applique sans redéploiement. Le script : scripts/backoffice-envoi.ts.
  */
 import EnTeteRubrique from './EnTeteRubrique.astro';

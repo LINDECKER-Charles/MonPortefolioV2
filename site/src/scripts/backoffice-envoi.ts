@@ -4,7 +4,9 @@
  *
  * API (backend/src/mail_settings.rs) : GET, PUT et DELETE /mail, POST
  * /mail/test. Le mot de passe ne revient jamais : le champ reste vide, et
- * vide à l’enregistrement, il garde celui qui est enregistré. Un refus de
+ * vide à l’enregistrement, il garde celui qui est enregistré, tant que l’hôte,
+ * le port, la sécurité et l’identifiant ne changent pas ; sinon, l’indication
+ * le dit et il faut le saisir de nouveau. Un refus de
  * champ (`fields`) se dit sous le champ, qui reçoit `aria-invalid`.
  */
 import { ErreurApi, type Dire, type Etat } from './backoffice-commun';
@@ -147,14 +149,28 @@ export function brancherEnvoi(contexte: ContexteEnvoi): RubriqueEnvoi {
     identifiant.value = reglage?.username ?? '';
     expediteur.value = depart?.from ?? '';
     motDePasse.value = '';
-    motDePasse.placeholder = reglage?.password_set ? 'Enregistré, laisser vide pour le garder' : '';
-    element('bo-mail-password-help').textContent = !donnees.password_storage
-      ? `Le serveur n’a pas de clé de chiffrement (BACKOFFICE_TOTP_ENCRYPTION_KEY)${NBSP}: un mot de passe ne peut pas être enregistré.`
-      : reglage?.password_set
-        ? 'Un mot de passe est enregistré, chiffré. Laissez le champ vide pour le garder.'
-        : 'Chiffré avant d’être enregistré, il ne s’affiche plus ensuite.';
     modifie = false;
+    decrireMotDePasse();
     afficherEtat(donnees);
+  }
+
+  /** Le mot de passe enregistré ne vaut que pour son serveur et son identifiant. */
+  function memeServeur(reglage: Reglage): boolean {
+    return reglage.host === hote.value.trim().toLowerCase() && reglage.port === Number(port.value)
+      && reglage.security === securite() && reglage.username === identifiant.value.trim();
+  }
+
+  function decrireMotDePasse(): void {
+    const reglage = vue?.settings;
+    const garde = Boolean(reglage?.password_set && memeServeur(reglage));
+    motDePasse.placeholder = garde ? 'Enregistré, laisser vide pour le garder' : '';
+    element('bo-mail-password-help').textContent = !vue?.password_storage
+      ? `Le serveur n’a pas de clé de chiffrement (BACKOFFICE_TOTP_ENCRYPTION_KEY)${NBSP}: un mot de passe ne peut pas être enregistré.`
+      : garde
+        ? 'Un mot de passe est enregistré, chiffré. Laissez le champ vide pour le garder.'
+        : reglage?.password_set
+          ? `Le serveur ou l’identifiant a changé${NBSP}: saisissez de nouveau le mot de passe, il ne suit pas un autre serveur.`
+          : 'Chiffré avant d’être enregistré, il ne s’affiche plus ensuite.';
   }
 
   async function charger(): Promise<void> {
@@ -173,7 +189,7 @@ export function brancherEnvoi(contexte: ContexteEnvoi): RubriqueEnvoi {
     element('bo-mail-forget-zone').hidden = true;
   }
 
-  formulaire.addEventListener('input', () => { modifie = true; });
+  formulaire.addEventListener('input', () => { modifie = true; decrireMotDePasse(); });
   // L’identifiant d’une boîte est souvent son adresse d’expédition : la recopier tant qu’on n’a rien écrit d’autre.
   let identifiantPrecedent = '';
   identifiant.addEventListener('focus', () => { identifiantPrecedent = identifiant.value.trim(); });
@@ -186,6 +202,7 @@ export function brancherEnvoi(contexte: ContexteEnvoi): RubriqueEnvoi {
     option.addEventListener('change', () => {
       // Le port suit la sécurité tant qu’il est celui de l’autre mode.
       if (Object.values(PORT_PAR_DEFAUT).includes(Number(port.value))) port.value = String(PORT_PAR_DEFAUT[securite()]);
+      decrireMotDePasse();
     });
   }
 
@@ -195,6 +212,7 @@ export function brancherEnvoi(contexte: ContexteEnvoi): RubriqueEnvoi {
     port.value = String(HOSTINGER.port);
     active.checked = true;
     modifie = true;
+    decrireMotDePasse();
     effacerErreurs();
     contexte.afficher(retourFormulaire, `Hôte, port et sécurité préremplis pour Hostinger. Indiquez l’adresse de la boîte comme identifiant et comme expéditeur, et son mot de passe, puis enregistrez.`);
     identifiant.focus();
