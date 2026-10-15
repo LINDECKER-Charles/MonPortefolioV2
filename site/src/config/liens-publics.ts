@@ -45,7 +45,7 @@ export const DEPOTS_PUBLICS: readonly DepotPublic[] = [
   { nom: 'App.GitHealth', usage: 'GitHealth : carte de la vitrine (famille « Outils ») et sa page', statut: 'lie', verifie: '2026-10-13' },
   { nom: 'app-life-pixel', usage: 'Projets archivés : Life Pixel', statut: 'lie', verifie: '2026-10-13' },
   { nom: 'Web-Image-Formateur', usage: 'Projets archivés : img-convertor', statut: 'lie', verifie: '2026-10-13' },
-  { nom: 'Piscine42-Mulhouse-2024', usage: 'Parcours, formation : piscine de 42 (date à confirmer)', statut: 'lie', verifie: '2026-10-13' },
+  { nom: 'Piscine42-Mulhouse-2024', usage: 'Parcours, formation et accueil : piscine de 42 (juillet 2024)', statut: 'lie', verifie: '2026-10-13' },
 ];
 
 /**

@@ -1,7 +1,8 @@
 ---
 /**
  * Le hub du parcours (cahier, § 5.8) : qui est Charles aujourd’hui, la forme
- * du parcours en une frise (PAR-F1), puis trois portes avec un fait chacune.
+ * du parcours en une frise (PAR-F1 : le titre, la piscine de 42 et le BUT
+ * Réseaux & Télécoms en formation), puis trois portes avec un fait chacune.
  * La photo vient de la séance en chemise bleu roi (n° 3, PAR-PHO).
  */
 import Base from '../layouts/Base.astro';
@@ -35,6 +36,8 @@ const couloirs = [
     nom: 'Formation',
     lignes: [
       { cle: 'dwwm', href: '/parcours/formation#dwwm', libelle: `Titre ${DIPLOME.sigle}, Elan Formation`, periode: 'Formation, avril – octobre 2025', nature: 'formation', debut: DIPLOME.debut, fin: DIPLOME.fin },
+      // La piscine de 42, en juillet 2024, juste après le BUT (retour du 15/10/2026) : elle comble le trou avant le titre.
+      { cle: 'piscine', href: '/parcours/formation#piscine', libelle: 'Piscine de 42, sélection d’entrée', periode: 'Formation, juillet 2024', nature: 'formation', debut: '2024-07', fin: '2024-07' },
       // Connu à l’année seulement (2023–2024) : placé sur l’année universitaire, sans mois affiché.
       { cle: 'reseaux', href: '/parcours/formation#reseaux', libelle: 'BUT Réseaux & Télécoms', periode: 'Formation, 2023–2024', nature: 'formation', debut: '2023-09', fin: '2024-06' },
     ],

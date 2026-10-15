@@ -67,8 +67,8 @@ test.describe('hub', () => {
     const frise = page.getByRole('figure', { name: 'De 2023 à aujourd’hui' });
     await expect(frise).toBeVisible();
     const liens = frise.getByRole('link');
-    await expect(liens).toHaveCount(8);
-    await expect(frise.getByRole('list', { name: 'Formation' }).getByRole('link')).toHaveCount(2);
+    await expect(liens).toHaveCount(9);
+    await expect(frise.getByRole('list', { name: 'Formation' }).getByRole('link')).toHaveCount(3);
     await expect(frise.getByRole('list', { name: 'Travail' }).getByRole('link')).toHaveCount(4);
     await expect(frise.getByRole('list', { name: 'Communauté' }).getByRole('link')).toHaveCount(2);
     for (const lien of await liens.all()) {
@@ -77,6 +77,8 @@ test.describe('hub', () => {
     // Le nom du lien lit la période en mots : jamais « flèche droite ».
     await expect(frise.getByRole('link', { name: 'Formateur, Elan Formation, Freelance, décembre 2025 à mai 2026', exact: true })).toHaveCount(1);
     await expect(frise.getByRole('link', { name: 'BUT Réseaux & Télécoms, Formation, de 2023 à 2024', exact: true })).toHaveAttribute('href', '/parcours/formation#reseaux');
+    // La piscine de 42, juste après le BUT : elle comble le trou avant le titre.
+    await expect(frise.getByRole('link', { name: 'Piscine de 42, sélection d’entrée, Formation, juillet 2024', exact: true })).toHaveAttribute('href', '/parcours/formation#piscine');
     await expect(frise.getByRole('link', { name: 'Titre DWWM, Elan Formation, Formation, avril à octobre 2025', exact: true })).toHaveCount(1);
     for (const lien of await liens.all()) expect(await lien.getAttribute('aria-label')).not.toContain('→');
 
@@ -337,7 +339,7 @@ test.describe('page Formation', () => {
       await expect(complement.getByText('Titre non passé', { exact: true })).toBeVisible();
     });
 
-    test('la frise présente les formations récentes en premier, sans date inventée', async ({ page }) => {
+    test('la frise présente les formations récentes en premier, chacune datée', async ({ page }) => {
       await page.goto('/parcours/formation');
       const frise = page.locator('#formation ol.formation-timeline');
       const etapes = frise.locator(':scope > li');
@@ -348,11 +350,15 @@ test.describe('page Formation', () => {
         await expect(etapes.nth(index).getByRole('heading', { level: 3, name: formation, exact: true })).toBeVisible();
         await expect(etapes.nth(index).locator(`[data-visuel="${visuels[index]}"]`)).toBeVisible();
       }
-      const datesReseaux = await etapes.nth(2).locator('time[datetime]').evaluateAll((dates) => dates.map((date) => date.getAttribute('datetime')));
-      expect(datesReseaux).toEqual(['2023', '2024']);
-      // Q9 : pas de date pour la piscine de 42, ni pour les deux premières années.
-      for (const index of [1, 3, 4, 5]) await expect(etapes.nth(index).locator('time')).toHaveCount(0);
-      await expect(etapes.nth(1)).not.toContainText(/20\d\d/);
+      // Chaque étape d’avant le titre est datée (retour du 15/10/2026), du plus récent au plus ancien, et le repère le dit.
+      await expect(frise.locator('.formation-sens')).toHaveText('Avant le titre, du plus récent au plus ancien');
+      const datesAvant = [['2024-07'], ['2023', '2024'], ['2022', '2023'], ['2021', '2022']];
+      for (const [rang, attendues] of datesAvant.entries()) {
+        const dates = await etapes.nth(rang + 1).locator('.station__quand time[datetime]').evaluateAll((temps) => temps.map((t) => t.getAttribute('datetime')));
+        expect(dates).toEqual(attendues);
+      }
+      await expect(etapes.nth(1).locator('.station__quand')).toHaveText('Juillet 2024');
+      await expect(etapes.nth(5).locator('time')).toHaveCount(0);
       await expect(etapes.nth(5)).toContainText(/vers\s*13\s*ans/i);
       await expect(etapes.nth(5)).toContainText('Le C, pour passer ensuite au C++ et coder mes jeux sur Unreal Engine');
       await expect(etapes.nth(1).getByRole('link', { name: /Mes exercices/ })).toHaveAttribute('href', 'https://github.com/LINDECKER-Charles/Piscine42-Mulhouse-2024');

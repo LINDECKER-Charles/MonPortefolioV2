@@ -130,8 +130,8 @@ test('le récit garde ses moments, ses figures et ses scènes', async ({ page })
   await expect(lanternes.locator('.lt-aplat').first()).toHaveCSS('vector-effect', 'non-scaling-stroke');
   // Plus aucun dessin de l’ancienne direction.
   await expect(page.locator('.scene-origine, .illustration, .planche')).toHaveCount(0);
-  // Les portes portent leurs intitulés en HTML, sans date pour la piscine de 42.
-  await expect(page.locator('#portes .portes li')).toHaveText(['BUT Informatique', 'Physique-chimie', 'BUT Réseaux & Télécoms, 2023-2024', 'Piscine de 42', 'Elan Formation, 2025']);
+  // Les portes portent leurs intitulés en HTML, chacune datée (retour du 15/10/2026).
+  await expect(page.locator('#portes .portes li')).toHaveText(['BUT Informatique, 2021–2022', 'Physique-chimie, 2022–2023', 'BUT Réseaux & Télécoms, 2023–2024', 'Piscine de 42, juillet 2024', 'Elan Formation, 2025']);
   // Les trois règles, de 1 à 3, chacune renvoyant là où le récit la prouve.
   const regles = page.locator('#regles [data-revelation-progressive] > li');
   await expect(regles.locator('h4')).toHaveText(['Maîtriser', 'Réinventer', 'Emmener']);

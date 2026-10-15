@@ -3,8 +3,13 @@
  * certifications et la pratique sur Frontend Mentor.
  *
  * Faits : docs/matiere-premiere.md (Parcours, Certifications) et
- * docs/questions.md (C1, C3, C5). Aucune date inventée : seules les études
- * datées par Charles portent une date (Q9 : pas de date pour la piscine de 42).
+ * docs/questions.md (C1, C3, C5). Aucune date inventée. Les études d’avant le
+ * titre sont datées depuis C3 (« trois ans d’études en filières classiques,
+ * une année chacune : BUT Informatique, fac de physique-chimie, BUT Réseaux &
+ * Télécoms (2023-2024). Puis la piscine de 42 ») : BUT Informatique
+ * 2021–2022, physique-chimie 2022–2023, BUT R&T 2023–2024. La piscine de 42 :
+ * juillet 2024, « juste après mon année de BUT » (retour de Charles du
+ * 15/10/2026, comme le dépôt public Piscine42-Mulhouse-2024).
  */
 
 /** Certificats vérifiés sur le profil public hexanti le 9 octobre 2026. */
@@ -123,8 +128,11 @@ export interface Etude {
   titre: string;
   /** Établissement ou nature de l’étape. */
   organisme: string;
-  /** Année ou repère de temps, seulement s’il est sourcé. */
-  quand?: { texte: string; debut?: string; fin?: string };
+  /**
+   * Année, mois ou repère de temps, seulement s’il est sourcé : `debut` et
+   * `fin` (années) font un intervalle, `debut` seul un mois (`AAAA-MM`).
+   */
+  quand: { texte: string; debut?: string; fin?: string };
   /** Ce qui a été suivi. */
   suivi?: string;
   statut?: string;
@@ -134,13 +142,14 @@ export interface Etude {
 
 /**
  * Le chemin d’avant le titre, du plus récent au plus ancien (ordre demandé le
- * 2026-10-09). Les deux premières années n’ont pas de date sourcée.
+ * 2026-10-09), chaque étape datée (retour du 15/10/2026).
  */
 export const ETUDES_AVANT: readonly Etude[] = [
   {
     id: 'piscine',
     titre: 'Piscine de 42',
     organisme: 'Sélection d’entrée',
+    quand: { texte: 'Juillet 2024', debut: '2024-07' },
     statut: 'Candidature non retenue',
     visuel: 'FOR-07',
     lien: { href: 'https://github.com/LINDECKER-Charles/Piscine42-Mulhouse-2024', libelle: 'Mes exercices' },
@@ -158,6 +167,7 @@ export const ETUDES_AVANT: readonly Etude[] = [
     id: 'physique',
     titre: 'Physique-chimie',
     organisme: 'Université',
+    quand: { texte: '2022–2023', debut: '2022', fin: '2023' },
     suivi: 'Première année suivie',
     statut: 'Cursus non poursuivi',
     visuel: 'FOR-05',
@@ -166,6 +176,7 @@ export const ETUDES_AVANT: readonly Etude[] = [
     id: 'informatique',
     titre: 'BUT Informatique',
     organisme: 'IUT',
+    quand: { texte: '2021–2022', debut: '2021', fin: '2022' },
     suivi: 'Première année suivie',
     statut: 'Cursus non poursuivi',
     visuel: 'FOR-04',
