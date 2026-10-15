@@ -27,6 +27,11 @@ before(async () => {
       res.end(JSON.stringify({ email }));
       return;
     }
+    if (req.url === '/api/backoffice/mail/test') {
+      res.writeHead(502, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ code: 'SMTP_AUTH_FAILED', message: 'Le serveur a refusé l’identifiant ou le mot de passe.' }));
+      return;
+    }
     if (req.method === 'DELETE' || (req.url === '/mcp' && body.includes('notifications/initialized'))) {
       res.writeHead(req.method === 'DELETE' ? 204 : 202);
       res.end();
@@ -150,6 +155,32 @@ test('le stockage se relaie en lecture seule, avec la session et sans paramètre
   }
   assert.equal((await fetch(`${base}/api/backoffice/storage/1`)).status, 404);
   assert.equal(calls.length, before);
+});
+
+test('le serveur d’envoi se règle, s’oublie et s’essaie par ses deux routes, et rien d’autre', async () => {
+  const entetes = { 'Content-Type': 'application/json', 'X-Backoffice-Request': '1', Cookie: 'portfolio_session=test' };
+  const reglage = { enabled: true, host: 'smtp.hostinger.com', port: 465, security: 'tls', username: 'contact@example.test', password: 'secret', from: 'contact@example.test' };
+  assert.equal((await fetch(`${base}/api/backoffice/mail`, { headers: { Cookie: 'portfolio_session=test' } })).status, 200);
+  assert.equal((await fetch(`${base}/api/backoffice/mail`, { method: 'PUT', headers: entetes, body: JSON.stringify(reglage) })).status, 200);
+  let call = calls.at(-1);
+  assert.equal(call.url, '/api/backoffice/mail');
+  assert.equal(call.method, 'PUT');
+  assert.deepEqual(JSON.parse(call.body), reglage);
+  assert.equal(call.headers.cookie, 'portfolio_session=test');
+  assert.equal(call.headers['x-backoffice-request'], '1');
+  assert.equal((await fetch(`${base}/api/backoffice/mail`, { method: 'DELETE', headers: { 'X-Backoffice-Request': '1' } })).status, 204);
+  // Un échec d’envoi garde son statut et son message à travers le relais.
+  const essai = await fetch(`${base}/api/backoffice/mail/test`, { method: 'POST', headers: entetes, body: '{}' });
+  assert.equal(essai.status, 502);
+  assert.equal((await essai.json()).code, 'SMTP_AUTH_FAILED');
+  call = calls.at(-1);
+  assert.equal(call.url, '/api/backoffice/mail/test');
+  const avant = calls.length;
+  assert.equal((await fetch(`${base}/api/backoffice/mail`, { method: 'PUT', headers: { ...entetes, 'X-Backoffice-Request': '0' }, body: '{}' })).status, 403);
+  assert.equal((await fetch(`${base}/api/backoffice/mail/test`)).status, 405);
+  assert.equal((await fetch(`${base}/api/backoffice/mail`, { method: 'POST', headers: entetes, body: '{}' })).status, 405);
+  assert.equal((await fetch(`${base}/api/backoffice/mail/1`)).status, 404);
+  assert.equal(calls.length, avant);
 });
 
 test('les routes explicites gardent DELETE sans corps et refusent les chemins arbitraires', async () => {
