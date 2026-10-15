@@ -65,3 +65,28 @@ impl ContactRequest {
         })
     }
 }
+
+/// La conservation des demandes : au démarrage puis chaque heure, les demandes
+/// reçues il y a plus de trois ans (`storage::CONTACT_RETENTION_YEARS`) sont
+/// supprimées. Le journal ne dit que leur nombre.
+pub fn spawn_retention(
+    store: std::sync::Arc<crate::storage::Store>,
+) -> tokio::task::JoinHandle<()> {
+    tokio::spawn(async move {
+        let mut interval = tokio::time::interval(std::time::Duration::from_secs(60 * 60));
+        loop {
+            interval.tick().await;
+            let store = store.clone();
+            let now = std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .map_or(0, |elapsed| elapsed.as_secs() as i64);
+            match tokio::task::spawn_blocking(move || store.purge_expired_contacts(now)).await {
+                Ok(Ok(0)) => {}
+                Ok(Ok(count)) => {
+                    eprintln!("{count} demande(s) de contact de plus de trois ans supprimée(s).")
+                }
+                _ => eprintln!("La conservation des demandes de contact n’a pas pu être vérifiée."),
+            }
+        }
+    })
+}

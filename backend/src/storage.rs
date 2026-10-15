@@ -110,6 +110,10 @@ pub const DEFAULT_TOKEN_DAYS: u32 = 90;
 /// expiré ne se prolonge pas, on en crée un autre.
 pub const MAX_TOKEN_DAYS: u32 = 365;
 
+/// Les demandes de contact sont supprimées automatiquement 3 ans après leur
+/// réception (le maximum admis par la CNIL pour des contacts entrants).
+pub const CONTACT_RETENTION_YEARS: u32 = 3;
+
 /// Format des dates enregistrées : `2026-10-15T08:30:00.000Z`. Deux dates de
 /// ce format se comparent comme du texte.
 const NOW: &str = "strftime('%Y-%m-%dT%H:%M:%fZ','now')";
@@ -605,6 +609,16 @@ impl Store {
             .connection()?
             .execute("DELETE FROM contacts WHERE id=?1", [id])?
             > 0)
+    }
+
+    /// Supprime les demandes reçues il y a plus de `CONTACT_RETENTION_YEARS`
+    /// ans à l’instant `now` (secondes Unix) ; retourne leur nombre.
+    pub fn purge_expired_contacts(&self, now: i64) -> Result<usize, StoreError> {
+        Ok(self.connection()?.execute(
+            "DELETE FROM contacts
+             WHERE created_at < strftime('%Y-%m-%dT%H:%M:%fZ',?1,'unixepoch',?2)",
+            params![now, format!("-{CONTACT_RETENTION_YEARS} years")],
+        )?)
     }
 
     pub fn list_links(&self) -> Result<Vec<ToolLink>, StoreError> {
@@ -1383,5 +1397,40 @@ mod tests {
         assert_eq!(expires_at(&reopened, 2), "2026-06-01T08:00:00.000Z");
         drop(reopened);
         std::fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn contacts_are_purged_three_years_after_their_reception() {
+        let store = Store::in_memory("owner@example.org").unwrap();
+        let contact = ContactMessage {
+            name: "Une personne".into(),
+            email: "person@example.org".parse().unwrap(),
+            subject: "Projet".into(),
+            message: "Bonjour à vous".into(),
+        };
+        let old = store.save_contact(&contact, "sent").unwrap();
+        let kept = store.save_contact(&contact, "sent").unwrap();
+        let recent = store.save_contact(&contact, "sent").unwrap();
+        let connection = store.connection().unwrap();
+        connection
+            .execute(
+                "UPDATE contacts SET created_at='2023-10-14T23:59:59.000Z' WHERE id=?1",
+                [old],
+            )
+            .unwrap();
+        connection
+            .execute(
+                "UPDATE contacts SET created_at='2023-10-15T00:00:01.000Z' WHERE id=?1",
+                [kept],
+            )
+            .unwrap();
+        drop(connection);
+        // Le 15 octobre 2026 à minuit (UTC) : trois ans tout juste.
+        let now = 1_792_022_400;
+        assert_eq!(store.purge_expired_contacts(now).unwrap(), 1);
+        assert!(store.get_contact(old).unwrap().is_none());
+        assert!(store.get_contact(kept).unwrap().is_some());
+        assert!(store.get_contact(recent).unwrap().is_some());
+        assert_eq!(store.purge_expired_contacts(now).unwrap(), 0);
     }
 }

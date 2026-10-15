@@ -97,7 +97,8 @@ async fn run(config: Config) -> Result<(), String> {
         config.backoffice,
         config.secure_cookie,
     )?;
-    let scheduler = portfolio_backend::blog::spawn_scheduler(store);
+    let scheduler = portfolio_backend::blog::spawn_scheduler(store.clone());
+    let retention = portfolio_backend::contact::spawn_retention(store);
     let listener = tokio::net::TcpListener::bind(config.address)
         .await
         .map_err(|_| "Impossible d’ouvrir le port HTTP configuré".to_owned())?;
@@ -110,6 +111,7 @@ async fn run(config: Config) -> Result<(), String> {
     .await
     .map_err(|_| "Le serveur HTTP s’est interrompu".to_owned());
     scheduler.abort();
+    retention.abort();
     result
 }
 
