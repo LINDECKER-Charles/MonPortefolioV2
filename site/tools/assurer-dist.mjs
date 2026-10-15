@@ -19,7 +19,9 @@ const DIST = path.join(SITE, 'dist');
 const VERROU = path.join(SITE, '.astro', 'dist.lock');
 const SOURCES = ['src', 'public'];
 const FICHIERS_SOURCES = ['astro.config.mjs', 'package.json', 'package-lock.json', 'tsconfig.json'];
-const ATTENTE_MAX_MS = 6 * 60_000;
+// Plus long qu'un build : un build à froid en CI optimise plus de 1 000 images
+// (près de 7 min, 15/10/2026), contre quelques dizaines de secondes en local.
+const ATTENTE_MAX_MS = (process.env.CI ? 15 : 6) * 60_000;
 
 const dormir = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
