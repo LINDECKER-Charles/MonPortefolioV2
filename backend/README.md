@@ -26,9 +26,9 @@ dans Compose. Le navigateur et les clients MCP utilisent le serveur du site.
 | `APP_ENV` | `production` par défaut ; `test` impose aussi la 2FA ; seul `development` la dispense |
 | `BACKOFFICE_EMAIL` | adresse de connexion administrateur, distincte de l’adresse publique |
 | `BACKOFFICE_PASSWORD` | mot de passe administrateur d’au moins 12 octets ; absent avec l’e-mail, administration désactivée |
-| `BACKOFFICE_TOTP_ENCRYPTION_KEY` | clé de 32 octets en hexadécimal (`openssl rand -hex 32`), obligatoire hors développement si l’administration est activée |
+| `BACKOFFICE_TOTP_ENCRYPTION_KEY` | clé de 32 octets en hexadécimal (`openssl rand -hex 32`), obligatoire hors développement si l’administration est activée ; chiffre aussi, par une sous-clé, le mot de passe SMTP réglé dans le backoffice |
 | `BACKOFFICE_COOKIE_SECURE` | `true` par défaut ; `false` uniquement pour HTTP local |
-| `SMTP_HOST` | relais de notification facultatif |
+| `SMTP_HOST` | relais de notification facultatif, **repli** quand aucun serveur d’envoi n’est réglé dans le backoffice (voir « Serveur d’envoi des e-mails ») |
 | `SMTP_TLS` | `starttls` par défaut, `tls`, ou `none` pour un relais loopback seulement |
 | `SMTP_PORT` | par défaut 587, 465 ou 25 selon le mode TLS |
 | `SMTP_FROM` | expéditeur autorisé, obligatoire avec `SMTP_HOST` |
@@ -126,7 +126,10 @@ a accepté l’e-mail, sans garantir sa remise finale. Une notification interrom
 passe de `pending` à `failed` ; aucune relance automatique n’est effectuée.
 
 Le destinataire vient de SQLite à chaque demande ; le visiteur apparaît dans `Reply-To` et
-`SMTP_FROM` reste l’expéditeur. La notification expire après 15 secondes. La concurrence des
+l’adresse d’expédition du serveur d’envoi (réglage du backoffice, sinon `SMTP_FROM`) reste
+l’expéditeur. Le serveur utilisé est le réglage courant, lu sans redémarrage. Un réglage
+enregistré mais inutilisable (mot de passe qui ne se déchiffre plus, connexion sans TLS hors
+développement) marque la notification `failed` ; un envoi coupé ou absent, `unconfigured`. La notification expire après 15 secondes. La concurrence des
 envois est limitée à 16 ; une saturation marque la notification comme échouée sans perdre la
 demande. Deux tentatives de formulaire par IP sont autorisées dans une fenêtre d’une heure,
 avec `Retry-After` dès la troisième. Les fenêtres et la table bornée à 10 000 IP vivent en
@@ -151,8 +154,10 @@ Les routes suivantes nécessitent une session valide, à l’exception de `login
 | `/contacts` | GET | lister avec `status=new\|read\|archived\|all`, `limit=1..100`, `offset` |
 | `/contacts/{id}` | PATCH, DELETE | changer le statut ou supprimer définitivement |
 | `/settings` | GET, PUT | consulter ou changer `{"email":"…"}` |
+| `/mail` | GET, PUT, DELETE | lire, enregistrer ou oublier le serveur d’envoi des e-mails (voir « Serveur d’envoi des e-mails ») |
+| `/mail/test` | POST | envoyer l’e-mail d’essai vers l’adresse de contact, avec le réglage courant |
 | `/links`, `/links/{id}` | GET/POST, PUT/DELETE | gérer les raccourcis `label`, `url`, `description` |
-| `/tokens`, `/tokens/{id}` | GET/POST, DELETE | lister, créer (`{"name":"…","scopes":[…]}`, 201 avec le secret ; 409 `TOKEN_LIMIT_REACHED` au-delà de 64 accès) et révoquer les accès MCP |
+| `/tokens`, `/tokens/{id}` | GET/POST, DELETE | lister (avec `expires_at` et `expired`), créer (`{"name":"…","scopes":[…],"expires_in_days":90}`, 201 avec le secret et `expires_at` ; 422 au-delà de 365 jours ; 409 `TOKEN_LIMIT_REACHED` au-delà de 64 accès) et révoquer ou supprimer les accès MCP |
 | `/blog/posts` | GET/POST | lister avec `status=draft\|scheduled\|published\|all`, `limit=1..100`, `offset` ; créer un brouillon |
 | `/blog/posts/{id}` | GET/PUT/DELETE | lire, remplacer les champs éditables avec `revision`, supprimer avec `{"revision":…}` |
 | `/blog/posts/{id}/preview`, `/blog/posts/{id}/seo` | GET | lire le brouillon ou son audit SEO |
@@ -166,6 +171,79 @@ POST, PUT et PATCH utilisent `Content-Type: application/json`, même sans corps 
 omettre cet en-tête, sauf sous `/blog/` : à travers le relais Node, une DELETE du blog exige elle
 aussi `Content-Type: application/json`, sinon `415` (le backoffice envoie alors le corps `{}`). Les liens acceptent uniquement HTTP/HTTPS sans identifiants.
 Leur ouverture est une navigation normale vers le service, avec sa propre authentification.
+
+### Serveur d’envoi des e-mails
+
+Le backoffice règle le serveur SMTP des notifications (rubrique « E-mails »). **Priorité** : un
+réglage enregistré en SQLite prime, qu’il active ou coupe l’envoi ; tant qu’aucun réglage n’est
+enregistré, les variables `SMTP_*` servent de repli. `DELETE /api/backoffice/mail` oublie le
+réglage et rend la main au repli. Chaque notification lit le réglage courant, sans redémarrage ;
+le transport est reconstruit au premier envoi qui suit un enregistrement.
+
+`GET /api/backoffice/mail` (comme les réponses de `PUT` et `DELETE`) :
+
+```json
+{
+  "active": true,
+  "source": "settings",
+  "recipient": "contact@example.org",
+  "settings": { "enabled": true, "host": "smtp.hostinger.com", "port": 465, "security": "tls",
+                "username": "contact@example.org", "password_set": true,
+                "from": "contact@example.org", "updated_at": "2026-10-15T09:25:45.184Z" },
+  "environment": null,
+  "problem": null,
+  "password_storage": true,
+  "allow_insecure": false,
+  "allowed_ports": [465, 587, 25, 2525]
+}
+```
+
+`source` vaut `settings`, `environment` (le repli `SMTP_*`, résumé dans `environment` : hôte,
+port, sécurité, expéditeur, jamais l’identifiant ni le mot de passe) ou `none`. `active` dit si la
+prochaine demande partira aussi par e-mail. `problem` signale un réglage qui ne peut pas servir :
+`password_unreadable` (la clé a changé : ressaisir le mot de passe), `insecure_connection` ou
+`invalid_settings`. `password_storage` est faux sans `BACKOFFICE_TOTP_ENCRYPTION_KEY` : un mot de
+passe ne peut alors pas être enregistré (422 sur le champ `password`).
+
+`PUT /api/backoffice/mail` prend `{"enabled":…, "host":"…", "port":…, "security":"tls|starttls|none",
+"username":"…", "password":"…", "from":"…"}`. Un refus répond `422 VALIDATION_ERROR` avec
+`fields` (`host`, `port`, `security`, `username`, `password`, `from`) :
+
+- `host` : un nom d’hôte (lettres, chiffres, tirets, points) ou une adresse IP, jamais une URL ni
+  un port ; avec TLS, il doit permettre de vérifier un certificat ;
+- `port` : 465, 587, 25 ou 2525 ;
+- `security` : `tls` (TLS implicite, en général 465) ou `starttls` (en général 587). Hors
+  `APP_ENV=development`, aucune connexion sans TLS. En développement seulement, `none` vers un
+  relais local, sur un port libre (mailpit, 1025) ;
+- `username` et `password` : vides, pas d’authentification ; un identifiant exige un mot de
+  passe. Un `password` vide ou absent **garde** celui qui est enregistré ; vider l’identifiant
+  efface le mot de passe ;
+- `from` : l’adresse d’expédition, exigée quand l’envoi est activé.
+
+Le mot de passe est chiffré au repos : XChaCha20-Poly1305 avec une sous-clé SHA-256 tirée de
+`BACKOFFICE_TOTP_ENCRYPTION_KEY` (contexte `portfolio-backoffice-smtp-password-key-v1`) et des
+données associées propres à cet usage. Un chiffré du secret TOTP ne s’ouvre pas comme mot de
+passe, ni l’inverse. Le choix de cette clé plutôt qu’une clé dédiée : une seule clé à générer, à
+conserver et à sauvegarder avec la base, déjà obligatoire hors développement. Changer la clé rend
+le mot de passe illisible (`problem: password_unreadable`) sans empêcher le démarrage. Le mot de
+passe n’est jamais renvoyé par l’API (seulement `password_set`) ni écrit dans un journal.
+
+Pour la messagerie d’Hostinger : hôte `smtp.hostinger.com`, port 465, TLS ; l’identifiant et
+l’adresse d’expédition sont l’adresse de la boîte.
+
+`POST /api/backoffice/mail/test` (corps `{}`) envoie un e-mail d’essai à l’adresse de contact,
+avec le réglage courant (ou le repli). La connexion se fait d’abord, TLS et authentification
+comprises, puis l’envoi ; 15 s au plus. Un essai toutes les 15 secondes, dix par heure
+(`429 RATE_LIMITED` avec `Retry-After`). Réponses, sans détail du serveur ni secret :
+
+| Statut | Code | Sens |
+|---|---|---|
+| 200 | — | `{"result":"sent","recipient":"…","message":"…"}` : le serveur a accepté l’e-mail |
+| 409 | `SMTP_NOT_CONFIGURED` | aucun envoi actif |
+| 409 | `SMTP_SETTINGS_UNREADABLE`, `SMTP_SETTINGS_INVALID`, `SMTP_INSECURE` | le réglage enregistré ne peut pas servir |
+| 502 | `SMTP_CONNECTION_FAILED` | hôte injoignable, port fermé, TLS refusé ou serveur muet |
+| 502 | `SMTP_AUTH_FAILED` | identifiant ou mot de passe refusé (530, 534, 535, 538) |
+| 502 | `SMTP_SENDER_REJECTED` | expéditeur, destinataire ou message refusé |
 
 ### Stockage
 
@@ -342,7 +420,7 @@ et les aperçus restent hors de ces sorties.
 1. Dans le backoffice, rubrique « Accès MCP », le formulaire « Nouvel accès » est déjà rempli :
    nom « Claude Code » (« Claude Code 2 »… si le nom existe ; nommer plutôt l’appareil,
    « Claude Code — MacBook »), préréglage **Rédaction**, case « Lire aussi les demandes de
-   contact » **décochée**.
+   contact » **décochée**, durée **90 jours** (7 jours, 30 jours ou 1 an au choix).
 2. « Créer l’accès » : la carte éclairée montre la commande prête à copier, par exemple en
    production :
 
@@ -375,10 +453,26 @@ La commande contient le secret : Claude Code l’enregistre de toute façon dans
 seulement ; une commande précédée d’une espace reste hors de l’historique si le shell ignore ces
 lignes (`setopt HIST_IGNORE_SPACE` pour zsh).
 
-La liste « Accès actifs » montre pour chaque accès son nom, ses permissions en clair, sa date de
-création et sa dernière utilisation (« À l’instant », « Il y a 3 heures »…). « Révoquer »
-demande confirmation, rend le secret inutilisable immédiatement et rappelle, seule sur sa
+La liste « Accès créés » montre pour chaque accès son nom, ses permissions en clair, sa date de
+création, sa dernière utilisation (« À l’instant », « Il y a 3 heures »…) et son échéance.
+« Révoquer » demande confirmation, rend le secret inutilisable immédiatement et rappelle, seule sur sa
 ligne, la commande `claude mcp remove --scope user …` à lancer côté client.
+
+### Expiration des accès
+
+Chaque accès expire, **un an au plus** : une mesure de sécurité. Le formulaire propose 7 jours,
+30 jours, 90 jours (par défaut) ou 1 an ; l’API accepte `expires_in_days` de 1 à 365 (90 sans
+précision) et refuse au-delà (`422 VALIDATION_ERROR`). La carte de l’accès créé dit sa date de
+fin ; la commande Claude Code ne change pas. Un accès ne se prolonge pas : à son terme, on en
+crée un autre. Les accès créés avant l’expiration ont reçu un an depuis leur création, sans
+jamais être prolongés ; ceux qui avaient déjà plus d’un an sont expirés.
+
+La liste annonce « Expire le … », signale un accès qui expire dans moins de 14 jours (losange,
+jours restants) et garde un accès expiré, « Expiré le … », à supprimer comme les autres. Le MCP
+refuse un accès expiré en `401`, avec le même en-tête `WWW-Authenticate` et la même forme de
+corps qu’un secret inconnu : `{"code":"TOKEN_EXPIRED","message":"…"}` au lieu de
+`{"code":"INVALID_TOKEN","message":"…"}`, sans nom, date ni permission. Seul le détenteur du
+secret apprend qu’il a expiré. Un appel refusé ne compte pas comme une utilisation.
 
 ### Préréglages et permissions
 
@@ -502,8 +596,12 @@ existent), puis redémarrer. Une copie à chaud du seul fichier `.sqlite3` peut 
 transactions du WAL. Pour une sauvegarde sans interruption, employer l’API de sauvegarde SQLite
 ou la commande `.backup` d’un client SQLite installé sur l’hôte. Les sauvegardes contiennent des
 données personnelles : limiter leur accès comme celui de la base. La suppression d’une demande
-dans le backoffice ne supprime pas les e-mails ni les anciennes sauvegardes. La conservation des
-demandes est manuelle ; aucune purge périodique n’est activée.
+dans le backoffice ne supprime pas les e-mails ni les anciennes sauvegardes.
+
+**Conservation** : les demandes de contact sont supprimées automatiquement 3 ans après leur
+réception, le maximum admis par la CNIL pour des contacts entrants. Le backend vérifie au
+démarrage puis chaque heure (`contact::spawn_retention`) et ne journalise que le nombre de
+demandes supprimées. Les sauvegardes suivent leur propre durée de conservation.
 
 ## Vérification
 
@@ -524,11 +622,13 @@ npm --prefix site run build
 node scripts/test-backoffice.mjs
 ```
 
-Il utilise une base et des ports temporaires, sans SMTP, puis nettoie les processus et les
-données. `--screenshots` produit en plus des captures de l’interface réelle dans le dossier
+Il utilise une base et des ports temporaires, puis nettoie les processus et les données. Le seul
+SMTP est un faux serveur sur la boucle locale : réglage du serveur d’envoi, mot de passe chiffré
+au repos, e-mail d’essai, notification sans redémarrage, puis expiration d’un accès MCP
+(`TOKEN_EXPIRED` à travers le relais). `--screenshots` produit en plus des captures de l’interface réelle dans le dossier
 temporaire du système. Ce parcours est exécuté par le job navigateur de la CI.
 
 Les tests couvrent la validation, la persistance après réouverture, la connexion et la révocation,
 les mutations et leurs protections, le changement de destinataire, les échecs SMTP et le MCP.
-Les tests SMTP utilisent un relais loopback qui accepte ou refuse les messages ; aucun e-mail
-n’est envoyé sur Internet.
+Les tests SMTP (`tests/contact_api.rs`, `tests/mail_api.rs`) utilisent un relais loopback qui
+accepte, refuse l’authentification ou l’expéditeur ; aucun e-mail n’est envoyé sur Internet.
