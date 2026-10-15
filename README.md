@@ -114,8 +114,9 @@ famille : PvZ Fusion ; Omnicard, Bloodborne Legendary Run et League Of Data Base
 GitHealth ; Karl Scraper, Sillage et Relais. Elles partagent le gabarit de
 `site/src/components/projets/gabarit/` : un en-tête commun (nom canonique, étiquette de preuve,
 fiche technique en tableau à filets, un à trois repères chiffrés sourcés et datés), un corps libre
-avec sa navigation de page, « Comment je l’ai construit », une sortie commune (projet précédent et
-suivant, « Discutons ») et une note de sources. Le corps reste propre à chaque projet ; ses
+avec sa navigation de page, « Sous le capot » (une liste de points d’une ligne, chacun dépliable
+sur son explication et un extrait court ; les pages IA y ajoutent la liste de leurs fonctions),
+une sortie commune (projet précédent et suivant, « Discutons ») et une note de sources. Le corps reste propre à chaque projet ; ses
 données sont dans `site/src/config/<projet>.ts`, avec, pour les quatre pages entrées le
 14 octobre 2026, la carte de la vitrine (`CARTE`). Karl Scraper, Sillage et Relais sont des
 dépôts privés : ni lien ni nom de dépôt, leur fiche le dit.
