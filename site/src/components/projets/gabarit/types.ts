@@ -65,7 +65,10 @@ export interface SchemaProjet {
  * de client, de chemin interne ou de secret.
  */
 export type Extrait = {
-  /** Le code tel qu’il s’affiche, indentation comprise ; douze lignes au plus. */
+  /**
+   * Le code tel qu’il s’affiche, indentation comprise ; douze lignes au plus.
+   * Un schéma (`langage: 'Schéma'`) s’aligne à gauche, en 35 colonnes au plus.
+   */
   code: string;
   /** Le langage, dit dans la légende : « C# », « TypeScript », « JSON »… */
   langage: string;

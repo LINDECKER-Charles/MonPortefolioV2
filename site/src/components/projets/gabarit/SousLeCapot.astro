@@ -19,8 +19,8 @@
  * public, avec son chemin, ou une forme écrite pour la page quand le code est
  * privé (types.ts, `Extrait`). Un extrait plus large que son cadre défile, et
  * le montre par une ombre sur le bord d’où il reste du texte (CSS seul) ; un
- * extrait de prose (`prose`) se replie à la largeur du cadre. Imprimé, tout
- * est déplié.
+ * extrait de prose (`prose`) se replie à la largeur du cadre, et un schéma
+ * tient en 35 colonnes, la largeur d’un téléphone. Imprimé, tout est déplié.
  */
 import SectionProjet from './SectionProjet.astro';
 import LienAction from '../../ui/LienAction.astro';
@@ -45,6 +45,9 @@ for (const point of points) {
     throw new Error(`<SousLeCapot> : « ${point.titre} » se dit soit « contrainte, choix, effet », soit en texte.`);
   }
   if (point.extrait && point.extrait.code.trimEnd().split('\n').length > 12) throw new Error(`<SousLeCapot> : l’extrait de « ${point.titre} » dépasse douze lignes.`);
+  if (point.extrait?.langage === 'Schéma' && point.extrait.code.split('\n').some((ligne) => [...ligne].length > 35)) {
+    throw new Error(`<SousLeCapot> : le schéma de « ${point.titre} » dépasse 35 colonnes, la largeur d’un téléphone.`);
+  }
 }
 
 /** Les groupes, dans l’ordre de leur première apparition ; un seul, sans titre, quand aucun point n’en a. */

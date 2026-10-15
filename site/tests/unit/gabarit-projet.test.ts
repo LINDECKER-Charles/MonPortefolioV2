@@ -188,12 +188,14 @@ describe('SousLeCapot', () => {
     expect([...html.matchAll(/<span class="point-capot__rang"[^>]*>(\d+)<\/span>/g)].map((m) => m[1])).toEqual(['01', '02', '03']);
   });
 
-  it('refuse moins de deux ou plus de dix points, un point sans forme et un extrait trop long', async () => {
+  it('refuse moins de deux ou plus de dix points, un point sans forme, un extrait trop long et un schéma trop large', async () => {
     await expect(rendre(SousLeCapot, { points: CAPOT.slice(0, 1) })).rejects.toThrow(/deux à dix/);
     await expect(rendre(SousLeCapot, { points: [...CAPOT, ...CAPOT, ...CAPOT, ...CAPOT] })).rejects.toThrow(/deux à dix/);
     await expect(rendre(SousLeCapot, { points: [{ titre: 'Rien', contrainte: 'a' }, CAPOT[0]] })).rejects.toThrow(/contrainte, choix, effet/);
     const long = { titre: 'Long', texte: 'x', extrait: { ecrit: true, langage: 'Texte', code: Array.from({ length: 13 }, (_, i) => `ligne ${i}`).join('\n') } };
     await expect(rendre(SousLeCapot, { points: [long, CAPOT[0]] })).rejects.toThrow(/douze lignes/);
+    const large = { titre: 'Large', texte: 'x', extrait: { ecrit: true, langage: 'Schéma', code: `service\n└▶ ${'x'.repeat(33)}` } };
+    await expect(rendre(SousLeCapot, { points: [large, CAPOT[0]] })).rejects.toThrow(/35 colonnes/);
   });
 });
 
