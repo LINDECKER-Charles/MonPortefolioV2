@@ -44,7 +44,7 @@ jobs:
   front:
     name: Application (Astro)
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: site
@@ -73,6 +73,17 @@ jobs:
       - name: Installation des dependances
         run: npm ci
 
+      - name: Cache des images optimisees par Astro
+        # node_modules/.astro garde les images deja optimisees : sans lui, chaque
+        # build en reencode plus de 1 000 (pres de 7 min a froid). Restaure
+        # apres `npm ci`, qui vide node_modules.
+        uses: actions/cache@v6
+        with:
+          path: site/node_modules/.astro
+          key: astro-${{ hashFiles('site/package-lock.json') }}-${{ hashFiles('site/src/assets/**', 'site/public/**') }}
+          restore-keys: |
+            astro-${{ hashFiles('site/package-lock.json') }}-
+
       - name: Verification des types (astro check)
         run: npm run check
 
@@ -88,7 +99,7 @@ jobs:
   e2e:
     name: Navigateur (Playwright)
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 40
     defaults:
       run:
         working-directory: site
@@ -113,6 +124,17 @@ jobs:
 
       - name: Installation des dependances
         run: npm ci
+
+      - name: Cache des images optimisees par Astro
+        # node_modules/.astro garde les images deja optimisees : sans lui, chaque
+        # build en reencode plus de 1 000 (pres de 7 min a froid). Restaure
+        # apres `npm ci`, qui vide node_modules.
+        uses: actions/cache@v6
+        with:
+          path: site/node_modules/.astro
+          key: astro-${{ hashFiles('site/package-lock.json') }}-${{ hashFiles('site/src/assets/**', 'site/public/**') }}
+          restore-keys: |
+            astro-${{ hashFiles('site/package-lock.json') }}-
 
       - name: Chromium, Firefox et WebKit
         # La version suit @playwright/test, epingle dans package-lock.json.
@@ -152,7 +174,7 @@ jobs:
   infra:
     name: Mise en ligne (Docker, Compose, scripts)
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 40
     steps:
       - name: Checkout
         uses: actions/checkout@v7
