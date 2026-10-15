@@ -549,6 +549,9 @@ async function testerEnvoi() {
     assert.equal(Buffer.from(authentification.slice(11), 'base64').toString(), `\0boite@example.test\0${secretBoite}`, 'Le mot de passe déchiffré est celui saisi.');
     const suivant = await requete('/api/backoffice/mail/test', { method: 'POST', data: {}, session: true, status: 429 });
     assert(suivant.reponse.headers.get('retry-after'), 'L’essai suivant attend son tour.');
+    // Le mot de passe enregistré ne suit jamais un autre serveur : il faut le saisir de nouveau.
+    const ailleurs = await requete('/api/backoffice/mail', { method: 'PUT', session: true, status: 422, data: { ...reglage, port: smtp.port + 1, password: '' } });
+    assert.deepEqual(Object.keys(ailleurs.json.fields), ['password'], 'Un autre port exige le mot de passe.');
 
     // La prochaine demande suit le réglage, sans redémarrage.
     await requete('/api/contact', { method: 'POST', data: { ...message, subject: 'Notification par le réglage' } });
