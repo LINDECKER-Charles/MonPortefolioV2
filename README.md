@@ -46,12 +46,14 @@ docker compose up --build    # les deux services, http://127.0.0.1:4000
 ```
 
 Les demandes du formulaire sont conservées dans une base SQLite persistante, puis notifiées
-par e-mail si le relais SMTP est configuré. Un succès confirme leur enregistrement ; une panne
-SMTP ne fait pas perdre la demande. Renseigner `SMTP_HOST`, `SMTP_FROM` et les réglages du relais
-pour activer les notifications.
+par e-mail si un serveur d’envoi est configuré. Un succès confirme leur enregistrement ; une panne
+SMTP ne fait pas perdre la demande. Le serveur d’envoi se règle dans le backoffice, rubrique
+« E-mails » (hôte, sécurité, port, identifiant, mot de passe chiffré, expéditeur, e-mail d’essai) ;
+les variables `SMTP_*` du `.env` servent de repli tant qu’aucun réglage n’y est enregistré. Les
+demandes sont supprimées automatiquement 3 ans après leur réception.
 
 Le **backoffice `/backoffice`** rassemble les demandes (nouvelles, lues, archivées), leur état de
-notification, le blog, l’adresse de contact, les liens de la boîte à outils, les accès MCP et le stockage (disque, base, images et articles
+notification, le blog, l’adresse de contact et le serveur d’envoi des e-mails, les liens de la boîte à outils, les accès MCP et le stockage (disque, base, images et articles
 par poids, suppression d’une image inutilisée). Il
 suit la direction « Lanterne » du site (jour et nuit, bascule lanterne, sans mesure d’audience) :
 une navigation par rubriques dans l’en-tête et un retour affiché à côté de chaque action. L’adresse
@@ -78,7 +80,8 @@ Brancher Claude Code sur le MCP distant `https://<domaine>/mcp` se fait en un ge
 secret (`claude mcp remove` du serveur du même nom, puis `claude mcp add …` : un nouvel accès
 remplace l’ancien). Trois préréglages disent ce que l’assistant pourra faire : lecture du blog,
 **rédaction** (par défaut) ou publication ; lire les demandes de contact est une case à part,
-décochée par défaut. « Vérifier l’accès » montre les outils réellement ouverts, par le chemin de Claude Code. Chaque accès se
+décochée par défaut. Chaque accès expire, un an au plus (7 jours, 30 jours, 90 jours par défaut
+ou 1 an) : expiré, il reste listé mais le MCP le refuse, et on en crée un autre. « Vérifier l’accès » montre les outils réellement ouverts, par le chemin de Claude Code. Chaque accès se
 révoque individuellement, avec effet immédiat. Les accès existants gardent leurs permissions, et
 la lecture des contacts ne marque aucune demande comme lue. Parcours complet, autres clients
 (Codex), contrat de l’API et sauvegarde de la base : [`backend/README.md`](backend/README.md).
