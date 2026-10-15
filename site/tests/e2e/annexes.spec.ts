@@ -166,11 +166,17 @@ test.describe('mentions légales', () => {
 
   test('un sommaire d’ancres, le tableau des données et la date de mise à jour', async ({ page }) => {
     await page.goto('/mentions-legales');
-    await expect(page.locator('time[datetime="2026-10-13"]')).toBeVisible();
+    await expect(page.locator('time[datetime="2026-10-15"]')).toBeVisible();
     await expect(page.locator('nav[aria-label="Dans cette page"]')).toHaveCount(1);
     const tableau = page.locator('#donnees table');
     await expect(tableau.locator('thead th')).toHaveText(['Donnée', 'Pourquoi', 'Combien de temps', 'Qui la reçoit']);
     await expect(tableau.locator('tbody tr')).toHaveCount(5);
+    // Durées au maximum admis (décision du 15/10/2026) et service d’envoi nommé : plus aucune marque.
+    const duree = (ligne: number) => tableau.locator('tbody tr').nth(ligne).locator('td[data-titre="Combien de temps"]');
+    await expect(duree(0)).toHaveText('3 ans au plus après sa réception, puis supprimé automatiquement');
+    await expect(duree(1)).toHaveText('1 an au plus');
+    await expect(tableau.locator('tbody tr').first()).toContainText('la messagerie d’Hostinger');
+    await expect(page.locator('main .a-confirmer')).toHaveCount(0);
     await expect(page.locator('#mesure-audience [data-opposition]')).toHaveCount(1);
     await expect(page.locator('#credits')).toContainText('Instrument Serif');
     await expect(page.locator('#credits')).toContainText('SIL Open Font License');
