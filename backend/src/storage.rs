@@ -222,6 +222,7 @@ impl Store {
             connection.execute("ALTER TABLE tokens ADD COLUMN scopes TEXT NOT NULL DEFAULT '[\"contacts:read\",\"blog:read\"]'", [])?;
         }
         migrate_token_expiry(&connection)?;
+        crate::mail_settings::initialize(&connection)?;
         let configured: bool = connection.query_row(
             "SELECT EXISTS(SELECT 1 FROM settings WHERE key='contact_email')",
             [],

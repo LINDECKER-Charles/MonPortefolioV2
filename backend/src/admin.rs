@@ -155,6 +155,16 @@ pub fn routes(state: AppState) -> Router<AppState> {
             axum::routing::delete(delete_token),
         )
         .route("/api/backoffice/storage", get(storage))
+        .route(
+            "/api/backoffice/mail",
+            get(crate::mail_settings::get_settings)
+                .put(crate::mail_settings::put_settings)
+                .delete(crate::mail_settings::delete_settings),
+        )
+        .route(
+            "/api/backoffice/mail/test",
+            post(crate::mail_settings::send_test),
+        )
         .route_layer(middleware::from_fn_with_state(state, require_session));
     Router::new()
         .merge(protected)
@@ -300,7 +310,8 @@ fn authenticated_response(
     token: &str,
     recovery_codes: Option<Vec<String>>,
 ) -> Response {
-    let mut body = json!({"authenticated":true,"smtp_configured":state.delivery.is_some()});
+    let mut body =
+        json!({"authenticated":true,"smtp_configured":state.mailer.is_active(&state.store)});
     if let Some(codes) = recovery_codes {
         body["recovery_codes"] = json!(codes);
     }
@@ -550,7 +561,7 @@ async fn verify_two_factor(
 }
 
 async fn session(State(state): State<AppState>) -> Json<Value> {
-    Json(json!({"authenticated":true,"smtp_configured":state.delivery.is_some()}))
+    Json(json!({"authenticated":true,"smtp_configured":state.mailer.is_active(&state.store)}))
 }
 
 async fn logout(State(state): State<AppState>, headers: HeaderMap) -> Result<Response, ApiError> {

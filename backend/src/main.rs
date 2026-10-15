@@ -87,7 +87,7 @@ async fn run(config: Config) -> Result<(), String> {
         .map(|delivery| Arc::new(delivery) as Arc<dyn portfolio_backend::mail::MailDelivery>);
     if delivery.is_none() {
         eprintln!(
-            "Relais SMTP absent : les demandes seront conservées dans le backoffice sans notification par e-mail."
+            "Variables SMTP_* absentes : sans réglage d’envoi dans le backoffice, les demandes sont seulement conservées."
         );
     }
     let state = AppState::with_store(

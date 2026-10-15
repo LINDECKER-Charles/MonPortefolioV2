@@ -11,7 +11,7 @@ use axum::{
 use serde_json::{Value, json};
 use subtle::ConstantTimeEq;
 
-use crate::{AppState, contact::ContactRequest, error::ApiError};
+use crate::{AppState, contact::ContactRequest, error::ApiError, mail_settings::Delivery};
 
 pub const MAX_BODY_BYTES: usize = 24 * 1024;
 
@@ -85,7 +85,13 @@ async fn contact(
             }
         })?;
     let message = payload.validate()?;
-    let recipient: Option<lettre::Address> = if state.delivery.is_some() {
+    // Le réglage courant du backoffice (ou SMTP_* en repli), sans redémarrage.
+    let (delivery, initial_status) = match state.mailer.delivery(&state.store) {
+        Delivery::Active(delivery) => (Some(delivery), "pending"),
+        Delivery::Off => (None, "unconfigured"),
+        Delivery::Broken => (None, "failed"),
+    };
+    let recipient: Option<lettre::Address> = if delivery.is_some() {
         Some(
             state
                 .store
@@ -97,19 +103,13 @@ async fn contact(
     } else {
         None
     };
-    let initial_status = if state.delivery.is_some() {
-        "pending"
-    } else {
-        "unconfigured"
-    };
     let id = state
         .store
         .save_contact(&message, initial_status)
         .map_err(crate::admin::storage_error)?;
-    if let (Some(delivery), Some(recipient)) = (state.delivery.as_ref(), recipient) {
+    if let (Some(delivery), Some(recipient)) = (delivery, recipient) {
         // La persistance précède toujours la notification, y compris si SMTP est indisponible.
         let store = state.store.clone();
-        let delivery = delivery.clone();
         let permit = state.mail_slots.clone().try_acquire_owned();
         // L’envoi et sa mise à jour continuent même si le client ferme sa connexion.
         let notification = tokio::spawn(async move {
