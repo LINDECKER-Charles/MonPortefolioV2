@@ -166,7 +166,7 @@ url="https://${DOMAINE}/"
 entetes=""
 for _ in $(seq 1 24); do
   if entetes="$(curl -sS --max-time 10 -o /dev/null -D - "${url}" 2>/dev/null)" \
-    && printf '%s' "${entetes}" | grep -qE '^HTTP/[0-9.]+ 200'; then
+    && grep -qE '^HTTP/[0-9.]+ 200' <<<"${entetes}"; then
     break
   fi
   entetes=""
@@ -180,16 +180,19 @@ if [ -z "${entetes}" ]; then
   echo "  docker restart \$(docker ps -q --filter label=com.docker.compose.project=edge --filter label=com.docker.compose.service=caddy)" >&2
   exit 1
 fi
-if ! printf '%s' "${entetes}" | grep -qiE '^x-robots-tag:.*noindex'; then
+if ! grep -qiE '^x-robots-tag:.*noindex' <<<"${entetes}"; then
   echo "https://${DOMAINE}/ ne porte pas X-Robots-Tag: noindex. L'archive serait indexee." >&2
   exit 1
 fi
 page="$(curl -fsS --max-time 10 "${url}")"
-if ! printf '%s' "${page}" | grep -q 'ng-server-context="ssg'; then
+# Lu par <<< et non par un tube : `grep -q` s'arrete au premier resultat, et
+# `printf` qui ecrit encore une page de 200 Ko recoit alors SIGPIPE ; avec
+# pipefail, le controle echouerait sur une page pourtant conforme.
+if ! grep -q 'ng-server-context="ssg' <<<"${page}"; then
   echo "https://${DOMAINE}/ ne sert pas le prerendu (verifier NG_ALLOWED_HOSTS)." >&2
   exit 1
 fi
-if ! printf '%s' "${page}" | grep -q 'class="archive-bandeau"'; then
+if ! grep -q 'class="archive-bandeau"' <<<"${page}"; then
   echo "https://${DOMAINE}/ ne montre pas le bandeau d'archive." >&2
   exit 1
 fi
