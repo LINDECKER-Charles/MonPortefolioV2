@@ -357,10 +357,10 @@ Assert.DoesNotContain(clientDeLaSource, fermeture);
     texte: 'Cinq métiers d’agent (préparer, répartir, rédiger, planifier, réaliser) partagent un seul plafond de sessions simultanées. Ceux qui lisent tournent dans une session Relais en lecture seule, relue après coup ; un seul métier écrit, et seulement dans un worktree, jamais dans le dépôt principal.',
   },
   {
-    // git grep à 6615950 : 1 345 [Fact]/[Theory] dans 231 fichiers C#, 718 it( dans 114 fichiers spec.
+    // git grep à 6615950, en début de ligne : 1 227 [Fact] et 113 [Theory] dans 207 fichiers de test, 718 it( dans 114 fichiers spec.
     groupe: 'Garde-fous, tests et limites',
     titre: 'Plus de deux mille cas de test déclarés',
-    texte: '1 345 cas de test côté serveur (xUnit v3) et 718 côté interface (Vitest), comptés dans le code à la révision lue, sans les exécuter. Il n’y a pas d’intégration continue : les tests tournent sur mon poste.',
+    texte: '1 340 cas de test côté serveur (xUnit v3) et 718 côté interface (Vitest), comptés dans le code à la révision lue, sans les exécuter. Il n’y a pas d’intégration continue : les tests tournent sur mon poste.',
   },
   {
     // docs/AVANCEMENT.md:44 ; PLAN-enchainements.md:3 (dossier de tâche : lot 0 seul) ; macOS (launchd, notifications).
