@@ -3,8 +3,12 @@ import path from 'node:path';
 import { assurerDist } from '../../../tools/assurer-dist.mjs';
 import { analyser, decoder } from '../../../tools/verifier-site.mjs';
 
-/** Délai d’un test qui peut déclencher un build complet (≈ 20 s à froid, davantage en CI). */
-export const DELAI_BUILD = 240_000;
+/**
+ * Délai d’un test qui peut déclencher un build complet : quelques dizaines de
+ * secondes sur un poste au cache d’Astro chaud, près de 7 min à froid en CI
+ * (plus de 1 000 images optimisées, mesuré le 15/10/2026).
+ */
+export const DELAI_BUILD = process.env.CI ? 900_000 : 240_000;
 
 export interface PageConstruite {
   /** Adresse publique : `/`, `/blog`, `/404`… */

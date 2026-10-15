@@ -41,7 +41,8 @@ export default defineConfig({
       command: `${SKIP_BUILD ? '' : 'npm run build && '}node server/server.mjs`,
       url: `${SITE.url}/`,
       env: SITE.env,
-      timeout: 240_000,
+      // Un build à froid en CI optimise plus de 1 000 images : près de 7 min.
+      timeout: IS_CI ? 900_000 : 240_000,
       reuseExistingServer: false,
     },
     {
