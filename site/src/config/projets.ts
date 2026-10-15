@@ -46,8 +46,8 @@ export interface ProjetVitrine {
 /**
  * Rangée famille par famille, dans l’ordre de FAMILLES_PROJETS : le rang, le
  * précédent et le suivant suivent cette seule suite, d’une famille à l’autre.
- * Les étiquettes de GitHealth, Karl Scraper, Sillage et Relais sont des
- * propositions, à faire confirmer par Charles.
+ * Les étiquettes de GitHealth, Karl Scraper, Sillage et Relais, proposées le
+ * 14/10/2026, sont validées telles qu’affichées le 15/10/2026.
  */
 export const VITRINE: readonly ProjetVitrine[] = [
   { id: 'pvz', famille: 'equipe', nom: 'PvZ Fusion, pôle francophone', href: '/projets/pvz-fusion', preuve: 'Une équipe formée et menée' },

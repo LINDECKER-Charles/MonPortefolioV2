@@ -11,7 +11,8 @@
  * Capacité : la page la présente comme une visibilité sur la consommation et
  * une admission selon la charge (quotas lus, seuil de protection, session
  * ouverte jamais coupée). Elle ne montre ni la bascule entre abonnements ni la
- * connexion automatisée d’un compte (cadrage à confirmer, a-confirmer.md).
+ * connexion automatisée d’un compte (cadrage validé tel qu’affiché le
+ * 15/10/2026, docs/questions.md, J).
  *
  * Captures : Relais 0.2.0 lancé en local avec des données de démonstration,
  * un agent de démonstration à la place de Claude Code
@@ -42,8 +43,8 @@ export const CARTE: CarteVitrine = {
   // git log à bdf041f : 260 commits, un seul auteur.
   role: 'Conçu et développé seul',
   // Une instance en service sur la machine, vue le 14/10/2026 ; « en usage
-  // quotidien » n’est pas sourcé et attend la réponse de Charles, comme pour
-  // Sillage et Karl Scraper (docs/a-confirmer.md).
+  // quotidien » n’est pas sourcé : la page ne le dit pas, comme pour Sillage et
+  // Karl Scraper (statut validé le 15/10/2026, docs/questions.md, J).
   statut: { texte: 'Outil personnel, en usage sur ma machine' },
   liens: [],
   // backend/Cargo.toml (Rust, rusqlite), frontend/package.json (Angular 21.2).
@@ -114,7 +115,7 @@ export const FICHE: DonneesFiche = {
   // 260 commits à bdf041f, tous de Charles (deux graphies du nom).
   equipe: 'Projet personnel, seul',
   // Une instance en service sur la machine, vue le 14/10/2026 ; « en usage
-  // quotidien » attend la réponse de Charles.
+  // quotidien » n’est pas sourcé.
   statut: { texte: 'Outil personnel, en usage sur ma machine' },
   liens: [],
 };

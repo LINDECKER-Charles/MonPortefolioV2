@@ -1914,9 +1914,9 @@ Rien ici n’est à générer : les dessins vectoriels s’écrivent à la main,
 - **Priorité** : élargi · **Méthode** : FIG, figure codée depuis des données, rien à générer
 - **Produit par** : équipe Omnicard
 - **Emplacement** : `/projets/omnicard` · « Ce que j’en retiens » _(contexte : ne pas le recopier dans un prompt)_
-- **Élargi, non posé** : la date de lancement (16/05/2026, CHANGELOG du dépôt de présentation) attend la validation de Charles.
+- **Élargi, non posé** : la fiche s’en tient à « Depuis l’adolescence, puis en ligne », validée le 15/10/2026 : les autres étapes n’ont pas de date sourcée.
 - **Sujet** : Du papier au lancement
-- **Composition** : Frise : jeu papier → saison 1 → première ligne de code → lancement en ligne → hors ligne, en attente de refonte. Dates à confirmer par Charles avant tout affichage (cahier, Q8)
+- **Composition** : Frise : jeu papier → saison 1 → première ligne de code → lancement en ligne → hors ligne, en attente de refonte. Seulement des dates sourcées (cahier, Q8)
 - **Format** : 5:1
 - **Composant** : aucun, figure à coder
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Frise : le jeu papier, la saison 1, la première ligne de code, le lancement en ligne, puis la mise hors ligne. »
@@ -2522,7 +2522,7 @@ Fiches pour mémoire : rien à produire.
 - **Format** : libre, 4:1 sur ordinateur, en pile sur mobile
 - **Composant** : `site/src/components/projets/league/Fabrication.astro`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « La chaîne des sauvegardes et de la restauration »
-- **Note** : Codée en HTML et SVG (bloc #sauvegardes), réunie avec LOD-F2. Le dispositif est celui du dépôt public ; son activation en production reste à confirmer.
+- **Note** : Codée en HTML et SVG (bloc #sauvegardes), réunie avec LOD-F2. Le dispositif est celui du dépôt public.
 
 #### LOD-F4 · Construire une fois, livrer la même version
 
@@ -2873,7 +2873,7 @@ Fiches pour mémoire : rien à produire.
 - **Emplacement** : `/parcours` · Hub, sous le bandeau d’identité, pleine largeur _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/pages/parcours.astro`
 - **Sujet** : Mini-frise septembre 2023 → aujourd’hui
-- **Composition** : Trois couloirs (formation, travail, communauté), une ligne par activité, un mois vaut un mois de septembre 2023 (première activité) au mois de construction, filet plein à l’origine ; chaque ligne mène à sa fiche ; nature en forme et en mot, pointe pour ce qui continue, fondu pour une fin à confirmer seulement, un trait plein au 1er janvier de chaque année ; la barre de PvZ Fusion se coupe en décembre 2025 (traducteur en contour, puis lead)
+- **Composition** : Trois couloirs (formation, travail, communauté), une ligne par activité, un mois vaut un mois de septembre 2023 (première activité) au mois de construction, filet plein à l’origine ; chaque ligne mène à sa fiche ; nature en forme et en mot, pointe pour ce qui continue, un trait plein au 1er janvier de chaque année ; la barre de PvZ Fusion se coupe en décembre 2025 (traducteur en contour, puis lead)
 - **Format** : 16:5 sur ordinateur ; libellé au-dessus de chaque barre sur mobile
 - **Composant** : `site/src/components/parcours/Frise.astro`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Le parcours de septembre 2023 à aujourd’hui, en trois couloirs : formation, travail et communauté. »
@@ -2886,7 +2886,7 @@ Fiches pour mémoire : rien à produire.
 - **Emplacement** : `/parcours/professionnel` · Professionnel, en tête du contenu, au-dessus des fiches _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/pages/parcours/professionnel.astro`
 - **Sujet** : Chronologie
-- **Composition** : Une ligne par expérience, de la plus récente à la plus ancienne, d’août 2025 au mois de construction, repères d’année et de trimestre ; nature en forme et en mot (plein, laiton, hachures, gris), pointe pour ce qui continue, fondu et mention « fin à confirmer » pour une date de fin inconnue ; filet plein à l’origine de l’échelle ; la barre de PvZ Fusion se coupe en décembre 2025 (traducteur en contour, puis lead) ; chaque ligne mène à sa fiche
+- **Composition** : Une ligne par expérience, de la plus récente à la plus ancienne, d’août 2025 au mois de construction, repères d’année et de trimestre ; nature en forme et en mot (plein, laiton, hachures, gris), pointe pour ce qui continue ; filet plein à l’origine de l’échelle ; la barre de PvZ Fusion se coupe en décembre 2025 (traducteur en contour, puis lead) ; chaque ligne mène à sa fiche
 - **Format** : 16:6 sur ordinateur ; libellé au-dessus de chaque barre sur mobile
 - **Composant** : `site/src/components/parcours/Frise.astro`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Mes six expériences d’août 2025 à aujourd’hui, avec leurs durées et leurs chevauchements. »

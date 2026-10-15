@@ -36,7 +36,7 @@ export const CARTE: CarteVitrine = {
   chiffre: { valeur: '18', libelle: 'actions et 14 déclencheurs pour enchaîner les gestes d’un ticket', releve: '14 octobre 2026' },
   role: 'Conçu et développé seul',
   // Sourcé : le service tourne sur mon poste (127.0.0.1:5177, relevé le 14/10/2026). L’usage
-  // quotidien attend la réponse de Charles (Q72) : la carte n’a pas de marque par champ.
+  // quotidien n’est pas sourcé : la carte ne le dit pas (statut validé le 15/10/2026).
   statut: { texte: 'Outil personnel, en service sur mon poste' },
   liens: [],
   // backend/Directory.Build.props (net10.0) ; frontend Angular 22 ; EF Core et SQLite (Directory.Packages.props).

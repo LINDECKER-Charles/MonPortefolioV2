@@ -23,7 +23,8 @@
  *     défaut, 643 tests Rust joués en intégration continue sous Windows et
  *     macOS : code du serveur et workflow de compatibilité à c256e76.
  * Statut : « en usage sur ma machine » (dossier de faits, § 6) ; « en usage
- * quotidien » attend la réponse de Charles (docs/a-confirmer.md).
+ * quotidien » n’est pas sourcé : la page ne le dit pas (statut validé le
+ * 15/10/2026, docs/questions.md, J).
  * Les écrans : src/assets/projets/sillage/README.md (données de démonstration).
  */
 import type { EntreeSommaire } from './navigation';
