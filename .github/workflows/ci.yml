@@ -59,6 +59,8 @@ jobs:
   tests:
     if: github.ref == 'refs/heads/dev' || github.event_name == 'pull_request'
     uses: ./.github/workflows/_tests.yml
+    secrets:
+      CADRAGE_DEPLOY_KEY: ${{ secrets.CADRAGE_DEPLOY_KEY }}
 
   merge-to-test:
     needs: tests

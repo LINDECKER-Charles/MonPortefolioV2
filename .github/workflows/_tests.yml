@@ -7,6 +7,13 @@ name: _tests
 
 on:
   workflow_call:
+    secrets:
+      CADRAGE_DEPLOY_KEY:
+        # Cle de deploiement, en lecture seule, du depot prive
+        # MonPortefolioV2-cadrage : les garde-fous de confidentialite et de
+        # citations lisent ses listes (site/tests/support/prive.ts). Ce depot
+        # est public, ce dossier ne l'est pas.
+        required: true
 
 permissions:
   contents: read
@@ -45,6 +52,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Cadrage prive (docs/prive)
+        uses: actions/checkout@v7
+        with:
+          repository: LINDECKER-Charles/MonPortefolioV2-cadrage
+          path: docs/prive
+          ssh-key: ${{ secrets.CADRAGE_DEPLOY_KEY }}
+          persist-credentials: false
+
       - name: Setup Node
         uses: actions/setup-node@v7
         with:
@@ -80,6 +95,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+
+      - name: Cadrage prive (docs/prive)
+        uses: actions/checkout@v7
+        with:
+          repository: LINDECKER-Charles/MonPortefolioV2-cadrage
+          path: docs/prive
+          ssh-key: ${{ secrets.CADRAGE_DEPLOY_KEY }}
+          persist-credentials: false
 
       - name: Setup Node
         uses: actions/setup-node@v7

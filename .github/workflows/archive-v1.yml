@@ -3,7 +3,7 @@ name: Archive V1
 # Construit l'archive de la V1 et la met en ligne sur son sous-domaine.
 #
 # La V1 (depot public MonPortfolio) est figee sur V1_REF : la refonte d'aout,
-# celle de test.charles-lindecker.com (docs/questions.md, F2). Ce workflow en
+# celle de test.charles-lindecker.com (docs/prive/questions.md, F2). Ce workflow en
 # extrait les sources, y pose le bandeau d'archive (archive-v1/bandeau/), les
 # construit avec le Dockerfile de la V1 et SITE_URL pointe sur l'archive :
 # balises canoniques, sitemap et robots.txt designent alors l'archive, jamais le
