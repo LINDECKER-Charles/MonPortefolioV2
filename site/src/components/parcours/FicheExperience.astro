@@ -7,13 +7,11 @@
  *
  *   <FicheExperience experience={EXPERIENCES[0]} actuelle />
  *
- * Les dates sont des <time datetime="AAAA-MM"> ; une fin inconnue reste
- * « à confirmer », jamais extrapolée. Un rôle pris en cours de route
+ * Les dates sont des <time datetime="AAAA-MM">, jamais extrapolées. Un rôle pris en cours de route
  * (`bascule`) dit depuis quand il est tenu : « Depuis octobre 2025 (lead
  * depuis décembre 2025) ». La preuve reste sous le rôle, en taille
  * intermédiaire : le rôle domine. Sur mobile, le visuel suit le texte.
  */
-import AConfirmer from '../ui/AConfirmer.astro';
 import LienAction from '../ui/LienAction.astro';
 import PreuveChiffree from '../ui/PreuveChiffree.astro';
 import Statut from '../ui/Statut.astro';
@@ -45,12 +43,6 @@ const debutTexte = moisEnClair(e.debut);
               <time datetime={e.debut}>{majuscule(memeAnnee ? debutTexte.replace(/ \d+$/, '') : debutTexte)}</time>
               <span aria-hidden="true"> – </span><span class="sr"> à </span>
               <time datetime={e.fin}>{moisEnClair(e.fin)}</time>
-            </>
-          ) : e.finAConfirmer ? (
-            <>
-              <time datetime={e.debut}>{majuscule(debutTexte)}</time>
-              <span aria-hidden="true"> –</span><span class="sr">, </span>
-              <AConfirmer titre="Date de fin à confirmer">fin à confirmer</AConfirmer>
             </>
           ) : (
             <>Depuis <time datetime={e.debut}>{debutTexte}</time></>
@@ -192,10 +184,6 @@ const debutTexte = moisEnClair(e.debut);
   .fiche__periode {
     font-variant-numeric: tabular-nums lining-nums;
     color: var(--encre);
-  }
-
-  .fiche__periode :global(.a-confirmer) {
-    vertical-align: baseline;
   }
 
   .fiche__mission {

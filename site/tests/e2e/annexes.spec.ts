@@ -176,7 +176,7 @@ test.describe('mentions légales', () => {
     await expect(duree(0)).toHaveText('3 ans au plus après sa réception, puis supprimé automatiquement');
     await expect(duree(1)).toHaveText('1 an au plus');
     await expect(tableau.locator('tbody tr').first()).toContainText('la messagerie d’Hostinger');
-    await expect(page.locator('main .a-confirmer')).toHaveCount(0);
+    await expect(page.locator('main')).not.toContainText('à confirmer');
     await expect(page.locator('#mesure-audience [data-opposition]')).toHaveCount(1);
     await expect(page.locator('#credits')).toContainText('Instrument Serif');
     await expect(page.locator('#credits')).toContainText('SIL Open Font License');

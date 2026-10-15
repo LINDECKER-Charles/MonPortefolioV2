@@ -22,7 +22,6 @@
  * sorties), « Discutons de ce projet → » mène à /contact dès la fiche, sans
  * attendre la sortie de page (`contact-page`, emplacement `fiche-projet`).
  */
-import AConfirmer from '../../ui/AConfirmer.astro';
 import Statut from '../../ui/Statut.astro';
 import { attributsMesure, FLECHES, sorteDeLien, type Emplacement } from '../../../lib/liens';
 import { typo } from '../../../lib/typo';
@@ -54,10 +53,7 @@ const cases: { champ: ChampFiche; titre: string; large?: boolean }[] = [
       cases.map(({ champ, titre, large }) => (
         <div class:list={['fiche-projet__case', `fiche-projet__case--${champ}`, { 'fiche-projet__case--large': large }]}>
           <dt>{titre}</dt>
-          <dd>
-            {typo(fiche[champ])}
-            {fiche.aConfirmer?.[champ] && <AConfirmer titre={fiche.aConfirmer[champ]} />}
-          </dd>
+          <dd>{typo(fiche[champ])}</dd>
         </div>
       ))
     }

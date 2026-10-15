@@ -296,7 +296,7 @@ test('les pièges des données, la réécriture et l’exploitation gardent leur
   await expect(page.locator('#audience')).toContainText('Umami');
   // Le dispositif des sauvegardes est public : la page dit ce qu’il prévoit, sans marque « à confirmer ».
   await expect(page.locator('#sauvegardes')).toContainText('La chaîne prévoit une sauvegarde chaque nuit');
-  await expect(page.locator('main .a-confirmer')).toHaveCount(0);
+  await expect(page.locator('main')).not.toContainText('à confirmer');
 });
 
 test('la sortie : projets voisins dans l’ordre de la vitrine, « Discutons » vers /contact', async ({ page }) => {

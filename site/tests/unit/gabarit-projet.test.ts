@@ -104,10 +104,6 @@ describe('FicheProjet', () => {
     await expect(rendre(FicheProjet, { fiche: { ...FICHE, liens: [] } })).rejects.toThrow(/prive/);
   });
 
-  it('marque ce qui reste à confirmer, case par case', async () => {
-    const html = await rendre(FicheProjet, { fiche: { ...FICHE, aConfirmer: { periode: 'Date du lancement (Q8)' } } });
-    expect(html).toMatch(/class="a-confirmer" title="Date du lancement \(Q8\)">à confirmer</);
-  });
 });
 
 describe('EnTeteProjet', () => {

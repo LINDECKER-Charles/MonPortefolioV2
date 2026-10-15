@@ -10,8 +10,7 @@
  * Nature en forme et en mot (règle A2 : jamais la couleur seule) : plein pour
  * un CDI, laiton pour une mission, hachures pour le bénévolat, gris pour un
  * stage, contour pour une formation. Une activité en cours finit en pointe à
- * droite ; une fin inconnue se dissout et le texte dit « fin à confirmer » :
- * le fondu lui est réservé. Chaque année commence à un trait plein (1er
+ * droite. Chaque année commence à un trait plein (1er
  * janvier), son libellé à droite ; les trimestres restent en pointillé.
  * L’échelle s’arrête au mois de la construction du site.
  *
@@ -36,9 +35,8 @@ export interface LigneFrise {
   periode: string;
   nature: Nature;
   debut: Mois;
-  /** Dernier mois ; `null` : en cours, ou fin à confirmer avec `finAConfirmer`. */
+  /** Dernier mois ; `null` : en cours. */
   fin: Mois | null;
-  finAConfirmer?: boolean;
   /** Mois où commence le rôle du libellé : la barre se coupe à cet endroit. */
   bascule?: Mois;
 }
@@ -69,18 +67,12 @@ const etendue = terme - origine;
 const position = (rang: number) => Math.max(0, Math.min(100, ((rang - origine) / etendue) * 100));
 const arrondi = (valeur: number) => Math.round(valeur * 100) / 100;
 
-/** Une fin inconnue s’estompe sur trois mois, sans jamais dépasser l’échelle. */
-const FONDU = 3;
-
 function barre(ligne: LigneFrise) {
   const depart = rangDuMois(ligne.debut);
-  let arrivee: number;
-  if (ligne.fin) arrivee = rangDuMois(ligne.fin) + 1;
-  else if (ligne.finAConfirmer) arrivee = Math.min(terme, depart + 1 + FONDU);
-  else arrivee = terme;
+  const arrivee = ligne.fin ? rangDuMois(ligne.fin) + 1 : terme;
   const d = position(depart);
   const f = position(arrivee);
-  const etat = ligne.fin ? 'close' : ligne.finAConfirmer ? 'incertaine' : 'en-cours';
+  const etat = ligne.fin ? 'close' : 'en-cours';
   const b = ligne.bascule ? arrondi(position(rangDuMois(ligne.bascule))) : null;
   return { d: arrondi(d), f: arrondi(f), b, etat };
 }
@@ -88,7 +80,6 @@ function barre(ligne: LigneFrise) {
 /** La période en mots pour le nom du lien : « août à septembre 2025 », « de 2023 à 2024 ». */
 const periodeLue = (periode: string) =>
   periode
-    .replace(' – fin à confirmer', ', fin à confirmer')
     .replace(' – terminé', ', terminé')
     .replace(' – ', ' à ')
     .replace(/(\d{4})–(\d{4})/, 'de $1 à $2');
@@ -112,8 +103,7 @@ for (let annee = Math.floor(origine / 12); annee * 12 < terme; annee += 1) {
 }
 
 const presentes = [...new Set(couloirs.flatMap((c) => c.lignes.map((l) => l.nature)))];
-const avecEnCours = couloirs.some((c) => c.lignes.some((l) => !l.fin && !l.finAConfirmer));
-const avecIncertaine = couloirs.some((c) => c.lignes.some((l) => l.finAConfirmer));
+const avecEnCours = couloirs.some((c) => c.lignes.some((l) => !l.fin));
 const titreId = `${id ?? 'frise'}-titre`;
 const avecCouloirs = couloirs.some((c) => c.nom);
 ---
@@ -124,7 +114,6 @@ const avecCouloirs = couloirs.some((c) => c.nom);
     <ul class="frise__legende" aria-label="Légende">
       {presentes.map((nature) => <li><span class:list={['frise__echantillon', `frise__barre--${nature}`]} aria-hidden="true"></span>{NATURES[nature]}</li>)}
       {avecEnCours && <li><span class="frise__echantillon frise__echantillon--en-cours" aria-hidden="true"></span>en cours</li>}
-      {avecIncertaine && <li><span class="frise__echantillon frise__echantillon--incertaine" aria-hidden="true"></span>fin à confirmer</li>}
     </ul>
   </div>
   <div class="frise__corps">
@@ -215,11 +204,6 @@ const avecCouloirs = couloirs.some((c) => c.nom);
   .frise__echantillon--en-cours {
     background: var(--encre);
     clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 50%, calc(100% - 6px) 100%, 0 100%);
-  }
-
-  .frise__echantillon--incertaine {
-    background: var(--encre);
-    mask-image: linear-gradient(90deg, currentColor 30%, transparent);
   }
 
   .frise__corps {
@@ -387,11 +371,6 @@ const avecCouloirs = couloirs.some((c) => c.nom);
   .frise__barre--en-cours {
     border-radius: var(--r1) 0 0 var(--r1);
     clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 50%, calc(100% - 7px) 100%, 0 100%);
-  }
-
-  /* Fin à confirmer : la barre se dissout. */
-  .frise__barre--incertaine {
-    mask-image: linear-gradient(90deg, currentColor 25%, transparent);
   }
 
   .frise__ligne a:hover .frise__barre,

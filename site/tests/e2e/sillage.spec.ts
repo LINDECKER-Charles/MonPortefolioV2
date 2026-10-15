@@ -182,7 +182,7 @@ test('la sortie : Karl Scraper avant, Relais après, retour à la vitrine, « Di
   const sortie = page.locator('#retiens');
   await expect(sortie.getByRole('heading', { level: 2 })).toHaveText('Aujourd’hui');
   await expect(sortie).toContainText('579');
-  await expect(sortie.locator('.a-confirmer')).toHaveCount(0);
+  await expect(sortie).not.toContainText('à confirmer');
   // Dépôt privé : aucune liste de liens publics dans la sortie.
   await expect(sortie.getByRole('list', { name: 'Liens publics du projet' })).toHaveCount(0);
   const discutons = sortie.getByRole('link', { name: /^Discutons/ });

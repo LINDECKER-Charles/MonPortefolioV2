@@ -150,7 +150,7 @@ test('les faits du récit : C puis C++, lead depuis décembre 2025, « Seul on v
   await expect(reperes.locator('.preuve-chiffree__valeur')).toHaveText(['20', '10', '35']);
   await expect(reperes.locator('li').first()).toContainText('personnes formées au pôle francophone');
   await expect(reperes.locator('mark')).toHaveCount(1);
-  // La citation d’Omnicard attend la réponse de Charles (Q8) : pas affichée.
+  // La citation d’Omnicard n’est pas affichée (validé le 15/10/2026).
   await expect(page.locator('main')).not.toContainText('un moment j’en ai eu marre');
 });
 

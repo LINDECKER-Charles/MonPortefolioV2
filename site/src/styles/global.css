@@ -1,7 +1,7 @@
 /*
  * Socle du site, direction « Lanterne » : base typographique, mise en page,
  * actes, zone éclairée et les primitives employées partout (bouton, lien
- * d’action, flèches, surligneur, marque « à confirmer »). Les jetons vivent
+ * d’action, flèches, surligneur). Les jetons vivent
  * dans jetons.css ; un composant garde ses propres styles (src/components/ui,
  * src/components/pages), payés seulement par les pages qui l’emploient.
  *
@@ -356,24 +356,6 @@ mark,
   border-radius: var(--r1);
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
-}
-
-/* Marque « à confirmer » : jamais une couleur seule, toujours un mot. Une
-   espace la sépare du texte (ui/AConfirmer.astro). */
-.a-confirmer {
-  display: inline-block;
-  padding: 0 0.4em;
-  border: 1px dashed var(--trait);
-  border-radius: var(--r1);
-  font-family: var(--police-texte);
-  font-size: var(--t-xs);
-  font-style: normal;
-  font-weight: 500;
-  line-height: 1.5;
-  letter-spacing: var(--ls-petit);
-  color: var(--eteint);
-  vertical-align: 0.3em;
-  white-space: nowrap;
 }
 
 /* Sans JavaScript, une commande qui ne ferait rien ne s’affiche pas. */

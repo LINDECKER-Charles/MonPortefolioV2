@@ -8,8 +8,7 @@
  * (A2, B3, C5, C7) et, pour les rôles chez PvZ Fusion, le journal public du
  * pôle (config/pvz-fusion.ts, ROLES). Fins d’Elan Formation (mai 2026) et du
  * mentorat à la Mission Locale (juin 2026) : données par Charles le
- * 15/10/2026. Une date de fin inconnue n’est jamais extrapolée : le champ
- * `finAConfirmer` la dit (aucune aujourd’hui).
+ * 15/10/2026. Une date de fin inconnue n’est jamais extrapolée.
  */
 
 /** Les trois pages du parcours, partagées par le hub, les onglets et la suite de lecture. */
@@ -78,8 +77,6 @@ export interface Experience {
   debut: Mois;
   /** Dernier mois de l’activité ; `null` si elle continue. */
   fin: Mois | null;
-  /** Terminée, mais à une date que Charles n’a pas encore donnée. */
-  finAConfirmer?: boolean;
   /** Statut honnête, en un mot ou deux (composant Statut). */
   statut: { texte: string; etat: 'actif' | 'ouvert' | 'eteint' };
   mission: string;
@@ -238,7 +235,7 @@ export function rangDuMois(mois: Mois): number {
 }
 
 /** Période d’une expérience, en clair : « Depuis août 2026 », « Août – septembre 2025 » (le tiret d’intervalle : les flèches sont réservées aux liens, règle E2). */
-export function periodeEnClair(experience: Pick<Experience, 'debut' | 'fin' | 'finAConfirmer'>): string {
+export function periodeEnClair(experience: Pick<Experience, 'debut' | 'fin'>): string {
   const debut = moisEnClair(experience.debut);
   if (experience.fin) {
     const [anneeDebut] = experience.debut.split('-');
@@ -246,7 +243,6 @@ export function periodeEnClair(experience: Pick<Experience, 'debut' | 'fin' | 'f
     const premier = anneeDebut === anneeFin ? debut.replace(/ \d+$/, '') : debut;
     return majuscule(`${premier} – ${moisEnClair(experience.fin)}`);
   }
-  if (experience.finAConfirmer) return majuscule(`${debut} – terminé`);
   return `Depuis ${debut}`;
 }
 
@@ -255,10 +251,8 @@ export function majuscule(texte: string): string {
 }
 
 /** Nature et période pour une ligne de frise : « CDI, depuis août 2026 ». */
-export function periodeDeFrise(experience: Pick<Experience, 'debut' | 'fin' | 'finAConfirmer' | 'nature' | 'bascule'>): string {
-  const periode = experience.finAConfirmer && !experience.fin
-    ? `${moisEnClair(experience.debut)} – fin à confirmer`
-    : periodeEnClair(experience);
+export function periodeDeFrise(experience: Pick<Experience, 'debut' | 'fin' | 'nature' | 'bascule'>): string {
+  const periode = periodeEnClair(experience);
   const role = experience.bascule ? `, ${experience.bascule.role} depuis ${moisEnClair(experience.bascule.mois)}` : '';
   return `${NATURES[experience.nature]}, ${periode.charAt(0).toLowerCase()}${periode.slice(1)}${role}`;
 }
@@ -273,7 +267,6 @@ export function ligneDeFrise(experience: Experience, page = '/parcours/professio
     nature: experience.nature,
     debut: experience.debut,
     fin: experience.fin,
-    finAConfirmer: experience.finAConfirmer,
     bascule: experience.bascule?.mois,
   };
 }

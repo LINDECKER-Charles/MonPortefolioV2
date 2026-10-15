@@ -24,7 +24,7 @@
  *
  * `preuve` : l’étiquette de preuve (ce que le projet prouve), numérotée par
  * `rang` sur deux chiffres (« 01 »), comme dans l’index de la vitrine
- * (IndexPreuves). `aConfirmer` pose une marque « à confirmer » après le nom.
+ * (IndexPreuves).
  * `pli` marque le chiffre de la carte pour le contrôle du premier écran
  * (`data-pli`, règle E1). Les liens publics disent de quel projet ils sont
  * (« Code de gup », le nom en texte masqué). Le visuel vient du slot
@@ -34,7 +34,6 @@
  * « Dépôt privé », dans le vocabulaire de sa fiche (FicheProjet).
  */
 import type { ImageMetadata } from 'astro';
-import AConfirmer from '../ui/AConfirmer.astro';
 import Statut from '../ui/Statut.astro';
 import { attributsMesure, type Emplacement } from '../../lib/liens';
 import { typo } from '../../lib/typo';
@@ -54,8 +53,6 @@ interface Props {
   /** Dépôt privé (VITRINE, `prive`) : sans lien public, la carte le dit. */
   prive?: boolean;
   technos?: { src: ImageMetadata; alt: string; mono?: boolean }[];
-  /** Ce qui reste à confirmer sur le nom (info-bulle de la marque). */
-  aConfirmer?: string;
   /** Emplacement de mesure des liens publics. */
   emplacement?: Emplacement;
   /** Niveau du titre : h2 dans la vitrine, h3 sous un titre de section. */
@@ -79,7 +76,6 @@ const {
   liens = [],
   prive = false,
   technos = [],
-  aConfirmer,
   emplacement = 'preuves',
   niveau = 2,
   as: Element = 'li',
@@ -101,7 +97,7 @@ const duProjet = /^[aeiouyhâéèêîôû]/i.test(nom) ? ` d’${nom}` : ` de ${
       {typo(preuve)}
     </p>
     <Titre class="carte-projet__nom">
-      <a href={href}>{nom}</a>{aConfirmer && <AConfirmer titre={aConfirmer}>nom à confirmer</AConfirmer>}
+      <a href={href}>{nom}</a>
     </Titre>
     <p class="carte-projet__besoin">{typo(besoin)}</p>
     {chiffre && <p class="carte-projet__chiffre" data-pli={pli}><b>{chiffre.valeur}</b><small>{typo(chiffre.libelle)}</small></p>}

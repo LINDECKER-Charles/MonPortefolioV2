@@ -97,8 +97,6 @@ export interface CarteVitrine {
   liens: readonly LienPublic[];
   /** Trois au plus ; `mono` : logo monochrome, inversé la nuit. */
   technos: readonly { src: ImageMetadata; alt: string; mono?: boolean }[];
-  /** Ce qui reste à confirmer sur le nom, en info-bulle de la marque. */
-  aConfirmer?: string;
   /**
    * Le visuel de la carte, quand la carte le décrit : projets entrés le
    * 14/10/2026, League Of Data Base et Omnicard (15/10/2026). PvZ Fusion,

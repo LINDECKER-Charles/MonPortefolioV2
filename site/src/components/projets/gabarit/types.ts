@@ -35,8 +35,6 @@ export interface DonneesFiche {
   statut: { texte: string; etat?: 'actif' | 'ouvert' | 'eteint' };
   /** Liens publics (dépôts publics de la liste blanche, application en ligne). */
   liens: readonly LienProjet[];
-  /** Ce qui reste à confirmer, champ par champ (info-bulle de la marque). */
-  aConfirmer?: Partial<Record<ChampFiche, string>>;
 }
 
 /**

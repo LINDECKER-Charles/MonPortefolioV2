@@ -66,7 +66,7 @@ test('la fiche : sept cases, statut hors ligne à forme et mot, sans marque « �
   // Un seul rôle : les règles du jeu papier sont co-écrites, le jeu en ligne est fait seul.
   await expect(fiche.locator('.fiche-projet__case--role dd')).toHaveText(`Co-auteur du jeu papier${NBSP}; seul pour le jeu en ligne (équilibrage, moteur, interface)`);
   await expect(fiche.locator('.statut')).toHaveClass(/statut--eteint/);
-  await expect(fiche.locator('.a-confirmer')).toHaveCount(0);
+  await expect(fiche).not.toContainText('à confirmer');
   await expect(fiche).toContainText('moteur de règles en C#');
   for (const lien of await fiche.locator('a').all()) {
     expect(await lien.getAttribute('href')).toMatch(new RegExp(`^${DEPOT}`));
@@ -156,7 +156,7 @@ test('le rééquilibrage montre, carte par carte, la saison 1 et la version actu
   await expect(visible.getByRole('img').last()).toHaveAttribute('alt', /version actuelle.*4\/15/);
   // La version en ligne de ces valeurs n’est pas établie : l’étiquette le dit.
   await expect(visible.locator('.comparaison__carte--apres .comparaison__etiquette')).toContainText('Version actuelle du projet');
-  await expect(visible.locator('.comparaison__carte--apres .a-confirmer')).toHaveCount(0);
+  await expect(visible.locator('.comparaison__carte--apres')).not.toContainText('à confirmer');
   await expect(comparateur).not.toContainText('Jeu en ligne');
   await expect(visible.locator('dd')).toHaveText(['4/8 → devient 4/15']);
 
@@ -191,7 +191,7 @@ test('le compte à rebours de GitGud : neuf fins de tour, cinq comptent, puis l�
   await expect(frise.locator('.etape--fin')).toContainText('Égalité');
   await expect(page.locator('[data-figure="OMN-05"] figcaption')).toContainText('cinq de mes fins de tour');
   // La règle affichée ne s’appuie que sur le glossaire public : aucune précision incertaine.
-  await expect(page.locator('[data-figure="OMN-05"] figcaption .a-confirmer')).toHaveCount(0);
+  await expect(page.locator('[data-figure="OMN-05"] figcaption')).not.toContainText('à confirmer');
   await expect(page.locator('[data-figure="OMN-05"] figcaption')).toContainText('jamais à la fin du tour adverse');
 });
 

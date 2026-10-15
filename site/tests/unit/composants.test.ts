@@ -1,6 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
-import AConfirmer from '../../src/components/ui/AConfirmer.astro';
 import Acte from '../../src/components/ui/Acte.astro';
 import Bouton from '../../src/components/ui/Bouton.astro';
 import CaptureAnnotee from '../../src/components/ui/CaptureAnnotee.astro';
@@ -85,9 +84,8 @@ describe('preuves', () => {
     await expect(rendre(PreuveChiffree, { valeur: '1', libelle: 'x', source: 'y', href: 'https://example.com' })).rejects.toThrow(/interne/);
   });
 
-  it('exige la source du surligneur et dit « à confirmer » par un mot', async () => {
+  it('exige la source du surligneur', async () => {
     expect(await rendre(Surligneur, { source: 'docs/matiere-premiere.md' }, { default: '35' })).toMatch(/<mark class="surligneur" data-source="docs\/matiere-premiere.md"[^>]*>35<\/mark>/);
-    expect(await rendre(AConfirmer, { titre: 'Nom officiel (Q8)' })).toMatch(/<span class="a-confirmer" title="Nom officiel \(Q8\)">à confirmer<\/span>/);
   });
 
   it('donne au statut une forme et un mot', async () => {

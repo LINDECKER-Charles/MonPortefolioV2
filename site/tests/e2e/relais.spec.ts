@@ -153,7 +153,7 @@ test('la sortie : Sillage avant, aucun projet suivant, les projets archivés, la
   const sortie = page.locator('#retiens');
   await expect(sortie.getByRole('heading', { level: 2 })).toHaveText('En une phrase');
   await expect(sortie).toContainText('lancés, encadrés et relus');
-  await expect(sortie.locator('.a-confirmer')).toHaveCount(0);
+  await expect(sortie).not.toContainText('à confirmer');
   const discutons = sortie.getByRole('link', { name: /^Discutons/ });
   await expect(discutons).toHaveAttribute('href', '/contact');
   await expect(discutons).toHaveAttribute('data-umami-event', 'contact-page');

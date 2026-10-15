@@ -267,7 +267,7 @@ test.describe('page Professionnel', () => {
       // Fins données par Charles le 15/10/2026 : plus aucune marque.
       await expect(page.locator('#elan .fiche__periode time').last()).toHaveText('mai 2026');
       await expect(page.locator('#mission-locale .fiche__periode time').first()).toHaveText('Janvier');
-      await expect(page.locator('main .a-confirmer')).toHaveCount(0);
+      await expect(page.locator('main')).not.toContainText('à confirmer');
       // Dev-Mates : la société ouverte, mais sans client ; rien de non sourcé (« conseil »).
       await expect(page.locator('#devmates .fiche__situation')).toHaveText('Ma société reste ouverte, sans client actuellement.');
       await expect(page.locator('#devmates')).not.toContainText(/conseil/i);
