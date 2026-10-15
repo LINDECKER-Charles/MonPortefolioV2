@@ -104,7 +104,7 @@ enregistre déjà le chemin de chaque événement. Une conversion n'a qu'une sou
 | `contact-email` | clic sur un lien `mailto:` | attributs `data-umami-event` | `emplacement` |
 | `contact-copie` | bouton « Copier l'adresse » | `mesurer()` | `emplacement` |
 | `cv-telechargement` | lien de téléchargement du CV (quand le CV existera) | `mesurer()` | `emplacement` |
-| `lien-sortant` | lien vers un profil, une démo, un dépôt ou le site officiel d’une technologie | attributs | `domaine` (nom d'hôte de la cible), `emplacement` |
+| `lien-sortant` | lien vers un profil, une démo, un dépôt, le site officiel d’une technologie ou l’archive de la V1 | attributs | `domaine` (nom d'hôte de la cible), `emplacement` |
 | `lecture` | un chapitre de l'accueil atteint, une fois par chargement | `mesurer()` | `chapitre` = `origine` \| `aujourdhui` \| `discutons` |
 | `theme` | bascule jour/nuit par le visiteur | `mesurer()` | `choix` = `nuit` \| `jour` |
 | `glossaire` | ouverture d'une définition | `mesurer()` | `terme` (identifiant stable) |

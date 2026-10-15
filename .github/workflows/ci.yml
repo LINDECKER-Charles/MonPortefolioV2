@@ -17,12 +17,16 @@ name: CI/CD
 #
 # Tant que la V1 du portfolio occupe charles-lindecker.com, une fusion dans main
 # ne met rien en ligne : le deploiement de production refuse de demarrer sur un
-# domaine qu'un autre projet de l'hote declare deja (docs/deploiement.md).
-
-# Declenchements automatiques suspendus pendant la transition avec la V1.
-# Aucun push ni aucune PR ne lance la chaine. Pour la reactiver, retablir
-# push sur [dev, main] et pull_request sur [dev].
+# domaine qu'un autre projet de l'hote declare deja. L'ordre de la bascule est
+# dans docs/bascule.md.
 on:
+  push:
+    branches: [dev, main]
+  # Une PR vers dev (Dependabot compris) ne joue que les tests : les jobs
+  # suivants sont gardes sur refs/heads/dev, et la ref d'une PR est
+  # refs/pull/<n>/merge.
+  pull_request:
+    branches: [dev]
   # Rejouer la chaine sans nouveau commit : indispensable apres une rotation de
   # secret, puisqu'un secret change ne parvient sur l'hote qu'au deploiement
   # suivant. Les gardes `if` ci-dessous restent valides — un declenchement

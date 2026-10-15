@@ -134,10 +134,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Shellcheck du script de deploiement
-        # Ce script tourne en `set -euo pipefail` sur le VPS de production : une
-        # variable mal citee y coute un deploiement a moitie applique.
-        run: shellcheck scripts/deploy-remote.sh
+      - name: Shellcheck des scripts de deploiement
+        # Ces scripts tournent en `set -euo pipefail` sur le VPS de production :
+        # une variable mal citee y coute un deploiement a moitie applique.
+        run: shellcheck scripts/deploy-remote.sh scripts/deploy-archive-v1.sh
+
+      - name: Outils de la bascule
+        # Le bandeau de l'archive et le verificateur de bascule n'ont besoin
+        # que de Node : aucune installation. Fichiers nommes un par un, pour
+        # que le lanceur ne prenne pas scripts/test-backoffice.mjs, qui attend
+        # un backend construit (job e2e).
+        run: node --test scripts/verifier-bascule.test.mjs archive-v1/bandeau/poser.test.mjs
 
       - name: Actionlint sur les workflows
         # Un contrat de workflow reutilisable casse (secret non declare, entree
@@ -194,6 +201,26 @@ jobs:
           fi
           echo "— pile de developpement (base + override, chargement implicite)"
           docker compose config -q
+          echo "— le relais joint le backend par son alias, jamais par son nom court"
+          jq -e '.services.backend.networks.default.aliases == ["portfolio-backend"]
+            and .services.web.environment.BACKEND_URL == "http://portfolio-backend:8080"' \
+            "$RUNNER_TEMP/base.json"
+          echo "— pile de l'archive de la V1"
+          ARCHIVE_IMAGE="ghcr.io/exemple/archive@sha256:$(printf '0%.0s' {1..64})" \
+            ARCHIVE_DOMAINE=archive.exemple.test \
+            docker compose -f archive-v1/compose.yaml config --format json > "$RUNNER_TEMP/archive.json"
+          # Hors index, sur son seul domaine, derriere l'edge, sans port publie.
+          jq -e '.services.web
+            | .environment.ROBOTS_NOINDEX == "1"
+              and .environment.NG_ALLOWED_HOSTS == "archive.exemple.test"
+              and .labels.caddy == "archive.exemple.test"
+              and (.networks | has("edge"))
+              and (.ports // [] | length == 0)' "$RUNNER_TEMP/archive.json"
+          echo "— garde-fou : pile de l'archive sans image epinglee (doit echouer)"
+          if ARCHIVE_DOMAINE=archive.exemple.test docker compose -f archive-v1/compose.yaml config -q 2>/dev/null; then
+            echo "archive-v1/compose.yaml accepte une image absente." >&2
+            exit 1
+          fi
 
       - name: Setup Buildx
         uses: docker/setup-buildx-action@v4

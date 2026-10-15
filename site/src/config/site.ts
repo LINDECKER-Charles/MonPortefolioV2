@@ -16,6 +16,13 @@ export const SITE = {
   locale: 'fr_FR',
   /** Couleur du navigateur mobile : le bleu roi du site. */
   couleurTheme: '#1F4FD1',
+  /**
+   * Jeton de la propriété Search Console de charles-lindecker.com, repris de
+   * la V1 (`front-portfolio/src/index.html`). Google revérifie la propriété de
+   * temps en temps : sans cette balise sur l’accueil, elle se perdrait au
+   * moment où la V2 prend le domaine, celui où il faut suivre la réindexation.
+   */
+  verificationGoogle: '8ktW_VNmaBZquKlGxRbpspq5KO7jrgMHQ3hH1asr06s',
 } as const;
 
 export const CONTACT = {
@@ -33,11 +40,12 @@ export const CONTACT = {
 export const CV: string | null = null;
 
 /**
- * Archive de la V1, sur son sous-domaine (brief § 6, encore à choisir). Tant
- * qu'elle n'existe pas, le pied de page ne la cite pas : la V1 occupe encore le
- * domaine que la V2 prendra.
+ * Archive de la V1, sur son sous-domaine (questions.md, F1 : `yharnam.`,
+ * 2026-10-14). Construite et mise en ligne par `archive-v1/`, avant la
+ * production de la V2 (docs/bascule.md) : le pied de page ne la cite qu’une
+ * fois qu’elle répond. `null` la retire du pied de page.
  */
-export const ARCHIVE_V1: string | null = null;
+export const ARCHIVE_V1: string | null = 'https://yharnam.charles-lindecker.com';
 
 /**
  * Démos en ligne. Au 2026-10-07, les deux adresses de la V1 (test.omnicard.fr,

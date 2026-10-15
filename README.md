@@ -90,7 +90,7 @@ la lecture des contacts ne marque aucune demande comme lue. Parcours complet, au
 
 | Chemin | Rôle |
 |---|---|
-| `docs/` | cadrage (brief, questionnaire, matière première, briefs d'assets) et exploitation (déploiement, secrets, mesure d'audience) |
+| `docs/` | cadrage (brief, questionnaire, matière première, briefs d'assets) et exploitation (déploiement, secrets, mesure d'audience, bascule) |
 | `design/` | maquettes et assets sources (logo, pictogrammes, illustrations, photos) |
 | `site/` | le site Astro ; son `Dockerfile` produit l'image publiée |
 | `site/src/` | pages, composants, scripts, styles, configuration du contenu |
@@ -100,7 +100,9 @@ la lecture des contacts ne marque aucune demande comme lue. Parcours complet, au
 | `site/tests/` | `unit/` (Vitest), `e2e/` (Playwright) et `fixtures/`, les cas partagés avec `backend/tests/blog_api.rs` ([`site/tests/fixtures/README.md`](site/tests/fixtures/README.md)) |
 | `compose*.yaml`, `.env*.example` | piles Compose et modèles d'environnement |
 | `scripts/deploy-remote.sh` | ce qui s'exécute sur le VPS à chaque déploiement |
-| `.github/workflows/` | `ci.yml` orchestre ; `_tests`, `_build`, `_promote`, `_deploy` font le travail |
+| `scripts/verifier-bascule.mjs` | contrôle public de la bascule depuis le poste : indexabilité, `www.`, 301 de la V1, archive hors index |
+| `archive-v1/`, `scripts/deploy-archive-v1.sh` | l'archive de la V1 sur `yharnam.charles-lindecker.com` : pile, bandeau, mise en ligne |
+| `.github/workflows/` | `ci.yml` orchestre ; `_tests`, `_build`, `_promote`, `_deploy` font le travail ; `archive-v1.yml` construit et déploie l'archive |
 
 ## Pages et contenu
 
@@ -229,17 +231,15 @@ existants continuent à fonctionner.
 
 ## Mise en ligne
 
-**CI/CD automatique suspendue pendant la transition avec la V1.** Les push et les PR
-ne déclenchent rien. Seul un lancement manuel (`workflow_dispatch`) peut exécuter la chaîne.
-Pour réactiver les automatismes, rétablir dans `.github/workflows/ci.yml` les événements
-`push` sur `[dev, main]` et `pull_request` sur `[dev]`.
-
-Chaîne prévue après réactivation :
+La chaîne, réactivée pour la bascule depuis la V1 ([`docs/bascule.md`](docs/bascule.md)) :
 
 ```
 push dev  ->  tests  ->  fusion dev->test  ->  build (:sha + :staging)  ->  déploiement TEST
 push main ->  promotion (:staging -> :prod)                             ->  déploiement PROD
 ```
+
+L'archive de la V1 (`yharnam.charles-lindecker.com`) a sa propre chaîne,
+`.github/workflows/archive-v1.yml` : voir [`archive-v1/README.md`](archive-v1/README.md).
 
 La production ne reconstruit jamais : elle ré-étiquette les deux images validées en test,
 après vérification de leur révision commune. L'edge TLS

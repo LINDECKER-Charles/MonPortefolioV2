@@ -44,7 +44,8 @@ services:
         condition: service_healthy
     environment:
       CONTACT_EMAIL: ${CONTACT_EMAIL:-}
-      BACKEND_URL: http://backend:8080
+      # Par l'alias du backend, jamais par son nom court : voir backend.networks.
+      BACKEND_URL: http://portfolio-backend:8080
       BACKEND_PROXY_TOKEN: ${BACKEND_PROXY_TOKEN:-}
     # Docker injecte tini comme PID 1. Le serveur gere lui-meme SIGTERM et sort
     # sans attendre le sursis (verifie par site/server/server.test.mjs). tini
@@ -71,6 +72,15 @@ services:
     init: true
     logging: *default-logging
     read_only: true
+    # Le service web rejoint le reseau `edge`, partage par tous les projets de
+    # l'hote, ou chaque service est inscrit sous son nom court. Si un autre
+    # projet y publiait un service `backend`, le DNS de Docker pourrait repondre
+    # pour lui, et le relais lui enverrait les demandes de contact et le jeton
+    # BACKEND_PROXY_TOKEN, sans erreur. D'ou un alias prefixe par le projet, sur
+    # le seul reseau de la pile (infra-vps, docs/APPLICATIONS.md, reseaux).
+    networks:
+      default:
+        aliases: [portfolio-backend]
     volumes:
       - portfolio-data:/data
     tmpfs:

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { VITRINE } from '../../src/config/projets';
 import { jsonLd, noeudAriane, noeudPersonne, noeudProjet, titreCourt, titreDePage } from '../../src/lib/seo';
+import { SITE } from '../../src/config/site';
+import { DELAI_BUILD, pagesConstruites } from './support/dist';
 
 /**
  * Ce que lisent les moteurs et les réseaux (lib/seo.ts) : un seul gabarit de
@@ -50,4 +52,14 @@ describe('JSON-LD', () => {
   it('échappe < pour qu’aucune chaîne ne referme la balise', () => {
     expect(jsonLd([{ name: '</script>' }])).not.toContain('</script>');
   });
+});
+
+describe('Search Console', () => {
+  it('l’accueil, et lui seul, garde la balise de vérification de la propriété', async () => {
+    const balise = `<meta name="google-site-verification" content="${SITE.verificationGoogle}">`;
+    const pages = await pagesConstruites();
+    const porteuses = pages.filter(({ html }) => html.includes('google-site-verification')).map(({ url }) => url);
+    expect(porteuses).toEqual(['/']);
+    expect(pages.find(({ url }) => url === '/')?.html).toContain(balise);
+  }, DELAI_BUILD);
 });
