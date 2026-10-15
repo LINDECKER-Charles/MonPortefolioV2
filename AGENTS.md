@@ -28,8 +28,7 @@ puis les quatre pages de projet du 14/10/2026, sont faites dessus. Le lot 0 a po
 (liens publics, citations, formulations interdites, pages, visuels) et le registre des
 emplacements de visuels (182 au 14/10/2026) ; les dessins, captures et images de partage sont livrés, et les 74 images générées
 aussi (2026-10-13), chacune en deux versions dessinées, jour et nuit, branchées sur le thème :
-plus aucun visuel « socle » ne manque. Prochaines étapes : le CV et les premiers articles, puis
-la bascule de la V1 sur son sous-domaine d’archive.
+plus aucun visuel « socle » ne manque. Prochaines étapes : le CV et les premiers articles.
 
 **Vitrine finale, backoffice et blog (2026-10-14).** Le 14/10/2026, la vitrine finale est en
 place, le backoffice et ses accès MCP sont refaits dans la coque « Lanterne », et les articles de
@@ -46,11 +45,13 @@ détaillées, les accès MCP expirent au bout d’un an au plus, le serveur d’
 backoffice, les demandes sont purgées après trois ans, et plus aucune marque « à confirmer » ne
 reste sur le site ([`docs/prive/questions.md`](docs/prive/questions.md), section J).
 
-**Bascule préparée (2026-10-14, branche `ci/bascule-v2-production`).** La CI est réactivée,
-l’archive de la V1 (`yharnam.charles-lindecker.com`, refonte d’août figée) se construit depuis
-ce dépôt (`archive-v1/`), et [`docs/bascule.md`](docs/bascule.md) liste dans l’ordre les secrets,
-le DNS, les gestes manuels, les vérifications et le retour arrière. Au 2026-10-14, aucun
-environnement de la V2 ne tourne encore.
+**Bascule faite (2026-10-15).** La V2 sert `charles-lindecker.com` (`www.` en 301 vers l’apex,
+les adresses de la V1 en 301), son test `test.charles-lindecker.com`, et la V1 est archivée,
+figée, sur `yharnam.charles-lindecker.com` (`archive-v1/`). Le dépôt est public depuis le même
+jour, avec un historique réécrit : le cadrage vit dans le dépôt privé cloné dans `docs/prive/`
+(section « Confidentialité »), et l’ancien historique complet dans le dépôt privé
+`MonPortefolioV2-private-cadrage`. Déroulé, écarts et retour arrière :
+[`docs/bascule.md`](docs/bascule.md).
 
 Avant toute intervention, lire dans l'ordre. Les documents 1, 2, 3 et 5 sont dans `docs/prive/`,
 le cadrage privé : un clone de `LINDECKER-Charles/MonPortefolioV2-cadrage`, ignoré par git
