@@ -261,12 +261,18 @@ export const CAPOT: readonly PointCapot[] = [
     extrait: {
       ecrit: true,
       langage: 'Schéma',
-      code: `navigateur piloté (Playwright) ──▶ outil de gestion de tâches
-          │  lectures, et une seule écriture : le statut
-service .NET 10 ── SQLite (EF Core, FTS5) · magasins JSON
-   ├─ SignalR ─▶ interface Angular 22
-   └─ HTTP ────▶ Relais (agents) · Sillage (plans) · gh (pull requests)
-serveur MCP, processus à part ── base en lecture seule ──▶ agent IA`,
+      // Aligné à gauche, branches empilées : tient en 35 colonnes, la largeur d’un téléphone.
+      code: `service .NET 10
+├▶ navigateur piloté (Playwright)
+│  └▶ outil de gestion de tâches
+│     lit, et n’écrit que le statut
+├▶ SQLite (EF Core, FTS5)
+├▶ magasins JSON
+├▶ interface Angular 22 (SignalR)
+└▶ par HTTP, Relais (agents),
+   Sillage (plans), gh (PR)
+serveur MCP, processus à part
+└▶ base en lecture seule ▶ agent IA`,
     },
   },
   {

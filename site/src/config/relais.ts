@@ -337,10 +337,16 @@ API Rust (Axum)
     extrait: {
       ecrit: true,
       langage: 'Schéma',
-      code: `Claude Code  ⇄  stream-json, sur stdin et stdout
-Codex        ⇄  JSON-RPC, codex app-server
-                 ↓ événements d’origine, gardés tels quels
-SQLite       :  sessions · événements · permissions · audit`,
+      // Aligné à gauche, branches empilées : tient en 35 colonnes, la largeur d’un téléphone.
+      code: `Claude Code
+  ⇄ stream-json, stdin et stdout
+Codex
+  ⇄ JSON-RPC, codex app-server
+↓ événements d’origine,
+  gardés tels quels
+SQLite
+├ sessions · événements
+└ permissions · audit`,
     },
   },
   {
