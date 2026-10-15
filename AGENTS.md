@@ -50,7 +50,7 @@ les adresses de la V1 en 301), son test `test.charles-lindecker.com`, et la V1 e
 figée, sur `yharnam.charles-lindecker.com` (`archive-v1/`). Le dépôt est public depuis le même
 jour, avec un historique réécrit : le cadrage vit dans le dépôt privé cloné dans `docs/prive/`
 (section « Confidentialité »), et l’ancien historique complet dans le dépôt privé
-`MonPortefolioV2-private-cadrage`. Déroulé, écarts et retour arrière :
+`MonPortefolioV2-historique`. Déroulé, écarts et retour arrière :
 [`docs/bascule.md`](docs/bascule.md).
 
 Avant toute intervention, lire dans l'ordre. Les documents 1, 2, 3 et 5 sont dans `docs/prive/`,

@@ -36,7 +36,7 @@ Coupure du domaine principal : **environ deux minutes**. Écarts avec le déroul
 - **Le dépôt est public.** Il a été recréé avec un historique réécrit, sans le cadrage ni les noms
   privés : le cadrage vit dans le dépôt privé `MonPortefolioV2-cadrage`, cloné dans
   `docs/prive/` ([`README`](../README.md), « Dossier privé »), et l’ancien dépôt, renommé
-  `MonPortefolioV2-private-cadrage`, garde l’historique complet, en privé. Un onzième secret,
+  `MonPortefolioV2-historique`, garde l’historique complet, en privé. Un onzième secret,
   `CADRAGE_DEPLOY_KEY` (clé de déploiement du cadrage, en lecture), sert aux tests ; il est
   aussi posé pour Dependabot.
 - **Le test a repris `test.charles-lindecker.com`** une fois la V1 arrêtée : `test.v2.` et
@@ -54,7 +54,7 @@ Coupure du domaine principal : **environ deux minutes**. Écarts avec le déroul
   `githealth`. Restent, le lendemain : `karl-scraper`, `sillage`, `relais`,
   `/parcours/professionnel`, `/parcours/competences`, `/parcours/formation`, `/blog`,
   `/mentions-legales` (déjà dans le sitemap). Dépôts `MonPortfolio` et
-  `MonPortefolioV2-private-cadrage` archivés sur GitHub.
+  `MonPortefolioV2-historique` archivés sur GitHub.
 
 ---
 
