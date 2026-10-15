@@ -7,7 +7,7 @@
  *
  * Usage :
  *   node scripts/verifier-bascule.mjs                    # après la bascule
- *   node scripts/verifier-bascule.mjs --site https://test.v2.charles-lindecker.com \
+ *   node scripts/verifier-bascule.mjs --site https://test.charles-lindecker.com \
  *     --indexable non --www=                             # la V2 en test, avant
  *
  * Options (valeur vide = contrôle sauté) :
