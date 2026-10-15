@@ -360,7 +360,8 @@ struct MailSettingsInput {
     security: String,
     #[serde(default)]
     username: String,
-    /// Vide ou absent : le mot de passe enregistré est gardé.
+    /// Vide ou absent : le mot de passe enregistré est gardé, à serveur et
+    /// identifiant inchangés.
     #[serde(default)]
     password: Option<String>,
     #[serde(default)]
@@ -516,6 +517,19 @@ fn validate(
             "Le mot de passe ne peut pas être chiffré : BACKOFFICE_TOTP_ENCRYPTION_KEY manque dans le .env du serveur.",
         );
     }
+    // Le mot de passe enregistré ne suit que le serveur et l’identifiant pour
+    // lesquels il a été saisi : un autre hôte, port, mode ou identifiant ne le
+    // recevra jamais sans qu’on le saisisse à nouveau.
+    let kept_password = previous
+        .filter(|settings| {
+            settings.host == host
+                && Some(settings.port) == port
+                && Some(settings.security) == security
+                && settings.username == username
+        })
+        .and_then(|settings| settings.encrypted_password.clone());
+    let server_changed = kept_password.is_none()
+        && previous.is_some_and(|settings| settings.encrypted_password.is_some());
     // Sans identifiant, pas d’authentification : un mot de passe ne sert à rien.
     let encrypted_password = if username.is_empty() {
         None
@@ -525,14 +539,21 @@ fn validate(
                 .map_err(storage_error)?,
         )
     } else {
-        previous.and_then(|settings| settings.encrypted_password.clone())
+        kept_password
     };
     if input.enabled
         && !username.is_empty()
         && encrypted_password.is_none()
         && !fields.contains_key("password")
     {
-        fields.insert("password", "Indiquez le mot de passe de la boîte.");
+        fields.insert(
+            "password",
+            if server_changed {
+                "Ressaisissez le mot de passe : le serveur d’envoi ou l’identifiant a changé."
+            } else {
+                "Indiquez le mot de passe de la boîte."
+            },
+        );
     }
     if !fields.contains_key("host")
         && !host.is_empty()

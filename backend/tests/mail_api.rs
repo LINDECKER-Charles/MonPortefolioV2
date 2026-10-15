@@ -354,6 +354,81 @@ async fn settings_are_validated_and_the_password_is_never_returned() {
 }
 
 #[tokio::test]
+async fn the_saved_password_never_follows_another_server_or_username() {
+    let (first, _) = fake_smtp(Behaviour::Accept).await;
+    let (other, other_transcript) = fake_smtp(Behaviour::Accept).await;
+    let (app, _) = fixture(None);
+    let cookie = login(&app).await;
+    let (status, _) = send(
+        &app,
+        request(
+            "PUT",
+            "/api/backoffice/mail",
+            local_settings(first),
+            Some(&cookie),
+        ),
+    )
+    .await;
+    assert_eq!(status, StatusCode::OK);
+
+    // Un autre port, un autre hôte ou un autre identifiant, sans mot de passe :
+    // refusé, le mot de passe est à saisir de nouveau.
+    let mut moved = local_settings(other);
+    moved["password"] = json!("");
+    let mut renamed_host = local_settings(first);
+    renamed_host["host"] = json!("localhost");
+    renamed_host.as_object_mut().unwrap().remove("password");
+    let mut renamed_user = local_settings(first);
+    renamed_user["username"] = json!("autre@example.org");
+    renamed_user.as_object_mut().unwrap().remove("password");
+    for changed in [moved.clone(), renamed_host, renamed_user] {
+        let (status, refused) = send(
+            &app,
+            request("PUT", "/api/backoffice/mail", changed, Some(&cookie)),
+        )
+        .await;
+        assert_eq!(status, StatusCode::UNPROCESSABLE_ENTITY);
+        assert!(
+            refused["fields"]["password"]
+                .as_str()
+                .unwrap()
+                .starts_with("Ressaisissez le mot de passe")
+        );
+    }
+
+    // Envoi coupé : le changement passe, mais le mot de passe est oublié.
+    moved["enabled"] = json!(false);
+    let (status, view) = send(
+        &app,
+        request("PUT", "/api/backoffice/mail", moved.clone(), Some(&cookie)),
+    )
+    .await;
+    assert_eq!(status, StatusCode::OK);
+    assert_eq!(view["settings"]["password_set"], false);
+    moved["enabled"] = json!(true);
+    let (status, _) = send(
+        &app,
+        request("PUT", "/api/backoffice/mail", moved, Some(&cookie)),
+    )
+    .await;
+    assert_eq!(status, StatusCode::UNPROCESSABLE_ENTITY);
+    let (status, _) = send(
+        &app,
+        request(
+            "POST",
+            "/api/backoffice/mail/test",
+            json!({}),
+            Some(&cookie),
+        ),
+    )
+    .await;
+    assert_eq!(status, StatusCode::CONFLICT);
+    let lines = other_transcript.lock().unwrap().clone();
+    assert!(!lines.contains("AUTH"), "{lines}");
+    assert!(!lines.contains(&STANDARD.encode(MAILBOX_PASSWORD)));
+}
+
+#[tokio::test]
 async fn without_an_encryption_key_a_password_cannot_be_saved() {
     let store = Arc::new(Store::in_memory("owner@example.org").unwrap());
     let mut config = credentials();

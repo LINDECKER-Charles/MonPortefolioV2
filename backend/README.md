@@ -216,8 +216,10 @@ passe ne peut alors pas être enregistré (422 sur le champ `password`).
   `APP_ENV=development`, aucune connexion sans TLS. En développement seulement, `none` vers un
   relais local, sur un port libre (mailpit, 1025) ;
 - `username` et `password` : vides, pas d’authentification ; un identifiant exige un mot de
-  passe. Un `password` vide ou absent **garde** celui qui est enregistré ; vider l’identifiant
-  efface le mot de passe ;
+  passe. Un `password` vide ou absent **garde** celui qui est enregistré, tant que l’hôte, le
+  port, la sécurité et l’identifiant ne changent pas : sinon, il faut le saisir de nouveau (422
+  sur `password` quand l’envoi est activé ; envoi coupé, l’ancien est oublié), et le secret
+  n’atteint jamais un autre serveur. Vider l’identifiant efface le mot de passe ;
 - `from` : l’adresse d’expédition, exigée quand l’envoi est activé.
 
 Le mot de passe est chiffré au repos : XChaCha20-Poly1305 avec une sous-clé SHA-256 tirée de
