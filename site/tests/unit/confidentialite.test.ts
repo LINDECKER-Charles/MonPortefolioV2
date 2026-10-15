@@ -1,25 +1,28 @@
 import { describe, expect, it } from 'vitest';
-import { DEPOTS_PRIVES_PRESENTES, NOMS_INTERNES } from '../../src/config/liens-publics';
 import { VITRINE } from '../../src/config/projets';
+import { confidentialite } from '../support/prive';
 import { DELAI_BUILD, pagesConstruites } from './support/dist';
 
 /**
  * Garde-fou « confidentialité » (décision de Charles du 14/10/2026) : Karl
  * Scraper, Sillage et Relais sont des dépôts privés présentés sans lien ni nom
- * de dépôt. Dans tout le site construit
- * (texte, attributs, JSON-LD), aucun nom interne (NOMS_INTERNES : l’adresse de
- * l’outil source, le nom technique de Karl Scraper, les projets internes) ni
- * aucun nom de ces dépôts (DEPOTS_PRIVES_PRESENTES) ; et sur les pages de la
- * famille « IA », aucune mention de l’employeur, hors du nœud de la personne
- * dans le JSON-LD (employeur affiché ailleurs avec l’accord de Charles,
- * questions.md, A2) : rien n’y nomme l’employeur.
+ * de dépôt. Dans tout le site construit (texte, attributs, JSON-LD), aucun nom
+ * privé : ni nom interne, ni nom de ces dépôts. Et sur les pages de la famille
+ * « IA », aucune mention de l’employeur hors du nœud de la personne dans le
+ * JSON-LD (employeur affiché ailleurs avec l’accord de Charles).
+ *
+ * Les noms et le motif de l’employeur vivent dans le cadrage privé
+ * (`tests/support/prive.ts`) : ce dépôt et les journaux de sa CI sont publics,
+ * une faute se désigne donc par le numéro du nom, jamais par le nom.
  */
 
+const { nomsInternes, depotsPrivesPresentes, employeur } = confidentialite();
+const NOMS = [...nomsInternes, ...depotsPrivesPresentes];
 const echapper = (texte: string) => texte.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-/** Un nom entier : ni lettre, ni chiffre, ni « _ » collés de part et d’autre (« depot-prive » n’est pas « depot-prive »). */
+/** Un nom entier : ni lettre, ni chiffre, ni « _ » collés de part et d’autre (« app-x » n’est pas « app-x-v2 »). */
 const motEntier = (nom: string) => new RegExp(`(?<![\\p{L}\\p{N}_])${echapper(nom)}(?![\\p{L}\\p{N}_]|-[\\p{L}\\p{N}])`, 'iu');
-const INTERDITS = [...NOMS_INTERNES, ...DEPOTS_PRIVES_PRESENTES].map((nom) => ({ nom, motif: motEntier(nom) }));
-const EMPLOYEUR = /b[-\s]?hive/i;
+const INTERDITS = NOMS.map((nom, i) => ({ repere: `nom privé n°${i + 1}`, motif: motEntier(nom) }));
+const EMPLOYEUR = new RegExp(employeur, 'i');
 
 /** Le HTML sans les adresses de fichiers construits ni les données en ligne, où un hachage pourrait former un nom par hasard. */
 function sansAdressesDeFichiers(html: string): string {
@@ -37,29 +40,39 @@ function sansPersonne(html: string): string {
 
 function nomsInterdits(html: string): string[] {
   const propre = sansAdressesDeFichiers(html);
-  return INTERDITS.filter(({ motif }) => motif.test(propre)).map(({ nom }) => nom);
+  return INTERDITS.filter(({ motif }) => motif.test(propre)).map(({ repere }) => repere);
 }
 
 describe('confidentialité : le détecteur', () => {
-  it('refuse chaque nom interne et chaque nom de dépôt privé, quelle que soit la casse', () => {
-    for (const nom of [...NOMS_INTERNES, ...DEPOTS_PRIVES_PRESENTES]) {
-      expect(nomsInterdits(`<p>Voir ${nom.toUpperCase()}.</p>`), nom).toContain(nom);
-      expect(nomsInterdits(`<img alt="capture de ${nom}" src="/a.webp">`), nom).toContain(nom);
-    }
-    expect(nomsInterdits('<script type="application/ld+json">{"url":"https://outil-source.example/t/12"}</script>')).toContain('outil-source.example');
+  it('lit des listes non vides dans le cadrage privé', () => {
+    expect(nomsInternes.length).toBeGreaterThan(0);
+    expect(depotsPrivesPresentes.length).toBeGreaterThan(0);
+  });
+
+  it('refuse chaque nom privé, quelle que soit la casse', () => {
+    NOMS.forEach((nom, i) => {
+      const repere = `nom privé n°${i + 1}`;
+      expect(nomsInterdits(`<p>Voir ${nom.toUpperCase()}.</p>`), repere).toContain(repere);
+      expect(nomsInterdits(`<img alt="capture de ${nom}" src="/a.webp">`), repere).toContain(repere);
+      expect(nomsInterdits(`<script type="application/ld+json">{"url":"https://exemple.test/${nom}/12"}</script>`), repere).toContain(repere);
+    });
   });
 
   it('admet les mots voisins et les hachages des fichiers construits', () => {
-    expect(nomsInterdits('<p>La force d’un outil, un holon, un relais de lanterne.</p>')).toEqual([]);
-    expect(nomsInterdits('<img src="/_astro/atlas.nom-interne_nom-interne.webp" alt="">')).toEqual([]);
+    NOMS.forEach((nom, i) => {
+      const repere = `nom privé n°${i + 1}`;
+      expect(nomsInterdits(`<p>${nom}x et x${nom}</p>`), repere).not.toContain(repere);
+      expect(nomsInterdits(`<img src="/_astro/atlas.${nom}.webp" alt="">`), repere).toEqual([]);
+    });
     expect(nomsInterdits('<p>Karl Scraper, Sillage et Relais.</p>')).toEqual([]);
   });
 
   it('retire le seul nœud de la personne du JSON-LD, le reste gardé', () => {
-    const html = '<script type="application/ld+json">{"@graph":[{"@type":"Person","worksFor":{"name":"B-Hive"}},{"@type":"WebPage","name":"Relais"}]}</script>';
-    expect(sansPersonne(html)).not.toMatch(EMPLOYEUR);
+    const graphe = (relais: string) => `<script type="application/ld+json">{"@graph":[{"@type":"Person","worksFor":{"name":"EMPLOYEUR"}},{"@type":"WebPage","name":"${relais}"}]}</script>`;
+    const html = graphe('Relais');
+    expect(sansPersonne(html)).not.toContain('EMPLOYEUR');
     expect(sansPersonne(html)).toContain('"name":"Relais"');
-    expect(sansPersonne(html.replace('"WebPage","name":"Relais"', '"WebPage","name":"Relais chez B-Hive"'))).toMatch(EMPLOYEUR);
+    expect(sansPersonne(graphe('Relais chez EMPLOYEUR'))).toContain('EMPLOYEUR');
   });
 });
 

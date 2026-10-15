@@ -1,6 +1,6 @@
 /**
  * Données de la page /projets/pvz-fusion : textes du gabarit, relevés des
- * figures et liens publics. Chaque fait vient de docs/matiere-premiere.md
+ * figures et liens publics. Chaque fait vient de docs/prive/matiere-premiere.md
  * (« PvZ Fusion — témoignage du 2026-10-13 », « Audit public du 2026-10-13 »
  * et « Relevés publics de la page de projet ») ; un fait non sourcé n’entre
  * pas ici.
@@ -90,7 +90,7 @@ export const SECTIONS: readonly EntreeSommaire[] = [
 ];
 
 /* ------------------------------------------------------------------ */
-/* Relevés (docs/matiere-premiere.md, « Relevés publics… »)            */
+/* Relevés (docs/prive/matiere-premiere.md, « Relevés publics… »)            */
 /* ------------------------------------------------------------------ */
 
 /** Couverture du français par clé, une révision de la branche principale par relevé. */

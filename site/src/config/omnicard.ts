@@ -1,7 +1,7 @@
 /**
  * Données de la page /projets/omnicard : textes du gabarit, cartes, règles et
- * liens publics. Chaque fait vient de docs/questions.md (D1, D2 et « Page
- * Omnicard (2026-10-13) »), de docs/matiere-premiere.md (« Omnicard —
+ * liens publics. Chaque fait vient de docs/prive/questions.md (D1, D2 et « Page
+ * Omnicard (2026-10-13) »), de docs/prive/matiere-premiere.md (« Omnicard —
  * complément du 2026-10-13 ») ou du dépôt de présentation public, relu le
  * 13/10/2026 à la révision 8be9cbb (README, CARDS-SHOWCASE.md, docs/rules.md,
  * docs/keywords.md, docs/cards/*.md, Archive/Carte/saison_01). Un fait non

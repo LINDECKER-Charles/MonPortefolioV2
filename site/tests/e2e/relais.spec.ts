@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 import { surveillerConsole } from './support/navigateur';
+import { confidentialite, motifsPage, motifsTrouves } from '../support/prive';
 
 /**
  * Relais, sur le gabarit commun des pages de projet (règle E5) : en-tête au
@@ -77,9 +78,10 @@ test('dépôt privé : aucune sortie du site, ni nom privé, ni bascule entre ab
   await expect(page.locator('main a[href^="http"]')).toHaveCount(0);
   await expect(page.locator('main a[href^="mailto:"]')).toHaveCount(0);
   const html = await page.content();
-  expect(html).not.toMatch(/depot-prive|depot-prive|nom-interne|outil-source|TICKET-\d/i);
+  // Motifs du cadrage privé (tests/support/prive.ts), désignés par leur numéro.
+  expect(motifsTrouves(html, motifsPage('relais'))).toEqual([]);
   const texte = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
-  expect(texte).not.toMatch(/b[-\s]?hive/i);
+  expect(motifsTrouves(texte, [new RegExp(confidentialite().employeur, 'i')])).toEqual([]);
   // La capacité se dit en visibilité et en admission : ni bascule, ni secours, ni connexion automatisée.
   expect(texte).not.toMatch(/bascul|secours|OAuth|contourn/i);
   // Les chiffres des écrans ne passent pas pour un usage réel.

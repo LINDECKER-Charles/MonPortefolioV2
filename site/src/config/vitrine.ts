@@ -14,7 +14,7 @@
  * Relais vivent dans le fichier de leur page (config/<projet>.ts, export
  * CARTE), que chaque page tient seule : ce fichier ne fait que les importer.
  *
- * Chaque fait vient de docs/matiere-premiere.md, d’un README public ou d’une
+ * Chaque fait vient de docs/prive/matiere-premiere.md, d’un README public ou d’une
  * page publique du projet (source notée à côté). Un fait que Charles n’a pas
  * confirmé n’entre pas ici (Q8 : rien d’affiché sans réponse). La réserve sur
  * le nom « League Of Data Base » est dite une fois, dans la note de sources

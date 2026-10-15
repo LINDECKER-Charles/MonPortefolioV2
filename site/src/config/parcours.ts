@@ -4,7 +4,7 @@
  * chronologie de la page Professionnel (PRO-F1) et la mini-frise du hub
  * (PAR-F1). Une seule source : les dates ne s’écrivent qu’ici.
  *
- * Faits : docs/matiere-premiere.md (Identité, Parcours), docs/questions.md
+ * Faits : docs/prive/matiere-premiere.md (Identité, Parcours), docs/prive/questions.md
  * (A2, B3, C5, C7) et, pour les rôles chez PvZ Fusion, le journal public du
  * pôle (config/pvz-fusion.ts, ROLES). Fins d’Elan Formation (mai 2026) et du
  * mentorat à la Mission Locale (juin 2026) : données par Charles le

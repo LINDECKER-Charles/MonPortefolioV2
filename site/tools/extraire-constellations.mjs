@@ -12,7 +12,7 @@
  * d’entrée, en coordonnées réduites. Aucun code d’objectif ni texte du
  * catalogue n’est recopié, seulement la géométrie publique du ciel.
  *
- * Le script vérifie les deux faits consignés dans docs/matiere-premiere.md :
+ * Le script vérifie les deux faits consignés dans docs/prive/matiere-premiere.md :
  * 22 constellations et 1 289 objectifs uniques (étoiles et succès globaux).
  */
 import { readFileSync, writeFileSync } from 'node:fs';

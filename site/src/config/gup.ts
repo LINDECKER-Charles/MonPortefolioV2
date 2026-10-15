@@ -2,7 +2,7 @@
  * Données de la page /projets/gup : textes du gabarit, relevés des figures et
  * liens publics. Chaque fait vient du dépôt public de gup, lu à la release
  * 0.5.3 (commit 0c0e85a du 06/10/2026), ou du registre npm, relevés le
- * 13/10/2026 (docs/matiere-premiere.md, « gup — relevés publics de la page de
+ * 13/10/2026 (docs/prive/matiere-premiere.md, « gup — relevés publics de la page de
  * projet ») ; un fait non sourcé n’entre pas ici.
  *
  * Liens : le dépôt gup (liste blanche, liens-publics.ts), son site GitHub

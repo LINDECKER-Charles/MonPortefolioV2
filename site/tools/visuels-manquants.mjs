@@ -18,7 +18,7 @@
  * Le build n’échoue jamais sur un manque : `--strict` est la porte de
  * promotion en production (cahier des charges, T7). Tous les visuels « socle »
  * existent depuis le 13 octobre 2026 ; la brancher reste à décider
- * (docs/a-confirmer.md, S1).
+ * (docs/prive/a-confirmer.md, S1).
  *
  * Une figure codée (FIG) n’a pas d’image : elle est faite quand son composant,
  * nommé dans `fichier`, existe ; « à coder » tant qu’aucun ne l’est. Un

@@ -24,6 +24,7 @@ import {
   type EntreeVisuel,
 } from '../../src/config/visuels';
 import { dimensionsDuNom, etatDesVisuels, rapport, resume, verifierLivres } from '../../tools/visuels-manquants.mjs';
+import { confidentialite } from '../support/prive';
 
 /**
  * Garde-fous du registre des visuels (config/visuels.ts) : l’inventaire du
@@ -34,7 +35,8 @@ import { dimensionsDuNom, etatDesVisuels, rapport, resume, verifierLivres } from
 
 const SITE = new URL('../../', import.meta.url).pathname;
 const SRC = path.join(SITE, 'src');
-const MARQUES = /\b(?:pvz|plants vs\.? zombies|riot|league of legends|sony|fromsoftware|trello|b-hive|karl|nom-interne|claude|codex|elan formation|atis|mission locale|shrek|gwent|bloodborne|omnicard|unreal|unity)\b|\b42\b/i;
+/** Marques refusées, plus celles du cadrage privé (tests/support/prive.ts). */
+const MARQUES = new RegExp(String.raw`\b(?:pvz|plants vs\.? zombies|riot|league of legends|sony|fromsoftware|trello|b-hive|karl|claude|codex|elan formation|atis|mission locale|shrek|gwent|bloodborne|omnicard|unreal|unity|${confidentialite().marques.join('|')})\b|\b42\b`, 'i');
 const tous = (cle: 'sujet' | 'composition' | 'cadrage' | 'alt' | 'emplacement' | 'format' | 'note' | 'raisonNonPose') => VISUELS.flatMap((v) => (v[cle] ? [[v.id, v[cle] as string] as const] : []));
 const images = VISUELS.filter((v) => v.methode === 'IMG' && !v.reprend?.length);
 /**
@@ -333,13 +335,13 @@ describe('registre des visuels : textes', () => {
   });
 
   it('ne met aucun nom de marque dans ce qu’on donne à un générateur d’image (règle 1)', () => {
-    for (const v of images) expect(`${sujetPourGenerateur(v)} ${v.composition}`, v.id).not.toMatch(MARQUES);
+    for (const v of images) expect(MARQUES.test(`${sujetPourGenerateur(v)} ${v.composition}`), v.id).toBe(false);
   });
 
   it('garde un sujet neutre là où le sujet nomme une marque', () => {
     const avecNeutre = INVENTAIRE.filter((v) => v.sujetNeutre).map((v) => v.id).sort();
     expect(avecNeutre).toEqual(['FOR-07', 'PVZ-10', 'PVZ-C2', 'PVZ-C3']);
-    for (const v of VISUELS.filter((x) => x.sujetNeutre)) expect(v.sujetNeutre, v.id).not.toMatch(MARQUES);
+    for (const v of VISUELS.filter((x) => x.sujetNeutre)) expect(MARQUES.test(v.sujetNeutre ?? ''), v.id).toBe(false);
   });
 
   it('reprend les huit règles communes du cahier des charges, la règle 6 tranchée', () => {

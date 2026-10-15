@@ -1,13 +1,19 @@
 import { describe, expect, it } from 'vitest';
-import { COMPTE_GITHUB, DEPOT_BLOODBORNE, DEPOTS_PRIVES_PRESENTES, DEPOTS_PUBLICS, DOMAINES_HORS_LIGNE } from '../../src/config/liens-publics';
+import { COMPTE_GITHUB, DEPOT_BLOODBORNE, DEPOTS_PUBLICS, DOMAINES_HORS_LIGNE } from '../../src/config/liens-publics';
+import { confidentialite } from '../support/prive';
 import { DELAI_BUILD, pagesConstruites } from './support/dist';
 
 /**
  * Garde-fou « liens publics » : le HTML construit ne mène que vers des dépôts
  * publics de la liste blanche, jamais vers le dépôt de Bloodborne Legendary Run
  * ni vers ceux de Karl Scraper, Sillage et Relais (privés, présentés sans
- * lien), ni vers une démo hors ligne.
+ * lien), ni vers une démo hors ligne. Les noms de ces dépôts privés viennent du
+ * cadrage privé (`tests/support/prive.ts`) : une faute les désigne par leur
+ * numéro, jamais par leur nom.
  */
+
+const DEPOTS_PRIVES_PRESENTES = confidentialite().depotsPrivesPresentes;
+const repere = (depot: string) => `dépôt privé n°${DEPOTS_PRIVES_PRESENTES.indexOf(depot) + 1}`;
 
 const AUTORISES = new Set(DEPOTS_PUBLICS.map((d) => d.nom.toLowerCase()));
 
@@ -26,7 +32,7 @@ function fautesLiens(html: string): string[] {
     if (depot.toLowerCase() === DEPOT_BLOODBORNE.toLowerCase()) {
       fautes.push(`dépôt de Bloodborne Legendary Run (privé) : ${COMPTE_GITHUB}/${depot}`);
     } else if (PRIVES.has(depot.toLowerCase())) {
-      fautes.push(`dépôt privé présenté sans lien : ${COMPTE_GITHUB}/${depot}`);
+      fautes.push(`dépôt privé présenté sans lien : ${COMPTE_GITHUB}/${repere(DEPOTS_PRIVES_PRESENTES.find((d) => d.toLowerCase() === depot.toLowerCase())!)}`);
     } else if (!AUTORISES.has(depot.toLowerCase())) {
       fautes.push(`dépôt hors liste blanche : ${COMPTE_GITHUB}/${depot}`);
     }
@@ -36,7 +42,7 @@ function fautesLiens(html: string): string[] {
   }
   // Sous n’importe quel compte (fork, organisation) : jamais un lien vers ces dépôts.
   for (const depot of DEPOTS_PRIVES_PRESENTES) {
-    if (new RegExp(`github[a-z]*\\.com/[^\\s"'<>]*/${depot.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\w.-])`, 'i').test(html)) fautes.push(`lien GitHub vers ${depot}`);
+    if (new RegExp(`github[a-z]*\\.com/[^\\s"'<>]*/${depot.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\w.-])`, 'i').test(html)) fautes.push(`lien GitHub vers le ${repere(depot)}`);
   }
   const minuscules = html.toLowerCase();
   for (const domaine of DOMAINES_HORS_LIGNE) {
@@ -51,7 +57,7 @@ describe('liste blanche des liens publics : la liste elle-même', () => {
     const noms = DEPOTS_PUBLICS.map((d) => d.nom.toLowerCase());
     expect(new Set(noms).size).toBe(noms.length);
     expect(noms).not.toContain(DEPOT_BLOODBORNE.toLowerCase());
-    for (const prive of DEPOTS_PRIVES_PRESENTES) expect(noms, prive).not.toContain(prive.toLowerCase());
+    for (const prive of DEPOTS_PRIVES_PRESENTES) expect(noms.includes(prive.toLowerCase()), repere(prive)).toBe(false);
   });
 
   it('date chaque vérification de visibilité', () => {
@@ -80,8 +86,8 @@ describe('liste blanche des liens publics : le détecteur', () => {
 
   it('refuse les dépôts privés de Karl Scraper, Sillage et Relais, sous tout compte', () => {
     for (const depot of DEPOTS_PRIVES_PRESENTES) {
-      expect(fautesLiens(`<a href="https://github.com/${COMPTE_GITHUB}/${depot}">x</a>`).join(), depot).toMatch(/privé/);
-      expect(fautesLiens(`<a href="https://github.com/ailleurs/${depot}/tree/dev">x</a>`).join(), depot).toMatch(new RegExp(depot));
+      expect(fautesLiens(`<a href="https://github.com/${COMPTE_GITHUB}/${depot}">x</a>`).join(), repere(depot)).toMatch(/privé/);
+      expect(fautesLiens(`<a href="https://github.com/ailleurs/${depot}/tree/dev">x</a>`), repere(depot)).toContain(`lien GitHub vers le ${repere(depot)}`);
     }
   });
 

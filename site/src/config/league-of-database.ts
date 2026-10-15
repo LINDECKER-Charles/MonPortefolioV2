@@ -1,7 +1,7 @@
 /**
  * Données de la page /projets/league-of-database : textes du gabarit,
  * relevés des figures, captures et liens publics. Chaque fait vient de
- * docs/matiere-premiere.md (« League Of Database — vérification du 12 octobre
+ * docs/prive/matiere-premiere.md (« League Of Database — vérification du 12 octobre
  * 2026 », son complément du 13 octobre et « Relevés publics de la page de
  * projet ») ; un fait non sourcé n’entre pas ici.
  *

@@ -1,18 +1,16 @@
-import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { decouper } from '../../tools/verifier-site.mjs';
 import { CITATIONS } from '../../src/config/citations';
+import { lireDocPrive } from '../support/prive';
 import { DELAI_BUILD, pagesConstruites } from './support/dist';
 
 /**
  * Garde-fou « citations » : tout texte présenté comme une citation de Charles
  * dans le HTML construit (blockquote, q, élément marqué data-citation) est une
  * de ses phrases, mot pour mot, listée dans src/config/citations.ts — elle-même
- * recopiée depuis docs/questions.md et docs/brief.md.
+ * recopiée depuis docs/prive/questions.md et docs/prive/brief.md, lus dans le
+ * cadrage privé (`tests/support/prive.ts`).
  */
-
-const RACINE = new URL('../../../', import.meta.url);
-const lireDoc = (source: string): string => readFileSync(new URL(source, RACINE), 'utf8');
 
 /** Le document tel qu’on le lit : marques de citation Markdown et retours à la ligne ôtés, rien d’autre modifié. */
 const aplatirDoc = (texte: string): string => texte.replace(/^\s*>\s?/gm, '').replace(/\s+/g, ' ');
@@ -83,7 +81,7 @@ const fautesCitations = (html: string): string[] =>
   citationsAffichees(html).filter((t) => !estAutorisee(t)).map((t) => `citation hors liste : « ${t} »`);
 
 describe('citations : la liste est fidèle à ses sources', () => {
-  const sources = new Map(['docs/questions.md', 'docs/brief.md'].map((s) => [s, aplatirDoc(lireDoc(s))]));
+  const sources = new Map(['docs/prive/questions.md', 'docs/prive/brief.md'].map((s) => [s, aplatirDoc(lireDocPrive(s))]));
 
   it.each(CITATIONS.map((c) => [c.texte, c] as const))('« %s » figure mot pour mot dans sa source', (_texte, citation) => {
     expect(sources.get(citation.source)).toContain(citation.texte);

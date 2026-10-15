@@ -1,6 +1,6 @@
 /**
- * Formulations que le site ne doit jamais employer : Charles est en poste (brief § 4,
- * « Cible et posture » ; cahier des charges C4). Le site montre ce qu’il fait
+ * Formulations que le site ne doit jamais employer : Charles est en poste
+ * (brief § 4, « Cible et posture » ; cahier des charges C4). Le site montre ce qu’il fait
  * et sa façon de penser ; il n’annonce ni recherche de poste ni disponibilité.
  *
  * Contrôlées par `tests/unit/formulations-interdites.test.ts` sur le HTML

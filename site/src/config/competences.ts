@@ -2,7 +2,7 @@
  * Compétences de Charles (/parcours/competences), en trois niveaux, puis
  * l’intégration IA, les tests et la livraison, et les compétences humaines.
  *
- * Inventaire public vérifié le 2026-10-09 : docs/matiere-premiere.md
+ * Inventaire public vérifié le 2026-10-09 : docs/prive/matiere-premiere.md
  * (« Stack déclarée (CV) », « Actualisation des technologies », « Compétences
  * IA »). Les technologies des forks sont retenues seulement sur contribution
  * attestée.

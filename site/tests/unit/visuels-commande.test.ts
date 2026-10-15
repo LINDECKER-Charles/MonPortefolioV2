@@ -20,6 +20,7 @@ import {
   VISUELS,
 } from '../../src/config/visuels';
 import { COMMANDE, rendreCommande, SORTIE } from '../../tools/generer-visuels.mjs';
+import { confidentialite } from '../support/prive';
 
 /**
  * La commande de production des images (docs/visuels-a-generer.md) est une
@@ -27,7 +28,8 @@ import { COMMANDE, rendreCommande, SORTIE } from '../../tools/generer-visuels.mj
  * ou livre un fichier sans régénérer l’autre.
  */
 
-const MARQUES = /\b(?:pvz|plants vs\.? zombies|riot|league of legends|sony|fromsoftware|trello|b-hive|karl|nom-interne|claude|codex|elan formation|atis|mission locale|shrek|gwent|bloodborne|omnicard|unreal|unity)\b|\b42\b/i;
+/** Marques refusées, plus celles du cadrage privé (tests/support/prive.ts). */
+const MARQUES = new RegExp(String.raw`\b(?:pvz|plants vs\.? zombies|riot|league of legends|sony|fromsoftware|trello|b-hive|karl|claude|codex|elan formation|atis|mission locale|shrek|gwent|bloodborne|omnicard|unreal|unity|${confidentialite().marques.join('|')})\b|\b42\b`, 'i');
 const DEPOT = new URL('../../../', import.meta.url).pathname;
 
 describe('commande de production des visuels', () => {
@@ -145,10 +147,10 @@ describe('commande de production des visuels', () => {
       if (/^#### /.test(ligne) || /^- \*\*Sujet/.test(ligne)) {
         const id = /^#### ([A-Z]{3}-\w+)/.exec(ligne)?.[1];
         const v = id ? visuelParId(id) : undefined;
-        if (v?.methode === 'IMG' && !v.reprend?.length) expect(ligne.replace(/^#### [A-Z]{3}-\w+/, ''), ligne).not.toMatch(MARQUES);
+        if (v?.methode === 'IMG' && !v.reprend?.length) expect(MARQUES.test(ligne.replace(/^#### [A-Z]{3}-\w+/, '')), ligne).toBe(false);
       }
     }
-    expect(STYLE_PROMPT).not.toMatch(MARQUES);
-    expect(NEGATIVE_PROMPT).not.toMatch(MARQUES);
+    expect(MARQUES.test(STYLE_PROMPT)).toBe(false);
+    expect(MARQUES.test(NEGATIVE_PROMPT)).toBe(false);
   });
 });

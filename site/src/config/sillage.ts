@@ -24,7 +24,7 @@
  *     macOS : code du serveur et workflow de compatibilité à c256e76.
  * Statut : « en usage sur ma machine » (dossier de faits, § 6) ; « en usage
  * quotidien » n’est pas sourcé : la page ne le dit pas (statut validé le
- * 15/10/2026, docs/questions.md, J).
+ * 15/10/2026, docs/prive/questions.md, J).
  * Les écrans : src/assets/projets/sillage/README.md (données de démonstration).
  */
 import type { EntreeSommaire } from './navigation';

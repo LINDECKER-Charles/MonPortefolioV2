@@ -111,7 +111,7 @@ const PROJETS_SCHEMA: Readonly<Record<ProjetVitrine['id'], SchemaProjet & { url?
   league: { type: 'SoftwareApplication', url: FICHE_LEAGUE.liens[0]?.href, categorie: 'ReferenceApplication', systemes: 'Web' },
   omnicard: { type: 'CreativeWork', url: FICHE_OMNICARD.liens[0]?.href },
   bloodborne: { type: 'SoftwareApplication', url: FICHE_BLOODBORNE.liens[0]?.href, categorie: 'GameApplication', systemes: 'Web, Android' },
-  // Interface en anglais et en français (`gup language fr`) : docs/matiere-premiere.md.
+  // Interface en anglais et en français (`gup language fr`) : docs/prive/matiere-premiere.md.
   gup: { type: 'SoftwareApplication', url: FICHE_GUP.liens[0]?.href, categorie: 'DeveloperApplication', systemes: 'Windows, macOS, Linux', langue: ['en', 'fr'] },
   githealth: { ...SCHEMA_GITHEALTH, url: FICHE_GITHEALTH.liens[0]?.href },
   'karl-scraper': { ...SCHEMA_KARL_SCRAPER, url: FICHE_KARL_SCRAPER.liens[0]?.href },

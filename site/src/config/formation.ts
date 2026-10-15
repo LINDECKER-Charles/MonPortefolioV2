@@ -2,8 +2,8 @@
  * Formation et certifications : le titre obtenu, le chemin d’avant, les douze
  * certifications et la pratique sur Frontend Mentor.
  *
- * Faits : docs/matiere-premiere.md (Parcours, Certifications) et
- * docs/questions.md (C1, C3, C5). Aucune date inventée. Les études d’avant le
+ * Faits : docs/prive/matiere-premiere.md (Parcours, Certifications) et
+ * docs/prive/questions.md (C1, C3, C5). Aucune date inventée. Les études d’avant le
  * titre sont datées depuis C3 (« trois ans d’études en filières classiques,
  * une année chacune : BUT Informatique, fac de physique-chimie, BUT Réseaux &
  * Télécoms (2023-2024). Puis la piscine de 42 ») : BUT Informatique

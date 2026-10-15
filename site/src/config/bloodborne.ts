@@ -1,7 +1,7 @@
 /**
  * Données de la page /projets/bloodborne-legendary-run : textes du gabarit,
  * repères chiffrés, décisions et liens publics. Chaque fait vient de
- * docs/matiere-premiere.md (« Bloodborne Legendary Run — vérification du
+ * docs/prive/matiere-premiere.md (« Bloodborne Legendary Run — vérification du
  * 2026-10-08 » et « journal public, relevé du 2026-10-13 ») ; un fait non
  * sourcé n’entre pas ici.
  *
@@ -83,7 +83,7 @@ export const SECTIONS: readonly EntreeSommaire[] = [
 /**
  * Trois décisions datées par le journal public, chacune avec son étape. La
  * livraison construite une fois est relue dans la chaîne d’intégration du
- * dépôt (docs/matiere-premiere.md) ; le dépôt est privé, le lien mène au
+ * dépôt (docs/prive/matiere-premiere.md) ; le dépôt est privé, le lien mène au
  * journal.
  */
 export const CAPOT: readonly PointCapot[] = [

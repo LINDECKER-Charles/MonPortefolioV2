@@ -85,7 +85,7 @@ describe('preuves', () => {
   });
 
   it('exige la source du surligneur', async () => {
-    expect(await rendre(Surligneur, { source: 'docs/matiere-premiere.md' }, { default: '35' })).toMatch(/<mark class="surligneur" data-source="docs\/matiere-premiere.md"[^>]*>35<\/mark>/);
+    expect(await rendre(Surligneur, { source: 'docs/prive/matiere-premiere.md' }, { default: '35' })).toMatch(/<mark class="surligneur" data-source="docs\/prive\/matiere-premiere.md"[^>]*>35<\/mark>/);
   });
 
   it('donne au statut une forme et un mot', async () => {

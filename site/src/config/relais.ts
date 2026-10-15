@@ -12,7 +12,7 @@
  * une admission selon la charge (quotas lus, seuil de protection, session
  * ouverte jamais coupée). Elle ne montre ni la bascule entre abonnements ni la
  * connexion automatisée d’un compte (cadrage validé tel qu’affiché le
- * 15/10/2026, docs/questions.md, J).
+ * 15/10/2026, docs/prive/questions.md, J).
  *
  * Captures : Relais 0.2.0 lancé en local avec des données de démonstration,
  * un agent de démonstration à la place de Claude Code
@@ -44,7 +44,7 @@ export const CARTE: CarteVitrine = {
   role: 'Conçu et développé seul',
   // Une instance en service sur la machine, vue le 14/10/2026 ; « en usage
   // quotidien » n’est pas sourcé : la page ne le dit pas, comme pour Sillage et
-  // Karl Scraper (statut validé le 15/10/2026, docs/questions.md, J).
+  // Karl Scraper (statut validé le 15/10/2026, docs/prive/questions.md, J).
   statut: { texte: 'Outil personnel, en usage sur ma machine' },
   liens: [],
   // backend/Cargo.toml (Rust, rusqlite), frontend/package.json (Angular 21.2).

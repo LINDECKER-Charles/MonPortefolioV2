@@ -6,8 +6,8 @@
  * Dépôt privé (décision de Charles du 14/10/2026) : aucun lien, aucun nom de
  * dépôt. Le projet se présente sous l’angle de l’automatisation de tâches ;
  * l’outil qu’il lit se dit « un outil de gestion de tâches », sans jamais
- * nommer l’outil source, ses utilisateurs ni leurs projets, ni
- * aucun volume réel de tâches.
+ * nommer l’outil source, ses utilisateurs ni leurs projets, ni aucun volume
+ * réel de tâches.
  *
  * Faits relus le 14/10/2026 à la révision 6615950 du dépôt (09/10/2026),
  * source notée à côté de chacun (chemins du dépôt privé). Ce qui est écrit
@@ -106,7 +106,7 @@ export const FICHE: DonneesFiche = {
   periode: 'Depuis fin août 2026',
   equipe: 'Projet personnel, seul',
   // Le service tourne sur mon poste (relevé le 14/10/2026) ; « en usage quotidien » n’est pas
-  // sourcé : la fiche ne le dit pas (statut validé le 15/10/2026, Q72, docs/questions.md, J).
+  // sourcé : la fiche ne le dit pas (statut validé le 15/10/2026, Q72, docs/prive/questions.md, J).
   statut: { texte: 'Outil personnel, en service sur mon poste' },
   liens: [],
 };

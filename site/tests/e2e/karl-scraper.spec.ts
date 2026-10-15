@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { surveillerConsole } from './support/navigateur';
+import { motifsPage, motifsTrouves } from '../support/prive';
 
 /**
  * Karl Scraper, sur le gabarit commun des pages de projet (règle E5) : en-tête
@@ -100,7 +101,8 @@ test('dépôt privé : aucune sortie du site depuis la page, et aucun nom de dé
 test('rien ne nomme une donnée privée ni une référence réelle : « Karl » n’existe que dans « Karl Scraper »', async ({ page }) => {
   await page.goto(CHEMIN);
   const texte = await texteEtAttributs(page);
-  expect(texte).not.toMatch(/b[-\s]?hive|nom-interne|karl\.|TICKET-\d|nom-interne|nom-interne/i);
+  // Motifs du cadrage privé (tests/support/prive.ts), désignés par leur numéro.
+  expect(motifsTrouves(texte, motifsPage('karl-scraper'))).toEqual([]);
   // Chaque « Karl » est suivi de « Scraper » (texte, alts, légendes et titres compris).
   expect(texte.match(/\bKarl\b(?!\sScraper)/gi) ?? []).toEqual([]);
   // Aucun volume réel de tâches : la démonstration compte seize tâches fictives.

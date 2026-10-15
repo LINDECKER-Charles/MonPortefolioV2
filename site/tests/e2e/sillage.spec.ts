@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 import { surveillerConsole } from './support/navigateur';
+import { motifsPage, motifsTrouves } from '../support/prive';
 
 /**
  * Sillage, sur le gabarit commun des pages de projet (règle E5) : en-tête au
@@ -75,7 +76,9 @@ test('dépôt privé : aucune sortie du site, aucun nom de dépôt ni projet voi
   await expect(page.locator('main a[href^="http"]')).toHaveCount(0);
   await expect(page.locator('main a[href*="github"]')).toHaveCount(0);
   const texte = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
-  expect(texte).not.toMatch(/github|depot-prive|b-?hive/i);
+  expect(texte).not.toMatch(/github/i);
+  // Motifs du cadrage privé (tests/support/prive.ts), désignés par leur numéro.
+  expect(motifsTrouves(texte, motifsPage('sillage'))).toEqual([]);
   // Les trois pages de la famille « IA » se citent entre elles, en liens internes.
   const principe = page.locator('#principe');
   await expect(principe.getByRole('link', { name: 'Relais', exact: true })).toHaveAttribute('href', '/projets/relais');

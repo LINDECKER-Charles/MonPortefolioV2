@@ -7,15 +7,15 @@
  * entre jamais, et aucune page ne le cite ni ne s’en sert comme preuve, sauf
  * les exceptions décidées par Charles : Bloodborne Legendary Run, puis, le
  * 14/10/2026, Karl Scraper, Sillage et Relais, présentés sans aucun lien ni
- * nom de dépôt (DEPOTS_PRIVES_PRESENTES).
+ * nom de dépôt.
  *
  * `tests/unit/liens-publics.test.ts` lit le HTML construit : il échoue sur tout
  * lien `github.com/LINDECKER-Charles/<dépôt>` absent d’ici, sur le dépôt de
  * Bloodborne Legendary Run, sur les dépôts privés présentés et sur les
  * domaines de démos hors ligne. `tests/unit/confidentialite.test.ts` refuse,
- * dans tout le site, les noms internes (NOMS_INTERNES) et ceux de ces dépôts,
- * et, sur les pages de la famille « IA », toute mention de l’employeur hors du
- * nœud de la personne dans le JSON-LD.
+ * dans tout le site, les noms qui doivent rester privés. Ces deux listes-là
+ * (dépôts privés présentés, noms privés) ne sont pas dans ce dépôt public :
+ * elles vivent dans le cadrage privé, lu par `tests/support/prive.ts`.
  *
  * Pour ajouter un dépôt : le vérifier avec `gh`, l’ajouter ici avec la date de
  * vérification, puis lancer `npm test`.
@@ -53,24 +53,6 @@ export const DEPOTS_PUBLICS: readonly DepotPublic[] = [
  * jamais vers lui, quel que soit le propriétaire d’un éventuel fork.
  */
 export const DEPOT_BLOODBORNE = 'Bloodborne-Legendary-Run';
-
-/**
- * Dépôts privés dont le projet est présenté sur le site, sans lien ni nom de
- * dépôt (décision de Charles du 14/10/2026) : Karl Scraper, Sillage
- * (orchestrateur), Relais (fournisseur, et sa première version), et l’outil
- * qui supervise ces services. Aucun lien n’y mène, sous aucun compte, et leur
- * nom n’apparaît nulle part dans le site construit.
- */
-export const DEPOTS_PRIVES_PRESENTES: readonly string[] = ['depot-prive', 'depot-prive', 'depot-prive', 'depot-prive', 'depot-prive'];
-
-/**
- * Noms internes à ne jamais écrire sur le site (texte, attributs, JSON-LD) :
- * l’adresse de l’outil source, le nom technique de
- * Karl Scraper, les projets internes et leur outil de gestion. Karl Scraper se
- * présente par « un outil de gestion de tâches », sans nommer l’outil source
- * ni ses utilisateurs.
- */
-export const NOMS_INTERNES: readonly string[] = ['outil-source.example', 'nom-interne', 'nom-interne', 'nom-interne', 'nom-interne', 'nom-interne', 'nom-interne', 'nom-interne', 'nom-interne'];
 
 /**
  * Démos hors ligne : aucun lien ne doit y mener tant qu’elles ne répondent pas
