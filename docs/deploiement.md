@@ -7,14 +7,11 @@ ligne, la bascule depuis la V1, les gestes courants et les pièges connus. Les v
 sont dans [`secrets.md`](secrets.md) ; la mesure d'audience a son propre document,
 [`mesure-audience.md`](mesure-audience.md).
 
-> **Au 2026-10-14, aucun environnement de la V2 ne tourne** : ni secret, ni exécution de la
-> chaîne, ni DNS pour le test. La V1 (dépôt `MonPortfolio`, piles `monportfolio-staging` et
-> `monportfolio-prod`) déclare `charles-lindecker.com`, `www.charles-lindecker.com` et
-> `test.charles-lindecker.com` sur l'edge du même hôte. Deux conteneurs qui déclarent le même
-> domaine se marchent dessus : la production de la V2 ne se déploie qu'**après** l'arrêt de la V1,
-> archivée sur `yharnam.charles-lindecker.com`. Le déploiement le vérifie et refuse de démarrer
-> sur un domaine qu'un autre projet déclare encore. Mise en service, secrets et gestes manuels,
-> dans l'ordre : [`bascule.md`](bascule.md).
+> **Depuis le 2026-10-15, la V2 sert `charles-lindecker.com`** (`www.` en 301 vers l'apex) et
+> son test `test.charles-lindecker.com` ; la V1 est arrêtée et archivée, figée, sur
+> `yharnam.charles-lindecker.com`. Deux conteneurs qui déclarent le même domaine se marchent
+> dessus : le déploiement refuse toujours de démarrer sur un domaine qu'un autre projet de l'hôte
+> déclare encore. Déroulé de la bascule, écarts et retour arrière : [`bascule.md`](bascule.md).
 
 ---
 
@@ -32,13 +29,11 @@ sont dans [`secrets.md`](secrets.md) ; la mesure d'audience a son propre documen
                             |  réseau docker « edge »
      +----------------------+---------------------+------------------------+
      |                      |                     |                        |
-portfolio-prod-web-1   portfolio-test-web-1   monportfolio-* (V1)     analytics-umami
-:4000 (interne)        :4000 (interne)        charles-lindecker.com   (pile analytics,
-après la bascule :     test.v2.charles-       www., test.             infra-vps)
-charles-lindecker.com  lindecker.com          jusqu'à la bascule,     /u/script.js,
-www. -> 301 apex                              puis arrêtées ;         /u/api/send
-                                              monportfolio-archive
-                                              sur yharnam.
+portfolio-prod-web-1   portfolio-test-web-1   monportfolio-archive    analytics-umami
+:4000 (interne)        :4000 (interne)        (V1 figée)              (pile analytics,
+charles-lindecker.com  test.charles-          yharnam.charles-        infra-vps)
+www. -> 301 apex       lindecker.com          lindecker.com           /u/script.js,
+                                              hors index              /u/api/send
 ```
 
 Trois propriétés structurent tout le reste :
@@ -143,11 +138,11 @@ exécute ce dernier depuis le fichier. Le script :
 | Image | `:staging`, construite par `_build` | `:prod`, la même image ré-étiquetée |
 | `COMPOSE_PROJECT_NAME` | `portfolio-test` | `portfolio-prod` |
 | Dossier sur l'hôte (`*_PATH`, proposé) | `/opt/portfolio-test` | `/opt/portfolio-prod` |
-| Domaines | `test.v2.charles-lindecker.com` (proposé) | `charles-lindecker.com`, `www.charles-lindecker.com` |
+| Domaines | `test.charles-lindecker.com` (`test.v2.` jusqu'à la bascule) | `charles-lindecker.com`, `www.charles-lindecker.com` |
 | Hôte canonique | — | `www.` renvoyé en 301 vers l'apex |
 | Indexation (`X-Robots-Tag`) | `noindex` | `all` |
 | Mesure d'audience | active, site Umami « Portfolio V2 (test) » | préparée, commentée : après la purge à 25 mois |
-| État au 2026-10-14 | à mettre en service ([`bascule.md`](bascule.md), phase 2) | attend la bascule ([`bascule.md`](bascule.md), phase 3) |
+| État au 2026-10-15 | en service | en service depuis la bascule ([`bascule.md`](bascule.md)) |
 
 Les dossiers et les noms de projet de la V2 sont distincts de ceux de la V1
 (`/opt/monportfolio-staging`, `/opt/monportfolio-prod`) : jamais de dossier partagé entre les
@@ -155,7 +150,7 @@ deux versions.
 
 ## 4. Mise en service
 
-### 4.1 Premier déploiement de test (maintenant)
+### 4.1 Premier déploiement de test (fait le 2026-10-15)
 
 1. **L'edge tourne sur l'hôte** (dépôt `infra-vps`) :
 
@@ -164,18 +159,18 @@ deux versions.
    ```
 
 2. **Secrets posés** : [`secrets.md`](secrets.md) § 1 à § 6.
-3. **DNS** : `test.v2.charles-lindecker.com` en A vers l'IP de l'hôte. Le nom n'a aucun
-   enregistrement au 2026-10-07 : sans lui, Let's Encrypt échoue et Caddy entre en back-off.
+3. **DNS** : le domaine de test en A vers l'IP de l'hôte (`test.v2.` pendant la bascule,
+   `test.` depuis) : sans lui, Let's Encrypt échoue et Caddy entre en back-off.
 
    ```bash
-   dig +short test.v2.charles-lindecker.com      # l'IP de l'hôte
+   dig +short test.charles-lindecker.com         # l'IP de l'hôte
    ```
 
 4. **Premier passage** : `git push origin dev`. La chaîne joue les tests, fusionne dans `test`,
    construit l'image, la publie et la déploie. Puis :
 
    ```bash
-   T=https://test.v2.charles-lindecker.com
+   T=https://test.charles-lindecker.com
    curl -I "$T/"                                                    # 200, certificat valide
    curl -sI "$T/" | grep -iE 'x-robots|content-security'            # noindex, CSP
    curl -o /dev/null -w '%{http_code}\n' "$T/page-inexistante"      # 404
@@ -189,14 +184,14 @@ deux versions.
 
 5. **Recette de la mesure d'audience** : [`mesure-audience.md`](mesure-audience.md) § 6.
 
-### 4.2 Bascule depuis la V1 et archive
+### 4.2 Bascule depuis la V1 et archive (faite le 2026-10-15)
 
 L'invariant : **à aucun moment deux projets ne déclarent le même domaine.** La V1 quitte
 `charles-lindecker.com` et `www.` avant que la V2 ne les déclare ; le garde-fou du déploiement
 refuserait l'ordre inverse. La procédure complète, avec les secrets, le DNS, les gestes manuels,
 les vérifications et le retour arrière, est dans [`bascule.md`](bascule.md). En résumé :
 
-1. **Préparer** : DNS de `yharnam.` et `test.v2.`, clé SSH, `ENV_TEST`, `ENV_PROD` et les dix
+1. **Préparer** : DNS de `yharnam.` et `test.v2.`, clé SSH, `ENV_TEST`, `ENV_PROD` et les onze
    secrets. Rien ne change en ligne.
 2. **Intégrer** : un push sur `dev` met en ligne la V2 en test et l'archive de la V1 sur
    `yharnam.charles-lindecker.com` (`.github/workflows/archive-v1.yml`, [`archive-v1/`](../archive-v1/README.md)).
@@ -231,7 +226,7 @@ COMPOSE_FILE="$(sed -n 's/^calques *: //p' DEPLOIEMENT.txt)" docker compose ps
 Au démarrage, le serveur annonce sa configuration :
 
 ```
-[serveur] /app/dist servi sur http://0.0.0.0:4000 — mesure d'audience active (site …, domaine test.v2.charles-lindecker.com) — pas d'hôte secondaire
+[serveur] /app/dist servi sur http://0.0.0.0:4000 — mesure d'audience active (site …, domaine test.charles-lindecker.com) — pas d'hôte secondaire
 ```
 
 ### Revenir en arrière

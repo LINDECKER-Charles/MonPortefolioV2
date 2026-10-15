@@ -436,7 +436,7 @@ et les aperçus restent hors de ces sorties.
    elle, recréer un accès échouerait sans qu’on le voie.
 
    L’adresse vient de l’origine de la page ; le nom du serveur, de l’hôte : `portfolio` en
-   production, `portfolio-test` sur `test.v2…`, `portfolio-local` sur le poste. `--scope user`
+   production, `portfolio-test` sur `test.…`, `portfolio-local` sur le poste. `--scope user`
    rend le serveur disponible dans tous les projets. `--header` vient en dernier : l’option
    accepte plusieurs valeurs.
 3. « Copier la commande », la coller dans un terminal, puis `claude mcp list` doit afficher

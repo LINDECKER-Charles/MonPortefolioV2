@@ -19,7 +19,8 @@ Les secrets de la V1 (`STAGING_*`, `ENV_STAGING`, `REPO_URL`…) vivent dans le 
 
 ## 1. Secrets GitHub du dépôt
 
-Dix secrets, cinq par environnement. Aucun n'a de valeur par défaut sauf `*_SSH_USER` : la chaîne
+Onze secrets : cinq par environnement, et la clé du cadrage privé pour les tests. Aucun n'a de
+valeur par défaut sauf `*_SSH_USER` : la chaîne
 échoue tôt et bruyamment s'il en manque un, plutôt que de déployer à moitié.
 
 ### Environnement de test (branche `test`)
@@ -51,6 +52,18 @@ Dix secrets, cinq par environnement. Aucun n'a de valeur par défaut sauf `*_SSH
 > Compose distincts, ce sont deux espaces de noms de conteneurs, de réseaux et de volumes
 > distincts. Les chemins, eux, ne doivent jamais être ceux de la V1 (`/opt/monportfolio-staging`,
 > `/opt/monportfolio-prod`).
+
+### Tests (toutes branches)
+
+| Secret | Obligatoire | Contenu |
+|---|---|---|
+| `CADRAGE_DEPLOY_KEY` | oui | clé privée SSH d'une clé de déploiement **en lecture seule** du dépôt privé `MonPortefolioV2-cadrage`, que `_tests` clone dans `docs/prive/` pour les garde-fous de confidentialité et de citations |
+
+Le même secret est posé pour Dependabot (`gh secret set CADRAGE_DEPLOY_KEY --app dependabot`) :
+une PR de Dependabot ne lit pas les secrets d'Actions. Pour le renouveler : une nouvelle paire
+(`ssh-keygen -t ed25519`), la clé publique en clé de déploiement du cadrage
+(`gh repo deploy-key add … --repo LINDECKER-Charles/MonPortefolioV2-cadrage`), la privée dans les
+deux secrets, puis retirer l'ancienne clé de déploiement.
 
 ### Fourni automatiquement
 
@@ -88,12 +101,12 @@ configuration SMTP pour l’envoi réel. Récapitulatif :
 | `SMTP_FROM` | avec le relais | expéditeur autorisé | expéditeur autorisé | adresse acceptée par le fournisseur SMTP ; le visiteur reste dans `Reply-To` |
 | `SMTP_PORT`, `SMTP_TLS` | non | `587`, `starttls` | idem | STARTTLS obligatoire ou TLS direct (`465`, `tls`) ; `none` seulement sur boucle locale |
 | `SMTP_USERNAME`, `SMTP_PASSWORD` | ensemble si nécessaires | compte SMTP | compte SMTP | identifiants du relais, uniquement dans le backend |
-| `CADDY_DOMAINS` | **oui** | `test.v2.charles-lindecker.com` (proposé) | `charles-lindecker.com, www.charles-lindecker.com` | domaines servis par l'edge partagé |
+| `CADDY_DOMAINS` | **oui** | `test.charles-lindecker.com` | `charles-lindecker.com, www.charles-lindecker.com` | domaines servis par l'edge partagé |
 | `ROBOTS_TAG` | non | `noindex` | `all` | en-tête `X-Robots-Tag` posé par l'edge |
 | `REDIRECT_HOSTS` | non | — | `www.charles-lindecker.com` | hôtes renvoyés en 301 vers `CANONICAL_ORIGIN` par le serveur du site |
 | `CANONICAL_ORIGIN` | avec `REDIRECT_HOSTS` | — | `https://charles-lindecker.com` | origine canonique (https, sans chemin) |
 | `UMAMI_WEBSITE_ID` | pour mesurer | `100ee54a-6c1f-46cc-a67e-8ac78d57d51d` | plus tard : `0450b7ff-eb45-4328-a93e-496cd25b3348` | active la mesure d'audience : ajoute `compose.umami.yaml` |
-| `UMAMI_SITE_DOMAIN` | avec l'ID | `test.v2.charles-lindecker.com` | `charles-lindecker.com` | nom d'hôte nu mesuré (`data-domains`, `umami.domain`) |
+| `UMAMI_SITE_DOMAIN` | avec l'ID | `test.charles-lindecker.com` | `charles-lindecker.com` | nom d'hôte nu mesuré (`data-domains`, `umami.domain`) |
 | `UMAMI_SITE_NAME` | avec l'ID | `Portfolio V2 (test)` | `Portfolio` | nom du site dans Umami |
 | `TLS_ASSERT` | non | `1` | `1` | échec du déploiement si un domaine ne sert pas un certificat valide |
 
@@ -137,9 +150,10 @@ Points à lire avant de remplir :
 
 - **`CADDY_DOMAINS` n'a pas de valeur par défaut, par construction.** Le calque de déploiement le
   déclare en `${CADDY_DOMAINS:?…}` : un `.env` qui l'oublie fait échouer le `docker compose up` au
-  lieu de mettre en ligne un site sans domaine. Le domaine de test est une proposition : un autre
-  nom convient, pourvu qu'aucun autre projet de l'hôte ne le déclare (la V1 tient
-  `test.charles-lindecker.com`) et que `UMAMI_SITE_DOMAIN` le suive.
+  lieu de mettre en ligne un site sans domaine. Le test a d'abord tourné sur
+  `test.v2.charles-lindecker.com`, tant que la V1 tenait `test.charles-lindecker.com` ; il a repris
+  ce nom à la bascule du 2026-10-15. Un autre nom convient, pourvu qu'aucun autre projet de l'hôte
+  ne le déclare et que `UMAMI_SITE_DOMAIN` le suive.
 
 - **`ROBOTS_TAG` a pour défaut `noindex`.** Un environnement qui oublie de se déclarer n'est pas
   indexé ; seule la production pose `all`.
@@ -277,12 +291,13 @@ couvre en plus tout conteneur lancé à la main.
 
 ### f. Enregistrements DNS
 
-| Nom | Type | Valeur | Pour | État au 2026-10-07 |
+| Nom | Type | Valeur | Pour | État au 2026-10-15 |
 |---|---|---|---|---|
-| `test.v2.charles-lindecker.com` | A | IP de l'hôte | environnement de test | **à créer** avant le premier déploiement |
-| `charles-lindecker.com` | A | IP de l'hôte | production | en place (sert la V1) |
+| `charles-lindecker.com` | A | IP de l'hôte | production | en place (sert la V2 depuis la bascule) |
 | `www.charles-lindecker.com` | CNAME vers l'apex | — | production, redirigé vers l'apex | en place |
-| `yharnam.charles-lindecker.com` | A | IP de l'hôte | archive de la V1 | **à créer** avant d'intégrer la bascule ([`bascule.md`](bascule.md) § 3.1) |
+| `test.charles-lindecker.com` | A | IP de l'hôte | environnement de test | en place (servait le test de la V1 jusqu'à la bascule) |
+| `yharnam.charles-lindecker.com` | A | IP de l'hôte | archive de la V1 | en place |
+| `test.v2.charles-lindecker.com`, `test.yharnam.charles-lindecker.com` | A | IP de l'hôte | — | ne servent plus : à supprimer |
 
 Sans enregistrement, Let's Encrypt échoue et Caddy entre en back-off.
 
@@ -308,6 +323,10 @@ gh secret set PROD_SSH_KEY  --repo "$REPO" < ~/.ssh/portfolio_v2_deploy
 gh secret set PROD_PATH     --repo "$REPO" --body "/opt/portfolio-prod"
 gh secret set ENV_PROD      --repo "$REPO" < ./.env.prod      # copie de .env.prod.example
 
+# --- tests : clé de déploiement en lecture du cadrage privé ---
+gh secret set CADRAGE_DEPLOY_KEY --repo "$REPO" < ~/chemin/vers/cle-cadrage
+gh secret set CADRAGE_DEPLOY_KEY --app dependabot --repo "$REPO" < ~/chemin/vers/cle-cadrage
+
 gh secret list --repo "$REPO"
 ```
 
@@ -322,8 +341,8 @@ gh secret list --repo "$REPO"
 REPO=LINDECKER-Charles/MonPortefolioV2
 VPS=root@203.0.113.10
 
-gh secret list --repo "$REPO"                                 # les 10 secrets sont là
-dig +short test.v2.charles-lindecker.com                      # renvoie l'IP du VPS
+gh secret list --repo "$REPO"                                 # les 11 secrets sont là
+dig +short test.charles-lindecker.com                         # renvoie l'IP du VPS
 ssh -i ~/.ssh/portfolio_v2_deploy "$VPS" 'docker version'     # la clé de la CI passe
 ssh "$VPS" 'command -v docker curl >/dev/null && echo "binaires OK"'
 ssh "$VPS" 'docker network inspect edge >/dev/null && echo "edge OK"'

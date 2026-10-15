@@ -67,6 +67,7 @@ describe('nom de l’accès et du serveur', () => {
     expect(nomServeur('localhost', 'charles-lindecker.com')).toBe('portfolio-local');
     expect(nomServeur('127.0.0.1', 'charles-lindecker.com')).toBe('portfolio-local');
     expect(nomServeur('[::1]', 'charles-lindecker.com')).toBe('portfolio-local');
+    expect(nomServeur('test.charles-lindecker.com', 'charles-lindecker.com')).toBe('portfolio-test');
     expect(nomServeur('test.v2.charles-lindecker.com', 'charles-lindecker.com')).toBe('portfolio-test');
   });
 });

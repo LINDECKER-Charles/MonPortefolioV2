@@ -21,6 +21,36 @@ la fin du déploiement de la V2. Sans effet sur le référencement, à faire à 
 
 ---
 
+## Fait le 2026-10-15
+
+| Étape | Heure (UTC) | Résultat |
+|---|---|---|
+| Archive de la V1 sur `yharnam.` | 13:07 | certificat, prérendu, bandeau et `noindex` vérifiés au déploiement |
+| V2 en test sur `test.v2.` | 14:39 | 28 contrôles publics ; recette dans un navigateur : pages, thème, contact enregistré et notifié par e-mail, backoffice avec inscription 2FA |
+| CI de la V1 coupée | 14:40 | `CI/CD` de `MonPortfolio` en `disabled_manually` |
+| Piles de la V1 arrêtées | 14:40:13 | dossiers et `.env` gardés pour le retour arrière (§ 7) |
+| V2 en production | 14:42:01 | 29 contrôles passés (`node scripts/verifier-bascule.mjs`), 18 pages sans erreur à 1 440 et 390 px |
+
+Coupure du domaine principal : **environ deux minutes**. Écarts avec le déroulé qui suit :
+
+- **Le dépôt est public.** Il a été recréé avec un historique réécrit, sans le cadrage ni les noms
+  privés : le cadrage vit dans le dépôt privé `MonPortefolioV2-cadrage`, cloné dans
+  `docs/prive/` ([`README`](../README.md), « Dossier privé »), et l’ancien dépôt, renommé
+  `MonPortefolioV2-private-cadrage`, garde l’historique complet, en privé. Un onzième secret,
+  `CADRAGE_DEPLOY_KEY` (clé de déploiement du cadrage, en lecture), sert aux tests ; il est
+  aussi posé pour Dependabot.
+- **Le test a repris `test.charles-lindecker.com`** une fois la V1 arrêtée : `test.v2.` et
+  `test.yharnam.` ne servent plus (§ 6).
+- **Première exécution réelle de la CI**, quatre défauts corrigés en route : le contrôle de
+  l’archive (`printf … | grep -q` sous `pipefail` sur une page de 200 Ko), les délais d’un build à
+  froid (plus de 1 000 images optimisées, près de 7 min) et le cache de ces images, et le rendu
+  du texte par Chromium sous Linux (`--font-render-hinting=none`, `site/playwright.config.ts`).
+- **Backoffice** : hors développement, l’inscription 2FA et la déconnexion échouaient en 415
+  (mutation sans type JSON) ; corrigé et vérifié en test avant la mise en production.
+- **Silence des alertes** (§ 5.5) : refusé à l’agent, à poser à la main.
+
+---
+
 ## 0. Où en est-on (constaté le 2026-10-14)
 
 | | État |
@@ -319,14 +349,15 @@ ssh root@charles-lindecker.com '
   l’effet attendu des 301.
 - **Garder les redirections pour toujours** (`site/server/redirections.mjs`) : des CV déjà
   envoyés pointent encore vers `/resume` ou `/projects`.
-- **DNS** : supprimer l’enregistrement `test` (`test.charles-lindecker.com`), qui ne sert plus.
+- **DNS** : supprimer `test.v2` et `test.yharnam`, qui ne servent plus ; `test` sert désormais le
+  test de la V2.
 - **Dépôt `MonPortfolio`** : désactiver ses mises à jour Dependabot (Settings → Code security), ou
   archiver le dépôt sur GitHub. L’archive n’en a besoin qu’en lecture.
 - **Mémoire** : après une semaine, rederiver les limites (256 Mio pour le site et l’archive,
   128 Mio pour l’API) avec
   `max_over_time(container_memory_working_set_bytes{stack=~"portfolio-prod|monportfolio-archive"}[7d])`.
-- **Documentation** : retirer l’avertissement de tête de [`deploiement.md`](deploiement.md) et
-  mettre à jour « État du projet » dans `AGENTS.md`.
+- **Documentation** : fait le 2026-10-15 ([`deploiement.md`](deploiement.md), « État du projet »
+  dans `AGENTS.md`).
 
 ---
 

@@ -312,7 +312,7 @@ dans `.env.test.example` : la mesure est active dès le premier déploiement de 
 2. **Contrôles en ligne de commande** :
 
    ```bash
-   T=https://test.v2.charles-lindecker.com
+   T=https://test.charles-lindecker.com
    curl -s "$T/mesure.js" | grep -E 'data-website-id|data-domains'
    curl -sI "$T/u/script.js" | head -1        # 200
    ```

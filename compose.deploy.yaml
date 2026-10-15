@@ -18,7 +18,7 @@
 #   COMPOSE_PROJECT_NAME  portfolio-test | portfolio-prod   (projets Compose
 #                         distincts, donc aucun ecrasement croise sur la meme
 #                         machine)
-#   CADDY_DOMAINS         test.v2.charles-lindecker.com
+#   CADDY_DOMAINS         test.charles-lindecker.com
 #                         | charles-lindecker.com, www.charles-lindecker.com
 #   IMAGE_TAG             staging | prod
 #   ROBOTS_TAG            noindex | all
