@@ -12,23 +12,29 @@ use crate::storage::StoreError;
 
 const ASSOCIATED_DATA: &[u8] = b"portfolio-backoffice-totp-v1";
 
+/// Chiffre le secret TOTP avec `BACKOFFICE_TOTP_ENCRYPTION_KEY`.
 pub(crate) fn encrypt(secret: &[u8], key: &[u8; 32]) -> Result<Vec<u8>, StoreError> {
+    seal(secret, key, ASSOCIATED_DATA)
+}
+
+pub(crate) fn decrypt(value: &[u8], key: &[u8; 32]) -> Result<Vec<u8>, StoreError> {
+    open(value, key, ASSOCIATED_DATA)
+}
+
+/// XChaCha20-Poly1305 : nonce aléatoire de 24 octets, puis le chiffré
+/// authentifié. `aad` sépare les usages d’une même clé : un chiffré produit
+/// pour l’un ne s’ouvre jamais pour l’autre.
+pub(crate) fn seal(secret: &[u8], key: &[u8; 32], aad: &[u8]) -> Result<Vec<u8>, StoreError> {
     let cipher = XChaCha20Poly1305::new(key.into());
     let mut nonce = [0; 24];
     OsRng.fill_bytes(&mut nonce);
     let encrypted = cipher
-        .encrypt(
-            XNonce::from_slice(&nonce),
-            Payload {
-                msg: secret,
-                aad: ASSOCIATED_DATA,
-            },
-        )
+        .encrypt(XNonce::from_slice(&nonce), Payload { msg: secret, aad })
         .map_err(|_| StoreError)?;
     Ok([nonce.to_vec(), encrypted].concat())
 }
 
-pub(crate) fn decrypt(value: &[u8], key: &[u8; 32]) -> Result<Vec<u8>, StoreError> {
+pub(crate) fn open(value: &[u8], key: &[u8; 32], aad: &[u8]) -> Result<Vec<u8>, StoreError> {
     if value.len() < 40 {
         return Err(StoreError);
     }
@@ -37,7 +43,7 @@ pub(crate) fn decrypt(value: &[u8], key: &[u8; 32]) -> Result<Vec<u8>, StoreErro
             XNonce::from_slice(&value[..24]),
             Payload {
                 msg: &value[24..],
-                aad: ASSOCIATED_DATA,
+                aad,
             },
         )
         .map_err(|_| StoreError)

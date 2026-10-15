@@ -283,7 +283,7 @@ test('un accès MCP de rédaction ne lit pas les demandes par défaut et une exp
   await expect(page.getByRole('checkbox', { name: 'Lire aussi les demandes de contact' })).not.toBeChecked();
   await page.getByRole('button', { name: 'Créer l’accès', exact: true }).click();
   await expect(page.locator('#bo-token-command')).toContainText('Authorization: Bearer test-token');
-  expect(state.mutations.find((mutation) => mutation.path === '/tokens')?.body).toEqual({ name: 'Rédacteur', scopes: ['blog:read', 'blog:write'] });
+  expect(state.mutations.find((mutation) => mutation.path === '/tokens')?.body).toEqual({ name: 'Rédacteur', scopes: ['blog:read', 'blog:write'], expires_in_days: 90 });
   await rubrique(page, 'Blog').click();
   await expect(page.locator('#bo-token-command')).toBeEmpty();
   await page.locator('#blog-post-list').getByRole('link').click();

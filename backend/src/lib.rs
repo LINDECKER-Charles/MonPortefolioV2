@@ -5,6 +5,7 @@ pub mod config;
 pub mod contact;
 pub mod error;
 pub mod mail;
+mod mail_settings;
 pub mod mcp;
 mod rate_limit;
 pub mod routes;
@@ -17,11 +18,12 @@ use std::{sync::Arc, time::Duration};
 
 use tokio::sync::Semaphore;
 
-use crate::{mail::MailDelivery, rate_limit::RateLimiter, storage::Store};
+use crate::{mail::MailDelivery, mail_settings::Mailer, rate_limit::RateLimiter, storage::Store};
 
 #[derive(Clone)]
 pub struct AppState {
-    pub(crate) delivery: Option<Arc<dyn MailDelivery>>,
+    /// L’envoi des notifications : le réglage du backoffice, sinon `SMTP_*`.
+    pub(crate) mailer: Arc<Mailer>,
     pub(crate) proxy_token: Option<Arc<str>>,
     limiter: Arc<RateLimiter>,
     mail_slots: Arc<Semaphore>,
@@ -53,7 +55,7 @@ impl AppState {
         let password_hash = store.bind_admin_credentials(backoffice.as_ref(), secure_cookie)
             .map_err(|_| "Impossible d’initialiser l’authentification du backoffice ; vérifier la base et la clé 2FA".to_owned())?;
         Ok(Self {
-            delivery,
+            mailer: Arc::new(Mailer::new(delivery, backoffice.as_ref())),
             proxy_token: proxy_token.map(Arc::from),
             limiter: Arc::new(RateLimiter::default()),
             mail_slots: Arc::new(Semaphore::new(16)),

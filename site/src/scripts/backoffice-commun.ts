@@ -9,7 +9,8 @@ export type Dire = (message: string, etat?: Etat) => void;
 
 /** Une erreur dont le message s’affiche tel quel : celui de l’API, ou un texte écrit pour l’interface. */
 export class ErreurApi extends Error {
-  constructor(message: string, readonly status: number, readonly code?: string) { super(message); }
+  /** `champs` : le message de chaque champ refusé (`fields` d’une erreur VALIDATION_ERROR). */
+  constructor(message: string, readonly status: number, readonly code?: string, readonly champs?: Readonly<Record<string, string>>) { super(message); }
 }
 
 /** Le message à montrer pour une erreur : le sien s’il a été écrit pour l’interface, sinon une panne de réseau. */

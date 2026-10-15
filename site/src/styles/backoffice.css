@@ -912,7 +912,7 @@
   margin-top: var(--s5);
 }
 
-/* ===== Adresse et boîte à outils ===== */
+/* ===== E-mails et boîte à outils ===== */
 .bo-formulaire {
   max-width: 40rem;
 }
@@ -972,6 +972,72 @@
   gap: var(--s2);
 }
 
+/* ===== E-mails : destinataire, serveur d’envoi, état ===== */
+.bo-envoi__reglages {
+  display: grid;
+  gap: var(--s6);
+}
+
+.bo-envoi__etat {
+  display: grid;
+  gap: var(--s4);
+}
+
+.bo-envoi__etat > .bo-help,
+.bo-envoi__etat > .bo-retour:not(:empty) {
+  margin-top: 0;
+}
+
+.bo-envoi__probleme {
+  margin: 0;
+  border-left-color: var(--erreur);
+}
+
+.bo-envoi__repli {
+  padding-top: var(--s4);
+  border-top: 1px solid var(--filet);
+}
+
+/* L’indice Hostinger : une ligne de référence et son préremplissage. */
+.bo-indice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2) var(--s4);
+  padding: var(--s3) var(--s4);
+  border-left: 2px solid var(--trait);
+  background: var(--fond);
+  border-radius: 0 var(--r1) var(--r1) 0;
+}
+
+.bo-indice > p {
+  flex: 1 1 20rem;
+  overflow-wrap: anywhere;
+}
+
+.bo-champ--court > input {
+  max-width: 10rem;
+}
+
+/* Le refus d’un champ, sous lui : un trait et des mots, pas la couleur seule. */
+.bo-erreur-champ {
+  margin-top: var(--s2);
+  padding-left: var(--s3);
+  border-left: 2px solid var(--erreur);
+  color: var(--erreur);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+:where(.bo) :where(input[aria-invalid='true']) {
+  border-color: var(--erreur);
+}
+
+.bo-conservation {
+  padding-top: var(--s3);
+}
+
 /* ===== Accès MCP ===== */
 .bo-mcp {
   display: grid;
@@ -987,6 +1053,79 @@
 
 .bo-formulaire .bo-mcp__garde-fou {
   margin-top: 0;
+}
+
+/* Le nom et la durée sur une ligne, leur aide dessous : « Créer l’accès »
+   reste visible dès l’arrivée. */
+.bo-mcp__identite {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0 var(--s3);
+}
+
+.bo-mcp__identite > .bo-help {
+  grid-column: 1 / -1;
+}
+
+.bo-secret__echeance {
+  font-weight: 600;
+}
+
+/* L’échéance d’un accès : une forme et des mots, jamais la couleur seule.
+   Proche (moins de 14 jours) : losange et graisse ; expiré : trait, éteint. */
+.bo-echeance {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+}
+
+.bo-echeance:is([data-echeance='proche'], [data-echeance='expire'])::before {
+  content: '';
+  flex: none;
+  background: currentColor;
+}
+
+.bo-echeance[data-echeance='proche'] {
+  font-weight: 600;
+}
+
+/* « Expire le » puis la date, d’un tenant si la place le permet ;
+   « dans 9 jours » dessous. */
+.bo-echeance__texte {
+  display: grid;
+}
+
+.bo-table .bo-echeance time {
+  white-space: normal;
+}
+
+/* Le nom d’un accès se coupe entre ses mots, jamais au milieu d’un mot. */
+.bo-mcp .bo-table th[scope='row'] {
+  min-width: 7rem;
+  overflow-wrap: break-word;
+}
+
+/* L’échéance garde « Expire le 22 oct. 2026 » sur deux lignes au plus. */
+.bo-mcp .bo-table td[data-label='Échéance'] {
+  min-width: 9.5rem;
+}
+
+.bo-echeance[data-echeance='proche']::before {
+  width: 7px;
+  height: 7px;
+  border-radius: 1px;
+  rotate: 45deg;
+}
+
+.bo-echeance[data-echeance='expire'],
+.bo-table tr[data-echeance='expire'] th[scope='row'] {
+  color: var(--eteint);
+}
+
+.bo-echeance[data-echeance='expire']::before {
+  width: 8px;
+  height: 2px;
+  border-radius: 1px;
 }
 
 .bo-mcp__liste-entete {
@@ -1598,7 +1737,7 @@
 
   .bo-table td:last-child {
     grid-column: 2;
-    grid-row: 1 / span 4;
+    grid-row: 1 / span 5;
     align-self: start;
   }
 

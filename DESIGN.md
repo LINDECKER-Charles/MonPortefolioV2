@@ -379,6 +379,10 @@ Chaque composant est documenté en tête de son fichier.
   consultation sans zone éclairée : deux cartes (le disque, la base en barre empilée légendée,
   parts distinguées par la valeur et la trame), puis des fiches à filets du plus lourd au plus
   léger ; tailles en base 1000 comme le Finder (`lib/octets.ts`).
+  La rubrique E-mails (`RubriqueEmails.astro`) n’a pas non plus de zone éclairée : le
+  destinataire et le serveur d’envoi à gauche, l’état de l’envoi et l’e-mail d’essai à droite
+  (dessous sous 1 100 px) ; un champ refusé se dit sous lui, par un trait et des mots. Dans la
+  liste des accès MCP, l’échéance proche porte un losange, l’accès expiré un trait éteint.
 
 ### Motion
 

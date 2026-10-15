@@ -10,4 +10,4 @@
  * tests/unit/proxy-dev.test.ts dit ce qui passe et ce qui ne passe pas.
  */
 export const ROUTES_PROXY_DEV =
-  '^/(api/(contact|health|config/contact|blog/(posts(/[a-z0-9-]+)?|media/[1-9][0-9]*(/[1-9][0-9]*)?)|backoffice/((login|logout|session|settings|contacts|links|tokens)(/[1-9][0-9]*)?|storage|2fa/(setup|verify)|blog/(posts(/[1-9][0-9]*(/(publish|schedule|unpublish|preview|seo))?)?|media(/[1-9][0-9]*(/[1-9][0-9]*)?)?)))|mcp)(\\?.*)?$';
+  '^/(api/(contact|health|config/contact|blog/(posts(/[a-z0-9-]+)?|media/[1-9][0-9]*(/[1-9][0-9]*)?)|backoffice/((login|logout|session|settings|contacts|links|tokens)(/[1-9][0-9]*)?|storage|mail(/test)?|2fa/(setup|verify)|blog/(posts(/[1-9][0-9]*(/(publish|schedule|unpublish|preview|seo))?)?|media(/[1-9][0-9]*(/[1-9][0-9]*)?)?)))|mcp)(\\?.*)?$';

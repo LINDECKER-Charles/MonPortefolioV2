@@ -19,7 +19,7 @@ export interface DefinitionRubrique {
 
 export const RUBRIQUES: readonly DefinitionRubrique[] = [
   { id: 'contacts', lien: '/backoffice?rubrique=contacts', titreCourt: 'Demandes', titre: 'Demandes de contact' },
-  { id: 'settings', lien: '/backoffice?rubrique=settings', titreCourt: 'Adresse', titre: 'Adresse de contact' },
+  { id: 'settings', lien: '/backoffice?rubrique=settings', titreCourt: 'E-mails', titre: 'Adresse et serveur d’envoi' },
   { id: 'links', lien: '/backoffice?rubrique=links', titreCourt: 'Boîte à outils', titre: 'Boîte à outils' },
   { id: 'tokens', lien: '/backoffice?rubrique=tokens', titreCourt: 'Accès MCP', titre: 'Accès MCP' },
   { id: 'blog', lien: '/backoffice/blog', titreCourt: 'Blog', titre: 'Blog' },

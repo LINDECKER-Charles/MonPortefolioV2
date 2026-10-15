@@ -72,6 +72,28 @@ pub struct TokenRecord {
     pub created_at: String,
     pub last_used_at: Option<String>,
     pub scopes: Vec<String>,
+    /// La fin de l’accès, au même format que `created_at` ; jamais prolongée.
+    pub expires_at: String,
+    /// Vrai quand `expires_at` est passée : l’accès reste listé, mais le MCP le refuse.
+    pub expired: bool,
+}
+
+/// Un accès MCP qui vient d’être créé : son secret, montré une seule fois.
+pub struct CreatedToken {
+    pub id: i64,
+    pub token: String,
+    pub expires_at: String,
+}
+
+/// Ce que vaut un secret présenté au MCP.
+#[derive(Debug, PartialEq, Eq)]
+pub enum TokenAccess {
+    /// L’accès existe et court encore : ses permissions.
+    Valid(Vec<String>),
+    /// L’accès existe, mais sa date de fin est passée.
+    Expired,
+    /// Aucun accès ne porte ce secret.
+    Unknown,
 }
 
 /// Permissions d’un accès créé sans permissions explicites : la lecture du blog
@@ -80,6 +102,21 @@ pub const DEFAULT_TOKEN_SCOPES: [&str; 1] = ["blog:read"];
 
 /// Nombre maximal d’accès MCP actifs : au-delà, il faut en révoquer un.
 pub const MAX_TOKENS: u64 = 64;
+
+/// Durée d’un accès MCP créé sans durée explicite, en jours.
+pub const DEFAULT_TOKEN_DAYS: u32 = 90;
+
+/// Durée maximale d’un accès MCP : un an. Une mesure de sécurité ; un accès
+/// expiré ne se prolonge pas, on en crée un autre.
+pub const MAX_TOKEN_DAYS: u32 = 365;
+
+/// Les demandes de contact sont supprimées automatiquement 3 ans après leur
+/// réception (le maximum admis par la CNIL pour des contacts entrants).
+pub const CONTACT_RETENTION_YEARS: u32 = 3;
+
+/// Format des dates enregistrées : `2026-10-15T08:30:00.000Z`. Deux dates de
+/// ce format se comparent comme du texte.
+const NOW: &str = "strftime('%Y-%m-%dT%H:%M:%fZ','now')";
 
 /// Échec de la création d’un accès MCP : le plafond est une règle, pas une panne.
 #[derive(Debug)]
@@ -188,6 +225,8 @@ impl Store {
         if !has_scopes {
             connection.execute("ALTER TABLE tokens ADD COLUMN scopes TEXT NOT NULL DEFAULT '[\"contacts:read\",\"blog:read\"]'", [])?;
         }
+        migrate_token_expiry(&connection)?;
+        crate::mail_settings::initialize(&connection)?;
         let configured: bool = connection.query_row(
             "SELECT EXISTS(SELECT 1 FROM settings WHERE key='contact_email')",
             [],
@@ -572,6 +611,16 @@ impl Store {
             > 0)
     }
 
+    /// Supprime les demandes reçues il y a plus de `CONTACT_RETENTION_YEARS`
+    /// ans à l’instant `now` (secondes Unix) ; retourne leur nombre.
+    pub fn purge_expired_contacts(&self, now: i64) -> Result<usize, StoreError> {
+        Ok(self.connection()?.execute(
+            "DELETE FROM contacts
+             WHERE created_at < strftime('%Y-%m-%dT%H:%M:%fZ',?1,'unixepoch',?2)",
+            params![now, format!("-{CONTACT_RETENTION_YEARS} years")],
+        )?)
+    }
+
     pub fn list_links(&self) -> Result<Vec<ToolLink>, StoreError> {
         let connection = self.connection()?;
         let mut query =
@@ -650,9 +699,11 @@ impl Store {
 
     pub fn list_tokens(&self) -> Result<Vec<TokenRecord>, StoreError> {
         let connection = self.connection()?;
-        let mut query = connection.prepare(
-            "SELECT id,name,created_at,last_used_at,scopes FROM tokens ORDER BY id DESC",
-        )?;
+        let mut query = connection.prepare(&format!(
+            "SELECT id,name,created_at,last_used_at,scopes,COALESCE(expires_at,created_at),
+                    COALESCE(expires_at<={NOW},1)
+             FROM tokens ORDER BY id DESC"
+        ))?;
         Ok(query
             .query_map([], |row| {
                 Ok(TokenRecord {
@@ -662,6 +713,8 @@ impl Store {
                     last_used_at: row.get(3)?,
                     scopes: serde_json::from_str(&row.get::<_, String>(4)?)
                         .map_err(|_| rusqlite::Error::InvalidQuery)?,
+                    expires_at: row.get(5)?,
+                    expired: row.get(6)?,
                 })
             })?
             .collect::<Result<Vec<_>, _>>()?)
@@ -672,12 +725,24 @@ impl Store {
         self.create_token_with_scopes(name, &scopes)
     }
 
+    /// Un accès de la durée par défaut (`DEFAULT_TOKEN_DAYS`).
     pub fn create_token_with_scopes(
         &self,
         name: &str,
         scopes: &[String],
     ) -> Result<(i64, String), TokenCreationError> {
-        if !crate::admin::valid_token_scopes(scopes) {
+        let created = self.create_token_expiring(name, scopes, DEFAULT_TOKEN_DAYS)?;
+        Ok((created.id, created.token))
+    }
+
+    /// Un accès qui expire dans `days` jours, de 1 à `MAX_TOKEN_DAYS`.
+    pub fn create_token_expiring(
+        &self,
+        name: &str,
+        scopes: &[String],
+        days: u32,
+    ) -> Result<CreatedToken, TokenCreationError> {
+        if !crate::admin::valid_token_scopes(scopes) || !(1..=MAX_TOKEN_DAYS).contains(&days) {
             return Err(StoreError.into());
         }
         let connection = self.connection()?;
@@ -688,44 +753,68 @@ impl Store {
         }
         let token = random_secret();
         connection.execute(
-            "INSERT INTO tokens(name,hash,scopes) VALUES(?1,?2,?3)",
+            "INSERT INTO tokens(name,hash,scopes,expires_at)
+             VALUES(?1,?2,?3,strftime('%Y-%m-%dT%H:%M:%fZ','now',?4))",
             params![
                 name,
                 hash_secret(&token),
-                serde_json::to_string(scopes).map_err(|_| StoreError)?
+                serde_json::to_string(scopes).map_err(|_| StoreError)?,
+                format!("+{days} days"),
             ],
         )?;
-        Ok((connection.last_insert_rowid(), token))
+        let id = connection.last_insert_rowid();
+        let expires_at =
+            connection.query_row("SELECT expires_at FROM tokens WHERE id=?1", [id], |row| {
+                row.get(0)
+            })?;
+        Ok(CreatedToken {
+            id,
+            token,
+            expires_at,
+        })
     }
 
     pub fn authenticate_token(&self, token: &str) -> Result<bool, StoreError> {
         Ok(self.authenticate_token_scopes(token)?.is_some())
     }
 
+    /// Les permissions d’un accès valide ; `None` pour un secret inconnu ou expiré.
     pub fn authenticate_token_scopes(
         &self,
         token: &str,
     ) -> Result<Option<Vec<String>>, StoreError> {
+        Ok(match self.authenticate_token_access(token)? {
+            TokenAccess::Valid(scopes) => Some(scopes),
+            TokenAccess::Expired | TokenAccess::Unknown => None,
+        })
+    }
+
+    /// Un accès expiré n’est pas marqué comme utilisé : sa dernière utilisation
+    /// reste celle d’avant son expiration.
+    pub fn authenticate_token_access(&self, token: &str) -> Result<TokenAccess, StoreError> {
         if token.len() != 64 {
-            return Ok(None);
+            return Ok(TokenAccess::Unknown);
         }
         let connection = self.connection()?;
-        let encoded: Option<String> = connection
+        let found: Option<(String, bool)> = connection
             .query_row(
-                "SELECT scopes FROM tokens WHERE hash=?1",
+                &format!("SELECT scopes,COALESCE(expires_at>{NOW},0) FROM tokens WHERE hash=?1"),
                 [hash_secret(token)],
-                |row| row.get(0),
+                |row| Ok((row.get(0)?, row.get(1)?)),
             )
             .optional()?;
-        let Some(encoded) = encoded else {
-            return Ok(None);
+        let Some((encoded, active)) = found else {
+            return Ok(TokenAccess::Unknown);
         };
+        if !active {
+            return Ok(TokenAccess::Expired);
+        }
         let scopes: Vec<String> = serde_json::from_str(&encoded).map_err(|_| StoreError)?;
         connection.execute(
-            "UPDATE tokens SET last_used_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE hash=?1",
+            &format!("UPDATE tokens SET last_used_at={NOW} WHERE hash=?1"),
             [hash_secret(token)],
         )?;
-        Ok(Some(scopes))
+        Ok(TokenAccess::Valid(scopes))
     }
 
     pub fn delete_token(&self, id: i64) -> Result<bool, StoreError> {
@@ -734,6 +823,31 @@ impl Store {
             .execute("DELETE FROM tokens WHERE id=?1", [id])?
             > 0)
     }
+}
+
+/// Les accès créés avant l’expiration reçoivent un an depuis leur création,
+/// jamais plus : un accès déjà plus vieux qu’un an est expiré. Une date de
+/// création illisible donne une fin immédiate. Les dates posées ne sont plus
+/// jamais touchées.
+fn migrate_token_expiry(connection: &Connection) -> Result<(), StoreError> {
+    let has_expiry = connection
+        .prepare("PRAGMA table_info(tokens)")?
+        .query_map([], |row| row.get::<_, String>(1))?
+        .collect::<Result<Vec<_>, _>>()?
+        .iter()
+        .any(|name| name == "expires_at");
+    if !has_expiry {
+        connection.execute("ALTER TABLE tokens ADD COLUMN expires_at TEXT", [])?;
+    }
+    connection.execute(
+        &format!(
+            "UPDATE tokens SET expires_at=COALESCE(
+               strftime('%Y-%m-%dT%H:%M:%fZ',created_at,'+{MAX_TOKEN_DAYS} days'),{NOW})
+             WHERE expires_at IS NULL"
+        ),
+        [],
+    )?;
+    Ok(())
 }
 
 fn insert_session(connection: &Connection, ttl: Duration) -> Result<String, StoreError> {
@@ -1131,5 +1245,192 @@ mod tests {
             "changed@example.org"
         );
         std::fs::remove_file(path).unwrap();
+    }
+
+    fn expires_at(store: &Store, id: i64) -> String {
+        store
+            .connection()
+            .unwrap()
+            .query_row("SELECT expires_at FROM tokens WHERE id=?1", [id], |row| {
+                row.get(0)
+            })
+            .unwrap()
+    }
+
+    #[test]
+    fn tokens_expire_within_a_year_and_an_expired_token_is_refused_without_being_used() {
+        let store = Store::in_memory("owner@example.org").unwrap();
+        let scopes = vec!["blog:read".to_owned()];
+        for days in [0, MAX_TOKEN_DAYS + 1] {
+            assert!(matches!(
+                store.create_token_expiring("Trop long", &scopes, days),
+                Err(TokenCreationError::Store(_))
+            ));
+        }
+        let year = store
+            .create_token_expiring("Un an", &scopes, MAX_TOKEN_DAYS)
+            .unwrap();
+        let in_a_year: String = store
+            .connection()
+            .unwrap()
+            .query_row("SELECT strftime('%Y-%m-%d','now','+365 days')", [], |row| {
+                row.get(0)
+            })
+            .unwrap();
+        assert!(year.expires_at.starts_with(&in_a_year));
+        let (default_id, _) = store.create_token("Par défaut").unwrap();
+        let default_end: String = store
+            .connection()
+            .unwrap()
+            .query_row("SELECT strftime('%Y-%m-%d','now','+90 days')", [], |row| {
+                row.get(0)
+            })
+            .unwrap();
+        assert!(expires_at(&store, default_id).starts_with(&default_end));
+
+        let short = store.create_token_expiring("Court", &scopes, 1).unwrap();
+        assert_eq!(
+            store.authenticate_token_access(&short.token).unwrap(),
+            TokenAccess::Valid(scopes.clone())
+        );
+        let used_before: String = store.list_tokens().unwrap()[0]
+            .last_used_at
+            .clone()
+            .unwrap();
+        store
+            .connection()
+            .unwrap()
+            .execute(
+                "UPDATE tokens SET expires_at=strftime('%Y-%m-%dT%H:%M:%fZ','now','-1 second'), last_used_at='2026-01-01T00:00:00.000Z' WHERE id=?1",
+                [short.id],
+            )
+            .unwrap();
+        assert_ne!(used_before, "2026-01-01T00:00:00.000Z");
+        assert_eq!(
+            store.authenticate_token_access(&short.token).unwrap(),
+            TokenAccess::Expired
+        );
+        assert!(
+            store
+                .authenticate_token_scopes(&short.token)
+                .unwrap()
+                .is_none()
+        );
+        assert_eq!(
+            store.authenticate_token_access(&random_secret()).unwrap(),
+            TokenAccess::Unknown
+        );
+        let listed = store.list_tokens().unwrap();
+        let expired = listed.iter().find(|token| token.id == short.id).unwrap();
+        assert!(expired.expired);
+        assert_eq!(
+            expired.last_used_at.as_deref(),
+            Some("2026-01-01T00:00:00.000Z"),
+            "Un appel refusé ne compte pas comme une utilisation."
+        );
+        assert!(
+            !listed
+                .iter()
+                .find(|token| token.id == year.id)
+                .unwrap()
+                .expired
+        );
+        // Un accès expiré se supprime comme les autres.
+        assert!(store.delete_token(short.id).unwrap());
+    }
+
+    #[test]
+    fn legacy_tokens_get_a_year_from_their_creation_and_are_never_extended() {
+        let path =
+            std::env::temp_dir().join(format!("portfolio-expiry-{}.sqlite3", random_secret()));
+        let (recent, old) = (random_secret(), random_secret());
+        {
+            let connection = Connection::open(&path).unwrap();
+            connection.execute_batch("CREATE TABLE tokens (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, hash TEXT NOT NULL UNIQUE, created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')), last_used_at TEXT, scopes TEXT NOT NULL DEFAULT '[\"blog:read\"]');").unwrap();
+            connection
+                .execute(
+                    "INSERT INTO tokens(name,hash,created_at) VALUES('Récent',?1,strftime('%Y-%m-%dT%H:%M:%fZ','now','-10 days'))",
+                    [hash_secret(&recent)],
+                )
+                .unwrap();
+            connection
+                .execute(
+                    "INSERT INTO tokens(name,hash,created_at) VALUES('Ancien',?1,'2025-06-01T08:00:00.000Z')",
+                    [hash_secret(&old)],
+                )
+                .unwrap();
+        }
+        let store = Store::open(&path, Some("owner@example.org")).unwrap();
+        assert!(matches!(
+            store.authenticate_token_access(&recent).unwrap(),
+            TokenAccess::Valid(_)
+        ));
+        assert_eq!(
+            store.authenticate_token_access(&old).unwrap(),
+            TokenAccess::Expired,
+            "Créé il y a plus d’un an : expiré dès la migration."
+        );
+        assert_eq!(expires_at(&store, 2), "2026-06-01T08:00:00.000Z");
+        let recent_end = expires_at(&store, 1);
+        let expected: String = store
+            .connection()
+            .unwrap()
+            .query_row(
+                "SELECT strftime('%Y-%m-%dT%H:%M:%fZ',created_at,'+365 days') FROM tokens WHERE id=1",
+                [],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(recent_end, expected);
+        // Raccourcir un accès à la main : la migration suivante ne le rallonge pas.
+        store
+            .connection()
+            .unwrap()
+            .execute(
+                "UPDATE tokens SET expires_at='2026-11-01T00:00:00.000Z' WHERE id=1",
+                [],
+            )
+            .unwrap();
+        drop(store);
+        let reopened = Store::open(&path, None).unwrap();
+        assert_eq!(expires_at(&reopened, 1), "2026-11-01T00:00:00.000Z");
+        assert_eq!(expires_at(&reopened, 2), "2026-06-01T08:00:00.000Z");
+        drop(reopened);
+        std::fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn contacts_are_purged_three_years_after_their_reception() {
+        let store = Store::in_memory("owner@example.org").unwrap();
+        let contact = ContactMessage {
+            name: "Une personne".into(),
+            email: "person@example.org".parse().unwrap(),
+            subject: "Projet".into(),
+            message: "Bonjour à vous".into(),
+        };
+        let old = store.save_contact(&contact, "sent").unwrap();
+        let kept = store.save_contact(&contact, "sent").unwrap();
+        let recent = store.save_contact(&contact, "sent").unwrap();
+        let connection = store.connection().unwrap();
+        connection
+            .execute(
+                "UPDATE contacts SET created_at='2023-10-14T23:59:59.000Z' WHERE id=?1",
+                [old],
+            )
+            .unwrap();
+        connection
+            .execute(
+                "UPDATE contacts SET created_at='2023-10-15T00:00:01.000Z' WHERE id=?1",
+                [kept],
+            )
+            .unwrap();
+        drop(connection);
+        // Le 15 octobre 2026 à minuit (UTC) : trois ans tout juste.
+        let now = 1_792_022_400;
+        assert_eq!(store.purge_expired_contacts(now).unwrap(), 1);
+        assert!(store.get_contact(old).unwrap().is_none());
+        assert!(store.get_contact(kept).unwrap().is_some());
+        assert!(store.get_contact(recent).unwrap().is_some());
+        assert_eq!(store.purge_expired_contacts(now).unwrap(), 0);
     }
 }

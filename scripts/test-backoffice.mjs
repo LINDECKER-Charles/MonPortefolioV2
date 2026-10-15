@@ -3,7 +3,8 @@
  * Intégration réelle du backend Rust, du relais Node et du MCP, sans mocks.
  * Prérequis : cargo build --manifest-path backend/Cargo.toml et build du site.
  * Usage : node scripts/test-backoffice.mjs [--screenshots] [--dev]
- * Les données, mots de passe et jetons sont factices ; aucun SMTP n’est utilisé.
+ * Les données, mots de passe et jetons sont factices. Le seul serveur SMTP est
+ * un faux serveur local, sur la boucle : aucun e-mail ne part.
  */
 import assert from 'node:assert/strict';
 import { spawn, execFileSync } from 'node:child_process';
@@ -12,6 +13,7 @@ import { once } from 'node:events';
 import { access, mkdtemp, readFile, rm } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { createServer } from 'node:net';
+import { DatabaseSync } from 'node:sqlite';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { setTimeout as attendre } from 'node:timers/promises';
@@ -363,7 +365,7 @@ async function main() {
   const envBackend = {
     BACKEND_ADDR: `127.0.0.1:${portBackend}`, DATABASE_PATH: path.join(dossierTemporaire, 'portfolio.sqlite3'),
     CONTACT_EMAIL: adresseInitiale, BACKEND_PROXY_TOKEN: proxyToken, APP_ENV: 'development',
-    BACKOFFICE_EMAIL: emailConnexion, BACKOFFICE_PASSWORD: motDePasse, BACKOFFICE_TOTP_ENCRYPTION_KEY: '',
+    BACKOFFICE_EMAIL: emailConnexion, BACKOFFICE_PASSWORD: motDePasse, BACKOFFICE_TOTP_ENCRYPTION_KEY: randomBytes(32).toString('hex'),
     BACKOFFICE_COOKIE_SECURE: 'false', SMTP_HOST: '', SMTP_FROM: '', SMTP_USERNAME: '', SMTP_PASSWORD: '', SMTP_PORT: '', SMTP_TLS: '',
   };
   await demarrerBackend(envBackend);
@@ -466,9 +468,124 @@ async function main() {
   assert.equal((await requete('/api/backoffice/tokens', { session: true })).json.tokens.length, 0);
   assert((await requete('/contact')).texte.includes(adresseFinale));
   console.log('[integration] Redémarrage sans CONTACT_EMAIL : données, adresse et session conservées');
+  await testerEnvoi(envBackend);
+  await testerExpiration(envBackend);
   if (process.argv.includes('--screenshots')) await capturerInterface();
   await testerDoubleAuthentification(envBackend);
   console.log('[integration] Tous les contrôles du backoffice passent.');
+}
+
+/**
+ * Un faux serveur SMTP en clair sur la boucle locale (permis en développement) :
+ * il accepte l’authentification PLAIN et chaque message, et garde ce qu’il reçoit.
+ */
+async function fauxSmtp() {
+  const recu = { lignes: [], connexions: 0 };
+  const serveurSmtp = createServer((socket) => {
+    recu.connexions += 1;
+    socket.setEncoding('utf8');
+    socket.write('220 faux.test ESMTP\r\n');
+    let tampon = '';
+    let donnees = false;
+    socket.on('data', (morceau) => {
+      tampon += morceau;
+      let fin;
+      while ((fin = tampon.indexOf('\r\n')) >= 0) {
+        const ligne = tampon.slice(0, fin);
+        tampon = tampon.slice(fin + 2);
+        recu.lignes.push(ligne);
+        if (donnees) {
+          if (ligne === '.') { donnees = false; socket.write('250 Accepted\r\n'); }
+          continue;
+        }
+        const commande = ligne.toUpperCase();
+        if (commande.startsWith('EHLO')) socket.write('250-faux.test\r\n250-AUTH PLAIN\r\n250 8BITMIME\r\n');
+        else if (commande.startsWith('AUTH')) socket.write('235 2.7.0 OK\r\n');
+        else if (commande === 'DATA') { donnees = true; socket.write('354 Fin par un point\r\n'); }
+        else if (commande.startsWith('QUIT')) { socket.end('221 Au revoir\r\n'); }
+        else socket.write('250 OK\r\n');
+      }
+    });
+    socket.on('error', () => {});
+  });
+  serveurSmtp.listen(0, '127.0.0.1');
+  await once(serveurSmtp, 'listening');
+  return { recu, port: serveurSmtp.address().port, fermer: () => new Promise((resolve) => { serveurSmtp.close(resolve); serveurSmtp.unref(); }) };
+}
+
+/**
+ * Le serveur d’envoi réglé dans le backoffice, à travers le relais Node : le
+ * mot de passe n’est jamais renvoyé, l’essai et la notification suivante
+ * passent par le réglage enregistré, sans redémarrage, puis le réglage s’oublie.
+ */
+async function testerEnvoi() {
+  const smtp = await fauxSmtp();
+  const secretBoite = 'mot-de-passe-de-la-boite-factice';
+  try {
+    const initial = (await requete('/api/backoffice/mail', { session: true })).json;
+    assert.equal(initial.source, 'none');
+    assert.equal(initial.active, false);
+    assert.equal(initial.password_storage, true, 'La clé du .env permet de chiffrer le mot de passe.');
+    const refus = await requete('/api/backoffice/mail', { method: 'PUT', session: true, status: 422, data: { enabled: true, host: 'https://smtp.hostinger.com', port: 8080, security: 'tls', username: '', from: 'pas-une-adresse' } });
+    assert.deepEqual(Object.keys(refus.json.fields).sort(), ['from', 'host', 'port']);
+    await requete('/api/backoffice/mail/test', { method: 'POST', data: {}, session: true, status: 409 });
+    const reglage = { enabled: true, host: '127.0.0.1', port: smtp.port, security: 'none', username: 'boite@example.test', password: secretBoite, from: 'boite@example.test' };
+    await requete('/api/backoffice/mail', { method: 'PUT', data: reglage, session: true, csrf: false, status: 403 });
+    const enregistre = await requete('/api/backoffice/mail', { method: 'PUT', data: reglage, session: true });
+    assert(!enregistre.texte.includes(secretBoite), 'Le mot de passe ne revient jamais.');
+    assert.equal(enregistre.json.settings.password_set, true);
+    assert.equal(enregistre.json.active, true);
+    assert.equal((await requete('/api/backoffice/session', { session: true })).json.smtp_configured, true);
+    const base = new DatabaseSync(path.join(dossierTemporaire, 'portfolio.sqlite3'), { readOnly: true });
+    const chiffre = base.prepare('SELECT encrypted_password FROM mail_settings').get().encrypted_password;
+    base.close();
+    assert(!Buffer.from(chiffre).includes(Buffer.from(secretBoite)), 'Le mot de passe est chiffré au repos.');
+
+    const essai = await requete('/api/backoffice/mail/test', { method: 'POST', data: {}, session: true });
+    assert.equal(essai.json.result, 'sent');
+    assert.equal(essai.json.recipient, adresseFinale);
+    assert(smtp.recu.lignes.includes(`RCPT TO:<${adresseFinale}>`), 'L’essai part vers l’adresse de contact.');
+    const authentification = smtp.recu.lignes.find((ligne) => ligne.startsWith('AUTH PLAIN '));
+    assert.equal(Buffer.from(authentification.slice(11), 'base64').toString(), `\0boite@example.test\0${secretBoite}`, 'Le mot de passe déchiffré est celui saisi.');
+    const suivant = await requete('/api/backoffice/mail/test', { method: 'POST', data: {}, session: true, status: 429 });
+    assert(suivant.reponse.headers.get('retry-after'), 'L’essai suivant attend son tour.');
+
+    // La prochaine demande suit le réglage, sans redémarrage.
+    await requete('/api/contact', { method: 'POST', data: { ...message, subject: 'Notification par le réglage' } });
+    const boite = (await requete('/api/backoffice/contacts?status=all&limit=50&offset=0', { session: true })).json;
+    assert.equal(boite.contacts[0].subject, 'Notification par le réglage');
+    assert.equal(boite.contacts[0].delivery_status, 'sent');
+    assert(smtp.recu.lignes.some((ligne) => ligne.startsWith('Reply-To:') && ligne.includes(message.email)), 'Le visiteur est en Reply-To.');
+    // Les contrôles suivants comptent une seule demande.
+    await requete(`/api/backoffice/contacts/${boite.contacts[0].id}`, { method: 'DELETE', session: true });
+
+    const oublie = (await requete('/api/backoffice/mail', { method: 'DELETE', session: true })).json;
+    assert.equal(oublie.source, 'none');
+    assert.equal(oublie.settings, null);
+    console.log('[integration] Serveur d’envoi réglé, chiffré, essayé, notifié sans redémarrage puis oublié : OK');
+  } finally {
+    await smtp.fermer();
+  }
+}
+
+/** Un accès MCP expire au plus tard dans un an ; expiré, il reste listé et le MCP le refuse. */
+async function testerExpiration() {
+  await requete('/api/backoffice/tokens', { method: 'POST', data: { name: 'Trop long', scopes: ['blog:read'], expires_in_days: 366 }, session: true, status: 422 });
+  const acces = (await requete('/api/backoffice/tokens', { method: 'POST', data: { name: 'Une semaine', scopes: ['blog:read'], expires_in_days: 7 }, session: true, status: 201 })).json;
+  const jours = (Date.parse(acces.expires_at) - Date.now()) / 86_400_000;
+  assert(jours > 6.9 && jours <= 7, 'L’accès expire dans sept jours.');
+  await mcpModerne('tools/list', {}, { bearer: acces.token });
+  const base = new DatabaseSync(path.join(dossierTemporaire, 'portfolio.sqlite3'));
+  base.prepare("UPDATE tokens SET expires_at='2026-01-01T00:00:00.000Z' WHERE id=?").run(acces.id);
+  base.close();
+  const refus = await requete('/mcp', { method: 'POST', accept: 'application/json, text/event-stream', bearer: acces.token, data: { jsonrpc: '2.0', id: 1, method: 'tools/list' }, headers: { 'MCP-Protocol-Version': '2025-11-25' }, status: 401 });
+  assert.equal(refus.json.code, 'TOKEN_EXPIRED');
+  assert(refus.reponse.headers.get('www-authenticate'), 'Le relais garde l’en-tête d’authentification.');
+  assert(!refus.texte.includes('Une semaine'), 'Le refus ne dit rien de l’accès.');
+  const liste = (await requete('/api/backoffice/tokens', { session: true })).json.tokens;
+  assert.equal(liste.find(({ id }) => id === acces.id).expired, true);
+  await requete(`/api/backoffice/tokens/${acces.id}`, { method: 'DELETE', session: true });
+  console.log('[integration] Accès MCP : un an au plus, expiré refusé (TOKEN_EXPIRED) puis supprimé : OK');
 }
 
 async function testerBlog(lecture) {

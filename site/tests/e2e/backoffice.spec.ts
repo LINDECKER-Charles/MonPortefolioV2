@@ -23,10 +23,18 @@ const IMAGES = [
 ];
 const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aXioAAAAASUVORK5CYII=', 'base64');
 const NBSP = '\u00a0';
+interface VueEnvoi {
+  active: boolean; source: 'settings' | 'environment' | 'none'; recipient: string;
+  settings: { enabled: boolean; host: string; port: number; security: 'tls' | 'starttls' | 'none'; username: string; password_set: boolean; from: string; updated_at: string } | null;
+  environment: { host: string; port: number; security: 'tls' | 'starttls' | 'none'; from: string } | null;
+  problem: string | null; password_storage: boolean; allow_insecure: boolean; allowed_ports: number[];
+}
+/** Aucun serveur d’envoi : ni réglage, ni variables SMTP_*. */
+const ENVOI_VIDE: VueEnvoi = { active: false, source: 'none', recipient: 'contact@example.test', settings: null, environment: null, problem: null, password_storage: true, allow_insecure: false, allowed_ports: [465, 587, 25, 2525] };
 const NNBSP = '\u202f';
 
 /** Doubles de l’API, sans stockage réel ni envoi de courriel. */
-async function apiDouble(page: Page, options: { authenticated?: boolean; smtp?: boolean; twoFactor?: boolean; enrollment?: boolean; setupFailures?: number; tokenLimit?: boolean; disque?: { total: number; available: number } | null; imagePriseEntreTemps?: number; journalVide?: boolean } = {}) {
+async function apiDouble(page: Page, options: { authenticated?: boolean; smtp?: boolean; twoFactor?: boolean; enrollment?: boolean; setupFailures?: number; tokenLimit?: boolean; jetons?: { id: number; name: string; created_at: string; last_used_at: string | null; scopes: string[]; expires_at: string; expired: boolean }[]; envoi?: Partial<VueEnvoi>; essai?: { status: number; corps: unknown }; disque?: { total: number; available: number } | null; imagePriseEntreTemps?: number; journalVide?: boolean } = {}) {
   const etat = {
     authenticated: options.authenticated ?? false,
     smtp: options.smtp ?? true,
@@ -36,7 +44,8 @@ async function apiDouble(page: Page, options: { authenticated?: boolean; smtp?: 
     email: 'contact@example.test',
     contacts: [{ ...DEMANDE }],
     links: [] as { id: number; label: string; url: string; description: string }[],
-    tokens: [] as { id: number; name: string; created_at: string; last_used_at: string | null; scopes: string[] }[],
+    tokens: structuredClone(options.jetons ?? []) as { id: number; name: string; created_at: string; last_used_at: string | null; scopes: string[]; expires_at: string; expired: boolean }[],
+    envoi: { ...ENVOI_VIDE, ...options.envoi } as VueEnvoi,
     images: structuredClone(IMAGES),
     mutations: [] as { path: string; method: string; body: unknown; header: string | undefined }[],
     consultations: [] as string[],
@@ -109,12 +118,26 @@ async function apiDouble(page: Page, options: { authenticated?: boolean; smtp?: 
     if (path === '/tokens') {
       if (method === 'POST') {
         if (options.tokenLimit) { await repondre({ code: 'TOKEN_LIMIT_REACHED', message: 'Le portfolio compte déjà 64 accès MCP, le maximum. Révoquez un accès inutilisé pour en créer un autre.' }, 409); return; }
-        const corps = body as unknown as { name: string; scopes: string[] };
-        const jeton = { id: etat.tokens.length + 1, name: corps.name, created_at: '2026-10-08T09:00:00Z', last_used_at: null, scopes: corps.scopes };
+        const corps = body as unknown as { name: string; scopes: string[]; expires_in_days: number };
+        const jeton = { id: etat.tokens.length + 1, name: corps.name, created_at: '2026-10-08T09:00:00Z', last_used_at: null, scopes: corps.scopes, expires_at: new Date(Date.now() + corps.expires_in_days * 86_400_000).toISOString(), expired: false };
         etat.tokens.unshift(jeton);
         await repondre({ ...jeton, token: SECRET }, 201); return;
       }
       await repondre({ tokens: etat.tokens }); return;
+    }
+    if (path === '/mail') {
+      if (method === 'PUT') {
+        const corps = body as unknown as { enabled: boolean; host: string; port: number; security: 'tls' | 'starttls' | 'none'; username: string; password?: string; from: string };
+        if (corps.host.includes('/')) { await repondre({ code: 'VALIDATION_ERROR', message: 'Vérifiez les champs du formulaire.', fields: { host: 'Indiquez un nom d’hôte, par exemple smtp.hostinger.com, sans https:// ni port.' } }, 422); return; }
+        const motDePasse = Boolean(corps.password) || Boolean(etat.envoi.settings?.password_set && corps.username);
+        etat.envoi = { ...etat.envoi, active: corps.enabled, source: 'settings', settings: { enabled: corps.enabled, host: corps.host, port: corps.port, security: corps.security, username: corps.username, password_set: motDePasse, from: corps.from, updated_at: '2026-10-15T09:00:00Z' } };
+      }
+      if (method === 'DELETE') etat.envoi = { ...etat.envoi, settings: null, source: etat.envoi.environment ? 'environment' : 'none', active: Boolean(etat.envoi.environment) };
+      await repondre({ ...etat.envoi, recipient: etat.email }); return;
+    }
+    if (path === '/mail/test') {
+      const essai = options.essai ?? { status: 200, corps: { result: 'sent', recipient: etat.email, message: 'Le serveur a accepté l’e-mail d’essai.' } };
+      await repondre(essai.corps, essai.status); return;
     }
     if (path === '/storage') {
       const enMemoire = options.disque === null;
@@ -348,6 +371,8 @@ test('la boîte réception gère les statuts et confirme la suppression sans ex�
   await page.goto('/backoffice');
   const ligne = page.locator('#bo-contact-list').getByRole('button');
   await expect(ligne).toHaveCount(1);
+  // La conservation se dit sous la liste : le backend supprime une demande après trois ans.
+  await expect(page.locator('.bo-conservation')).toHaveText(`Les demandes sont supprimées automatiquement 3${NBSP}ans après leur réception.`);
   await ligne.click();
   await expect(page.locator('#bo-contact-message')).toHaveText(DEMANDE.message);
   await expect(page.locator('#bo-contact-message img')).toHaveCount(0);
@@ -393,17 +418,19 @@ test('le destinataire et les outils sont modifiables et les suggestions attenden
   const etat = await apiDouble(page, { authenticated: true, smtp: false });
   await page.goto('/backoffice');
   await expect(page.locator('#bo-contact-list').getByRole('button')).toHaveCount(1);
-  await rubrique(page, 'Adresse').focus();
+  await rubrique(page, 'E-mails').focus();
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/\/backoffice\?rubrique=settings$/);
-  await expect(page.getByRole('heading', { name: 'Adresse de contact', level: 2 })).toBeFocused();
-  await expect(rubrique(page, 'Adresse')).toHaveAttribute('aria-current', 'page');
+  await expect(page.getByRole('heading', { name: 'Adresse et serveur d’envoi', level: 2 })).toBeFocused();
+  await expect(rubrique(page, 'E-mails')).toHaveAttribute('aria-current', 'page');
   await expect(page.locator('#bo-smtp-warning')).toBeVisible();
   await page.getByLabel('Adresse e-mail', { exact: true }).fill('nouvelle-adresse@example.test');
   await page.getByRole('button', { name: 'Enregistrer l’adresse' }).click();
   await expect(page.locator('#bo-settings-retour')).toHaveText('L’adresse de contact est enregistrée.');
   await expect(page.locator('#bo-notice')).toBeHidden();
   expect(etat.email).toBe('nouvelle-adresse@example.test');
+  // L’état de l’envoi suit le nouveau destinataire.
+  await expect(page.locator('#bo-mail-recipient')).toHaveText('nouvelle-adresse@example.test');
   await accessibilite(page);
   await rubrique(page, 'Boîte à outils').click();
   await expect(page.locator('#bo-settings-retour')).toBeEmpty();
@@ -458,7 +485,7 @@ test('nouvel accès MCP en un geste : Rédaction sans les demandes, commande pr�
   }
   await accessibilite(page);
   await page.getByRole('button', { name: 'Créer l’accès', exact: true }).click();
-  expect(etat.mutations.find(({ path }) => path === '/tokens')?.body).toEqual({ name: 'Claude Code', scopes: ['blog:read', 'blog:write'] });
+  expect(etat.mutations.find(({ path }) => path === '/tokens')?.body).toEqual({ name: 'Claude Code', scopes: ['blog:read', 'blog:write'], expires_in_days: 90 });
 
   // Une seule zone éclairée : la commande, avec l’origine du site et le secret.
   // Deux lignes : le serveur du même nom est d’abord retiré, pour qu’un nouvel accès remplace l’ancien.
@@ -539,7 +566,7 @@ test('le secret ne s’affiche qu’une fois et les demandes de contact se deman
   await page.getByRole('radio', { name: 'Publication', exact: true }).check();
   await page.getByRole('checkbox', { name: 'Lire aussi les demandes de contact' }).check();
   await page.getByRole('button', { name: 'Créer l’accès', exact: true }).click();
-  expect(etat.mutations.at(-1)?.body).toEqual({ name: 'Claude Code — MacBook', scopes: ['contacts:read', 'blog:read', 'blog:write', 'blog:publish'] });
+  expect(etat.mutations.at(-1)?.body).toEqual({ name: 'Claude Code — MacBook', scopes: ['contacts:read', 'blog:read', 'blog:write', 'blog:publish'], expires_in_days: 90 });
   await expect(page.locator('#bo-token-secret')).toHaveValue(SECRET);
   await expect(page.locator('#bo-secret-retour')).toHaveText('Accès créé avec les permissions Publication et Demandes de contact.');
   await expect(page.locator('#bo-token-list .bo-etiquette')).toHaveText(['Publication', 'Demandes de contact']);
@@ -555,7 +582,7 @@ test('le secret ne s’affiche qu’une fois et les demandes de contact se deman
 
   // « Terminé » efface aussi le secret et le dit là où était la carte.
   await page.getByRole('button', { name: 'Créer l’accès', exact: true }).click();
-  expect(etat.mutations.at(-1)?.body).toEqual({ name: 'Claude Code', scopes: ['blog:read', 'blog:write'] });
+  expect(etat.mutations.at(-1)?.body).toEqual({ name: 'Claude Code', scopes: ['blog:read', 'blog:write'], expires_in_days: 90 });
   await page.getByRole('button', { name: 'Terminé', exact: true }).click();
   await expect(page.locator('#bo-token-secret')).toHaveValue('');
   await expect(page.locator('#bo-token-form-retour')).toHaveText('L’accès « Claude Code » reste actif. Son secret n’est plus affiché.');
@@ -620,12 +647,144 @@ test('révoquer un accès efface « reste actif » sous le formulaire', async ({
   await expect(page.locator('#bo-token-form-retour')).toBeEmpty();
 });
 
+test('un accès dure 90 jours par défaut, un an au plus, et la liste dit son échéance', async ({ page }) => {
+  const jour = 86_400_000;
+  const date = (decalage: number) => new Date(Date.now() + decalage).toISOString();
+  const etat = await apiDouble(page, {
+    authenticated: true,
+    jetons: [
+      { id: 3, name: 'Poste fixe', created_at: date(-10 * jour), last_used_at: null, scopes: ['blog:read'], expires_at: date(200 * jour), expired: false },
+      { id: 2, name: 'Essai', created_at: date(-1 * jour), last_used_at: null, scopes: ['blog:read'], expires_at: date(6.5 * jour), expired: false },
+      { id: 1, name: 'Ancien poste', created_at: date(-400 * jour), last_used_at: date(-40 * jour), scopes: ['blog:read'], expires_at: date(-35 * jour), expired: true },
+    ],
+  });
+  const appels = await mcpDouble(page, async () => ({ status: 401, corps: { code: 'TOKEN_EXPIRED', message: 'Cet accès MCP a expiré.' } }));
+  await page.goto('/backoffice?rubrique=tokens');
+  await expect(page.locator('#bo-tokens-count')).toHaveText('3 accès, dont 1 expiré');
+  const lignes = page.locator('#bo-token-list tr');
+  await expect(lignes.nth(0).locator('.bo-echeance')).toHaveAttribute('data-echeance', 'loin');
+  await expect(lignes.nth(0).locator('.bo-echeance')).toHaveText(/^Expire le /);
+  // Moins de 14 jours : signalé, avec ce qui reste.
+  await expect(lignes.nth(1).locator('.bo-echeance')).toHaveAttribute('data-echeance', 'proche');
+  await expect(lignes.nth(1).locator('.bo-echeance')).toContainText('dans 7 jours');
+  // Expiré : listé, refusé par le MCP, et supprimé comme les autres.
+  await expect(lignes.nth(2).locator('.bo-echeance')).toHaveText(/^Expiré le /);
+  await expect(lignes.nth(2).getByRole('button', { name: 'Supprimer Ancien poste', exact: true })).toBeVisible();
+  await accessibilite(page);
+
+  // La durée se choisit : 7 jours, 30 jours, 90 jours (par défaut) ou 1 an, jamais plus.
+  const duree = page.getByLabel('Durée', { exact: true });
+  await expect(duree).toHaveValue('90');
+  await expect(duree.locator('option')).toHaveText(['7 jours', '30 jours', '90 jours', '1 an']);
+  await duree.selectOption({ label: '1 an' });
+  await page.getByRole('button', { name: 'Créer l’accès', exact: true }).click();
+  expect(etat.mutations.at(-1)?.body).toEqual({ name: 'Claude Code', scopes: ['blog:read', 'blog:write'], expires_in_days: 365 });
+  await expect(page.locator('#bo-token-expiry')).toContainText(/^Expire le .+ À cette date, Claude Code ne pourra plus s’en servir/);
+  // Un secret expiré se dit tel quel à la vérification.
+  await page.getByRole('button', { name: 'Vérifier l’accès', exact: true }).click();
+  await expect(page.locator('#bo-secret-retour')).toHaveText('Le serveur MCP refuse ce secret : l’accès a expiré. Créez-en un autre.');
+  expect(appels.length).toBe(1);
+  await page.getByRole('button', { name: 'Terminé', exact: true }).click();
+
+  await lignes.filter({ hasText: 'Ancien poste' }).getByRole('button', { name: 'Supprimer Ancien poste', exact: true }).click();
+  await expect(page.getByRole('dialog')).toContainText('a expiré');
+  await page.getByRole('button', { name: 'Supprimer l’accès', exact: true }).click();
+  await expect(page.locator('#bo-tokens-retour')).toHaveText('L’accès expiré « Ancien poste » est supprimé.');
+  await expect(page.locator('#bo-tokens-count')).toHaveText('3 accès');
+  expect(etat.tokens.map(({ name }) => name)).not.toContain('Ancien poste');
+  verifierMutations(etat.mutations);
+});
+
+test('le serveur d’envoi se prépare pour Hostinger, s’enregistre sans renvoyer le mot de passe, s’essaie et s’oublie', async ({ page }) => {
+  const etat = await apiDouble(page, { authenticated: true, smtp: false });
+  await page.goto('/backoffice?rubrique=settings');
+  await expect(page.locator('#bo-mail-active')).toHaveText('Coupées');
+  await expect(page.locator('#bo-mail-source')).toHaveText('Aucun serveur configuré');
+  await expect(page.locator('#bo-mail-recipient')).toHaveText('contact@example.test');
+  await expect(page.locator('#bo-smtp-warning')).toBeVisible();
+  // Hors développement, pas de connexion sans TLS : l’option ne se propose pas.
+  await expect(page.getByRole('radio', { name: 'Sans TLS' })).toBeHidden();
+  await accessibilite(page);
+
+  await page.getByRole('button', { name: 'Préremplir pour Hostinger', exact: true }).click();
+  await expect(page.getByLabel('Hôte', { exact: true })).toHaveValue('smtp.hostinger.com');
+  await expect(page.getByLabel('Port', { exact: true })).toHaveValue('465');
+  await expect(page.getByRole('radio', { name: 'TLS', exact: true })).toBeChecked();
+  await expect(page.getByLabel('Identifiant', { exact: true })).toBeFocused();
+  await page.getByLabel('Identifiant', { exact: true }).fill('boite@example.test');
+  // L’adresse d’expédition reprend celle de la boîte.
+  await expect(page.getByLabel('Adresse d’expédition', { exact: true })).toHaveValue('boite@example.test');
+  // L’essai suit les réglages enregistrés : pas avant d’avoir enregistré.
+  await page.getByRole('button', { name: 'Envoyer un e-mail de test', exact: true }).click();
+  await expect(page.locator('#bo-mail-test-retour')).toHaveText('L’essai utilise les réglages enregistrés : enregistrez d’abord vos changements.');
+  expect(etat.mutations.filter(({ path }) => path === '/mail/test')).toEqual([]);
+
+  // Un champ refusé se dit sous lui, et reçoit le focus.
+  await page.getByLabel('Hôte', { exact: true }).fill('https://smtp.hostinger.com');
+  await page.getByRole('button', { name: 'Enregistrer le serveur', exact: true }).click();
+  await expect(page.locator('#bo-mail-host-erreur')).toHaveText('Indiquez un nom d’hôte, par exemple smtp.hostinger.com, sans https:// ni port.');
+  await expect(page.getByLabel('Hôte', { exact: true })).toHaveAttribute('aria-invalid', 'true');
+  await expect(page.getByLabel('Hôte', { exact: true })).toBeFocused();
+  await expect(page.locator('#bo-mail-retour')).toHaveAttribute('data-state', 'error');
+  await accessibilite(page);
+
+  await page.getByLabel('Hôte', { exact: true }).fill('smtp.hostinger.com');
+  await page.getByLabel('Mot de passe de la boîte', { exact: true }).fill('mot-de-passe-de-la-boite');
+  await page.getByRole('button', { name: 'Enregistrer le serveur', exact: true }).click();
+  await expect(page.locator('#bo-mail-retour')).toHaveText('Le serveur d’envoi est enregistré : la prochaine demande l’utilisera. Envoyez un e-mail de test pour le vérifier.');
+  expect(etat.mutations.at(-1)?.body).toEqual({ enabled: true, host: 'smtp.hostinger.com', port: 465, security: 'tls', username: 'boite@example.test', password: 'mot-de-passe-de-la-boite', from: 'boite@example.test' });
+  await expect(page.locator('#bo-mail-host-erreur')).toBeHidden();
+  await expect(page.locator('#bo-mail-active')).toHaveText('Actives');
+  await expect(page.locator('#bo-mail-source')).toContainText('Ce réglage, enregistré le');
+  await expect(page.locator('#bo-smtp-warning')).toBeHidden();
+  await expect(page.getByLabel('Mot de passe de la boîte', { exact: true })).toHaveValue('');
+  await expect(page.locator('#bo-mail-password-help')).toHaveText('Un mot de passe est enregistré, chiffré. Laissez le champ vide pour le garder.');
+  // Laissé vide, le mot de passe n’est pas envoyé : le serveur garde le sien.
+  await page.getByRole('radio', { name: 'STARTTLS', exact: true }).check();
+  await expect(page.getByLabel('Port', { exact: true })).toHaveValue('587');
+  await page.getByRole('button', { name: 'Enregistrer le serveur', exact: true }).click();
+  await expect(page.locator('#bo-mail-retour')).toHaveAttribute('data-state', 'success');
+  expect(etat.mutations.at(-1)?.body).toEqual({ enabled: true, host: 'smtp.hostinger.com', port: 587, security: 'starttls', username: 'boite@example.test', from: 'boite@example.test' });
+
+  await page.getByRole('button', { name: 'Envoyer un e-mail de test', exact: true }).click();
+  await expect(page.locator('#bo-mail-test-retour')).toHaveText('E-mail d’essai accepté par le serveur, pour contact@example.test. Vérifiez la boîte de réception, et les indésirables.');
+  await accessibilite(page);
+
+  await page.getByRole('button', { name: 'Oublier ce réglage', exact: true }).click();
+  await expect(page.getByRole('dialog')).toContainText('mot de passe compris');
+  await page.getByRole('button', { name: 'Oublier le réglage', exact: true }).click();
+  await expect(page.locator('#bo-mail-test-retour')).toHaveText('Le réglage est oublié : l’envoi est coupé.');
+  await expect(page.locator('#bo-mail-active')).toHaveText('Coupées');
+  await expect(page.locator('#bo-smtp-warning')).toBeVisible();
+  expect(etat.mutations.at(-1)).toMatchObject({ method: 'DELETE', path: '/mail' });
+  verifierMutations(etat.mutations);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+});
+
+test('l’essai dit pourquoi l’e-mail ne part pas, et le repli du serveur se signale', async ({ page }) => {
+  await apiDouble(page, {
+    authenticated: true,
+    envoi: { active: true, source: 'environment', environment: { host: 'smtp.example.test', port: 587, security: 'starttls', from: 'relais@example.test' } },
+    essai: { status: 502, corps: { code: 'SMTP_AUTH_FAILED', message: 'Le serveur a refusé l’identifiant ou le mot de passe.' } },
+  });
+  await page.goto('/backoffice?rubrique=settings');
+  await expect(page.locator('#bo-mail-source')).toHaveText('Variables SMTP_* du serveur : smtp.example.test, port 587, STARTTLS');
+  await expect(page.locator('#bo-mail-forget-zone')).toBeHidden();
+  // Le formulaire part du repli, sans identifiant ni mot de passe.
+  await expect(page.getByLabel('Hôte', { exact: true })).toHaveValue('smtp.example.test');
+  await expect(page.getByRole('radio', { name: 'STARTTLS', exact: true })).toBeChecked();
+  await page.getByRole('button', { name: 'Envoyer un e-mail de test', exact: true }).click();
+  await expect(page.locator('#bo-mail-test-retour')).toHaveText('Le serveur a refusé l’identifiant ou le mot de passe.');
+  await expect(page.locator('#bo-mail-test-retour')).toHaveAttribute('data-state', 'error');
+  await expect(page.locator('#bo-notice')).toBeHidden();
+});
+
 test('Stockage : le disque, la base, les images et les articles, du plus lourd au plus léger', async ({ page }) => {
   const etat = await apiDouble(page, { authenticated: true });
   await page.goto('/backoffice');
   await expect(page.locator('#bo-contact-list').getByRole('button')).toHaveCount(1);
   // Dernière rubrique de l’en-tête, après Blog.
-  await expect(page.getByRole('navigation', { name: 'Rubriques du backoffice' }).getByRole('link')).toHaveText([/^Demandes/, 'Adresse', 'Boîte à outils', 'Accès MCP', 'Blog', 'Stockage']);
+  await expect(page.getByRole('navigation', { name: 'Rubriques du backoffice' }).getByRole('link')).toHaveText([/^Demandes/, 'E-mails', 'Boîte à outils', 'Accès MCP', 'Blog', 'Stockage']);
   await rubrique(page, 'Stockage').click();
   await expect(page).toHaveURL(/\/backoffice\?rubrique=storage$/);
   await expect(page.getByRole('heading', { name: 'Stockage', level: 2 })).toBeFocused();
@@ -701,7 +860,7 @@ test('Stockage : le disque, la base, les images et les articles, du plus lourd a
   await expect(panneau.locator('#bo-storage-retour')).toHaveText('Les chiffres sont à jour.');
   // Quitter puis revenir relit le stockage.
   const lectures = etat.consultations.filter((chemin) => chemin === '/storage').length;
-  await rubrique(page, 'Adresse').click();
+  await rubrique(page, 'E-mails').click();
   await rubrique(page, 'Stockage').click();
   await expect.poll(() => etat.consultations.filter((chemin) => chemin === '/storage').length).toBe(lectures + 1);
 });
@@ -781,7 +940,7 @@ for (const theme of ['jour', 'nuit'] as const) {
       await expect(page.locator('#bo-contact-list').getByRole('button')).toHaveCount(1);
       await page.locator('#bo-contact-list').getByRole('button').click();
       await accessibilite(page);
-      for (const nom of ['Adresse', 'Boîte à outils', 'Accès MCP']) {
+      for (const nom of ['E-mails', 'Boîte à outils', 'Accès MCP']) {
         await rubrique(page, nom).click();
         await expect(rubrique(page, nom)).toHaveAttribute('aria-current', 'page');
         await accessibilite(page);

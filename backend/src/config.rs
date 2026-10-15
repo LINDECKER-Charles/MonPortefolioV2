@@ -49,6 +49,26 @@ pub enum SmtpTls {
     None,
 }
 
+impl SmtpTls {
+    /// Le nom employé par `SMTP_TLS` et par l’API du backoffice.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::StartTls => "starttls",
+            Self::Tls => "tls",
+            Self::None => "none",
+        }
+    }
+
+    pub fn parse(value: &str) -> Option<Self> {
+        match value {
+            "starttls" => Some(Self::StartTls),
+            "tls" => Some(Self::Tls),
+            "none" => Some(Self::None),
+            _ => None,
+        }
+    }
+}
+
 impl Config {
     pub fn from_env() -> Result<Self, String> {
         load_dotenv()?;

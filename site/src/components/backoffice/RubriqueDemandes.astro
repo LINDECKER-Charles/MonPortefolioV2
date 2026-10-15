@@ -5,6 +5,8 @@
  * éclairée de l’écran quand une demande est ouverte (scripts/backoffice.ts).
  *
  * Le texte des visiteurs est toujours inséré comme texte (`textContent`).
+ * Sous la liste, une ligne discrète dit la conservation : le backend supprime
+ * une demande 3 ans après sa réception (backend/src/contact.rs).
  */
 import EnTeteRubrique from './EnTeteRubrique.astro';
 import Retour from './Retour.astro';
@@ -35,6 +37,7 @@ import Retour from './Retour.astro';
         <span class="bo-muted chiffres" id="bo-page"></span>
         <button class="bo-button" id="bo-next" type="button">Suivantes</button>
       </div>
+      <p class="bo-help bo-conservation">Les demandes sont supprimées automatiquement 3&nbsp;ans après leur réception.</p>
     </div>
     <article class="bo-carte bo-detail" id="bo-contact-article" aria-labelledby="bo-contact-title" data-retour="bo-contact-retour">
       <h3 id="bo-contact-title">Choisissez une demande</h3>

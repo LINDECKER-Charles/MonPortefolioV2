@@ -167,6 +167,7 @@ export async function relayerApi(req, res, chemin, config, communs, recherche = 
     ['/api/backoffice/contacts', ['GET', 'HEAD']], ['/api/backoffice/links', ['GET', 'HEAD', 'POST']],
     ['/api/backoffice/tokens', ['GET', 'HEAD', 'POST']],
     ['/api/backoffice/storage', ['GET', 'HEAD']],
+    ['/api/backoffice/mail', ['GET', 'HEAD', 'PUT', 'DELETE']], ['/api/backoffice/mail/test', ['POST']],
     ['/api/backoffice/blog/posts', ['GET', 'HEAD', 'POST']],
     ['/api/backoffice/blog/media', ['GET', 'HEAD', 'POST']],
     ['/api/blog/posts', ['GET', 'HEAD']],

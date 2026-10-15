@@ -153,3 +153,45 @@ export function depuis(valeur: string, maintenant = Date.now()): string {
   if (jours < 7) return capitale(relatif.format(-jours, 'day'));
   return `Le ${jour.format(instant)}`;
 }
+
+/**
+ * Les durées proposées à la création d’un accès (backend : 1 à 365 jours,
+ * 90 sans précision). Un an au plus, une mesure de sécurité : un accès
+ * expiré ne se prolonge pas, on en crée un autre.
+ */
+export const DUREES: readonly { jours: number; libelle: string }[] = [
+  { jours: 7, libelle: '7 jours' },
+  { jours: 30, libelle: '30 jours' },
+  { jours: 90, libelle: '90 jours' },
+  { jours: 365, libelle: '1 an' },
+];
+export const DUREE_PAR_DEFAUT = 90;
+/** En deçà, la liste signale l’accès qui arrive à son terme. */
+export const SEUIL_PROCHE_JOURS = 14;
+
+export type Echeance =
+  | { etat: 'expire'; date: string }
+  | { etat: 'proche' | 'loin'; date: string; jours: number };
+
+const MS_JOUR = 86_400_000;
+
+/**
+ * L’échéance d’un accès : « Expiré le 3 oct. 2026 », « Expire le 3 nov. 2026 »,
+ * et dans moins de 14 jours, le nombre de jours qui restent (au moins 1).
+ */
+export function echeance(valeur: string, maintenant = Date.now()): Echeance {
+  const instant = Date.parse(valeur);
+  if (Number.isNaN(instant)) return { etat: 'expire', date: 'date inconnue' };
+  const date = jour.format(instant);
+  const reste = instant - maintenant;
+  if (reste <= 0) return { etat: 'expire', date };
+  const jours = Math.max(1, Math.ceil(reste / MS_JOUR));
+  return { etat: reste < SEUIL_PROCHE_JOURS * MS_JOUR ? 'proche' : 'loin', date, jours };
+}
+
+/** L’échéance en mots, pour la liste et la carte de l’accès créé. */
+export function libelleEcheance(valeur: string, maintenant = Date.now()): string {
+  const fin = echeance(valeur, maintenant);
+  if (fin.etat === 'expire') return `Expiré le ${fin.date}`;
+  return fin.etat === 'proche' ? `Expire le ${fin.date}, dans ${fin.jours} jour${fin.jours > 1 ? 's' : ''}` : `Expire le ${fin.date}`;
+}

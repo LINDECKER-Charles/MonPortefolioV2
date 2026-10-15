@@ -1,0 +1,122 @@
+---
+/**
+ * E-mails : où arrivent les demandes, et par quel serveur elles y sont
+ * notifiées. Une rubrique, trois temps, dans l’ordre où on les règle :
+ *
+ *   1. le destinataire, l’adresse de contact aussi affichée sur le site ;
+ *   2. le serveur d’envoi (SMTP) : activé ou non, hôte, sécurité, port,
+ *      identifiant, mot de passe, adresse d’expédition, avec l’indice
+ *      Hostinger et son préremplissage ;
+ *   3. à droite (dessous sous 1 100 px), l’état de l’envoi : actif ou coupé,
+ *      sa source (ce réglage, ou les variables SMTP_* du serveur en repli),
+ *      l’e-mail d’essai et « Revenir aux variables du serveur ».
+ *
+ * Le mot de passe n’est jamais renvoyé par l’API : le champ reste vide, et
+ * vide à l’enregistrement, il garde celui qui est enregistré (chiffré).
+ * Tout s’applique sans redéploiement. Le script : scripts/backoffice-envoi.ts.
+ */
+import EnTeteRubrique from './EnTeteRubrique.astro';
+import Retour from './Retour.astro';
+
+const SECURITES = [
+  { id: 'tls', titre: 'TLS', aide: 'Chiffré dès la connexion, en général sur le port 465.' },
+  { id: 'starttls', titre: 'STARTTLS', aide: 'Chiffré après l’accueil du serveur, en général sur le port 587.' },
+  { id: 'none', titre: 'Sans TLS', aide: 'Réservé au développement, vers un relais local.' },
+] as const;
+---
+
+<section class="bo-rubrique" id="bo-panel-settings" aria-labelledby="bo-titre-settings" hidden>
+  <EnTeteRubrique id="bo-titre-settings" titre="Adresse et serveur d’envoi" description="Les demandes arrivent à cette adresse, notifiées par le serveur d’envoi. Elles restent toujours conservées ici, même si l’e-mail ne part pas." />
+  <p class="bo-avis" id="bo-smtp-warning" hidden>La notification par e-mail est coupée&nbsp;: les demandes sont seulement conservées ici. Réglez le serveur d’envoi pour les recevoir aussi par e-mail.</p>
+  <div class="bo-colonnes bo-envoi">
+    <div class="bo-colonnes__principale bo-envoi__reglages">
+      <form class="bo-carte bo-formulaire" id="bo-settings-form" aria-labelledby="bo-settings-title" data-retour="bo-settings-retour">
+        <h3 id="bo-settings-title">Destinataire</h3>
+        <fieldset><legend class="sr">Destinataire des messages</legend>
+          <div class="bo-champ">
+            <label for="bo-email">Adresse e-mail</label>
+            <input id="bo-email" name="email" type="email" maxlength="254" autocomplete="email" required aria-describedby="bo-email-help" />
+            <p class="bo-help" id="bo-email-help">La prochaine demande sera envoyée à cette adresse, aussi affichée sur le site. Le changement s’applique sans redéploiement.</p>
+          </div>
+          <div class="bo-actions"><button class="bo-button bo-button--primary" type="submit">Enregistrer l’adresse</button></div>
+        </fieldset>
+        <Retour id="bo-settings-retour" />
+      </form>
+
+      <form class="bo-carte bo-formulaire" id="bo-mail-form" aria-labelledby="bo-mail-title" data-retour="bo-mail-retour" novalidate>
+        <h3 id="bo-mail-title" tabindex="-1">Serveur d’envoi</h3>
+        <fieldset><legend class="sr">Serveur d’envoi des notifications</legend>
+          <div class="bo-indice">
+            <p><strong>Avec Hostinger</strong>&nbsp;: hôte <code>smtp.hostinger.com</code>, port 465, TLS&nbsp;; l’identifiant et l’adresse d’expédition sont l’adresse de la boîte.</p>
+            <button class="bo-button bo-button--petit" id="bo-mail-hostinger" type="button">Préremplir pour Hostinger</button>
+          </div>
+          <div class="bo-case bo-option-ligne">
+            <input type="checkbox" id="bo-mail-enabled" name="enabled" aria-describedby="bo-mail-enabled-help" />
+            <p class="bo-option-ligne__texte"><label for="bo-mail-enabled">Notifier chaque demande par e-mail</label> <span class="bo-choix__aide" id="bo-mail-enabled-help">Décoché, l’envoi est coupé&nbsp;: les demandes restent conservées ici.</span></p>
+          </div>
+          <div class="bo-champ">
+            <label for="bo-mail-host">Hôte</label>
+            <input id="bo-mail-host" name="host" maxlength="253" autocomplete="off" spellcheck="false" autocapitalize="off" placeholder="smtp.hostinger.com" aria-describedby="bo-mail-host-help bo-mail-host-erreur" />
+            <p class="bo-help" id="bo-mail-host-help">Un nom d’hôte ou une adresse IP, sans <code>https://</code> ni port.</p>
+            <p class="bo-erreur-champ" id="bo-mail-host-erreur" hidden></p>
+          </div>
+          <fieldset class="bo-choix" id="bo-mail-security" aria-describedby="bo-mail-security-erreur">
+            <legend>Sécurité de la connexion</legend>
+            {SECURITES.map(({ id, titre, aide }) => (
+              <div class="bo-choix__option bo-option-ligne" data-securite={id} hidden={id === 'none'}>
+                <input type="radio" name="security" id={`bo-mail-security-${id}`} value={id} checked={id === 'tls'} aria-describedby={`bo-mail-security-${id}-aide`} />
+                <p class="bo-option-ligne__texte"><label for={`bo-mail-security-${id}`}>{titre}</label> <span class="bo-choix__aide" id={`bo-mail-security-${id}-aide`}>{aide}</span></p>
+              </div>
+            ))}
+            <p class="bo-erreur-champ" id="bo-mail-security-erreur" hidden></p>
+          </fieldset>
+          <div class="bo-champ bo-champ--court">
+            <label for="bo-mail-port">Port</label>
+            <input id="bo-mail-port" name="port" type="number" inputmode="numeric" min="1" max="65535" value="465" aria-describedby="bo-mail-port-help bo-mail-port-erreur" />
+            <p class="bo-help" id="bo-mail-port-help">465 avec TLS, 587 avec STARTTLS&nbsp;; 25 et 2525 sont aussi admis.</p>
+            <p class="bo-erreur-champ" id="bo-mail-port-erreur" hidden></p>
+          </div>
+          <div class="bo-champ">
+            <label for="bo-mail-username">Identifiant</label>
+            <input id="bo-mail-username" name="username" maxlength="254" autocomplete="off" spellcheck="false" autocapitalize="off" aria-describedby="bo-mail-username-help bo-mail-username-erreur" />
+            <p class="bo-help" id="bo-mail-username-help">Avec Hostinger, l’adresse complète de la boîte. Vide&nbsp;: aucune authentification.</p>
+            <p class="bo-erreur-champ" id="bo-mail-username-erreur" hidden></p>
+          </div>
+          <div class="bo-champ">
+            <label for="bo-mail-password">Mot de passe de la boîte</label>
+            <input id="bo-mail-password" name="password" type="password" maxlength="256" autocomplete="new-password" spellcheck="false" aria-describedby="bo-mail-password-help bo-mail-password-erreur" />
+            <p class="bo-help" id="bo-mail-password-help">Chiffré avant d’être enregistré, il ne s’affiche plus ensuite.</p>
+            <p class="bo-erreur-champ" id="bo-mail-password-erreur" hidden></p>
+          </div>
+          <div class="bo-champ">
+            <label for="bo-mail-from">Adresse d’expédition</label>
+            <input id="bo-mail-from" name="from" type="email" maxlength="254" autocomplete="off" spellcheck="false" aria-describedby="bo-mail-from-help bo-mail-from-erreur" />
+            <p class="bo-help" id="bo-mail-from-help">En général l’adresse de la boîte. «&nbsp;Répondre&nbsp;» écrit au visiteur, pas à cette adresse.</p>
+            <p class="bo-erreur-champ" id="bo-mail-from-erreur" hidden></p>
+          </div>
+          <div class="bo-actions"><button class="bo-button bo-button--primary" type="submit">Enregistrer le serveur</button></div>
+        </fieldset>
+        <Retour id="bo-mail-retour" />
+      </form>
+    </div>
+
+    <aside class="bo-carte bo-envoi__etat" aria-labelledby="bo-mail-state-title" data-retour="bo-mail-test-retour">
+      <h3 id="bo-mail-state-title">État de l’envoi</h3>
+      <dl class="bo-reference bo-envoi__resume">
+        <div><dt>Notifications</dt><dd><span class="bo-state" id="bo-mail-active" data-state="draft">Chargement…</span></dd></div>
+        <div><dt>Réglage utilisé</dt><dd id="bo-mail-source"></dd></div>
+        <div><dt>Destinataire</dt><dd id="bo-mail-recipient"></dd></div>
+      </dl>
+      <p class="bo-avis bo-envoi__probleme" id="bo-mail-problem" hidden></p>
+      <div class="bo-actions">
+        <button class="bo-button" id="bo-mail-test" type="button" aria-describedby="bo-mail-test-help">Envoyer un e-mail de test</button>
+      </div>
+      <p class="bo-help" id="bo-mail-test-help">Il part vers l’adresse de contact avec les réglages enregistrés. Un essai toutes les 15&nbsp;secondes, dix par heure.</p>
+      <Retour id="bo-mail-test-retour" />
+      <div class="bo-envoi__repli" id="bo-mail-forget-zone" hidden>
+        <button class="bo-button bo-button--quiet" id="bo-mail-forget" type="button" aria-describedby="bo-mail-forget-help">Revenir aux variables du serveur</button>
+        <p class="bo-help" id="bo-mail-forget-help"></p>
+      </div>
+    </aside>
+  </div>
+</section>

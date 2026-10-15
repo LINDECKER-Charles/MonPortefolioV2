@@ -24,7 +24,7 @@ use crate::{
     AppState,
     config::BackofficeConfig,
     error::ApiError,
-    storage::{MAX_TOKENS, StoreError, TokenCreationError, TwoFactorResult},
+    storage::{MAX_TOKEN_DAYS, MAX_TOKENS, StoreError, TokenCreationError, TwoFactorResult},
 };
 use subtle::ConstantTimeEq;
 
@@ -155,6 +155,16 @@ pub fn routes(state: AppState) -> Router<AppState> {
             axum::routing::delete(delete_token),
         )
         .route("/api/backoffice/storage", get(storage))
+        .route(
+            "/api/backoffice/mail",
+            get(crate::mail_settings::get_settings)
+                .put(crate::mail_settings::put_settings)
+                .delete(crate::mail_settings::delete_settings),
+        )
+        .route(
+            "/api/backoffice/mail/test",
+            post(crate::mail_settings::send_test),
+        )
         .route_layer(middleware::from_fn_with_state(state, require_session));
     Router::new()
         .merge(protected)
@@ -300,7 +310,8 @@ fn authenticated_response(
     token: &str,
     recovery_codes: Option<Vec<String>>,
 ) -> Response {
-    let mut body = json!({"authenticated":true,"smtp_configured":state.delivery.is_some()});
+    let mut body =
+        json!({"authenticated":true,"smtp_configured":state.mailer.is_active(&state.store)});
     if let Some(codes) = recovery_codes {
         body["recovery_codes"] = json!(codes);
     }
@@ -550,7 +561,7 @@ async fn verify_two_factor(
 }
 
 async fn session(State(state): State<AppState>) -> Json<Value> {
-    Json(json!({"authenticated":true,"smtp_configured":state.delivery.is_some()}))
+    Json(json!({"authenticated":true,"smtp_configured":state.mailer.is_active(&state.store)}))
 }
 
 async fn logout(State(state): State<AppState>, headers: HeaderMap) -> Result<Response, ApiError> {
@@ -749,6 +760,13 @@ struct TokenInput {
     name: String,
     #[serde(default = "default_token_scopes")]
     scopes: Vec<String>,
+    /// La durée de l’accès en jours, de 1 à 365 ; 90 sans précision.
+    #[serde(default = "default_token_days")]
+    expires_in_days: u32,
+}
+
+fn default_token_days() -> u32 {
+    crate::storage::DEFAULT_TOKEN_DAYS
 }
 
 /// Sans permissions explicites, un accès ne lit que le blog : les demandes de
@@ -786,16 +804,29 @@ async fn create_token(
     {
         return Err(invalid());
     }
-    let (id, token) = state
+    if !(1..=MAX_TOKEN_DAYS).contains(&payload.expires_in_days) {
+        return Err(ApiError::new(
+            StatusCode::UNPROCESSABLE_ENTITY,
+            "VALIDATION_ERROR",
+            format!("Un accès MCP dure de 1 à {MAX_TOKEN_DAYS} jours, un an au plus."),
+        ));
+    }
+    let created = state
         .store
-        .create_token_with_scopes(name, &payload.scopes)
+        .create_token_expiring(name, &payload.scopes, payload.expires_in_days)
         .map_err(|error| match error {
             TokenCreationError::LimitReached => token_limit_reached(),
             TokenCreationError::Store(error) => storage_error(error),
         })?;
     Ok((
         StatusCode::CREATED,
-        Json(json!({"id":id,"name":name,"token":token,"scopes":payload.scopes})),
+        Json(json!({
+            "id": created.id,
+            "name": name,
+            "token": created.token,
+            "scopes": payload.scopes,
+            "expires_at": created.expires_at,
+        })),
     ))
 }
 async fn delete_token(
