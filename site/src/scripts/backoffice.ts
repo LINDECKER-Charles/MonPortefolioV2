@@ -26,6 +26,7 @@ import { brancherAccesMcp } from './backoffice-acces';
 import { brancherAtelier } from './backoffice-atelier';
 import { ErreurApi, messageDe, type Dire, type Etat } from './backoffice-commun';
 import { TITRES_RUBRIQUES, type Rubrique } from '../components/backoffice/rubriques';
+import { typo } from '../lib/typo';
 
 type Statut = 'new' | 'read' | 'archived';
 type Filtre = Statut | 'all';
@@ -396,8 +397,9 @@ export function brancherBackoffice(): void {
   }
   /** Une confirmation ; `commande`, une ligne de terminal, se montre seule en code sous le message. */
   function demanderConfirmation(titre: string, message: string, libelle: string, commande = ''): Promise<boolean> {
-    texte('bo-confirm-title', titre);
-    texte('bo-confirm-message', message);
+    // Écrits dans les scripts, titre et message reçoivent ici leurs espaces insécables : le vérificateur du site ne les voit pas.
+    texte('bo-confirm-title', typo(titre));
+    texte('bo-confirm-message', typo(message));
     element('bo-confirm-code').replaceChildren(...(commande ? commande.split(' ') : []).flatMap((mot, rang) => [...(rang ? [' '] : []), creer('span', 'bo-commande__mot', mot)]));
     element('bo-confirm-code').parentElement!.hidden = !commande;
     texte('bo-confirm-submit', libelle);
