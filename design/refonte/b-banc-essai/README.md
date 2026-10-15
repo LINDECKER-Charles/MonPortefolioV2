@@ -268,7 +268,7 @@ elles ne sont pas l’illustration finale.
 - La date du titre de lead, la place du Console Manager, la part personnelle des traductions, le nom
   « League Of Data Base », le « seul » de Bloodborne et la citation sur Omnicard restent marqués.
 - Les relevés de l’audit (couverture, 1 225 téléchargements npm, 20 PR en 21 semaines) doivent être
-  consignés dans `docs/matiere-premiere.md` avant toute mise en ligne.
+  consignés dans `docs/prive/matiere-premiere.md` avant toute mise en ligne.
 - Les notes de maquette (gabarit commun, identifiants, formats, consignes) sont masquées par défaut
   et ne doivent pas exister en production.
 - Compétences n’a pas d’acte sombre : la page est à 6,86 écrans sur 7 sur mobile, sans marge pour

@@ -26,7 +26,7 @@ Le contenu et la présentation se modifient dans `index.html`, `styles.css` et `
 
 Les informations proviennent de l’ancien dépôt `MonPortfolio`, dans `front-portfolio/src/app/components/page/works/works.data.ts` et `front-portfolio/public/lang/works/works.fr.json` : **6 expériences, dont 3 bénévolats, 1 formation et 12 certifications**. Elles constituent une première base à compléter au fil des échanges.
 
-Le CV existant est repris sans modification dans `assets/cv-charles-lindecker.pdf`.
+Le CV existant était repris sans modification dans `assets/cv-charles-lindecker.pdf` ; il est rangé depuis le 2026-10-15 dans le cadrage privé (`docs/prive/cv/`), hors du dépôt public.
 
 ## Accessibilité et navigation
 
