@@ -1,12 +1,12 @@
 /**
  * Le backoffice : session, navigation entre rubriques et rubriques simples
  * (demandes, adresse, boîte à outils). Les accès MCP vivent dans
- * backoffice-acces.ts, l’atelier du blog dans blog-editor.ts (chargé à la
+ * backoffice-acces.ts, le serveur d’envoi des e-mails dans backoffice-envoi.ts, l’atelier du blog dans blog-editor.ts (chargé à la
  * demande) ; sa barre, ses retours et ses aides d’erreur dans
  * backoffice-atelier.ts.
  *
- * La rubrique Stockage vit dans backoffice-stockage.ts, chargé à sa première
- * visite.
+ * Les rubriques Stockage et E-mails vivent dans backoffice-stockage.ts et
+ * backoffice-envoi.ts, chargés à leur première visite.
  *
  * Les textes reçus de l’API sont toujours insérés comme texte.
  *
@@ -21,6 +21,7 @@
  */
 import type { BlogWorkspace } from './blog-editor';
 import type { RubriqueStockage } from './backoffice-stockage';
+import type { RubriqueEnvoi } from './backoffice-envoi';
 import { brancherAccesMcp } from './backoffice-acces';
 import { brancherAtelier } from './backoffice-atelier';
 import { ErreurApi, messageDe, type Dire, type Etat } from './backoffice-commun';
@@ -95,6 +96,8 @@ export function brancherBackoffice(): void {
   let chargementBlog: Promise<void> | undefined;
   let stockage: RubriqueStockage | undefined;
   let chargementStockage: Promise<RubriqueStockage> | undefined;
+  let envoi: RubriqueEnvoi | undefined;
+  let chargementEnvoi: Promise<RubriqueEnvoi> | undefined;
   let navigationQueue = Promise.resolve();
   let visibleURL = `${window.location.pathname}${window.location.search}`;
   let historyPosition = typeof history.state?.backofficeIndex === 'number' ? history.state.backofficeIndex : 0;
@@ -194,6 +197,23 @@ export function brancherBackoffice(): void {
     }).finally(() => { chargementStockage = undefined; });
     return chargementStockage;
   }
+  /** La rubrique E-mails (serveur d’envoi), chargée à sa première visite. */
+  function chargerEnvoi(): Promise<RubriqueEnvoi> {
+    if (envoi) return Promise.resolve(envoi);
+    chargementEnvoi ??= import('./backoffice-envoi').then(({ brancherEnvoi }) => {
+      envoi = brancherEnvoi({
+        api,
+        action: (cible, operation, attente) => action(cible, operation, attente),
+        afficher,
+        confirmer: demanderConfirmation,
+        estConnecte: () => authenticated,
+        date,
+        surEtat: (actif) => { element('bo-smtp-warning').hidden = actif; },
+      });
+      return envoi;
+    }).finally(() => { chargementEnvoi = undefined; });
+    return chargementEnvoi;
+  }
   function restaurerHistorique(targetPosition?: number): void {
     if (targetPosition !== undefined && targetPosition !== historyPosition) {
       restoringHistory = true;
@@ -224,6 +244,10 @@ export function brancherBackoffice(): void {
     choisirRubrique(rubrique);
     // La dernière utilisation des accès change sans nous : relue à chaque visite.
     if (rubrique === 'tokens' && arrivee && authenticated) void acces.charger().catch((cause: unknown) => erreur(cause, element('bo-tokens-retour')));
+    // L’état de l’envoi peut changer sans nous (variables du serveur) : relu à chaque visite.
+    if (rubrique === 'settings' && arrivee && authenticated) {
+      void chargerEnvoi().then((rubriqueEnvoi) => rubriqueEnvoi.charger()).catch((cause: unknown) => erreur(cause, element('bo-mail-retour')));
+    }
     // La place prise change à chaque import : relue à chaque visite.
     if (rubrique === 'storage' && arrivee && authenticated) {
       void chargerStockage().then((rubriqueStockage) => rubriqueStockage.charger()).catch((cause: unknown) => erreur(cause, element('bo-storage-retour')));
@@ -291,6 +315,7 @@ export function brancherBackoffice(): void {
     element<HTMLFormElement>('bo-settings-form').reset();
     resetLinkForm();
     acces.reinitialiser();
+    envoi?.reinitialiser();
     stockage?.reinitialiser();
     effacerRetours();
     choisirRubrique('contacts');
@@ -311,7 +336,7 @@ export function brancherBackoffice(): void {
         method, headers, credentials: 'same-origin', cache: 'no-store',
         ...(corps !== undefined ? { body: JSON.stringify(corps) } : {}), signal: controleur.signal,
       });
-      const contenu = await reponse.json().catch(() => ({})) as { message?: string; code?: string };
+      const contenu = await reponse.json().catch(() => ({})) as { message?: string; code?: string; fields?: Record<string, string> };
       if (!reponse.ok) {
         if (reponse.status === 401 && (authenticated || (challenge && contenu.code === 'CHALLENGE_EXPIRED'))) {
           const draft = blog?.hasUnsavedChanges();
@@ -324,6 +349,7 @@ export function brancherBackoffice(): void {
             : reponse.status === 401 ? 'La session a expiré. Connectez-vous à nouveau.' : 'La demande n’a pas abouti. Réessayez dans un instant.',
           reponse.status,
           contenu.code,
+          contenu.fields && typeof contenu.fields === 'object' ? contenu.fields : undefined,
         );
       }
       return contenu as T;
@@ -744,6 +770,7 @@ export function brancherBackoffice(): void {
     const email = element<HTMLInputElement>('bo-email').value.trim();
     void action(settingsForm, async (dire) => {
       await api('/settings', 'PUT', { email });
+      envoi?.destinataire(email);
       dire('L’adresse de contact est enregistrée.');
     }, 'Enregistrement de l’adresse…');
   });

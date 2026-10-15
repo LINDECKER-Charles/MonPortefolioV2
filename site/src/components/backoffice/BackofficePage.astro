@@ -28,7 +28,7 @@ import '../../styles/blog-editor.css';
 import EnteteBackoffice from './EnteteBackoffice.astro';
 import ConnexionBackoffice from './ConnexionBackoffice.astro';
 import RubriqueDemandes from './RubriqueDemandes.astro';
-import RubriqueAdresse from './RubriqueAdresse.astro';
+import RubriqueEmails from './RubriqueEmails.astro';
 import RubriqueOutils from './RubriqueOutils.astro';
 import RubriqueAccesMcp from './RubriqueAccesMcp.astro';
 import RubriqueStockage from './RubriqueStockage.astro';
@@ -39,7 +39,7 @@ interface Props { blogSection?: 'list' | 'redaction' | 'medias' | 'seo' | 'publi
 const { blogSection } = Astro.props;
 const titres = { list: 'Articles', redaction: 'Rédaction', medias: 'Images', seo: 'Référencement', publication: 'Publication' };
 const titre = `${blogSection ? titres[blogSection] + ' du blog' : 'Backoffice'} — Charles Lindecker`;
-const description = 'L’espace privé du portfolio de Charles Lindecker pour consulter les demandes de contact, régler leur destinataire, retrouver ses outils et surveiller le stockage.';
+const description = 'L’espace privé du portfolio de Charles Lindecker pour consulter les demandes de contact, régler leur envoi par e-mail, retrouver ses outils et suivre le stockage.';
 /** La barre du navigateur mobile, comme Base.astro : bleu roi le jour, suie la nuit. */
 const COULEUR_NUIT = '#0b0d12';
 ---
@@ -77,7 +77,7 @@ const COULEUR_NUIT = '#0b0d12';
 
       <div class="bo-workspace" id="bo-workspace" hidden>
         <RubriqueDemandes />
-        <RubriqueAdresse />
+        <RubriqueEmails />
         <RubriqueOutils />
         <RubriqueAccesMcp />
         <BlogWorkspace />

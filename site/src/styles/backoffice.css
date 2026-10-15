@@ -912,7 +912,7 @@
   margin-top: var(--s5);
 }
 
-/* ===== Adresse et boîte à outils ===== */
+/* ===== E-mails et boîte à outils ===== */
 .bo-formulaire {
   max-width: 40rem;
 }
@@ -970,6 +970,72 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--s2);
+}
+
+/* ===== E-mails : destinataire, serveur d’envoi, état ===== */
+.bo-envoi__reglages {
+  display: grid;
+  gap: var(--s6);
+}
+
+.bo-envoi__etat {
+  display: grid;
+  gap: var(--s4);
+}
+
+.bo-envoi__etat > .bo-help,
+.bo-envoi__etat > .bo-retour:not(:empty) {
+  margin-top: 0;
+}
+
+.bo-envoi__probleme {
+  margin: 0;
+  border-left-color: var(--erreur);
+}
+
+.bo-envoi__repli {
+  padding-top: var(--s4);
+  border-top: 1px solid var(--filet);
+}
+
+/* L’indice Hostinger : une ligne de référence et son préremplissage. */
+.bo-indice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2) var(--s4);
+  padding: var(--s3) var(--s4);
+  border-left: 2px solid var(--trait);
+  background: var(--fond);
+  border-radius: 0 var(--r1) var(--r1) 0;
+}
+
+.bo-indice > p {
+  flex: 1 1 20rem;
+  overflow-wrap: anywhere;
+}
+
+.bo-champ--court > input {
+  max-width: 10rem;
+}
+
+/* Le refus d’un champ, sous lui : un trait et des mots, pas la couleur seule. */
+.bo-erreur-champ {
+  margin-top: var(--s2);
+  padding-left: var(--s3);
+  border-left: 2px solid var(--erreur);
+  color: var(--erreur);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+:where(.bo) :where(input[aria-invalid='true']) {
+  border-color: var(--erreur);
+}
+
+.bo-conservation {
+  padding-top: var(--s3);
 }
 
 /* ===== Accès MCP ===== */
