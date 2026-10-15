@@ -156,7 +156,9 @@ export function brancherEnvoi(contexte: ContexteEnvoi): RubriqueEnvoi {
 
   /** Le mot de passe enregistré ne vaut que pour son serveur et son identifiant. */
   function memeServeur(reglage: Reglage): boolean {
-    return reglage.host === hote.value.trim().toLowerCase() && reglage.port === Number(port.value)
+    // L’hôte normalisé comme le backend (mail_settings.rs, validate) : sans crochets, en minuscules.
+    const hoteSaisi = hote.value.trim().replace(/^\[+|\]+$/g, '').toLowerCase();
+    return reglage.host === hoteSaisi && reglage.port === Number(port.value)
       && reglage.security === securite() && reglage.username === identifiant.value.trim();
   }
 
