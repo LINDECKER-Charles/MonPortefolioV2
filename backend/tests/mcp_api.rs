@@ -1111,3 +1111,67 @@ async fn an_image_too_heavy_to_reduce_is_refused_with_the_message_to_show_as_is(
     assert_eq!(refused["content"][0]["text"], message);
     assert!(fixture.store.list_blog_media(10, 0).unwrap().is_empty());
 }
+
+#[tokio::test]
+async fn an_expired_access_is_refused_like_an_unknown_one_but_says_why() {
+    let path = std::env::temp_dir().join(format!(
+        "portfolio-mcp-expiry-{}-{}.sqlite3",
+        std::process::id(),
+        line!()
+    ));
+    let store = Arc::new(Store::open(&path, Some("owner@example.org")).unwrap());
+    let (id, token) = store
+        .create_token_with_scopes("Expiré", &["blog:read".into()])
+        .unwrap();
+    let state = AppState::with_store(None, None, store.clone(), None, false).unwrap();
+    let app: Router = mcp::routes(state.clone()).with_state(state);
+    let payload = json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/list" });
+    assert_eq!(
+        app.clone()
+            .oneshot(legacy_request(Some(&token), payload.clone()))
+            .await
+            .unwrap()
+            .status(),
+        StatusCode::OK
+    );
+    rusqlite::Connection::open(&path)
+        .unwrap()
+        .execute(
+            "UPDATE tokens SET expires_at='2026-01-01T00:00:00.000Z' WHERE id=?1",
+            [id],
+        )
+        .unwrap();
+    let expired = app
+        .clone()
+        .oneshot(legacy_request(Some(&token), payload.clone()))
+        .await
+        .unwrap();
+    let unknown = app
+        .clone()
+        .oneshot(legacy_request(Some(&"0".repeat(64)), payload))
+        .await
+        .unwrap();
+    assert_eq!(expired.status(), StatusCode::UNAUTHORIZED);
+    assert_eq!(unknown.status(), StatusCode::UNAUTHORIZED);
+    assert_eq!(
+        expired.headers()["www-authenticate"],
+        unknown.headers()["www-authenticate"]
+    );
+    let (expired, unknown) = (body(expired).await, body(unknown).await);
+    assert_eq!(expired["code"], "TOKEN_EXPIRED");
+    assert_eq!(unknown["code"], "INVALID_TOKEN");
+    // Ni le nom, ni la date, ni les permissions : seulement le code et un message.
+    assert_eq!(
+        expired.as_object().unwrap().keys().collect::<Vec<_>>(),
+        unknown.as_object().unwrap().keys().collect::<Vec<_>>()
+    );
+    let text = expired.to_string();
+    for secret in ["Expiré", "2026-01-01", "blog:read"] {
+        assert!(!text.contains(secret), "{secret}");
+    }
+    drop(app);
+    drop(store);
+    for suffix in ["", "-wal", "-shm"] {
+        let _ = std::fs::remove_file(format!("{}{suffix}", path.display()));
+    }
+}

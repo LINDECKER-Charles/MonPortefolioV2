@@ -645,3 +645,75 @@ async fn changing_admin_password_invalidates_previous_sessions() {
         StatusCode::UNAUTHORIZED
     );
 }
+
+#[tokio::test]
+async fn mcp_accesses_expire_within_a_year_and_say_when() {
+    let (app, store) = fixture(None);
+    let cookie = login(&app).await;
+    let create = |body: Value| request("POST", "/api/backoffice/tokens", body, Some(&cookie));
+    for days in [0, 366, 1000] {
+        let refused = app
+            .clone()
+            .oneshot(create(
+                json!({"name":"Trop long","scopes":["blog:read"],"expires_in_days":days}),
+            ))
+            .await
+            .unwrap();
+        assert_eq!(refused.status(), StatusCode::UNPROCESSABLE_ENTITY, "{days}");
+        assert!(
+            body(refused).await["message"]
+                .as_str()
+                .unwrap()
+                .contains("365")
+        );
+    }
+    for (days, expected) in [(None, 90), (Some(7), 7), (Some(30), 30), (Some(365), 365)] {
+        let mut input = json!({"name":format!("Accès {expected}"),"scopes":["blog:read"]});
+        if let Some(days) = days {
+            input["expires_in_days"] = json!(days);
+        }
+        let created = app.clone().oneshot(create(input)).await.unwrap();
+        assert_eq!(created.status(), StatusCode::CREATED);
+        let created = body(created).await;
+        let end = created["expires_at"].as_str().unwrap();
+        let today = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_secs() as i64
+            / 86_400;
+        assert_eq!(civil_day(end) - today, expected, "{end} ≠ J+{expected}");
+        assert!(
+            store
+                .authenticate_token(created["token"].as_str().unwrap())
+                .unwrap()
+        );
+    }
+    let listing = body(
+        app.clone()
+            .oneshot(request(
+                "GET",
+                "/api/backoffice/tokens",
+                json!(null),
+                Some(&cookie),
+            ))
+            .await
+            .unwrap(),
+    )
+    .await;
+    for token in listing["tokens"].as_array().unwrap() {
+        assert!(token["expires_at"].is_string());
+        assert_eq!(token["expired"], false);
+    }
+}
+
+/// Le jour d’une date `AAAA-MM-JJ…`, compté depuis le 1er janvier 1970 (UTC).
+fn civil_day(date: &str) -> i64 {
+    let part = |range: std::ops::Range<usize>| date[range].parse::<i64>().unwrap();
+    let (year, month, day) = (part(0..4), part(5..7), part(8..10));
+    let year = if month <= 2 { year - 1 } else { year };
+    let era = year.div_euclid(400);
+    let year_of_era = year - era * 400;
+    let day_of_year = (153 * (month + if month > 2 { -3 } else { 9 }) + 2) / 5 + day - 1;
+    let day_of_era = year_of_era * 365 + year_of_era / 4 - year_of_era / 100 + day_of_year;
+    era * 146_097 + day_of_era - 719_468
+}

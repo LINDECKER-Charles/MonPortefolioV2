@@ -20,7 +20,7 @@ use base64::{Engine, engine::general_purpose::STANDARD};
 use serde::Deserialize;
 use serde_json::{Value, json};
 
-use crate::{AppState, blog, routes::client_ip};
+use crate::{AppState, blog, routes::client_ip, storage::TokenAccess};
 
 const MODERN_VERSION: &str = "2026-07-28";
 const LEGACY_VERSIONS: &[&str] = &["2025-11-25", "2025-06-18", "2025-03-26"];
@@ -131,22 +131,35 @@ fn guard(
                 && token.bytes().all(|byte| byte.is_ascii_graphic()))
             .then_some(token)
         });
-    match token.map(|token| state.store.authenticate_token_scopes(token)) {
-        Some(Ok(Some(scopes))) => Ok(scopes),
-        Some(Err(_)) => Err(Box::new(http_error(
-            StatusCode::SERVICE_UNAVAILABLE,
-            "L’accès MCP est temporairement indisponible.",
-        ))),
-        _ => {
-            let mut response =
-                http_error(StatusCode::UNAUTHORIZED, "Un jeton MCP valide est requis.");
-            response.headers_mut().insert(
-                header::WWW_AUTHENTICATE,
-                "Bearer realm=\"portfolio-mcp\"".parse().unwrap(),
-            );
-            Err(Box::new(response))
+    let access = match token.map(|token| state.store.authenticate_token_access(token)) {
+        Some(Ok(access)) => access,
+        None => TokenAccess::Unknown,
+        Some(Err(_)) => {
+            return Err(Box::new(http_error(
+                StatusCode::SERVICE_UNAVAILABLE,
+                "L’accès MCP est temporairement indisponible.",
+            )));
         }
-    }
+    };
+    // Un accès expiré reçoit la même réponse qu’un secret inconnu, avec son code :
+    // ni son nom, ni sa date, ni ses permissions.
+    let (code, message) = match access {
+        TokenAccess::Valid(scopes) => return Ok(scopes),
+        TokenAccess::Expired => (
+            "TOKEN_EXPIRED",
+            "Cet accès MCP a expiré. Créez-en un nouveau dans le backoffice.",
+        ),
+        TokenAccess::Unknown => ("INVALID_TOKEN", "Un jeton MCP valide est requis."),
+    };
+    let mut response = json_response(
+        StatusCode::UNAUTHORIZED,
+        json!({ "code": code, "message": message }),
+    );
+    response.headers_mut().insert(
+        header::WWW_AUTHENTICATE,
+        "Bearer realm=\"portfolio-mcp\"".parse().unwrap(),
+    );
+    Err(Box::new(response))
 }
 
 /// Les connecteurs serveur n’envoient généralement pas Origin. Un navigateur doit rester

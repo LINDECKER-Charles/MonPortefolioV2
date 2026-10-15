@@ -24,7 +24,7 @@ use crate::{
     AppState,
     config::BackofficeConfig,
     error::ApiError,
-    storage::{MAX_TOKENS, StoreError, TokenCreationError, TwoFactorResult},
+    storage::{MAX_TOKEN_DAYS, MAX_TOKENS, StoreError, TokenCreationError, TwoFactorResult},
 };
 use subtle::ConstantTimeEq;
 
@@ -749,6 +749,13 @@ struct TokenInput {
     name: String,
     #[serde(default = "default_token_scopes")]
     scopes: Vec<String>,
+    /// La durée de l’accès en jours, de 1 à 365 ; 90 sans précision.
+    #[serde(default = "default_token_days")]
+    expires_in_days: u32,
+}
+
+fn default_token_days() -> u32 {
+    crate::storage::DEFAULT_TOKEN_DAYS
 }
 
 /// Sans permissions explicites, un accès ne lit que le blog : les demandes de
@@ -786,16 +793,29 @@ async fn create_token(
     {
         return Err(invalid());
     }
-    let (id, token) = state
+    if !(1..=MAX_TOKEN_DAYS).contains(&payload.expires_in_days) {
+        return Err(ApiError::new(
+            StatusCode::UNPROCESSABLE_ENTITY,
+            "VALIDATION_ERROR",
+            format!("Un accès MCP dure de 1 à {MAX_TOKEN_DAYS} jours, un an au plus."),
+        ));
+    }
+    let created = state
         .store
-        .create_token_with_scopes(name, &payload.scopes)
+        .create_token_expiring(name, &payload.scopes, payload.expires_in_days)
         .map_err(|error| match error {
             TokenCreationError::LimitReached => token_limit_reached(),
             TokenCreationError::Store(error) => storage_error(error),
         })?;
     Ok((
         StatusCode::CREATED,
-        Json(json!({"id":id,"name":name,"token":token,"scopes":payload.scopes})),
+        Json(json!({
+            "id": created.id,
+            "name": name,
+            "token": created.token,
+            "scopes": payload.scopes,
+            "expires_at": created.expires_at,
+        })),
     ))
 }
 async fn delete_token(
