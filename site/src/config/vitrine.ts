@@ -69,6 +69,12 @@ export interface CaptureCarte {
    * une famille de trois, le panneau prend la hauteur du plus haut visuel.
    */
   remplir?: boolean;
+  /**
+   * Avec `remplir` : la part haute de la capture (en %) qui peut paraître,
+   * quelle que soit la hauteur du panneau. Le bas de l’image (un panneau
+   * coupé, par exemple) n’entre jamais dans le cadre.
+   */
+  hauteurUtile?: number;
   sizes?: string;
 }
 
@@ -180,6 +186,9 @@ export const CARTES: Readonly<Record<ProjetVitrine['id'], CarteVitrine>> = {
         ratio: '16 / 10',
         position: '50% 12%',
         remplir: true,
+        // Le paysage seul, jamais la « Récompense quotidienne » coupée sous lui
+        // (son cadre commence à 83 % de la hauteur), à toutes les largeurs.
+        hauteurUtile: 79,
         widths: [480, 960, 1440],
       },
     },

@@ -130,6 +130,7 @@ const contenue = (id: string) => visuelParId(id)?.fond === 'transparent';
                         {...carte.visuel.capture}
                         sizes={carte.visuel.capture.sizes ?? (carte.visuel.capture.type === 'telephone' ? '(max-width: 860px) 200px, 150px' : '(max-width: 860px) 100vw, 400px')}
                         class:list={['vitrine-capture', `vitrine-capture--${carte.visuel.capture.type}`, { 'vitrine-capture--remplie': carte.visuel.capture.remplir }]}
+                        style={carte.visuel.capture.hauteurUtile ? `--hauteur-utile:${carte.visuel.capture.hauteurUtile}` : undefined}
                       />
                     )
                   }
@@ -286,6 +287,15 @@ const contenue = (id: string) => visuelParId(id)?.fond === 'transparent';
     .vitrine-corps :global(.vitrine-capture--remplie .capture__vue img) {
       position: absolute;
       inset: 0;
+    }
+
+    /* `--hauteur-utile` (config/vitrine.ts, `hauteurUtile`) : l’image déborde
+       la vue par le bas, d’autant qu’il faut pour que sa part basse n’y entre
+       jamais ; la vue, recadrée, la coupe (overflow: hidden). Le sélecteur
+       l’emporte sur la hauteur du recadrage de CadreCapture. */
+    .vitrine-corps :global(.vitrine-capture--remplie.capture--recadree .capture__vue picture img) {
+      bottom: auto;
+      height: calc(100% * 100 / var(--hauteur-utile, 100));
     }
   }
 
