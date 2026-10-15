@@ -11,7 +11,8 @@
  * un CDI, laiton pour une mission, hachures pour le bénévolat, gris pour un
  * stage, contour pour une formation. Une activité en cours finit en pointe à
  * droite. Chaque année commence à un trait plein (1er
- * janvier), son libellé à droite ; les trimestres restent en pointillé.
+ * janvier), son libellé à droite (sauf une première année entamée trop
+ * courte pour le porter) ; les trimestres restent en pointillé.
  * L’échelle s’arrête au mois de la construction du site.
  *
  * Un rôle tenu seulement depuis un mois donné (`bascule`, PvZ Fusion :
@@ -94,12 +95,16 @@ for (let rang = Math.ceil(origine); rang < terme; rang += 1) {
 }
 
 // Années, posées à droite de leur repère du 1er janvier (de l’origine pour la
-// première, entamée) ; une année de moins de deux mois sur l’échelle n’a pas de libellé.
+// première, entamée) ; une année de moins de deux mois sur l’échelle n’a pas de
+// libellé. La première, entamée, n’en a pas non plus si elle tient moins de
+// 15 % de l’échelle : son libellé toucherait celui de l’année suivante sur un
+// téléphone (« 2023 2024 » dans la frise du hub, qui part de septembre 2023).
 const annees: { annee: number; x: number }[] = [];
 for (let annee = Math.floor(origine / 12); annee * 12 < terme; annee += 1) {
   const de = Math.max(origine, annee * 12);
   const a = Math.min(terme, (annee + 1) * 12);
-  if (a - de >= 2) annees.push({ annee, x: arrondi(position(de)) });
+  const entameeEtroite = de === origine && de > annee * 12 && a < terme && (a - de) / etendue < 0.15;
+  if (a - de >= 2 && !entameeEtroite) annees.push({ annee, x: arrondi(position(de)) });
 }
 
 const presentes = [...new Set(couloirs.flatMap((c) => c.lignes.map((l) => l.nature)))];
@@ -415,8 +420,12 @@ const avecCouloirs = couloirs.some((c) => c.nom);
       --ecart: 0px;
     }
 
+    /* Le nom du couloir, comme le texte des lignes : les traits des années
+       passent derrière lui, jamais à travers. */
     .frise__couloir-nom {
-      width: auto;
+      width: fit-content;
+      padding-right: var(--s2);
+      background: var(--fond-frise, var(--surface));
     }
 
     .frise__ligne a {
