@@ -190,7 +190,9 @@ Il doit rester démarré pour assurer les publications à l’heure prévue.
 Les treize outils MCP du blog permettent les mêmes opérations, y compris les images, l’aperçu et
 l’audit SEO, plus la suppression d’une image qu’aucun article ne cite (`blog:publish`). Les révisions empêchent une IA et l’éditeur d’écraser leurs changements respectifs.
 Les articles publics contiennent leur texte et leurs métadonnées dans le HTML, avec balisage
-`BlogPosting` et sitemap actualisé. Aucun article fictif n’est publié. Contrat complet et exemple
+`BlogPosting` relié à la personne du site, fil d’Ariane et sitemap actualisé ; le flux RSS des
+vingt derniers articles est servi sous `/blog/rss.xml`. Tant qu’aucun article n’est publié, la
+page `/blog` reste hors index et hors sitemap. Aucun article fictif n’est publié. Contrat complet et exemple
 de document structuré : [`backend/README.md`](backend/README.md).
 
 **Articles de démonstration (local).** Pour juger le rendu réel des articles, `npm run blog:demo`
