@@ -18,9 +18,12 @@
 # test qui reprendrait celui de la production melangerait ses visites aux
 # siennes.
 #
-# Pas d'etiquette umami.team : les teams servent a ouvrir un site a un client,
-# et ce site n'en a pas. Sans elle, le reconciler ne touche pas au rangement du
-# site dans Umami.
+# umami.team range le site dans la team `portefolio`, creee et tenue par le
+# reconciler : c'est elle qui ouvre ses statistiques a un compte
+# « Consultation » (rapport-portefolio), ajoute a la main par l'admin
+# d'Umami. Le reconciler ne voit que les sites de ses propres teams : un
+# rangement fait dans l'UI, dans une team qu'il n'a pas creee, lui ferait
+# perdre le site.
 
 services:
   web:
@@ -37,3 +40,4 @@ services:
       umami.website: ${UMAMI_WEBSITE_ID:?UMAMI_WEBSITE_ID est requis par compose.umami.yaml (UUID du site)}
       umami.domain: ${UMAMI_SITE_DOMAIN:?UMAMI_SITE_DOMAIN est requis par compose.umami.yaml (nom d hote nu)}
       umami.name: ${UMAMI_SITE_NAME:?UMAMI_SITE_NAME est requis par compose.umami.yaml (nom affiche dans Umami)}
+      umami.team: portefolio
