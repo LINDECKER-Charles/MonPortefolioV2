@@ -86,7 +86,7 @@ configuration SMTP pour l’envoi réel. Récapitulatif :
 | Clé | Obligatoire | Test | Production | Rôle |
 |---|---|---|---|---|
 | `COMPOSE_PROJECT_NAME` | oui | `portfolio-test` | `portfolio-prod` | isole les piles sur la même machine |
-| `COMPOSE_FILE` | non | `compose.yaml:compose.deploy.yaml:compose.umami.yaml` | `compose.yaml:compose.deploy.yaml` | confort : un `docker compose` lancé à la main dans le dossier charge les bons calques. Le déploiement choisit les siens et signale un écart |
+| `COMPOSE_FILE` | non | `compose.yaml:compose.deploy.yaml:compose.umami.yaml` | idem | confort : un `docker compose` lancé à la main dans le dossier charge les bons calques. Le déploiement choisit les siens et signale un écart |
 | `WEB_IMAGE` | non | `ghcr.io/lindecker-charles/monportefoliov2` | idem | image publiée par la CI |
 | `BACKEND_IMAGE` | non | `ghcr.io/lindecker-charles/monportefoliov2-backend` | idem | image Rust publiée avec le site |
 | `IMAGE_TAG` | oui | `staging` | `prod` | étiquette mobile déployée |
@@ -105,7 +105,7 @@ configuration SMTP pour l’envoi réel. Récapitulatif :
 | `ROBOTS_TAG` | non | `noindex` | `all` | en-tête `X-Robots-Tag` posé par l'edge |
 | `REDIRECT_HOSTS` | non | — | `www.charles-lindecker.com` | hôtes renvoyés en 301 vers `CANONICAL_ORIGIN` par le serveur du site |
 | `CANONICAL_ORIGIN` | avec `REDIRECT_HOSTS` | — | `https://charles-lindecker.com` | origine canonique (https, sans chemin) |
-| `UMAMI_WEBSITE_ID` | pour mesurer | `100ee54a-6c1f-46cc-a67e-8ac78d57d51d` | plus tard : `0450b7ff-eb45-4328-a93e-496cd25b3348` | active la mesure d'audience : ajoute `compose.umami.yaml` |
+| `UMAMI_WEBSITE_ID` | pour mesurer | `100ee54a-6c1f-46cc-a67e-8ac78d57d51d` | `0450b7ff-eb45-4328-a93e-496cd25b3348` | active la mesure d'audience : ajoute `compose.umami.yaml` |
 | `UMAMI_SITE_DOMAIN` | avec l'ID | `test.charles-lindecker.com` | `charles-lindecker.com` | nom d'hôte nu mesuré (`data-domains`, `umami.domain`) |
 | `UMAMI_SITE_NAME` | avec l'ID | `Portfolio V2 (test)` | `Portfolio` | nom du site dans Umami |
 | `TLS_ASSERT` | non | `1` | `1` | échec du déploiement si un domaine ne sert pas un certificat valide |

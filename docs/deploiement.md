@@ -141,7 +141,7 @@ exécute ce dernier depuis le fichier. Le script :
 | Domaines | `test.charles-lindecker.com` (`test.v2.` jusqu'à la bascule) | `charles-lindecker.com`, `www.charles-lindecker.com` |
 | Hôte canonique | — | `www.` renvoyé en 301 vers l'apex |
 | Indexation (`X-Robots-Tag`) | `noindex` | `all` |
-| Mesure d'audience | active, site Umami « Portfolio V2 (test) » | préparée, commentée : après la purge à 25 mois |
+| Mesure d'audience | active, site Umami « Portfolio V2 (test) » | active depuis le 2026-10-16, site Umami « Portfolio » |
 | État au 2026-10-15 | en service | en service depuis la bascule ([`bascule.md`](bascule.md)) |
 
 Les dossiers et les noms de projet de la V2 sont distincts de ceux de la V1
