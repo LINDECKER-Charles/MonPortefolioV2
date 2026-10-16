@@ -153,7 +153,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 | FIG | Figure codée | Coder depuis des données sourcées. Jamais générée : pas de fichier image à produire ici. |
 | CAP | Capture réelle | Capturer l’application ou la page réelle. Jamais une image générée présentée comme une capture. |
 | PHO | Photo réelle | Photo réelle de Charles : détourage, bichromie et filtres déterministes seulement. Jamais régénérée. |
-| OG | Image de partage | Composer en HTML avec la vraie typographie, puis rendre en PNG de 1 200 × 630. |
+| OG | Image de partage | Composer en HTML avec la vraie typographie, puis rendre en JPEG de 1 200 × 630, sous 300 Ko. |
 
 ## Livraison
 
@@ -163,7 +163,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 - **Sans master de nuit**, le script écrit une nuit de repli « clair de lune » tirée du jour, sans inversion (encre (`#000000`) → `--fond`, aplat (`#FFFFFF`) → `--papier-lune`, lumière (`#FF0000`) → `--lanterne`), et le signale : ce n’est pas une livraison, `npm run visuels` la liste jusqu’à ce que le master de nuit arrive.
 - **Poids d’un WebP** (chacun des deux rendus), selon son plus grand côté : 40 Ko jusqu’à 480 px, 120 Ko jusqu’à 1 200 px, 250 Ko au-delà. Un rendu plus lourd en qualité 82 est réencodé, pour lui seul, à la qualité qui le fait tenir (pas de 2, jamais sous 50), et le script le signale ; un master trop chargé pour tenir même à 50 est à simplifier.
 - **Dessin vectoriel** : `<ID>.svg`, au chemin attendu. Un lot est un sprite : un `<symbol id>` par pièce, aux identifiants listés par la fiche (« Pièces du fichier »).
-- **Image de partage** : `public/og/<ID>_1200x630.png`, ou les fichiers nommés par la fiche quand elle en attend plusieurs.
+- **Image de partage** : `public/og/<ID>_1200x630.jpg`, ou les fichiers nommés par la fiche quand elle en attend plusieurs.
 - **Provenance** : pour chaque fichier, une ligne du tableau `Fichier | Prompt | Date | Provenance` de `design/assets/visuels/<série>/README.md` et de `site/src/assets/visuels/<série>/README.md`.
 - **Vérifier** avec `npm run visuels -- --verifier` (dans `site/`) : dimensions annoncées par le nom, ratio, fond transparent, poids, présence des deux rendus et des deux masters d’une image générée, au même cadrage ; pièces d’un SVG. Une nuit de repli y est un écart : il manque le master de nuit. Puis relancer `npm run visuels:doc` : le visuel livré sort des files.
 - **Commit par série** : les masters, les rendus, les lignes de provenance et cette commande régénérée, en un commit Conventional Commits en français (section « commit » d’`AGENTS.md`), par exemple `feat(site): livrer les images de la série « Compétences humaines »`. Jamais d’image d’essai écartée dans un commit.
@@ -1811,7 +1811,7 @@ Rien ici n’est à générer : les dessins vectoriels s’écrivent à la main,
 - **Sujet** : Version simplifiée de PVZ-01
 - **Composition** : Version simplifiée de PVZ-01 (la table et la fiche transmise à la lumière de la lanterne), composée en HTML avec le titre de la page ; marge de sécurité de 10 %
 - **Format** : 1200 × 630
-- **Fichier attendu** : `site/public/og/PVZ-OG_1200x630.png`
+- **Fichier attendu** : `site/public/og/PVZ-OG_1200x630.jpg`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « PvZ Fusion, pôle francophone — Charles Lindecker »
 
 ### League Of Data Base
@@ -1995,7 +1995,7 @@ Rien ici n’est à générer : les dessins vectoriels s’écrivent à la main,
 - **Sujet** : Carte et engrenage imbriqués
 - **Composition** : Centré, beaucoup d’air
 - **Format** : 1200 × 630
-- **Fichier attendu** : `site/public/og/OMN-OG_1200x630.png`
+- **Fichier attendu** : `site/public/og/OMN-OG_1200x630.jpg`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Omnicard, du jeu papier au jeu en ligne — Charles Lindecker »
 
 ### Bloodborne Legendary Run
@@ -2060,7 +2060,7 @@ Rien ici n’est à générer : les dessins vectoriels s’écrivent à la main,
 - **Sujet** : Trois silhouettes de constellations
 - **Composition** : Titre à gauche, constellations à droite
 - **Format** : 1200 × 630
-- **Fichier attendu** : `site/public/og/BLR-OG_1200x630.png`
+- **Fichier attendu** : `site/public/og/BLR-OG_1200x630.jpg`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Bloodborne Legendary Run — Charles Lindecker »
 
 ### Parcours : hub, professionnel, compétences, formation
@@ -2176,7 +2176,7 @@ Fiches pour mémoire : rien à produire.
 - **Sujet** : Nom, métier, accroche, emblème, photo en couleur (chemise bleu roi)
 - **Composition** : Typographie réelle de la direction : Instrument Serif pour l’accroche, Instrument Sans pour le nom et le métier, sur la pierre du jour
 - **Format** : 1200 × 630
-- **Fichier attendu** : `site/public/og/GLO-07_1200x630.png`
+- **Fichier attendu** : `site/public/og/GLO-07_1200x630.jpg`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Charles Lindecker, architecte logiciel. Je maîtrise d’abord les règles du jeu. Ensuite, je les réinvente. »
 
 #### GLO-08 · Gabarit de GLO-07 avec le visuel de la page : Projets, chaque projet, Parcours et ses trois pages, Contact, Blog, Mentions légales
@@ -2188,7 +2188,7 @@ Fiches pour mémoire : rien à produire.
 - **Sujet** : Gabarit de GLO-07 avec le visuel de la page : Projets, chaque projet, Parcours et ses trois pages, Contact, Blog, Mentions légales
 - **Composition** : Titre à gauche, visuel à droite, emblème en bas
 - **Format** : 1200 × 630 (×17)
-- **Fichiers attendus** (17) : `site/public/og/GLO-08-projets_1200x630.png` (alt « Charles Lindecker, Projets. ») ; `site/public/og/GLO-08-projets-pvz-fusion_1200x630.png` (alt « Charles Lindecker, PvZ Fusion, pôle francophone : une équipe formée et menée. ») ; `site/public/og/GLO-08-projets-omnicard_1200x630.png` (alt « Charles Lindecker, Omnicard : réinventer. ») ; `site/public/og/GLO-08-projets-bloodborne-legendary-run_1200x630.png` (alt « Charles Lindecker, Bloodborne Legendary Run : un produit de bout en bout. ») ; `site/public/og/GLO-08-projets-league-of-database_1200x630.png` (alt « Charles Lindecker, League Of Data Base : un système en production. ») ; `site/public/og/GLO-08-projets-gup_1200x630.png` (alt « Charles Lindecker, gup : un outil open source. ») ; `site/public/og/GLO-08-projets-githealth_1200x630.png` (alt « Charles Lindecker, GitHealth : une application de bureau. ») ; `site/public/og/GLO-08-projets-karl-scraper_1200x630.png` (alt « Charles Lindecker, Karl Scraper : automatiser des tâches. ») ; `site/public/og/GLO-08-projets-sillage_1200x630.png` (alt « Charles Lindecker, Sillage : orchestrer des agents IA. ») ; `site/public/og/GLO-08-projets-relais_1200x630.png` (alt « Charles Lindecker, Relais : encadrer des agents IA. ») ; `site/public/og/GLO-08-parcours_1200x630.png` (alt « Charles Lindecker, Parcours. ») ; `site/public/og/GLO-08-parcours-professionnel_1200x630.png` (alt « Charles Lindecker, Parcours professionnel. ») ; `site/public/og/GLO-08-parcours-competences_1200x630.png` (alt « Charles Lindecker, Compétences. ») ; `site/public/og/GLO-08-parcours-formation_1200x630.png` (alt « Charles Lindecker, Formation et certifications. ») ; `site/public/og/GLO-08-contact_1200x630.png` (alt « Charles Lindecker, Discutons. ») ; `site/public/og/GLO-08-blog_1200x630.png` (alt « Charles Lindecker, Blog. ») ; `site/public/og/GLO-08-mentions-legales_1200x630.png` (alt « Charles Lindecker, Mentions légales. »)
+- **Fichiers attendus** (17) : `site/public/og/GLO-08-projets_1200x630.jpg` (alt « Charles Lindecker, Projets. ») ; `site/public/og/GLO-08-projets-pvz-fusion_1200x630.jpg` (alt « Charles Lindecker, PvZ Fusion, pôle francophone : une équipe formée et menée. ») ; `site/public/og/GLO-08-projets-omnicard_1200x630.jpg` (alt « Charles Lindecker, Omnicard : réinventer. ») ; `site/public/og/GLO-08-projets-bloodborne-legendary-run_1200x630.jpg` (alt « Charles Lindecker, Bloodborne Legendary Run : un produit de bout en bout. ») ; `site/public/og/GLO-08-projets-league-of-database_1200x630.jpg` (alt « Charles Lindecker, League Of Data Base : un système en production. ») ; `site/public/og/GLO-08-projets-gup_1200x630.jpg` (alt « Charles Lindecker, gup : un outil open source. ») ; `site/public/og/GLO-08-projets-githealth_1200x630.jpg` (alt « Charles Lindecker, GitHealth : une application de bureau. ») ; `site/public/og/GLO-08-projets-karl-scraper_1200x630.jpg` (alt « Charles Lindecker, Karl Scraper : automatiser des tâches. ») ; `site/public/og/GLO-08-projets-sillage_1200x630.jpg` (alt « Charles Lindecker, Sillage : orchestrer des agents IA. ») ; `site/public/og/GLO-08-projets-relais_1200x630.jpg` (alt « Charles Lindecker, Relais : encadrer des agents IA. ») ; `site/public/og/GLO-08-parcours_1200x630.jpg` (alt « Charles Lindecker, Parcours. ») ; `site/public/og/GLO-08-parcours-professionnel_1200x630.jpg` (alt « Charles Lindecker, Parcours professionnel. ») ; `site/public/og/GLO-08-parcours-competences_1200x630.jpg` (alt « Charles Lindecker, Compétences. ») ; `site/public/og/GLO-08-parcours-formation_1200x630.jpg` (alt « Charles Lindecker, Formation et certifications. ») ; `site/public/og/GLO-08-contact_1200x630.jpg` (alt « Charles Lindecker, Discutons. ») ; `site/public/og/GLO-08-blog_1200x630.jpg` (alt « Charles Lindecker, Blog. ») ; `site/public/og/GLO-08-mentions-legales_1200x630.jpg` (alt « Charles Lindecker, Mentions légales. »)
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Charles Lindecker et le titre de la page partagée, par exemple « Charles Lindecker, Parcours. » (voir chaque déclinaison). »
 - **Note** : Dix-sept déclinaisons, une par page publique : treize livrées le 13 octobre 2026, puis, le 14 octobre 2026, GitHealth, Karl Scraper, Sillage et Relais, avec Projets et chaque projet dans l’ordre de la vitrine en quatre familles. Ordre et textes : lib/partage.ts est la seule source de leurs titres et de leurs alts, tools/generer-partage.mjs les compose en HTML avec la vraie typographie, et layouts/Base.astro choisit celle de la page. Le visuel de droite est une photo de séance (Contact, Parcours) ou la lanterne allumée ; PVZ-OG, OMN-OG et BLR-OG pourront le remplacer pour leur projet. La 404 garde l’image par défaut, GLO-07.
 

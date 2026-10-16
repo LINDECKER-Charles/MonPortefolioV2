@@ -44,8 +44,10 @@ d’ordinateur et du pied de page :
   ICO, icône Apple et icônes d’application.
 - **Images de partage (GLO-07 et GLO-08)** : `node --disable-warning=ExperimentalWarning
   tools/generer-partage.mjs` compose une image par page, avec Instrument Serif et Instrument
-  Sans, le logo validé et les photos de séance (`site/src/lib/partage.ts`). L’image par défaut
-  est aussi copiée en `site/public/og/accueil.png`, l’image de repli des articles du blog.
+  Sans, le logo validé et les photos de séance (`site/src/lib/partage.ts`). Depuis le
+  2026-10-16, elles sont rendues en JPEG sous 300 Ko (WhatsApp n’affiche souvent pas l’aperçu
+  d’une image plus lourde) ; `accueil.png` est retirée, et l’image du blog (GLO-08-blog) sert de
+  repli aux articles sans image.
 
 **Correction du favicon du 2026-10-14.** Le repli ICO sombre pouvait disparaître sur des
 onglets sombres ; les deux PNG dépendaient de la sélection de `media` par le navigateur,
