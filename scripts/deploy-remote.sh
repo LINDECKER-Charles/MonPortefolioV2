@@ -131,29 +131,15 @@ calques="compose.yaml:compose.deploy.yaml"
 # forme sure (voir compose.umami.yaml). Hors de ce calque, l'etiquette
 # caddy.import n'existe pas ; un import vide ferait au contraire refuser la
 # configuration de l'edge, donc couperait TOUS les sites du VPS.
-site_umami="$(lire_env UMAMI_WEBSITE_ID)"
-tableau_umami="$(lire_env UMAMI_DASHBOARD_DOMAIN)"
-if [ -n "${site_umami}" ]; then
+if [ -n "$(lire_env UMAMI_WEBSITE_ID)" ]; then
   exiger_fichier compose.umami.yaml
   calques="${calques}:compose.umami.yaml"
-fi
-if [ -n "${tableau_umami}" ]; then
-  # Le tableau de bord mene au site Umami de cet environnement : sans site
-  # declare, le domaine s'ouvrirait sur une liste ou sur un refus.
-  if [ -z "${site_umami}" ]; then
-    echo "UMAMI_DASHBOARD_DOMAIN est pose sans UMAMI_WEBSITE_ID dans le .env de ${DEPLOY_PATH}." >&2
-    echo "Generer l'ID du site de cet environnement (docs/mesure-audience.md)," >&2
-    echo "ou retirer UMAMI_DASHBOARD_DOMAIN du secret ENV_TEST / ENV_PROD." >&2
-    exit 1
-  fi
-  exiger_fichier compose.umami-tableau.yaml
-  calques="${calques}:compose.umami-tableau.yaml"
 fi
 export COMPOSE_FILE="${calques}"
 
 # COMPOSE_FILE du .env n'est qu'un confort pour les commandes lancees a la main
 # dans ce repertoire. S'il diverge, le premier "docker compose up" manuel
-# recreerait le conteneur sans ses calques de mesure, sans rien dire : on le
+# recreerait le conteneur sans son calque de mesure, sans rien dire : on le
 # signale a chaque deploiement, sans bloquer celui-ci.
 confort="$(lire_env COMPOSE_FILE)"
 if [ -n "${confort}" ] && [ "${confort}" != "${calques}" ]; then
@@ -177,9 +163,7 @@ fi
 # dessus, et rien ne le signale. Cas connu : la V1 du portfolio (piles
 # monportfolio-staging et monportfolio-prod) declare charles-lindecker.com,
 # www. et test. tant qu'elle n'a pas ete deplacee sur son sous-domaine
-# d'archive. Autre cas : le domaine du tableau de bord Umami, tant qu'il reste
-# le domaine global de l'instance (UMAMI_DOMAIN de la pile analytics
-# d'infra-vps). Ce deploiement refuse donc de demarrer, AVANT le "up", tant qu'un
+# d'archive. Ce deploiement refuse donc de demarrer, AVANT le "up", tant qu'un
 # conteneur d'un AUTRE projet declare l'un de nos domaines. Les conteneurs de ce
 # projet-ci (meme nom de projet) sont ignores : ce sont ceux qu'il remplace.
 domaines_des_autres() {
@@ -208,7 +192,7 @@ domaines_des_autres() {
         }'
 }
 
-conflits="$(domaines_des_autres | awk -F'|' -v nos="${domaines} ${tableau_umami}" '
+conflits="$(domaines_des_autres | awk -F'|' -v nos="${domaines}" '
   BEGIN {
     n = split(tolower(nos), t, /[ \t,]+/)
     for (i = 1; i <= n; i++) if (t[i] != "") cherche[t[i]] = 1
@@ -219,9 +203,7 @@ if [ -n "${conflits}" ]; then
   printf '%s\n' "${conflits}" >&2
   echo "Deux projets qui declarent le meme domaine se marchent dessus. Retirer" >&2
   echo "d'abord ce domaine de l'autre projet ; pour la V1 du portfolio, la" >&2
-  echo "deplacer sur son sous-domaine d'archive (docs/deploiement.md, bascule) ;" >&2
-  echo "pour le domaine global d'Umami, changer UMAMI_DOMAIN cote infra-vps" >&2
-  echo "(docs/mesure-audience.md, tableau de bord)." >&2
+  echo "deplacer sur son sous-domaine d'archive (docs/deploiement.md, bascule)." >&2
   exit 1
 fi
 
@@ -333,15 +315,6 @@ assert_tls() {
       return 1
     fi
   done
-  if [ -n "${tableau_umami}" ]; then
-    # Le tableau de bord est servi par Umami (pile analytics d'infra-vps) :
-    # seul son certificat engage ce deploiement. Un 5xx y signale Umami arrete,
-    # ce qu'aucun redemarrage de l'edge ne reparerait : on le dit, sans echouer.
-    statut="$(curl -sS --max-time 10 -o /dev/null -w '%{http_code}' "https://${tableau_umami}/")" || return 1
-    if [ "${statut}" -ge 500 ]; then
-      echo "Attention : https://${tableau_umami}/ repond ${statut} (Umami arrete ?)." >&2
-    fi
-  fi
 }
 
 # Conteneur Caddy de l'edge, resolu depuis ses etiquettes Compose (projet edge,

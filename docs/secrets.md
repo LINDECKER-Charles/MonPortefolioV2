@@ -86,7 +86,7 @@ configuration SMTP pour l’envoi réel. Récapitulatif :
 | Clé | Obligatoire | Test | Production | Rôle |
 |---|---|---|---|---|
 | `COMPOSE_PROJECT_NAME` | oui | `portfolio-test` | `portfolio-prod` | isole les piles sur la même machine |
-| `COMPOSE_FILE` | non | `compose.yaml:compose.deploy.yaml:compose.umami.yaml` | `…:compose.umami.yaml:compose.umami-tableau.yaml` | confort : un `docker compose` lancé à la main dans le dossier charge les bons calques. Le déploiement choisit les siens et signale un écart |
+| `COMPOSE_FILE` | non | `compose.yaml:compose.deploy.yaml:compose.umami.yaml` | idem | confort : un `docker compose` lancé à la main dans le dossier charge les bons calques. Le déploiement choisit les siens et signale un écart |
 | `WEB_IMAGE` | non | `ghcr.io/lindecker-charles/monportefoliov2` | idem | image publiée par la CI |
 | `BACKEND_IMAGE` | non | `ghcr.io/lindecker-charles/monportefoliov2-backend` | idem | image Rust publiée avec le site |
 | `IMAGE_TAG` | oui | `staging` | `prod` | étiquette mobile déployée |
@@ -108,7 +108,6 @@ configuration SMTP pour l’envoi réel. Récapitulatif :
 | `UMAMI_WEBSITE_ID` | pour mesurer | `100ee54a-6c1f-46cc-a67e-8ac78d57d51d` | `0450b7ff-eb45-4328-a93e-496cd25b3348` | active la mesure d'audience : ajoute `compose.umami.yaml` |
 | `UMAMI_SITE_DOMAIN` | avec l'ID | `test.charles-lindecker.com` | `charles-lindecker.com` | nom d'hôte nu mesuré (`data-domains`, `umami.domain`) |
 | `UMAMI_SITE_NAME` | avec l'ID | `Portfolio V2 (test)` | `Portfolio` | nom du site dans Umami |
-| `UMAMI_DASHBOARD_DOMAIN` | non | — | `stats.charles-lindecker.com` | tableau de bord sous un domaine propre : ajoute `compose.umami-tableau.yaml`, dont `/` mène au site ; refusé sans ID, ou tant qu'un autre projet déclare ce domaine |
 | `TLS_ASSERT` | non | `1` | `1` | échec du déploiement si un domaine ne sert pas un certificat valide |
 
 Points à lire avant de remplir :
@@ -214,8 +213,8 @@ ssh root@<vps> 'command -v docker curl && docker compose version && bash --versi
 
 `docker` (avec le plugin `compose` v2), `curl` et `bash` 4 ou plus suffisent. **`git` n'est pas
 nécessaire** : l'hôte ne clone rien. Le job de déploiement lui envoie par `scp` les seuls fichiers
-dont il a besoin — `compose.yaml`, `compose.deploy.yaml`, `compose.umami.yaml`,
-`compose.umami-tableau.yaml` et le script de mise en ligne. Le VPS n'a donc besoin d'aucun accès en lecture au dépôt : ni clé de déploiement,
+dont il a besoin — `compose.yaml`, `compose.deploy.yaml`, `compose.umami.yaml` et le script de
+mise en ligne. Le VPS n'a donc besoin d'aucun accès en lecture au dépôt : ni clé de déploiement,
 ni jeton. Sans `curl`, le déploiement échoue à la toute dernière étape, celle qui vérifie le
 certificat TLS.
 

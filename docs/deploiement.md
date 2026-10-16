@@ -123,17 +123,15 @@ divergé, c'est la divergence qu'il faut résoudre, pas la chaîne.
 ### Ce que fait le déploiement sur l'hôte
 
 `_deploy.yml` écrit le `.env` de l'hôte depuis le secret `ENV_TEST` ou `ENV_PROD`, dépose
-`compose.yaml`, `compose.deploy.yaml`, `compose.umami.yaml`, `compose.umami-tableau.yaml` et
-`scripts/deploy-remote.sh`, puis exécute ce dernier depuis le fichier. Le script :
+`compose.yaml`, `compose.deploy.yaml`, `compose.umami.yaml` et `scripts/deploy-remote.sh`, puis
+exécute ce dernier depuis le fichier. Le script :
 
 1. vérifie le `.env` (`COMPOSE_PROJECT_NAME`, `CADDY_DOMAINS`) ;
 2. **choisit les calques** : `compose.yaml` et `compose.deploy.yaml` toujours,
-   `compose.umami.yaml` si `UMAMI_WEBSITE_ID` est posé, `compose.umami-tableau.yaml` si
-   `UMAMI_DASHBOARD_DOMAIN` l'est (refusé sans ID). Un `COMPOSE_FILE` de confort périmé dans le
-   `.env` est signalé ;
+   `compose.umami.yaml` si `UMAMI_WEBSITE_ID` est posé. Un `COMPOSE_FILE` de confort périmé dans
+   le `.env` est signalé ;
 3. vérifie que le réseau `edge` existe, puis **refuse de continuer si un conteneur d'un autre
-   projet déclare déjà l'un de ses domaines** (étiquettes `caddy` et `caddy_N`), domaine du
-   tableau de bord Umami compris ;
+   projet déclare déjà l'un de ses domaines** (étiquettes `caddy` et `caddy_N`) ;
 4. tire les deux images, démarre la pile, attend leurs états *healthy* — et échoue si un
    conteneur s'arrête dès son démarrage (configuration refusée par le serveur), en affichant ses
    journaux ;
@@ -153,7 +151,6 @@ divergé, c'est la divergence qu'il faut résoudre, pas la chaîne.
 | Hôte canonique | — | `www.` renvoyé en 301 vers l'apex |
 | Indexation (`X-Robots-Tag`) | `noindex` | `all` |
 | Mesure d'audience | active, site Umami « Portfolio V2 (test) » | active depuis le 2026-10-16, site Umami « Portfolio » |
-| Tableau de bord Umami | — | `stats.charles-lindecker.com` (`UMAMI_DASHBOARD_DOMAIN`) |
 | État au 2026-10-15 | en service | en service depuis la bascule ([`bascule.md`](bascule.md)) |
 
 Les dossiers et les noms de projet de la V2 sont distincts de ceux de la V1
