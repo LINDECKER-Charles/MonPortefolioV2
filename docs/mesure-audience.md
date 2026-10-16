@@ -276,7 +276,7 @@ La mesure est exemptée tant que **toutes** ces conditions tiennent :
 | Pas de mise en commun ni de transmission | un site Umami par environnement, aucun rapport inter-sites, aucune transmission à des tiers |
 | Opposition | § 4 |
 | Information | section « Mesure d'audience » des mentions légales |
-| Conservation de 25 mois au plus | **à mettre en place avant la production** : Umami auto-hébergé garde tout indéfiniment (§ 7) |
+| Conservation de 25 mois au plus | Umami auto-hébergé garde tout indéfiniment : la purge quotidienne d’`infra-vps` retire ce qui dépasse 25 mois (§ 7) |
 
 ### Écarts documentés, et leurs compensations
 
@@ -350,12 +350,12 @@ dans `.env.test.example` : la mesure est active dès le premier déploiement de 
   l'historique n'a plus lieu d'être.
 - **Purge à 25 mois** : Umami n'en a pas. Elle se fait côté `infra-vps` (pile `analytics`), pour
   tous les sites de l'hôte, par une tâche mensuelle validée d'abord sur une copie de la base, et
-  s'applique aussi aux sauvegardes. Au 2026-10-07, elle n'existe pas encore. **Prérequis de
-  l'activation en production.**
-- **Activer la production** (après la recette en test et la purge) : dans `ENV_PROD`, décommenter
-  les trois lignes Umami de `.env.prod.example` et compléter `COMPOSE_FILE` avec
-  `:compose.umami.yaml`, puis redéployer. Le site « Portfolio » apparaît dans Umami ; refaire la
-  recette du § 6 sur `charles-lindecker.com`, et créer les objectifs du § 3 dans ce site.
+  s'applique aussi aux sauvegardes : service `purge` de la pile `analytics`, chaque jour à
+  partir de 4 h UTC, en service depuis le 2026-10-11 (`docker compose logs purge`). **Prérequis
+  de la mesure en production.**
+- **Production** : active depuis le 2026-10-16 (les trois lignes Umami de `.env.prod.example`
+  et `:compose.umami.yaml` dans `COMPOSE_FILE`), site « Portfolio ». Les objectifs et
+  l'entonnoir du § 3 se créent dans ce site, dans l'interface d'Umami.
 - **Panne d'Umami** : l'edge répond 502 sur `/u/*`, le traceur ignore l'erreur, le site ne change
   pas.
 - **Listes de filtrage** : au relevé du 7 octobre 2026 (fait pour le site L.I.S, mêmes chemins),
