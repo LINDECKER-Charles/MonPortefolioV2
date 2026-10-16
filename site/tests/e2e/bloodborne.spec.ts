@@ -41,7 +41,7 @@ test('l’en-tête tient dans le premier écran : titre, identité, preuve, acti
   for (const marque of ['titre', 'identite', 'preuve', 'action']) {
     await expect(page.locator(`[data-pli="${marque}"]`), marque).toBeInViewport();
   }
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Plus de mille objectifs, un ciel pour s’y retrouver.');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Bloodborne Legendary Run Plus de mille objectifs, un ciel pour s’y retrouver.');
   if ((page.viewportSize()?.width ?? 0) >= 1440) {
     for (const preuve of await page.locator('[data-pli="preuve"] li').all()) await expect(preuve).toBeInViewport({ ratio: 1 });
     await expect(page.getByRole('group', { name: 'Fiche du projet' })).toBeInViewport({ ratio: 1 });

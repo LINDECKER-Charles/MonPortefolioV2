@@ -115,12 +115,16 @@ describe('EnTeteProjet', () => {
     // Une phrase par ligne : le parallèle des deux phrases ne se casse pas.
     const titre = /<h1[^>]*data-pli="titre"[^>]*>(.*?)<\/h1>/.exec(html)?.[1] ?? '';
     expect([...titre.matchAll(/<span class="projet-tete__ligne"[^>]*>([^<]+)<\/span>/g)].map((m) => m[1])).toEqual(['Traduire un jeu.', 'Faire grandir une équipe.']);
-    expect(titre.replace(/<[^>]+>/g, '')).toBe('Traduire un jeu. Faire grandir une équipe.');
+    // Le h1 nomme le projet avant la phrase : c’est le titre que lisent les moteurs.
+    expect(titre.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()).toBe('PvZ Fusion, pôle francophone Traduire un jeu. Faire grandir une équipe.');
+    expect(titre).toMatch(/^\s*<span class="projet-tete__nom"[^>]*>PvZ Fusion, pôle francophone<\/span>/);
+    // L’étiquette de preuve reste hors du titre.
+    expect(titre).not.toContain('projet-tete__preuve');
   });
 
   it('accepte aussi un titre d’un seul tenant', async () => {
     const html = await rendre(EnTeteProjet, { ...props, titre: 'Un titre en une phrase.' });
-    expect(html).toMatch(/<h1[^>]*data-pli="titre"[^>]*><span class="projet-tete__ligne"[^>]*>Un titre en une phrase\.<\/span><\/h1>/);
+    expect(html).toMatch(/<h1[^>]*data-pli="titre"[^>]*>\s*<span class="projet-tete__nom"[^>]*>PvZ Fusion, pôle francophone<\/span>\s*<span class="projet-tete__lignes"[^>]*><span class="projet-tete__ligne"[^>]*>Un titre en une phrase\.<\/span><\/span>\s*<\/h1>/);
   });
 
   it('donne toute la largeur au texte d’un en-tête sans visuel', async () => {

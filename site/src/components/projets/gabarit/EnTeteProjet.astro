@@ -12,7 +12,9 @@
  *   </EnTeteProjet>
  *
  * Le nom, l’étiquette et le rang viennent de VITRINE (config/projets.ts) :
- * une seule graphie par projet (règle E6). La première action mène toujours
+ * une seule graphie par projet (règle E6). Le nom ouvre le h1, avant la
+ * phrase : le titre de la page nomme le projet, pour les moteurs comme pour
+ * les lecteurs d’écran. La première action mène toujours
  * à « Sous le capot » (`construit`, l’identifiant de la section SousLeCapot,
  * gardé depuis « Comment je l’ai construit »). Tout tient dans le premier écran à 1 440 × 900 ; les
  * éléments `[data-pli]` (titre, identité, preuve, action) y sont visibles à
@@ -60,11 +62,11 @@ const avecVisuel = Astro.slots.has('visuel');
     <FilAriane courant={projet.nom} projet class="projet-tete__ariane" />
     <div class:list={['projet-tete__grille', { 'projet-tete__grille--sans-visuel': !avecVisuel }]}>
       <div class="projet-tete__texte foyer">
-        <p class="projet-tete__nom">
-          <span>{projet.nom}</span>
-          <span class="projet-tete__preuve">{typo(projet.preuve)}</span>
-        </p>
-        <h1 class="projet-tete__titre" data-pli="titre">{lignes.map((ligne, index) => <>{index > 0 && ' '}<span class="projet-tete__ligne">{typo(ligne)}</span></>)}</h1>
+        <h1 class="projet-tete__titre" data-pli="titre">
+          <span class="projet-tete__nom">{projet.nom}</span>
+          <span class="projet-tete__lignes">{lignes.map((ligne, index) => <>{index > 0 && ' '}<span class="projet-tete__ligne">{typo(ligne)}</span></>)}</span>
+        </h1>
+        <p class="projet-tete__preuve">{typo(projet.preuve)}</p>
         <p class="chapeau projet-tete__chapeau" data-pli="identite">{typo(chapeau)}</p>
         <div class="actions projet-tete__actions" data-pli="action">
           <LienAction href={`#${construit}`}>Sous le capot</LienAction>
@@ -145,19 +147,24 @@ const avecVisuel = Astro.slots.has('visuel');
     grid-area: fiche;
   }
 
+  /* Le nom du projet ouvre le h1, en petit au-dessus de la phrase : le titre
+     que lisent les moteurs nomme le projet. L’étiquette de preuve, hors du
+     h1, se pose à côté du nom par une sous-grille (sous 600 px, dessous). Un
+     navigateur sans sous-grille la pose après le titre. */
   .projet-tete__nom {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--s2) var(--s3);
+    display: block;
+    font-family: var(--police-texte);
     font-size: var(--t-s);
     font-weight: 600;
     line-height: 1.4;
+    letter-spacing: normal;
+    text-wrap: wrap;
     color: var(--encre);
   }
 
   .projet-tete__preuve {
-    display: inline-block;
+    justify-self: start;
+    width: fit-content;
     padding: 0 var(--s2);
     border: 1px solid var(--trait);
     border-radius: var(--r1);
@@ -167,12 +174,54 @@ const avecVisuel = Astro.slots.has('visuel');
     color: var(--eteint);
   }
 
-  .projet-tete__titre {
+  .projet-tete__lignes {
+    display: block;
     margin-top: var(--s2);
     max-width: 15em;
     font-size: var(--t-3xl);
     line-height: 0.98;
     letter-spacing: var(--ls-affiche);
+  }
+
+  @supports (grid-template-rows: subgrid) {
+    .projet-tete__texte {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      column-gap: var(--s3);
+      align-items: center;
+    }
+
+    .projet-tete__texte > * {
+      grid-column: 1 / -1;
+    }
+
+    .projet-tete__titre {
+      display: grid;
+      grid-template-columns: subgrid;
+      grid-template-rows: subgrid;
+      grid-row: 1 / span 2;
+    }
+
+    .projet-tete__nom {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .projet-tete__lignes {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+
+    .projet-tete__texte > .projet-tete__preuve {
+      grid-column: 2;
+      grid-row: 1;
+    }
+  }
+
+  @supports not (grid-template-rows: subgrid) {
+    .projet-tete__preuve {
+      margin-top: var(--s3);
+    }
   }
 
   /* Une phrase par ligne : le parallèle des deux phrases ne se casse pas. */
@@ -236,7 +285,7 @@ const avecVisuel = Astro.slots.has('visuel');
   }
 
   @media (max-width: 860px) {
-    .projet-tete__titre {
+    .projet-tete__lignes {
       max-width: none;
     }
 
@@ -251,6 +300,29 @@ const avecVisuel = Astro.slots.has('visuel');
 
     .projet-tete__actions {
       gap: 0 var(--s5);
+    }
+  }
+
+  /* Sur un téléphone, l’étiquette passe sous le nom, avant la phrase. */
+  @media (max-width: 599px) {
+    @supports (grid-template-rows: subgrid) {
+      .projet-tete__texte {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .projet-tete__titre {
+        grid-row: 1 / span 3;
+      }
+
+      .projet-tete__lignes {
+        grid-row: 3;
+      }
+
+      .projet-tete__texte > .projet-tete__preuve {
+        grid-column: 1;
+        grid-row: 2;
+        margin-top: var(--s2);
+      }
     }
   }
 </style>

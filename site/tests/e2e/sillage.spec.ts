@@ -20,7 +20,7 @@ test('l’en-tête tient dans le premier écran : titre, identité, preuve, acti
   for (const marque of ['titre', 'identite', 'preuve', 'action']) {
     await expect(page.locator(`[data-pli="${marque}"]`), marque).toBeInViewport();
   }
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Confier un long travail à des agents, sans perdre la main.');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Sillage Confier un long travail à des agents, sans perdre la main.');
   if ((page.viewportSize()?.width ?? 0) >= 1440) {
     await expect(page.locator('[data-pli="preuve"] li')).toHaveCount(3);
     for (const preuve of await page.locator('[data-pli="preuve"] li').all()) await expect(preuve).toBeInViewport({ ratio: 1 });
