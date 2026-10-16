@@ -125,6 +125,10 @@ Astro 7, rendu statique avec publications du blog rendues à la demande, servi p
 `site/server/server.mjs` (Node sans dépendance). Commandes,
 carte du dépôt et mise en ligne : [`README.md`](README.md).
 
+- **Avant de pousser sur `dev`** : le hook `.githooks/pre-push` joue `npm run test:e2e` et le
+  parcours réel du backoffice (`scripts/test-backoffice.mjs`), que la CI ne joue plus au push ;
+  ne pas le contourner (`--no-verify`) sans l’accord de Charles. Il se pose au `npm install` de
+  `site/` ; sinon : `git config core.hooksPath .githooks`.
 - **Avant de rendre la main** : `npm run check`, `npm test` et `npm run test:e2e` dans `site/`,
   avec `docs/prive/` en place (dans un worktree, celui du dépôt principal suffit).
   Le build échoue sur toute erreur de `tools/verifier-site.mjs` : c'est voulu.
