@@ -759,5 +759,9 @@ export function brancherBlog(context: Context): BlogWorkspace {
     notice('Votre rédaction a été conservée pendant l’expiration de la session. Enregistrez-la pour la conserver en base.');
     return true;
   }
+  // Chargé à la demande, l’atelier arrive après sa page : ses deux boutons,
+  // inactifs dans le HTML, ne s’ouvrent qu’une fois branchés, pour qu’aucun
+  // clic ne se perde.
+  for (const id of ['blog-new', 'blog-refresh']) button(id).disabled = false;
   return { open: openRoute, canNavigate, reset, restoreDraft, hasUnsavedChanges: dirty, confirmDiscard };
 }

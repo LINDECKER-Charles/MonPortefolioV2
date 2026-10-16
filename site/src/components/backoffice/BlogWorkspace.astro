@@ -7,6 +7,8 @@
  * Contrat avec scripts/blog-editor.ts (sa logique ne change pas ici) : les
  * identifiants `blog-*`, `[data-blog-page]`, `[data-blog-section-link]`,
  * `[data-editor]`, et les zones que le script montre ou cache (`hidden`).
+ * « Nouvel article » et « Actualiser les articles » sont inactifs dans le HTML :
+ * l’atelier, chargé à la demande, les active une fois branché.
  *
  * La barre de l’article (blog/BarreArticle) est collante pendant l’édition :
  * Enregistrer et Aperçu restent à portée, avec le retour de chaque action
@@ -29,7 +31,7 @@ import PagePublication from './blog/PagePublication.astro';
       <h2 id="blog-workspace-title" tabindex="-1">Articles</h2>
       <p class="bo-rubrique__description" id="blog-workspace-description">Retrouver un article, préparer un brouillon et suivre les publications.</p>
     </div>
-    <div class="bo-rubrique__actions"><button class="bo-button bo-button--primary" id="blog-new" type="button">Nouvel article</button></div>
+    <div class="bo-rubrique__actions"><button class="bo-button bo-button--primary" id="blog-new" type="button" disabled>Nouvel article</button></div>
   </header>
 
   <BarreArticle />

@@ -189,6 +189,18 @@ test('rédiger un brouillon riche, décrire une image et ouvrir un aperçu priv�
   for (const mutation of state.mutations) expect(mutation.header).toBe('1');
 });
 
+test('un atelier lent à charger ne perd pas le clic sur « Nouvel article »', async ({ page }) => {
+  await mockApi(page);
+  // L’atelier est chargé à la demande : sur une machine lente, la page s’affiche avant lui.
+  await page.route(/\/_astro\/blog-editor\.[^/]+\.js$/, async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    await route.continue();
+  });
+  await openBlog(page);
+  await page.getByRole('button', { name: 'Nouvel article', exact: true }).click();
+  await onlySection(page, 'redaction');
+});
+
 test('l’atelier montre tel quel le refus d’une image trop lourde à réduire ou d’un import en attente', async ({ page }) => {
   const state = await mockApi(page);
   await openBlog(page);
