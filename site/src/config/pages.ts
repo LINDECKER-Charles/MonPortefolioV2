@@ -7,20 +7,22 @@
  * pages indexables construites divergent.
  *
  * La date est celle d’un contenu, jamais celle du build, qu’un moteur finit
- * par ignorer si elle change à chaque déploiement.
+ * par ignorer si elle change à chaque déploiement. Elle décide aussi de ce que
+ * la mise en production signale à IndexNow (scripts/indexnow.mjs) : une page
+ * retouchée change de date, sinon les moteurs ne la relisent qu’à leur rythme.
  */
 export const PAGES_SITEMAP = [
-  { chemin: '/', maj: '2026-10-15' },
+  { chemin: '/', maj: '2026-10-16' },
   { chemin: '/projets', maj: '2026-10-15' },
-  { chemin: '/projets/pvz-fusion', maj: '2026-10-15' },
-  { chemin: '/projets/omnicard', maj: '2026-10-15' },
-  { chemin: '/projets/gup', maj: '2026-10-15' },
-  { chemin: '/projets/bloodborne-legendary-run', maj: '2026-10-15' },
-  { chemin: '/projets/league-of-database', maj: '2026-10-15' },
-  { chemin: '/projets/githealth', maj: '2026-10-15' },
-  { chemin: '/projets/karl-scraper', maj: '2026-10-15' },
-  { chemin: '/projets/sillage', maj: '2026-10-15' },
-  { chemin: '/projets/relais', maj: '2026-10-15' },
+  { chemin: '/projets/pvz-fusion', maj: '2026-10-16' },
+  { chemin: '/projets/omnicard', maj: '2026-10-16' },
+  { chemin: '/projets/gup', maj: '2026-10-16' },
+  { chemin: '/projets/bloodborne-legendary-run', maj: '2026-10-16' },
+  { chemin: '/projets/league-of-database', maj: '2026-10-16' },
+  { chemin: '/projets/githealth', maj: '2026-10-16' },
+  { chemin: '/projets/karl-scraper', maj: '2026-10-16' },
+  { chemin: '/projets/sillage', maj: '2026-10-16' },
+  { chemin: '/projets/relais', maj: '2026-10-16' },
   { chemin: '/parcours', maj: '2026-10-15' },
   { chemin: '/parcours/professionnel', maj: '2026-10-15' },
   { chemin: '/parcours/competences', maj: '2026-10-15' },
