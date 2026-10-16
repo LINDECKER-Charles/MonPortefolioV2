@@ -1,0 +1,20 @@
+# Tableau de bord Umami sous un domaine propre au site (stats.<domaine>) : se
+# connecter sur ce domaine mene directement au tableau du site, sans passer par
+# la liste des sites de l'instance. Contrat : infra-vps docs/APPLICATIONS.md
+# section 6, « Un domaine dedie pour le client » — ces deux etiquettes, rien de
+# plus : le snippet `umami-tableau` de l'edge sert l'UI d'Umami sous ce nom et
+# mene `/` au tableau du site. Le domaine n'est qu'une porte d'entree : c'est le
+# compte, par sa team (`portefolio`), qui borne ce qu'on y voit.
+#
+# Ajoute au COMPOSE_FILE par scripts/deploy-remote.sh si le .env de l'hote
+# definit UMAMI_DASHBOARD_DOMAIN, et toujours PAR-DESSUS compose.umami.yaml : le
+# script refuse un tableau de bord sans site declare, et un domaine qu'un autre
+# projet declare encore (le domaine global d'Umami, par exemple).
+# L'enregistrement DNS du domaine doit pointer sur l'hote avant le deploiement ;
+# le controle TLS de fin de deploiement le verifie comme les domaines du site.
+
+services:
+  web:
+    labels:
+      caddy_1: ${UMAMI_DASHBOARD_DOMAIN:?UMAMI_DASHBOARD_DOMAIN est requis par compose.umami-tableau.yaml}
+      caddy_1.import: umami-tableau ${UMAMI_WEBSITE_ID:?UMAMI_WEBSITE_ID est requis par compose.umami-tableau.yaml (UUID du site)}
