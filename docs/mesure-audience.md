@@ -343,17 +343,12 @@ dans `.env.test.example` : la mesure est active dès le premier déploiement de 
   appartiennent au projet (contrat `infra-vps`, `docs/APPLICATIONS.md` § 6) : Umami recrée le site
   sous le même ID après une reconstruction de l'hôte, seul l'historique dépend d'une sauvegarde. En
   changer, c'est repartir d'un site vide.
-- **Team `portefolio`** : l'étiquette `umami.team` de `compose.umami.yaml` range les sites de
-  test et de production dans cette team, créée et tenue par le reconciler. Elle ouvre leurs
-  statistiques au compte « Consultation » `rapport-portefolio`, ajouté à la main par l'admin
-  d'Umami (*Administrateur → Équipes → portefolio → Ajouter un membre*). Ne pas ranger le site à
-  la main dans une autre team : le reconciler ne voit que les sites de ses propres teams.
-- **Tableau de bord sur `stats.charles-lindecker.com`**, comme `stats.<domaine>` des autres
-  projets : `UMAMI_DASHBOARD_DOMAIN` (secret `ENV_PROD`) ajoute `compose.umami-tableau.yaml`, et
-  le snippet `umami-tableau` de l'edge y mène `/` au site « Portfolio », connexion comprise.
-  Ce domaine a d'abord été celui de l'UI globale d'Umami (`UMAMI_DOMAIN` de la pile `analytics`
-  d'`infra-vps`) : il faut l'y remplacer par un autre nom, avec son enregistrement DNS, avant le
-  déploiement de production, qui refuse sinon un domaine déclaré par un autre projet.
+- **Team `portefolio`, pas de domaine de tableau de bord dédié** : l'étiquette `umami.team` de
+  `compose.umami.yaml` range les sites de test et de production dans cette team, créée et tenue
+  par le reconciler. Elle ouvre leurs statistiques au compte « Consultation »
+  `rapport-portefolio`, ajouté à la main par l'admin d'Umami (*Administrateur → Équipes →
+  portefolio → Ajouter un membre*). Ne pas ranger le site à la main dans une autre team : le
+  reconciler ne voit que les sites de ses propres teams.
 - **Arrêter de mesurer** : retirer les clés Umami du secret et redéployer. Le site et son
   historique restent dans Umami (le reconciler ne supprime rien) ; le supprimer dans l'interface si
   l'historique n'a plus lieu d'être.
