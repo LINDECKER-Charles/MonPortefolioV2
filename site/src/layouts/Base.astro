@@ -126,6 +126,8 @@ if (!horsIndex) {
     <Favicons />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20261013-embleme" />
     <link rel="manifest" href="/site.webmanifest" />
+    {/* Le nom sous l’icône de l’écran d’accueil d’iOS, le short_name du manifeste. */}
+    <meta name="apple-mobile-web-app-title" content="C. Lindecker" />
     {/* Le flux des articles, rendu par le serveur (server/blog.mjs). */}
     <link rel="alternate" type="application/rss+xml" title={`Le blog de ${SITE.nom}`} href="/blog/rss.xml" />
     {/* Synchrone, avant les styles : le thème est posé avant le premier rendu. */}

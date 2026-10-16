@@ -1,8 +1,12 @@
 {
+  "id": "/",
   "name": "Charles Lindecker",
-  "short_name": "Charles Lindecker",
+  "short_name": "C. Lindecker",
+  "description": "Architecte logiciel chez B-Hive, à Mulhouse, et lead du pôle francophone de PvZ Fusion. Je maîtrise d’abord les règles du jeu, ensuite je les réinvente.",
   "lang": "fr",
+  "dir": "ltr",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "theme_color": "#1F4FD1",
   "background_color": "#ECE9E3",
@@ -24,6 +28,28 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    { "name": "Projets", "url": "/projets" },
+    { "name": "Parcours", "url": "/parcours" },
+    { "name": "Blog", "url": "/blog" },
+    { "name": "Discutons", "short_name": "Contact", "url": "/contact" }
+  ],
+  "screenshots": [
+    {
+      "src": "installation/accueil-large.webp",
+      "sizes": "1280x800",
+      "type": "image/webp",
+      "form_factor": "wide",
+      "label": "L’accueil sur ordinateur"
+    },
+    {
+      "src": "installation/accueil-etroit.webp",
+      "sizes": "390x844",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "L’accueil sur téléphone"
     }
   ]
 }
