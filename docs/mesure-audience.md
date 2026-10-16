@@ -349,6 +349,10 @@ dans `.env.test.example` : la mesure est active dès le premier déploiement de 
   `rapport-portefolio`, ajouté à la main par l'admin d'Umami (*Administrateur → Équipes →
   portefolio → Ajouter un membre*). Ne pas ranger le site à la main dans une autre team : le
   reconciler ne voit que les sites de ses propres teams.
+- **`stats.charles-lindecker.com` s'ouvre sur le site « Portfolio »** : c'est le domaine global
+  d'Umami, que la pile `analytics` d'`infra-vps` mène à ce site (`UMAMI_ACCUEIL_SITE`), comme
+  le domaine dédié d'un projet — `/`, `/websites` et `/dashboard`, connexion comprise. Rien à
+  déclarer ici.
 - **Arrêter de mesurer** : retirer les clés Umami du secret et redéployer. Le site et son
   historique restent dans Umami (le reconciler ne supprime rien) ; le supprimer dans l'interface si
   l'historique n'a plus lieu d'être.
