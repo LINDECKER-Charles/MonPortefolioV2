@@ -283,6 +283,9 @@ carte du dépôt et mise en ligne : [`README.md`](README.md).
   posée parce qu’elle se met en ligne avant la V2 ([`docs/bascule.md`](docs/bascule.md)). Seule
   exception : les emplacements de visuels, qui restent posés en cadre neutre jusqu’à la livraison
   de leur fichier.
+- **IndexNow** : chaque mise en production signale aux moteurs les pages dont la date `maj` de
+  `config/pages.ts` tombe depuis la précédente (`scripts/indexnow.mjs`, job `indexnow`), et les
+  articles du blog passent chaque nuit (`indexnow.yml`). Une page retouchée change de `maj`.
 - **Search Console** : l’accueil garde la balise de vérification de la V1
   (`SITE.verificationGoogle`) ; la retirer ferait perdre la propriété.
 

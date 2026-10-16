@@ -106,6 +106,14 @@ parcours réel du backoffice (`scripts/test-backoffice.mjs`). Il ne s’arme que
 tout seul au `npm install` de `site/` (script `prepare` : `git config core.hooksPath .githooks`).
 `git push --no-verify` passe outre, en connaissance de cause.
 
+Après la mise en production, le job `indexnow` signale à IndexNow (Bing, Yandex, Seznam,
+Naver…) les pages dont la date du sitemap tombe le jour de la mise en production précédente ou
+après (`scripts/indexnow.mjs`, dates tenues dans `site/src/config/pages.ts`). Les articles du
+blog, publiés sans déploiement, passent chaque nuit par `.github/workflows/indexnow.yml` ;
+`gh workflow run indexnow.yml` signale tout le sitemap. La clé, publique par principe, est le
+fichier `site/public/<clé>.txt`. Un refus d’IndexNow fait échouer le job sans toucher au
+déploiement.
+
 `test` ne déclenche jamais la chaîne : c'est la CI elle-même qui y pousse. `main` n'est atteinte
 que par une fusion `test -> main` faite à la main : cette porte humaine est ce qui promeut en
 production.

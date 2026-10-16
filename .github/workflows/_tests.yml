@@ -190,12 +190,12 @@ jobs:
         # une variable mal citee y coute un deploiement a moitie applique.
         run: shellcheck scripts/deploy-remote.sh scripts/deploy-archive-v1.sh .githooks/pre-push
 
-      - name: Outils de la bascule
-        # Le bandeau de l'archive et le verificateur de bascule n'ont besoin
+      - name: Outils de la bascule et IndexNow
+        # Le bandeau de l'archive, le verificateur de bascule et IndexNow n'ont besoin
         # que de Node : aucune installation. Fichiers nommes un par un, pour
         # que le lanceur ne prenne pas scripts/test-backoffice.mjs, qui attend
         # un backend construit (job e2e).
-        run: node --test scripts/verifier-bascule.test.mjs archive-v1/bandeau/poser.test.mjs
+        run: node --test scripts/verifier-bascule.test.mjs scripts/indexnow.test.mjs archive-v1/bandeau/poser.test.mjs
 
       - name: Actionlint sur les workflows
         # Un contrat de workflow reutilisable casse (secret non declare, entree
