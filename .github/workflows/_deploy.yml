@@ -81,16 +81,17 @@ jobs:
           # Cette liste est le miroir exact des calques que
           # scripts/deploy-remote.sh peut choisir : un fichier compose ajoute au
           # projet doit etre ajoute ICI aussi, sinon le deploiement echoue sur
-          # l'hote en ne le trouvant pas. Le calque de mesure part meme vers un
-          # environnement qui ne mesure pas : c'est le .env de l'hote, pas cette
-          # liste, qui decide de le charger. Volontairement PAS
+          # l'hote en ne le trouvant pas. Les calques de mesure partent meme
+          # vers un environnement qui ne mesure pas : c'est le .env de l'hote,
+          # pas cette liste, qui decide de les charger. Volontairement PAS
           # compose.override.yaml : les conforts de developpement n'ont rien a
           # faire sur un environnement servi.
           #
           # Le script de deploiement est depose dans DEPLOY_PATH et non dans
           # /tmp : ce dernier est partage et inscriptible par tous, donc un nom
           # previsible y serait pre-positionnable par un utilisateur local.
-          scp compose.yaml compose.deploy.yaml compose.umami.yaml \
+          scp compose.yaml compose.deploy.yaml \
+            compose.umami.yaml compose.umami-tableau.yaml \
             scripts/deploy-remote.sh \
             "$SSH_TARGET:$DEPLOY_PATH/"
 

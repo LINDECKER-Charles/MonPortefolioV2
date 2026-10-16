@@ -218,11 +218,13 @@ jobs:
           BACKEND_PROXY_TOKEN: ci-contact-proxy-token-at-least-thirty-two-characters
           UMAMI_SITE_DOMAIN: exemple.test
           UMAMI_SITE_NAME: Portfolio (ci)
+          UMAMI_DASHBOARD_DOMAIN: stats.exemple.test
         run: |
           set -euo pipefail
           id=00000000-0000-4000-8000-0000000000c1
           base=(-f compose.yaml -f compose.deploy.yaml)
           mesure=(-f compose.umami.yaml)
+          tableau=(-f compose.umami-tableau.yaml)
           echo "— pile servie (base + calque de deploiement)"
           docker compose "${base[@]}" config --format json > "$RUNNER_TEMP/base.json"
           # Sans le calque de mesure, aucune etiquette Umami : un import vide
@@ -245,6 +247,17 @@ jobs:
             and .services.web.labels["umami.website"] == $id
             and .services.web.labels["umami.team"] == "portefolio"
             and .services.web.environment.UMAMI_WEBSITE_ID == $id' "$RUNNER_TEMP/pile.json"
+          echo "— avec le tableau de bord dedie"
+          UMAMI_WEBSITE_ID="$id" docker compose "${base[@]}" "${mesure[@]}" "${tableau[@]}" \
+            config --format json > "$RUNNER_TEMP/tableau.json"
+          jq -e '[.services.web.labels | to_entries[] | select((.value | tostring) == "")] | length == 0' \
+            "$RUNNER_TEMP/tableau.json"
+          # Le tableau de bord mene au site de CE calque : un autre ID ouvrirait
+          # le domaine sur une liste ou un refus (tableau_incoherent cote reconciler).
+          jq -e --arg id "$id" '.services.web.labels["caddy.import"] == "umami"
+            and .services.web.labels["caddy_1"] == "stats.exemple.test"
+            and .services.web.labels["caddy_1.import"] == ("umami-tableau " + $id)
+            and .services.web.labels["umami.website"] == $id' "$RUNNER_TEMP/tableau.json"
           echo "— garde-fou : calque de mesure sans UMAMI_WEBSITE_ID (doit echouer)"
           if docker compose "${base[@]}" "${mesure[@]}" config -q 2>/dev/null; then
             echo "compose.umami.yaml accepte un UMAMI_WEBSITE_ID absent." >&2
