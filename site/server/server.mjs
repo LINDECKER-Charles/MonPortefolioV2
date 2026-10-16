@@ -9,8 +9,8 @@
  *
  * Ce qu'il fait, et pourquoi il existe plutôt qu'un serveur générique :
  *   - des URL sans slash final (`/mentions-legales`), la forme de la V1 que
- *     Google connaît déjà : `/x/` et `/x/index.html` redirigent en 301 vers
- *     `/x`, pour qu'aucune page n'existe sous deux adresses ;
+ *     Google connaît déjà : `/x/`, `/x/index.html` et `/X` redirigent en 301
+ *     vers `/x`, pour qu'aucune page n'existe sous deux adresses ;
  *   - les 301 des anciennes routes de la V1 (`redirections.mjs`) et celle de
  *     l'hôte secondaire vers l'hôte canonique (`www.` vers l'apex), qui suivent
  *     l'image de test en production sans rien changer à l'edge partagé ;
@@ -69,6 +69,8 @@ const TYPES = new Map([
   ['.pdf', 'application/pdf'],
 ]);
 
+/** L'adresse d'un article du blog, la forme de ses slugs (server/blog.mjs). */
+const ARTICLE_DU_BLOG = /^\/blog\/[a-z0-9]+(?:-[a-z0-9]+)*$/;
 /** `/_astro/` ne contient que des fichiers nommés d'après le hachage de leur contenu. */
 const PREFIXE_EMPREINTE = '/_astro/';
 /** Ce qui pilote le rendu ou les robots : toujours revalidé. */
@@ -547,6 +549,17 @@ export function creerServeur({ dossier, env = process.env } = {}) {
     }
     if (normalise !== chemin) {
       rediriger(res, `${encodeURI(normalise)}${requete}`);
+      return;
+    }
+    // Une page écrite avec des majuscules (`/Projets`) mène à sa forme en
+    // minuscules, la seule du site : un lien recopié à la main ne finit ni en
+    // 404 (Linux) ni en double de la page (macOS, insensible à la casse). Les
+    // fichiers, qui ont une extension, ne sont pas concernés : ceux de
+    // /_astro/ portent des majuscules dans leur empreinte.
+    const minuscules = normalise.toLowerCase();
+    if (minuscules !== normalise && !path.posix.extname(normalise)
+      && (ARTICLE_DU_BLOG.test(minuscules) || (await resoudre(minuscules)))) {
+      rediriger(res, `${encodeURI(minuscules)}${requete}`);
       return;
     }
 

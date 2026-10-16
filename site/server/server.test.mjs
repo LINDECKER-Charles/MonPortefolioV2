@@ -200,6 +200,24 @@ describe('pages et fichiers', () => {
     }
   });
 
+  test('une page écrite avec des majuscules redirige en 301 vers sa forme en minuscules', async () => {
+    for (const [cible, destination] of [
+      ['/Projets', '/projets'],
+      ['/MENTIONS-LEGALES?ref=cv', '/mentions-legales?ref=cv'],
+      ['/Rubrique/Sous-Page/', '/rubrique/sous-page'],
+      ['/Blog/Un-Article', '/blog/un-article'],
+    ]) {
+      let res = await fetch(`${site.base}${cible}`, { redirect: 'manual' });
+      // Le slash final part d’abord, puis les majuscules.
+      if (cible.endsWith('/')) res = await fetch(`${site.base}${res.headers.get('location')}`, { redirect: 'manual' });
+      assert.equal(res.status, 301, cible);
+      assert.equal(res.headers.get('location'), destination, cible);
+    }
+    // Un fichier garde sa casse ; une adresse sans page en minuscules reste introuvable.
+    assert.equal((await fetch(`${site.base}/_astro/app.Ab12Cd34.js`)).status, 200);
+    assert.equal((await fetch(`${site.base}/Inconnue`, { redirect: 'manual' })).status, 404);
+  });
+
   test('une double barre initiale ne produit jamais de redirection ouverte', async () => {
     const res = await brute(site.port, 'GET', '//exemple.org/piege');
     assert.equal(res.statut, 301);
