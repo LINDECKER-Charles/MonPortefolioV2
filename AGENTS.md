@@ -125,6 +125,10 @@ Astro 7, rendu statique avec publications du blog rendues à la demande, servi p
 `site/server/server.mjs` (Node sans dépendance). Commandes,
 carte du dépôt et mise en ligne : [`README.md`](README.md).
 
+- **Avant de pousser sur `dev`** : le hook `.githooks/pre-push` joue `npm run test:e2e` et le
+  parcours réel du backoffice (`scripts/test-backoffice.mjs`), que la CI ne joue plus au push ;
+  ne pas le contourner (`--no-verify`) sans l’accord de Charles. Il se pose au `npm install` de
+  `site/` ; sinon : `git config core.hooksPath .githooks`.
 - **Avant de rendre la main** : `npm run check`, `npm test` et `npm run test:e2e` dans `site/`,
   avec `docs/prive/` en place (dans un worktree, celui du dépôt principal suffit).
   Le build échoue sur toute erreur de `tools/verifier-site.mjs` : c'est voulu.
@@ -178,8 +182,9 @@ carte du dépôt et mise en ligne : [`README.md`](README.md).
   rejoint `PROJETS_ARCHIVES` (même fichier) avec sa vignette et ses liens publics, ou sa page,
   qui garde son adresse et son entrée dans `config/pages.ts`.
 - **Gabarit des pages de projet** : chaque page
-  assemble `components/projets/gabarit/` : `EnTeteProjet` (fiche technique en tableau à filets,
-  repères chiffrés sourcés et datés), `CorpsProjet` et `SectionProjet`, `SousLeCapot` (depuis le
+  assemble `components/projets/gabarit/` : `EnTeteProjet` (le h1 nomme le projet avant sa phrase,
+  l’étiquette de preuve à côté, hors du titre ; fiche technique en tableau à filets, repères
+  chiffrés sourcés et datés), `CorpsProjet` et `SectionProjet`, `SousLeCapot` (depuis le
   15/10/2026, à la place de « Comment je l’ai construit », jugé trop lourd : une liste serrée de
   deux à dix points d’une ligne, ancre `#construit` gardée, chacun dépliable en `<details>` natif
   sur « contrainte, choix, effet » ou un texte, puis un extrait court de douze lignes au plus ;
@@ -193,7 +198,9 @@ carte du dépôt et mise en ligne : [`README.md`](README.md).
   (Architecture, Décisions, Garde-fous, tests et limites). Ses données vivent dans
   `config/<projet>.ts` ; pour GitHealth, Karl Scraper, Sillage et Relais, la carte de la vitrine
   aussi (export `CARTE`, importé par `config/vitrine.ts` ; `FICHE` et `SCHEMA` sont lus par
-  `lib/seo.ts`). Un projet privé n’a aucun lien (`liens: []`) et sa fiche le dit (« Aucun : le
+  `lib/seo.ts`). Un projet est `SoftwareSourceCode` (dépôt public, `codeRepository`) ou
+  `CreativeWork`, jamais `SoftwareApplication` : Google y exige un prix et des notes qu’aucun projet
+  n’a. Un projet privé n’a aucun lien (`liens: []`) et sa fiche le dit (« Aucun : le
   code est dans un dépôt privé. ») ; un projet public sans lien fait échouer le build.
 - **Visuels** : toute illustration qui n’est ni une photo, ni une capture réelle, ni un logo, ni
   une figure codée est un `<Visuel id="…">` du registre `site/src/config/visuels.ts`, avec sa
@@ -221,7 +228,10 @@ carte du dépôt et mise en ligne : [`README.md`](README.md).
   acte sombre le déclare (`acte`). À la bascule, `scripts/theme.ts` charge et décode le rendu visé
   des images proches avant d’afficher la nouvelle vue. Une scène animée (`components/accueil/Scene.astro`) refuse une lumière qui
   ne part pas de la lanterne du registre. Les figures codées (FIG), les dessins vectoriels écrits
-  à la main (SVG) et les captures réelles (CAP) se font dans le dépôt. `npm run visuels` liste ce
+  à la main (SVG) et les captures réelles (CAP) se font dans le dépôt. Les images de partage (OG,
+  `tools/generer-partage.mjs`) sont en JPEG sous 300 Ko, au-delà desquels WhatsApp n’affiche
+  souvent pas l’aperçu ; les captures du manifeste se reprennent avec
+  `tools/capturer-installation.mjs`. `npm run visuels` liste ce
   qui manque (rendus et masters de nuit compris), `-- --verifier` contrôle ce qui est livré
   (dimensions, ratio, poids, fond, les deux masters et les deux rendus) ; `npm run visuels:doc`
   régénère [`docs/visuels-a-generer.md`](docs/visuels-a-generer.md), la commande à donner à
@@ -324,7 +334,9 @@ les routes publiques de l’API ; le service Rust reste privé dans Compose.
   10 s au plus, puis `503 UPLOAD_BUSY` ; un petit import prend sa place une fois lu, avant son
   décodage, et chaque import la garde jusqu’à la fin de son traitement ; les autres petites
   requêtes n’y passent jamais. Aperçu HTML sous `/api/backoffice/blog/preview/{id}` pour conserver le cookie privé.
-  Le serveur Node rend les articles, leur SEO et le sitemap sans JavaScript client ni rebuild ;
+  Le serveur Node rend les articles, leur SEO, le sitemap et le flux RSS (`/blog/rss.xml`) sans
+  JavaScript client ni rebuild ; tant qu’aucun article n’est publié, `/blog` reste hors index et
+  hors sitemap ;
   `blog-modele.astro` est un gabarit hors index, dont l’adresse publique reste inaccessible.
   L’atelier `/backoffice/blog` sépare liste, rédaction, images, référencement et publication.
   Les pages d’un article partagent sa version de travail et sa révision ; leur navigation garde

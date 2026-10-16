@@ -497,7 +497,7 @@ async function essais() {
     ['ancre vide (#)', doc(p(t('lien', lien('#'))))],
     ['texte avec \\r\\n (copier-coller Windows)', doc(p(texteBrut('ligne 1\r\nligne 2')))],
     ['image /images/… (existe dans public/)', doc(img('/images/charles.webp', { alt: 'x' }))],
-    ['image /og/… (existe dans public/)', doc(img('/og/accueil.png', { alt: 'x' }))],
+    ['image /og/… (existe dans public/)', doc(img('/og/GLO-07_1200x630.jpg', { alt: 'x' }))],
     ['image /assets/… (aucun dossier servi)', doc(img('/assets/demo/inexistante.png', { alt: 'x' }))],
     ['image /api/blog/media/ inconnue', doc(img('/api/blog/media/999999', { alt: 'x' }))],
     ['titre de niveau 1', doc({ type: 'heading', attrs: { level: 1 }, content: [t('H1')] })],

@@ -91,11 +91,20 @@ L'archive de la V1 a sa propre chaîne, `.github/workflows/archive-v1.yml` : un 
 touche `archive-v1/` (ou un lancement manuel) la reconstruit depuis le dépôt `MonPortfolio` figé
 et la redéploie dans `/opt/monportfolio-archive` ([`archive-v1/README.md`](../archive-v1/README.md)).
 
-`_tests` joue quatre jobs en parallèle : l’API (`backend` : rustfmt, Clippy, tests dont SMTP
+`_tests` joue ses jobs en parallèle : l’API (`backend` : rustfmt, Clippy, tests dont SMTP
 local), l'application (`front` : `astro check`, tests dont ceux
 du serveur, build), le navigateur (`e2e` : Playwright sur le build servi par le serveur de
-production) et la mise en ligne (`infra` : shellcheck, actionlint, combinaisons Compose,
-construction des deux images sans publication). Une PR vers `dev` ne joue que `_tests`.
+production, puis le parcours réel du backoffice et du MCP) et la mise en ligne (`infra` :
+shellcheck, actionlint, combinaisons Compose, construction des deux images sans publication).
+Une PR vers `dev` ne joue que `_tests`.
+
+Depuis le 2026-10-16, `e2e` ne joue plus que sur une PR (Dependabot compris) : il prenait près
+d’un quart d’heure à chaque push. Au push sur `dev`, c’est le hook `.githooks/pre-push` qui le
+joue en local, sur l’arbre de travail, avant que le commit ne parte : `npm run test:e2e`, puis le
+parcours réel du backoffice (`scripts/test-backoffice.mjs`). Il ne s’arme que si le push touche
+`site/` ou `backend/`, refuse un arbre de travail qui n’est pas exactement ce qui part, et se pose
+tout seul au `npm install` de `site/` (script `prepare` : `git config core.hooksPath .githooks`).
+`git push --no-verify` passe outre, en connaissance de cause.
 
 `test` ne déclenche jamais la chaîne : c'est la CI elle-même qui y pousse. `main` n'est atteinte
 que par une fusion `test -> main` faite à la main : cette porte humaine est ce qui promeut en
@@ -289,7 +298,7 @@ npm ci
 npm run dev                       # Astro, rechargement à chaud : http://localhost:4321
 npm run build && npm run serve    # le serveur de production : http://localhost:4000
 npm test                          # dont les tests du serveur (node --test)
-npx playwright test               # navigateur
+npx playwright test               # navigateur (joué aussi par le hook avant un push sur dev)
 ```
 
 `npm run dev` est le plus rapide pour travailler les pages, mais il ne passe pas par

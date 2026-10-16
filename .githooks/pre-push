@@ -1,0 +1,51 @@
+#!/bin/sh
+# Garde-fou local avant un push sur dev : les tests de navigateur (Playwright)
+# et le parcours réel du backoffice et du MCP ne tournent plus dans la CI au
+# push, trop longs (près d'un quart d'heure sur le runner). Ils tournent ici,
+# sur ce qui part : un push sur dev met le site en ligne sur test.
+#
+# Posé par `npm install` dans site/ (script `prepare`), ou à la main :
+#   git config core.hooksPath .githooks
+# Passer outre, en connaissance de cause : git push --no-verify
+#
+# Seul un push sur dev qui touche site/ ou backend/ est vérifié. main n'est
+# atteinte que par une fusion de test, déjà vérifiée à son push sur dev. Une
+# PR vers dev (Dependabot compris) joue toujours ces tests dans la CI.
+
+set -eu
+
+racine=$(git rev-parse --show-toplevel)
+zero=0000000000000000000000000000000000000000
+a_verifier=""
+
+while read -r _ref_locale sha_local ref_distante sha_distant; do
+  [ "$ref_distante" = "refs/heads/dev" ] || continue
+  [ "$sha_local" = "$zero" ] && continue
+  if [ "$sha_distant" = "$zero" ] || ! git cat-file -e "$sha_distant^{commit}" 2>/dev/null; then
+    changes=$(git diff --name-only "$(git merge-base "$sha_local" origin/main 2>/dev/null || echo "$sha_local~1")" "$sha_local" -- site backend)
+  else
+    changes=$(git diff --name-only "$sha_distant" "$sha_local" -- site backend)
+  fi
+  [ -n "$changes" ] && a_verifier="$sha_local"
+done
+
+if [ -z "$a_verifier" ]; then
+  exit 0
+fi
+
+# Les tests portent sur l'arbre de travail : il doit être exactement ce qui part.
+if [ "$(git rev-parse HEAD)" != "$a_verifier" ]; then
+  echo "[pre-push] Le commit poussé sur dev n'est pas celui de l'arbre de travail : extrayez-le (git checkout) pour que les tests portent sur ce qui part." >&2
+  exit 1
+fi
+if [ -n "$(git status --porcelain -- site backend)" ]; then
+  echo "[pre-push] site/ ou backend/ a des changements non commités : les tests ne porteraient pas sur ce qui part. Commitez-les ou mettez-les de côté (git stash -u)." >&2
+  exit 1
+fi
+
+echo "[pre-push] dev : tests de navigateur et parcours réel du backoffice, avant de pousser…"
+cd "$racine/site"
+npm run test:e2e
+cargo build --manifest-path "$racine/backend/Cargo.toml" --locked
+node "$racine/scripts/test-backoffice.mjs"
+echo "[pre-push] tout est vert, le push part."

@@ -1,9 +1,13 @@
 name: _tests
 
 # Reutilisable : tout ce qui se verifie sans hote. Trois responsabilites
-# separees en trois jobs paralleles — l'application, son comportement dans un
+# separees en jobs paralleles — l'application, son comportement dans un
 # navigateur, et ce qui la met en ligne — pour qu'un echec designe tout de suite
 # laquelle des trois est cassee.
+#
+# Le navigateur (job e2e, pres d'un quart d'heure) ne joue que sur une PR, dont
+# celles de Dependabot : au push sur dev, le hook .githooks/pre-push le joue en
+# local avant que le commit ne parte, et la mise en ligne n'attend plus.
 
 on:
   workflow_call:
@@ -98,6 +102,8 @@ jobs:
 
   e2e:
     name: Navigateur (Playwright)
+    # Au push sur dev, joue en local par .githooks/pre-push (voir en tete).
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 40
     defaults:
@@ -182,7 +188,7 @@ jobs:
       - name: Shellcheck des scripts de deploiement
         # Ces scripts tournent en `set -euo pipefail` sur le VPS de production :
         # une variable mal citee y coute un deploiement a moitie applique.
-        run: shellcheck scripts/deploy-remote.sh scripts/deploy-archive-v1.sh
+        run: shellcheck scripts/deploy-remote.sh scripts/deploy-archive-v1.sh .githooks/pre-push
 
       - name: Outils de la bascule
         # Le bandeau de l'archive et le verificateur de bascule n'ont besoin

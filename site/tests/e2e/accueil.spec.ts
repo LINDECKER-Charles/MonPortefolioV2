@@ -22,7 +22,7 @@ const bureau = (largeur: number | undefined) => (largeur ?? 0) >= 1100;
 
 test('le premier écran dit qui, quoi, une preuve et l’action (règle E1)', async ({ page }) => {
   await page.goto('/');
-  await expect(page).toHaveTitle('Charles Lindecker — architecte logiciel');
+  await expect(page).toHaveTitle('Charles Lindecker — architecte logiciel à Mulhouse');
   const titre = page.getByRole('heading', { level: 1 });
   // Le nom en sur-titre, puis l’accroche validée, seul grand titre de la page.
   expect((await titre.textContent())?.replace(/\s+/g, ' ').trim()).toBe('Charles Lindecker Je maîtrise d’abord les règles du jeu. Ensuite, je les réinvente.');

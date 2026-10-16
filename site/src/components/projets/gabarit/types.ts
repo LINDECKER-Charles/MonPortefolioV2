@@ -39,16 +39,15 @@ export interface DonneesFiche {
 
 /**
  * Ce que schema.org dit d’un projet (lib/seo.ts, nœud du projet dans le
- * JSON-LD de sa page) : son type, et pour une application sa catégorie et ses
- * systèmes. L’adresse du nœud est le premier lien public de la fiche, ou la
- * page du projet pour un projet sans lien public.
+ * JSON-LD de sa page) : SoftwareSourceCode pour un dépôt public, dont le
+ * nœud nomme le dépôt (`codeRepository`), CreativeWork sinon. Jamais
+ * SoftwareApplication : Google y exige un prix et des notes qu’aucun projet
+ * n’a, et signalerait chaque page en erreur dans la Search Console. L’adresse
+ * du nœud est le premier lien public de la fiche, ou la page du projet pour
+ * un projet sans lien public.
  */
 export interface SchemaProjet {
-  type: 'CreativeWork' | 'SoftwareApplication';
-  /** Catégorie d’application (`applicationCategory`) : DeveloperApplication… */
-  categorie?: string;
-  /** Systèmes (`operatingSystem`) : « Windows, macOS, Linux ». */
-  systemes?: string;
+  type: 'CreativeWork' | 'SoftwareSourceCode';
   /**
    * Langue(s) du logiciel (`inLanguage`), code BCP 47 : 'en' pour une
    * interface en anglais seulement. Sans elle, la langue du site.

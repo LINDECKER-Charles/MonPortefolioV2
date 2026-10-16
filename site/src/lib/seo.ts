@@ -1,8 +1,10 @@
 /**
  * Ce que les balises de partage et le JSON-LD ont en commun : adresses
- * absolues, titre des pages, nœuds schema.org de la personne, de la page, du
- * fil d’Ariane et du projet.
+ * absolues, titre des pages, nœuds schema.org du site, de la personne, de la
+ * page, du fil d’Ariane et du projet.
  */
+import { QUOTIDIEN } from '../config/competences';
+import { DIPLOME, DOMAINES_CERTIFICATIONS, ETUDES_AVANT, FRONTEND_MENTOR, PROFIL_FREECODECAMP } from '../config/formation';
 import { VITRINE, type ProjetVitrine } from '../config/projets';
 import { CONTACT, SITE } from '../config/site';
 import { FICHE as FICHE_BLOODBORNE } from '../config/bloodborne';
@@ -14,7 +16,7 @@ import { FICHE as FICHE_OMNICARD } from '../config/omnicard';
 import { FICHE as FICHE_PVZ } from '../config/pvz-fusion';
 import { FICHE as FICHE_RELAIS, SCHEMA as SCHEMA_RELAIS } from '../config/relais';
 import { FICHE as FICHE_SILLAGE, SCHEMA as SCHEMA_SILLAGE } from '../config/sillage';
-import type { SchemaProjet } from '../components/projets/gabarit/types';
+import type { DonneesFiche, SchemaProjet } from '../components/projets/gabarit/types';
 
 /** Adresse absolue sur l'hôte canonique : '/x' -> 'https://charles-lindecker.com/x'. */
 export function absolue(chemin: string): string {
@@ -22,6 +24,7 @@ export function absolue(chemin: string): string {
 }
 
 export const PERSONNE_ID = `${SITE.url}/#charles-lindecker`;
+export const SITE_ID = `${SITE.url}/#site`;
 
 const NOM = SITE.nom.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 /** Un titre qui porte déjà le nom, quel qu’en soit le séparateur. */
@@ -50,7 +53,59 @@ interface Image {
   hauteur: number;
 }
 
-export function noeudPersonne(photo?: Image) {
+/**
+ * Le site, sur l’accueil : la forme que Google lit pour choisir le nom du
+ * site affiché dans ses résultats.
+ */
+export function noeudSite() {
+  return {
+    '@type': 'WebSite',
+    '@id': SITE_ID,
+    url: `${SITE.url}/`,
+    name: SITE.nom,
+    alternateName: new URL(SITE.url).hostname,
+    inLanguage: SITE.langue,
+    publisher: { '@id': PERSONNE_ID },
+  };
+}
+
+const MULHOUSE = { '@type': 'PostalAddress', addressLocality: 'Mulhouse', addressCountry: 'FR' } as const;
+
+/**
+ * Ce que la page Formation montre, en schema.org : l’école du titre et celle
+ * du BUT Réseaux & Télécoms, seules nommées, puis le titre et les douze
+ * certifications, chacune avec son certificat.
+ */
+function formation() {
+  const [ecole, ville] = DIPLOME.organisme.split(', ');
+  const iut = ETUDES_AVANT.find((etude) => etude.id === 'reseaux')?.organisme;
+  return {
+    alumniOf: [
+      { '@type': 'EducationalOrganization', name: ecole, ...(ville === 'Mulhouse' && { address: MULHOUSE }) },
+      ...(iut ? [{ '@type': 'EducationalOrganization', name: iut }] : []),
+    ],
+    hasCredential: [
+      { '@type': 'EducationalOccupationalCredential', name: `${DIPLOME.titre} (${DIPLOME.sigle})`, credentialCategory: 'Titre professionnel', educationalLevel: DIPLOME.niveau },
+      ...DOMAINES_CERTIFICATIONS.flatMap((domaine) =>
+        domaine.certifications.map((certification) => ({
+          '@type': 'EducationalOccupationalCredential',
+          name: 'version' in certification ? `${certification.titre} (${certification.version})` : certification.titre,
+          credentialCategory: 'Certification',
+          url: certification.url,
+          dateCreated: certification.date,
+          recognizedBy: domaine.organisme.split(' et ').map((name) => ({ '@type': 'Organization', name })),
+        })),
+      ),
+    ],
+  };
+}
+
+/**
+ * Charles. Chaque page le décrit sous le même @id ; l’accueil, sa page de
+ * profil, ajoute ce qu’il sait faire (le métier et la stack du quotidien),
+ * ses écoles et ses certifications.
+ */
+export function noeudPersonne(photo?: Image, { complet = false } = {}) {
   return {
     '@type': 'Person',
     '@id': PERSONNE_ID,
@@ -60,11 +115,15 @@ export function noeudPersonne(photo?: Image) {
     ...(photo && {
       image: { '@type': 'ImageObject', url: photo.url, width: photo.largeur, height: photo.hauteur },
     }),
-    sameAs: [CONTACT.linkedin, CONTACT.github],
+    sameAs: [CONTACT.linkedin, CONTACT.github, FRONTEND_MENTOR.profil, PROFIL_FREECODECAMP],
     knowsLanguage: ['fr', 'en'],
     // Employeur et ville affichés avec l’accord de Charles (questions.md, A2, 2026-10-09).
-    worksFor: { '@type': 'Organization', name: 'B-Hive', address: { '@type': 'PostalAddress', addressLocality: 'Mulhouse', addressCountry: 'FR' } },
-    workLocation: { '@type': 'Place', address: { '@type': 'PostalAddress', addressLocality: 'Mulhouse', addressCountry: 'FR' } },
+    worksFor: { '@type': 'Organization', name: 'B-Hive', address: MULHOUSE },
+    workLocation: { '@type': 'Place', address: MULHOUSE },
+    ...(complet && {
+      knowsAbout: ['Architecture logicielle', 'Développement web', 'DevOps', ...QUOTIDIEN.map((techno) => techno.nom)],
+      ...formation(),
+    }),
   };
 }
 
@@ -100,27 +159,39 @@ export function noeudAriane(chemin: string, titre: string) {
   };
 }
 
+type SchemaAvecAdresses = SchemaProjet & { url?: string; depot?: string };
+
+/** Le schéma d’un projet, son adresse publique (le premier lien de sa fiche) et, pour un code public, son dépôt GitHub. */
+function avecAdresses(schema: SchemaProjet, fiche: DonneesFiche): SchemaAvecAdresses {
+  const depot = fiche.liens.find((lien) => lien.href.startsWith('https://github.com/'))?.href;
+  return { ...schema, url: fiche.liens[0]?.href, ...(schema.type === 'SoftwareSourceCode' && depot && { depot }) };
+}
+
 /**
  * Ce que schema.org dit de chaque projet, et son adresse publique : le premier
  * lien de sa fiche, ou rien pour un projet sans lien public (dépôt privé), que
  * le nœud nomme alors par sa page. Les projets entrés le 14/10/2026 décrivent
  * le leur dans leur fichier (config/<projet>.ts, export SCHEMA).
  */
-const PROJETS_SCHEMA: Readonly<Record<ProjetVitrine['id'], SchemaProjet & { url?: string }>> = {
-  pvz: { type: 'CreativeWork', url: FICHE_PVZ.liens[0]?.href },
-  league: { type: 'SoftwareApplication', url: FICHE_LEAGUE.liens[0]?.href, categorie: 'ReferenceApplication', systemes: 'Web' },
-  omnicard: { type: 'CreativeWork', url: FICHE_OMNICARD.liens[0]?.href },
-  bloodborne: { type: 'SoftwareApplication', url: FICHE_BLOODBORNE.liens[0]?.href, categorie: 'GameApplication', systemes: 'Web, Android' },
+const PROJETS_SCHEMA: Readonly<Record<ProjetVitrine['id'], SchemaAvecAdresses>> = {
+  pvz: avecAdresses({ type: 'CreativeWork' }, FICHE_PVZ),
+  league: avecAdresses({ type: 'SoftwareSourceCode' }, FICHE_LEAGUE),
+  omnicard: avecAdresses({ type: 'CreativeWork' }, FICHE_OMNICARD),
+  bloodborne: avecAdresses({ type: 'CreativeWork' }, FICHE_BLOODBORNE),
   // Interface en anglais et en français (`gup language fr`) : docs/prive/matiere-premiere.md.
-  gup: { type: 'SoftwareApplication', url: FICHE_GUP.liens[0]?.href, categorie: 'DeveloperApplication', systemes: 'Windows, macOS, Linux', langue: ['en', 'fr'] },
-  githealth: { ...SCHEMA_GITHEALTH, url: FICHE_GITHEALTH.liens[0]?.href },
-  'karl-scraper': { ...SCHEMA_KARL_SCRAPER, url: FICHE_KARL_SCRAPER.liens[0]?.href },
-  sillage: { ...SCHEMA_SILLAGE, url: FICHE_SILLAGE.liens[0]?.href },
-  relais: { ...SCHEMA_RELAIS, url: FICHE_RELAIS.liens[0]?.href },
+  gup: avecAdresses({ type: 'SoftwareSourceCode', langue: ['en', 'fr'] }, FICHE_GUP),
+  githealth: avecAdresses(SCHEMA_GITHEALTH, FICHE_GITHEALTH),
+  'karl-scraper': avecAdresses(SCHEMA_KARL_SCRAPER, FICHE_KARL_SCRAPER),
+  sillage: avecAdresses(SCHEMA_SILLAGE, FICHE_SILLAGE),
+  relais: avecAdresses(SCHEMA_RELAIS, FICHE_RELAIS),
 };
 
-/** Le projet d’une page de projet de la vitrine (CreativeWork ou SoftwareApplication), dont Charles est l’auteur. */
-export function noeudProjet(chemin: string, description: string) {
+/**
+ * Le projet d’une page de projet de la vitrine (CreativeWork, ou
+ * SoftwareSourceCode et son dépôt), dont Charles est l’auteur, avec l’image
+ * de partage de sa page.
+ */
+export function noeudProjet(chemin: string, description: string, image?: string) {
   const projet = VITRINE.find((p) => p.href === chemin);
   if (!projet) return undefined;
   const schema = PROJETS_SCHEMA[projet.id];
@@ -132,24 +203,37 @@ export function noeudProjet(chemin: string, description: string) {
     url: schema.url ?? absolue(chemin),
     author: { '@id': PERSONNE_ID },
     inLanguage: schema.langue ?? SITE.langue,
-    ...(schema.categorie && { applicationCategory: schema.categorie }),
-    ...(schema.systemes && { operatingSystem: schema.systemes }),
+    ...(image && { image }),
+    ...(schema.depot && { codeRepository: schema.depot }),
   };
 }
 
-export function noeudPage({ chemin, titre, description }: { chemin: string; titre: string; description: string }) {
+/**
+ * La page : le profil de Charles sur l’accueil, la liste des projets de la
+ * vitrine sur /projets, une page web ailleurs ; `maj`, la date de son dernier
+ * contenu (config/pages.ts), devient dateModified.
+ */
+export function noeudPage({ chemin, titre, description, maj }: { chemin: string; titre: string; description: string; maj?: string }) {
   const url = absolue(chemin);
+  const type = chemin === '/' ? 'ProfilePage' : chemin === '/projets' ? 'CollectionPage' : 'WebPage';
   return {
-    '@type': chemin === '/' ? 'ProfilePage' : 'WebPage',
+    '@type': type,
     '@id': `${url}#page`,
     url,
     name: titre,
     description,
     inLanguage: SITE.langue,
-    isPartOf: { '@type': 'WebSite', '@id': `${SITE.url}/#site`, url: `${SITE.url}/`, name: SITE.nom },
+    ...(maj && { dateModified: maj }),
+    isPartOf: chemin === '/' ? { '@id': SITE_ID } : { '@type': 'WebSite', '@id': SITE_ID, url: `${SITE.url}/`, name: SITE.nom },
     ...(chemin === '/' ? { mainEntity: { '@id': PERSONNE_ID } } : { about: { '@id': PERSONNE_ID } }),
     ...(chemin !== '/' && { breadcrumb: { '@id': `${url}#ariane` } }),
     ...(VITRINE.some((projet) => projet.href === chemin) && { mainEntity: { '@id': `${url}#projet` } }),
+    ...(type === 'CollectionPage' && {
+      mainEntity: {
+        '@type': 'ItemList',
+        itemListElement: VITRINE.map((projet, i) => ({ '@type': 'ListItem', position: i + 1, name: projet.nom, url: absolue(projet.href) })),
+      },
+    }),
   };
 }
 

@@ -3,29 +3,31 @@
  * Images de partage de la direction « Lanterne » (GLO-07 et les déclinaisons
  * de GLO-08), une par page de src/lib/partage.ts : composées en HTML avec la
  * vraie typographie du site (Instrument Serif et Instrument Sans, fichiers de
- * src/assets/fonts), puis rendues en PNG de 1 200 × 630 par le Chromium de
- * Playwright.
+ * src/assets/fonts), puis rendues en JPEG de 1 200 × 630 par le Chromium de
+ * Playwright, sous 300 Ko (WhatsApp n’affiche souvent pas l’aperçu d’une
+ * image plus lourde).
  *
  *   node --disable-warning=ExperimentalWarning tools/generer-partage.mjs
  *
  * Tout est local : polices, photos et logo sont lus sur le disque et posés en
  * data: dans la page ; aucune requête ne sort de la machine. Les fichiers
  * produits vont dans public/og/ et se versionnent : le build et le serveur ne
- * dépendent pas d’un navigateur. L’image par défaut est aussi copiée en
- * public/og/accueil.png, l’image de repli des articles du blog
- * (server/blog.mjs).
+ * dépendent pas d’un navigateur. L’image du blog (GLO-08-blog) sert aussi
+ * de repli aux articles sans image (server/blog.mjs).
  *
  * Rien n’est généré par une IA : la photo est une vraie photo de Charles,
  * l’emblème est le logo validé ou son dessin GLO-01.
  */
-import { copyFileSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 import sharp from 'sharp';
-import { IMAGES_PARTAGE, PARTAGE_DEFAUT } from '../src/lib/partage.ts';
+import { IMAGES_PARTAGE } from '../src/lib/partage.ts';
 
 const SITE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+/** Au-delà, WhatsApp n’affiche souvent pas l’aperçu du lien. */
+const POIDS_MAX = 300 * 1024;
 const lire = (fichier) => readFileSync(path.join(SITE, fichier));
 const enDonnees = (fichier, type) => `data:${type};base64,${lire(fichier).toString('base64')}`;
 
@@ -116,11 +118,8 @@ for (const image of IMAGES_PARTAGE) {
   await onglet.evaluate(() => document.fonts.ready);
   const brut = await onglet.screenshot({ type: 'png' });
   const sortie = path.join(SITE, image.fichier);
-  const png = image.visuel === 'lanterne' ? sharp(brut).png({ palette: true, quality: 92, compressionLevel: 9 }) : sharp(brut).png({ compressionLevel: 9 });
-  const { size } = await png.toFile(sortie);
+  const { size } = await sharp(brut).jpeg({ quality: 84, mozjpeg: true, chromaSubsampling: '4:4:4' }).toFile(sortie);
+  if (size > POIDS_MAX) throw new Error(`${image.fichier} : ${Math.round(size / 1024)} Ko, au-delà de ${POIDS_MAX / 1024} Ko`);
   console.log(`${image.fichier} (${Math.round(size / 1024)} Ko)`);
 }
 await navigateur.close();
-
-copyFileSync(path.join(SITE, PARTAGE_DEFAUT.fichier), path.join(SITE, 'public/og/accueil.png'));
-console.log('public/og/accueil.png (copie de l’image par défaut)');

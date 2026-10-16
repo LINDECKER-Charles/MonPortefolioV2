@@ -5,7 +5,7 @@ import { mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { creerServeur } from './server.mjs';
-import { renderArticle, renderDocument } from './blog.mjs';
+import { completerSitemap, fluxRss, horsIndex, renderArticle, renderDocument } from './blog.mjs';
 
 const template = '<html><head><title>Gabarit</title><meta name="robots" content="noindex"><meta name="description" content="test"><meta property="og:type" content="website"><script src="/mesure.js"></script></head><body><main><div id="blog-article-slot"></div></main><noscript><h1>Gabarit</h1></noscript></body></html>';
 const post = { id: 1, title: 'Comprendre les décisions', slug: 'comprendre-les-decisions', excerpt: 'Des décisions expliquées.', content: { type: 'doc', content: [{ type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: 'La méthode' }] }, { type: 'paragraph', content: [{ type: 'text', text: 'Le contenu publié.', marks: [{ type: 'bold' }] }] }, { type: 'image', attrs: { src: '/api/blog/media/1', alt: 'La figure', title: 'Une légende' } }] }, cover_image: '/api/blog/media/1', cover_alt: 'La couverture', tags: ['Architecture'], seo_title: 'Décisions et architecture', seo_description: 'Un article sur la méthode.', canonical_url: '', og_image: '', noindex: false, published_at: 1791468000, updated_at: '2026-10-08T12:00:00Z' };
@@ -27,11 +27,13 @@ test('article SEO et aperçu partagent le rendu, avec médias privés et sans me
   const publicHtml = renderArticle(template, post);
   assert.match(publicHtml, /<h1>Comprendre les décisions<\/h1>/);
   assert.equal((publicHtml.match(/<h1>/g) ?? []).length, 1);
-  assert.match(publicHtml, /<title>Décisions et architecture<\/title>/);
+  assert.match(publicHtml, /<title>Décisions et architecture — Charles Lindecker<\/title>/);
   assert.match(publicHtml, /rel="canonical" href="https:\/\/charles-lindecker.com\/blog\/comprendre-les-decisions"/);
-  const ld = JSON.parse(publicHtml.match(/<script type="application\/ld\+json">(.*?)<\/script>/)[1]);
+  const [ld, ariane] = JSON.parse(publicHtml.match(/<script type="application\/ld\+json">(.*?)<\/script>/)[1])['@graph'];
   assert.equal(ld['@type'], 'BlogPosting');
-  assert.equal(ld.author.name, 'Charles Lindecker');
+  // L’auteur est la personne du site, celle du JSON-LD de chaque page (src/lib/seo.ts).
+  assert.deepEqual(ld.author, { '@type': 'Person', '@id': 'https://charles-lindecker.com/#charles-lindecker', name: 'Charles Lindecker', url: 'https://charles-lindecker.com/' });
+  assert.deepEqual(ariane.itemListElement.map((etape) => [etape.name, etape.item]), [['Accueil', 'https://charles-lindecker.com/'], ['Blog', 'https://charles-lindecker.com/blog'], ['Comprendre les décisions', 'https://charles-lindecker.com/blog/comprendre-les-decisions']]);
   const preview = renderArticle(template, { ...post, title: '</script><script>alert(1)</script>' }, { preview: true });
   assert.match(preview, /noindex, nofollow/);
   assert.match(preview, /src="\/api\/backoffice\/blog\/media\/1"/);
@@ -77,7 +79,51 @@ test('les articles et le sitemap sont disponibles dans le HTML dès la publicati
   const xml = await sitemap.text();
   assert.match(xml, /\/blog\/comprendre-les-decisions/);
   assert.doesNotMatch(xml, /prive-du-sitemap|backoffice/);
+  const rss = await fetch(`${base}/blog/rss.xml`);
+  assert.equal(rss.headers.get('content-type'), 'application/rss+xml; charset=utf-8');
+  assert.match(await rss.text(), /<link>https:\/\/charles-lindecker.com\/blog\/comprendre-les-decisions<\/link>/);
   assert.equal((await fetch(`${base}/blog-modele`)).status, 404);
+});
+
+test('un titre qui porte déjà le nom ne le répète pas', () => {
+  assert.match(renderArticle(template, { ...post, seo_title: 'Décisions | Charles Lindecker' }), /<title>Décisions — Charles Lindecker<\/title>/);
+});
+
+test('l’image de partage : la variante de 1 600 px d’un grand original, avec ses dimensions, sinon l’image du blog', () => {
+  const meta = (html, cle) => html.match(new RegExp(`<meta property="${cle}" content="([^"]*)">`))?.[1];
+  const grand = renderArticle(template, { ...post, media: { '/api/blog/media/1': { width: 4000, height: 3000, variants: [480, 960, 1600] } } });
+  assert.equal(meta(grand, 'og:image'), 'https://charles-lindecker.com/api/blog/media/1/1600');
+  assert.deepEqual([meta(grand, 'og:image:width'), meta(grand, 'og:image:height')], ['1600', '1200']);
+  const petit = renderArticle(template, { ...post, media: { '/api/blog/media/1': { width: 800, height: 600, variants: [480] } } });
+  assert.equal(meta(petit, 'og:image'), 'https://charles-lindecker.com/api/blog/media/1');
+  assert.deepEqual([meta(petit, 'og:image:width'), meta(petit, 'og:image:height')], ['800', '600']);
+  const sans = renderArticle(template, { ...post, cover_image: '' });
+  assert.equal(meta(sans, 'og:image'), 'https://charles-lindecker.com/og/GLO-08-blog_1200x630.jpg');
+  assert.deepEqual([meta(sans, 'og:image:type'), meta(sans, 'og:image:width'), meta(sans, 'og:image:height')], ['image/jpeg', '1200', '630']);
+});
+
+test('sans article publié, le blog sort de l’index et du sitemap ; avec, sa date suit le dernier article', () => {
+  const page = '<head><link rel="canonical" href="https://charles-lindecker.com/blog"><meta name="robots" content="index, follow, max-image-preview:large"></head>';
+  assert.equal(horsIndex(page), '<head><meta name="robots" content="noindex, follow"></head>');
+  const xml = '<urlset>\n  <url>\n    <loc>https://charles-lindecker.com/</loc>\n    <lastmod>2026-10-15</lastmod>\n  </url>\n  <url>\n    <loc>https://charles-lindecker.com/blog</loc>\n    <lastmod>2026-10-13</lastmod>\n  </url>\n</urlset>';
+  const vide = completerSitemap(xml, []);
+  assert.doesNotMatch(vide, /\/blog</);
+  assert.match(vide, /<loc>https:\/\/charles-lindecker.com\/<\/loc>/);
+  const plein = completerSitemap(xml, [post]);
+  // Un article plus ancien que la page ne change pas sa date.
+  assert.match(plein, /\/blog<\/loc>\s*<lastmod>2026-10-13<\/lastmod>/);
+  const recent = completerSitemap(xml, [{ ...post, updated_at: '2026-11-02T09:00:00Z' }]);
+  assert.match(recent, /\/blog<\/loc>\s*<lastmod>2026-11-02T09:00:00.000Z<\/lastmod>/);
+  assert.match(recent, /<url><loc>https:\/\/charles-lindecker.com\/blog\/comprendre-les-decisions<\/loc>/);
+});
+
+test('le flux RSS reprend les articles, la description du blog et son adresse', () => {
+  const xml = fluxRss([post], '<meta name="description" content="Les articles &amp; projets.">');
+  assert.match(xml, /^<\?xml version="1.0" encoding="UTF-8"\?>\n<rss version="2.0"/);
+  assert.match(xml, /<description>Les articles &amp; projets\.<\/description>/);
+  assert.match(xml, /<atom:link href="https:\/\/charles-lindecker.com\/blog\/rss.xml" rel="self" type="application\/rss\+xml"\/>/);
+  assert.match(xml, /<item><title>Comprendre les décisions<\/title><link>https:\/\/charles-lindecker.com\/blog\/comprendre-les-decisions<\/link><guid isPermaLink="true">https:\/\/charles-lindecker.com\/blog\/comprendre-les-decisions<\/guid><pubDate>[A-Z][a-z]{2}, \d{2} [A-Z][a-z]{2} \d{4} \d{2}:\d{2}:\d{2} GMT<\/pubDate><description>Des décisions expliquées\.<\/description><category>Architecture<\/category><\/item>/);
+  assert.doesNotMatch(fluxRss([], ''), /<item>|lastBuildDate/);
 });
 
 test('l’aperçu exige une session et ne peut être mis en cache ou indexé', async () => {

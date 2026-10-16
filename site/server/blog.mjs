@@ -4,6 +4,12 @@ import { imageArticle, lienArticle } from './blog-regles.mjs';
 
 const ORIGIN = 'https://charles-lindecker.com';
 const AUTHOR = 'Charles Lindecker';
+/** Le nœud Person du JSON-LD du site (src/lib/seo.ts, PERSONNE_ID) : l’auteur des articles. */
+const PERSONNE_ID = `${ORIGIN}/#charles-lindecker`;
+/** L’image de partage du blog (src/lib/partage.ts) : le repli d’un article sans image. */
+const IMAGE_BLOG = { url: `${ORIGIN}/og/GLO-08-blog_1200x630.jpg`, width: 1200, height: 630, type: 'image/jpeg', alt: `${AUTHOR}, Blog.` };
+/** Un titre qui porte déjà le nom, quel qu’en soit le séparateur (src/lib/seo.ts, titreDePage). */
+const SUFFIXE_NOM = /(?:\s*[—–|·,-]\s*|\s+de\s+)Charles Lindecker$/;
 const MAX_RESPONSE = 8 * 1024 * 1024;
 export const escapeHtml = (value = '') => String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 /**
@@ -212,16 +218,41 @@ function noticeApercu(post) {
 }
 const tagsHtml = (post) => (post.tags?.length ? `<ul class="blog-tags" aria-label="Sujets">${post.tags.map((tag) => `<li>${texteAuteur(tag)}</li>`).join('')}</ul>` : '');
 
+/**
+ * L’image de partage d’un article : la sienne (og_image, sinon la
+ * couverture), servie dans sa plus grande variante de 1 600 px au plus avec
+ * ses dimensions, sinon l’image du blog. Un original de plusieurs Mo
+ * priverait le lien de son aperçu sur WhatsApp.
+ */
+function imagePartage(post) {
+  const src = safeUrl(post.og_image || post.cover_image, true);
+  if (!src) return IMAGE_BLOG;
+  const info = infoImage(post.media, src);
+  if (!info) return { url: `${ORIGIN}${src}` };
+  const largeur = info.width > VARIANTE_MAX && info.variants.length ? info.variants.at(-1) : info.width;
+  return { url: `${ORIGIN}${largeur === info.width ? src : `${src}/${largeur}`}`, width: largeur, height: Math.max(1, Math.round((largeur * info.height) / info.width)) };
+}
+
 function metadata(post, preview) {
-  const title = typoAuteur(post.seo_title || post.title);
+  // Le gabarit du site : « Titre — Charles Lindecker » (src/lib/seo.ts, titreDePage).
+  const title = `${typoAuteur(post.seo_title || post.title).replace(SUFFIXE_NOM, '').trim()} — ${AUTHOR}`;
   const description = typoAuteur(post.seo_description || post.excerpt || textContent(post.content).slice(0, 160));
   let canonical = `${ORIGIN}/blog/${encodeURIComponent(post.slug)}`;
   try { const url = new URL(post.canonical_url); if (url.protocol === 'https:' && !url.username && !url.password) canonical = url.href; } catch { /* Canonical propre à la publication. */ }
-  const image = safeUrl(post.og_image || post.cover_image, true) || '/og/accueil.png';
+  const image = imagePartage(post);
   const published = isoDate(post.published_at);
   const modified = isoDate(post.updated_at) || published;
-  const article = { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: typoAuteur(post.title), description, url: canonical, mainEntityOfPage: canonical, inLanguage: 'fr', author: { '@type': 'Person', name: AUTHOR, url: `${ORIGIN}/parcours` }, image: [`${ORIGIN}${image}`], ...(published ? { datePublished: published } : {}), ...(modified ? { dateModified: modified } : {}), keywords: post.tags ?? [] };
-  return `<title>${escapeHtml(title)}</title><meta name="description" content="${escapeHtml(description)}"><meta name="robots" content="${preview || post.noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'}">${preview ? '' : `<link rel="canonical" href="${escapeHtml(canonical)}">`}<meta property="og:type" content="article"><meta property="og:site_name" content="${AUTHOR}"><meta property="og:locale" content="fr_FR"><meta property="og:title" content="${escapeHtml(title)}"><meta property="og:description" content="${escapeHtml(description)}"><meta property="og:url" content="${escapeHtml(canonical)}"><meta property="og:image" content="${escapeHtml(ORIGIN + image)}"><meta property="og:image:alt" content="${texteAuteur((!post.og_image && post.cover_alt) || post.title)}"><meta name="twitter:card" content="summary_large_image">${published ? `<meta property="article:published_time" content="${published}">` : ''}${modified ? `<meta property="article:modified_time" content="${modified}">` : ''}${preview ? '' : `<script type="application/ld+json">${jsonScript(article)}</script>`}`;
+  const propre = `${ORIGIN}/blog/${encodeURIComponent(post.slug)}`;
+  // L’article, relié à la personne du site, et le fil d’Ariane que la page affiche.
+  const donnees = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      { '@type': 'BlogPosting', '@id': `${propre}#article`, headline: typoAuteur(post.title), description, url: canonical, mainEntityOfPage: canonical, inLanguage: 'fr', author: { '@type': 'Person', '@id': PERSONNE_ID, name: AUTHOR, url: `${ORIGIN}/` }, image: [image.url], ...(published ? { datePublished: published } : {}), ...(modified ? { dateModified: modified } : {}), keywords: post.tags ?? [] },
+      { '@type': 'BreadcrumbList', '@id': `${propre}#ariane`, itemListElement: [['Accueil', `${ORIGIN}/`], ['Blog', `${ORIGIN}/blog`], [typoAuteur(post.title), propre]].map(([name, item], i) => ({ '@type': 'ListItem', position: i + 1, name, item })) },
+    ],
+  };
+  const dimensions = image.width ? `<meta property="og:image:width" content="${image.width}"><meta property="og:image:height" content="${image.height}">` : '';
+  return `<title>${escapeHtml(title)}</title><meta name="description" content="${escapeHtml(description)}"><meta name="robots" content="${preview || post.noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'}">${preview ? '' : `<link rel="canonical" href="${escapeHtml(canonical)}">`}<meta property="og:type" content="article"><meta property="og:site_name" content="${AUTHOR}"><meta property="og:locale" content="fr_FR"><meta property="og:title" content="${escapeHtml(title)}"><meta property="og:description" content="${escapeHtml(description)}"><meta property="og:url" content="${escapeHtml(canonical)}"><meta property="og:image" content="${escapeHtml(image.url)}">${image.type ? `<meta property="og:image:type" content="${image.type}">` : ''}${dimensions}<meta property="og:image:alt" content="${image.alt ? escapeHtml(image.alt) : texteAuteur((!post.og_image && post.cover_alt) || post.title)}"><meta name="twitter:card" content="summary_large_image">${published ? `<meta property="article:published_time" content="${published}">` : ''}${modified ? `<meta property="article:modified_time" content="${modified}">` : ''}${preview ? '' : `<script type="application/ld+json">${jsonScript(donnees)}</script>`}`;
 }
 
 export function renderArticle(template, post, { preview = false } = {}) {
@@ -252,6 +283,50 @@ export function renderIndex(template, page, number = 1) {
   return html;
 }
 
+/**
+ * Le blog sans article publié : une page d’attente, tenue hors index (sans
+ * canonical) jusqu’au premier article, pour ne pas finir en « soft 404 ».
+ */
+export function horsIndex(html) {
+  return html.replace(/<meta name="robots" content="[^"]*">/, '<meta name="robots" content="noindex, follow">').replace(/<link rel="canonical"[^>]*>/, '');
+}
+
+const entreeBlog = new RegExp(`\\s*<url>\\s*<loc>${ORIGIN.replace(/[.]/g, '\\.')}/blog</loc>[\\s\\S]*?</url>`);
+/**
+ * Le sitemap du site, complété des articles. Sans article publié, la page du
+ * blog en sort ; sinon, sa date suit le dernier article, s’il est plus récent.
+ */
+export function completerSitemap(xml, posts) {
+  if (!posts.length) return xml.replace(entreeBlog, '');
+  const entries = [];
+  let derniere = '';
+  for (const post of posts) {
+    const own = `${ORIGIN}/blog/${post.slug}`;
+    const date = isoDate(post.updated_at) || isoDate(post.published_at);
+    if (date > derniere) derniere = date;
+    if (!post.noindex && (!post.canonical_url || post.canonical_url === own)) entries.push(`<url><loc>${escapeHtml(own)}</loc><lastmod>${escapeHtml(date)}</lastmod></url>`);
+  }
+  const avecDate = xml.replace(entreeBlog, (entree) => entree.replace(/<lastmod>([^<]*)<\/lastmod>/, (balise, date) => (derniere.slice(0, 10) > date ? `<lastmod>${derniere}</lastmod>` : balise)));
+  return avecDate.replace('</urlset>', `${entries.join('')}\n</urlset>`);
+}
+
+const decoderAttribut = (valeur) => valeur.replace(/&(amp|lt|gt|quot|#39);/g, (_, nom) => ({ amp: '&', lt: '<', gt: '>', quot: '"', '#39': "'" }[nom]));
+/**
+ * Le flux RSS 2.0 des vingt derniers articles. Le titre et la description du
+ * flux viennent de la page du blog (src/pages/blog.astro) : une seule source.
+ */
+export function fluxRss(posts, liste) {
+  const description = decoderAttribut(/<meta name="description" content="([^"]*)"/.exec(liste)?.[1] ?? '');
+  const date = (post) => isoDate(post.published_at) || isoDate(post.updated_at);
+  const items = posts.map((post) => {
+    const own = `${ORIGIN}/blog/${encodeURIComponent(post.slug)}`;
+    const publie = date(post);
+    return `<item><title>${texteAuteur(post.title)}</title><link>${own}</link><guid isPermaLink="true">${own}</guid>${publie ? `<pubDate>${new Date(publie).toUTCString()}</pubDate>` : ''}<description>${texteAuteur(post.excerpt || post.seo_description)}</description>${(post.tags ?? []).map((tag) => `<category>${texteAuteur(tag)}</category>`).join('')}</item>`;
+  }).join('');
+  const derniere = posts.map(date).filter(Boolean).sort().at(-1);
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Le blog de ${AUTHOR}</title><link>${ORIGIN}/blog</link><description>${escapeHtml(description)}</description><language>fr</language><atom:link href="${ORIGIN}/blog/rss.xml" rel="self" type="application/rss+xml"/>${derniere ? `<lastBuildDate>${new Date(derniere).toUTCString()}</lastBuildDate>` : ''}${items}</channel></rss>\n`;
+}
+
 async function backendJson(config, route, cookie) {
   const response = await fetch(`${config.origine}${route}`, { headers: { Accept: 'application/json', ...(cookie ? { Cookie: cookie } : {}) }, signal: AbortSignal.timeout(5000), redirect: 'error' });
   if (!response.ok) { await response.body?.cancel(); const error = new Error('blog indisponible'); error.status = [401, 403, 404].includes(response.status) ? response.status : 503; throw error; }
@@ -265,29 +340,29 @@ export async function serveBlog(req, res, { pathname, search, root, backend, hea
   const preview = /^\/api\/backoffice\/blog\/preview\/([1-9]\d*)$/.exec(pathname);
   const article = /^\/blog\/([a-z0-9]+(?:-[a-z0-9]+)*)$/.exec(pathname);
   if (pathname === '/blog-modele') { await notFound(req, res); return true; }
-  if (!preview && pathname !== '/blog' && pathname !== '/sitemap.xml' && !article) return false;
+  if (!preview && pathname !== '/blog' && pathname !== '/sitemap.xml' && pathname !== '/blog/rss.xml' && !article) return false;
   if (!backend) { if (preview || article) { await notFound(req, res); return true; } return false; }
   if (!['GET', 'HEAD'].includes(req.method)) { res.writeHead(405, { ...headers, Allow: 'GET, HEAD' }); res.end(); return true; }
   try {
-    let html; let type = 'text/html; charset=utf-8'; let noindex = !!preview;
+    let html; let type = 'text/html; charset=utf-8'; let robots = preview ? 'noindex, nofollow' : '';
     if (pathname === '/sitemap.xml') {
-      html = await loadTemplate('sitemap.xml');
-      let offset = 0; const entries = [];
+      const posts = [];
+      let offset = 0;
       do {
         const page = await backendJson(backend, `/api/blog/posts?limit=100&offset=${offset}`);
-        for (const post of page.posts) {
-          const own = `${ORIGIN}/blog/${post.slug}`;
-          if (!post.noindex && (!post.canonical_url || post.canonical_url === own)) entries.push(`<url><loc>${escapeHtml(own)}</loc><lastmod>${escapeHtml(isoDate(post.updated_at) || isoDate(post.published_at))}</lastmod></url>`);
-        }
+        posts.push(...page.posts);
         offset += page.posts.length;
         if (offset >= page.total || !page.posts.length) break;
         if (offset >= 50_000) throw new Error('sitemap trop grand');
       } while (true);
-      html = html.replace('</urlset>', `${entries.join('')}\n</urlset>`); type = 'application/xml; charset=utf-8';
+      html = completerSitemap(await loadTemplate('sitemap.xml'), posts); type = 'application/xml; charset=utf-8';
+    } else if (pathname === '/blog/rss.xml') {
+      const page = await backendJson(backend, '/api/blog/posts?limit=20&offset=0');
+      html = fluxRss(page.posts, await loadTemplate('blog/index.html')); type = 'application/rss+xml; charset=utf-8';
     } else if (preview || article) {
       const post = await backendJson(backend, preview ? `/api/backoffice/blog/posts/${preview[1]}/preview` : `/api/blog/posts/${article[1]}`, preview ? req.headers.cookie : undefined);
       const template = await loadTemplate('blog-modele/index.html');
-      html = renderArticle(template, post, { preview: !!preview }); noindex ||= post.noindex;
+      html = renderArticle(template, post, { preview: !!preview }); if (post.noindex) robots = 'noindex, nofollow';
     } else {
       const raw = new URLSearchParams(search).get('page') ?? '1';
       if (!/^[1-9]\d{0,5}$/.test(raw)) { await notFound(req, res); return true; }
@@ -295,9 +370,10 @@ export async function serveBlog(req, res, { pathname, search, root, backend, hea
       const page = await backendJson(backend, `/api/blog/posts?limit=20&offset=${(number - 1) * 20}`);
       if (number > 1 && !page.posts.length) { await notFound(req, res); return true; }
       html = renderIndex(await loadTemplate('blog/index.html'), page, number);
+      if (!page.total) { html = horsIndex(html); robots = 'noindex'; }
     }
     const body = Buffer.from(replaceEmail(html));
-    res.writeHead(200, { ...headers, 'Content-Type': type, 'Cache-Control': preview ? 'no-store' : 'no-cache', ...(noindex ? { 'X-Robots-Tag': 'noindex, nofollow' } : {}), 'Content-Length': body.length });
+    res.writeHead(200, { ...headers, 'Content-Type': type, 'Cache-Control': preview ? 'no-store' : 'no-cache', ...(robots ? { 'X-Robots-Tag': robots } : {}), 'Content-Length': body.length });
     res.end(req.method === 'HEAD' ? undefined : body);
   } catch (error) {
     if (error.status === 404) { await notFound(req, res); return true; }

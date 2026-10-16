@@ -1,8 +1,9 @@
 /**
  * Les images de partage (Open Graph) de la direction « Lanterne » : une par
  * page publique, 1 200 × 630, composées en HTML avec la vraie typographie
- * puis rendues en PNG par `node tools/generer-partage.mjs` (local, aucune
- * origine tierce). Les fichiers vivent dans public/og/ et sont versionnés.
+ * puis rendues en JPEG par `node tools/generer-partage.mjs` (local, aucune
+ * origine tierce), sous 300 Ko : WhatsApp n’affiche souvent pas l’aperçu
+ * d’une image plus lourde. Les fichiers vivent dans public/og/ et sont versionnés.
  *
  *   - GLO-07, l’image par défaut (l’accueil, et toute page sans image) : le
  *     nom, le métier, l’accroche, la photo du colza en couleur, l’emblème.
@@ -44,7 +45,7 @@ const NOM = 'Charles Lindecker';
 /** L’image par défaut (GLO-07). */
 export const PARTAGE_DEFAUT: ImagePartage = {
   chemin: '/',
-  fichier: 'public/og/GLO-07_1200x630.png',
+  fichier: 'public/og/GLO-07_1200x630.jpg',
   titre: ACCROCHE,
   lignes: ['Je maîtrise d’abord', 'les règles du jeu.', 'Ensuite, je les réinvente.'],
   surtitre: 'Architecte logiciel',
@@ -55,11 +56,11 @@ export const PARTAGE_DEFAUT: ImagePartage = {
 /** « Encadrer des agents IA » → « encadrer des agents IA » : seule l’initiale change, un sigle reste en capitales. */
 const minusculeInitiale = (texte: string) => texte.charAt(0).toLowerCase() + texte.slice(1);
 
-/** Une déclinaison de GLO-08 : `public/og/GLO-08-<page>_1200x630.png`. */
+/** Une déclinaison de GLO-08 : `public/og/GLO-08-<page>_1200x630.jpg`. */
 function declinaison(chemin: string, titre: string, visuel: VisuelPartage, options: { surtitre?: string; etiquette?: string } = {}): ImagePartage {
   const page = chemin.slice(1).replaceAll('/', '-');
   const description = (options.etiquette ? `${titre}\u00a0: ${minusculeInitiale(options.etiquette)}` : titre).replace(/\.$/, '');
-  return { chemin, fichier: `public/og/GLO-08-${page}_1200x630.png`, titre, visuel, alt: `${NOM}, ${description}.`, ...options };
+  return { chemin, fichier: `public/og/GLO-08-${page}_1200x630.jpg`, titre, visuel, alt: `${NOM}, ${description}.`, ...options };
 }
 
 export const IMAGES_PARTAGE: readonly ImagePartage[] = [

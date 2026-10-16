@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { CHAPITRES } from '../../src/config/chapitres';
 import { GLOSSAIRE } from '../../src/config/glossaire';
+import { FRONTEND_MENTOR, PROFIL_FREECODECAMP } from '../../src/config/formation';
 import { ARCHIVE_V1, CONTACT, CV, MAILTO, SITE } from '../../src/config/site';
 import { jsonLd, noeudPage, noeudPersonne } from '../../src/lib/seo';
 
@@ -52,6 +53,7 @@ describe('JSON-LD', () => {
     const donnees = JSON.parse(texte);
     expect(donnees['@graph'][0]['@type']).toBe('ProfilePage');
     expect(donnees['@graph'][0].mainEntity['@id']).toBe(donnees['@graph'][1]['@id']);
-    expect(donnees['@graph'][1].sameAs).toEqual([CONTACT.linkedin, CONTACT.github]);
+    // Les profils publics que la page Formation cite déjà suivent LinkedIn et GitHub.
+    expect(donnees['@graph'][1].sameAs).toEqual([CONTACT.linkedin, CONTACT.github, FRONTEND_MENTOR.profil, PROFIL_FREECODECAMP]);
   });
 });

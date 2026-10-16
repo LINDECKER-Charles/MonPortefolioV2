@@ -453,5 +453,5 @@ une session déjà ouverte n’est jamais coupée`,
 /** Dépôt privé : aucun lien public. */
 export const LIENS_SORTIE: readonly LienProjet[] = [];
 
-/** Ce que schema.org dit du projet (lib/seo.ts) : intégration continue sur Windows et macOS (README l. 222-223). */
-export const SCHEMA: SchemaProjet = { type: 'SoftwareApplication', categorie: 'DeveloperApplication', systemes: 'Windows, macOS' };
+/** Ce que schema.org dit du projet (lib/seo.ts) : une œuvre, son code est privé. */
+export const SCHEMA: SchemaProjet = { type: 'CreativeWork' };
