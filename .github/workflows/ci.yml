@@ -135,3 +135,35 @@ jobs:
       SSH_USER: ${{ secrets.PROD_SSH_USER }}
       DEPLOY_PATH: ${{ secrets.PROD_PATH }}
       ENV_FILE: ${{ secrets.ENV_PROD }}
+
+  # Les moteurs d'IndexNow (Bing, Yandex...) relisent sans attendre les pages
+  # modifiees depuis la mise en production precedente : celles dont la date du
+  # sitemap tombe le jour de l'ancienne pointe de main (`github.event.before`)
+  # ou apres. Un lancement manuel, sans cette pointe, signale tout le sitemap.
+  # Les articles du blog, publies sans deploiement, passent par indexnow.yml.
+  indexnow:
+    needs: deploy-prod
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Pages modifiees depuis la mise en production precedente
+        env:
+          AVANT: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+          args=()
+          if [ -n "${AVANT}" ] && [ "${AVANT}" != "0000000000000000000000000000000000000000" ] && git cat-file -e "${AVANT}^{commit}" 2>/dev/null; then
+            args=(--depuis "$(git log -1 --format=%cs "${AVANT}")")
+          fi
+          node scripts/indexnow.mjs "${args[@]}"
