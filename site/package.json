@@ -12,6 +12,7 @@
     "sharp": true
   },
   "scripts": {
+    "prepare": "git -C .. config core.hooksPath .githooks 2>/dev/null || true",
     "dev": "astro dev",
     "build": "astro build && node tools/verifier-site.mjs dist && node --disable-warning=ExperimentalWarning tools/visuels-manquants.mjs --resume",
     "check": "astro check",
