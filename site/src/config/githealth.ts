@@ -321,8 +321,8 @@ export const LIENS_SORTIE: readonly LienProjet[] = [
 ];
 
 /**
- * Ce que schema.org dit du projet (lib/seo.ts) : quatre cibles natives,
- * Windows, macOS et Linux, et une interface en anglais seulement
- * (docs/KNOWN_LIMITATIONS.md, section « Interface »).
+ * Ce que schema.org dit du projet (lib/seo.ts) : un code public, à
+ * l’interface en anglais seulement (docs/KNOWN_LIMITATIONS.md, section
+ * « Interface »).
  */
-export const SCHEMA: SchemaProjet = { type: 'SoftwareApplication', categorie: 'DeveloperApplication', systemes: 'Windows, macOS, Linux', langue: 'en' };
+export const SCHEMA: SchemaProjet = { type: 'SoftwareSourceCode', langue: 'en' };

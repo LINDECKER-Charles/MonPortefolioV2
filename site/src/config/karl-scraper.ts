@@ -384,5 +384,5 @@ Assert.DoesNotContain(clientDeLaSource, fermeture);
 /** Dépôt privé : aucun lien public. */
 export const LIENS_SORTIE: readonly LienProjet[] = [];
 
-/** Ce que schema.org dit du projet (lib/seo.ts) : un service local, sur macOS. */
-export const SCHEMA: SchemaProjet = { type: 'SoftwareApplication', categorie: 'DeveloperApplication', systemes: 'macOS' };
+/** Ce que schema.org dit du projet (lib/seo.ts) : une œuvre, son code est privé. */
+export const SCHEMA: SchemaProjet = { type: 'CreativeWork' };

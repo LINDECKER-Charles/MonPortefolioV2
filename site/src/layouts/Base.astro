@@ -19,8 +19,8 @@
  *
  * `titre` : le titre court de la page ; le <title> et og:title suivent un seul
  * gabarit, « Titre — Charles Lindecker » (lib/seo.ts, titreDePage). Le JSON-LD
- * décrit la page, Charles, le fil d’Ariane (BreadcrumbList) et, sur une page
- * de projet, le projet lui-même.
+ * décrit la page et sa date, Charles, le fil d’Ariane (BreadcrumbList), le
+ * site sur l’accueil et, sur une page de projet, le projet lui-même.
  */
 import { existsSync } from 'node:fs';
 import path from 'node:path';
@@ -29,10 +29,11 @@ import Entete from '../components/layout/Entete.astro';
 import Favicons from '../components/layout/Favicons.astro';
 import PiedDePage from '../components/layout/PiedDePage.astro';
 import photo from '../assets/photos/charles-4.webp';
+import { PAGES_SITEMAP } from '../config/pages';
 import { SITE } from '../config/site';
 import type { EntreeSommaire } from '../config/navigation';
 import { imagePartageDe, PARTAGE_DEFAUT } from '../lib/partage';
-import { absolue, jsonLd, noeudAriane, noeudPage, noeudPersonne, noeudProjet, titreDePage } from '../lib/seo';
+import { absolue, jsonLd, noeudAriane, noeudPage, noeudPersonne, noeudProjet, noeudSite, titreDePage } from '../lib/seo';
 import '../styles/global.css';
 
 interface Props {
@@ -74,12 +75,14 @@ const imagePartage = {
 let donnees: string | undefined;
 if (!horsIndex) {
   const portrait = await getImage({ src: photo, width: 800, format: 'jpg', quality: 80 });
+  const maj = PAGES_SITEMAP.find((page) => page.chemin === chemin)?.maj;
   donnees = jsonLd(
     [
-      noeudPage({ chemin, titre, description }),
-      noeudPersonne({ url: absolue(portrait.src), largeur: 800, hauteur: Math.round((800 * photo.height) / photo.width) }),
+      chemin === '/' ? noeudSite() : undefined,
+      noeudPage({ chemin, titre, description, maj }),
+      noeudPersonne({ url: absolue(portrait.src), largeur: 800, hauteur: Math.round((800 * photo.height) / photo.width) }, { complet: chemin === '/' }),
       noeudAriane(chemin, titreDonne),
-      noeudProjet(chemin, description),
+      noeudProjet(chemin, description, imagePartage.url),
     ].filter((noeud): noeud is NonNullable<typeof noeud> => Boolean(noeud)),
   );
 }

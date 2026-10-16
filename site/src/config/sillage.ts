@@ -358,5 +358,5 @@ agents ◀ Playwright MCP :
 /** Dépôt privé : aucun lien public. */
 export const LIENS_SORTIE: readonly LienProjet[] = [];
 
-/** Ce que schema.org dit du projet (lib/seo.ts) : validé en intégration continue sur macOS et Windows. */
-export const SCHEMA: SchemaProjet = { type: 'SoftwareApplication', categorie: 'DeveloperApplication', systemes: 'macOS, Windows' };
+/** Ce que schema.org dit du projet (lib/seo.ts) : une œuvre, son code est privé. */
+export const SCHEMA: SchemaProjet = { type: 'CreativeWork' };
