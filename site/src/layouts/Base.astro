@@ -57,18 +57,18 @@ const titre = titreDePage(titreDonne, chemin);
 const canonique = absolue(chemin);
 /** La barre du navigateur mobile : bleu roi le jour, suie la nuit. */
 const COULEUR_NUIT = '#0b0d12';
-/* L’image de partage de la page (lib/partage.ts, rendue par
-   tools/generer-partage.mjs) : la sienne, sinon l’image par défaut (GLO-07),
-   sinon public/og/accueil.png. Une page peut passer la sienne (`ogImage`,
-   adresse sous public/, et `ogImageAlt`). */
+/* L’image de partage de la page (lib/partage.ts, rendue en JPEG par
+   tools/generer-partage.mjs) : la sienne, sinon l’image par défaut (GLO-07).
+   Une page peut passer la sienne (`ogImage`, adresse sous public/, et
+   `ogImageAlt`). */
 const prevue = imagePartageDe(chemin);
 const livree = (fichier: string) => existsSync(path.resolve(fichier));
-const fichierPartage = [prevue, PARTAGE_DEFAUT].find((image) => livree(image.fichier));
+const fichierPartage = livree(prevue.fichier) ? prevue : PARTAGE_DEFAUT;
 const imagePartage = {
-  url: absolue(ogImage ?? (fichierPartage ? fichierPartage.fichier.replace(/^public/, '') : '/og/accueil.png')),
+  url: absolue(ogImage ?? fichierPartage.fichier.replace(/^public/, '')),
   largeur: 1200,
   hauteur: 630,
-  alt: ogImageAlt ?? fichierPartage?.alt ?? PARTAGE_DEFAUT.alt,
+  alt: ogImageAlt ?? fichierPartage.alt,
 };
 
 let donnees: string | undefined;
@@ -113,7 +113,7 @@ if (!horsIndex) {
     <meta property="og:description" content={description} />
     {!horsIndex && <meta property="og:url" content={canonique} />}
     <meta property="og:image" content={imagePartage.url} />
-    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content={String(imagePartage.largeur)} />
     <meta property="og:image:height" content={String(imagePartage.hauteur)} />
     <meta property="og:image:alt" content={imagePartage.alt} />

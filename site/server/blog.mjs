@@ -217,7 +217,7 @@ function metadata(post, preview) {
   const description = typoAuteur(post.seo_description || post.excerpt || textContent(post.content).slice(0, 160));
   let canonical = `${ORIGIN}/blog/${encodeURIComponent(post.slug)}`;
   try { const url = new URL(post.canonical_url); if (url.protocol === 'https:' && !url.username && !url.password) canonical = url.href; } catch { /* Canonical propre à la publication. */ }
-  const image = safeUrl(post.og_image || post.cover_image, true) || '/og/accueil.png';
+  const image = safeUrl(post.og_image || post.cover_image, true) || '/og/GLO-08-blog_1200x630.jpg';
   const published = isoDate(post.published_at);
   const modified = isoDate(post.updated_at) || published;
   const article = { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: typoAuteur(post.title), description, url: canonical, mainEntityOfPage: canonical, inLanguage: 'fr', author: { '@type': 'Person', name: AUTHOR, url: `${ORIGIN}/parcours` }, image: [`${ORIGIN}${image}`], ...(published ? { datePublished: published } : {}), ...(modified ? { dateModified: modified } : {}), keywords: post.tags ?? [] };

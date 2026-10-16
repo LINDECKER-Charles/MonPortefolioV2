@@ -58,7 +58,7 @@
  * Nommage : `<ID>_<largeur>x<hauteur>.webp` pour une image (le rendu de jour)
  * et `<ID>_<largeur>x<hauteur>.nuit.webp` pour son rendu de nuit, depuis les
  * masters `design/assets/visuels/<série>/<ID>.png` et `<ID>.nuit.png` ;
- * `<ID>.svg` pour un dessin vectoriel, `public/og/<ID>_1200x630.png` pour une
+ * `<ID>.svg` pour un dessin vectoriel, `public/og/<ID>_1200x630.jpg` pour une
  * image de partage.
  */
 
@@ -274,7 +274,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     priorite: 'socle',
     pose: ['lib/partage.ts', 'layouts/Base.astro'],
     alt: 'Charles Lindecker, architecte logiciel. Je maîtrise d’abord les règles du jeu. Ensuite, je les réinvente.',
-    fichier: 'public/og/GLO-07_1200x630.png',
+    fichier: 'public/og/GLO-07_1200x630.jpg',
   },
   {
     id: 'GLO-08',
@@ -292,23 +292,23 @@ export const VISUELS: readonly EntreeVisuel[] = [
     fichier: null,
     lot: 17,
     declinaisons: [
-      { nom: 'projets', fichier: 'public/og/GLO-08-projets_1200x630.png', alt: 'Charles Lindecker, Projets.' },
-      { nom: 'projets-pvz-fusion', fichier: 'public/og/GLO-08-projets-pvz-fusion_1200x630.png', alt: 'Charles Lindecker, PvZ Fusion, pôle francophone : une équipe formée et menée.' },
-      { nom: 'projets-omnicard', fichier: 'public/og/GLO-08-projets-omnicard_1200x630.png', alt: 'Charles Lindecker, Omnicard : réinventer.' },
-      { nom: 'projets-bloodborne-legendary-run', fichier: 'public/og/GLO-08-projets-bloodborne-legendary-run_1200x630.png', alt: 'Charles Lindecker, Bloodborne Legendary Run : un produit de bout en bout.' },
-      { nom: 'projets-league-of-database', fichier: 'public/og/GLO-08-projets-league-of-database_1200x630.png', alt: 'Charles Lindecker, League Of Data Base : un système en production.' },
-      { nom: 'projets-gup', fichier: 'public/og/GLO-08-projets-gup_1200x630.png', alt: 'Charles Lindecker, gup : un outil open source.' },
-      { nom: 'projets-githealth', fichier: 'public/og/GLO-08-projets-githealth_1200x630.png', alt: 'Charles Lindecker, GitHealth : une application de bureau.' },
-      { nom: 'projets-karl-scraper', fichier: 'public/og/GLO-08-projets-karl-scraper_1200x630.png', alt: 'Charles Lindecker, Karl Scraper : automatiser des tâches.' },
-      { nom: 'projets-sillage', fichier: 'public/og/GLO-08-projets-sillage_1200x630.png', alt: 'Charles Lindecker, Sillage : orchestrer des agents IA.' },
-      { nom: 'projets-relais', fichier: 'public/og/GLO-08-projets-relais_1200x630.png', alt: 'Charles Lindecker, Relais : encadrer des agents IA.' },
-      { nom: 'parcours', fichier: 'public/og/GLO-08-parcours_1200x630.png', alt: 'Charles Lindecker, Parcours.' },
-      { nom: 'parcours-professionnel', fichier: 'public/og/GLO-08-parcours-professionnel_1200x630.png', alt: 'Charles Lindecker, Parcours professionnel.' },
-      { nom: 'parcours-competences', fichier: 'public/og/GLO-08-parcours-competences_1200x630.png', alt: 'Charles Lindecker, Compétences.' },
-      { nom: 'parcours-formation', fichier: 'public/og/GLO-08-parcours-formation_1200x630.png', alt: 'Charles Lindecker, Formation et certifications.' },
-      { nom: 'contact', fichier: 'public/og/GLO-08-contact_1200x630.png', alt: 'Charles Lindecker, Discutons.' },
-      { nom: 'blog', fichier: 'public/og/GLO-08-blog_1200x630.png', alt: 'Charles Lindecker, Blog.' },
-      { nom: 'mentions-legales', fichier: 'public/og/GLO-08-mentions-legales_1200x630.png', alt: 'Charles Lindecker, Mentions légales.' },
+      { nom: 'projets', fichier: 'public/og/GLO-08-projets_1200x630.jpg', alt: 'Charles Lindecker, Projets.' },
+      { nom: 'projets-pvz-fusion', fichier: 'public/og/GLO-08-projets-pvz-fusion_1200x630.jpg', alt: 'Charles Lindecker, PvZ Fusion, pôle francophone : une équipe formée et menée.' },
+      { nom: 'projets-omnicard', fichier: 'public/og/GLO-08-projets-omnicard_1200x630.jpg', alt: 'Charles Lindecker, Omnicard : réinventer.' },
+      { nom: 'projets-bloodborne-legendary-run', fichier: 'public/og/GLO-08-projets-bloodborne-legendary-run_1200x630.jpg', alt: 'Charles Lindecker, Bloodborne Legendary Run : un produit de bout en bout.' },
+      { nom: 'projets-league-of-database', fichier: 'public/og/GLO-08-projets-league-of-database_1200x630.jpg', alt: 'Charles Lindecker, League Of Data Base : un système en production.' },
+      { nom: 'projets-gup', fichier: 'public/og/GLO-08-projets-gup_1200x630.jpg', alt: 'Charles Lindecker, gup : un outil open source.' },
+      { nom: 'projets-githealth', fichier: 'public/og/GLO-08-projets-githealth_1200x630.jpg', alt: 'Charles Lindecker, GitHealth : une application de bureau.' },
+      { nom: 'projets-karl-scraper', fichier: 'public/og/GLO-08-projets-karl-scraper_1200x630.jpg', alt: 'Charles Lindecker, Karl Scraper : automatiser des tâches.' },
+      { nom: 'projets-sillage', fichier: 'public/og/GLO-08-projets-sillage_1200x630.jpg', alt: 'Charles Lindecker, Sillage : orchestrer des agents IA.' },
+      { nom: 'projets-relais', fichier: 'public/og/GLO-08-projets-relais_1200x630.jpg', alt: 'Charles Lindecker, Relais : encadrer des agents IA.' },
+      { nom: 'parcours', fichier: 'public/og/GLO-08-parcours_1200x630.jpg', alt: 'Charles Lindecker, Parcours.' },
+      { nom: 'parcours-professionnel', fichier: 'public/og/GLO-08-parcours-professionnel_1200x630.jpg', alt: 'Charles Lindecker, Parcours professionnel.' },
+      { nom: 'parcours-competences', fichier: 'public/og/GLO-08-parcours-competences_1200x630.jpg', alt: 'Charles Lindecker, Compétences.' },
+      { nom: 'parcours-formation', fichier: 'public/og/GLO-08-parcours-formation_1200x630.jpg', alt: 'Charles Lindecker, Formation et certifications.' },
+      { nom: 'contact', fichier: 'public/og/GLO-08-contact_1200x630.jpg', alt: 'Charles Lindecker, Discutons.' },
+      { nom: 'blog', fichier: 'public/og/GLO-08-blog_1200x630.jpg', alt: 'Charles Lindecker, Blog.' },
+      { nom: 'mentions-legales', fichier: 'public/og/GLO-08-mentions-legales_1200x630.jpg', alt: 'Charles Lindecker, Mentions légales.' },
     ],
     note: 'Dix-sept déclinaisons, une par page publique : treize livrées le 13 octobre 2026, puis, le 14 octobre 2026, GitHealth, Karl Scraper, Sillage et Relais, avec Projets et chaque projet dans l’ordre de la vitrine en quatre familles. Ordre et textes : lib/partage.ts est la seule source de leurs titres et de leurs alts, tools/generer-partage.mjs les compose en HTML avec la vraie typographie, et layouts/Base.astro choisit celle de la page. Le visuel de droite est une photo de séance (Contact, Parcours) ou la lanterne allumée ; PVZ-OG, OMN-OG et BLR-OG pourront le remplacer pour leur projet. La 404 garde l’image par défaut, GLO-07.',
   },
@@ -1604,7 +1604,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     pose: null,
     raisonNonPose: 'layouts/Base.astro ne pose que l’image de partage par défaut (GLO-07) ; ce visuel sert la déclinaison GLO-08-pvz-fusion.',
     alt: 'PvZ Fusion, pôle francophone — Charles Lindecker',
-    fichier: 'public/og/PVZ-OG_1200x630.png',
+    fichier: 'public/og/PVZ-OG_1200x630.jpg',
   },
 
   // LOD
@@ -2259,7 +2259,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     pose: null,
     raisonNonPose: 'layouts/Base.astro ne pose que l’image de partage par défaut (GLO-07) ; ce visuel sert la déclinaison GLO-08-omnicard.',
     alt: 'Omnicard, du jeu papier au jeu en ligne — Charles Lindecker',
-    fichier: 'public/og/OMN-OG_1200x630.png',
+    fichier: 'public/og/OMN-OG_1200x630.jpg',
   },
 
   // BLR
@@ -2555,7 +2555,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     pose: null,
     raisonNonPose: 'layouts/Base.astro ne pose que l’image de partage par défaut (GLO-07) ; ce visuel sert la déclinaison GLO-08-bloodborne-legendary-run.',
     alt: 'Bloodborne Legendary Run — Charles Lindecker',
-    fichier: 'public/og/BLR-OG_1200x630.png',
+    fichier: 'public/og/BLR-OG_1200x630.jpg',
   },
 
   // GUP
@@ -3838,7 +3838,7 @@ export const METHODES: Readonly<Record<MethodeVisuel, { nom: string; consigne: s
   FIG: { nom: 'Figure codée', consigne: 'Coder depuis des données sourcées. Jamais générée : pas de fichier image à produire ici.' },
   CAP: { nom: 'Capture réelle', consigne: 'Capturer l’application ou la page réelle. Jamais une image générée présentée comme une capture.' },
   PHO: { nom: 'Photo réelle', consigne: 'Photo réelle de Charles : détourage, bichromie et filtres déterministes seulement. Jamais régénérée.' },
-  OG: { nom: 'Image de partage', consigne: 'Composer en HTML avec la vraie typographie, puis rendre en PNG de 1 200 × 630.' },
+  OG: { nom: 'Image de partage', consigne: 'Composer en HTML avec la vraie typographie, puis rendre en JPEG de 1 200 × 630, sous 300 Ko.' },
 };
 
 /** Plafonds de poids d’un WebP livré, selon son plus grand côté (en Ko). */

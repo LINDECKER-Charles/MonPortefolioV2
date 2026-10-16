@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { PAGES_SITEMAP } from '../../src/config/pages';
@@ -15,11 +15,15 @@ import { DELAI_BUILD, pagesConstruites } from './support/dist';
  */
 
 const SITE = path.resolve(import.meta.dirname, '../..');
-/** Largeur et hauteur d’un PNG, lues dans son en-tête IHDR. */
+/** Largeur et hauteur d’un JPEG, lues dans son marqueur de trame (SOF). */
 const dimensions = (fichier: string) => {
   const octets = readFileSync(path.join(SITE, fichier));
-  expect(octets.subarray(1, 4).toString('latin1'), fichier).toBe('PNG');
-  return [octets.readUInt32BE(16), octets.readUInt32BE(20)];
+  expect(octets.readUInt16BE(0), fichier).toBe(0xffd8);
+  for (let i = 2; i + 9 < octets.length; i += 2 + octets.readUInt16BE(i + 2)) {
+    const marqueur = octets.readUInt16BE(i);
+    if (marqueur >= 0xffc0 && marqueur <= 0xffcf && ![0xffc4, 0xffc8, 0xffcc].includes(marqueur)) return [octets.readUInt16BE(i + 7), octets.readUInt16BE(i + 5)];
+  }
+  throw new Error(`${fichier} : aucun marqueur SOF`);
 };
 
 describe('images de partage', () => {
@@ -27,9 +31,11 @@ describe('images de partage', () => {
     for (const { chemin } of PAGES_SITEMAP) expect(imagePartageDe(chemin).chemin, chemin).toBe(chemin);
   });
 
-  it('livre chaque image prévue, en PNG de 1 200 × 630, dans public/og/', () => {
+  it('livre chaque image prévue, en JPEG de 1 200 × 630 sous 300 Ko, dans public/og/', () => {
     for (const image of IMAGES_PARTAGE) {
-      expect(image.fichier).toMatch(/^public\/og\/GLO-0[78][\w-]*_1200x630\.png$/);
+      expect(image.fichier).toMatch(/^public\/og\/GLO-0[78][\w-]*_1200x630\.jpg$/);
+      // Au-delà, WhatsApp n’affiche souvent pas l’aperçu du lien.
+      expect(statSync(path.join(SITE, image.fichier)).size, image.fichier).toBeLessThanOrEqual(300 * 1024);
       expect(existsSync(path.join(SITE, image.fichier)), image.fichier).toBe(true);
       expect(dimensions(image.fichier), image.fichier).toEqual([1200, 630]);
     }

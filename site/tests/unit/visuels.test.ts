@@ -231,7 +231,7 @@ describe('registre des visuels : fichiers attendus', () => {
     for (const v of VISUELS) {
       if (v.reprend?.length || v.methode === 'FIG') continue;
       if (v.declinaisons?.length) {
-        if (v.methode === 'OG') for (const d of v.declinaisons) expect(d.fichier, v.id).toBe(`public/og/${v.id}-${d.nom}_1200x630.png`);
+        if (v.methode === 'OG') for (const d of v.declinaisons) expect(d.fichier, v.id).toBe(`public/og/${v.id}-${d.nom}_1200x630.jpg`);
         continue;
       }
       if (!v.fichier) continue;
@@ -239,7 +239,7 @@ describe('registre des visuels : fichiers attendus', () => {
       // Photo et captures réelles existantes, nommées avant la refonte (la vitrine les pose dans leurs cadres).
       if (['ACC-01', 'PRJ-04', 'PRJ-05'].includes(v.id)) continue;
       if (v.methode === 'SVG') expect(v.fichier, v.id).toMatch(new RegExp(`^src/assets/visuels/${v.serie}/${v.id}\\.(?:svg|txt)$`));
-      else if (v.methode === 'OG') expect(v.fichier, v.id).toBe(`public/og/${v.id}_1200x630.png`);
+      else if (v.methode === 'OG') expect(v.fichier, v.id).toBe(`public/og/${v.id}_1200x630.jpg`);
       else if (v.methode === 'CAP' && !v.largeur) expect(v.fichier, v.id).toBe(`src/assets/visuels/${v.serie}/${v.id}.webp`);
       else {
         expect(v.largeur && v.hauteur, `${v.id} sans taille`).toBeTruthy();
@@ -380,7 +380,7 @@ describe('registre des visuels : liste des manquants', () => {
 
   it('retire de la liste un visuel livré, et attend toutes les déclinaisons d’un lot', () => {
     ecrire('src/assets/visuels/league-of-database/LOD-03.svg');
-    ecrire('public/og/GLO-08-projets_1200x630.png');
+    ecrire('public/og/GLO-08-projets_1200x630.jpg');
     const etat = etatDesVisuels(racine, INVENTAIRE);
     expect(etat.presents).toBe(1);
     expect(etat.manquantsSocle.map((v: { id: string }) => v.id)).not.toContain('LOD-03');
