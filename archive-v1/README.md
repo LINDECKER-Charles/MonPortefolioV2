@@ -23,7 +23,9 @@ une archive est ici.
 | `NG_ALLOWED_HOSTS` sur le sous-domaine | `compose.yaml` | sans lui, le serveur d’Angular retombe en rendu client |
 
 Le robots.txt de l’archive laisse l’exploration ouverte, et c’est voulu : un robot bloqué par
-`Disallow: /` ne lirait jamais l’en-tête `noindex`. Les balises `<meta name="robots">` de la V1
+`Disallow: /` ne lirait jamais l’en-tête `noindex`. Il n’annonce en revanche ni sitemap ni
+directive `Host` (propre à Yandex, abandonnée) : `bandeau/poser.mjs` les retire du générateur de
+la V1 (`scripts/gen-env.mjs`) avant la construction, l’archive n’ayant aucune page à proposer. Les balises `<meta name="robots">` de la V1
 disent encore `index, follow` ; l’en-tête l’emporte, les moteurs retenant la consigne la plus
 restrictive.
 

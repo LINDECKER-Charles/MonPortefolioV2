@@ -23,13 +23,25 @@ const GABARIT_V1 = `<!doctype html>
 </html>
 `;
 
+/** L’extrait de scripts/gen-env.mjs de la V1 (commit figé) qui écrit le robots.txt. */
+const GENERATEUR_V1 = `const robots = \`User-agent: *
+Allow: /
+
+Host: \${siteUrl}
+Sitemap: \${siteUrl}/sitemap.xml
+\`;
+writeFileSync(join(frontDir, 'public', 'robots.txt'), robots);
+`;
+
 const dossiers = [];
-function sources(gabarit = GABARIT_V1) {
+function sources(gabarit = GABARIT_V1, generateur = GENERATEUR_V1) {
   const dossier = mkdtempSync(path.join(tmpdir(), 'archive-v1-'));
   dossiers.push(dossier);
   mkdirSync(path.join(dossier, 'src'));
   mkdirSync(path.join(dossier, 'public'));
+  mkdirSync(path.join(dossier, 'scripts'));
   writeFileSync(path.join(dossier, 'src', 'index.html'), gabarit);
+  writeFileSync(path.join(dossier, 'scripts', 'gen-env.mjs'), generateur);
   return dossier;
 }
 const poser = (dossier) => execFileSync(process.execPath, [POSER, dossier], { encoding: 'utf8', stdio: 'pipe' });
@@ -48,6 +60,18 @@ describe('bandeau de l’archive', () => {
     assert.ok(html.indexOf('archive-bandeau.css') < html.indexOf('</head>'));
     assert.match(html, /href="https:\/\/charles-lindecker\.com\/"/);
     assert.ok(existsSync(path.join(dossier, 'public', 'archive-bandeau.css')));
+  });
+
+  test('retire du robots.txt le sitemap et la directive Host, sans fermer l’exploration', () => {
+    const dossier = sources();
+    poser(dossier);
+    const generateur = readFileSync(path.join(dossier, 'scripts', 'gen-env.mjs'), 'utf8');
+    assert.match(generateur, /const robots = `User-agent: \*\nAllow: \/\n`;/);
+    assert.doesNotMatch(generateur, /Sitemap|Host/);
+  });
+
+  test('refuse un générateur dont le robots.txt a changé', () => {
+    assert.throws(() => poser(sources(GABARIT_V1, 'const robots = `User-agent: *\nDisallow: /\n`;\n')), /robots\.txt de la V1 introuvable/);
   });
 
   test('refuse d’être posé deux fois', () => {
