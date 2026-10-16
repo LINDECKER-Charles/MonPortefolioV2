@@ -343,8 +343,12 @@ dans `.env.test.example` : la mesure est active dès le premier déploiement de 
   appartiennent au projet (contrat `infra-vps`, `docs/APPLICATIONS.md` § 6) : Umami recrée le site
   sous le même ID après une reconstruction de l'hôte, seul l'historique dépend d'une sauvegarde. En
   changer, c'est repartir d'un site vide.
-- **Pas de team, pas de domaine de tableau de bord dédié** : il n'y a aucun client à qui ouvrir un
-  accès. Le site se consulte avec le compte d'administration de l'instance.
+- **Team `portefolio`, pas de domaine de tableau de bord dédié** : l'étiquette `umami.team` de
+  `compose.umami.yaml` range les sites de test et de production dans cette team, créée et tenue
+  par le reconciler. Elle ouvre leurs statistiques au compte « Consultation »
+  `rapport-portefolio`, ajouté à la main par l'admin d'Umami (*Administrateur → Équipes →
+  portefolio → Ajouter un membre*). Ne pas ranger le site à la main dans une autre team : le
+  reconciler ne voit que les sites de ses propres teams.
 - **Arrêter de mesurer** : retirer les clés Umami du secret et redéployer. Le site et son
   historique restent dans Umami (le reconciler ne supprime rien) ; le supprimer dans l'interface si
   l'historique n'a plus lieu d'être.

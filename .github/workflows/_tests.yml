@@ -243,7 +243,7 @@ jobs:
             "$RUNNER_TEMP/pile.json"
           jq -e --arg id "$id" '.services.web.labels["caddy.import"] == "umami"
             and .services.web.labels["umami.website"] == $id
-            and (.services.web.labels | has("umami.team") | not)
+            and .services.web.labels["umami.team"] == "portefolio"
             and .services.web.environment.UMAMI_WEBSITE_ID == $id' "$RUNNER_TEMP/pile.json"
           echo "— garde-fou : calque de mesure sans UMAMI_WEBSITE_ID (doit echouer)"
           if docker compose "${base[@]}" "${mesure[@]}" config -q 2>/dev/null; then
