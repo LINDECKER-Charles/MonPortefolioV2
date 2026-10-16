@@ -10,7 +10,7 @@ export function blogDevelopment(backend) {
       server.middlewares.use(async (req, res, next) => {
         if (req.headers['x-portfolio-template'] === templateKey) { next(); return; }
         const url = new URL(req.url ?? '/', 'http://localhost');
-        if (!/^\/(?:blog(?:\/[a-z0-9-]+)?|blog-modele|sitemap.xml|api\/backoffice\/blog\/preview\/[1-9]\d*)$/.test(url.pathname)) { next(); return; }
+        if (!/^\/(?:blog(?:\/[a-z0-9-]+|\/rss\.xml)?|blog-modele|sitemap.xml|api\/backoffice\/blog\/preview\/[1-9]\d*)$/.test(url.pathname)) { next(); return; }
         const address = server.httpServer?.address();
         if (!address || typeof address === 'string') { next(); return; }
         try {

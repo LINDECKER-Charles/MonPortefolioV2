@@ -123,6 +123,8 @@ if (!horsIndex) {
     <Favicons />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20261013-embleme" />
     <link rel="manifest" href="/site.webmanifest" />
+    {/* Le flux des articles, rendu par le serveur (server/blog.mjs). */}
+    <link rel="alternate" type="application/rss+xml" title={`Le blog de ${SITE.nom}`} href="/blog/rss.xml" />
     {/* Synchrone, avant les styles : le thème est posé avant le premier rendu. */}
     <script is:inline src="/theme.js"></script>
     {/* Le texte et les titres composent le premier écran : préchargés. L'italique attend. */}

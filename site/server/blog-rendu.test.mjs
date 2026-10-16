@@ -36,11 +36,11 @@ test('les motifs $ de l’auteur ne réinjectent jamais le gabarit (titre, extra
   }));
   for (const balise of [/<html>/g, /<\/head>/g, /<main /g, /<footer>/g, /<header>Entête/g]) assert.equal(compter(html, balise), 1, `une seule occurrence de ${balise}`);
   assert.doesNotMatch(html, /blog-article-slot/, 'l’emplacement est consommé une fois, jamais recopié');
-  assert.match(html, /<title>Prix 5 \$\$, \$&amp; et \$&#39; puis \$`<\/title>/);
+  assert.match(html, /<title>Prix 5 \$\$, \$&amp; et \$&#39; puis \$` — Charles Lindecker<\/title>/);
   assert.match(html, /<h1>Prix 5 \$\$, \$&amp; et \$&#39; puis \$`<\/h1>/);
   assert.match(html, /<p class="blog-article__intro">Prix 5 \$\$, \$&amp; et \$&#39; puis \$`<\/p>/);
   assert.match(html, /<code>IFS=\$&#39;\\n&#39;; echo \$\$ &quot;\$&amp;&quot; \$` \$&#39;<\/code>/);
-  const ld = JSON.parse(html.match(/<script type="application\/ld\+json">(.*?)<\/script>/)[1]);
+  const ld = JSON.parse(html.match(/<script type="application\/ld\+json">(.*?)<\/script>/)[1])['@graph'][0];
   assert.equal(ld.headline, motifs);
 });
 
@@ -133,7 +133,7 @@ test('le texte d’auteur reçoit la typographie du site, sauf le code et les ad
   }));
   const nb = ' ';
   assert.match(html, new RegExp(`<h1>Titre${nb}: l’essai${nb}!</h1>`));
-  assert.match(html, new RegExp(`<title>Titre${nb}: l’essai${nb}!</title>`));
+  assert.match(html, new RegExp(`<title>Titre${nb}: l’essai${nb}! — Charles Lindecker</title>`));
   assert.match(html, new RegExp(`<p class="blog-article__intro">L’extrait${nb}; «${nb}court${nb}»${nb}\\?</p>`));
   assert.match(html, /<li>l’été<\/li>/);
   assert.match(html, new RegExp(`<p>L’article${nb}: ici${nb}; là${nb}! vraiment${nb}\\? «${nb}citation${nb}» <code>a \\? b : c&#39;est</code> et un lien${nb}: <a href="/blog\\?page=2"[^>]*>aujourd’hui</a></p>`));
@@ -165,7 +165,8 @@ test('og:image:alt décrit l’image de partage réellement choisie', () => {
   const alt = (html) => html.match(/<meta property="og:image:alt" content="([^"]*)">/)[1];
   assert.equal(alt(renderArticle(GABARIT, article({ title: 'Le titre', cover_image: '/api/blog/media/1', cover_alt: 'La couverture' }))), 'La couverture');
   assert.equal(alt(renderArticle(GABARIT, article({ title: 'Le titre', cover_image: '/api/blog/media/1', cover_alt: 'La couverture', og_image: '/api/blog/media/2' }))), 'Le titre');
-  assert.equal(alt(renderArticle(GABARIT, article({ title: 'Le titre' }))), 'Le titre');
+  // Sans image, l’image du blog, avec son alt.
+  assert.equal(alt(renderArticle(GABARIT, article({ title: 'Le titre' }))), 'Charles Lindecker, Blog.');
 });
 
 test('un lien sortant suit la grammaire du site (↗, rel external) et la mesure, une seule fois par lien', () => {

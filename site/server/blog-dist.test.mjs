@@ -81,7 +81,7 @@ test('un article injecté dans le vrai gabarit porte un seul titre, canonical, J
   const html = renderArticle(gabaritArticle, article);
 
   assert.equal(compter(html, /<title>/g), 1, 'un seul <title>');
-  assert.match(html, /<title>Titre SEO de l’article factice<\/title>/);
+  assert.match(html, /<title>Titre SEO de l’article factice — Charles Lindecker<\/title>/);
   assert.doesNotMatch(html, /Aperçu d’un article \|/, 'le titre du gabarit a disparu');
 
   assert.equal(compter(html, /<link rel="canonical"/g), 1, 'un seul canonical');
@@ -89,7 +89,7 @@ test('un article injecté dans le vrai gabarit porte un seul titre, canonical, J
 
   const blocs = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
   assert.equal(blocs.length, 1, 'un seul bloc JSON-LD');
-  const ld = JSON.parse(blocs[0][1]);
+  const ld = JSON.parse(blocs[0][1])['@graph'][0];
   assert.equal(ld['@type'], 'BlogPosting');
   assert.equal(ld.headline, article.title);
   assert.equal(ld.url, `${ORIGINE}/blog/article-factice-test`);
@@ -175,7 +175,7 @@ test('le serveur de production, branché sur le vrai dist/, publie l’article e
   const reponse = await fetch(`${base}/blog/article-factice-test`);
   assert.equal(reponse.status, 200);
   const page = await reponse.text();
-  assert.match(page, /<title>Titre SEO de l’article factice<\/title>/);
+  assert.match(page, /<title>Titre SEO de l’article factice — Charles Lindecker<\/title>/);
   assert.match(page, /<link rel="canonical" href="https:\/\/charles-lindecker\.com\/blog\/article-factice-test">/);
   assert.equal(compter(page, /application\/ld\+json/g), 1);
   assert.equal(compter(page, /<noscript/g), 0);
