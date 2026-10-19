@@ -13,14 +13,14 @@
  */
 export const PAGES_SITEMAP = [
   { chemin: '/', maj: '2026-10-16' },
-  { chemin: '/projets', maj: '2026-10-15' },
+  { chemin: '/projets', maj: '2026-10-19' },
   { chemin: '/projets/pvz-fusion', maj: '2026-10-16' },
   { chemin: '/projets/omnicard', maj: '2026-10-16' },
   { chemin: '/projets/gup', maj: '2026-10-16' },
   { chemin: '/projets/bloodborne-legendary-run', maj: '2026-10-16' },
   { chemin: '/projets/league-of-database', maj: '2026-10-16' },
   { chemin: '/projets/githealth', maj: '2026-10-16' },
-  { chemin: '/projets/karl-scraper', maj: '2026-10-16' },
+  { chemin: '/projets/karl-scraper', maj: '2026-10-19' },
   { chemin: '/projets/sillage', maj: '2026-10-16' },
   { chemin: '/projets/relais', maj: '2026-10-16' },
   { chemin: '/parcours', maj: '2026-10-15' },

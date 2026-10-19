@@ -2745,7 +2745,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
     page: '/projets/karl-scraper',
     emplacement: 'En-tête, § Une copie locale, § La Galaxie, § Ce que l’agent lit ; carte de la vitrine',
     sujet: 'Les écrans de Karl Scraper',
-    composition: 'Écrans réels de l’application lancée en local à la révision 6615950, face à un faux serveur source et sur des données fictives (trois projets, seize tâches, trois observations), aucun agent lancé, sans retouche ni recomposition',
+    composition: 'Écrans réels de l’application lancée en local à la révision 4e054a3, après la refonte graphique de son interface, face à un faux serveur source et sur des données fictives (trois projets, seize tâches, trois observations), aucun agent lancé, chaque écran pris sur son panneau de contenu, sans retouche ni recomposition',
     format: 'format natif des écrans',
     ratio: null,
     methode: 'CAP',
@@ -2760,7 +2760,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
       { nom: 'vue-agent', fichier: 'src/assets/projets/karl-scraper/vue-agent.webp', alt: '' },
       { nom: 'carte-galaxie', fichier: 'src/assets/projets/karl-scraper/carte-galaxie.webp', alt: '' },
     ],
-    note: 'Captures provisoires, à refaire après la refonte graphique de l’interface ; provenance dans src/assets/projets/karl-scraper/README.md, alts et légendes dans config/karl-scraper.ts. Aucun libellé qui nomme l’outil source à l’écran.',
+    note: 'Série du 19/10/2026, après la refonte graphique de l’interface ; provenance dans src/assets/projets/karl-scraper/README.md, alts et légendes dans config/karl-scraper.ts. Aucun libellé qui nomme l’outil source à l’écran.',
   },
 
   // ↑ fin des entrées KSC

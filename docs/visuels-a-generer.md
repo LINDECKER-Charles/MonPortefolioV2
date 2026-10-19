@@ -2802,11 +2802,11 @@ Fiches pour mémoire : rien à produire.
 - **Emplacement** : `/projets/karl-scraper` · En-tête, § Une copie locale, § La Galaxie, § Ce que l’agent lit ; carte de la vitrine _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/pages/projets/karl-scraper.astro`, `src/config/karl-scraper.ts`
 - **Sujet** : Les écrans de Karl Scraper
-- **Composition** : Écrans réels de l’application lancée en local à la révision 6615950, face à un faux serveur source et sur des données fictives (trois projets, seize tâches, trois observations), aucun agent lancé, sans retouche ni recomposition
+- **Composition** : Écrans réels de l’application lancée en local à la révision 4e054a3, après la refonte graphique de son interface, face à un faux serveur source et sur des données fictives (trois projets, seize tâches, trois observations), aucun agent lancé, chaque écran pris sur son panneau de contenu, sans retouche ni recomposition
 - **Format** : format natif des écrans
 - **Fichiers attendus** (5) : `site/src/assets/projets/karl-scraper/enchainements.webp` ; `site/src/assets/projets/karl-scraper/tableau-de-bord.webp` ; `site/src/assets/projets/karl-scraper/galaxie.webp` ; `site/src/assets/projets/karl-scraper/vue-agent.webp` ; `site/src/assets/projets/karl-scraper/carte-galaxie.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
-- **Note** : Captures provisoires, à refaire après la refonte graphique de l’interface ; provenance dans src/assets/projets/karl-scraper/README.md, alts et légendes dans config/karl-scraper.ts. Aucun libellé qui nomme l’outil source à l’écran.
+- **Note** : Série du 19/10/2026, après la refonte graphique de l’interface ; provenance dans src/assets/projets/karl-scraper/README.md, alts et légendes dans config/karl-scraper.ts. Aucun libellé qui nomme l’outil source à l’écran.
 
 ### Sillage
 
