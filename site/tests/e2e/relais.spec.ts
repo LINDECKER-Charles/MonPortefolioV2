@@ -87,6 +87,8 @@ test('dépôt privé : aucune sortie du site, ni nom privé, ni bascule entre ab
   // Les chiffres des écrans ne passent pas pour un usage réel.
   await expect(page.locator('#sources')).toContainText('données de démonstration');
   await expect(page.locator('#sources')).toContainText('bdf041f');
+  // Les captures sont prises après la refonte graphique de l’interface.
+  await expect(page.locator('#sources')).toContainText('e00f22b');
 });
 
 test('le point d’accès : la figure, et les liens vers Sillage et Karl Scraper', async ({ page }) => {

@@ -91,7 +91,7 @@ Sillage et Relais sont des dépôts privés : ni nommés ni liés, ici comme sur
 | [`githealth/`](githealth/README.md) | `GTH-C1` | `bd2e5c9` (`dev`, version affichée 0.2.0) | dépôts Git fabriqués, auteurs fictifs en `example.invalid` |
 | [`karl-scraper/`](karl-scraper/README.md) | `KSC-C1` | `4e054a3` (après la refonte graphique, 19/10/2026) | faux serveur source, trois projets et seize tâches fictifs |
 | [`sillage/`](sillage/README.md) | `SIL-C1` | `c256e76` | faux fournisseur des tests du dépôt, trois projets de démonstration |
-| [`relais/`](relais/README.md) | `REL-C1` | `bdf041f` (version 0.2.0) | agent de démonstration aux tours écrits à l’avance, sans inférence |
+| [`relais/`](relais/README.md) | `REL-C1` | `e00f22b` (version 0.2.0, après la refonte graphique, série du 19/10/2026) | agent de démonstration aux tours écrits à l’avance, sans inférence |
 
 ## Logos techniques
 

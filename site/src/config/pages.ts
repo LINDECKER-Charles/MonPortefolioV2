@@ -22,7 +22,7 @@ export const PAGES_SITEMAP = [
   { chemin: '/projets/githealth', maj: '2026-10-16' },
   { chemin: '/projets/karl-scraper', maj: '2026-10-19' },
   { chemin: '/projets/sillage', maj: '2026-10-16' },
-  { chemin: '/projets/relais', maj: '2026-10-16' },
+  { chemin: '/projets/relais', maj: '2026-10-19' },
   { chemin: '/parcours', maj: '2026-10-15' },
   { chemin: '/parcours/professionnel', maj: '2026-10-15' },
   { chemin: '/parcours/competences', maj: '2026-10-15' },

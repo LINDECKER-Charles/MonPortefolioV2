@@ -8,8 +8,9 @@
  * de la vitrine comprise).
  *
  * Dépôt privé : aucun lien, aucun nom de dépôt. Les captures sont de vraies
- * vues de Relais 0.2.0 lancé en local avec des données de démonstration et un
- * agent de démonstration (src/assets/projets/relais/README.md). Relais est le
+ * vues de Relais 0.2.0 lancé en local le 19/10/2026, après la refonte graphique
+ * de son interface, avec des données de démonstration et un agent de
+ * démonstration (src/assets/projets/relais/README.md). Relais est le
  * dernier projet de la vitrine : sa sortie mène aux projets archivés.
  */
 import type { ImageMetadata } from 'astro';
@@ -158,7 +159,7 @@ const analyse = capture('analyse');
     <SourcesProjet>
       <p><b>Le projet.</b> Dépôt privé, présenté sans lien. Relu le 14/10/2026 à la révision bdf041f de sa branche de développement&nbsp;: version 0.2.0, 260&nbsp;commits du 18/09 au 14/10/2026, tous de ma main, et 373&nbsp;tests du serveur en Rust. Versions fixées par Relais&nbsp;: Claude Code 2.1.281 et Codex 0.157.1.</p>
       <p><b>Chiffres.</b> Les 1&nbsp;011&nbsp;décisions de permission, et les 69&nbsp;refus de lecture et de recherche parmi elles, viennent du registre des correctifs du dépôt&nbsp;: la base de l’instance en service après trois jours, du 21 au 23/09/2026. Les 52&nbsp;cas et le défaut des liens physiques viennent de l’audit des permissions du 20/09/2026&nbsp;; les 69&nbsp;refus ont été recoupés avec les paramètres des appels, pas rejoués un à un sur la base en service. Le frein des lancements et l’incident du 27/09/2026 viennent de son code et du correctif du 05/10/2026. Le seuil de 95&nbsp;% et la suppression des conversations après 90&nbsp;jours sont des valeurs par défaut, réglables.</p>
-      <p><b>Captures.</b> Relais 0.2.0 lancé en local le 14/10/2026, avec des données de démonstration&nbsp;: trois abonnements, des projets et des conversations inventés, aucun compte réel. Un agent de démonstration remplace Claude Code&nbsp;: il rejoue des tours écrits à l’avance, sans inférence ni appel réseau. Les décisions de permission, refus compris, sont celles de Relais. Les chiffres des écrans (tokens, coûts, durées, quotas) sont calculés par Relais sur ces données et ne décrivent aucun usage réel. Aucune retouche&nbsp;; la vignette de la vitrine recadre le panneau de pilotage de la conversation.</p>
+      <p><b>Captures.</b> Relais 0.2.0 lancé en local le 19/10/2026, après la refonte graphique de son interface, à la révision e00f22b, avec des données de démonstration&nbsp;: trois abonnements, des projets et des conversations inventés, aucun compte réel. Un agent de démonstration remplace Claude Code&nbsp;: il rejoue des tours écrits à l’avance, sans inférence ni appel réseau. Les décisions de permission, refus compris, sont celles de Relais. Les chiffres des écrans (tokens, coûts, durées, quotas) sont calculés par Relais sur ces données et ne décrivent aucun usage réel. Aucune retouche&nbsp;; la vignette de la vitrine recadre le tableau de bord.</p>
       <p><b>Limites.</b> Le mode strict contrôle chaque appel d’outil&nbsp;; ce n’est pas un bac à sable imposé par le système. Relais n’écoute que la machine locale&nbsp;: l’accès distant et le multi-utilisateur sont hors de son périmètre.</p>
       <p><b>Fonctions et sous le capot.</b> Relus le 15/10/2026 à la même révision&nbsp;: l’architecture, le contrat de l’API, les serveurs MCP par session, la conversation, les diagnostics et le code. Les extraits sont des formes simplifiées, écrites pour cette page. 54&nbsp;scripts de vérification et les faux agents des tests sont comptés à la même révision.</p>
     </SourcesProjet>
