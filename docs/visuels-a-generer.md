@@ -2802,11 +2802,11 @@ Fiches pour mémoire : rien à produire.
 - **Emplacement** : `/projets/karl-scraper` · En-tête, § Une copie locale, § La Galaxie, § Ce que l’agent lit ; carte de la vitrine _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/pages/projets/karl-scraper.astro`, `src/config/karl-scraper.ts`
 - **Sujet** : Les écrans de Karl Scraper
-- **Composition** : Écrans réels de l’application lancée en local à la révision 6615950, face à un faux serveur source et sur des données fictives (trois projets, seize tâches, trois observations), aucun agent lancé, sans retouche ni recomposition
+- **Composition** : Écrans réels de l’application lancée en local à la révision 4e054a3, après la refonte graphique de son interface, face à un faux serveur source et sur des données fictives (trois projets, seize tâches, trois observations), aucun agent lancé, chaque écran pris sur son panneau de contenu, sans retouche ni recomposition
 - **Format** : format natif des écrans
 - **Fichiers attendus** (5) : `site/src/assets/projets/karl-scraper/enchainements.webp` ; `site/src/assets/projets/karl-scraper/tableau-de-bord.webp` ; `site/src/assets/projets/karl-scraper/galaxie.webp` ; `site/src/assets/projets/karl-scraper/vue-agent.webp` ; `site/src/assets/projets/karl-scraper/carte-galaxie.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
-- **Note** : Captures provisoires, à refaire après la refonte graphique de l’interface ; provenance dans src/assets/projets/karl-scraper/README.md, alts et légendes dans config/karl-scraper.ts. Aucun libellé qui nomme l’outil source à l’écran.
+- **Note** : Série du 19/10/2026, après la refonte graphique de l’interface ; provenance dans src/assets/projets/karl-scraper/README.md, alts et légendes dans config/karl-scraper.ts. Aucun libellé qui nomme l’outil source à l’écran.
 
 ### Sillage
 
@@ -2845,8 +2845,8 @@ Fiches pour mémoire : rien à produire.
 - **Emplacement** : `/projets/relais` · En-tête, § le périmètre, § la capacité, § l’analyse ; carte de la vitrine (/projets) _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/pages/projets/relais.astro`, `src/config/relais.ts`
 - **Sujet** : Les écrans de Relais, sur des données de démonstration
-- **Composition** : Écrans réels de Relais 0.2.0 lancé en local (abonnements, projets et conversations inventés, un agent de démonstration à la place du CLI, aucun compte réel), fenêtre de 1 440 × 900 en densité 2, sans retouche ni recomposition ; la vignette de la carte est un recadrage du panneau de pilotage de la conversation
-- **Format** : format natif des écrans, 2880 × 1800 ; vignette 610 × 490
+- **Composition** : Écrans réels de Relais 0.2.0 lancé en local à la révision e00f22b, après la refonte graphique de son interface (abonnements, projets et conversations inventés, un agent de démonstration à la place du CLI, aucun compte réel), fenêtre de 1 440 × 900 en densité 2, sans retouche ni recomposition ; la vignette de la carte est un recadrage du tableau de bord
+- **Format** : format natif des écrans, 2880 × 1800 ; vignette 960 × 960
 - **Fichiers attendus** (6) : `site/src/assets/projets/relais/dashboard.webp` ; `site/src/assets/projets/relais/conversation-perimetre.webp` ; `site/src/assets/projets/relais/capacite.webp` ; `site/src/assets/projets/relais/garde-fous.webp` ; `site/src/assets/projets/relais/analyse.webp` ; `site/src/assets/projets/relais/carte-dashboard.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
 - **Note** : Livrés le 14/10/2026, provenance dans src/assets/projets/relais/README.md ; leurs alts sont dans config/relais.ts. La vignette carte-dashboard, recadrage du Dashboard, est posée sur la carte de la vitrine par config/relais.ts (CARTE.visuel), dans un cadre navigateur ; les autres par la page.

@@ -10,7 +10,7 @@
  * Dépôt privé, présenté sans lien ni nom de dépôt ; l’outil qu’il lit se dit
  * « un outil de gestion de tâches » (décision de Charles du 14/10/2026).
  * Captures (KSC-C1) : vraies vues de l’application lancée en local sur des
- * données fictives, provisoires jusqu’à la refonte graphique de son interface
+ * données fictives, après la refonte graphique de son interface
  * (src/assets/projets/karl-scraper/README.md). La chaîne d’un ticket (KSC-F1)
  * montre ce qu’aucune capture ne montre sans agent lancé.
  */
@@ -40,7 +40,7 @@ const description = 'Karl Scraper tient une copie locale de mes tâches, la donn
 
 <Base titre={titre} description={description} chemin="/projets/karl-scraper" sommaire={SECTIONS}>
   <EnTeteProjet projet="karl-scraper" titre={EN_TETE.titre} chapeau={EN_TETE.chapeau} liens={EN_TETE.liens} preuves={PREUVES} fiche={FICHE}>
-    <!-- Les réglages des enchaînements, recadrés sur leur colonne (les marges vides de l’écran sortent du cadre) ;
+    <!-- La colonne des enchaînements, prise seule à la capture ;
          sur mobile, les deux règles seules, lisibles (l’écran entier s’agrandit). -->
     <CadreCapture
       slot="visuel"
@@ -48,11 +48,11 @@ const description = 'Karl Scraper tient une copie locale de mes tâches, la donn
       src={enchainements}
       alt={ECRANS.enchainements.alt}
       legende={ECRANS.enchainements.legende}
-      region={{ x: 20.5, y: 0, l: 59, h: 100 }}
-      regionMobile={{ x: 22.5, y: 54, l: 39, h: 46 }}
+      region={{ x: 0, y: 0, l: 100, h: 100 }}
+      regionMobile={{ x: 1, y: 64.5, l: 60.5, h: 35.5 }}
       class="ksc-entete-capture"
-      widths={[960, 1400, 1900, 2728]}
-      sizes="(max-width: 860px) 260vw, (max-width: 1100px) 1090px, 950px"
+      widths={[640, 1200, 1808]}
+      sizes="(max-width: 860px) 170vw, (max-width: 1100px) 640px, 560px"
       loading="eager"
       agrandir
     />
@@ -71,10 +71,10 @@ const description = 'Karl Scraper tient une copie locale de mes tâches, la donn
         alt={ECRANS.tableauDeBord.alt}
         legende={ECRANS.tableauDeBord.legende}
         region={{ x: 0, y: 0, l: 100, h: 100 }}
-        regionMobile={{ x: 66.5, y: 0, l: 33.5, h: 100 }}
+        regionMobile={{ x: 0.5, y: 1.5, l: 44.5, h: 81.5 }}
         class="ksc-capture-large"
-        widths={[800, 1200, 1600, 2392]}
-        sizes="(max-width: 860px) 300vw, 1000px"
+        widths={[800, 1200, 1600, 2352]}
+        sizes="(max-width: 860px) 225vw, 1000px"
         agrandir
       />
     </SectionProjet>
@@ -90,9 +90,9 @@ const description = 'Karl Scraper tient une copie locale de mes tâches, la donn
           src={galaxie}
           alt={ECRANS.galaxie.alt}
           legende={ECRANS.galaxie.legende}
-          ratio="2400 / 1350"
-          cible={{ x: 18.6, y: 5.2 }}
-          loupe={{ x: 12.5, y: 4.4, zoom: 3.9, largeur: 40, ratio: '4 / 1', coin: 'haut-droite', dessous: true }}
+          ratio="2400 / 1500"
+          cible={{ x: 16.2, y: 5.3 }}
+          loupe={{ x: 11, y: 5.3, zoom: 4.6, largeur: 40, ratio: '4 / 1', coin: 'haut-droite', dessous: true }}
           class="ksc-capture-large"
           widths={[800, 1200, 1600, 2400]}
           sizes="(max-width: 1100px) 100vw, 1000px"
@@ -112,10 +112,10 @@ const description = 'Karl Scraper tient une copie locale de mes tâches, la donn
         src={vueAgent}
         alt={ECRANS.vueAgent.alt}
         legende={ECRANS.vueAgent.legende}
-        ratio="1696 / 1668"
-        cible={{ x: 6.5, y: 39.5 }}
-        loupe={{ x: 20.5, y: 44.3, zoom: 3, largeur: 48, ratio: '3 / 1', coin: 'bas-droite', dessous: true }}
-        widths={[700, 1100, 1696]}
+        ratio="1086 / 1602"
+        cible={{ x: 6.5, y: 34.5 }}
+        loupe={{ x: 34.5, y: 34.6, zoom: 2, largeur: 62, ratio: '3 / 1', coin: 'bas-droite', dessous: true }}
+        widths={[700, 1086]}
         sizes="(max-width: 1100px) 100vw, 520px"
         agrandir
       />
@@ -135,13 +135,13 @@ const description = 'Karl Scraper tient une copie locale de mes tâches, la donn
     <SousLeCapot points={CAPOT} chapeau="L’architecture, puis ce que l’outil et ses agents ont le droit de faire, et ce qui le garantit. Le code est privé : les extraits sont des formes simplifiées, écrites pour cette page." />
 
     <SortieProjet projet="karl-scraper" titre="Où il en est" liens={LIENS_SORTIE}>
-      <p>Karl Scraper tourne sur mon poste, sans être déployé ni exposé&nbsp;: il n’écoute que la machine elle-même. Il tient la copie de mes tâches et sait en confier la lecture et la réalisation à des agents. Son interface attend une refonte graphique&nbsp;: les écrans de cette page sont provisoires.</p>
+      <p>Karl Scraper tourne sur mon poste, sans être déployé ni exposé&nbsp;: il n’écoute que la machine elle-même. Il tient la copie de mes tâches et sait en confier la lecture et la réalisation à des agents. Son interface a été refaite en octobre 2026, sur le système de design commun à mes outils IA&nbsp;: les écrans de cette page la montrent.</p>
     </SortieProjet>
 
     <SourcesProjet>
       <p><b>Le projet.</b> Dépôt privé, présenté sans lien, relu le 14/10/2026 à la révision 6615950 du 09/10/2026&nbsp;: 282&nbsp;commits d’un seul auteur, du 28/08 au 09/10/2026. Les chiffres viennent de son code&nbsp;: le catalogue des enchaînements (14&nbsp;déclencheurs, 18&nbsp;actions), les outils du serveur MCP (13, dont 10 marqués en lecture seule) et la liste blanche des appels réseau. La chaîne d’un ticket et les décisions viennent de ses plans et de ses invariants, à la même révision.</p>
       <p><b>Ce qui n’est pas montré.</b> Un «&nbsp;dossier de tâche&nbsp;» unifié est écrit dans les plans, mais seul son premier lot est livré&nbsp;: il n’est pas présenté ici. Sans agent lancé, les écrans de préparation, de réalisation et de plans restent vides&nbsp;; la figure de la chaîne les remplace.</p>
-      <p><b>Captures.</b> Application lancée en local le 14/10/2026, à la même révision et sans modification, face à un faux serveur source&nbsp;: données fictives (trois projets, seize tâches, trois observations), aucun agent lancé, aucune donnée réelle. Les deux règles d’enchaînement sont écrites pour la démonstration. Les écrans sont cadrés sur leur contenu, sans retouche. Ils sont provisoires et seront refaits après la refonte graphique de l’interface.</p>
+      <p><b>Captures.</b> Application lancée en local le 19/10/2026, après la refonte graphique de son interface, à la révision 4e054a3 du même jour et sans modification, face à un faux serveur source&nbsp;: données fictives (trois projets, seize tâches, trois observations), aucun agent lancé, aucune donnée réelle. Les deux règles d’enchaînement sont écrites pour la démonstration. Les écrans sont pris sur leur seul panneau de contenu, sans retouche.</p>
       <p><b>Fonctions et sous le capot.</b> Relus le 15/10/2026 à la même révision&nbsp;: plans, invariants, documentation de l’API locale et code. Les extraits sont des formes simplifiées, écrites pour cette page, sans nom interne ni chemin de la machine. Les cas de test sont comptés dans le code (1&nbsp;345 côté serveur, 718 côté interface), sans être exécutés.</p>
     </SourcesProjet>
   </CorpsProjet>

@@ -15,8 +15,8 @@
  * ici ; les enchaînements sont livrés sans aucune règle : la page le dit.
  *
  * Captures : vraies vues de l’application lancée en local avec des données de
- * démonstration fictives, provisoires jusqu’à la refonte graphique de son
- * interface (src/assets/projets/karl-scraper/README.md).
+ * démonstration fictives, prises le 19/10/2026 à la révision 4e054a3, après la
+ * refonte graphique de son interface (src/assets/projets/karl-scraper/README.md).
  */
 import type { EntreeSommaire } from './navigation';
 import type { CarteVitrine } from './vitrine';
@@ -47,13 +47,13 @@ export const CARTE: CarteVitrine = {
   ],
   // La Galaxie, recadrée sur ses anneaux (KSC-C1, carte-galaxie.webp) : entière,
   // ses tâches ne faisaient que 2 ou 3 px à la taille d’une carte. Le recadrage
-  // garde les tâches reliées et deux libellés de statut, sans en trancher aucun.
+  // garde des tâches et leurs traînées, et deux libellés de statut entiers.
   visuel: {
     capture: {
       type: 'navigateur',
       src: carteGalaxie,
-      alt: 'La Galaxie de Karl Scraper : des tâches fictives sur les anneaux de leur statut, reliées entre elles.',
-      widths: [400, 783],
+      alt: 'La Galaxie de Karl Scraper : des tâches fictives sur les anneaux de leur statut, certaines suivies de la traînée de leurs positions précédentes.',
+      widths: [400, 780],
     },
   },
 };
@@ -132,7 +132,7 @@ export const ECRANS = {
     legende: 'Deux règles écrites pour la démonstration : retenir la compréhension qu’un agent propose (une « lecture », à l’écran), puis la confier à un agent. Un clic agrandit l’écran.',
   },
   tableauDeBord: {
-    alt: 'Le tableau de bord sur trois projets fictifs : les tâches par projet, par statut, et l’écart avec l’observation précédente, cinq statuts changés et une tâche nouvelle.',
+    alt: 'Le tableau de bord sur trois projets fictifs : l’écart avec l’observation précédente, cinq statuts changés et une tâche nouvelle, puis les tâches par projet et par statut.',
     legende: 'L’écart avec l’observation précédente : cinq statuts ont changé, une tâche est apparue.',
   },
   galaxie: {

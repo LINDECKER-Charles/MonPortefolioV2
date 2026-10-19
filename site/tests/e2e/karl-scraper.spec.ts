@@ -109,6 +109,7 @@ test('rien ne nomme une donnée privée ni une référence réelle : « Karl » 
   expect(texte).not.toMatch(/\b181\b/);
   await expect(page.locator('#sources')).toContainText('données fictives');
   await expect(page.locator('#sources')).toContainText('6615950');
+  await expect(page.locator('#sources')).toContainText('4e054a3');
 });
 
 test('quatre vrais écrans : l’en-tête recadré sur sa colonne, chacun s’ouvre en grand et se referme à Échap', async ({ page }) => {
@@ -128,7 +129,7 @@ test('quatre vrais écrans : l’en-tête recadré sur sa colonne, chacun s’ou
   const entiere = visionneuse.locator('[data-visionneuse-image]');
   await expect.poll(() => entiere.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
   const ratio = await entiere.evaluate((img: HTMLImageElement) => img.naturalWidth / img.naturalHeight);
-  expect(ratio).toBeCloseTo(2392 / 562, 1);
+  expect(ratio).toBeCloseTo(2352 / 1060, 1);
   await page.keyboard.press('Escape');
   await expect(visionneuse).toBeHidden();
   await expect(agrandir).toBeFocused();
@@ -145,11 +146,11 @@ test('la Galaxie, toujours sombre, vit dans un acte de veille, et sa loupe lit l
   const imageLoupe = capture.locator('.loupe img');
   await expect.poll(() => imageLoupe.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
   const [loupe, detail, ecran] = await Promise.all([capture.locator('.loupe').boundingBox(), imageLoupe.boundingBox(), capture.locator('.capture__vue > a img').boundingBox()]);
-  // L’image de la loupe est entière (2400 × 1350) et agrandie : le compte s’y lit.
-  expect(detail!.width / detail!.height).toBeCloseTo(2400 / 1350, 1);
+  // L’image de la loupe est entière (2400 × 1500) et agrandie : le compte s’y lit.
+  expect(detail!.width / detail!.height).toBeCloseTo(2400 / 1500, 1);
   expect(detail!.width).toBeGreaterThan(loupe!.width * 3.5);
   // La capture entière, à son ratio, et assez large pour la page.
-  expect(ecran!.width / ecran!.height).toBeCloseTo(2400 / 1350, 1);
+  expect(ecran!.width / ecran!.height).toBeCloseTo(2400 / 1500, 1);
   if ((page.viewportSize()?.width ?? 0) >= 1440) expect(ecran!.width).toBeGreaterThan(800);
 });
 
@@ -158,8 +159,8 @@ test('l’en-tête : sur mobile, les deux règles seules, lisibles ; sur ordinat
   const vue = page.locator('.ksc-entete-capture .capture__vue');
   const boite = await vue.boundingBox();
   const ratio = boite!.width / boite!.height;
-  if ((page.viewportSize()?.width ?? 0) <= 860) expect(ratio).toBeCloseTo((0.39 * 2728) / (0.46 * 1278), 1);
-  else expect(ratio).toBeCloseTo((0.59 * 2728) / 1278, 1);
+  if ((page.viewportSize()?.width ?? 0) <= 860) expect(ratio).toBeCloseTo((0.605 * 1808) / (0.355 * 1186), 1);
+  else expect(ratio).toBeCloseTo(1808 / 1186, 1);
 });
 
 test('sur mobile, l’écart seul se lit ; sur ordinateur, les trois panneaux', async ({ page }) => {
@@ -168,8 +169,8 @@ test('sur mobile, l’écart seul se lit ; sur ordinateur, les trois panneaux', 
   await vue.scrollIntoViewIfNeeded();
   const boite = await vue.boundingBox();
   const ratio = boite!.width / boite!.height;
-  if ((page.viewportSize()?.width ?? 0) <= 860) expect(ratio).toBeCloseTo(801 / 562, 1);
-  else expect(ratio).toBeCloseTo(2392 / 562, 1);
+  if ((page.viewportSize()?.width ?? 0) <= 860) expect(ratio).toBeCloseTo((0.445 * 2352) / (0.815 * 1060), 1);
+  else expect(ratio).toBeCloseTo(2352 / 1060, 1);
 });
 
 test('la loupe de la vue agent : l’image garde sa proportion, ne couvre pas la cible, passe dessous sous 560 px', async ({ page }) => {
@@ -184,8 +185,8 @@ test('la loupe de la vue agent : l’image garde sa proportion, ne couvre pas la
     capture.locator('.capture__vue > a img').boundingBox(),
     capture.locator('.loupe img').boundingBox(),
   ]);
-  // L’image de la loupe est entière (1696 × 1668), pas écrasée à la hauteur de la loupe.
-  expect(detail!.width / detail!.height).toBeCloseTo(1696 / 1668, 1);
+  // L’image de la loupe est entière (1086 × 1602), pas écrasée à la hauteur de la loupe.
+  expect(detail!.width / detail!.height).toBeCloseTo(1086 / 1602, 1);
   expect(detail!.height).toBeGreaterThan(loupe!.height * 2);
   const separees = loupe!.x > cible!.x + cible!.width || loupe!.y > cible!.y + cible!.height || loupe!.x + loupe!.width < cible!.x || loupe!.y + loupe!.height < cible!.y;
   expect(separees).toBe(true);
@@ -226,7 +227,9 @@ test('la sortie : GitHealth avant, Sillage après, retour à la vitrine, « Disc
   await expect(sortie.getByRole('link', { name: /Projet suivant\s+Sillage/ })).toHaveAttribute('href', '/projets/sillage');
   await expect(sortie.getByRole('link', { name: /Tous les projets/ })).toHaveAttribute('href', '/projets');
   await expect(sortie.locator('a[href^="http"]')).toHaveCount(0);
-  await expect(sortie).toContainText('les écrans de cette page sont provisoires');
+  // Les écrans sont pris après la refonte graphique : plus rien de provisoire.
+  await expect(sortie).toContainText('les écrans de cette page la montrent');
+  await expect(page.locator('main')).not.toContainText('provisoire');
 });
 
 test('une seule navigation de page, sans la note de sources', async ({ page }) => {

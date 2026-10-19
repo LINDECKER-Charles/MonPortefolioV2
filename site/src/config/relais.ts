@@ -14,8 +14,9 @@
  * connexion automatisée d’un compte (cadrage validé tel qu’affiché le
  * 15/10/2026, docs/prive/questions.md, J).
  *
- * Captures : Relais 0.2.0 lancé en local avec des données de démonstration,
- * un agent de démonstration à la place de Claude Code
+ * Captures : Relais 0.2.0 lancé en local le 19/10/2026 à la révision e00f22b,
+ * après la refonte graphique de son interface, avec des données de
+ * démonstration et un agent de démonstration à la place de Claude Code
  * (src/assets/projets/relais/README.md).
  */
 import type { EntreeSommaire } from './navigation';
@@ -197,34 +198,37 @@ export const CAPTURES: Readonly<Record<NomCapture, CaptureRelais>> = {
   'conversation-perimetre': {
     alt: typo('Une conversation dans Relais : chaque appel d’outil suivi de sa décision ; la lecture d’un fichier hors du périmètre échoue, avec son motif.'),
     legende: 'Lecture refusée hors du périmètre, motif à l’appui, sur des données de démonstration ; la réponse vient d’un agent de démonstration. À droite, les dossiers ouverts en lecture et en écriture.',
-    // « Échec » sur la lecture refusée ; la loupe sur le motif rendu par Relais,
-    // la phrase entière (x 14,5 à 42,4 % de l’image).
-    cible: { x: 60.2, y: 38.2 },
-    loupe: { x: 28.5, y: 58.4, zoom: 3.3, largeur: 60, ratio: '4 / 1', coin: 'haut-droite', dessous: true },
+    // L’anneau autour d’« Échec », sur la lecture refusée ; la loupe sur le motif
+    // rendu par Relais, la phrase entière (x 14,5 à 42,4 % de l’image), posée en
+    // bas pour ne pas couvrir la cible.
+    cible: { x: 58.7, y: 14.4 },
+    loupe: { x: 28.5, y: 32.7, zoom: 3.3, largeur: 60, ratio: '9 / 2', coin: 'bas-droite', dessous: true },
   },
   capacite: {
     alt: typo('La capacité de trois abonnements de démonstration : quotas de cinq heures et de sept jours, chacun face au repère de son seuil de protection.'),
     legende: 'Le quota de cinq heures de l’abonnement « Personnel » : 35,8 %, sous le repère de son seuil de protection. Les trois abonnements de démonstration sont disponibles.',
-    // Le repère du seuil sur la jauge de cinq heures de « Personnel » ; la loupe
-    // sur cette jauge, son pourcentage et sa réinitialisation (x 34,4 à 48,4 %).
-    cible: { x: 47.7, y: 52.4 },
-    loupe: { x: 41.3, y: 52.4, zoom: 6, largeur: 50, ratio: '3 / 1', coin: 'haut-droite', dessous: true },
+    // L’anneau autour du pourcentage de la jauge de cinq heures de « Personnel »
+    // et de son repère de seuil ; la loupe sur cette jauge, son repère, son
+    // pourcentage et sa réinitialisation (x 39,7 à 50,3 % de l’image).
+    cible: { x: 48.8, y: 51 },
+    loupe: { x: 45, y: 52.9, zoom: 6, largeur: 50, ratio: '3 / 1', coin: 'haut-droite', dessous: true },
   },
   'garde-fous': {
     alt: typo('Les garde-fous d’un abonnement : nouvelles sessions refusées dès 95 % du quota ; une session déjà ouverte n’est jamais coupée.'),
     legende: 'Le seuil de protection : nouvelles sessions refusées dès 95 % du quota, par défaut. Une session déjà ouverte n’est jamais coupée.',
-    // Le champ « 95 », la cible un peu sous son centre : sa pastille reste à
-    // gauche du libellé ; la loupe sur ce champ et son libellé (x 39 à 66 %).
-    cible: { x: 39.6, y: 70 },
-    loupe: { x: 52.6, y: 66, zoom: 3.4, largeur: 58, ratio: '9 / 2', coin: 'haut-droite', dessous: true },
+    // L’anneau autour du « 95 », un peu sous son centre : sa pastille reste à
+    // gauche du libellé ; la loupe sur ce champ, son libellé et son aide (x 39 à
+    // 66,4 %).
+    cible: { x: 40.45, y: 58 },
+    loupe: { x: 52.7, y: 55.6, zoom: 3.3, largeur: 58, ratio: '9 / 2', coin: 'haut-droite', dessous: true },
   },
   analyse: {
     alt: typo('L’analyse de Relais sur des données de démonstration : durée médiane des tours, durée sous laquelle tombent 95 % d’entre eux, débit, et part des tokens relus depuis le cache.'),
     legende: 'La durée d’un tour : la médiane, et le P95, sous lequel tombent 95 % des tours. Calculés par Relais sur les données de démonstration.',
-    // Le P95 d’un tour, la pastille à gauche de son libellé ; la loupe sur la
-    // médiane et le P95 seuls (x 21 à 41 %).
-    cible: { x: 33.2, y: 30.5 },
-    loupe: { x: 31.2, y: 28, zoom: 4.8, largeur: 60, ratio: '7 / 2', coin: 'bas-droite', dessous: true },
+    // L’anneau autour du P95 d’un tour, « 32,5 s » ; la loupe sur la médiane et
+    // le P95 seuls (x 20,7 à 40,9 %).
+    cible: { x: 33, y: 26.5 },
+    loupe: { x: 30.8, y: 24.1, zoom: 4.6, largeur: 60, ratio: '7 / 2', coin: 'bas-droite', dessous: true },
   },
 };
 
