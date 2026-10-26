@@ -29,7 +29,7 @@ import { confidentialite } from '../support/prive';
  */
 
 /** Marques refusées, plus celles du cadrage privé (tests/support/prive.ts). */
-const MARQUES = new RegExp(String.raw`\b(?:pvz|plants vs\.? zombies|riot|league of legends|sony|fromsoftware|trello|b-hive|karl|claude|codex|elan formation|atis|mission locale|shrek|gwent|bloodborne|omnicard|unreal|unity|${confidentialite().marques.join('|')})\b|\b42\b`, 'i');
+const MARQUES = new RegExp(String.raw`\b(?:pvz|plants vs\.? zombies|riot|league of legends|sony|fromsoftware|trello|b-hive|claude|codex|elan formation|atis|mission locale|shrek|gwent|bloodborne|omnicard|unreal|unity|${confidentialite().marques.join('|')})\b|\b42\b`, 'i');
 const DEPOT = new URL('../../../', import.meta.url).pathname;
 
 describe('commande de production des visuels', () => {

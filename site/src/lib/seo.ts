@@ -10,7 +10,7 @@ import { CONTACT, SITE } from '../config/site';
 import { FICHE as FICHE_BLOODBORNE } from '../config/bloodborne';
 import { FICHE as FICHE_GITHEALTH, SCHEMA as SCHEMA_GITHEALTH } from '../config/githealth';
 import { FICHE as FICHE_GUP } from '../config/gup';
-import { FICHE as FICHE_KARL_SCRAPER, SCHEMA as SCHEMA_KARL_SCRAPER } from '../config/karl-scraper';
+import { FICHE as FICHE_AUTOTICKET, SCHEMA as SCHEMA_AUTOTICKET } from '../config/autoticket';
 import { FICHE as FICHE_LEAGUE } from '../config/league-of-database';
 import { FICHE as FICHE_OMNICARD } from '../config/omnicard';
 import { FICHE as FICHE_PVZ } from '../config/pvz-fusion';
@@ -181,7 +181,7 @@ const PROJETS_SCHEMA: Readonly<Record<ProjetVitrine['id'], SchemaAvecAdresses>> 
   // Interface en anglais et en français (`gup language fr`) : docs/prive/matiere-premiere.md.
   gup: avecAdresses({ type: 'SoftwareSourceCode', langue: ['en', 'fr'] }, FICHE_GUP),
   githealth: avecAdresses(SCHEMA_GITHEALTH, FICHE_GITHEALTH),
-  'karl-scraper': avecAdresses(SCHEMA_KARL_SCRAPER, FICHE_KARL_SCRAPER),
+  autoticket: avecAdresses(SCHEMA_AUTOTICKET, FICHE_AUTOTICKET),
   sillage: avecAdresses(SCHEMA_SILLAGE, FICHE_SILLAGE),
   relais: avecAdresses(SCHEMA_RELAIS, FICHE_RELAIS),
 };

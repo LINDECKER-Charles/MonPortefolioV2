@@ -10,7 +10,7 @@
  * Les cartes de PvZ Fusion, Omnicard, Bloodborne Legendary Run, League Of Data
  * Base et gup s’écrivent ici. Depuis le 15/10/2026, les jeux vidéo montrent
  * une vraie capture (retour de Charles : « plus vendeur ») ; seule la vedette,
- * PvZ Fusion, garde son illustration. Celles de GitHealth, Karl Scraper, Sillage et
+ * PvZ Fusion, garde son illustration. Celles de GitHealth, AutoTicket, Sillage et
  * Relais vivent dans le fichier de leur page (config/<projet>.ts, export
  * CARTE), que chaque page tient seule : ce fichier ne fait que les importer.
  *
@@ -27,7 +27,7 @@
 import type { ImageMetadata } from 'astro';
 import { VITRINE, type ProjetVitrine } from './projets';
 import { CARTE as CARTE_GITHEALTH } from './githealth';
-import { CARTE as CARTE_KARL_SCRAPER } from './karl-scraper';
+import { CARTE as CARTE_AUTOTICKET } from './autoticket';
 import { CARTE as CARTE_RELAIS } from './relais';
 import { CARTE as CARTE_SILLAGE } from './sillage';
 import championsLeague from '../assets/projets/league-of-database/champions.webp';
@@ -225,7 +225,7 @@ export const CARTES: Readonly<Record<ProjetVitrine['id'], CarteVitrine>> = {
     ],
   },
   githealth: CARTE_GITHEALTH,
-  'karl-scraper': CARTE_KARL_SCRAPER,
+  autoticket: CARTE_AUTOTICKET,
   sillage: CARTE_SILLAGE,
   relais: CARTE_RELAIS,
 };

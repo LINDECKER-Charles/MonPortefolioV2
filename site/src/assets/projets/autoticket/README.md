@@ -1,11 +1,11 @@
-# Captures de Karl Scraper (19 octobre 2026)
+# Captures d’AutoTicket (19 octobre 2026)
 
 Série refaite après la refonte graphique de l’interface, fusionnée dans la branche de
 développement le 19 octobre 2026 ; elle remplace la série provisoire du 14 octobre. Registre :
-`KSC-C1` (`src/config/visuels.ts`) ; alts et légendes dans `src/config/karl-scraper.ts`.
+`ATK-C1` (`src/config/visuels.ts`) ; alts et légendes dans `src/config/autoticket.ts`.
 
 Vraies vues de l’application lancée en local sur des **données de démonstration fictives**, sans
-retouche ni texte remplacé. Le dépôt de Karl Scraper est privé (décision de Charles du
+retouche ni texte remplacé. Le dépôt d’AutoTicket est privé (décision de Charles du
 14/10/2026) : il n’est ni nommé ni lié sur le site.
 
 - **Version capturée** : branche `dev`, révision `4e054a3789bd12aa2aa98432aab8e48184ce3efe`
@@ -28,7 +28,7 @@ retouche ni texte remplacé. Le dépôt de Karl Scraper est privé (décision de
 
 | Fichier | Scène | Ce qu’elle montre | Dimensions | Usage |
 |---|---|---|---|---|
-| `enchainements.webp` | Réglages, Enchaînements (fenêtre de 1 440 × 900) | La colonne des enchaînements : l’interrupteur général allumé, les plafonds (lancements d’agent par jour, créneaux laissés libres, abandon, heures creuses), puis les deux règles fictives, allumées : retenir une lecture proposée, puis la confier à Relais. Cadre arrêté sous la règle 2. | 1808 × 1186 | En-tête de `/projets/karl-scraper` ; sur mobile, les deux règles seules |
+| `enchainements.webp` | Réglages, Enchaînements (fenêtre de 1 440 × 900) | La colonne des enchaînements : l’interrupteur général allumé, les plafonds (lancements d’agent par jour, créneaux laissés libres, abandon, heures creuses), puis les deux règles fictives, allumées : retenir une lecture proposée, puis la confier à Relais. Cadre arrêté sous la règle 2. | 1808 × 1186 | En-tête de `/projets/autoticket` ; sur mobile, les deux règles seules |
 | `tableau-de-bord.webp` | Tableau de bord, bloc des panneaux (fenêtre de 1 440 × 900) | L’écart avec l’observation précédente (cinq statuts changés, une tâche nouvelle), puis les panneaux Par projet et Par statut. | 2352 × 1060 | § Une copie locale ; sur mobile, l’écart seul |
 | `galaxie.webp` | Galaxie, fenêtre entière (1 440 × 900) | Les seize tâches sur les anneaux de leur statut, deux en retard, le goulot à « À faire », la frise des trois observations. | 2400 × 1500 | § La Galaxie |
 | `carte-galaxie.webp` | Galaxie, recadrée | Recadrage de `galaxie` avant réduction (zone de 780 × 630 à partir de 735, 485 dans l’image de 2 880 px) : des tâches reliées à leurs positions précédentes et les libellés « À valider » et « En relecture », sans en trancher aucun. | 780 × 630 | Carte de la vitrine `/projets` |
@@ -45,7 +45,7 @@ retouche ni texte remplacé. Le dépôt de Karl Scraper est privé (décision de
 - **Lien profond** : le service de démonstration calcule un lien neutre
   (`http://127.0.0.1:8890/taches/{n}`), visible dans la vue agent.
 - **Écrans d’agents** (préparation, répartition, espaces, plans, réalisation) : vides, aucun agent
-  n’a tourné. La page les remplace par une figure codée (`KSC-F1`).
+  n’a tourné. La page les remplace par une figure codée (`ATK-F1`).
 - **Pas de capture mobile** : l’application est un outil de bureau.
 
 ## Données utilisées (toutes inventées)

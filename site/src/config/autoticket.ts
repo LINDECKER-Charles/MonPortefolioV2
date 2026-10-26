@@ -1,7 +1,7 @@
 /**
- * Données de Karl Scraper (/projets/karl-scraper) : la carte de la vitrine
- * (CARTE), puis les données de sa page. Ce fichier appartient à la page Karl
- * Scraper : config/vitrine.ts et lib/seo.ts ne font que l’importer.
+ * Données d’AutoTicket (/projets/autoticket) : la carte de la vitrine
+ * (CARTE), puis les données de sa page. Ce fichier appartient à la page
+ * AutoTicket : config/vitrine.ts et lib/seo.ts ne font que l’importer.
  *
  * Dépôt privé (décision de Charles du 14/10/2026) : aucun lien, aucun nom de
  * dépôt. Le projet se présente sous l’angle de l’automatisation de tâches ;
@@ -16,12 +16,12 @@
  *
  * Captures : vraies vues de l’application lancée en local avec des données de
  * démonstration fictives, prises le 19/10/2026 à la révision 4e054a3, après la
- * refonte graphique de son interface (src/assets/projets/karl-scraper/README.md).
+ * refonte graphique de son interface (src/assets/projets/autoticket/README.md).
  */
 import type { EntreeSommaire } from './navigation';
 import type { CarteVitrine } from './vitrine';
 import type { PointCapot, DonneesFiche, LienProjet, PreuveEnTete, SchemaProjet } from '../components/projets/gabarit/types';
-import carteGalaxie from '../assets/projets/karl-scraper/carte-galaxie.webp';
+import carteGalaxie from '../assets/projets/autoticket/carte-galaxie.webp';
 import angular from '../assets/stacks/angular.svg';
 import dotnet from '../assets/stacks/dotnet.svg';
 import sqlite from '../assets/stacks/sqlite.svg';
@@ -45,14 +45,14 @@ export const CARTE: CarteVitrine = {
     { src: angular, alt: 'Angular' },
     { src: sqlite, alt: 'SQLite' },
   ],
-  // La Galaxie, recadrée sur ses anneaux (KSC-C1, carte-galaxie.webp) : entière,
+  // La Galaxie, recadrée sur ses anneaux (ATK-C1, carte-galaxie.webp) : entière,
   // ses tâches ne faisaient que 2 ou 3 px à la taille d’une carte. Le recadrage
   // garde des tâches et leurs traînées, et deux libellés de statut entiers.
   visuel: {
     capture: {
       type: 'navigateur',
       src: carteGalaxie,
-      alt: 'La Galaxie de Karl Scraper : des tâches fictives sur les anneaux de leur statut, certaines suivies de la traînée de leurs positions précédentes.',
+      alt: 'La Galaxie d’AutoTicket : des tâches fictives sur les anneaux de leur statut, certaines suivies de la traînée de leurs positions précédentes.',
       widths: [400, 780],
     },
   },
@@ -66,7 +66,7 @@ export const EN_TETE = {
   // Second vers propre au projet (aucun agent n’ouvre l’outil source), pas la formule de Sillage (Q96).
   titre: ['Automatiser le chemin d’un ticket.', 'Sans ouvrir l’outil aux agents.'],
   chapeau:
-    'Mes tâches vivent dans un outil de gestion de tâches en ligne. Karl Scraper en tient une copie locale, la donne à lire à des agents IA et enchaîne les gestes d’une tâche, du ticket à sa pull request, sans leur ouvrir l’outil source. Je l’ai conçu et développé seul.',
+    'Mes tâches vivent dans un outil de gestion de tâches en ligne. AutoTicket en tient une copie locale, la donne à lire à des agents IA et enchaîne les gestes d’une tâche, du ticket à sa pull request, sans leur ouvrir l’outil source. Je l’ai conçu et développé seul.',
   liens: [] satisfies LienProjet[],
 };
 
@@ -123,7 +123,7 @@ export const SECTIONS: readonly EntreeSommaire[] = [
 ];
 
 /* ------------------------------------------------------------------ */
-/* Les écrans : alts et légendes (KSC-C1, données de démonstration)     */
+/* Les écrans : alts et légendes (ATK-C1, données de démonstration)     */
 /* ------------------------------------------------------------------ */
 
 export const ECRANS = {
@@ -146,7 +146,7 @@ export const ECRANS = {
 } as const;
 
 /* ------------------------------------------------------------------ */
-/* Du ticket à la pull request (KSC-F1)                                 */
+/* Du ticket à la pull request (ATK-F1)                                 */
 /* ------------------------------------------------------------------ */
 
 /** Ce qu’une étape peut faire dans l’outil source : le lire, rien, ou y écrire le statut. */

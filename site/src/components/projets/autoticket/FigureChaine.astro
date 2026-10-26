@@ -1,9 +1,9 @@
 ---
 /**
- * KSC-F1 · La chaîne d’un ticket : les cinq étapes de Karl Scraper, de la
+ * ATK-F1 · La chaîne d’un ticket : les cinq étapes d’AutoTicket, de la
  * synchronisation au statut, avec qui agit à chacune et ce qu’elle peut faire
  * dans l’outil source (le lire, rien, ou y écrire le statut). Figure codée
- * depuis CHAINE (config/karl-scraper.ts), tirée du code et des plans du dépôt
+ * depuis CHAINE (config/autoticket.ts), tirée du code et des plans du dépôt
  * privé à la révision 6615950 (09/10/2026). Elle montre ce que les captures
  * ne peuvent pas montrer sans agent lancé : la préparation et la réalisation.
  *
@@ -12,7 +12,7 @@
  * (filet tireté pour la lecture, plein pour l’écriture), jamais la couleur
  * seule.
  */
-import { CHAINE, type AccesSource } from '../../../config/karl-scraper';
+import { CHAINE, type AccesSource } from '../../../config/autoticket';
 import { typo } from '../../../lib/typo';
 
 interface Props {
@@ -28,7 +28,7 @@ const ACCES: Readonly<Record<AccesSource, string>> = {
 };
 ---
 
-<figure class:list={['chaine', classe]} data-visuel="KSC-F1">
+<figure class:list={['chaine', classe]} data-visuel="ATK-F1">
   <figcaption class="chaine__titre">Le chemin d’un ticket, et ce que chaque étape peut faire dans l’outil source</figcaption>
   <ol class="chaine__etapes">
     {
