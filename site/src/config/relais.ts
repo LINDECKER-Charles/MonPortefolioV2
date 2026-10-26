@@ -45,7 +45,7 @@ export const CARTE: CarteVitrine = {
   role: 'Conçu et développé seul',
   // Une instance en service sur la machine, vue le 14/10/2026 ; « en usage
   // quotidien » n’est pas sourcé : la page ne le dit pas, comme pour Sillage et
-  // Karl Scraper (statut validé le 15/10/2026, docs/prive/questions.md, J).
+  // AutoTicket (statut validé le 15/10/2026, docs/prive/questions.md, J).
   statut: { texte: 'Outil personnel, en usage sur ma machine' },
   liens: [],
   // backend/Cargo.toml (Rust, rusqlite), frontend/package.json (Angular 21.2).
@@ -138,9 +138,9 @@ export const SECTIONS: readonly EntreeSommaire[] = [
 
 /**
  * Qui passe par Relais, ce qu’il prend en charge et ce qu’il lance. Clients : Sillage
- * se déclare par `application_name` (docs/api-contract.md l. 342) ; Karl
- * Scraper confie ses agents à Relais depuis le 21/09/2026 (dossier de faits
- * de Karl Scraper) ; tout outil qui a la clé (page « Intégrer un outil ») ;
+ * se déclare par `application_name` (docs/api-contract.md l. 342) ;
+ * AutoTicket confie ses agents à Relais depuis le 21/09/2026 (dossier de faits
+ * d’AutoTicket) ; tout outil qui a la clé (page « Intégrer un outil ») ;
  * la console elle-même (« Nouvelle session »). Ce qu’il prend en charge : README
  * l. 6-8, docs/architecture.md, backend/src/launch_brake.rs. Versions
  * fixées par Relais : runtime/package.json.
@@ -148,7 +148,7 @@ export const SECTIONS: readonly EntreeSommaire[] = [
 export const POINT_ACCES = {
   outils: [
     { nom: 'Sillage', role: 'orchestre des équipes d’agents' },
-    { nom: 'Karl Scraper', role: 'automatise des tâches' },
+    { nom: 'AutoTicket', role: 'automatise des tâches' },
     { nom: 'Un script', role: 'par l’API, avec la clé' },
     { nom: 'La console de Relais', role: 'une session lancée à la main' },
   ],

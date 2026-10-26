@@ -74,7 +74,7 @@ export type SerieVisuel =
   | 'bloodborne'
   | 'gup'
   | 'githealth'
-  | 'karl-scraper'
+  | 'autoticket'
   | 'sillage'
   | 'relais'
   | 'parcours'
@@ -299,7 +299,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
       { nom: 'projets-league-of-database', fichier: 'public/og/GLO-08-projets-league-of-database_1200x630.jpg', alt: 'Charles Lindecker, League Of Data Base : un système en production.' },
       { nom: 'projets-gup', fichier: 'public/og/GLO-08-projets-gup_1200x630.jpg', alt: 'Charles Lindecker, gup : un outil open source.' },
       { nom: 'projets-githealth', fichier: 'public/og/GLO-08-projets-githealth_1200x630.jpg', alt: 'Charles Lindecker, GitHealth : une application de bureau.' },
-      { nom: 'projets-karl-scraper', fichier: 'public/og/GLO-08-projets-karl-scraper_1200x630.jpg', alt: 'Charles Lindecker, Karl Scraper : automatiser des tâches.' },
+      { nom: 'projets-autoticket', fichier: 'public/og/GLO-08-projets-autoticket_1200x630.jpg', alt: 'Charles Lindecker, AutoTicket : automatiser des tâches.' },
       { nom: 'projets-sillage', fichier: 'public/og/GLO-08-projets-sillage_1200x630.jpg', alt: 'Charles Lindecker, Sillage : orchestrer des agents IA.' },
       { nom: 'projets-relais', fichier: 'public/og/GLO-08-projets-relais_1200x630.jpg', alt: 'Charles Lindecker, Relais : encadrer des agents IA.' },
       { nom: 'parcours', fichier: 'public/og/GLO-08-parcours_1200x630.jpg', alt: 'Charles Lindecker, Parcours.' },
@@ -310,7 +310,7 @@ export const VISUELS: readonly EntreeVisuel[] = [
       { nom: 'blog', fichier: 'public/og/GLO-08-blog_1200x630.jpg', alt: 'Charles Lindecker, Blog.' },
       { nom: 'mentions-legales', fichier: 'public/og/GLO-08-mentions-legales_1200x630.jpg', alt: 'Charles Lindecker, Mentions légales.' },
     ],
-    note: 'Dix-sept déclinaisons, une par page publique : treize livrées le 13 octobre 2026, puis, le 14 octobre 2026, GitHealth, Karl Scraper, Sillage et Relais, avec Projets et chaque projet dans l’ordre de la vitrine en quatre familles. Ordre et textes : lib/partage.ts est la seule source de leurs titres et de leurs alts, tools/generer-partage.mjs les compose en HTML avec la vraie typographie, et layouts/Base.astro choisit celle de la page. Le visuel de droite est une photo de séance (Contact, Parcours) ou la lanterne allumée ; PVZ-OG, OMN-OG et BLR-OG pourront le remplacer pour leur projet. La 404 garde l’image par défaut, GLO-07.',
+    note: 'Dix-sept déclinaisons, une par page publique : treize livrées le 13 octobre 2026, puis, le 14 octobre 2026, GitHealth, AutoTicket, Sillage et Relais, avec Projets et chaque projet dans l’ordre de la vitrine en quatre familles. Ordre et textes : lib/partage.ts est la seule source de leurs titres et de leurs alts, tools/generer-partage.mjs les compose en HTML avec la vraie typographie, et layouts/Base.astro choisit celle de la page. Le visuel de droite est une photo de séance (Contact, Parcours) ou la lanterne allumée ; PVZ-OG, OMN-OG et BLR-OG pourront le remplacer pour leur projet. La 404 garde l’image par défaut, GLO-07.',
   },
   {
     id: 'GLO-09',
@@ -2722,11 +2722,11 @@ export const VISUELS: readonly EntreeVisuel[] = [
 
   // ↑ fin des entrées GTH
 
-  // KSC — Karl Scraper (série « karl-scraper », /projets/karl-scraper) : ses entrées, sous ce repère.
+  // ATK — AutoTicket (série « autoticket », /projets/autoticket) : ses entrées, sous ce repère.
   {
-    id: 'KSC-F1',
-    serie: 'karl-scraper',
-    page: '/projets/karl-scraper',
+    id: 'ATK-F1',
+    serie: 'autoticket',
+    page: '/projets/autoticket',
     emplacement: '§ Du ticket à la pull request',
     sujet: 'La chaîne d’un ticket',
     composition: 'Cinq étapes en ligne, de la synchronisation au statut : qui agit à chaque étape, et ce que chacune peut faire dans l’outil source (le lire, rien, y écrire le statut)',
@@ -2734,36 +2734,36 @@ export const VISUELS: readonly EntreeVisuel[] = [
     ratio: null,
     methode: 'FIG',
     priorite: 'socle',
-    pose: ['pages/projets/karl-scraper.astro'],
+    pose: ['pages/projets/autoticket.astro'],
     alt: 'Cinq étapes d’un ticket, de la synchronisation au statut ; seule la dernière écrit dans l’outil source, et seulement le statut.',
-    fichier: 'src/components/projets/karl-scraper/FigureChaine.astro',
-    note: 'Codée en HTML, données CHAINE de config/karl-scraper.ts, tirées du code et des plans du dépôt privé (révision 6615950). Elle montre la préparation et la réalisation, que les captures ne montrent pas sans agent lancé.',
+    fichier: 'src/components/projets/autoticket/FigureChaine.astro',
+    note: 'Codée en HTML, données CHAINE de config/autoticket.ts, tirées du code et des plans du dépôt privé (révision 6615950). Elle montre la préparation et la réalisation, que les captures ne montrent pas sans agent lancé.',
   },
   {
-    id: 'KSC-C1',
-    serie: 'karl-scraper',
-    page: '/projets/karl-scraper',
+    id: 'ATK-C1',
+    serie: 'autoticket',
+    page: '/projets/autoticket',
     emplacement: 'En-tête, § Une copie locale, § La Galaxie, § Ce que l’agent lit ; carte de la vitrine',
-    sujet: 'Les écrans de Karl Scraper',
+    sujet: 'Les écrans d’AutoTicket',
     composition: 'Écrans réels de l’application lancée en local à la révision 4e054a3, après la refonte graphique de son interface, face à un faux serveur source et sur des données fictives (trois projets, seize tâches, trois observations), aucun agent lancé, chaque écran pris sur son panneau de contenu, sans retouche ni recomposition',
     format: 'format natif des écrans',
     ratio: null,
     methode: 'CAP',
     priorite: 'socle',
-    pose: ['pages/projets/karl-scraper.astro', 'config/karl-scraper.ts'],
+    pose: ['pages/projets/autoticket.astro', 'config/autoticket.ts'],
     alt: '',
     fichier: null,
     declinaisons: [
-      { nom: 'enchainements', fichier: 'src/assets/projets/karl-scraper/enchainements.webp', alt: '' },
-      { nom: 'tableau-de-bord', fichier: 'src/assets/projets/karl-scraper/tableau-de-bord.webp', alt: '' },
-      { nom: 'galaxie', fichier: 'src/assets/projets/karl-scraper/galaxie.webp', alt: '' },
-      { nom: 'vue-agent', fichier: 'src/assets/projets/karl-scraper/vue-agent.webp', alt: '' },
-      { nom: 'carte-galaxie', fichier: 'src/assets/projets/karl-scraper/carte-galaxie.webp', alt: '' },
+      { nom: 'enchainements', fichier: 'src/assets/projets/autoticket/enchainements.webp', alt: '' },
+      { nom: 'tableau-de-bord', fichier: 'src/assets/projets/autoticket/tableau-de-bord.webp', alt: '' },
+      { nom: 'galaxie', fichier: 'src/assets/projets/autoticket/galaxie.webp', alt: '' },
+      { nom: 'vue-agent', fichier: 'src/assets/projets/autoticket/vue-agent.webp', alt: '' },
+      { nom: 'carte-galaxie', fichier: 'src/assets/projets/autoticket/carte-galaxie.webp', alt: '' },
     ],
-    note: 'Série du 19/10/2026, après la refonte graphique de l’interface ; provenance dans src/assets/projets/karl-scraper/README.md, alts et légendes dans config/karl-scraper.ts. Aucun libellé qui nomme l’outil source à l’écran.',
+    note: 'Série du 19/10/2026, après la refonte graphique de l’interface ; provenance dans src/assets/projets/autoticket/README.md, alts et légendes dans config/autoticket.ts. Aucun libellé qui nomme l’outil source à l’écran.',
   },
 
-  // ↑ fin des entrées KSC
+  // ↑ fin des entrées ATK
 
   // SIL — Sillage (série « sillage », /projets/sillage) : ses entrées, sous ce repère.
   {
@@ -3813,18 +3813,18 @@ export function producteur(visuel: EntreeVisuel): 'codex' | 'equipe' | 'charles'
 }
 
 /** Ordre des séries dans les listes et dans la commande de production. */
-export const ORDRE_SERIES: readonly SerieVisuel[] = ['global', 'accueil', 'projets', 'pvz-fusion', 'league-of-database', 'omnicard', 'bloodborne', 'gup', 'githealth', 'karl-scraper', 'sillage', 'relais', 'parcours', 'contact', 'blog', 'etats'];
+export const ORDRE_SERIES: readonly SerieVisuel[] = ['global', 'accueil', 'projets', 'pvz-fusion', 'league-of-database', 'omnicard', 'bloodborne', 'gup', 'githealth', 'autoticket', 'sillage', 'relais', 'parcours', 'contact', 'blog', 'etats'];
 
 /**
  * Les séries des quatre pages entrées dans la vitrine le 14/10/2026 (GitHealth,
- * Karl Scraper, Sillage, Relais), chacune tenue par sa page : ses entrées
- * s’écrivent sous son repère dans VISUELS (GTH, KSC, SIL, REL). Leurs images
+ * AutoTicket, Sillage, Relais), chacune tenue par sa page : ses entrées
+ * s’écrivent sous son repère dans VISUELS (GTH, ATK, SIL, REL). Leurs images
  * générées rejoignent d’office la série de dessin « Pages de projet »
  * (FAMILLES), et les compteurs figés de tests/unit/visuels.test.ts ne comptent
  * que l’inventaire d’avant elles : ajouter une entrée ne touche qu’au repère
  * de sa série.
  */
-export const SERIES_VITRINE_FINALE: readonly SerieVisuel[] = ['githealth', 'karl-scraper', 'sillage', 'relais'];
+export const SERIES_VITRINE_FINALE: readonly SerieVisuel[] = ['githealth', 'autoticket', 'sillage', 'relais'];
 
 /** Sujet à transmettre à un générateur d’image : sans nom de marque. */
 export function sujetPourGenerateur(visuel: EntreeVisuel): string {

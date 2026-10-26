@@ -51,7 +51,7 @@ Coupure du domaine principal : **environ deux minutes**. Écarts avec le déroul
 - **Search Console** : sitemap renvoyé (18 pages découvertes, lu le 15/10) et indexation
   demandée pour 10 pages, jusqu’au quota du jour : `/`, `/projets`, `/parcours`, `/contact`,
   `/projets/pvz-fusion`, `omnicard`, `bloodborne-legendary-run`, `league-of-database`, `gup`,
-  `githealth`. Restent, le lendemain : `karl-scraper`, `sillage`, `relais`,
+  `githealth`. Restent, le lendemain : `autoticket`, `sillage`, `relais`,
   `/parcours/professionnel`, `/parcours/competences`, `/parcours/formation`, `/blog`,
   `/mentions-legales` (déjà dans le sitemap). Dépôts `MonPortfolio` et
   `MonPortefolioV2-historique` archivés sur GitHub.

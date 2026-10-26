@@ -9,7 +9,7 @@ import { confidentialite, motifsPage, motifsTrouves } from '../support/prive';
  * chiffres sourcés dont un seul surligné, aucun lien vers l’extérieur (dépôt
  * privé, décision du 14/10/2026), de vraies vues sur des données de
  * démonstration dont les loupes montrent le bon détail, la figure du point
- * d’accès, les liens vers Sillage et Karl Scraper, une sortie sans projet
+ * d’accès, les liens vers Sillage et AutoTicket, une sortie sans projet
  * suivant (Relais est le dernier de la vitrine), et la page complète et
  * accessible sans script, jour et nuit.
  */
@@ -91,11 +91,11 @@ test('dépôt privé : aucune sortie du site, ni nom privé, ni bascule entre ab
   await expect(page.locator('#sources')).toContainText('e00f22b');
 });
 
-test('le point d’accès : la figure, et les liens vers Sillage et Karl Scraper', async ({ page }) => {
+test('le point d’accès : la figure, et les liens vers Sillage et AutoTicket', async ({ page }) => {
   await page.goto(CHEMIN);
   const acces = page.locator('#acces');
   await expect(acces.getByRole('link', { name: 'Sillage', exact: true })).toHaveAttribute('href', '/projets/sillage');
-  await expect(acces.getByRole('link', { name: 'Karl Scraper', exact: true })).toHaveAttribute('href', '/projets/karl-scraper');
+  await expect(acces.getByRole('link', { name: 'AutoTicket', exact: true })).toHaveAttribute('href', '/projets/autoticket');
   const figure = acces.locator('figure[data-visuel="REL-F1"]');
   await expect(figure).toBeVisible();
   await expect(figure.getByRole('list', { name: 'Les outils de la machine' }).locator('li')).toHaveCount(4);

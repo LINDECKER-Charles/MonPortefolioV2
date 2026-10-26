@@ -16,9 +16,9 @@ Dire en un écran qui est Charles, avec trois preuves (Maîtriser, Réinventer, 
 
 ## Capabilities and Constraints
 
-Astro, serveur Node sans dépendance, API Rust pour le contact et le blog. Dix-neuf pages publiques, dont neuf pages de projet sur un gabarit commun, dans l’ordre de la vitrine (décision du 14 octobre 2026) : PvZ Fusion (pôle francophone) ; Omnicard, Bloodborne Legendary Run, League Of Data Base ; gup, GitHealth ; Karl Scraper, Sillage, Relais. Life Pixel, img-convertor et Shreksophone sont dans les projets archivés.
+Astro, serveur Node sans dépendance, API Rust pour le contact et le blog. Dix-neuf pages publiques, dont neuf pages de projet sur un gabarit commun, dans l’ordre de la vitrine (décision du 14 octobre 2026) : PvZ Fusion (pôle francophone) ; Omnicard, Bloodborne Legendary Run, League Of Data Base ; gup, GitHealth ; AutoTicket, Sillage, Relais. Life Pixel, img-convertor et Shreksophone sont dans les projets archivés.
 
-Contraintes dures : CSP sans script en ligne ni origine tierce, contenu complet sans JavaScript, budgets de 15 Ko de JavaScript et 30 Ko de CSS gzip par page, contrats du blog rendu par Node, plan de marquage Umami, URL inchangées. Les faits viennent de docs/prive/matiere-premiere.md et des sources publiques ; un fait non confirmé reste marqué « à confirmer » et figure dans docs/prive/a-confirmer.md. Aucun dépôt privé cité (sauf Bloodborne Legendary Run, Karl Scraper, Sillage et Relais, sans lien ni nom de dépôt ; sans nommer l’outil source de Karl Scraper), aucun chiffre d’adoption, aucune métrique d’usage non publiée, aucun téléchargement npm affiché.
+Contraintes dures : CSP sans script en ligne ni origine tierce, contenu complet sans JavaScript, budgets de 15 Ko de JavaScript et 30 Ko de CSS gzip par page, contrats du blog rendu par Node, plan de marquage Umami, URL inchangées. Les faits viennent de docs/prive/matiere-premiere.md et des sources publiques ; un fait non confirmé reste marqué « à confirmer » et figure dans docs/prive/a-confirmer.md. Aucun dépôt privé cité (sauf Bloodborne Legendary Run, AutoTicket, Sillage et Relais, sans lien ni nom de dépôt ; sans nommer l’outil source d’AutoTicket), aucun chiffre d’adoption, aucune métrique d’usage non publiée, aucun téléchargement npm affiché.
 
 ## Brand Commitments
 

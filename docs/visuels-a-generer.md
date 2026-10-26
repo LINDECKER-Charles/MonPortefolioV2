@@ -181,7 +181,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 | Bloodborne Legendary Run | 16 | 8 | IMG 4 · SVG 6 · FIG 1 · CAP 4 · PHO 0 · OG 1 |
 | gup | 7 | 6 | IMG 2 · SVG 1 · FIG 3 · CAP 1 · PHO 0 · OG 0 |
 | GitHealth | 1 | 1 | IMG 0 · SVG 0 · FIG 0 · CAP 1 · PHO 0 · OG 0 |
-| Karl Scraper | 2 | 2 | IMG 0 · SVG 0 · FIG 1 · CAP 1 · PHO 0 · OG 0 |
+| AutoTicket | 2 | 2 | IMG 0 · SVG 0 · FIG 1 · CAP 1 · PHO 0 · OG 0 |
 | Sillage | 1 | 1 | IMG 0 · SVG 0 · FIG 0 · CAP 1 · PHO 0 · OG 0 |
 | Relais | 2 | 2 | IMG 0 · SVG 0 · FIG 1 · CAP 1 · PHO 0 · OG 0 |
 | Parcours : hub, professionnel, compétences, formation | 33 | 30 | IMG 24 · SVG 4 · FIG 3 · CAP 1 · PHO 1 · OG 0 |
@@ -1581,7 +1581,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 Rien ici n’est à générer : les dessins vectoriels s’écrivent à la main, les figures se codent depuis des données sourcées, les captures se prennent sur l’application ou la page réelle, les images de partage se composent en HTML.
 
-**Déjà faits** : GLO-01, GLO-03, GLO-04, GLO-05, GLO-07, GLO-08, ACC-01, ACC-06, ACC-14, ACC-17, PRJ-04, PRJ-05, PVZ-03, PVZ-F1, PVZ-F2, PVZ-F3, PVZ-F4, PVZ-F5, LOD-03, LOD-05, LOD-06, LOD-07, LOD-08, LOD-09, LOD-10, LOD-11, LOD-12, LOD-F1, LOD-F2, LOD-F3, LOD-F4, LOD-F5, LOD-F6, OMN-03, OMN-04, OMN-05, BLR-06, BLR-07, BLR-08, BLR-09, BLR-10, BLR-F1, BLR-C4, GUP-02, GUP-F1, GUP-F2, GUP-F3, GUP-C1, GTH-C1, KSC-F1, KSC-C1, SIL-C1, REL-F1, REL-C1, PAR-PHO, PAR-F1, PRO-F1, CMP-F1, CMP-09, CMP-10, FOR-09, CON-PHO, ERR-PHO.
+**Déjà faits** : GLO-01, GLO-03, GLO-04, GLO-05, GLO-07, GLO-08, ACC-01, ACC-06, ACC-14, ACC-17, PRJ-04, PRJ-05, PVZ-03, PVZ-F1, PVZ-F2, PVZ-F3, PVZ-F4, PVZ-F5, LOD-03, LOD-05, LOD-06, LOD-07, LOD-08, LOD-09, LOD-10, LOD-11, LOD-12, LOD-F1, LOD-F2, LOD-F3, LOD-F4, LOD-F5, LOD-F6, OMN-03, OMN-04, OMN-05, BLR-06, BLR-07, BLR-08, BLR-09, BLR-10, BLR-F1, BLR-C4, GUP-02, GUP-F1, GUP-F2, GUP-F3, GUP-C1, GTH-C1, ATK-F1, ATK-C1, SIL-C1, REL-F1, REL-C1, PAR-PHO, PAR-F1, PRO-F1, CMP-F1, CMP-09, CMP-10, FOR-09, CON-PHO, ERR-PHO.
 
 | Zone | Socle | Élargi |
 |---|---|---|
@@ -2188,9 +2188,9 @@ Fiches pour mémoire : rien à produire.
 - **Sujet** : Gabarit de GLO-07 avec le visuel de la page : Projets, chaque projet, Parcours et ses trois pages, Contact, Blog, Mentions légales
 - **Composition** : Titre à gauche, visuel à droite, emblème en bas
 - **Format** : 1200 × 630 (×17)
-- **Fichiers attendus** (17) : `site/public/og/GLO-08-projets_1200x630.jpg` (alt « Charles Lindecker, Projets. ») ; `site/public/og/GLO-08-projets-pvz-fusion_1200x630.jpg` (alt « Charles Lindecker, PvZ Fusion, pôle francophone : une équipe formée et menée. ») ; `site/public/og/GLO-08-projets-omnicard_1200x630.jpg` (alt « Charles Lindecker, Omnicard : réinventer. ») ; `site/public/og/GLO-08-projets-bloodborne-legendary-run_1200x630.jpg` (alt « Charles Lindecker, Bloodborne Legendary Run : un produit de bout en bout. ») ; `site/public/og/GLO-08-projets-league-of-database_1200x630.jpg` (alt « Charles Lindecker, League Of Data Base : un système en production. ») ; `site/public/og/GLO-08-projets-gup_1200x630.jpg` (alt « Charles Lindecker, gup : un outil open source. ») ; `site/public/og/GLO-08-projets-githealth_1200x630.jpg` (alt « Charles Lindecker, GitHealth : une application de bureau. ») ; `site/public/og/GLO-08-projets-karl-scraper_1200x630.jpg` (alt « Charles Lindecker, Karl Scraper : automatiser des tâches. ») ; `site/public/og/GLO-08-projets-sillage_1200x630.jpg` (alt « Charles Lindecker, Sillage : orchestrer des agents IA. ») ; `site/public/og/GLO-08-projets-relais_1200x630.jpg` (alt « Charles Lindecker, Relais : encadrer des agents IA. ») ; `site/public/og/GLO-08-parcours_1200x630.jpg` (alt « Charles Lindecker, Parcours. ») ; `site/public/og/GLO-08-parcours-professionnel_1200x630.jpg` (alt « Charles Lindecker, Parcours professionnel. ») ; `site/public/og/GLO-08-parcours-competences_1200x630.jpg` (alt « Charles Lindecker, Compétences. ») ; `site/public/og/GLO-08-parcours-formation_1200x630.jpg` (alt « Charles Lindecker, Formation et certifications. ») ; `site/public/og/GLO-08-contact_1200x630.jpg` (alt « Charles Lindecker, Discutons. ») ; `site/public/og/GLO-08-blog_1200x630.jpg` (alt « Charles Lindecker, Blog. ») ; `site/public/og/GLO-08-mentions-legales_1200x630.jpg` (alt « Charles Lindecker, Mentions légales. »)
+- **Fichiers attendus** (17) : `site/public/og/GLO-08-projets_1200x630.jpg` (alt « Charles Lindecker, Projets. ») ; `site/public/og/GLO-08-projets-pvz-fusion_1200x630.jpg` (alt « Charles Lindecker, PvZ Fusion, pôle francophone : une équipe formée et menée. ») ; `site/public/og/GLO-08-projets-omnicard_1200x630.jpg` (alt « Charles Lindecker, Omnicard : réinventer. ») ; `site/public/og/GLO-08-projets-bloodborne-legendary-run_1200x630.jpg` (alt « Charles Lindecker, Bloodborne Legendary Run : un produit de bout en bout. ») ; `site/public/og/GLO-08-projets-league-of-database_1200x630.jpg` (alt « Charles Lindecker, League Of Data Base : un système en production. ») ; `site/public/og/GLO-08-projets-gup_1200x630.jpg` (alt « Charles Lindecker, gup : un outil open source. ») ; `site/public/og/GLO-08-projets-githealth_1200x630.jpg` (alt « Charles Lindecker, GitHealth : une application de bureau. ») ; `site/public/og/GLO-08-projets-autoticket_1200x630.jpg` (alt « Charles Lindecker, AutoTicket : automatiser des tâches. ») ; `site/public/og/GLO-08-projets-sillage_1200x630.jpg` (alt « Charles Lindecker, Sillage : orchestrer des agents IA. ») ; `site/public/og/GLO-08-projets-relais_1200x630.jpg` (alt « Charles Lindecker, Relais : encadrer des agents IA. ») ; `site/public/og/GLO-08-parcours_1200x630.jpg` (alt « Charles Lindecker, Parcours. ») ; `site/public/og/GLO-08-parcours-professionnel_1200x630.jpg` (alt « Charles Lindecker, Parcours professionnel. ») ; `site/public/og/GLO-08-parcours-competences_1200x630.jpg` (alt « Charles Lindecker, Compétences. ») ; `site/public/og/GLO-08-parcours-formation_1200x630.jpg` (alt « Charles Lindecker, Formation et certifications. ») ; `site/public/og/GLO-08-contact_1200x630.jpg` (alt « Charles Lindecker, Discutons. ») ; `site/public/og/GLO-08-blog_1200x630.jpg` (alt « Charles Lindecker, Blog. ») ; `site/public/og/GLO-08-mentions-legales_1200x630.jpg` (alt « Charles Lindecker, Mentions légales. »)
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Charles Lindecker et le titre de la page partagée, par exemple « Charles Lindecker, Parcours. » (voir chaque déclinaison). »
-- **Note** : Dix-sept déclinaisons, une par page publique : treize livrées le 13 octobre 2026, puis, le 14 octobre 2026, GitHealth, Karl Scraper, Sillage et Relais, avec Projets et chaque projet dans l’ordre de la vitrine en quatre familles. Ordre et textes : lib/partage.ts est la seule source de leurs titres et de leurs alts, tools/generer-partage.mjs les compose en HTML avec la vraie typographie, et layouts/Base.astro choisit celle de la page. Le visuel de droite est une photo de séance (Contact, Parcours) ou la lanterne allumée ; PVZ-OG, OMN-OG et BLR-OG pourront le remplacer pour leur projet. La 404 garde l’image par défaut, GLO-07.
+- **Note** : Dix-sept déclinaisons, une par page publique : treize livrées le 13 octobre 2026, puis, le 14 octobre 2026, GitHealth, AutoTicket, Sillage et Relais, avec Projets et chaque projet dans l’ordre de la vitrine en quatre familles. Ordre et textes : lib/partage.ts est la seule source de leurs titres et de leurs alts, tools/generer-partage.mjs les compose en HTML avec la vraie typographie, et layouts/Base.astro choisit celle de la page. Le visuel de droite est une photo de séance (Contact, Parcours) ou la lanterne allumée ; PVZ-OG, OMN-OG et BLR-OG pourront le remplacer pour leur projet. La 404 garde l’image par défaut, GLO-07.
 
 ### Accueil
 
@@ -2780,33 +2780,33 @@ Fiches pour mémoire : rien à produire.
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
 - **Note** : Livrés le 14/10/2026, provenance dans src/assets/projets/githealth/README.md ; leurs alts sont dans config/githealth.ts (CAPTURES et CARTE). Interface en anglais, celle de l’application ; l’engrenage de la barre du haut et le scan planifié viennent de la branche de développement, non publiés.
 
-### Karl Scraper
+### AutoTicket
 
-#### KSC-F1 · La chaîne d’un ticket
+#### ATK-F1 · La chaîne d’un ticket
 
 - **Priorité** : socle · **Méthode** : FIG, figure codée depuis des données, rien à générer
-- **Produit par** : équipe Karl Scraper
-- **Emplacement** : `/projets/karl-scraper` · § Du ticket à la pull request _(contexte : ne pas le recopier dans un prompt)_
-- **Posé dans** : `src/pages/projets/karl-scraper.astro`
+- **Produit par** : équipe AutoTicket
+- **Emplacement** : `/projets/autoticket` · § Du ticket à la pull request _(contexte : ne pas le recopier dans un prompt)_
+- **Posé dans** : `src/pages/projets/autoticket.astro`
 - **Sujet** : La chaîne d’un ticket
 - **Composition** : Cinq étapes en ligne, de la synchronisation au statut : qui agit à chaque étape, et ce que chacune peut faire dans l’outil source (le lire, rien, y écrire le statut)
 - **Format** : —
-- **Composant** : `site/src/components/projets/karl-scraper/FigureChaine.astro`
+- **Composant** : `site/src/components/projets/autoticket/FigureChaine.astro`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Cinq étapes d’un ticket, de la synchronisation au statut ; seule la dernière écrit dans l’outil source, et seulement le statut. »
-- **Note** : Codée en HTML, données CHAINE de config/karl-scraper.ts, tirées du code et des plans du dépôt privé (révision 6615950). Elle montre la préparation et la réalisation, que les captures ne montrent pas sans agent lancé.
+- **Note** : Codée en HTML, données CHAINE de config/autoticket.ts, tirées du code et des plans du dépôt privé (révision 6615950). Elle montre la préparation et la réalisation, que les captures ne montrent pas sans agent lancé.
 
-#### KSC-C1 · Les écrans de Karl Scraper
+#### ATK-C1 · Les écrans d’AutoTicket
 
 - **Priorité** : socle · **Méthode** : CAP, capture réelle, rien à générer
-- **Produit par** : équipe Karl Scraper
-- **Emplacement** : `/projets/karl-scraper` · En-tête, § Une copie locale, § La Galaxie, § Ce que l’agent lit ; carte de la vitrine _(contexte : ne pas le recopier dans un prompt)_
-- **Posé dans** : `src/pages/projets/karl-scraper.astro`, `src/config/karl-scraper.ts`
-- **Sujet** : Les écrans de Karl Scraper
+- **Produit par** : équipe AutoTicket
+- **Emplacement** : `/projets/autoticket` · En-tête, § Une copie locale, § La Galaxie, § Ce que l’agent lit ; carte de la vitrine _(contexte : ne pas le recopier dans un prompt)_
+- **Posé dans** : `src/pages/projets/autoticket.astro`, `src/config/autoticket.ts`
+- **Sujet** : Les écrans d’AutoTicket
 - **Composition** : Écrans réels de l’application lancée en local à la révision 4e054a3, après la refonte graphique de son interface, face à un faux serveur source et sur des données fictives (trois projets, seize tâches, trois observations), aucun agent lancé, chaque écran pris sur son panneau de contenu, sans retouche ni recomposition
 - **Format** : format natif des écrans
-- **Fichiers attendus** (5) : `site/src/assets/projets/karl-scraper/enchainements.webp` ; `site/src/assets/projets/karl-scraper/tableau-de-bord.webp` ; `site/src/assets/projets/karl-scraper/galaxie.webp` ; `site/src/assets/projets/karl-scraper/vue-agent.webp` ; `site/src/assets/projets/karl-scraper/carte-galaxie.webp`
+- **Fichiers attendus** (5) : `site/src/assets/projets/autoticket/enchainements.webp` ; `site/src/assets/projets/autoticket/tableau-de-bord.webp` ; `site/src/assets/projets/autoticket/galaxie.webp` ; `site/src/assets/projets/autoticket/vue-agent.webp` ; `site/src/assets/projets/autoticket/carte-galaxie.webp`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
-- **Note** : Série du 19/10/2026, après la refonte graphique de l’interface ; provenance dans src/assets/projets/karl-scraper/README.md, alts et légendes dans config/karl-scraper.ts. Aucun libellé qui nomme l’outil source à l’écran.
+- **Note** : Série du 19/10/2026, après la refonte graphique de l’interface ; provenance dans src/assets/projets/autoticket/README.md, alts et légendes dans config/autoticket.ts. Aucun libellé qui nomme l’outil source à l’écran.
 
 ### Sillage
 

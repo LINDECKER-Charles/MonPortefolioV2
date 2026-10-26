@@ -8,7 +8,7 @@ import { surveillerConsole } from './support/navigateur';
  * seul surligné, sorties limitées au dépôt public et figées aux révisions
  * relevées, six vraies captures agrandissables dont deux annotées, des loupes
  * qui montrent bien leur détail, PRJ-06 posé sous la liste des verdicts, la
- * sortie commune (gup avant, Karl Scraper après), la carte de la vitrine, et
+ * sortie commune (gup avant, AutoTicket après), la carte de la vitrine, et
  * la page complète et accessible sans script, jour et nuit.
  */
 
@@ -173,7 +173,7 @@ test('les loupes montrent leur détail, à côté de leur cible ; sous 560 px, e
   }
 });
 
-test('la sortie : gup avant, Karl Scraper après, retour à la vitrine, « Discutons » vers /contact', async ({ page }) => {
+test('la sortie : gup avant, AutoTicket après, retour à la vitrine, « Discutons » vers /contact', async ({ page }) => {
   await page.goto(CHEMIN);
   const sortie = page.locator('#retiens');
   await expect(sortie.getByRole('heading', { level: 2 })).toHaveText('Aujourd’hui');
@@ -183,7 +183,7 @@ test('la sortie : gup avant, Karl Scraper après, retour à la vitrine, « Discu
   await expect(discutons).toHaveAttribute('data-umami-event', 'contact-page');
   await expect(discutons).toHaveAttribute('data-umami-event-emplacement', 'discutons');
   await expect(sortie.getByRole('link', { name: /Projet précédent\s+gup/ })).toHaveAttribute('href', '/projets/gup');
-  await expect(sortie.getByRole('link', { name: /Projet suivant\s+Karl Scraper/ })).toHaveAttribute('href', '/projets/karl-scraper');
+  await expect(sortie.getByRole('link', { name: /Projet suivant\s+AutoTicket/ })).toHaveAttribute('href', '/projets/autoticket');
   await expect(sortie.getByRole('link', { name: /Tous les projets/ })).toHaveAttribute('href', '/projets');
 });
 

@@ -9,7 +9,7 @@ import { motifsPage, motifsTrouves } from '../support/prive';
  * sourcés dont un seul surligné, aucune sortie du site (dépôt privé, décision
  * du 14/10/2026), de vrais écrans sur des projets de démonstration, la loupe
  * qui montre le refus de Sillage, la page projet qui suit la largeur de
- * l’écran, la sortie commune entre Karl Scraper et Relais, et la page complète
+ * l’écran, la sortie commune entre AutoTicket et Relais, et la page complète
  * et accessible sans script, jour et nuit.
  */
 
@@ -82,7 +82,7 @@ test('dépôt privé : aucune sortie du site, aucun nom de dépôt ni projet voi
   // Les trois pages de la famille « IA » se citent entre elles, en liens internes.
   const principe = page.locator('#principe');
   await expect(principe.getByRole('link', { name: 'Relais', exact: true })).toHaveAttribute('href', '/projets/relais');
-  await expect(principe.getByRole('link', { name: 'Karl Scraper', exact: true })).toHaveAttribute('href', '/projets/karl-scraper');
+  await expect(principe.getByRole('link', { name: 'AutoTicket', exact: true })).toHaveAttribute('href', '/projets/autoticket');
   // Le lien vers Relais vit dans le pli de sa décision, replié par défaut.
   await expect(page.locator('#construit a[href="/projets/relais"]')).toHaveCount(1);
 });
@@ -180,7 +180,7 @@ test('« Reprendre » et « Le résultat » changent de lumière : un acte teint
   for (const section of ['#reprendre', '#resultat']) await expect(page.locator(`.acte-teinte ${section}`), section).toHaveCount(1);
 });
 
-test('la sortie : Karl Scraper avant, Relais après, retour à la vitrine, « Discutons » vers /contact', async ({ page }) => {
+test('la sortie : AutoTicket avant, Relais après, retour à la vitrine, « Discutons » vers /contact', async ({ page }) => {
   await page.goto(CHEMIN);
   const sortie = page.locator('#retiens');
   await expect(sortie.getByRole('heading', { level: 2 })).toHaveText('Aujourd’hui');
@@ -192,7 +192,7 @@ test('la sortie : Karl Scraper avant, Relais après, retour à la vitrine, « Di
   await expect(discutons).toHaveAttribute('href', '/contact');
   await expect(discutons).toHaveAttribute('data-umami-event', 'contact-page');
   await expect(discutons).toHaveAttribute('data-umami-event-emplacement', 'discutons');
-  await expect(sortie.getByRole('link', { name: /Projet précédent\s+Karl Scraper/ })).toHaveAttribute('href', '/projets/karl-scraper');
+  await expect(sortie.getByRole('link', { name: /Projet précédent\s+AutoTicket/ })).toHaveAttribute('href', '/projets/autoticket');
   await expect(sortie.getByRole('link', { name: /Projet suivant\s+Relais/ })).toHaveAttribute('href', '/projets/relais');
   await expect(sortie.getByRole('link', { name: /Tous les projets/ })).toHaveAttribute('href', '/projets');
 });

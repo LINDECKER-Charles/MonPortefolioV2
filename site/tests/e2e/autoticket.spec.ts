@@ -4,16 +4,16 @@ import { surveillerConsole } from './support/navigateur';
 import { motifsPage, motifsTrouves } from '../support/prive';
 
 /**
- * Karl Scraper, sur le gabarit commun des pages de projet (règle E5) : en-tête
+ * AutoTicket, sur le gabarit commun des pages de projet (règle E5) : en-tête
  * au pli (E1), fiche à sept cases en variante « dépôt privé », trois chiffres
  * sourcés dont un seul surligné, aucune sortie du site (dépôt privé, décision
  * de Charles du 14/10/2026), rien qui nomme l’outil source ni une donnée privée,
- * quatre vrais écrans agrandissables, la chaîne d’un ticket (KSC-F1), la
+ * quatre vrais écrans agrandissables, la chaîne d’un ticket (ATK-F1), la
  * sortie commune entre GitHealth et Sillage, et la page complète et
  * accessible sans script, jour et nuit.
  */
 
-const CHEMIN = '/projets/karl-scraper';
+const CHEMIN = '/projets/autoticket';
 
 /** Dépôt privé : aucune sortie admise depuis le contenu de la page. */
 const SORTIES_ADMISES: readonly string[] = [];
@@ -33,7 +33,7 @@ test('l’en-tête tient dans le premier écran : titre, identité, preuve, acti
   for (const marque of ['titre', 'identite', 'preuve', 'action']) {
     await expect(page.locator(`[data-pli="${marque}"]`), marque).toBeInViewport();
   }
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Karl Scraper Automatiser le chemin d’un ticket. Sans ouvrir l’outil aux agents.');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('AutoTicket Automatiser le chemin d’un ticket. Sans ouvrir l’outil aux agents.');
   if ((page.viewportSize()?.width ?? 0) >= 1440) {
     await expect(page.locator('[data-pli="preuve"] li')).toHaveCount(3);
     for (const preuve of await page.locator('[data-pli="preuve"] li').all()) await expect(preuve).toBeInViewport({ ratio: 1 });
@@ -45,7 +45,7 @@ test('l’en-tête tient dans le premier écran : titre, identité, preuve, acti
 test('le nom canonique, l’étiquette de preuve et « Sous le capot »', async ({ page }) => {
   await page.goto(CHEMIN);
   const ariane = page.getByRole('navigation', { name: 'Fil d’Ariane', exact: true });
-  await expect(ariane.locator('[aria-current="page"]')).toHaveText('Karl Scraper');
+  await expect(ariane.locator('[aria-current="page"]')).toHaveText('AutoTicket');
   const entete = page.locator('.projet-tete');
   await expect(entete).toContainText('Automatiser des tâches');
   const construit = entete.locator('[data-pli="action"]').getByRole('link', { name: /Sous le capot/ });
@@ -98,13 +98,11 @@ test('dépôt privé : aucune sortie du site depuis la page, et aucun nom de dé
   await expect(chaine.getByRole('link', { name: 'Sillage', exact: true })).toHaveAttribute('href', '/projets/sillage');
 });
 
-test('rien ne nomme une donnée privée ni une référence réelle : « Karl » n’existe que dans « Karl Scraper »', async ({ page }) => {
+test('rien ne nomme une donnée privée ni une référence réelle, ni l’outil source', async ({ page }) => {
   await page.goto(CHEMIN);
   const texte = await texteEtAttributs(page);
   // Motifs du cadrage privé (tests/support/prive.ts), désignés par leur numéro.
-  expect(motifsTrouves(texte, motifsPage('karl-scraper'))).toEqual([]);
-  // Chaque « Karl » est suivi de « Scraper » (texte, alts, légendes et titres compris).
-  expect(texte.match(/\bKarl\b(?!\sScraper)/gi) ?? []).toEqual([]);
+  expect(motifsTrouves(texte, motifsPage('autoticket'))).toEqual([]);
   // Aucun volume réel de tâches : la démonstration compte seize tâches fictives.
   expect(texte).not.toMatch(/\b181\b/);
   await expect(page.locator('#sources')).toContainText('données fictives');
@@ -114,7 +112,7 @@ test('rien ne nomme une donnée privée ni une référence réelle : « Karl » 
 
 test('quatre vrais écrans : l’en-tête recadré sur sa colonne, chacun s’ouvre en grand et se referme à Échap', async ({ page }) => {
   await page.goto(CHEMIN);
-  const entete = page.locator('.ksc-entete-capture');
+  const entete = page.locator('.atk-entete-capture');
   await expect(entete).toHaveClass(/capture--region/);
   await expect(entete.locator('img').first()).toHaveAttribute('alt', /deux règles qui retiennent une lecture et la confient à Relais/);
   const captures = page.locator('main .capture a[data-agrandir]');
@@ -156,7 +154,7 @@ test('la Galaxie, toujours sombre, vit dans un acte de veille, et sa loupe lit l
 
 test('l’en-tête : sur mobile, les deux règles seules, lisibles ; sur ordinateur, la colonne entière', async ({ page }) => {
   await page.goto(CHEMIN);
-  const vue = page.locator('.ksc-entete-capture .capture__vue');
+  const vue = page.locator('.atk-entete-capture .capture__vue');
   const boite = await vue.boundingBox();
   const ratio = boite!.width / boite!.height;
   if ((page.viewportSize()?.width ?? 0) <= 860) expect(ratio).toBeCloseTo((0.605 * 1808) / (0.355 * 1186), 1);
@@ -198,7 +196,7 @@ test('la loupe de la vue agent : l’image garde sa proportion, ne couvre pas la
 
 test('la chaîne d’un ticket : cinq étapes, une seule écrit dans l’outil source, et seulement le statut', async ({ page }) => {
   await page.goto(CHEMIN);
-  const figure = page.locator('#chaine [data-visuel="KSC-F1"]');
+  const figure = page.locator('#chaine [data-visuel="ATK-F1"]');
   const etapes = figure.locator('.chaine__etape');
   await expect(etapes).toHaveCount(5);
   await expect(etapes.locator('.chaine__geste')).toHaveText(['Synchroniser', 'Comprendre', 'Trancher', 'Réaliser', 'Poser le statut']);

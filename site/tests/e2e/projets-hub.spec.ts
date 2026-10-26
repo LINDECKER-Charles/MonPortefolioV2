@@ -130,7 +130,7 @@ test('entre 861 et 1 100 px, une famille de trois met une carte par ligne : ses 
     expect(new Set(gauches).size, famille.id).toBe(1);
   }
   // Sur deux colonnes, la Galaxie et le graphe tenaient dans un panneau d’environ 200 px.
-  for (const id of ['karl-scraper', 'sillage']) {
+  for (const id of ['autoticket', 'sillage']) {
     const largeur = (await carte(page, id).locator('.capture__vue img').first().boundingBox())?.width ?? 0;
     expect(largeur, id).toBeGreaterThan(320);
   }
