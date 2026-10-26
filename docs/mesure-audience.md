@@ -157,7 +157,7 @@ L’emplacement `preuves` reste actif sur les pages de projets qui utilisent le 
 
 Depuis le 2026-10-13, la vitrine `/projets` n’ajoute aucune valeur : les liens publics des cartes
 de projet et, depuis le 2026-10-14, du volet « Projets archivés » (l’ancienne rangée « Aussi »)
-utilisent `lien-sortant` avec l’emplacement `preuves` ; les cartes de Karl Scraper, Sillage et
+utilisent `lien-sortant` avec l’emplacement `preuves` ; les cartes d’AutoTicket, Sillage et
 Relais, dépôts privés, n’ont aucun lien sortant ; les
 guides de contribution et « Tous mes dépôts publics » du bloc « Contribuer » sont l’invitation
 open source de l’objectif O3 (`lien-sortant`, emplacement `discutons`, domaine `github.com`) ;
