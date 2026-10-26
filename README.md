@@ -132,14 +132,14 @@ source » mène au bloc « Contribuer » de la vitrine (`/projets#contribuer`). 
 
 Les neuf pages de projet (`site/src/pages/projets/`) suivent l’ordre de la vitrine, famille par
 famille : PvZ Fusion ; Omnicard, Bloodborne Legendary Run et League Of Data Base ; gup et
-GitHealth ; Karl Scraper, Sillage et Relais. Elles partagent le gabarit de
+GitHealth ; AutoTicket, Sillage et Relais. Elles partagent le gabarit de
 `site/src/components/projets/gabarit/` : un en-tête commun (nom canonique, étiquette de preuve,
 fiche technique en tableau à filets, un à trois repères chiffrés sourcés et datés), un corps libre
 avec sa navigation de page, « Sous le capot » (une liste de points d’une ligne, chacun dépliable
 sur son explication et un extrait court ; les pages IA y ajoutent la liste de leurs fonctions),
 une sortie commune (projet précédent et suivant, « Discutons ») et une note de sources. Le corps reste propre à chaque projet ; ses
 données sont dans `site/src/config/<projet>.ts`, avec, pour les quatre pages entrées le
-14 octobre 2026, la carte de la vitrine (`CARTE`). Karl Scraper, Sillage et Relais sont des
+14 octobre 2026, la carte de la vitrine (`CARTE`). AutoTicket, Sillage et Relais sont des
 dépôts privés : ni lien ni nom de dépôt, leur fiche le dit.
 
 La page `/parcours` est un hub vers `/parcours/professionnel`, `/parcours/competences` et
@@ -230,8 +230,8 @@ composition, format). Un dessin SVG livré est inséré en ligne et suit les jet
 
 Le hub `/projets` commence par l’index des étiquettes de preuve, puis présente les neuf projets
 en quatre familles : « Lead et équipe » (PvZ Fusion, en vedette), « Jeu vidéo » (Omnicard,
-Bloodborne Legendary Run, League Of Data Base), « Outils » (gup, GitHealth) et « IA » (Karl
-Scraper, Sillage, Relais). Chaque carte donne le besoin, un chiffre sourcé, le rôle, le statut et
+Bloodborne Legendary Run, League Of Data Base), « Outils » (gup, GitHealth) et « IA »
+(AutoTicket, Sillage, Relais). Chaque carte donne le besoin, un chiffre sourcé, le rôle, le statut et
 les liens publics, et mène à la page du projet (« Voir le projet → »). Suivent la ligne des
 relevés, le volet des projets archivés et le bloc « Contribuer ». Les démonstrations restent sur
 les pages dédiées : gup utilise les données d’exemple de son dépôt, Bloodborne montre de vraies

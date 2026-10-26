@@ -34,9 +34,9 @@ plus aucun visuel « socle » ne manque. Prochaines étapes : le CV et les premi
 place, le backoffice et ses accès MCP sont refaits dans la coque « Lanterne », et les articles de
 démonstration (`npm run blog:demo`) ont servi à corriger le rendu du blog. Charles range la
 vitrine en quatre familles, « Lead et équipe » (PvZ Fusion), « Jeu vidéo » (Omnicard, Bloodborne
-Legendary Run, League Of Data Base), « Outils » (gup, GitHealth) et « IA » (Karl Scraper, Sillage,
+Legendary Run, League Of Data Base), « Outils » (gup, GitHealth) et « IA » (AutoTicket, Sillage,
 Relais), et archive Life Pixel, img-convertor et Shreksophone ([`docs/prive/questions.md`](docs/prive/questions.md),
-section I). Karl Scraper, Sillage et Relais sont des dépôts privés, présentés sans lien.
+section I). AutoTicket, Sillage et Relais sont des dépôts privés, présentés sans lien.
 
 **Relecture finale (2026-10-15).** Après la relecture de Charles, le parcours est daté (fins
 d’Elan et de la Mission Locale, piscine de 42, études d’avant le titre), les jeux vidéo montrent
@@ -113,7 +113,7 @@ le cadrage privé : un clone de `LINDECKER-Charles/MonPortefolioV2-cadrage`, ign
   `docs/prive/`, que ce soit dans le code, un test, un commentaire, un message de commit ou de
   PR. Un garde-fou qui a besoin d’une liste privée la lit par `site/tests/support/prive.ts`, et
   son message d’échec désigne la faute par un numéro, jamais par le nom.
-- **Dépôts privés présentés** : Bloodborne Legendary Run, Karl Scraper, Sillage et Relais, sans
+- **Dépôts privés présentés** : Bloodborne Legendary Run, AutoTicket, Sillage et Relais, sans
   lien ni nom de dépôt (`prive: true` dans `VITRINE`). Aucun autre dépôt privé n’est mentionné
   ni ne sert de preuve.
 - **Poste actuel** : seulement en termes génériques (architecte logiciel, développement web,
@@ -193,10 +193,10 @@ carte du dépôt et mise en ligne : [`README.md`](README.md).
   dépôt public de la liste blanche, avec son chemin et sa révision dans la note de sources, ou,
   pour un dépôt privé, une forme écrite pour la page (`ecrit: true` : configuration, commande,
   structure de données, pseudo-code), jamais du code recopié, ni nom interne, chemin ou secret.
-  Les pages IA (Karl Scraper, Sillage, Relais) posent aussi la même liste en section `fonctions`
+  Les pages IA (AutoTicket, Sillage, Relais) posent aussi la même liste en section `fonctions`
   (« Toutes ses fonctions, une ligne chacune »), et leur « Sous le capot » se range en groupes
   (Architecture, Décisions, Garde-fous, tests et limites). Ses données vivent dans
-  `config/<projet>.ts` ; pour GitHealth, Karl Scraper, Sillage et Relais, la carte de la vitrine
+  `config/<projet>.ts` ; pour GitHealth, AutoTicket, Sillage et Relais, la carte de la vitrine
   aussi (export `CARTE`, importé par `config/vitrine.ts` ; `FICHE` et `SCHEMA` sont lus par
   `lib/seo.ts`). Un projet est `SoftwareSourceCode` (dépôt public, `codeRepository`) ou
   `CreativeWork`, jamais `SoftwareApplication` : Google y exige un prix et des notes qu’aucun projet
@@ -237,7 +237,7 @@ carte du dépôt et mise en ligne : [`README.md`](README.md).
   régénère [`docs/visuels-a-generer.md`](docs/visuels-a-generer.md), la commande à donner à
   Codex, seule référence des prochaines générations : ne jamais la corriger à la main.
   Les séries des quatre pages entrées le 14/10/2026 (`SERIES_VITRINE_FINALE` : `githealth`,
-  `karl-scraper`, `sillage`, `relais`, ids `GTH-`, `KSC-`, `SIL-`, `REL-`) s’écrivent chacune
+  `autoticket`, `sillage`, `relais`, ids `GTH-`, `ATK-`, `SIL-`, `REL-`) s’écrivent chacune
   sous son repère du registre (`// GTH — GitHealth …` jusqu’à `// ↑ fin des entrées GTH`) ; les
   compteurs figés de `tests/unit/visuels.test.ts` ne comptent que l’inventaire hors de ces séries.
 - **Garde-fous** (tests sur le HTML construit, dans `site/tests/unit/`) : liste blanche des liens
