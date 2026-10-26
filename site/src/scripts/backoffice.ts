@@ -18,8 +18,17 @@
  * Navigation : une rubrique est un lien (`aria-current="page"`) ; le clic est
  * intercepté, l’adresse et l’historique suivent, et le focus va au titre de
  * la rubrique.
+ *
+ * L’entrée (connexion, vérification, codes de secours) : `data-entree` sur
+ * <body> tant qu’elle est affichée. Sa mise en scène vit dans
+ * backoffice-entree.ts, chargé à part : chaque changement d’écran passe par
+ * `jouer`, qui la confie au module s’il est là, sinon l’applique d’un coup.
+ * Une session ouverte se mémorise (« cl-backoffice-session ») : la page
+ * suivante attend sa vérification au lieu de jouer le générique
+ * (public/backoffice-entree.js).
  */
 import type { BlogWorkspace } from './blog-editor';
+import type { Entree, Geste } from './backoffice-entree';
 import type { RubriqueStockage } from './backoffice-stockage';
 import type { RubriqueEnvoi } from './backoffice-envoi';
 import { brancherAccesMcp } from './backoffice-acces';
@@ -47,6 +56,17 @@ interface Connexion extends Partial<Session> { two_factor_required?: boolean; en
 interface ConfigurationDeuxFacteurs { secret: string; otpauth_url: string; qr_code_data_url: string }
 
 const RUBRIQUES_CONNUES: readonly Rubrique[] = ['contacts', 'settings', 'links', 'tokens', 'blog', 'storage'];
+/** Une session ouverte dans ce navigateur (public/backoffice-entree.js le lit avant le premier rendu). */
+const CLE_SESSION = 'cl-backoffice-session';
+
+/** Mémorise qu’une session est ouverte, ou ne l’est plus : seulement un indice, jamais un secret. */
+function memoriserSession(ouverte: boolean): void {
+  try {
+    if (ouverte) window.localStorage.setItem(CLE_SESSION, '1');
+    else window.localStorage.removeItem(CLE_SESSION);
+  } catch { /* Stockage bloqué : le générique se jouera, rien de plus. */ }
+}
+
 const NBSP = ' ';
 
 export function brancherBackoffice(): void {
@@ -104,11 +124,29 @@ export function brancherBackoffice(): void {
   let historyPosition = typeof history.state?.backofficeIndex === 'number' ? history.state.backofficeIndex : 0;
   let restoringHistory = false;
   history.replaceState({ ...history.state, backofficeIndex: historyPosition }, '', visibleURL);
+  const racine = document.documentElement;
+  const page = document.body;
+  let envoiAuto = 0;
+  /** La mise en scène de l’entrée, chargée à part : sans elle, tout fonctionne, d’un coup. */
+  let entree: Entree | undefined;
+  /** L’ouverture posée avant le premier rendu ne se jouera pas : ses états de départ s’effacent. */
+  const effacerOuverture = () => { for (const attribut of ['data-ouverture', 'data-pilote', 'data-nuit-forcee']) racine.removeAttribute(attribut); };
+  void import('./backoffice-entree').then(({ brancherEntree }) => { entree = brancherEntree(); }).catch(effacerOuverture);
+
+  /** Un geste de l’entrée, confié au module s’il est chargé ; ignoré si une autre connexion a pris la main entre-temps. */
+  function jouer(geste: Geste, maj: () => void): Promise<void> {
+    const sequence = authSequence;
+    const appliquer = () => { if (sequence === authSequence) maj(); };
+    if (entree) return entree.jouer(geste, appliquer);
+    appliquer();
+    return Promise.resolve();
+  }
 
   /** Un message dans une zone de retour ; #bo-notice se montre, les retours locaux sont toujours là. */
   function afficher(zone: HTMLElement, message: string, etat: Etat = 'success'): void {
     zone.textContent = message;
     zone.dataset.state = etat;
+    delete zone.dataset.attente;
     if (zone === notice) notice.hidden = false;
   }
   function annoncer(message: string, etat: Etat = 'success'): void {
@@ -126,6 +164,7 @@ export function brancherBackoffice(): void {
     for (const zone of document.querySelectorAll<HTMLElement>('.bo-retour')) {
       zone.textContent = '';
       delete zone.dataset.state;
+      delete zone.dataset.attente;
     }
   }
   function date(valeur: string): string {
@@ -323,6 +362,7 @@ export function brancherBackoffice(): void {
     workspace.hidden = true;
     navigation.hidden = true;
     login.hidden = false;
+    page.dataset.entree = '';
     element('bo-logout').hidden = true;
     loginForm.querySelector('fieldset')!.disabled = false;
   }
@@ -346,6 +386,7 @@ export function brancherBackoffice(): void {
         if (reponse.status === 401 && (authenticated || (challenge && contenu.code === 'CHALLENGE_EXPIRED'))) {
           const draft = blog?.hasUnsavedChanges();
           retourConnexion(true);
+          memoriserSession(false);
           annoncer(draft ? 'La session a expiré. Reconnectez-vous pour retrouver votre rédaction conservée dans cet onglet.' : 'La session a expiré. Connectez-vous à nouveau.', 'error');
         }
         throw new ErreurApi(
@@ -355,6 +396,7 @@ export function brancherBackoffice(): void {
           reponse.status,
           contenu.code,
           contenu.fields && typeof contenu.fields === 'object' ? contenu.fields : undefined,
+          Number(reponse.headers.get('retry-after')) || undefined,
         );
       }
       return contenu as T;
@@ -364,7 +406,10 @@ export function brancherBackoffice(): void {
   }
   /** Une erreur dans sa zone, ou dans le retour de session si cette zone n’est plus affichée. */
   function erreur(cause: unknown, zone: HTMLElement = notice): void {
-    afficher(visible(zone) ? zone : notice, messageDe(cause), 'error');
+    const cible = visible(zone) ? zone : notice;
+    afficher(cible, messageDe(cause), 'error');
+    // Trop de tentatives : l’entrée compte les secondes avant le prochain essai (backoffice-saisie.ts).
+    if (cause instanceof ErreurApi && cause.attente) cible.dataset.attente = String(cause.attente);
   }
   /**
    * Une action : verrou contre le double clic, champs désactivés, attente puis
@@ -577,21 +622,30 @@ export function brancherBackoffice(): void {
       return item;
     }));
   }
-  async function ouvrirWorkspace(): Promise<void> {
+  /** L’atelier : après une connexion (`finale`), la lumière le découvre ; une session retrouvée l’ouvre d’un coup. */
+  async function ouvrirWorkspace(finale = false): Promise<void> {
     const sequence = authSequence;
     const session = await api<Session>('/session');
     if (sequence !== authSequence) return;
-    if (!session.authenticated) { retourConnexion(); notice.hidden = true; return; }
+    if (!session.authenticated) { retourConnexion(); memoriserSession(false); notice.hidden = true; return; }
     authenticated = true;
     challenge = false;
-    effacerDeuxFacteurs();
-    effacerCodesSecours();
-    password.value = '';
-    login.hidden = true;
-    workspace.hidden = false;
-    navigation.hidden = false;
-    element('bo-logout').hidden = false;
-    element('bo-smtp-warning').hidden = session.smtp_configured;
+    memoriserSession(true);
+    const ouvrir = () => {
+      effacerDeuxFacteurs();
+      effacerCodesSecours();
+      password.value = '';
+      login.hidden = true;
+      delete page.dataset.entree;
+      effacerOuverture();
+      workspace.hidden = false;
+      navigation.hidden = false;
+      element('bo-logout').hidden = false;
+      element('bo-smtp-warning').hidden = session.smtp_configured;
+    };
+    if (finale) await jouer('atelier', ouvrir);
+    else ouvrir();
+    if (!authenticated || sequence !== authSequence) return;
     const reglages = await api<{ email: string }>('/settings');
     if (!authenticated || sequence !== authSequence) return;
     element<HTMLInputElement>('bo-email').value = reglages.email;
@@ -628,37 +682,46 @@ export function brancherBackoffice(): void {
     }
   }
   async function afficherDeuxFacteurs(inscription: boolean): Promise<void> {
+    const sequence = authSequence;
     challenge = true;
     enrollment = inscription;
-    effacerDeuxFacteurs();
-    twoFactorForm.querySelector('fieldset')!.disabled = false;
-    login.hidden = true;
-    twoFactor.hidden = false;
-    element('bo-enrollment').hidden = !inscription;
-    texte('bo-two-factor-title', inscription ? 'Configurer la vérification en deux étapes' : 'Vérifier la connexion');
-    texte('bo-two-factor-help', inscription ? 'Ajoutez le backoffice à votre application d’authentification pour protéger les prochaines connexions.' : 'Saisissez le code de votre application d’authentification ou un code de secours.');
-    texte('bo-two-factor-submit', inscription ? 'Activer la vérification' : 'Vérifier le code');
-    twoFactorCode.maxLength = inscription ? 6 : 64;
-    twoFactorCode.inputMode = inscription ? 'numeric' : 'text';
-    if (inscription) twoFactorCode.pattern = '[0-9]{6}';
-    else twoFactorCode.removeAttribute('pattern');
+    await jouer('verification', () => {
+      effacerDeuxFacteurs();
+      twoFactorForm.querySelector('fieldset')!.disabled = false;
+      login.hidden = true;
+      twoFactor.hidden = false;
+      element('bo-enrollment').hidden = !inscription;
+      texte('bo-two-factor-title', inscription ? 'Configurer la vérification en deux étapes' : 'Vérifier la connexion');
+      texte('bo-two-factor-help', inscription ? 'Ajoutez le backoffice à votre application d’authentification pour protéger les prochaines connexions.' : 'Saisissez le code de votre application d’authentification ou un code de secours.');
+      texte('bo-two-factor-submit', inscription ? 'Activer la vérification' : 'Vérifier le code');
+      twoFactorCode.maxLength = inscription ? 6 : 64;
+      twoFactorCode.inputMode = inscription ? 'numeric' : 'text';
+      if (inscription) twoFactorCode.pattern = '[0-9]{6}';
+      else twoFactorCode.removeAttribute('pattern');
+    });
+    if (sequence !== authSequence) return;
     if (inscription) {
       // L’échec de la préparation se dit sur l’écran de vérification, à côté de « Réessayer ».
       try { await preparerDeuxFacteurs(); } catch (cause) { erreur(cause, element('bo-two-factor-retour')); }
     } else { twoFactorForm.querySelector('fieldset')!.disabled = false; notice.hidden = true; twoFactorCode.focus(); }
   }
-  function afficherCodesSecours(codes: string[]): void {
+  async function afficherCodesSecours(codes: string[]): Promise<void> {
     authenticated = true;
     challenge = false;
-    effacerDeuxFacteurs();
-    element('bo-recovery-codes').replaceChildren(...codes.map((code) => {
-      const item = creer('li');
-      item.append(creer('code', '', code));
-      return item;
-    }));
-    recovery.hidden = false;
-    element('bo-logout').hidden = false;
-    notice.hidden = true;
+    await jouer('codes', () => {
+      effacerDeuxFacteurs();
+      element('bo-recovery-codes').replaceChildren(...codes.map((code) => {
+        const item = creer('li');
+        const texte = creer('code');
+        // Une coupure possible après chaque tiret : un code long passe à la ligne entre deux groupes.
+        texte.append(...code.split('-').flatMap((groupe, rang) => (rang ? ['-', creer('wbr'), groupe] : [groupe])));
+        item.append(texte);
+        return item;
+      }));
+      recovery.hidden = false;
+      element('bo-logout').hidden = false;
+      notice.hidden = true;
+    });
     element('bo-recovery-title').focus();
   }
 
@@ -687,12 +750,19 @@ export function brancherBackoffice(): void {
       if (sequence !== authSequence) return;
       password.value = '';
       if (connexion.two_factor_required) await afficherDeuxFacteurs(Boolean(connexion.enrollment_required));
-      else if (connexion.authenticated) { await ouvrirWorkspace(); focaliserRubrique(); }
+      else if (connexion.authenticated) { await ouvrirWorkspace(true); focaliserRubrique(); }
       else throw new ErreurApi('La connexion n’a pas abouti. Réessayez.', 502);
     }, 'Connexion…');
   });
+  // Six chiffres d’une application : le code part seul, après un instant (une saisie qui continue l’annule),
+  // jamais en saisie d’un code de secours (backoffice-saisie.ts pose `data-mode`).
+  twoFactorCode.addEventListener('input', () => {
+    window.clearTimeout(envoiAuto);
+    if (/^\d{6}$/.test(twoFactorCode.value.trim()) && !twoFactorCode.closest('[data-mode="secours"]')) envoiAuto = window.setTimeout(() => twoFactorForm.requestSubmit(), 250);
+  });
   twoFactorForm.addEventListener('submit', (event) => {
     event.preventDefault();
+    window.clearTimeout(envoiAuto);
     const code = twoFactorCode.value.trim();
     const sequence = authSequence;
     void action(twoFactorForm, async () => {
@@ -701,18 +771,19 @@ export function brancherBackoffice(): void {
       twoFactorCode.value = '';
       if (!connexion.authenticated) throw new ErreurApi('Le code n’a pas pu être vérifié. Réessayez.', 502);
       authenticated = true;
-      if (enrollment && connexion.recovery_codes?.length) afficherCodesSecours(connexion.recovery_codes);
-      else { await ouvrirWorkspace(); focaliserRubrique(); }
+      if (enrollment && connexion.recovery_codes?.length) await afficherCodesSecours(connexion.recovery_codes);
+      else { await ouvrirWorkspace(true); focaliserRubrique(); }
     }, enrollment ? 'Activation de la vérification…' : 'Vérification du code…');
   });
-  element('bo-two-factor-back').addEventListener('click', () => { retourConnexion(); notice.hidden = true; loginEmail.focus(); });
+  element('bo-two-factor-back').addEventListener('click', () => {
+    void jouer('connexion', () => { retourConnexion(); notice.hidden = true; }).then(() => loginEmail.focus());
+  });
   element('bo-two-factor-retry').addEventListener('click', (event) => {
     void action(event.currentTarget as HTMLButtonElement, preparerDeuxFacteurs, 'Préparation de la configuration…');
   });
   element('bo-recovery-continue').addEventListener('click', (event) => {
     void action(event.currentTarget as HTMLButtonElement, async () => {
-      effacerCodesSecours();
-      await ouvrirWorkspace();
+      await ouvrirWorkspace(true);
       focaliserRubrique();
     }, 'Ouverture du backoffice…');
   });
@@ -730,8 +801,8 @@ export function brancherBackoffice(): void {
       if (blog && !await blog.confirmDiscard()) return;
       await action(cible, async () => {
         await api('/logout', 'POST');
-        retourConnexion();
-        annoncer('Vous êtes déconnecté.');
+        memoriserSession(false);
+        await jouer('sortie', () => { retourConnexion(); annoncer('Vous êtes déconnecté.'); });
         loginEmail.focus();
       }, 'Déconnexion…', notice);
     })();
@@ -811,12 +882,13 @@ export function brancherBackoffice(): void {
       if (sequence !== authSequence) return;
       if (cause instanceof ErreurApi && cause.status === 401) {
         retourConnexion();
+        memoriserSession(false);
         notice.hidden = true;
       } else {
         loginForm.querySelector('fieldset')!.disabled = false;
         erreur(cause);
       }
-    });
+    }).finally(() => racine.removeAttribute('data-session-probable'));
   }
   window.addEventListener('pagehide', () => retourConnexion());
   window.addEventListener('pageshow', (event) => { if (event.persisted) verifierSession(); });

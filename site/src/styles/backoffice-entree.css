@@ -1,0 +1,1750 @@
+/*
+ * L’entrée du backoffice, « l’atelier s’allume » : la scène de la lanterne,
+ * le générique d’ouverture, les trois écrans (connexion, vérification en deux
+ * étapes, codes de secours) et le passage dans l’atelier. Maquette de
+ * référence : design/connexion-backoffice/.
+ *
+ * Le mouvement est piloté par scripts/backoffice-entree.ts (Web Animations,
+ * View Transitions). Ce fichier pose l’état final, les boucles du repos
+ * (flamme, halo, rayons, poussière, bokeh, grain), ce qui se déduit du DOM
+ * (attente, palier de lumière, plaque du QR code, codes qui s’éclairent) et
+ * les états de secours si le module ne se charge pas. Couleurs et courbes :
+ * jetons.css ; durées : multiples de --d-ui et --d-scene.
+ *
+ * États :
+ *   body.bo[data-entree]           l’entrée est affichée (scripts/backoffice.ts)
+ *   body.bo[data-flamme]           soufflee (trop de tentatives) ou embrasee (l’atelier s’ouvre)
+ *   html[data-ouverture]           complete ou courte : le générique (public/backoffice-entree.js)
+ *   html[data-pilote]              le module joue le générique : les secours se taisent
+ *   html[data-session-probable]    une session est sans doute ouverte : la page attend sa vérification
+ *   html[data-bandes]              les bandes de cinéma, le temps d’un passage
+ *   html[data-transition-entree]   ecran, ouverture ou fermeture : la View Transition en cours
+ *
+ * Plan : propriétés · mise en page · coque · scène · lanterne et flamme ·
+ * récit et titres · carte · champs · code à six chiffres · configuration ·
+ * codes de secours · étapes · générique (secours) · transitions · bandes et
+ * front de lumière · points de rupture · mouvement réduit · impression.
+ */
+
+/* ===== Propriétés animées ===== */
+/* Le liseré de la carte suit la main : enregistré pour glisser, pas sauter. */
+@property --lisere-x {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 50%;
+}
+
+@property --lisere-y {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 0%;
+}
+
+/* La lumière qui court sur le bord de la carte quand elle arrive. */
+@property --trace {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+/* Le rayon des masques (même déclaration que theme-transition.css). */
+@property --rayon {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* ===== Mise en page de l’entrée ===== */
+.bo {
+  --colonne-carte: 36rem;                      /* la colonne éclairée */
+  --carte-connexion: 27rem;                    /* connexion et vérification */
+  --carte-configuration: 34rem;                /* première configuration de la 2FA */
+  --carte-codes: 36rem;                        /* codes de secours */
+  --entree-espace: clamp(32px, 5vw, 96px);     /* entre le récit et la carte */
+  --lanterne-largeur: 144px;                   /* le dessin, proportions 120 × 200 */
+  --lanterne-trait: 1.25;                      /* ≈ 1,5 px à l’écran */
+  --lanterne-ecart: var(--s6);                 /* entre le socle et la carte */
+  --rangee-lanterne: calc(var(--lanterne-largeur) * 5 / 3 + var(--lanterne-ecart));
+  /* L’axe de la lanterne : le milieu de la colonne de la carte. */
+  --lanterne-x: calc(50% + min(50% - var(--gouttiere), var(--largeur) / 2) - var(--colonne-carte) / 2);
+  --bande-hauteur: clamp(40px, 11vh, 120px);
+}
+
+/* ===== Coque : la scène derrière l’en-tête, le récit, la carte et le pied ===== */
+.bo[data-entree] {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.bo[data-entree] > :is(.bo-entete, .bo-main, .bo-pied) {
+  position: relative;
+  z-index: 1;
+}
+
+.bo[data-entree] > .bo-entete {
+  z-index: 2;
+  background: transparent;
+  border-bottom-color: transparent;
+}
+
+/* Deux colonnes au-delà de 860 px : le récit à gauche, la carte éclairée à
+   droite sous la lanterne. Chaque écran se pose sur la grille par
+   sous-grille : son récit à gauche, sa carte à droite. Les cases vides
+   laissent passer le pointeur jusqu’à la lanterne, qu’on peut pousser. */
+.bo[data-entree] > .bo-main {
+  display: grid;
+  grid-template-columns:
+    [recit-debut] minmax(0, 1fr)
+    [recit-fin] var(--entree-espace)
+    [carte-debut] minmax(0, var(--colonne-carte)) [carte-fin];
+  grid-template-rows:
+    [lanterne] var(--rangee-lanterne)
+    [surtitre carte-haut] auto
+    [titre] auto
+    [etapes] auto
+    [reste] 1fr [fin];
+  align-content: start;
+  padding-block: 0 var(--s7);
+  pointer-events: none;
+}
+
+.bo[data-entree] > .bo-main > * {
+  pointer-events: auto;
+}
+
+.bo[data-entree] .bo-tete {
+  grid-column: recit-debut / recit-fin;
+  grid-row: surtitre;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--s3);
+}
+
+.bo[data-entree] .bo-tete > .bo-surtitre {
+  margin: 0;
+}
+
+.bo[data-entree] .bo-tete > :is(.bo-notice, noscript) {
+  flex-basis: 100%;
+}
+
+.bo[data-entree] .bo-tete .bo-notice {
+  margin: var(--s3) 0 var(--s2);
+}
+
+.bo-entree__horodatage {
+  color: var(--eteint);
+  font-size: var(--t-xs);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.bo-entree__horodatage::before {
+  content: '—';
+  margin-right: var(--s3);
+}
+
+.bo[data-entree] .bo-entree__ecran {
+  grid-column: recit-debut / carte-fin;
+  grid-row: surtitre / fin;
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-template-rows: subgrid;
+}
+
+/* Hors de l’entrée (l’atelier ouvert), la scène et ce qui l’accompagne se taisent. */
+.bo:not([data-entree]) :is(.bo-scene, .bo-etapes-cadre, .bo-entree__horodatage) {
+  display: none;
+}
+
+/* Une session sans doute ouverte : rien ne s’affiche avant sa vérification,
+   sauf « Vérification de la session… ». */
+:root[data-session-probable] .bo[data-entree] :is(.bo-scene, .bo-entree__ecran, .bo-etapes-cadre, .bo-entree__horodatage) {
+  visibility: hidden;
+}
+
+/* ===== La scène : les calques, du fond vers l’avant ===== */
+.bo-scene {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: clip;
+  pointer-events: none;
+}
+
+.bo-scene > * {
+  position: absolute;
+  inset: 0;
+}
+
+/* Le ciel : un clair de lune qui tombe du haut à gauche (la nuit) et une
+   vignette qui ferme le cadre. */
+.bo-scene__ciel {
+  background:
+    radial-gradient(75% 65% at 10% -15%, var(--scene-ciel), transparent 70%),
+    radial-gradient(130% 95% at 62% 38%, transparent 52%, var(--scene-ombre));
+}
+
+/* La pièce que la lanterne réchauffe ; elle vacille avec la flamme. */
+.bo-scene__chaleur {
+  background: radial-gradient(48% 60% at var(--lanterne-x) 38%, var(--scene-chaleur), transparent 80%);
+  animation: bo-vacillement-lumiere calc(var(--d-scene) * 4.3) ease-in-out infinite;
+}
+
+/* Le voile noir du générique : la scène sort de l’obscurité. */
+.bo-scene__noir {
+  background: var(--suie);
+  opacity: 0;
+}
+
+/* Le bokeh : des lumières lointaines, floues, qui dérivent ; elles suivent la
+   main plus que le reste (parallaxe : --px, --py posés par les scripts). */
+.bo-scene__bokeh {
+  translate: calc(var(--px, 0) * -18px) calc(var(--py, 0) * -12px);
+}
+
+.bo-scene__bokeh span {
+  position: absolute;
+  left: var(--bx);
+  top: var(--by);
+  width: var(--bt);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--bc) 0 56%, transparent 74%);
+  animation: bo-bokeh-derive calc(var(--d-scene) * var(--bd)) ease-in-out infinite alternate;
+}
+
+.bo-scene__bokeh span:nth-child(1) { --bx: 6%; --by: 18%; --bt: 150px; --bc: var(--bokeh-froid); --bd: 70; --bdx: 40px; --bdy: 18px; }
+.bo-scene__bokeh span:nth-child(2) { --bx: 33%; --by: 91%; --bt: 84px; --bc: var(--bokeh-froid); --bd: 55; --bdx: -24px; --bdy: -20px; }
+.bo-scene__bokeh span:nth-child(3) { --bx: 40%; --by: 27%; --bt: 40px; --bc: var(--bokeh-froid); --bd: 48; --bdx: 18px; --bdy: 22px; }
+.bo-scene__bokeh span:nth-child(4) { --bx: 61%; --by: 11%; --bt: 72px; --bc: var(--bokeh-chaud); --bd: 62; --bdx: -30px; --bdy: 22px; }
+.bo-scene__bokeh span:nth-child(5) { --bx: 88%; --by: 34%; --bt: 150px; --bc: var(--bokeh-chaud); --bd: 76; --bdx: -36px; --bdy: -16px; }
+.bo-scene__bokeh span:nth-child(6) { --bx: 72%; --by: 82%; --bt: 112px; --bc: var(--bokeh-chaud); --bd: 66; --bdx: 28px; --bdy: -24px; }
+.bo-scene__bokeh span:nth-child(7) { --bx: 95%; --by: 90%; --bt: 58px; --bc: var(--bokeh-chaud); --bd: 52; --bdx: -20px; --bdy: -28px; }
+
+@keyframes bo-bokeh-derive {
+  to { transform: translate(var(--bdx), var(--bdy)); }
+}
+
+/* Le plan de la lanterne : c’est lui que la caméra cadre (gros plan, recul)
+   et qui suit un peu la main. */
+.bo-scene__plan {
+  translate: calc(var(--px, 0) * -6px) calc(var(--py, 0) * -4px);
+}
+
+/* Le grain de pellicule : un bruit fixe, décalé huit fois par seconde. */
+.bo-scene > .bo-scene__grain {
+  inset: -40%;
+  opacity: var(--grain);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 200px;
+  mix-blend-mode: overlay;
+  animation: bo-grain steps(1) calc(var(--d-scene) * 2.5) infinite;
+}
+
+@keyframes bo-grain {
+  0% { translate: 0 0; }
+  12.5% { translate: -3% 2%; }
+  25% { translate: 2% -4%; }
+  37.5% { translate: -5% -1%; }
+  50% { translate: 4% 3%; }
+  62.5% { translate: -2% 5%; }
+  75% { translate: 5% -2%; }
+  87.5% { translate: -4% -5%; }
+}
+
+/* La lumière vacille avec la flamme : même période, la pièce entière suit. */
+@keyframes bo-vacillement-lumiere {
+  0%, 100% { opacity: 1; }
+  9% { opacity: 0.84; }
+  14% { opacity: 0.97; }
+  27% { opacity: 0.9; }
+  36% { opacity: 1; }
+  49% { opacity: 0.86; }
+  55% { opacity: 0.98; }
+  71% { opacity: 0.91; }
+  79% { opacity: 1; }
+  91% { opacity: 0.87; }
+}
+
+/* ===== La lanterne ===== */
+/* La suspension : la corde part du haut de l’écran, la lanterne pend au-dessus
+   de la carte, centrée sur sa colonne. Le pivot du balancier est le point
+   d’attache (scripts : le balancier amorti, `transform: rotate`). */
+.bo-suspension {
+  position: absolute;
+  top: 0;
+  left: calc(var(--lanterne-x) - var(--lanterne-largeur) / 2);
+  width: var(--lanterne-largeur);
+  height: calc(var(--entete) + var(--rangee-lanterne) - var(--lanterne-ecart));
+  transform-origin: 50% 0;
+}
+
+.bo-suspension__corde {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  bottom: calc(var(--lanterne-largeur) * 5 / 3 * 0.975);
+  width: 1.5px;
+  translate: -50% 0;
+  background-color: var(--encre);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, currentColor 45%);
+  mask-image: linear-gradient(to bottom, transparent, currentColor 45%);
+  transform-origin: 50% 0;
+  opacity: 0.85;
+}
+
+.bo-suspension__lanterne {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  aspect-ratio: 120 / 200;
+  cursor: grab;
+  pointer-events: auto;
+}
+
+.bo-lanterne {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Le trait garde environ 1,5 px à l’écran : le dessin fait 120 unités de
+   large, rendu à --lanterne-largeur (épaisseur plus forte quand il rétrécit). */
+.bo-lanterne__traits {
+  fill: none;
+  stroke: var(--encre);
+  stroke-width: var(--lanterne-trait);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bo-lanterne__vitre {
+  fill: var(--vitre-allumee);
+  opacity: var(--vitre, 1);
+  transition: opacity calc(var(--d-scene) * 2) var(--courbe);
+}
+
+/* Les éléments de lumière se centrent sur la flamme : (60, 135) dans le
+   dessin, soit 50 % × 67,5 % de la boîte. */
+.bo-lanterne__rayons,
+.bo-lanterne__halo,
+.bo-lanterne__poussieres,
+.bo-lanterne__eclat,
+.bo-lanterne__trainee {
+  position: absolute;
+  left: 50%;
+  top: 67.5%;
+  translate: -50% -50%;
+  pointer-events: none;
+}
+
+/* Les rayons : la lumière passe entre les montants de la cage. Le toit les
+   arrête vers le haut (masque conique) ; ils tournent très lentement et
+   vacillent avec la flamme. */
+.bo-lanterne__rayons {
+  width: calc(var(--lanterne-largeur) * 8.5);
+  aspect-ratio: 1;
+  -webkit-mask-image: radial-gradient(closest-side, currentColor 6%, transparent 78%), conic-gradient(transparent 0deg 30deg, currentColor 75deg 285deg, transparent 330deg 360deg);
+  -webkit-mask-composite: source-in;
+  mask-image: radial-gradient(closest-side, currentColor 6%, transparent 78%), conic-gradient(transparent 0deg 30deg, currentColor 75deg 285deg, transparent 330deg 360deg);
+  mask-composite: intersect;
+  animation: bo-vacillement-lumiere calc(var(--d-scene) * 4.3) ease-in-out infinite;
+}
+
+.bo-lanterne__rayons::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-conic-gradient(transparent 0deg, var(--rayon-lumiere) 1.2deg, transparent 3deg, transparent 6deg, var(--rayon-lumiere) 6.8deg, transparent 7.8deg, transparent 13deg);
+  animation: bo-rayons-tournent calc(var(--d-scene) * 250) linear infinite;
+}
+
+@keyframes bo-rayons-tournent {
+  to { rotate: 1turn; }
+}
+
+/* Le halo : la lumière portée. Son niveau suit l’étape franchie et l’état de
+   la flamme. */
+.bo-lanterne__halo {
+  width: calc(var(--lanterne-largeur) * 6.2);
+  aspect-ratio: 1;
+  scale: calc(var(--halo-palier, 1) * var(--halo-etat, 1));
+  opacity: var(--halo-opacite, 1);
+  transition: scale calc(var(--d-scene) * 2) var(--courbe), opacity calc(var(--d-scene) * 2) var(--courbe);
+}
+
+.bo-lanterne__halo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--halo-coeur), var(--halo-scene) 20%, transparent);
+  animation: bo-halo-respire calc(var(--d-scene) * 9.7) ease-in-out infinite;
+}
+
+@keyframes bo-halo-respire {
+  0%, 100% { opacity: 1; scale: 1; }
+  23% { opacity: 0.9; scale: 0.985; }
+  41% { opacity: 0.97; scale: 1.01; }
+  68% { opacity: 0.86; scale: 0.97; }
+  84% { opacity: 0.95; scale: 1; }
+}
+
+/* La poussière qui danse dans la lumière (scripts : positions et durées). */
+.bo-lanterne__poussieres {
+  width: calc(var(--lanterne-largeur) * 4.6);
+  aspect-ratio: 1;
+  -webkit-mask-image: radial-gradient(closest-side, currentColor 35%, transparent);
+  mask-image: radial-gradient(closest-side, currentColor 35%, transparent);
+}
+
+.bo-poussiere {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--taille);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--poussiere);
+  opacity: 0;
+  animation: bo-poussiere var(--duree) linear var(--retard) infinite;
+}
+
+@keyframes bo-poussiere {
+  0% { opacity: 0; translate: 0 0; }
+  25% { opacity: var(--o); }
+  75% { opacity: var(--o); }
+  100% { opacity: 0; translate: var(--dx) var(--dy); }
+}
+
+/* L’éclat : la flamme qui sursaute (frappe, allumage). */
+.bo-lanterne__eclat {
+  width: calc(var(--lanterne-largeur) * 2.2);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--lanterne-eclat), transparent);
+  opacity: 0;
+}
+
+/* La traînée : la flamme vue à travers un objectif anamorphique, un trait de
+   lumière horizontal qui vacille avec elle. */
+.bo-lanterne__trainee {
+  top: 66%;
+  width: calc(var(--lanterne-largeur) * 4.4);
+  height: 2px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, transparent, var(--trainee) 32%, var(--flamme-coeur) 50%, var(--trainee) 68%, transparent);
+  opacity: 0.4;
+  animation: bo-vacillement-lumiere calc(var(--d-scene) * 4.3) ease-in-out infinite;
+}
+
+.bo-lanterne__trainee::after {
+  content: '';
+  position: absolute;
+  inset: -6px 18%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--trainee), transparent);
+  opacity: 0.6;
+}
+
+/* Les étincelles de l’allumage (scripts). */
+.bo-lanterne__etincelles {
+  position: absolute;
+  left: 50%;
+  top: 62%;
+  width: 0;
+  height: 0;
+}
+
+.bo-etincelle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--flamme-coeur);
+  box-shadow: 0 0 6px 1px var(--lanterne-eclat);
+}
+
+/* La flamme : trois enveloppes. `.bo-flamme` porte l’état (niveau,
+   allumage), `__sursaut` le sursaut d’une frappe ou d’une erreur (scripts),
+   `__vacille` le vacillement continu. */
+.bo-flamme,
+.bo-flamme__sursaut,
+.bo-flamme__vacille,
+.bo-flamme__coeur {
+  transform-box: fill-box;
+  transform-origin: 50% 88%;
+}
+
+.bo-flamme {
+  scale: var(--flamme-niveau, 1);
+  opacity: var(--flamme-opacite, 1);
+  transition: scale calc(var(--d-scene) * 1.5) var(--courbe), opacity calc(var(--d-scene) * 1.5) var(--courbe);
+}
+
+.bo-flamme__corps {
+  fill: var(--lanterne);
+}
+
+.bo-flamme__coeur {
+  fill: var(--flamme-coeur);
+  animation: bo-coeur calc(var(--d-scene) * 2.9) ease-in-out infinite;
+}
+
+.bo-flamme__vacille {
+  animation: bo-vacille calc(var(--d-scene) * 4.3) ease-in-out infinite;
+}
+
+@keyframes bo-vacille {
+  0%, 100% { transform: scale(1, 1) skewX(0deg); }
+  17% { transform: scale(0.96, 1.04) skewX(-2deg); }
+  33% { transform: scale(1.03, 0.97) skewX(1.2deg); }
+  52% { transform: scale(0.98, 1.05) skewX(-0.6deg); }
+  71% { transform: scale(1.02, 0.96) skewX(1.8deg); }
+  86% { transform: scale(0.99, 1.02) skewX(-1deg); }
+}
+
+@keyframes bo-coeur {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  38% { opacity: 0.82; transform: scale(0.92, 1.06); }
+  64% { opacity: 0.95; transform: scale(1.05, 0.95); }
+}
+
+.bo-lanterne__fumee {
+  fill: none;
+  stroke: var(--trait);
+  stroke-width: calc(var(--lanterne-trait) * 0.8);
+  stroke-linecap: round;
+  stroke-dasharray: 0.32 1.4;
+  stroke-dashoffset: 0.32;
+  opacity: 0;
+}
+
+/* Une connexion en cours (le formulaire attend sa réponse) : la flamme
+   vacille plus vite, le halo respire plus court. */
+.bo[data-entree]:has(.bo-entree__ecran form[aria-busy='true']) .bo-flamme__vacille {
+  animation-duration: calc(var(--d-scene) * 1.6);
+}
+
+.bo[data-entree]:has(.bo-entree__ecran form[aria-busy='true']) .bo-lanterne__halo::before {
+  animation-duration: calc(var(--d-scene) * 2.4);
+}
+
+/* Trop de tentatives : la flamme est soufflée, il reste une braise et deux
+   filets de fumée ; elle se rallume à la fin de l’attente. */
+.bo[data-flamme='soufflee'] {
+  --flamme-niveau: 0.16;
+  --halo-etat: 0.45;
+  --halo-opacite: 0.22;
+  --vitre: 0.12;
+}
+
+.bo[data-flamme='soufflee'] .bo-flamme__vacille {
+  animation: bo-braise calc(var(--d-scene) * 5) ease-in-out infinite;
+}
+
+.bo[data-flamme='soufflee'] .bo-lanterne__fumee {
+  animation: bo-fumee calc(var(--d-scene) * 6.5) var(--courbe) infinite;
+}
+
+.bo[data-flamme='soufflee'] .bo-lanterne__fumee--2 {
+  animation-delay: calc(var(--d-scene) * 3);
+}
+
+.bo[data-flamme='soufflee'] :is(.bo-lanterne__rayons, .bo-lanterne__trainee, .bo-scene__chaleur) {
+  opacity: 0.15;
+  animation: none;
+  transition: opacity calc(var(--d-scene) * 2) var(--courbe);
+}
+
+@keyframes bo-braise {
+  50% { opacity: 0.45; }
+}
+
+@keyframes bo-fumee {
+  0% { opacity: 0; stroke-dashoffset: 0.32; }
+  12% { opacity: 0.8; }
+  100% { opacity: 0; stroke-dashoffset: -1.1; }
+}
+
+/* L’atelier s’ouvre : la flamme s’embrase avant que la lumière gagne l’écran. */
+.bo[data-flamme='embrasee'] {
+  --flamme-niveau: 1.4;
+  --halo-etat: 2.6;
+  --halo-opacite: 1;
+}
+
+/* La lumière grandit à chaque étape franchie. */
+.bo:has(#bo-two-factor:not([hidden])) {
+  --halo-palier: 1.14;
+}
+
+.bo:has(#bo-recovery:not([hidden])) {
+  --halo-palier: 1.28;
+}
+
+/* ===== Le récit et ses titres ===== */
+.bo[data-entree] .bo-entree__recit {
+  grid-column: recit-debut / recit-fin;
+  grid-row: titre;
+  margin-top: var(--s4);
+}
+
+.bo .bo-entree__titre {
+  position: relative;
+  max-width: 11ch;
+  font-size: var(--t-3xl);
+  line-height: 0.98;
+  letter-spacing: var(--ls-affiche);
+}
+
+/* Les deux premiers écrans ont le titre de l’accroche ; la configuration et
+   les codes de secours, plus longs, gardent celui des pages. */
+.bo #bo-login .bo-entree__titre,
+.bo #bo-two-factor:not(:has(#bo-enrollment:not([hidden]))) .bo-entree__titre {
+  font-size: var(--t-4xl);
+  line-height: 0.95;
+}
+
+.bo #bo-two-factor:has(#bo-enrollment:not([hidden])) .bo-entree__titre,
+.bo #bo-recovery .bo-entree__titre {
+  max-width: 15ch;
+}
+
+/* Un titre reçoit le focus pour les lecteurs d’écran à chaque écran : il
+   n’est pas une commande, pas de contour (comme .cible-sommaire, global.css). */
+.bo .bo-entree__titre:focus {
+  outline: none;
+}
+
+/* Le titre en lettres, le temps d’une animation : un calque de lettres posé
+   exactement sur le texte (crénage compris), le vrai texte rendu transparent ;
+   à la fin, le calque s’en va et le texte revient (scripts). */
+.bo .bo-titre--decoupe {
+  color: transparent;
+}
+
+.bo-titre-lettres {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bo-titre-lettres__lettre {
+  position: absolute;
+  color: var(--encre);
+  line-height: normal;
+  white-space: pre;
+  will-change: transform, opacity, filter;
+}
+
+.bo .bo-entree__texte {
+  max-width: 30rem;
+  margin-top: var(--s5);
+  color: var(--eteint);
+  font-size: var(--t-l);
+  line-height: 1.5;
+}
+
+/* ===== La carte éclairée ===== */
+.bo .bo-entree__carte {
+  --carte: var(--carte-connexion);
+  position: relative;
+  grid-column: carte-debut / carte-fin;
+  grid-row: carte-haut / fin;
+  justify-self: center;
+  align-self: start;
+  width: 100%;
+  max-width: var(--carte);
+  padding: var(--s6);
+  /* L’ombre portée s’écarte du balancier de la lanterne (scripts : --balance,
+     son angle en degrés). */
+  box-shadow: var(--ombre-2), calc(var(--balance, 0) * -3px) 44px 50px -36px var(--ombre-portee);
+  transition: max-width calc(var(--d-scene) * 1.5) var(--courbe), --lisere-x var(--d-scene) var(--courbe), --lisere-y var(--d-scene) var(--courbe);
+}
+
+.bo #bo-two-factor:has(#bo-enrollment:not([hidden])) .bo-entree__carte {
+  --carte: var(--carte-configuration);
+}
+
+.bo #bo-recovery .bo-entree__carte {
+  --carte: var(--carte-codes);
+}
+
+/* La zone éclairée (global.css) glisse un peu avec la lanterne qui se balance. */
+.bo-entree__carte.foyer::before {
+  translate: calc(var(--balance, 0) * 4px) 0;
+  transition: opacity calc(var(--d-scene) * 2) var(--courbe);
+}
+
+/* Le liseré : la lumière de la lanterne accroche le bord haut de la carte, et
+   suit la main quand le pointeur passe dessus (scripts : --lisere-x, -y). */
+.bo-entree__carte::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  padding: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(calc(var(--lanterne-largeur) * 2.4) circle at var(--lisere-x) var(--lisere-y), var(--lisere), transparent 72%);
+  -webkit-mask: linear-gradient(currentColor 0 0) content-box, linear-gradient(currentColor 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(currentColor 0 0) content-box exclude, linear-gradient(currentColor 0 0);
+  transition: opacity var(--d-scene) var(--courbe);
+}
+
+/* Le tracé : à l’arrivée de la carte, la lumière coule du haut le long de ses
+   deux bords et se rejoint en bas (scripts : --trace de 0 à 180°). */
+.bo-entree__trace {
+  position: absolute;
+  inset: -1px;
+  z-index: 1;
+  padding: 1.5px;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: conic-gradient(var(--lanterne) 0deg var(--trace), transparent var(--trace) calc(360deg - var(--trace)), var(--lanterne) calc(360deg - var(--trace)));
+  -webkit-mask: linear-gradient(currentColor 0 0) content-box, linear-gradient(currentColor 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(currentColor 0 0) content-box exclude, linear-gradient(currentColor 0 0);
+}
+
+/* Le refus : la carte se dérobe à peine (scripts, sauf mouvement réduit). */
+.bo-entree__carte[data-refus] {
+  animation: bo-refus calc(var(--d-scene) * 1.1) var(--courbe);
+}
+
+@keyframes bo-refus {
+  0%, 100% { translate: 0 0; }
+  18% { translate: -7px 0; }
+  36% { translate: 6px 0; }
+  54% { translate: -4px 0; }
+  72% { translate: 2px 0; }
+}
+
+/* Flamme soufflée : la flaque sous la carte s’éteint avec elle, et le bouton
+   qui compte les secondes passe au contour, sans lumière. */
+.bo[data-flamme='soufflee'] .bo-entree__carte::before,
+.bo[data-flamme='soufflee'] .bo-entree__carte::after {
+  opacity: 0.2;
+}
+
+.bo[data-flamme='soufflee'] .bo-entree__carte {
+  box-shadow: var(--ombre-1);
+}
+
+.bo[data-flamme='soufflee'] .bo-entree__action:disabled {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--trait);
+  color: var(--eteint);
+  opacity: 1;
+}
+
+/* L’anneau de focus : il glisse d’un champ à l’autre (scripts) ; le contour
+   natif s’efface seulement quand l’anneau est là. */
+.bo-anneau {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  width: 0;
+  height: 0;
+  border-radius: var(--r2);
+  box-shadow: 0 0 0 2px var(--focus), 0 0 22px 2px var(--anneau-halo);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--d-ui) var(--courbe);
+}
+
+.bo-anneau[data-actif] {
+  opacity: 1;
+}
+
+.bo-entree__carte:has(.bo-anneau[data-actif]) .bo-entree__formulaire input:focus-visible {
+  outline-color: transparent;
+}
+
+/* ===== Les champs ===== */
+.bo .bo-entree__formulaire fieldset {
+  gap: var(--s5);
+}
+
+.bo .bo-entree__formulaire fieldset > .bo-actions {
+  margin-top: var(--s2);
+}
+
+.bo .bo-entree__formulaire input:not([type='checkbox'], [type='radio']) {
+  display: block;
+  min-height: 48px;
+  background: var(--fond);
+  transition: border-color var(--d-ui) var(--courbe), box-shadow var(--d-ui) var(--courbe);
+}
+
+.bo .bo-entree__formulaire input:not(:disabled):hover {
+  border-color: var(--encre);
+}
+
+.bo .bo-entree__formulaire input:focus-visible {
+  border-color: var(--encre);
+}
+
+.bo .bo-entree__action {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  min-height: 48px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Le reflet : il passe une fois au survol, et court en boucle pendant
+   l’attente, comme la lumière sur le métal. */
+.bo-entree__action::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, var(--reflet) 50%, transparent 70%);
+  translate: -100% 0;
+  pointer-events: none;
+}
+
+.bo-entree__action:hover:not(:disabled)::after {
+  animation: bo-reflet calc(var(--d-scene) * 2.5) var(--courbe-expo);
+}
+
+.bo [aria-busy='true'] .bo-entree__action::after,
+.bo-entree__action[aria-busy='true']::after {
+  animation: bo-reflet calc(var(--d-scene) * 3) var(--courbe) infinite;
+}
+
+@keyframes bo-reflet {
+  to { translate: 100% 0; }
+}
+
+.bo [aria-busy='true'] .bo-entree__action,
+.bo .bo-entree__action[aria-busy='true'] {
+  opacity: 1;
+}
+
+/* L’onde : la lumière part du point où l’on appuie (scripts). */
+.bo-onde {
+  position: absolute;
+  width: 260%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--reflet), transparent 70%);
+  pointer-events: none;
+}
+
+/* Mot de passe : afficher ou masquer, et l’avertissement des majuscules. */
+.bo-motdepasse {
+  position: relative;
+}
+
+.bo .bo-entree__formulaire .bo-motdepasse:has(.bo-motdepasse__voir:not([hidden])) input {
+  padding-right: calc(var(--s9) + var(--s2));
+}
+
+.bo-motdepasse__voir {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  bottom: 2px;
+  min-width: 44px;
+  padding-inline: var(--s3);
+  border: 0;
+  border-radius: var(--r1);
+  background: transparent;
+  color: var(--accent);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-petit);
+  cursor: pointer;
+}
+
+.bo-motdepasse__voir:hover {
+  color: var(--accent-survol);
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+}
+
+.bo-majuscules {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  color: var(--encre);
+  font-weight: 600;
+}
+
+.bo-majuscules__signe {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--trait);
+  border-radius: var(--r1);
+  font-size: var(--t-xs);
+  line-height: 1;
+}
+
+/* Un retour s’allume en glissant, comme la lumière sur une ligne. */
+.bo-entree__carte .bo-retour:not(:empty),
+.bo[data-entree] .bo-tete .bo-notice,
+.bo-majuscules {
+  animation: bo-retour-vient calc(var(--d-ui) * 2) var(--courbe-expo);
+}
+
+@keyframes bo-retour-vient {
+  from {
+    opacity: 0;
+    translate: calc(-1 * var(--s2)) 0;
+    clip-path: inset(0 100% 0 0);
+  }
+}
+
+/* ===== Le code à six chiffres =====
+   Un seul vrai champ (le contrat, l’autoremplissage `one-time-code`, le
+   collage) ; les six cases en sont l’image, peinte par les scripts
+   (`data-cases`). Sans eux, le champ reste un champ. */
+.bo-code-saisie {
+  position: relative;
+}
+
+.bo-code-saisie__cases {
+  display: none;
+}
+
+.bo-code-saisie[data-cases]:not([data-mode='secours']) {
+  width: fit-content;
+  max-width: 100%;
+}
+
+.bo-code-saisie[data-cases]:not([data-mode='secours']) .bo-code-saisie__cases {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+}
+
+.bo-code-saisie__case {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 58px;
+  border: 1px solid var(--trait);
+  border-radius: var(--r1);
+  background: var(--fond);
+  font-size: var(--t-xl);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums lining-nums;
+  line-height: 1;
+  transition: border-color var(--d-ui) var(--courbe), box-shadow var(--d-ui) var(--courbe), background-color var(--d-ui) var(--courbe);
+}
+
+.bo-code-saisie__tiret {
+  width: 10px;
+  height: 2px;
+  border-radius: var(--r1);
+  background: var(--trait);
+}
+
+.bo-code-saisie__case[data-plein] {
+  border-color: var(--encre);
+}
+
+/* Un chiffre tombe dans sa case et la fait luire. */
+.bo-code-saisie__case[data-pose] {
+  animation: bo-chiffre-pose calc(var(--d-scene) * 1.2) var(--courbe-ressort);
+}
+
+@keyframes bo-chiffre-pose {
+  from { translate: 0 -10px; box-shadow: 0 0 0 4px var(--lanterne-halo); }
+}
+
+/* La case active : le contour de focus et un curseur qui bat. */
+.bo-code-saisie:has(.bo-code-saisie__champ:focus-visible) .bo-code-saisie__case[data-active] {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.bo-code-saisie:has(.bo-code-saisie__champ:focus) .bo-code-saisie__case[data-active]:not([data-plein])::after {
+  content: '';
+  width: 2px;
+  height: 26px;
+  border-radius: var(--r1);
+  background: var(--encre);
+  animation: bo-curseur calc(var(--d-scene) * 2.6) steps(1) infinite;
+}
+
+@keyframes bo-curseur {
+  50% { opacity: 0; }
+}
+
+.bo-code-saisie[data-etat='refus'] .bo-code-saisie__case {
+  border-color: var(--erreur);
+  color: var(--erreur);
+}
+
+.bo-code-saisie[data-etat='refus'] .bo-code-saisie__cases {
+  animation: bo-refus calc(var(--d-scene) * 1.1) var(--courbe);
+}
+
+/* Code juste : les cases s’allument l’une après l’autre. */
+.bo-code-saisie[data-etat='accepte'] .bo-code-saisie__case {
+  border-color: var(--lanterne);
+  box-shadow: 0 0 0 3px var(--lanterne-halo), 0 0 22px var(--lanterne-halo);
+  transition-delay: calc(var(--rang, 0) * var(--d-ui) / 3);
+}
+
+.bo-code-saisie__case:nth-child(2) { --rang: 1; }
+.bo-code-saisie__case:nth-child(3) { --rang: 2; }
+.bo-code-saisie__case:nth-child(5) { --rang: 3; }
+.bo-code-saisie__case:nth-child(6) { --rang: 4; }
+.bo-code-saisie__case:nth-child(7) { --rang: 5; }
+
+/* Le vrai champ couvre les cases, invisible : clic, collage et focus passent. */
+.bo .bo-entree__formulaire .bo-code-saisie[data-cases]:not([data-mode='secours']) .bo-code-saisie__champ {
+  position: absolute;
+  inset: 0;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: transparent;
+  caret-color: transparent;
+  letter-spacing: 2.4em;
+  cursor: text;
+}
+
+.bo .bo-entree__formulaire .bo-code-saisie[data-cases]:not([data-mode='secours']) .bo-code-saisie__champ:focus-visible {
+  outline: none;
+}
+
+.bo-code-saisie[data-cases]:not([data-mode='secours']) .bo-code-saisie__champ::selection {
+  background: transparent;
+}
+
+/* Code de secours : le champ redevient un champ, en capitales à chasse fixe. */
+.bo .bo-entree__formulaire .bo-code-saisie[data-mode='secours'] .bo-code-saisie__champ {
+  font-size: var(--t-s);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.bo-code-saisie[data-mode='secours'] .bo-code-saisie__champ::placeholder {
+  color: var(--eteint);
+  text-transform: none;
+}
+
+.bo-code-saisie[data-mode='secours'] + .bo-help {
+  display: none;
+}
+
+.bo .bo-code-saisie__mode {
+  margin: var(--s2) 0 0 calc(-1 * var(--s3));
+}
+
+/* ===== Première configuration : QR code, clé, puis le code ===== */
+.bo-inscription {
+  display: grid;
+  gap: var(--s5);
+  margin: 0 0 var(--s5);
+  padding: 0;
+  list-style: none;
+  counter-reset: pas;
+}
+
+.bo-inscription__pas {
+  position: relative;
+  padding-left: var(--s7);
+  counter-increment: pas;
+}
+
+.bo-inscription__pas::before {
+  content: counter(pas);
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--trait);
+  border-radius: 50%;
+  color: var(--encre);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.bo-inscription__pas + .bo-inscription__pas::after {
+  content: '';
+  position: absolute;
+  left: 15px;
+  bottom: calc(100% + var(--s1));
+  height: calc(var(--s5) - var(--s2));
+  border-left: 1px dashed var(--trait);
+}
+
+.bo-inscription__consigne {
+  padding-top: var(--s1);
+}
+
+/* Le QR code et son aide côte à côte, puis la clé sur toute la largeur. Les
+   détails arrivent flous, et se mettent au point. */
+.bo-inscription__details {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--s4) var(--s5);
+  margin-top: var(--s4);
+  animation: bo-details-viennent calc(var(--d-scene) * 2) var(--courbe-expo) both;
+}
+
+@keyframes bo-details-viennent {
+  from { opacity: 0; translate: 0 10px; filter: blur(6px); }
+}
+
+.bo .bo-inscription__aide {
+  margin: 0;
+}
+
+.bo-cle {
+  grid-column: 1 / -1;
+}
+
+.bo .bo-cle label {
+  font-size: var(--t-xs);
+}
+
+.bo-cle__ligne {
+  display: flex;
+  gap: var(--s2);
+}
+
+.bo .bo-cle__ligne .bo-code {
+  flex: 1;
+  min-width: 0;
+  letter-spacing: 0.06em;
+}
+
+/* Le QR code sur sa plaque claire ; la lumière le balaie à son arrivée. */
+.bo-qr {
+  position: relative;
+  overflow: hidden;
+  width: 168px;
+  padding: var(--s2);
+  border: 1px solid var(--filet);
+  border-radius: var(--r1);
+  background: var(--papier-logo);
+}
+
+.bo-qr img {
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.bo-qr__balayage {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 40%;
+  background: linear-gradient(to bottom, transparent, var(--lanterne-halo) 70%, var(--lanterne-eclat) 98%, transparent);
+  translate: 0 -100%;
+  pointer-events: none;
+}
+
+.bo-inscription__details .bo-qr__balayage {
+  animation: bo-balayage calc(var(--d-scene) * 3) var(--courbe) calc(var(--d-scene) * 0.5) both;
+}
+
+@keyframes bo-balayage {
+  from { translate: 0 -100%; }
+  to { translate: 0 260%; }
+}
+
+/* En préparation : une plaque vide que la lumière parcourt en boucle, tant
+   que ni le QR code ni « Réessayer » ne sont là. */
+.bo-qr--attente {
+  display: none;
+  aspect-ratio: 1;
+  margin-top: var(--s4);
+  background: var(--emplacement);
+}
+
+#bo-enrollment-details[hidden] + .bo-qr--attente:has(+ #bo-two-factor-retry[hidden]) {
+  display: block;
+}
+
+.bo-qr--attente .bo-qr__balayage {
+  animation: bo-balayage calc(var(--d-scene) * 3.5) var(--courbe) infinite;
+}
+
+/* ===== Codes de secours : numérotés, ils s’allument un à un ===== */
+.bo-recovery-codes {
+  display: grid;
+  gap: var(--s1);
+  margin: 0 0 var(--s5);
+  padding: 0;
+  list-style: none;
+  counter-reset: code;
+}
+
+.bo-recovery-codes li {
+  counter-increment: code;
+  display: grid;
+  grid-template-columns: var(--s6) minmax(0, 1fr);
+  align-items: center;
+  padding: var(--s2) var(--s3);
+  border: 1px solid var(--filet);
+  border-radius: var(--r1);
+  background: var(--fond);
+  animation: bo-code-eclaire calc(var(--d-scene) * 2) var(--courbe-expo) both;
+  animation-delay: calc(var(--d-scene) * 0.6 + var(--rang, 0) * var(--d-ui) / 2);
+}
+
+.bo-recovery-codes li::before {
+  content: counter(code, decimal-leading-zero);
+  color: var(--eteint);
+  font-size: var(--t-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Un code trop long pour sa ligne se coupe entre deux groupes (<wbr>), en
+   deux lignes égales. */
+.bo .bo-recovery-codes code {
+  letter-spacing: 0.03em;
+  overflow-wrap: normal;
+  word-break: keep-all;
+  text-wrap: balance;
+  user-select: all;
+}
+
+.bo-recovery-codes li:nth-child(2) { --rang: 1; }
+.bo-recovery-codes li:nth-child(3) { --rang: 2; }
+.bo-recovery-codes li:nth-child(4) { --rang: 3; }
+.bo-recovery-codes li:nth-child(5) { --rang: 4; }
+.bo-recovery-codes li:nth-child(6) { --rang: 5; }
+.bo-recovery-codes li:nth-child(7) { --rang: 6; }
+.bo-recovery-codes li:nth-child(n + 8) { --rang: 7; }
+
+@keyframes bo-code-eclaire {
+  0% { opacity: 0; translate: calc(-1 * var(--s3)) 0; filter: blur(4px); }
+  45% { opacity: 1; box-shadow: 0 0 0 3px var(--lanterne-halo); border-color: var(--lanterne); filter: blur(0); }
+  100% { opacity: 1; translate: 0 0; }
+}
+
+.bo #bo-recovery .bo-actions .bo-entree__action {
+  width: auto;
+  flex: 1 1 100%;
+}
+
+/* ===== Les étapes : un repère, un mot ; la lumière avance ===== */
+.bo[data-entree] .bo-etapes-cadre {
+  position: relative;
+  grid-column: recit-debut / recit-fin;
+  grid-row: etapes;
+  margin-top: var(--s7);
+}
+
+.bo-etapes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2) var(--s3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--eteint);
+  font-size: var(--t-xs);
+  line-height: 1.4;
+}
+
+.bo-etapes__etape {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+}
+
+.bo-etapes__etape + .bo-etapes__etape::before {
+  content: '';
+  width: var(--s6);
+  height: 1px;
+  margin-right: var(--s1);
+  background: var(--filet);
+  transition: background-color calc(var(--d-scene) * 2) var(--courbe);
+}
+
+.bo-etapes__etape[data-etat='faite'] + .bo-etapes__etape::before {
+  background: var(--encre);
+}
+
+.bo-etapes__repere {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid var(--trait);
+  border-radius: 50%;
+  transition: background-color var(--d-scene) var(--courbe), border-color var(--d-scene) var(--courbe), box-shadow var(--d-scene) var(--courbe);
+}
+
+.bo-etapes__etape[data-etat='faite'] .bo-etapes__repere {
+  border-color: var(--encre);
+  background: var(--encre);
+}
+
+/* L’étape en cours porte la lumière : un point de lanterne. */
+.bo-etapes__etape[data-etat='courante'] .bo-etapes__repere {
+  border-color: var(--lanterne);
+  background: var(--lanterne);
+  box-shadow: 0 0 0 4px var(--lanterne-halo), 0 0 16px var(--lanterne-eclat);
+}
+
+.bo-etapes__etape[data-etat='courante'] .bo-etapes__nom {
+  color: var(--encre);
+  font-weight: 600;
+}
+
+/* La lumière qui voyage d’une étape à la suivante (scripts). */
+.bo-etapes__lumiere {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  background: var(--lanterne);
+  box-shadow: 0 0 0 5px var(--lanterne-halo), 0 0 22px 4px var(--lanterne-eclat);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ===== Le générique : états de secours =====
+   public/backoffice-entree.js pose `data-ouverture` (complete ou courte)
+   avant le premier rendu ; le module prend la main (`data-pilote`) et joue
+   tout en Web Animations. S’il ne se charge pas, ces animations finissent
+   l’ouverture seules, au bout de quelques secondes. */
+:root[data-ouverture] {
+  --secours: calc(var(--d-scene) * 15);
+}
+
+:root[data-ouverture='complete'] .bo[data-entree] .bo-scene__noir {
+  opacity: 1;
+  animation: bo-secours-noir calc(var(--d-scene) * 2) var(--courbe) var(--secours) both;
+}
+
+:root[data-ouverture='complete'] .bo[data-entree] .bo-bande {
+  transform: none;
+}
+
+:root[data-ouverture='complete'] .bo[data-entree] .bo-bande--haut {
+  animation: bo-secours-bande-haut calc(var(--d-scene) * 2) var(--courbe-expo) var(--secours) both;
+}
+
+:root[data-ouverture='complete'] .bo[data-entree] .bo-bande--bas {
+  animation: bo-secours-bande-bas calc(var(--d-scene) * 2) var(--courbe-expo) var(--secours) both;
+}
+
+:root[data-ouverture='complete'] .bo[data-entree] :is(.bo-entete, .bo-tete, .bo-entree__texte, .bo-etapes-cadre, .bo-pied, .bo-scene__plan, .bo-scene__bokeh),
+:root[data-ouverture] .bo[data-entree] .bo-entree__carte {
+  animation: bo-secours-apparition var(--d-scene) var(--courbe) var(--secours) both;
+}
+
+:root[data-ouverture] .bo[data-entree] .bo-entree__titre {
+  animation: bo-secours-titre var(--d-scene) var(--courbe) var(--secours) both;
+}
+
+/* Un tiret de toute la longueur, puis un vide plus long que le tracé : décalé
+   de 1,02, il ne laisse rien paraître, ni au début ni à la fin. */
+:root[data-ouverture='complete'] .bo[data-entree] .bo-lanterne__traits > * {
+  stroke-dasharray: 1 2;
+}
+
+/* Le module pilote : les secours se taisent. Le temps de l’ouverture, un clic
+   l’abrège sans rien activer : rien ne bouge sous le pointeur. */
+:root[data-ouverture][data-pilote] .bo[data-entree] :is(.bo-scene__noir, .bo-bande, .bo-entete, .bo-tete, .bo-entree__texte, .bo-etapes-cadre, .bo-pied, .bo-scene__plan, .bo-scene__bokeh, .bo-entree__carte, .bo-entree__titre) {
+  animation: none;
+}
+
+:root[data-ouverture][data-pilote] .bo[data-entree] :is(.bo-entete, .bo-main, .bo-main > *, .bo-pied) {
+  pointer-events: none;
+}
+
+@keyframes bo-secours-apparition {
+  from { opacity: 0; }
+}
+
+@keyframes bo-secours-titre {
+  from { color: transparent; }
+}
+
+@keyframes bo-secours-noir {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes bo-secours-bande-haut {
+  from { transform: none; }
+  to { transform: translateY(-101%); }
+}
+
+@keyframes bo-secours-bande-bas {
+  from { transform: none; }
+  to { transform: translateY(101%); }
+}
+
+/* ===== D’un écran à l’autre (`data-transition-entree='ecran'`) =====
+   View Transitions : l’ancien récit monte et s’efface, l’ancienne carte se
+   dissout dans la lumière, la nouvelle en émerge ; les lettres du nouveau
+   titre et les champs de la nouvelle carte arrivent un à un (scripts). Les
+   noms ne valent que pendant ce geste : le thème et l’atelier capturent la
+   page entière. */
+:root[data-transition-entree='ecran'] .bo-entree__ecran:not([hidden]) > .bo-entree__recit {
+  view-transition-name: bo-entree-recit;
+}
+
+:root[data-transition-entree='ecran'] .bo-entree__ecran:not([hidden]) > .bo-entree__carte {
+  view-transition-name: bo-entree-carte;
+}
+
+::view-transition-group(bo-entree-carte) {
+  animation-duration: calc(var(--d-scene) * 1.75);
+  animation-timing-function: var(--courbe-expo);
+}
+
+::view-transition-old(bo-entree-carte) {
+  animation: bo-carte-dissout calc(var(--d-scene) * 1.1) var(--courbe) both;
+}
+
+::view-transition-new(bo-entree-carte) {
+  animation: bo-carte-emerge calc(var(--d-scene) * 2) var(--courbe-expo) both;
+}
+
+/* L’ancien récit part vite ; le nouveau texte arrive juste après, pendant que
+   les lettres du titre montent (scripts). */
+::view-transition-old(bo-entree-recit) {
+  animation: bo-recit-part calc(var(--d-scene) * 0.8) var(--courbe) both;
+}
+
+::view-transition-new(bo-entree-recit) {
+  animation: bo-recit-vient calc(var(--d-scene) * 1.2) var(--courbe) calc(var(--d-scene) * 0.35) both;
+}
+
+@keyframes bo-carte-dissout {
+  to { opacity: 0; filter: brightness(1.8) blur(10px); }
+}
+
+@keyframes bo-carte-emerge {
+  from { opacity: 0; filter: brightness(2.2) blur(14px); }
+}
+
+@keyframes bo-recit-part {
+  to { opacity: 0; transform: translateY(-28px); filter: blur(6px); }
+}
+
+@keyframes bo-recit-vient {
+  from { opacity: 0; }
+}
+
+/* ===== L’atelier s’ouvre (`ouverture`) et se referme (`fermeture`) =====
+   La caméra pousse dans la flamme, la lumière part d’elle et découvre
+   l’atelier, qui se met au point ; à la déconnexion, la lumière rentre dans
+   la lanterne et l’entrée recule jusqu’au plan large. Le centre est la
+   flamme (--flamme-x, --flamme-y, mesurés par les scripts). Le même geste
+   que l’allumage du thème (theme-transition.css) : un masque radial. */
+:root[data-transition-entree='ouverture']::view-transition-old(root) {
+  transform-origin: var(--flamme-x, 50%) var(--flamme-y, 30%);
+  animation: bo-pousse-suite calc(var(--d-scene) * 1.9) var(--courbe-entree) both;
+  mix-blend-mode: normal;
+}
+
+:root[data-transition-entree='ouverture']::view-transition-new(root) {
+  transform-origin: var(--flamme-x, 50%) var(--flamme-y, 30%);
+  -webkit-mask-image: radial-gradient(circle at var(--flamme-x, 50%) var(--flamme-y, 30%), currentColor var(--rayon), transparent calc(var(--rayon) + 70px));
+  mask-image: radial-gradient(circle at var(--flamme-x, 50%) var(--flamme-y, 30%), currentColor var(--rayon), transparent calc(var(--rayon) + 70px));
+  animation: bo-ouverture calc(var(--d-scene) * 2.75) var(--courbe-entree) both, bo-mise-au-point calc(var(--d-scene) * 4) var(--courbe-expo) both;
+  mix-blend-mode: normal;
+}
+
+:root[data-transition-entree='fermeture']::view-transition-old(root) {
+  z-index: 1;
+  -webkit-mask-image: radial-gradient(circle at var(--flamme-x, 50%) var(--flamme-y, 30%), currentColor var(--rayon), transparent calc(var(--rayon) + 70px));
+  mask-image: radial-gradient(circle at var(--flamme-x, 50%) var(--flamme-y, 30%), currentColor var(--rayon), transparent calc(var(--rayon) + 70px));
+  animation: bo-fermeture calc(var(--d-scene) * 2.5) var(--courbe) both;
+  mix-blend-mode: normal;
+}
+
+:root[data-transition-entree='fermeture']::view-transition-new(root) {
+  transform-origin: var(--flamme-x, 50%) var(--flamme-y, 30%);
+  animation: bo-recul calc(var(--d-scene) * 3.5) var(--courbe-expo) calc(var(--d-scene) * 0.875) both;
+  mix-blend-mode: normal;
+}
+
+@keyframes bo-pousse-suite {
+  to { transform: scale(1.6); filter: blur(8px) brightness(1.6); }
+}
+
+@keyframes bo-mise-au-point {
+  from { transform: scale(1.08); filter: blur(10px); }
+}
+
+@keyframes bo-recul {
+  from { transform: scale(1.75); filter: blur(8px) brightness(1.65); }
+}
+
+/* La lumière part de la flamme en accélérant et traverse l’écran : on la voit
+   passer (125 vmax couvrent l’écran depuis n’importe quel point). */
+@keyframes bo-ouverture {
+  from { --rayon: 0px; }
+  to { --rayon: 125vmax; }
+}
+
+@keyframes bo-fermeture {
+  from { --rayon: 125vmax; }
+  to { --rayon: -80px; }
+}
+
+/* ===== Le front de lumière et les bandes de cinéma =====
+   Chacun son groupe de transition, vivant, au-dessus de la page : le front
+   éclaire ce qu’il couvre sans le voiler, les bandes restent nettes. */
+.bo-front-lumiere {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: none;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at var(--flamme-x, 50%) var(--flamme-y, 30%), var(--eclat-interieur) 0, var(--eclat-interieur) calc(var(--rayon) - 40px), var(--lanterne-eclat) calc(var(--rayon) + 20px), var(--lanterne-halo) calc(var(--rayon) + 80px), transparent calc(var(--rayon) + 170px));
+  mix-blend-mode: screen;
+}
+
+.bo-front-lumiere[data-revele] {
+  display: block;
+  view-transition-name: bo-front-lumiere;
+}
+
+.bo-front-lumiere[data-revele='ouverture'] {
+  animation: bo-ouverture calc(var(--d-scene) * 2.75) var(--courbe-entree) both, bo-front calc(var(--d-scene) * 2.75) linear both;
+}
+
+.bo-front-lumiere[data-revele='fermeture'] {
+  animation: bo-fermeture calc(var(--d-scene) * 2.5) var(--courbe) both, bo-front calc(var(--d-scene) * 2.5) var(--courbe) both;
+}
+
+@keyframes bo-front {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  55% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+::view-transition-group(bo-front-lumiere) {
+  animation: none;
+  mix-blend-mode: screen;
+}
+
+::view-transition-group(bo-bandes) {
+  animation: none;
+}
+
+::view-transition-old(bo-front-lumiere),
+::view-transition-old(bo-bandes) {
+  animation: none;
+  opacity: 0;
+}
+
+::view-transition-new(bo-front-lumiere),
+::view-transition-new(bo-bandes) {
+  animation: none;
+}
+
+/* Les bandes : seulement le temps du générique et du passage dans l’atelier. */
+.bo-bandes {
+  position: fixed;
+  inset: 0;
+  z-index: 31;
+  display: none;
+  pointer-events: none;
+}
+
+:root[data-ouverture='complete'] .bo[data-entree] .bo-bandes,
+:root[data-bandes] .bo-bandes {
+  display: block;
+  view-transition-name: bo-bandes;
+}
+
+.bo-bande {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: var(--bande-hauteur);
+  background: var(--suie);
+}
+
+.bo-bande--haut {
+  top: 0;
+  transform: translateY(-101%);
+}
+
+.bo-bande--bas {
+  bottom: 0;
+  transform: translateY(101%);
+}
+
+/* ===== Points de rupture ===== */
+@media (max-width: 1100px) {
+  .bo {
+    --colonne-carte: 28rem;
+  }
+
+  .bo #bo-login .bo-entree__titre,
+  .bo #bo-two-factor:not(:has(#bo-enrollment:not([hidden]))) .bo-entree__titre {
+    font-size: var(--t-3xl);
+  }
+
+  .bo-inscription__details {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Mobile : une colonne. La lanterne pend au milieu, sous l’en-tête ; le récit,
+   les étapes, puis la carte. */
+@media (max-width: 860px) {
+  .bo {
+    --lanterne-largeur: 76px;
+    --lanterne-trait: 2.3;
+    --lanterne-ecart: var(--s5);
+    --lanterne-x: 50%;
+    --bande-hauteur: clamp(32px, 7vh, 64px);
+  }
+
+  .bo[data-entree] > .bo-main {
+    grid-template-columns: [recit-debut carte-debut] minmax(0, 1fr) [recit-fin carte-fin];
+    grid-template-rows:
+      [lanterne] var(--rangee-lanterne)
+      [surtitre] auto
+      [titre] auto
+      [etapes] auto
+      [carte-haut] auto [fin];
+    padding-bottom: var(--s6);
+  }
+
+  .bo[data-entree] .bo-entree__recit {
+    margin-top: var(--s2);
+  }
+
+  .bo .bo-entree__titre {
+    max-width: 12ch;
+  }
+
+  .bo .bo-entree__texte {
+    margin-top: var(--s3);
+    font-size: var(--t-m);
+  }
+
+  .bo[data-entree] .bo-etapes-cadre {
+    margin-top: var(--s5);
+  }
+
+  .bo-etapes__etape + .bo-etapes__etape::before {
+    width: var(--s5);
+  }
+
+  /* Les repères seuls, et le nom de l’étape en cours : les autres noms restent
+     dits aux lecteurs d’écran. */
+  .bo-etapes__etape:not([data-etat='courante']) .bo-etapes__nom {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .bo .bo-entree__carte {
+    justify-self: stretch;
+    max-width: none;
+    margin-top: var(--s5);
+    padding: var(--s5);
+  }
+
+  /* La configuration récupère la largeur de la carte sous l’intitulé numéroté,
+     et la clé prend sa ligne entière, « Copier » dessous. */
+  .bo-inscription__details {
+    margin-left: calc(-1 * var(--s7));
+  }
+
+  .bo-cle__ligne {
+    flex-wrap: wrap;
+  }
+
+  .bo .bo-cle__ligne .bo-code {
+    flex-basis: 100%;
+    padding-inline: var(--s2);
+    letter-spacing: 0;
+  }
+
+  .bo-code-saisie__case {
+    width: 42px;
+    height: 52px;
+  }
+
+  .bo-code-saisie[data-cases]:not([data-mode='secours']) .bo-code-saisie__cases {
+    gap: var(--s1);
+  }
+}
+
+@media (max-width: 400px) {
+  .bo-code-saisie__case {
+    width: 38px;
+  }
+}
+
+/* ===== Mouvement réduit : l’état final, sans boucle ni allumage =====
+   global.css ramène les animations à 0,01 ms ; une boucle infinie de cette
+   durée clignoterait : ici, plus d’animation du tout. */
+@media (prefers-reduced-motion: reduce) {
+  .bo-scene,
+  .bo-scene *,
+  .bo-scene *::before,
+  .bo-scene *::after,
+  .bo-entree__ecran *,
+  .bo-entree__ecran *::before,
+  .bo-entree__ecran *::after,
+  .bo-etapes-cadre *,
+  .bo-tete .bo-notice {
+    animation: none !important;
+  }
+
+  :is(.bo-scene__grain, .bo-lanterne__poussieres, .bo-lanterne__etincelles, .bo-bandes, .bo-front-lumiere) {
+    display: none !important;
+  }
+
+  .bo-suspension__lanterne {
+    cursor: default;
+  }
+}
+
+/* ===== Impression : la carte seule, encre sur papier ===== */
+@media print {
+  .bo-scene,
+  .bo-bandes,
+  .bo-front-lumiere,
+  .bo-etapes-cadre,
+  .bo-entree__trace,
+  .bo-entree__carte::after {
+    display: none !important;
+  }
+}

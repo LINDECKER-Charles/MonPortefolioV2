@@ -265,7 +265,6 @@
 }
 
 .bo-rubrique h3,
-.bo-connexion h2,
 .bo-dialog h2 {
   font-size: var(--t-xl);
 }
@@ -685,72 +684,7 @@
   rotate: 45deg;
 }
 
-/* ===== Entrée : connexion, vérification, codes de secours ===== */
-.bo-connexion {
-  max-width: 30rem;
-  margin-top: var(--s4);
-}
-
-.bo-connexion--large {
-  max-width: 38rem;
-}
-
-.bo-connexion__texte {
-  margin-block: var(--s2) var(--s5);
-  color: var(--eteint);
-}
-
-.bo-connexion form fieldset {
-  gap: var(--s4);
-}
-
-.bo-connexion fieldset > .bo-actions {
-  margin-top: var(--s2);
-}
-
-.bo-enrollment {
-  margin-bottom: var(--s5);
-}
-
-.bo-enrollment ol {
-  margin: 0 0 var(--s4);
-  padding-left: var(--s5);
-}
-
-.bo-enrollment li + li {
-  margin-top: var(--s2);
-}
-
-.bo-enrollment img {
-  width: 240px;
-  max-width: 100%;
-  height: auto;
-  margin-block: var(--s4);
-  padding: var(--s2);
-  background: var(--papier-logo);
-  border: 1px solid var(--filet);
-  border-radius: var(--r1);
-}
-
-.bo-recovery-codes {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--s2);
-  margin: 0 0 var(--s5);
-  padding: 0;
-  list-style: none;
-}
-
-.bo-recovery-codes li {
-  padding: var(--s2) var(--s3);
-  border: 1px solid var(--filet);
-  border-radius: var(--r1);
-  background: var(--fond);
-}
-
-.bo-recovery-codes code {
-  user-select: all;
-}
+/* L’entrée (connexion, vérification, codes de secours) : styles/backoffice-entree.css. */
 
 /* ===== Demandes de contact ===== */
 .bo-barre {
@@ -1773,10 +1707,6 @@
   .bo-tool .bo-actions {
     grid-column: 1;
     grid-row: auto;
-  }
-
-  .bo-recovery-codes {
-    grid-template-columns: minmax(0, 1fr);
   }
 
   /* Une image : la vignette à gauche, puis le nom, l’usage, le poids et l’action empilés. */
