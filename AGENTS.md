@@ -45,6 +45,11 @@ détaillées, les accès MCP expirent au bout d’un an au plus, le serveur d’
 backoffice, les demandes sont purgées après trois ans, et plus aucune marque « à confirmer » ne
 reste sur le site ([`docs/prive/questions.md`](docs/prive/questions.md), section J).
 
+**Entrée du backoffice (2026-10-27).** La connexion du backoffice devient « l’atelier
+s’allume » : une scène de lanterne, un générique d’ouverture, des passages d’écran en View
+Transitions et l’atelier qui s’ouvre dans la lumière (maquette `design/connexion-backoffice/`,
+règle ci-dessous, « Entrée du backoffice »).
+
 **Bascule faite (2026-10-15).** La V2 sert `charles-lindecker.com` (`www.` en 301 vers l’apex,
 les adresses de la V1 en 301), son test `test.charles-lindecker.com`, et la V1 est archivée,
 figée, sur `yharnam.charles-lindecker.com` (`archive-v1/`). Le dépôt est public depuis le même
@@ -169,6 +174,20 @@ carte du dépôt et mise en ligne : [`README.md`](README.md).
   rejouent en cliquant directement sur leur dessin ou au clavier
   (`scripts/figure-animations.ts`). Respecter `prefers-reduced-motion` (état final complet, ni
   transition ni allumage) et suspendre la boucle hors écran ou dans un onglet masqué.
+- **Entrée du backoffice** (depuis le 27/10/2026, maquette `design/connexion-backoffice/`) :
+  connexion, vérification en deux étapes et codes de secours sur une scène de lanterne
+  (`SceneEntree.astro`, `ConnexionBackoffice.astro`, `styles/backoffice-entree.css`), tant que
+  `<body>` porte `data-entree` (posé et retiré par `scripts/backoffice.ts`). L’ouverture se pose
+  avant le premier rendu (`public/backoffice-entree.js`, après `/theme.js`) : générique de nuit à
+  la première visite de l’onglet, ouverture courte ensuite, rien en mouvement réduit ni quand une
+  session est probable (« cl-backoffice-session », un indice, jamais un secret). La mise en scène
+  (`scripts/backoffice-entree.ts`, avec `backoffice-scene.ts`, `backoffice-saisie.ts` et
+  `backoffice-mouvement.ts`) se charge à la demande, hors du budget de la page comme l’atelier du
+  blog : sans elle, la connexion marche, d’un coup. `backoffice.ts` reste maître de la session et
+  du DOM ; chaque changement d’écran passe par `jouer(geste, maj)`. Le code part seul au sixième
+  chiffre (jamais un code de secours) ; un 429 compte les secondes de `Retry-After`. Ses trois
+  courbes, son titre en `--t-4xl` et son vocabulaire de cinéma (bandes, traînée, bokeh, grain)
+  ne sortent pas de cette page.
 - **Liens** : une seule grammaire, dans `lib/liens.ts` (`→` page interne, `↓` ancre, `↗` sortie
   du site ou e-mail), portée par `Bouton`, `LienAction` et `CarteProjet`. L’action principale est
   « Discutons → », vers `/contact`, partout. L’adresse e-mail passe seulement par `CONTACT.email`
