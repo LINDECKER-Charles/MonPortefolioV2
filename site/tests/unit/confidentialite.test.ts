@@ -4,8 +4,8 @@ import { confidentialite } from '../support/prive';
 import { DELAI_BUILD, pagesConstruites } from './support/dist';
 
 /**
- * Garde-fou « confidentialité » (décision de Charles du 14/10/2026) : Karl
- * Scraper, Sillage et Relais sont des dépôts privés présentés sans lien ni nom
+ * Garde-fou « confidentialité » (décision de Charles du 14/10/2026) :
+ * AutoTicket, Sillage et Relais sont des dépôts privés présentés sans lien ni nom
  * de dépôt. Dans tout le site construit (texte, attributs, JSON-LD), aucun nom
  * privé : ni nom interne, ni nom de ces dépôts. Et sur les pages de la famille
  * « IA », aucune mention de l’employeur hors du nœud de la personne dans le
@@ -64,7 +64,7 @@ describe('confidentialité : le détecteur', () => {
       expect(nomsInterdits(`<p>${nom}x et x${nom}</p>`), repere).not.toContain(repere);
       expect(nomsInterdits(`<img src="/_astro/atlas.${nom}.webp" alt="">`), repere).toEqual([]);
     });
-    expect(nomsInterdits('<p>Karl Scraper, Sillage et Relais.</p>')).toEqual([]);
+    expect(nomsInterdits('<p>AutoTicket, Sillage et Relais.</p>')).toEqual([]);
   });
 
   it('retire le seul nœud de la personne du JSON-LD, le reste gardé', () => {

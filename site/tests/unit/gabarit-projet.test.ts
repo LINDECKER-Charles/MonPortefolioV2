@@ -24,7 +24,7 @@ const rendre = async (composant: Parameters<AstroContainer['renderToString']>[0]
 
 describe('la vitrine, source des noms canoniques', () => {
   it('range les projets famille par famille, dans l’ordre de ce qu’ils prouvent (décision du 14/10/2026)', () => {
-    expect(VITRINE.map((projet) => projet.id)).toEqual(['pvz', 'omnicard', 'bloodborne', 'league', 'gup', 'githealth', 'karl-scraper', 'sillage', 'relais']);
+    expect(VITRINE.map((projet) => projet.id)).toEqual(['pvz', 'omnicard', 'bloodborne', 'league', 'gup', 'githealth', 'autoticket', 'sillage', 'relais']);
     expect(VITRINE[0]).toMatchObject({ nom: 'PvZ Fusion, pôle francophone', href: '/projets/pvz-fusion', preuve: 'Une équipe formée et menée' });
     expect(VEDETTE).toBe('pvz');
   });

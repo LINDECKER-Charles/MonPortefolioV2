@@ -80,16 +80,16 @@ Le script `tools/capturer-bloodborne.cjs` permet de les refaire sans modifier le
 
 ## Pages entrées dans la vitrine le 14 octobre 2026
 
-GitHealth, Karl Scraper, Sillage et Relais ont chacun leur dossier et leur provenance détaillée
+GitHealth, AutoTicket, Sillage et Relais ont chacun leur dossier et leur provenance détaillée
 (version capturée, données, navigateur, conversion, recadrages). Méthode commune : vraies vues de
 l’application lancée en local sur une copie du dépôt, avec des données de démonstration, sans
-retouche ni recomposition de l’interface ; aucune donnée ni aucun compte réels. Karl Scraper,
+retouche ni recomposition de l’interface ; aucune donnée ni aucun compte réels. AutoTicket,
 Sillage et Relais sont des dépôts privés : ni nommés ni liés, ici comme sur le site.
 
 | Dossier | Registre | Révision | Données de démonstration |
 |---|---|---|---|
 | [`githealth/`](githealth/README.md) | `GTH-C1` | `bd2e5c9` (`dev`, version affichée 0.2.0) | dépôts Git fabriqués, auteurs fictifs en `example.invalid` |
-| [`karl-scraper/`](karl-scraper/README.md) | `KSC-C1` | `4e054a3` (après la refonte graphique, 19/10/2026) | faux serveur source, trois projets et seize tâches fictifs |
+| [`autoticket/`](autoticket/README.md) | `ATK-C1` | `4e054a3` (après la refonte graphique, 19/10/2026) | faux serveur source, trois projets et seize tâches fictifs |
 | [`sillage/`](sillage/README.md) | `SIL-C1` | `c256e76` | faux fournisseur des tests du dépôt, trois projets de démonstration |
 | [`relais/`](relais/README.md) | `REL-C1` | `e00f22b` (version 0.2.0, après la refonte graphique, série du 19/10/2026) | agent de démonstration aux tours écrits à l’avance, sans inférence |
 

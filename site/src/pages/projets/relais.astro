@@ -67,7 +67,7 @@ const analyse = capture('analyse');
   <CorpsProjet sections={SECTIONS}>
     <SectionProjet id="acces" titre="Un seul point d’accès pour tous mes outils" alignement="centre">
       <Fragment slot="texte">
-        <p>Sur ma machine, plusieurs outils confient du travail à des agents IA&nbsp;: <a href="/projets/sillage">Sillage</a> orchestre des équipes d’agents, <a href="/projets/karl-scraper">Karl Scraper</a> automatise des tâches. Sans point commun, chacun lancerait et surveillerait lui-même son agent, avec ses propres comptes et ses propres droits.</p>
+        <p>Sur ma machine, plusieurs outils confient du travail à des agents IA&nbsp;: <a href="/projets/sillage">Sillage</a> orchestre des équipes d’agents, <a href="/projets/autoticket">AutoTicket</a> automatise des tâches. Sans point commun, chacun lancerait et surveillerait lui-même son agent, avec ses propres comptes et ses propres droits.</p>
         <p>Relais leur ouvre une seule porte&nbsp;: une API qui n’écoute que la machine, derrière une clé d’accès. Il lance lui-même Claude Code et Codex, dans des versions qu’il fixe, et garde les conversations dans SQLite.</p>
       </Fragment>
       <FigurePointAcces slot="figure" />
@@ -153,7 +153,7 @@ const analyse = capture('analyse');
     <SousLeCapot points={CAPOT} chapeau="L’architecture, puis quatre choix qui ne se voient pas à l’écran, le dernier né d’un incident, et ses limites. Le code est privé : les extraits sont des formes simplifiées, écrites pour cette page." />
 
     <SortieProjet projet="relais" titre="En une phrase" liens={LIENS_SORTIE}>
-      <p>Un seul point d’accès où les agents de ma machine sont lancés, encadrés et relus&nbsp;: Sillage et Karl Scraper y confient les leurs, et tout outil qui a la clé peut en faire autant.</p>
+      <p>Un seul point d’accès où les agents de ma machine sont lancés, encadrés et relus&nbsp;: Sillage et AutoTicket y confient les leurs, et tout outil qui a la clé peut en faire autant.</p>
     </SortieProjet>
 
     <SourcesProjet>

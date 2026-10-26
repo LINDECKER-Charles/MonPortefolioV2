@@ -1,17 +1,17 @@
 ---
 /**
- * Karl Scraper : la preuve de « Automatiser des tâches ». Page bâtie sur le
+ * AutoTicket : la preuve de « Automatiser des tâches ». Page bâtie sur le
  * gabarit commun des pages de projet (components/projets/gabarit, règle E5) :
  * en-tête et fiche, corps libre (une copie locale, la Galaxie, ce que l’agent
  * lit, la chaîne d’un ticket), « Sous le capot », sortie et note
- * de sources. Données, alts et sources : config/karl-scraper.ts, que cette
+ * de sources. Données, alts et sources : config/autoticket.ts, que cette
  * page tient seule (sa carte de la vitrine comprise).
  *
  * Dépôt privé, présenté sans lien ni nom de dépôt ; l’outil qu’il lit se dit
  * « un outil de gestion de tâches » (décision de Charles du 14/10/2026).
- * Captures (KSC-C1) : vraies vues de l’application lancée en local sur des
+ * Captures (ATK-C1) : vraies vues de l’application lancée en local sur des
  * données fictives, après la refonte graphique de son interface
- * (src/assets/projets/karl-scraper/README.md). La chaîne d’un ticket (KSC-F1)
+ * (src/assets/projets/autoticket/README.md). La chaîne d’un ticket (ATK-F1)
  * montre ce qu’aucune capture ne montre sans agent lancé.
  */
 import Base from '../../layouts/Base.astro';
@@ -21,25 +21,25 @@ import SectionProjet from '../../components/projets/gabarit/SectionProjet.astro'
 import SortieProjet from '../../components/projets/gabarit/SortieProjet.astro';
 import SourcesProjet from '../../components/projets/gabarit/SourcesProjet.astro';
 import SousLeCapot from '../../components/projets/gabarit/SousLeCapot.astro';
-import FigureChaine from '../../components/projets/karl-scraper/FigureChaine.astro';
+import FigureChaine from '../../components/projets/autoticket/FigureChaine.astro';
 import CadreCapture from '../../components/ui/CadreCapture.astro';
 import CaptureAnnotee from '../../components/ui/CaptureAnnotee.astro';
 import Visionneuse from '../../components/ui/Visionneuse.astro';
-import enchainements from '../../assets/projets/karl-scraper/enchainements.webp';
-import galaxie from '../../assets/projets/karl-scraper/galaxie.webp';
-import tableauDeBord from '../../assets/projets/karl-scraper/tableau-de-bord.webp';
-import vueAgent from '../../assets/projets/karl-scraper/vue-agent.webp';
+import enchainements from '../../assets/projets/autoticket/enchainements.webp';
+import galaxie from '../../assets/projets/autoticket/galaxie.webp';
+import tableauDeBord from '../../assets/projets/autoticket/tableau-de-bord.webp';
+import vueAgent from '../../assets/projets/autoticket/vue-agent.webp';
 import { SITE } from '../../config/site';
-import { CAPOT, ECRANS, EN_TETE, FICHE, FONCTIONS, LIENS_SORTIE, PREUVES, SECTIONS } from '../../config/karl-scraper';
+import { CAPOT, ECRANS, EN_TETE, FICHE, FONCTIONS, LIENS_SORTIE, PREUVES, SECTIONS } from '../../config/autoticket';
 
 // ≤ 45 caractères avant « — Charles Lindecker » (titre ≤ 65 au total).
-const titre = `Karl Scraper, automatiser ses tâches — ${SITE.nom}`;
+const titre = `AutoTicket, automatiser ses tâches — ${SITE.nom}`;
 // 110 à 165 caractères.
-const description = 'Karl Scraper tient une copie locale de mes tâches, la donne à lire à des agents IA et enchaîne les gestes d’un ticket jusqu’à sa pull request.';
+const description = 'AutoTicket tient une copie locale de mes tâches, la donne à lire à des agents IA et enchaîne les gestes d’un ticket jusqu’à sa pull request.';
 ---
 
-<Base titre={titre} description={description} chemin="/projets/karl-scraper" sommaire={SECTIONS}>
-  <EnTeteProjet projet="karl-scraper" titre={EN_TETE.titre} chapeau={EN_TETE.chapeau} liens={EN_TETE.liens} preuves={PREUVES} fiche={FICHE}>
+<Base titre={titre} description={description} chemin="/projets/autoticket" sommaire={SECTIONS}>
+  <EnTeteProjet projet="autoticket" titre={EN_TETE.titre} chapeau={EN_TETE.chapeau} liens={EN_TETE.liens} preuves={PREUVES} fiche={FICHE}>
     <!-- La colonne des enchaînements, prise seule à la capture ;
          sur mobile, les deux règles seules, lisibles (l’écran entier s’agrandit). -->
     <CadreCapture
@@ -50,7 +50,7 @@ const description = 'Karl Scraper tient une copie locale de mes tâches, la donn
       legende={ECRANS.enchainements.legende}
       region={{ x: 0, y: 0, l: 100, h: 100 }}
       regionMobile={{ x: 1, y: 64.5, l: 60.5, h: 35.5 }}
-      class="ksc-entete-capture"
+      class="atk-entete-capture"
       widths={[640, 1200, 1808]}
       sizes="(max-width: 860px) 170vw, (max-width: 1100px) 640px, 560px"
       loading="eager"
@@ -61,7 +61,7 @@ const description = 'Karl Scraper tient une copie locale de mes tâches, la donn
   <CorpsProjet sections={SECTIONS}>
     <SectionProjet id="copie" titre="Une copie locale, scellée à chaque passage">
       <Fragment slot="texte">
-        <p>Karl Scraper garde ouverte la session d’un navigateur sur l’outil de gestion de tâches et relit mes tâches assignées&nbsp;: description, commentaires, listes à cocher, historique et pièces jointes. Le tout tient dans une base SQLite, sur mon poste.</p>
+        <p>AutoTicket garde ouverte la session d’un navigateur sur l’outil de gestion de tâches et relit mes tâches assignées&nbsp;: description, commentaires, listes à cocher, historique et pièces jointes. Le tout tient dans une base SQLite, sur mon poste.</p>
         <p>Chaque passage scelle une observation qui ne bougera plus. D’une observation à l’autre, l’écart se lit tâche par tâche, et une empreinte évite de relire en détail ce qui n’a pas bougé.</p>
       </Fragment>
       <!-- Les trois panneaux sur ordinateur ; sur mobile, l’écart seul, lisible (l’écran entier s’agrandit). -->
@@ -72,14 +72,14 @@ const description = 'Karl Scraper tient une copie locale de mes tâches, la donn
         legende={ECRANS.tableauDeBord.legende}
         region={{ x: 0, y: 0, l: 100, h: 100 }}
         regionMobile={{ x: 0.5, y: 1.5, l: 44.5, h: 81.5 }}
-        class="ksc-capture-large"
+        class="atk-capture-large"
         widths={[800, 1200, 1600, 2352]}
         sizes="(max-width: 860px) 225vw, 1000px"
         agrandir
       />
     </SectionProjet>
 
-    <div class="ksc-acte acte-veille">
+    <div class="atk-acte acte-veille">
       <SectionProjet id="galaxie" titre="Voir d’un coup d’œil où tout en est">
         <Fragment slot="texte">
           <p>La même copie, en scène&nbsp;: où les tâches s’accumulent, et lesquelles sont en retard.</p>
@@ -93,7 +93,7 @@ const description = 'Karl Scraper tient une copie locale de mes tâches, la donn
           ratio="2400 / 1500"
           cible={{ x: 16.2, y: 5.3 }}
           loupe={{ x: 11, y: 5.3, zoom: 4.6, largeur: 40, ratio: '4 / 1', coin: 'haut-droite', dessous: true }}
-          class="ksc-capture-large"
+          class="atk-capture-large"
           widths={[800, 1200, 1600, 2400]}
           sizes="(max-width: 1100px) 100vw, 1000px"
           agrandir
@@ -104,7 +104,7 @@ const description = 'Karl Scraper tient une copie locale de mes tâches, la donn
     <SectionProjet id="agent" titre="Ce que l’agent lit, et rien de plus">
       <Fragment slot="texte">
         <p>Un agent à qui je confie une tâche la lit par un serveur MCP, le protocole qui donne des outils à un agent IA&nbsp;: 13&nbsp;outils, dont 10 en lecture seule. Les trois autres déposent une compréhension de la tâche ou un plan de correction, ou demandent un nouveau passage&nbsp;; aucun n’écrit dans l’outil source ni ne l’appelle lui-même.</p>
-        <p>Un bouton copie le lien MCP d’une tâche, à donner à un agent. Les agents que lance Karl Scraper, eux, n’ont même pas ce serveur&nbsp;: ils lisent une copie de la tâche déposée pour eux.</p>
+        <p>Un bouton copie le lien MCP d’une tâche, à donner à un agent. Les agents que lance AutoTicket, eux, n’ont même pas ce serveur&nbsp;: ils lisent une copie de la tâche déposée pour eux.</p>
       </Fragment>
       <CaptureAnnotee
         slot="figure"
@@ -125,7 +125,7 @@ const description = 'Karl Scraper tient une copie locale de mes tâches, la donn
       <Fragment slot="texte">
         <p>Après un passage, un agent lit chaque nouvelle tâche et rend une compréhension courte&nbsp;: le dépôt et le worktree, une copie de travail à part du dépôt, où la faire. Je la retiens ou je l’écarte&nbsp;: c’est le seul arbitrage avant que du code s’écrive. Une tâche retenue, je la confie d’un clic au seul agent qui écrit&nbsp;: il travaille dans ce worktree et ouvre une pull request par dépôt touché. Une réalisation réussie attend ensuite sa relecture, «&nbsp;Valider&nbsp;».</p>
         <p>Les enchaînements peuvent faire ces gestes d’un clic à ma place&nbsp;: des règles «&nbsp;quand…, alors…&nbsp;», à écrire et à activer soi-même, sur 14&nbsp;déclencheurs et 18&nbsp;actions. Aucune règle n’est livrée, l’interrupteur général est coupé par défaut et un plafond quotidien borne les lancements d’agent.</p>
-        <p>Les agents de Karl Scraper passent tous par <a href="/projets/relais">Relais</a>, qui borne leur dépense&nbsp;; une tâche complexe peut devenir un plan, relu pas à pas, puis confié à <a href="/projets/sillage">Sillage</a>, qui orchestre un graphe d’agents.</p>
+        <p>Les agents d’AutoTicket passent tous par <a href="/projets/relais">Relais</a>, qui borne leur dépense&nbsp;; une tâche complexe peut devenir un plan, relu pas à pas, puis confié à <a href="/projets/sillage">Sillage</a>, qui orchestre un graphe d’agents.</p>
       </Fragment>
       <FigureChaine />
     </SectionProjet>
@@ -134,8 +134,8 @@ const description = 'Karl Scraper tient une copie locale de mes tâches, la donn
 
     <SousLeCapot points={CAPOT} chapeau="L’architecture, puis ce que l’outil et ses agents ont le droit de faire, et ce qui le garantit. Le code est privé : les extraits sont des formes simplifiées, écrites pour cette page." />
 
-    <SortieProjet projet="karl-scraper" titre="Où il en est" liens={LIENS_SORTIE}>
-      <p>Karl Scraper tourne sur mon poste, sans être déployé ni exposé&nbsp;: il n’écoute que la machine elle-même. Il tient la copie de mes tâches et sait en confier la lecture et la réalisation à des agents. Son interface a été refaite en octobre 2026, sur le système de design commun à mes outils IA&nbsp;: les écrans de cette page la montrent.</p>
+    <SortieProjet projet="autoticket" titre="Où il en est" liens={LIENS_SORTIE}>
+      <p>AutoTicket tourne sur mon poste, sans être déployé ni exposé&nbsp;: il n’écoute que la machine elle-même. Il tient la copie de mes tâches et sait en confier la lecture et la réalisation à des agents. Son interface a été refaite en octobre 2026, sur le système de design commun à mes outils IA&nbsp;: les écrans de cette page la montrent.</p>
     </SortieProjet>
 
     <SourcesProjet>
@@ -151,17 +151,17 @@ const description = 'Karl Scraper tient une copie locale de mes tâches, la donn
 
 <style>
   /* La Galaxie, toujours sombre : la nuit dans le jour, comme la scène. */
-  .ksc-acte {
+  .atk-acte {
     margin-top: var(--entre-sections);
     padding: 0 clamp(16px, 3.4vw, 40px) clamp(24px, 3.4vw, 40px);
     border-radius: var(--r2);
   }
 
-  .ksc-acte :global(.section-projet) {
+  .atk-acte :global(.section-projet) {
     padding-top: clamp(24px, 3.4vw, 40px);
   }
 
-  :global(.ksc-capture-large) {
+  :global(.atk-capture-large) {
     margin-top: var(--s6);
   }
 </style>

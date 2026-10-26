@@ -66,7 +66,7 @@ export const SERIES = {
   bloodborne: 'Bloodborne Legendary Run',
   gup: 'gup',
   githealth: 'GitHealth',
-  'karl-scraper': 'Karl Scraper',
+  autoticket: 'AutoTicket',
   sillage: 'Sillage',
   relais: 'Relais',
   parcours: 'Parcours : hub, professionnel, compétences, formation',

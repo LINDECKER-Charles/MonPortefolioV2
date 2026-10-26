@@ -6,7 +6,7 @@ import { DELAI_BUILD, pagesConstruites } from './support/dist';
 /**
  * Garde-fou « liens publics » : le HTML construit ne mène que vers des dépôts
  * publics de la liste blanche, jamais vers le dépôt de Bloodborne Legendary Run
- * ni vers ceux de Karl Scraper, Sillage et Relais (privés, présentés sans
+ * ni vers ceux d’AutoTicket, Sillage et Relais (privés, présentés sans
  * lien), ni vers une démo hors ligne. Les noms de ces dépôts privés viennent du
  * cadrage privé (`tests/support/prive.ts`) : une faute les désigne par leur
  * numéro, jamais par leur nom.
@@ -84,7 +84,7 @@ describe('liste blanche des liens publics : le détecteur', () => {
     expect(fautesLiens(`<a href="https://github.com/ailleurs/${DEPOT_BLOODBORNE}">x</a>`).join()).toMatch(/Bloodborne/);
   });
 
-  it('refuse les dépôts privés de Karl Scraper, Sillage et Relais, sous tout compte', () => {
+  it('refuse les dépôts privés d’AutoTicket, Sillage et Relais, sous tout compte', () => {
     for (const depot of DEPOTS_PRIVES_PRESENTES) {
       expect(fautesLiens(`<a href="https://github.com/${COMPTE_GITHUB}/${depot}">x</a>`).join(), repere(depot)).toMatch(/privé/);
       expect(fautesLiens(`<a href="https://github.com/ailleurs/${depot}/tree/dev">x</a>`), repere(depot)).toContain(`lien GitHub vers le ${repere(depot)}`);

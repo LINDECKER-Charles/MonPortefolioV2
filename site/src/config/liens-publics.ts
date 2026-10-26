@@ -6,7 +6,7 @@
  * utilisé ou prévu par le cahier des charges de la refonte. Un dépôt privé n’y
  * entre jamais, et aucune page ne le cite ni ne s’en sert comme preuve, sauf
  * les exceptions décidées par Charles : Bloodborne Legendary Run, puis, le
- * 14/10/2026, Karl Scraper, Sillage et Relais, présentés sans aucun lien ni
+ * 14/10/2026, AutoTicket, Sillage et Relais, présentés sans aucun lien ni
  * nom de dépôt.
  *
  * `tests/unit/liens-publics.test.ts` lit le HTML construit : il échoue sur tout

@@ -36,7 +36,7 @@ import { confidentialite } from '../support/prive';
 const SITE = new URL('../../', import.meta.url).pathname;
 const SRC = path.join(SITE, 'src');
 /** Marques refusées, plus celles du cadrage privé (tests/support/prive.ts). */
-const MARQUES = new RegExp(String.raw`\b(?:pvz|plants vs\.? zombies|riot|league of legends|sony|fromsoftware|trello|b-hive|karl|claude|codex|elan formation|atis|mission locale|shrek|gwent|bloodborne|omnicard|unreal|unity|${confidentialite().marques.join('|')})\b|\b42\b`, 'i');
+const MARQUES = new RegExp(String.raw`\b(?:pvz|plants vs\.? zombies|riot|league of legends|sony|fromsoftware|trello|b-hive|claude|codex|elan formation|atis|mission locale|shrek|gwent|bloodborne|omnicard|unreal|unity|${confidentialite().marques.join('|')})\b|\b42\b`, 'i');
 const tous = (cle: 'sujet' | 'composition' | 'cadrage' | 'alt' | 'emplacement' | 'format' | 'note' | 'raisonNonPose') => VISUELS.flatMap((v) => (v[cle] ? [[v.id, v[cle] as string] as const] : []));
 const images = VISUELS.filter((v) => v.methode === 'IMG' && !v.reprend?.length);
 /**
@@ -75,7 +75,7 @@ describe('registre des visuels : l’inventaire', () => {
     expect(rangs).toEqual([...rangs].sort((a, b) => a - b));
     // Les quatre pages entrées le 14/10/2026, après gup, chacune son préfixe et son repère dans le registre.
     expect(ORDRE_SERIES.slice(ORDRE_SERIES.indexOf('gup') + 1, ORDRE_SERIES.indexOf('gup') + 5)).toEqual([...SERIES_VITRINE_FINALE]);
-    const prefixes = { githealth: 'GTH', 'karl-scraper': 'KSC', sillage: 'SIL', relais: 'REL' } as const;
+    const prefixes = { githealth: 'GTH', autoticket: 'ATK', sillage: 'SIL', relais: 'REL' } as const;
     const source = readFileSync(path.join(SRC, 'config/visuels.ts'), 'utf8');
     for (const serie of SERIES_VITRINE_FINALE) {
       for (const v of VISUELS.filter((x) => x.serie === serie)) expect(v.id, serie).toMatch(new RegExp(`^${prefixes[serie as keyof typeof prefixes]}-`));

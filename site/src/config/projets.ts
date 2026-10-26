@@ -28,7 +28,7 @@ export const FAMILLES_PROJETS: readonly { id: FamilleProjet; titre: string }[] =
 ];
 
 export interface ProjetVitrine {
-  id: 'pvz' | 'omnicard' | 'bloodborne' | 'league' | 'gup' | 'githealth' | 'karl-scraper' | 'sillage' | 'relais';
+  id: 'pvz' | 'omnicard' | 'bloodborne' | 'league' | 'gup' | 'githealth' | 'autoticket' | 'sillage' | 'relais';
   famille: FamilleProjet;
   /** Nom canonique, repris partout. */
   nom: string;
@@ -46,7 +46,7 @@ export interface ProjetVitrine {
 /**
  * Rangée famille par famille, dans l’ordre de FAMILLES_PROJETS : le rang, le
  * précédent et le suivant suivent cette seule suite, d’une famille à l’autre.
- * Les étiquettes de GitHealth, Karl Scraper, Sillage et Relais, proposées le
+ * Les étiquettes de GitHealth, AutoTicket, Sillage et Relais, proposées le
  * 14/10/2026, sont validées telles qu’affichées le 15/10/2026.
  */
 export const VITRINE: readonly ProjetVitrine[] = [
@@ -56,7 +56,7 @@ export const VITRINE: readonly ProjetVitrine[] = [
   { id: 'league', famille: 'jeu', nom: 'League Of Data Base', href: '/projets/league-of-database', preuve: 'Un système en production' },
   { id: 'gup', famille: 'outils', nom: 'gup', href: '/projets/gup', preuve: 'Un outil open source' },
   { id: 'githealth', famille: 'outils', nom: 'GitHealth', href: '/projets/githealth', preuve: 'Une application de bureau' },
-  { id: 'karl-scraper', famille: 'ia', nom: 'Karl Scraper', href: '/projets/karl-scraper', preuve: 'Automatiser des tâches', prive: true },
+  { id: 'autoticket', famille: 'ia', nom: 'AutoTicket', href: '/projets/autoticket', preuve: 'Automatiser des tâches', prive: true },
   { id: 'sillage', famille: 'ia', nom: 'Sillage', href: '/projets/sillage', preuve: 'Orchestrer des agents IA', prive: true },
   { id: 'relais', famille: 'ia', nom: 'Relais', href: '/projets/relais', preuve: 'Encadrer des agents IA', prive: true },
 ];
