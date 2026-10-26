@@ -4,13 +4,19 @@
  * Direction « Lanterne » (DESIGN.md). Les jetons ci-dessous recopient
  * site/src/styles/jetons.css ; ceux qui portent « nouveau » n’existent pas
  * encore et rejoindraient jetons.css au portage, jour et nuit. Hors de ce
- * bloc, aucune couleur, taille de texte, rayon, ombre ni durée en dur : seules
- * restent les coordonnées des dessins et les proportions de mise en page.
+ * bloc, aucune couleur, taille de texte, rayon ni durée en dur : seules
+ * restent les coordonnées des dessins, les proportions de mise en page et la
+ * géométrie de l’ombre portée.
  *
- * Plan : polices · jetons · base · coque · scène (décor, lanterne, flamme) ·
- * mise en page de l’entrée · carte et champs · code à six chiffres ·
- * configuration · codes de secours · étapes · ouverture · transitions ·
- * atelier · bascule et allumage · régie · points de rupture · mouvement réduit.
+ * Le mouvement est piloté par entree.js (Web Animations) ; ce fichier pose
+ * l’état final, les boucles du repos (flamme, halo, rayons, poussière,
+ * bokeh, grain) et les états de secours si le script ne tourne pas.
+ *
+ * Plan : polices · jetons · base · coque · primitives · scène (calques,
+ * lanterne, flamme) · mise en page · carte et champs · code à six chiffres ·
+ * configuration · codes de secours · étapes · générique (secours) ·
+ * changements d’écran · atelier · bandes · bascule et allumage · régie ·
+ * points de rupture · mouvement réduit · impression.
  */
 
 /* ===== Polices : celles de la maquette C, auto-hébergées ===== */
@@ -39,8 +45,8 @@
   font-display: swap;
 }
 
-/* ===== Jetons ===== */
-/* La position du liseré sur la carte : enregistrée pour glisser, pas sauter. */
+/* ===== Propriétés animées ===== */
+/* Le liseré de la carte suit la main : enregistré pour glisser, pas sauter. */
 @property --mx {
   syntax: '<percentage>';
   inherits: true;
@@ -53,12 +59,21 @@
   initial-value: 0%;
 }
 
+/* Le rayon du masque de l’atelier (et de l’allumage du thème). */
 @property --rayon {
   syntax: '<length>';
   inherits: false;
   initial-value: 0px;
 }
 
+/* La lumière qui court sur le bord de la carte quand elle arrive. */
+@property --trace {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+/* ===== Jetons ===== */
 :root {
   color-scheme: light;
   --police-titre: 'Instrument Serif', Georgia, serif;
@@ -100,20 +115,28 @@
   --bouton-survol: var(--accent-survol);
 
   /* Nouveau : la scène d’entrée, le jour. La lanterne pose une flaque claire
-     et chaude sur la pierre ; les bords s’assombrissent comme un plan de
-     cinéma. */
+     et chaude sur la pierre ; les bords s’assombrissent comme un plan. */
   --scene-ombre: rgb(20 19 18 / 0.14);         /* vignette des bords */
   --scene-ciel: rgb(255 253 246 / 0);          /* pas de clair de lune le jour */
-  --scene-chaleur: rgb(255 248 232 / 0.6);     /* la pièce que la lanterne réchauffe */
-  --halo-scene: rgb(255 250 238 / 0.92);       /* la lumière portée de la lanterne */
-  --halo-coeur: rgb(240 178 74 / 0.34);        /* son cœur chaud */
+  --scene-chaleur: rgb(255 244 222 / 0.65);    /* la pièce que la lanterne réchauffe */
+  --halo-scene: rgb(255 240 212 / 0.78);       /* la lumière portée de la lanterne */
+  --halo-coeur: rgb(240 178 74 / 0.4);         /* son cœur chaud */
   --vitre-allumee: rgb(240 178 74 / 0.18);     /* la vitre éclairée de l’intérieur */
   --flamme-coeur: #fff1cf;                     /* le blanc de la flamme */
   --poussiere: rgb(122 79 16 / 0.5);           /* poussière dans la lumière (laiton) */
+  --rayon-lumiere: rgb(255 246 226 / 0.55);    /* les rayons qui passent la cage */
+  --trainee: rgb(240 178 74 / 0.3);            /* la traînée de l’objectif sur la flamme */
+  --bokeh-chaud: rgb(255 236 200 / 0.38);      /* lumières floues, côté lanterne */
+  --bokeh-froid: rgb(255 255 255 / 0.28);      /* lumières floues, côté lune */
   --lisere: rgb(240 178 74 / 0.6);             /* la lumière accrochée au bord de la carte */
-  --ombre-portee: 0 44px 50px -36px rgb(20 19 18 / 0.32);  /* la carte, éclairée d’en haut */
-  --reflet: rgb(255 255 255 / 0.32);           /* reflet qui court sur le bouton en attente */
+  --titre-eclaire: var(--laiton);              /* une lettre sous la lumière qui passe */
+  --titre-lueur: rgb(240 178 74 / 0.35);
+  --ombre-portee-couleur: rgb(20 19 18 / 0.32);  /* la carte, éclairée d’en haut */
+  --eclat-interieur: rgb(255 250 240 / 0.62);  /* la lumière qui ouvre l’atelier */
+  --anneau-halo: rgb(31 79 209 / 0.16);        /* l’anneau de focus qui glisse */
+  --reflet: rgb(255 255 255 / 0.32);           /* reflet et onde sur le bouton */
   --grain: 0.05;                               /* opacité du grain de pellicule */
+  --bande-hauteur: clamp(40px, 11vh, 120px);   /* bandes de cinéma */
 
   /* Échelle (jetons.css) */
   --t-xs: 0.875rem;
@@ -145,7 +168,13 @@
   --r2: 6px;
   --r3: 999px;
 
+  /* Mouvement : la courbe et les deux durées du site, plus trois courbes
+     nouvelles pour la mise en scène de l’entrée (à valider) : l’arrivée d’un
+     plan, la poussée dans la lumière, la carte qui se pose. */
   --courbe: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --courbe-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --courbe-entree: cubic-bezier(0.5, 0, 0.75, 0);
+  --courbe-ressort: linear(0, 0.082 5%, 0.262 10%, 0.471 15%, 0.664 20%, 0.82 25%, 0.932 30%, 1.004 35%, 1.042 40%, 1.057 45%, 1.057 50%, 1.049 55%, 1.037 60%, 1.014 70%, 1.001 80%, 0.997 90%, 1);
   --d-ui: 200ms;
   --d-scene: 400ms;
 
@@ -163,11 +192,13 @@
   --rangee-lanterne: calc(var(--lanterne-largeur) * 5 / 3 + var(--lanterne-ecart));
 }
 
-/* Nuit « clair de lune » (jetons.css), et la scène sombre du jour en option
-   (`data-scene-jour="veille"`) : la nuit entre dans le jour, comme un acte de
-   veille. */
+/* Nuit « clair de lune » (jetons.css), la scène sombre du jour en option
+   (`data-scene-jour="veille"`), et le générique, qui se joue toujours de
+   nuit : le jour, s’il fait jour, se lève à la fin depuis la lanterne
+   (`data-aube`, scripts). */
 :root[data-theme='nuit'],
-:root[data-scene-jour='veille'] .entree {
+:root[data-scene-jour='veille'] .entree,
+:root[data-ouverture='complete'] .entree:not([data-aube]) {
   color-scheme: dark;
   --fond: #0b0d12;
   --surface: #1a1e29;
@@ -201,8 +232,16 @@
   --halo-coeur: rgb(240 178 74 / 0.58);
   --vitre-allumee: rgb(240 178 74 / 0.3);
   --poussiere: rgb(240 178 74 / 0.7);
+  --rayon-lumiere: rgb(240 178 74 / 0.08);
+  --trainee: rgb(240 178 74 / 0.55);
+  --bokeh-chaud: rgb(240 178 74 / 0.14);
+  --bokeh-froid: rgb(169 187 255 / 0.08);
   --lisere: rgb(240 178 74 / 0.7);
-  --ombre-portee: 0 48px 64px -32px rgb(0 0 0 / 0.75);
+  --titre-eclaire: var(--lanterne-survol);
+  --titre-lueur: rgb(240 178 74 / 0.55);
+  --ombre-portee-couleur: rgb(0 0 0 / 0.75);
+  --eclat-interieur: rgb(255 214 150 / 0.62);
+  --anneau-halo: rgb(240 178 74 / 0.3);
   --reflet: rgb(255 255 255 / 0.4);
   --grain: 0.07;
 }
@@ -243,8 +282,16 @@
     --halo-coeur: rgb(240 178 74 / 0.58);
     --vitre-allumee: rgb(240 178 74 / 0.3);
     --poussiere: rgb(240 178 74 / 0.7);
+    --rayon-lumiere: rgb(240 178 74 / 0.08);
+    --trainee: rgb(240 178 74 / 0.55);
+    --bokeh-chaud: rgb(240 178 74 / 0.14);
+    --bokeh-froid: rgb(169 187 255 / 0.08);
     --lisere: rgb(240 178 74 / 0.7);
-    --ombre-portee: 0 48px 64px -32px rgb(0 0 0 / 0.75);
+    --titre-eclaire: var(--lanterne-survol);
+    --titre-lueur: rgb(240 178 74 / 0.55);
+    --ombre-portee-couleur: rgb(0 0 0 / 0.75);
+    --eclat-interieur: rgb(255 214 150 / 0.62);
+    --anneau-halo: rgb(240 178 74 / 0.3);
     --grain: 0.07;
   }
 }
@@ -255,6 +302,7 @@
     --lanterne-largeur: 76px;
     --lanterne-trait: 2.3;
     --lanterne-ecart: var(--s5);
+    --bande-hauteur: clamp(32px, 7vh, 64px);
   }
 }
 
@@ -505,7 +553,7 @@ button {
   color: var(--eteint);
 }
 
-/* ===== Boutons, champs et retours (backoffice.css) ===== */
+/* ===== Primitives : boutons, champs, retours (backoffice.css) ===== */
 .bo-button {
   display: inline-flex;
   align-items: center;
@@ -631,7 +679,7 @@ button {
   padding: var(--s1) 0 var(--s1) var(--s3);
   border-left: 2px solid var(--trait);
   color: var(--eteint);
-  animation: retour-vient var(--d-ui) var(--courbe);
+  animation: retour-vient calc(var(--d-ui) * 2) var(--courbe-expo);
 }
 
 .bo-retour[data-state='success']:not(:empty) {
@@ -647,7 +695,8 @@ button {
 @keyframes retour-vient {
   from {
     opacity: 0;
-    translate: 0 calc(-1 * var(--s1));
+    translate: calc(-1 * var(--s2)) 0;
+    clip-path: inset(0 100% 0 0);
   }
 }
 
@@ -658,6 +707,7 @@ button {
   border-left: 2px solid var(--trait);
   background: var(--surface);
   border-radius: 0 var(--r1) var(--r1) 0;
+  animation: retour-vient calc(var(--d-ui) * 2) var(--courbe-expo);
 }
 
 .bo-notice[data-state='error'] {
@@ -669,7 +719,7 @@ button {
   border-left-color: var(--encre);
 }
 
-/* ===== La scène : décor, lanterne et lumière ===== */
+/* ===== La scène : les calques, du fond vers l’avant ===== */
 .entree {
   /* Résolus ici, où vivent les jetons de la scène sombre du jour. */
   --trait-lanterne: var(--encre);
@@ -693,20 +743,69 @@ button {
   pointer-events: none;
 }
 
+.scene > * {
+  position: absolute;
+  inset: 0;
+}
+
 /* Le ciel : un clair de lune qui tombe du haut à gauche (la nuit) et une
    vignette qui ferme le cadre. */
 .scene__ciel {
-  position: absolute;
-  inset: 0;
   background:
     radial-gradient(75% 65% at 10% -15%, var(--scene-ciel), transparent 70%),
-    radial-gradient(48% 60% at var(--lanterne-x) 38%, var(--scene-chaleur), transparent 80%),
     radial-gradient(130% 95% at 62% 38%, transparent 52%, var(--scene-ombre));
+}
+
+/* La pièce que la lanterne réchauffe ; elle vacille avec la flamme. */
+.scene__chaleur {
+  background: radial-gradient(48% 60% at var(--lanterne-x) 38%, var(--scene-chaleur), transparent 80%);
+  animation: vacillement-lumiere calc(var(--d-scene) * 4.3) ease-in-out infinite;
+}
+
+/* Le voile noir du générique : la scène sort de l’obscurité. */
+.scene__noir {
+  background: var(--suie);
+  opacity: 0;
+}
+
+/* Le bokeh : des lumières lointaines, floues, qui dérivent ; elles suivent la
+   main plus que le reste (parallaxe : --px, --py posés par les scripts). */
+.bokeh {
+  translate: calc(var(--px, 0) * -18px) calc(var(--py, 0) * -12px);
+}
+
+.bokeh span {
+  position: absolute;
+  left: var(--bx);
+  top: var(--by);
+  width: var(--bt);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--bc) 0 56%, transparent 74%);
+  animation: bokeh-derive calc(var(--d-scene) * var(--bd)) ease-in-out infinite alternate;
+}
+
+.bokeh span:nth-child(1) { --bx: 6%; --by: 18%; --bt: 150px; --bc: var(--bokeh-froid); --bd: 70; --bdx: 40px; --bdy: 18px; }
+.bokeh span:nth-child(2) { --bx: 33%; --by: 91%; --bt: 84px; --bc: var(--bokeh-froid); --bd: 55; --bdx: -24px; --bdy: -20px; }
+.bokeh span:nth-child(3) { --bx: 40%; --by: 27%; --bt: 40px; --bc: var(--bokeh-froid); --bd: 48; --bdx: 18px; --bdy: 22px; }
+.bokeh span:nth-child(4) { --bx: 61%; --by: 11%; --bt: 72px; --bc: var(--bokeh-chaud); --bd: 62; --bdx: -30px; --bdy: 22px; }
+.bokeh span:nth-child(5) { --bx: 88%; --by: 34%; --bt: 150px; --bc: var(--bokeh-chaud); --bd: 76; --bdx: -36px; --bdy: -16px; }
+.bokeh span:nth-child(6) { --bx: 72%; --by: 82%; --bt: 112px; --bc: var(--bokeh-chaud); --bd: 66; --bdx: 28px; --bdy: -24px; }
+.bokeh span:nth-child(7) { --bx: 95%; --by: 90%; --bt: 58px; --bc: var(--bokeh-chaud); --bd: 52; --bdx: -20px; --bdy: -28px; }
+
+@keyframes bokeh-derive {
+  to { transform: translate(var(--bdx), var(--bdy)); }
+}
+
+/* Le plan de la lanterne : c’est lui que la caméra cadre (gros plan, recul)
+   et qui suit un peu la main. */
+.plan {
+  translate: calc(var(--px, 0) * -6px) calc(var(--py, 0) * -4px);
 }
 
 /* Le grain de pellicule : un bruit fixe, décalé huit fois par seconde. */
 .scene__grain {
-  position: absolute;
   inset: -40%;
   opacity: var(--grain);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
@@ -726,14 +825,29 @@ button {
   87.5% { translate: -4% -5%; }
 }
 
+/* La lumière vacille avec la flamme : même période, la pièce entière suit. */
+@keyframes vacillement-lumiere {
+  0%, 100% { opacity: 1; }
+  9% { opacity: 0.84; }
+  14% { opacity: 0.97; }
+  27% { opacity: 0.9; }
+  36% { opacity: 1; }
+  49% { opacity: 0.86; }
+  55% { opacity: 0.98; }
+  71% { opacity: 0.91; }
+  79% { opacity: 1; }
+  91% { opacity: 0.87; }
+}
+
+/* ===== La lanterne ===== */
 /* La suspension : la corde part du haut de l’écran, la lanterne pend au-dessus
    de la carte. Le pivot du balancier est le point d’attache (scripts : le
-   balancier amorti, `rotate`). Elle se centre sur la colonne de la carte. */
+   balancier amorti, `transform: rotate`). Elle se centre sur la colonne de la
+   carte. */
 .suspension {
   position: absolute;
   top: 0;
   left: calc(var(--lanterne-x) - var(--lanterne-largeur) / 2);
-  z-index: 1;
   width: var(--lanterne-largeur);
   height: calc(var(--entete) + var(--rangee-lanterne) - var(--lanterne-ecart));
   transform-origin: 50% 0;
@@ -746,9 +860,12 @@ button {
   width: 1.5px;
   bottom: calc(var(--lanterne-largeur) * 5 / 3 * 0.975);
   translate: -50% 0;
-  background: linear-gradient(to bottom, transparent, var(--trait-lanterne) 45%);
+  background-color: var(--trait-lanterne);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, currentColor 45%);
+  mask-image: linear-gradient(to bottom, transparent, currentColor 45%);
   transform-origin: 50% 0;
   opacity: 0.85;
+  transition: background-color calc(var(--d-scene) * 2.5) var(--courbe);
 }
 
 .suspension__lanterne {
@@ -776,6 +893,7 @@ button {
   stroke-width: var(--lanterne-trait, 1.5);
   stroke-linecap: round;
   stroke-linejoin: round;
+  transition: stroke calc(var(--d-scene) * 2.5) var(--courbe);
 }
 
 .lanterne__vitre {
@@ -784,18 +902,52 @@ button {
   transition: opacity calc(var(--d-scene) * 2) var(--courbe);
 }
 
-/* Le halo : la lumière portée, centrée sur la flamme (60, 135 dans le dessin).
-   Le niveau suit l’étape (`data-palier`) et l’état de la flamme. */
-.lanterne__halo {
+/* Les éléments de lumière se centrent sur la flamme : (60, 135) dans le
+   dessin, soit 50 % × 67,5 % de la boîte. */
+.lanterne__rayons,
+.lanterne__halo,
+.lanterne__poussieres,
+.lanterne__eclat,
+.lanterne__trainee {
   position: absolute;
   left: 50%;
   top: 67.5%;
+  translate: -50% -50%;
+  pointer-events: none;
+}
+
+/* Les rayons : la lumière passe entre les montants de la cage. Le toit les
+   arrête vers le haut (masque conique) ; ils tournent très lentement et
+   vacillent avec la flamme. */
+.lanterne__rayons {
+  width: calc(var(--lanterne-largeur) * 8.5);
+  aspect-ratio: 1;
+  -webkit-mask-image: radial-gradient(closest-side, currentColor 6%, transparent 78%), conic-gradient(transparent 0deg 30deg, currentColor 75deg 285deg, transparent 330deg 360deg);
+  -webkit-mask-composite: source-in;
+  mask-image: radial-gradient(closest-side, currentColor 6%, transparent 78%), conic-gradient(transparent 0deg 30deg, currentColor 75deg 285deg, transparent 330deg 360deg);
+  mask-composite: intersect;
+  animation: vacillement-lumiere calc(var(--d-scene) * 4.3) ease-in-out infinite;
+}
+
+.lanterne__rayons::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-conic-gradient(transparent 0deg, var(--rayon-lumiere) 1.2deg, transparent 3deg, transparent 6deg, var(--rayon-lumiere) 6.8deg, transparent 7.8deg, transparent 13deg);
+  animation: rayons-tournent calc(var(--d-scene) * 250) linear infinite;
+}
+
+@keyframes rayons-tournent {
+  to { rotate: 1turn; }
+}
+
+/* Le halo : la lumière portée. Le niveau suit l’étape (`data-palier`) et
+   l’état de la flamme. */
+.lanterne__halo {
   width: calc(var(--lanterne-largeur) * 6.2);
   aspect-ratio: 1;
-  translate: -50% -50%;
   scale: calc(var(--halo-palier, 1) * var(--halo-etat, 1));
   opacity: var(--halo-opacite, 1);
-  pointer-events: none;
   transition: scale calc(var(--d-scene) * 2) var(--courbe), opacity calc(var(--d-scene) * 2) var(--courbe);
 }
 
@@ -818,15 +970,10 @@ button {
 
 /* La poussière qui danse dans la lumière (scripts : positions et durées). */
 .lanterne__poussieres {
-  position: absolute;
-  left: 50%;
-  top: 67.5%;
   width: calc(var(--lanterne-largeur) * 4.6);
   aspect-ratio: 1;
-  translate: -50% -50%;
   -webkit-mask-image: radial-gradient(closest-side, currentColor 35%, transparent);
   mask-image: radial-gradient(closest-side, currentColor 35%, transparent);
-  pointer-events: none;
 }
 
 .poussiere {
@@ -848,18 +995,54 @@ button {
   100% { opacity: 0; translate: var(--dx) var(--dy); }
 }
 
-/* L’éclat : la flamme qui sursaute à chaque frappe (scripts). */
+/* L’éclat : la flamme qui sursaute (frappe, allumage). */
 .lanterne__eclat {
-  position: absolute;
-  left: 50%;
-  top: 67.5%;
   width: calc(var(--lanterne-largeur) * 2.2);
   aspect-ratio: 1;
-  translate: -50% -50%;
   border-radius: 50%;
   background: radial-gradient(closest-side, var(--lanterne-eclat), transparent);
   opacity: 0;
-  pointer-events: none;
+}
+
+/* La traînée : la flamme vue à travers un objectif anamorphique, un trait de
+   lumière horizontal qui vacille avec elle. */
+.lanterne__trainee {
+  top: 66%;
+  width: calc(var(--lanterne-largeur) * 4.4);
+  height: 2px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, transparent, var(--trainee) 32%, var(--flamme-coeur) 50%, var(--trainee) 68%, transparent);
+  opacity: 0.4;
+  animation: vacillement-lumiere calc(var(--d-scene) * 4.3) ease-in-out infinite;
+}
+
+.lanterne__trainee::after {
+  content: '';
+  position: absolute;
+  inset: -6px 18%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--trainee), transparent);
+  opacity: 0.6;
+}
+
+/* Les étincelles de l’allumage (scripts). */
+.lanterne__etincelles {
+  position: absolute;
+  left: 50%;
+  top: 62%;
+  width: 0;
+  height: 0;
+}
+
+.etincelle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--flamme-coeur);
+  box-shadow: 0 0 6px 1px var(--lanterne-eclat);
 }
 
 /* La flamme : trois enveloppes. `.flamme` porte l’état (niveau, allumage),
@@ -926,8 +1109,8 @@ button {
   animation-duration: calc(var(--d-scene) * 2.4);
 }
 
-/* Trop de tentatives : la flamme est soufflée, il reste une braise et un filet
-   de fumée ; elle se rallume à la fin de l’attente. */
+/* Trop de tentatives : la flamme est soufflée, il reste une braise et deux
+   filets de fumée ; elle se rallume à la fin de l’attente. */
 .entree[data-flamme='soufflee'] {
   --flamme-niveau: 0.16;
   --halo-etat: 0.45;
@@ -941,6 +1124,16 @@ button {
 
 .entree[data-flamme='soufflee'] .lanterne__fumee {
   animation: fumee calc(var(--d-scene) * 6.5) var(--courbe) infinite;
+}
+
+.entree[data-flamme='soufflee'] .lanterne__fumee--2 {
+  animation-delay: calc(var(--d-scene) * 3);
+}
+
+.entree[data-flamme='soufflee'] :is(.lanterne__rayons, .lanterne__trainee, .scene__chaleur) {
+  opacity: 0.15;
+  animation: none;
+  transition: opacity calc(var(--d-scene) * 2) var(--courbe);
 }
 
 @keyframes braise {
@@ -970,7 +1163,7 @@ button {
 }
 
 /* ===== Mise en page de l’entrée =====
-   Deux colonnes au-delà de 1 100 px : le récit à gauche, la carte éclairée à
+   Deux colonnes au-delà de 860 px : le récit à gauche, la carte éclairée à
    droite sous la lanterne. Chaque écran (section) se pose sur la grille par
    sous-grille : son récit dans la colonne de gauche, sa carte à droite. */
 .entree__entete {
@@ -1055,16 +1248,11 @@ button {
 }
 
 .entree__titre {
+  position: relative;
   font-size: var(--t-3xl);
   line-height: 0.98;
   letter-spacing: var(--ls-affiche);
   max-width: 11ch;
-}
-
-/* Un titre reçoit le focus pour les lecteurs d’écran à chaque écran : il
-   n’est pas une commande, pas de contour (global.css, .cible-sommaire). */
-.entree__titre:focus {
-  outline: none;
 }
 
 #bo-login .entree__titre,
@@ -1078,28 +1266,32 @@ button {
   max-width: 15ch;
 }
 
-/* Un titre se compose mot à mot (scripts : `.mot`) ; la marge garde les
-   accents et les jambages hors de la découpe. */
-.mot {
-  display: inline-block;
-  overflow: clip;
-  padding-block: 0.14em;
-  margin-block: -0.14em;
-  vertical-align: top;
+/* Un titre reçoit le focus pour les lecteurs d’écran à chaque écran : il
+   n’est pas une commande, pas de contour (global.css, .cible-sommaire). */
+.entree__titre:focus {
+  outline: none;
 }
 
-.mot > span {
-  display: inline-block;
+/* Le titre en lettres, le temps d’une animation : un calque de lettres posé
+   exactement sur le texte (crénage compris), le vrai texte rendu transparent ;
+   à la fin, le calque s’en va et le texte revient. */
+.titre--decoupe {
+  color: transparent;
 }
 
-/* Le rang de chaque mot, pour l’ouverture (les titres écrits par les scripts
-   le reçoivent aussi en propriété). */
-.mot:nth-of-type(2) > span { --i: 1; }
-.mot:nth-of-type(3) > span { --i: 2; }
-.mot:nth-of-type(4) > span { --i: 3; }
-.mot:nth-of-type(5) > span { --i: 4; }
-.mot:nth-of-type(6) > span { --i: 5; }
-.mot:nth-of-type(7) > span { --i: 6; }
+.titre-lettres {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.titre-lettres__lettre {
+  position: absolute;
+  color: var(--encre);
+  line-height: normal;
+  white-space: pre;
+  will-change: transform, opacity, filter;
+}
 
 .entree__texte {
   max-width: 30rem;
@@ -1112,6 +1304,9 @@ button {
 /* ===== La carte éclairée ===== */
 .entree__carte {
   --carte: var(--carte-connexion);
+  /* L’ombre portée s’écarte du balancier de la lanterne (scripts : --balance,
+     son angle en degrés). */
+  --ombre-portee: calc(var(--balance, 0) * -3px) 44px 50px -36px var(--ombre-portee-couleur);
   grid-column: carte-debut / carte-fin;
   grid-row: carte-haut / fin;
   justify-self: center;
@@ -1132,7 +1327,8 @@ button {
   --carte: var(--carte-codes);
 }
 
-/* La zone éclairée (global.css) : une flaque derrière la carte. */
+/* La zone éclairée (global.css) : une flaque derrière la carte, qui glisse
+   un peu avec la lanterne qui se balance. */
 .foyer {
   isolation: isolate;
 }
@@ -1144,6 +1340,8 @@ button {
   z-index: -1;
   pointer-events: none;
   background: radial-gradient(closest-side, var(--lumiere), transparent);
+  translate: calc(var(--balance, 0) * 4px) 0;
+  transition: opacity calc(var(--d-scene) * 2) var(--courbe);
 }
 
 /* Le liseré : la lumière de la lanterne accroche le bord haut de la carte, et
@@ -1160,6 +1358,46 @@ button {
   -webkit-mask-composite: xor;
   mask: linear-gradient(currentColor 0 0) content-box exclude, linear-gradient(currentColor 0 0);
   transition: opacity var(--d-scene) var(--courbe);
+}
+
+/* Le tracé : à l’arrivée de la carte, la lumière coule du haut le long de ses
+   deux bords et se rejoint en bas (scripts : --trace de 0 à 180°). */
+.carte__trace {
+  position: absolute;
+  inset: -1px;
+  z-index: 1;
+  padding: 1.5px;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: conic-gradient(var(--lanterne) 0deg var(--trace), transparent var(--trace) calc(360deg - var(--trace)), var(--lanterne) calc(360deg - var(--trace)));
+  -webkit-mask: linear-gradient(currentColor 0 0) content-box, linear-gradient(currentColor 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(currentColor 0 0) content-box exclude, linear-gradient(currentColor 0 0);
+}
+
+/* L’anneau de focus : il glisse d’un champ à l’autre (scripts) ; le contour
+   natif s’efface seulement quand l’anneau est là. */
+.anneau {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  width: 0;
+  height: 0;
+  border-radius: var(--r2);
+  box-shadow: 0 0 0 2px var(--focus), 0 0 22px 2px var(--anneau-halo);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--d-ui) var(--courbe);
+}
+
+.anneau[data-actif] {
+  opacity: 1;
+}
+
+.entree__carte:has(.anneau[data-actif]) .entree__formulaire input:focus-visible {
+  outline-color: transparent;
 }
 
 .entree__formulaire fieldset {
@@ -1190,10 +1428,6 @@ button {
   border-color: var(--encre);
 }
 
-.entree__formulaire input[aria-invalid='true'] {
-  border-color: var(--erreur);
-}
-
 .entree__formulaire .bo-actions {
   margin-top: var(--s2);
 }
@@ -1206,7 +1440,8 @@ button {
   font-variant-numeric: tabular-nums;
 }
 
-/* En attente : un reflet court sur le bouton, comme la lumière sur le métal. */
+/* Le reflet : il passe une fois au survol, et court en boucle pendant
+   l’attente, comme la lumière sur le métal. */
 .entree__action::after {
   content: '';
   position: absolute;
@@ -1214,6 +1449,10 @@ button {
   background: linear-gradient(100deg, transparent 30%, var(--reflet) 50%, transparent 70%);
   translate: -100% 0;
   pointer-events: none;
+}
+
+.entree__action:hover:not(:disabled)::after {
+  animation: reflet calc(var(--d-scene) * 2.5) var(--courbe-expo);
 }
 
 [aria-busy='true'] .entree__action::after,
@@ -1231,16 +1470,20 @@ button {
   opacity: 1;
 }
 
+/* L’onde : la lumière part du point où l’on appuie (scripts). */
+.onde {
+  position: absolute;
+  width: 260%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--reflet), transparent 70%);
+  pointer-events: none;
+}
+
 /* Flamme soufflée : la flaque sous la carte s’éteint avec elle, et le bouton
    qui compte les secondes passe au contour, sans lumière. */
-.entree__carte::before {
-  transition: opacity calc(var(--d-scene) * 2) var(--courbe);
-}
-
-.entree[data-flamme='soufflee'] .entree__carte::before {
-  opacity: 0.2;
-}
-
+.entree[data-flamme='soufflee'] .entree__carte::before,
 .entree[data-flamme='soufflee'] .entree__carte::after {
   opacity: 0.2;
 }
@@ -1294,7 +1537,7 @@ button {
   gap: var(--s2);
   color: var(--encre);
   font-weight: 600;
-  animation: retour-vient var(--d-ui) var(--courbe);
+  animation: retour-vient calc(var(--d-ui) * 2) var(--courbe-expo);
 }
 
 .champ-maj__signe {
@@ -1363,12 +1606,13 @@ button {
   border-color: var(--encre);
 }
 
+/* Un chiffre tombe dans sa case et la fait luire. */
 .code__case[data-pose] {
-  animation: chiffre-pose calc(var(--d-ui) * 1.5) var(--courbe);
+  animation: chiffre-pose calc(var(--d-scene) * 1.2) var(--courbe-ressort);
 }
 
 @keyframes chiffre-pose {
-  from { scale: 1.14; box-shadow: 0 0 0 4px var(--lanterne-halo); }
+  from { translate: 0 -10px; box-shadow: 0 0 0 4px var(--lanterne-halo); }
 }
 
 /* La case active : le contour de focus et un curseur qui bat. */
@@ -1649,13 +1893,13 @@ button {
 
 /* Les codes apparaissent un à un, comme si la lumière passait dessus. */
 .bo-recovery-codes[data-revele] li {
-  animation: code-eclaire calc(var(--d-scene) * 2) var(--courbe) both;
-  animation-delay: calc(var(--rang, 0) * var(--d-ui) / 2);
+  animation: code-eclaire calc(var(--d-scene) * 2) var(--courbe-expo) both;
+  animation-delay: calc(var(--d-scene) * 0.6 + var(--rang, 0) * var(--d-ui) / 2);
 }
 
 @keyframes code-eclaire {
-  0% { opacity: 0; translate: calc(-1 * var(--s2)) 0; }
-  45% { opacity: 1; box-shadow: 0 0 0 3px var(--lanterne-halo); border-color: var(--lanterne); }
+  0% { opacity: 0; translate: calc(-1 * var(--s3)) 0; filter: blur(4px); }
+  45% { opacity: 1; box-shadow: 0 0 0 3px var(--lanterne-halo); border-color: var(--lanterne); filter: blur(0); }
   100% { opacity: 1; translate: 0 0; }
 }
 
@@ -1665,14 +1909,19 @@ button {
 }
 
 /* ===== Les étapes : un repère, un mot ; la lumière avance ===== */
-.etapes {
+.etapes-cadre {
   grid-column: recit-debut / recit-fin;
   grid-row: etapes;
+  position: relative;
+  margin-top: var(--s7);
+}
+
+.etapes {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--s2) var(--s3);
-  margin: var(--s7) 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
   color: var(--eteint);
@@ -1725,121 +1974,94 @@ button {
   font-weight: 600;
 }
 
-/* ===== L’ouverture : la scène se compose une fois par session =====
-   `data-ouverture` (posé par theme.js avant le premier rendu) : complète à la
-   première visite, courte ensuite, aucune en mouvement réduit. L’état final
-   est l’état par défaut : retirer l’attribut abrège tout. */
-:root[data-ouverture='complete'] {
-  --t-allumage: calc(var(--d-scene) * 3.75);
-  --t-carte: calc(var(--d-scene) * 4.25);
-  --t-titre: calc(var(--d-scene) * 4.5);
-  --t-reste: calc(var(--d-scene) * 5.25);
+/* La lumière qui voyage d’une étape à la suivante (scripts). */
+.etapes__lumiere {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  background: var(--lanterne);
+  box-shadow: 0 0 0 5px var(--lanterne-halo), 0 0 22px 4px var(--lanterne-eclat);
+  opacity: 0;
+  pointer-events: none;
 }
 
-:root[data-ouverture='courte'] {
-  --t-allumage: 0s;
-  --t-carte: calc(var(--d-scene) * 0.5);
-  --t-titre: calc(var(--d-scene) * 0.6);
-  --t-reste: var(--d-scene);
+/* ===== Le générique : états de secours =====
+   theme.js pose `data-ouverture` (complete ou courte) avant le premier rendu ;
+   entree.js prend la main (`data-pilote`) et joue tout en Web Animations. Si
+   le script ne tourne pas, ces animations de secours finissent l’ouverture
+   seules, au bout de quelques secondes. */
+:root[data-ouverture] {
+  --secours: calc(var(--d-scene) * 15);
 }
 
-:root[data-ouverture='complete'] .entree__entete {
-  animation: apparition calc(var(--d-scene) * 2) var(--courbe) both;
+:root[data-ouverture='complete'] .scene__noir {
+  opacity: 1;
+  animation: secours-noir calc(var(--d-scene) * 2) var(--courbe) var(--secours) both;
 }
 
-:root[data-ouverture='complete'] .suspension__corde {
-  animation: corde calc(var(--d-scene) * 1.5) var(--courbe) both;
+:root[data-ouverture='complete'] .bande {
+  transform: none;
 }
 
-:root[data-ouverture='complete'] .lanterne__traits > * {
-  stroke-dasharray: 1;
-  animation: trace calc(var(--d-scene) * 2.5) var(--courbe) both;
-  animation-delay: calc(var(--d-scene) * (0.75 + var(--rang, 0) * 0.15));
+:root[data-ouverture='complete'] .bande--haut {
+  animation: secours-bande-haut calc(var(--d-scene) * 2) var(--courbe-expo) var(--secours) both;
 }
 
-/* Ordre du tracé : anneau, col, toit, montants, traverses, fenêtre, bougie,
-   socle, pieds (les paires se tracent ensemble). */
-.lanterne__traits > :nth-child(1) { --rang: 0; }
-.lanterne__traits > :nth-child(2) { --rang: 1; }
-.lanterne__traits > :nth-child(3) { --rang: 2; }
-.lanterne__traits > :nth-child(4),
-.lanterne__traits > :nth-child(5) { --rang: 3; }
-.lanterne__traits > :nth-child(6),
-.lanterne__traits > :nth-child(7) { --rang: 4; }
-.lanterne__traits > :nth-child(8) { --rang: 5; }
-.lanterne__traits > :nth-child(9) { --rang: 6; }
-.lanterne__traits > :nth-child(10) { --rang: 7; }
-.lanterne__traits > :nth-child(11),
-.lanterne__traits > :nth-child(12) { --rang: 8; }
-
-:root[data-ouverture] .flamme {
-  animation: allumage calc(var(--d-scene) * 1.5) var(--courbe) both;
-  animation-delay: var(--t-allumage);
+:root[data-ouverture='complete'] .bande--bas {
+  animation: secours-bande-bas calc(var(--d-scene) * 2) var(--courbe-expo) var(--secours) both;
 }
 
-:root[data-ouverture] .lanterne__halo,
-:root[data-ouverture] .lanterne__poussieres {
-  animation: eclat calc(var(--d-scene) * 2.5) var(--courbe) both;
-  animation-delay: var(--t-allumage);
-}
-
-:root[data-ouverture] .lanterne__vitre {
-  animation: apparition calc(var(--d-scene) * 1.5) var(--courbe) both;
-  animation-delay: var(--t-allumage);
-}
-
+:root[data-ouverture='complete'] :is(.entree__entete, .entree__surtitre, .entree__texte, .etapes-cadre, .entree__pied, .plan, .bokeh),
 :root[data-ouverture] .entree__carte {
-  animation: carte-vient calc(var(--d-scene) * 2) var(--courbe) both;
-  animation-delay: var(--t-carte);
+  animation: secours-apparition var(--d-scene) var(--courbe) var(--secours) both;
 }
 
-:root[data-ouverture] .entree__etape:not([hidden]) .mot > span {
-  animation: mot-monte calc(var(--d-scene) * 1.75) var(--courbe) both;
-  animation-delay: calc(var(--t-titre) + var(--i, 0) * var(--d-scene) * 0.18);
+:root[data-ouverture] .entree__titre {
+  animation: secours-titre var(--d-scene) var(--courbe) var(--secours) both;
 }
 
-:root[data-ouverture] .entree__surtitre,
-:root[data-ouverture] .entree__texte,
-:root[data-ouverture] .etapes,
-:root[data-ouverture] .entree__pied {
-  animation: apparition calc(var(--d-scene) * 1.75) var(--courbe) both;
-  animation-delay: var(--t-reste);
+/* Un tiret de toute la longueur, puis un vide plus long que le tracé : décalé
+   de 1,02, il ne laisse rien paraître, ni au début ni à la fin. */
+:root[data-ouverture='complete'] .lanterne__traits > * {
+  stroke-dasharray: 1 2;
 }
 
-@keyframes apparition {
+/* Le script pilote : les secours se taisent. */
+:root[data-ouverture][data-pilote] :is(.scene__noir, .bande, .entree__entete, .entree__surtitre, .entree__texte, .etapes-cadre, .entree__pied, .plan, .bokeh, .entree__carte, .entree__titre) {
+  animation: none;
+}
+
+@keyframes secours-apparition {
   from { opacity: 0; }
 }
 
-@keyframes corde {
-  from { transform: scaleY(0); }
+@keyframes secours-titre {
+  from { color: transparent; }
 }
 
-@keyframes trace {
-  from { stroke-dashoffset: 1; }
-  to { stroke-dashoffset: 0; }
+@keyframes secours-noir {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
-@keyframes allumage {
-  0% { scale: 0.15; opacity: 0; }
-  55% { scale: 1.3; opacity: 1; }
-  100% { scale: 1; opacity: 1; }
+@keyframes secours-bande-haut {
+  from { transform: none; }
+  to { transform: translateY(-101%); }
 }
 
-@keyframes eclat {
-  0% { opacity: 0; scale: 0.3; }
-  40% { opacity: 1; scale: 1.18; }
-  100% { opacity: 1; scale: 1; }
+@keyframes secours-bande-bas {
+  from { transform: none; }
+  to { transform: translateY(101%); }
 }
 
-@keyframes carte-vient {
-  from { opacity: 0; translate: 0 var(--s5); filter: blur(8px); }
-}
-
-@keyframes mot-monte {
-  from { translate: 0 110%; }
-}
-
-/* ===== D’un écran à l’autre : View Transitions, sinon un fondu monté ===== */
+/* ===== D’un écran à l’autre =====
+   View Transitions : l’ancien récit monte et s’efface, l’ancienne carte se
+   dissout dans la lumière, la nouvelle en émerge ; les lettres du nouveau
+   titre et les champs de la nouvelle carte arrivent un à un (scripts). */
 .entree__etape:not([hidden]) > .entree__recit {
   view-transition-name: entree-recit;
 }
@@ -1855,41 +2077,46 @@ button {
 }
 
 ::view-transition-group(entree-carte) {
-  animation-duration: calc(var(--d-scene) * 1.5);
-  animation-timing-function: var(--courbe);
+  animation-duration: calc(var(--d-scene) * 1.75);
+  animation-timing-function: var(--courbe-expo);
 }
 
-::view-transition-old(entree-carte),
+::view-transition-old(entree-carte) {
+  animation: carte-dissout calc(var(--d-scene) * 1.1) var(--courbe) both;
+}
+
 ::view-transition-new(entree-carte) {
-  animation-duration: calc(var(--d-scene) * 1.25);
-  animation-timing-function: var(--courbe);
+  animation: carte-emerge calc(var(--d-scene) * 2) var(--courbe-expo) both;
 }
 
+/* L’ancien récit part vite ; le nouveau texte arrive juste après, pendant que
+   les lettres du titre montent (scripts). */
 ::view-transition-old(entree-recit) {
-  animation: recit-part var(--d-scene) var(--courbe) both;
+  animation: recit-part calc(var(--d-scene) * 0.8) var(--courbe) both;
 }
 
 ::view-transition-new(entree-recit) {
-  animation: recit-vient calc(var(--d-scene) * 1.75) var(--courbe) both;
+  animation: recit-vient calc(var(--d-scene) * 1.2) var(--courbe) calc(var(--d-scene) * 0.35) both;
+}
+
+@keyframes carte-dissout {
+  to { opacity: 0; filter: brightness(1.8) blur(10px); }
+}
+
+@keyframes carte-emerge {
+  from { opacity: 0; filter: brightness(2.2) blur(14px); }
 }
 
 @keyframes recit-part {
-  to { opacity: 0; translate: 0 calc(-1 * var(--s5)); filter: blur(4px); }
+  to { opacity: 0; transform: translateY(-28px); filter: blur(6px); }
 }
 
 @keyframes recit-vient {
-  from { opacity: 0; translate: 0 var(--s6); filter: blur(6px); }
+  from { opacity: 0; }
 }
 
-.entree__etape[data-arrivee] > .entree__recit {
-  animation: recit-vient calc(var(--d-scene) * 1.75) var(--courbe) both;
-}
-
-.entree__etape[data-arrivee] > .entree__carte {
-  animation: carte-vient calc(var(--d-scene) * 1.5) var(--courbe) both;
-}
-
-/* ===== L’atelier s’ouvre : la lumière part de la flamme et gagne l’écran =====
+/* ===== L’atelier s’ouvre : la caméra pousse dans la flamme, la lumière gagne
+   l’écran et découvre l’atelier =====
    Le même geste que l’allumage du thème (theme-transition.css) : un masque
    radial, et un front de lumière ambre à son bord. */
 .atelier {
@@ -1906,25 +2133,31 @@ button {
   mask-image: radial-gradient(circle at var(--ox, 50%) var(--oy, 30%), currentColor var(--rayon), transparent calc(var(--rayon) + 70px));
 }
 
+/* La lumière part de la flamme en accélérant et traverse l’écran : on la voit
+   passer (125 vmax couvrent l’écran depuis n’importe quel point). */
 .atelier[data-revele='ouverture'] {
-  animation: ouverture calc(var(--d-scene) * 3) var(--courbe) both;
+  animation: ouverture calc(var(--d-scene) * 2.75) var(--courbe-entree) both;
 }
 
 .atelier[data-revele='fermeture'] {
   animation: fermeture calc(var(--d-scene) * 2.5) var(--courbe) both;
 }
 
+/* Le front de lumière : un disque d’éclat chaud bordé d’un anneau ambre ;
+   l’éclat s’estompe pendant que le disque grandit, et l’atelier apparaît. */
 .front-lumiere {
   position: fixed;
   inset: 0;
   z-index: 11;
   pointer-events: none;
   opacity: 0;
-  background: radial-gradient(circle at var(--ox, 50%) var(--oy, 30%), transparent calc(var(--rayon) - 20px), var(--lanterne-eclat) calc(var(--rayon) + 35px), var(--lanterne-halo) calc(var(--rayon) + 80px), transparent calc(var(--rayon) + 160px));
+  background: radial-gradient(circle at var(--ox, 50%) var(--oy, 30%), var(--eclat-interieur) 0, var(--eclat-interieur) calc(var(--rayon) - 40px), var(--lanterne-eclat) calc(var(--rayon) + 20px), var(--lanterne-halo) calc(var(--rayon) + 80px), transparent calc(var(--rayon) + 170px));
+  /* Elle éclaire ce qu’elle couvre, sans le voiler. */
+  mix-blend-mode: screen;
 }
 
 .front-lumiere[data-revele='ouverture'] {
-  animation: ouverture calc(var(--d-scene) * 3) var(--courbe) both, front calc(var(--d-scene) * 3) var(--courbe) both;
+  animation: ouverture calc(var(--d-scene) * 2.75) var(--courbe-entree) both, front calc(var(--d-scene) * 2.75) linear both;
 }
 
 .front-lumiere[data-revele='fermeture'] {
@@ -1933,18 +2166,18 @@ button {
 
 @keyframes ouverture {
   from { --rayon: 0px; }
-  to { --rayon: 160vmax; }
+  to { --rayon: 125vmax; }
 }
 
 @keyframes fermeture {
-  from { --rayon: 160vmax; }
+  from { --rayon: 125vmax; }
   to { --rayon: -80px; }
 }
 
 @keyframes front {
   0% { opacity: 0; }
-  12% { opacity: 1; }
-  80% { opacity: 1; }
+  10% { opacity: 1; }
+  55% { opacity: 1; }
   100% { opacity: 0; }
 }
 
@@ -2064,11 +2297,49 @@ button {
 
 .atelier[data-installe] .atelier__entete,
 .atelier[data-installe] .atelier__grille {
-  animation: recit-vient calc(var(--d-scene) * 1.5) var(--courbe) both;
+  animation: atelier-vient calc(var(--d-scene) * 1.75) var(--courbe-expo) both;
 }
 
 .atelier[data-installe] .atelier__grille {
   animation-delay: calc(var(--d-scene) * 0.3);
+}
+
+@keyframes atelier-vient {
+  from { opacity: 0; translate: 0 var(--s5); filter: blur(6px); }
+}
+
+/* ===== Les bandes de cinéma =====
+   Seulement le temps du générique et du passage dans l’atelier
+   (`data-bandes`, scripts). */
+.bandes {
+  position: fixed;
+  inset: 0;
+  z-index: 15;
+  display: none;
+  pointer-events: none;
+}
+
+:root[data-ouverture='complete'] .bandes,
+:root[data-bandes] .bandes {
+  display: block;
+}
+
+.bande {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: var(--bande-hauteur);
+  background: var(--suie);
+}
+
+.bande--haut {
+  top: 0;
+  transform: translateY(-101%);
+}
+
+.bande--bas {
+  bottom: 0;
+  transform: translateY(101%);
 }
 
 /* ===== La bascule lanterne et l’allumage (BasculeLanterne.astro,
@@ -2312,7 +2583,7 @@ button {
     font-size: var(--t-m);
   }
 
-  .etapes {
+  .etapes-cadre {
     margin-top: var(--s5);
   }
 
@@ -2399,8 +2670,7 @@ button {
   transition: none !important;
 }
 
-:root.mouvement-reduit .lanterne__poussieres,
-:root.mouvement-reduit .scene__grain {
+:root.mouvement-reduit :is(.lanterne__poussieres, .scene__grain, .lanterne__etincelles, .bandes) {
   display: none;
 }
 
@@ -2414,12 +2684,14 @@ button {
   .regie,
   .atelier,
   .front-lumiere,
+  .bandes,
   .bascule {
     display: none !important;
   }
 
   .foyer::before,
-  .entree__carte::after {
+  .entree__carte::after,
+  .carte__trace {
     display: none;
   }
 }

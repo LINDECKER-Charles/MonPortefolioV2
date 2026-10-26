@@ -7,6 +7,8 @@
   <title>Backoffice — Charles Lindecker</title>
   <meta name="description" content="Maquette de la page de connexion du backoffice : l’atelier s’allume.">
   <link rel="icon" href="../assets/marque/favicon.svg">
+  <link rel="preload" href="../refonte/c-lanterne/polices/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../refonte/c-lanterne/polices/instrument-sans-var.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="style.css">
   <!-- Synchrone, avant le premier rendu : le thème et l’état de l’ouverture. -->
   <script src="theme.js"></script>
@@ -17,47 +19,59 @@
 <!-- ===== L’entrée de l’atelier : une scène, une seule lumière ===== -->
 <div class="entree" id="entree" data-ecran="connexion" data-flamme="vive" data-palier="1">
 
-  <!-- Le décor : décoratif, hors de l’arbre d’accessibilité. -->
-  <div class="scene" aria-hidden="true">
+  <!-- Le décor, du fond vers l’avant : ciel (clair de lune, vignette), chaleur
+       de la lanterne, voile noir du générique, bokeh lointain, le plan de la
+       lanterne (la caméra le cadre), grain de pellicule. Décoratif, hors de
+       l’arbre d’accessibilité. -->
+  <div class="scene" id="scene" aria-hidden="true">
     <div class="scene__ciel"></div>
-    <div class="scene__grain"></div>
-    <div class="suspension" id="suspension">
-      <span class="suspension__corde"></span>
-      <div class="suspension__lanterne" id="lanterne">
-        <span class="lanterne__halo"></span>
-        <span class="lanterne__poussieres" id="poussieres"></span>
-        <span class="lanterne__eclat"></span>
-        <svg class="lanterne" viewBox="0 0 120 200" focusable="false">
-          <path class="lanterne__vitre" d="M38 158H82V120C82 109 73 101 60 97C47 101 38 109 38 120Z"/>
-          <!-- La lanterne du logo (GLO-01) redessinée au trait : anneau, col, toit
-               en cloche, cage, fenêtre en arc brisé, bougie, socle et pieds. Un
-               tracé par trait : l’ouverture les dessine dans cet ordre. -->
-          <g class="lanterne__traits">
-            <circle cx="60" cy="13" r="8" pathLength="1"/>
-            <path d="M60 21V40" pathLength="1"/>
-            <path d="M60 40C51 55 35 66 14 69V78H106V69C85 66 69 55 60 40Z" pathLength="1"/>
-            <path d="M21 78V172" pathLength="1"/>
-            <path d="M99 78V172" pathLength="1"/>
-            <path d="M21 88H99" pathLength="1"/>
-            <path d="M21 164H99" pathLength="1"/>
-            <path d="M38 158H82V120C82 109 73 101 60 97C47 101 38 109 38 120Z" pathLength="1"/>
-            <path d="M54 148H66V158H54Z" pathLength="1"/>
-            <path d="M12 172H108V184H12Z" pathLength="1"/>
-            <path d="M26 184V192" pathLength="1"/>
-            <path d="M94 184V192" pathLength="1"/>
-          </g>
-          <path class="lanterne__fumee" d="M60 106C55 98 65 92 60 84C55 76 64 70 60 62" pathLength="1"/>
-          <g class="flamme">
-            <g class="flamme__sursaut">
-              <g class="flamme__vacille">
-                <path class="flamme__corps" d="M60 112C67 120 71 128 71 136A11 11 0 0 1 49 136C49 128 53 120 60 112Z"/>
-                <path class="flamme__coeur" d="M60 125C63.5 129 65 133 65 137A5 5 0 0 1 55 137C55 133 56.5 129 60 125Z"/>
+    <div class="scene__chaleur"></div>
+    <div class="scene__noir" id="noir"></div>
+    <div class="bokeh" id="bokeh"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <div class="plan" id="plan">
+      <div class="suspension" id="suspension">
+        <span class="suspension__corde"></span>
+        <div class="suspension__lanterne" id="lanterne">
+          <span class="lanterne__rayons"></span>
+          <span class="lanterne__halo"></span>
+          <span class="lanterne__poussieres" id="poussieres"></span>
+          <span class="lanterne__eclat"></span>
+          <svg class="lanterne" viewBox="0 0 120 200" focusable="false">
+            <path class="lanterne__vitre" d="M38 158H82V120C82 109 73 101 60 97C47 101 38 109 38 120Z"/>
+            <!-- La lanterne du logo (GLO-01) redessinée au trait : anneau, col, toit
+                 en cloche, cage, fenêtre en arc brisé, bougie, socle et pieds. Un
+                 tracé par trait : l’ouverture les dessine dans cet ordre. -->
+            <g class="lanterne__traits">
+              <circle cx="60" cy="13" r="8" pathLength="1"/>
+              <path d="M60 21V40" pathLength="1"/>
+              <path d="M60 40C51 55 35 66 14 69V78H106V69C85 66 69 55 60 40Z" pathLength="1"/>
+              <path d="M21 78V172" pathLength="1"/>
+              <path d="M99 78V172" pathLength="1"/>
+              <path d="M21 88H99" pathLength="1"/>
+              <path d="M21 164H99" pathLength="1"/>
+              <path d="M38 158H82V120C82 109 73 101 60 97C47 101 38 109 38 120Z" pathLength="1"/>
+              <path d="M54 148H66V158H54Z" pathLength="1"/>
+              <path d="M12 172H108V184H12Z" pathLength="1"/>
+              <path d="M26 184V192" pathLength="1"/>
+              <path d="M94 184V192" pathLength="1"/>
+            </g>
+            <path class="lanterne__fumee" d="M60 106C55 98 65 92 60 84C55 76 64 70 60 62" pathLength="1"/>
+            <path class="lanterne__fumee lanterne__fumee--2" d="M61 106C66 97 57 90 62 81C67 72 58 66 62 56" pathLength="1"/>
+            <g class="flamme">
+              <g class="flamme__sursaut">
+                <g class="flamme__vacille">
+                  <path class="flamme__corps" d="M60 112C67 120 71 128 71 136A11 11 0 0 1 49 136C49 128 53 120 60 112Z"/>
+                  <path class="flamme__coeur" d="M60 125C63.5 129 65 133 65 137A5 5 0 0 1 55 137C55 133 56.5 129 60 125Z"/>
+                </g>
               </g>
             </g>
-          </g>
-        </svg>
+          </svg>
+          <span class="lanterne__trainee"></span>
+          <span class="lanterne__etincelles" id="etincelles"></span>
+        </div>
       </div>
     </div>
+    <div class="scene__grain"></div>
   </div>
 
   <header class="bo-entete entree__entete">
@@ -91,10 +105,11 @@
     <!-- 1. Connexion -->
     <section class="entree__etape" id="bo-login" aria-labelledby="bo-login-title" data-retour="bo-login-retour">
       <div class="entree__recit">
-        <h2 class="entree__titre" id="bo-login-title"><span class="mot"><span>Entrer</span></span> <span class="mot"><span>dans</span></span> <span class="mot"><span>l’atelier</span></span></h2>
+        <h2 class="entree__titre" id="bo-login-title">Entrer dans l’atelier</h2>
         <p class="entree__texte">Cet espace est réservé à l’administration du portfolio.</p>
       </div>
       <div class="bo-carte entree__carte foyer">
+        <span class="carte__trace" aria-hidden="true"></span>
         <form id="bo-login-form" class="entree__formulaire">
           <fieldset><legend class="sr">Connexion</legend>
             <div class="bo-champ">
@@ -121,10 +136,11 @@
     <!-- 2. Vérification en deux étapes : code, ou première configuration -->
     <section class="entree__etape" id="bo-two-factor" aria-labelledby="bo-two-factor-title" data-retour="bo-two-factor-retour" hidden>
       <div class="entree__recit">
-        <h2 class="entree__titre" id="bo-two-factor-title" tabindex="-1"><span class="mot"><span>Vérifier</span></span> <span class="mot"><span>la</span></span> <span class="mot"><span>connexion</span></span></h2>
+        <h2 class="entree__titre" id="bo-two-factor-title" tabindex="-1">Vérifier la connexion</h2>
         <p class="entree__texte" id="bo-two-factor-help">Saisissez le code de votre application d’authentification ou un code de secours.</p>
       </div>
       <div class="bo-carte entree__carte foyer">
+        <span class="carte__trace" aria-hidden="true"></span>
         <div class="bo-enrollment" id="bo-enrollment" hidden>
           <ol class="inscription">
             <li class="inscription__pas">
@@ -179,10 +195,11 @@
     <!-- 3. Codes de secours, montrés une seule fois -->
     <section class="entree__etape entree__etape--large" id="bo-recovery" aria-labelledby="bo-recovery-title" data-retour="bo-recovery-retour" hidden>
       <div class="entree__recit">
-        <h2 class="entree__titre" id="bo-recovery-title" tabindex="-1"><span class="mot"><span>Conservez</span></span> <span class="mot"><span>vos</span></span> <span class="mot"><span>codes</span></span> <span class="mot"><span>de</span></span> <span class="mot"><span>secours</span></span></h2>
+        <h2 class="entree__titre" id="bo-recovery-title" tabindex="-1">Conservez vos codes de secours</h2>
         <p class="entree__texte">La vérification en deux étapes est activée. Chaque code permet une seule connexion si vous perdez l’accès à votre application. Gardez-les dans un endroit sûr&nbsp;: ils ne seront plus affichés après avoir quitté cet écran.</p>
       </div>
       <div class="bo-carte entree__carte foyer">
+        <span class="carte__trace" aria-hidden="true"></span>
         <ol class="bo-recovery-codes" id="bo-recovery-codes" aria-label="Codes de secours"></ol>
         <div class="bo-actions">
           <button class="bo-button" id="bo-recovery-copy" type="button">Copier les codes</button>
@@ -193,12 +210,15 @@
       </div>
     </section>
 
-    <ol class="etapes" id="etapes" aria-label="Étapes de la connexion">
-      <li class="etapes__etape" data-etape="connexion" data-etat="courante" aria-current="step"><span class="etapes__repere" aria-hidden="true"></span><span class="etapes__nom">Connexion</span></li>
-      <li class="etapes__etape" data-etape="verification" data-etat="a-venir"><span class="etapes__repere" aria-hidden="true"></span><span class="etapes__nom">Vérification</span></li>
-      <li class="etapes__etape" data-etape="codes" data-etat="a-venir" hidden><span class="etapes__repere" aria-hidden="true"></span><span class="etapes__nom">Codes de secours</span></li>
-      <li class="etapes__etape" data-etape="atelier" data-etat="a-venir"><span class="etapes__repere" aria-hidden="true"></span><span class="etapes__nom">Atelier</span></li>
-    </ol>
+    <div class="etapes-cadre" id="etapes-cadre">
+      <ol class="etapes" id="etapes" aria-label="Étapes de la connexion">
+        <li class="etapes__etape" data-etape="connexion" data-etat="courante" aria-current="step"><span class="etapes__repere" aria-hidden="true"></span><span class="etapes__nom">Connexion</span></li>
+        <li class="etapes__etape" data-etape="verification" data-etat="a-venir"><span class="etapes__repere" aria-hidden="true"></span><span class="etapes__nom">Vérification</span></li>
+        <li class="etapes__etape" data-etape="codes" data-etat="a-venir" hidden><span class="etapes__repere" aria-hidden="true"></span><span class="etapes__nom">Codes de secours</span></li>
+        <li class="etapes__etape" data-etape="atelier" data-etat="a-venir"><span class="etapes__repere" aria-hidden="true"></span><span class="etapes__nom">Atelier</span></li>
+      </ol>
+      <span class="etapes__lumiere" id="etapes-lumiere" aria-hidden="true"></span>
+    </div>
   </main>
 
   <footer class="bo-pied bo-cadre entree__pied"><a href="../refonte/c-lanterne/accueil.html">Revenir au portfolio</a><span>Espace privé, hors index</span></footer>
@@ -248,14 +268,17 @@
 <!-- Le front de lumière de l’ouverture et de la fermeture de l’atelier. -->
 <div class="front-lumiere" id="front-lumiere" aria-hidden="true"></div>
 
+<!-- Les bandes de cinéma : le générique et le passage dans l’atelier. -->
+<div class="bandes" aria-hidden="true"><span class="bande bande--haut"></span><span class="bande bande--bas"></span></div>
+
 <!-- ===== Régie : hors design, pour parcourir les états de la maquette ===== -->
 <details class="regie" id="regie">
   <summary>Régie de la maquette</summary>
   <div class="regie__panneau">
-    <p class="regie__note">Hors design. Tout mot de passe mène à la vérification, sauf «&nbsp;erreur&nbsp;» (refus) et «&nbsp;bloque&nbsp;» (trop de tentatives). Code «&nbsp;000000&nbsp;»&nbsp;: refusé. Un clic ou une touche abrège l’ouverture.</p>
+    <p class="regie__note">Hors design. Tout mot de passe mène à la vérification, sauf «&nbsp;erreur&nbsp;» (refus) et «&nbsp;bloque&nbsp;» (trop de tentatives). Code «&nbsp;000000&nbsp;»&nbsp;: refusé. Un clic ou une touche abrège le générique.</p>
     <p class="regie__groupe">Scènes</p>
     <div class="regie__scenes">
-      <button type="button" data-regie="ouverture">Ouverture complète</button>
+      <button type="button" data-regie="ouverture">Générique complet</button>
       <button type="button" data-regie="ouverture-courte">Ouverture courte</button>
       <button type="button" data-regie="connexion">Connexion</button>
       <button type="button" data-regie="erreur">Mot de passe refusé</button>

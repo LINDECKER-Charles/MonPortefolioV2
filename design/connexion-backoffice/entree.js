@@ -1,15 +1,23 @@
 /*
- * Maquette « L’atelier s’allume » : la scène et le parcours de connexion.
+ * Maquette « L’atelier s’allume » : la scène, sa mise en mouvement et le
+ * parcours de connexion.
  *
- * Le script joue aussi le serveur (`serveur`, en bas) : au portage, la scène
- * (balancier, poussière, liseré, états de la flamme, ouverture, fermeture) et
- * les champs (mot de passe, code à six chiffres, code de secours, codes)
- * rejoignent scripts/backoffice.ts, qui garde ses identifiants, ses appels et
- * ses retours.
+ * Le mouvement s’écrit comme un générique de film : une caméra (le plan de la
+ * lanterne) qui recule depuis un gros plan sur la flamme, des calques à des
+ * profondeurs différentes (bokeh, rayons, poussière) qui suivent la main, un
+ * carton-titre qui glisse à sa place, des bandes de cinéma. Tout passe par Web
+ * Animations : les instants s’écrivent en millisecondes à vitesse normale et
+ * passent par t(), qui suit --d-scene (le ralenti de la régie les étire), et
+ * les courbes viennent des jetons. L’état final est l’état par défaut du CSS :
+ * abréger, c’est annuler les animations.
  *
- * Plan : outils · scène · ouverture · écrans et étapes · connexion ·
- * vérification · configuration · codes de secours · atelier · horodatage ·
- * serveur simulé · régie · démarrage.
+ * Le script joue aussi le serveur (`serveur`, en bas) ; au portage, la scène et
+ * les champs rejoignent un module du backoffice, qui garde ses identifiants,
+ * ses appels et ses retours.
+ *
+ * Plan : outils · séquences · scène · titres · gestes communs · bandes ·
+ * écrans et étapes · générique · connexion · vérification · configuration ·
+ * codes de secours · atelier · horodatage · serveur simulé · régie · démarrage.
  */
 (function () {
   'use strict';
@@ -19,6 +27,7 @@
   var entree = $('entree');
   var NBSP = ' ';
   var pointeurFin = window.matchMedia('(pointer: fine)');
+  var etroit = window.matchMedia('(max-width: 860px)');
 
   /* ===== Outils ===== */
   function reduit() {
@@ -26,6 +35,13 @@
   }
   function dScene() {
     return parseFloat(getComputedStyle(racine).getPropertyValue('--d-scene')) || 400;
+  }
+  /** Un instant ou une durée de la chorégraphie, écrit à vitesse normale (le ralenti l’étire). */
+  function t(ms) {
+    return (ms * dScene()) / 400;
+  }
+  function jeton(nom, element) {
+    return getComputedStyle(element || racine).getPropertyValue(nom).trim();
   }
   function attendre(ms) {
     return new Promise(function (fin) { window.setTimeout(fin, ms); });
@@ -62,21 +78,6 @@
     if (groupe) groupe.disabled = false;
     else formulaire.disabled = false;
   }
-  /** Un titre se compose mot à mot : chaque mot monte de sa ligne à l’ouverture. */
-  function composerTitre(titre, texte) {
-    var mots = (texte === undefined ? titre.textContent : texte).trim().split(/\s+/);
-    titre.textContent = '';
-    mots.forEach(function (mot, rang) {
-      var enveloppe = document.createElement('span');
-      enveloppe.className = 'mot';
-      var interieur = document.createElement('span');
-      interieur.textContent = mot;
-      interieur.style.setProperty('--i', String(rang));
-      enveloppe.appendChild(interieur);
-      titre.appendChild(enveloppe);
-      if (rang < mots.length - 1) titre.appendChild(document.createTextNode(' '));
-    });
-  }
   /** Relance une animation CSS portée par un attribut. */
   function rejouer(element, attribut) {
     element.removeAttribute(attribut);
@@ -84,20 +85,76 @@
     element.setAttribute(attribut, '');
   }
 
-  /* ===== La scène : flamme, balancier, poussière, liseré ===== */
+  var COURBE = jeton('--courbe');
+  var EXPO = jeton('--courbe-expo');
+  var EXPO_ENTREE = jeton('--courbe-entree');
+  var RESSORT = jeton('--courbe-ressort');
+  // Un navigateur sans `linear()` refuserait l’animation : le ressort devient une sortie exponentielle.
+  try {
+    document.body.animate([], { easing: RESSORT });
+  } catch (erreur) {
+    RESSORT = EXPO;
+  }
+
+  /* ===== Séquences : des animations et des rendez-vous qu’on annule ensemble ===== */
+  function sequence() {
+    var animations = [];
+    var minuteries = [];
+    return {
+      animer: function (element, images, options) {
+        if (!element) return null;
+        var animation = element.animate(images, options);
+        animations.push(animation);
+        return animation;
+      },
+      plusTard: function (ms, action) {
+        minuteries.push(window.setTimeout(action, ms));
+      },
+      fini: function () {
+        return Promise.all(animations.map(function (animation) { return animation.finished; }));
+      },
+      annuler: function () {
+        minuteries.forEach(window.clearTimeout);
+        animations.forEach(function (animation) { animation.cancel(); });
+        animations = [];
+        minuteries = [];
+      },
+    };
+  }
+
+  /* ===== La scène : flamme, caméra, balancier, parallaxe, lumières ===== */
   var scene = (function () {
+    var calques = $('scene');
+    var plan = $('plan');
+    var bokeh = $('bokeh');
     var suspension = $('suspension');
     var lanterne = $('lanterne');
+    var corde = entree.querySelector('.suspension__corde');
+    var traits = Array.prototype.slice.call(entree.querySelectorAll('.lanterne__traits > *'));
+    var flamme = entree.querySelector('.flamme');
     var sursaut = entree.querySelector('.flamme__sursaut');
-    var eclat = entree.querySelector('.lanterne__eclat');
+    var vitre = entree.querySelector('.lanterne__vitre');
     var halo = entree.querySelector('.lanterne__halo');
+    var rayons = entree.querySelector('.lanterne__rayons');
+    var poussieres = $('poussieres');
+    var eclat = entree.querySelector('.lanterne__eclat');
+    var trainee = entree.querySelector('.lanterne__trainee');
+    var etincelles = $('etincelles');
+    // L’ordre du tracé : anneau, col, toit, montants, traverses, fenêtre, bougie, socle, pieds.
+    var RANGS = [0, 1, 2, 3, 3, 4, 4, 5, 6, 7, 8, 8];
+    var carte = null;
     var derniereFrappe = 0;
 
-    function flamme(etat) {
-      entree.dataset.flamme = etat;
+    function etat(valeur) {
+      entree.dataset.flamme = valeur;
     }
     function palier(niveau) {
       entree.dataset.palier = String(niveau);
+    }
+    /** La carte qui reçoit la lumière (et l’ombre qui suit le balancier). */
+    function suivreCarte(element) {
+      if (carte && carte !== element) carte.style.removeProperty('--balance');
+      carte = element;
     }
 
     /** Une frappe : la flamme sursaute, un éclat passe. */
@@ -108,37 +165,142 @@
       var ampleur = fort ? 1.22 : 1.1;
       sursaut.animate(
         [{ transform: 'scale(1)' }, { transform: 'scale(' + (ampleur - 0.04) + ', ' + ampleur + ')', offset: 0.35 }, { transform: 'scale(1)' }],
-        { duration: fort ? 520 : 300, easing: 'cubic-bezier(0.2, 0.7, 0.2, 1)' }
+        { duration: t(fort ? 520 : 300), easing: COURBE }
       );
       eclat.animate(
         [{ opacity: 0, scale: 0.85 }, { opacity: fort ? 1 : 0.75, scale: 1.08, offset: 0.3 }, { opacity: 0, scale: 1 }],
-        { duration: fort ? 700 : 420, easing: 'ease-out' }
+        { duration: t(fort ? 700 : 420), easing: 'ease-out' }
       );
     }
 
-    /** Un refus : la flamme se couche, faiblit, puis se redresse. */
+    /** La traînée d’objectif s’étire sur un éclat de la flamme. */
+    function trainer(fort) {
+      if (reduit()) return;
+      trainee.animate([
+        { transform: 'scaleX(0.3)', opacity: 0.2 },
+        { transform: 'scaleX(' + (fort ? 1.9 : 1.35) + ')', opacity: 1, offset: 0.22 },
+        { transform: 'scaleX(1)', opacity: 0.4 },
+      ], { duration: t(fort ? 1300 : 800), easing: EXPO });
+    }
+
+    /** Des étincelles jaillissent de la flamme, en éventail, puis retombent. */
+    function etinceler(nombre, force) {
+      if (reduit()) return;
+      for (var i = 0; i < nombre; i++) {
+        (function () {
+          var grain = document.createElement('span');
+          grain.className = 'etincelle';
+          etincelles.appendChild(grain);
+          var angle = ((-90 + (Math.random() - 0.5) * 200) * Math.PI) / 180;
+          var distance = (24 + Math.random() * 64) * (force || 1);
+          var dx = Math.cos(angle) * distance;
+          var dy = Math.sin(angle) * distance;
+          var animation = grain.animate([
+            { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+            { transform: 'translate(calc(-50% + ' + (dx * 0.7).toFixed(1) + 'px), calc(-50% + ' + (dy * 0.7).toFixed(1) + 'px)) scale(0.8)', opacity: 1, offset: 0.5 },
+            { transform: 'translate(calc(-50% + ' + dx.toFixed(1) + 'px), calc(-50% + ' + (dy + 18).toFixed(1) + 'px)) scale(0.2)', opacity: 0 },
+          ], { duration: t(550 + Math.random() * 550), easing: 'cubic-bezier(0.15, 0.6, 0.35, 1)' });
+          animation.onfinish = function () { grain.remove(); };
+        })();
+      }
+    }
+
+    /** Un refus : la flamme se couche, faiblit ; la lumière quitte un instant le bord de la carte. */
     function vaciller() {
       if (reduit()) return;
-      sursaut.animate(
-        [
-          { transform: 'scale(1) skewX(0deg)', opacity: 1 },
-          { transform: 'scale(0.6, 0.45) skewX(10deg)', opacity: 0.5, offset: 0.22 },
-          { transform: 'scale(0.8, 0.72) skewX(-6deg)', opacity: 0.8, offset: 0.5 },
-          { transform: 'scale(1) skewX(0deg)', opacity: 1 },
-        ],
-        { duration: 1200, easing: 'cubic-bezier(0.2, 0.7, 0.2, 1)' }
-      );
-      halo.animate([{ opacity: 1 }, { opacity: 0.32, offset: 0.25 }, { opacity: 1 }], { duration: 1400, easing: 'ease-in-out' });
+      sursaut.animate([
+        { transform: 'scale(1) skewX(0deg)', opacity: 1 },
+        { transform: 'scale(0.6, 0.45) skewX(10deg)', opacity: 0.5, offset: 0.22 },
+        { transform: 'scale(0.8, 0.72) skewX(-6deg)', opacity: 0.8, offset: 0.5 },
+        { transform: 'scale(1) skewX(0deg)', opacity: 1 },
+      ], { duration: t(1200), easing: COURBE });
+      halo.animate([{ opacity: 1 }, { opacity: 0.32, offset: 0.25 }, { opacity: 1 }], { duration: t(1400), easing: 'ease-in-out' });
+      if (carte) carte.animate([{ opacity: 1 }, { opacity: 0.1, offset: 0.25 }, { opacity: 1 }], { duration: t(1200), easing: 'ease-in-out', pseudoElement: '::after' });
     }
 
-    /** La flamme revient : elle grandit d’une braise, avec un éclat. */
+    /**
+     * L’allumage : la mèche crache deux fois avant de prendre ; à la prise, le
+     * halo jette un éclat, la traînée s’étire, des étincelles jaillissent, puis
+     * les rayons et la poussière apparaissent. Rend l’instant de la prise.
+     */
+    function allumer(seq, depart, rapide) {
+      var duree = rapide ? 700 : 950;
+      seq.animer(flamme, [
+        { scale: 0, opacity: 0 },
+        { scale: 0.3, opacity: 1, offset: 0.12 },
+        { scale: 0.06, opacity: 0.25, offset: 0.22 },
+        { scale: 0.38, opacity: 1, offset: 0.36 },
+        { scale: 0.1, opacity: 0.45, offset: 0.46 },
+        { scale: 1.35, opacity: 1, offset: 0.7 },
+        { scale: 1, opacity: 1 },
+      ], { duration: t(duree), delay: t(depart), fill: 'both' });
+      var prise = depart + duree * 0.66;
+      seq.animer(halo, [{ opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1.22, offset: 0.35 }, { opacity: 1, scale: 1 }], { duration: t(1200), delay: t(prise), easing: EXPO, fill: 'both' });
+      seq.animer(vitre, [{ opacity: 0 }, { opacity: 1 }], { duration: t(500), delay: t(prise), easing: COURBE, fill: 'both' });
+      seq.animer(trainee, [
+        { transform: 'scaleX(0.2)', opacity: 0 },
+        { transform: 'scaleX(1.9)', opacity: 1, offset: 0.22 },
+        { transform: 'scaleX(1)', opacity: 0.4 },
+      ], { duration: t(1300), delay: t(prise), easing: EXPO, fill: 'both' });
+      seq.animer(rayons, [{ opacity: 0 }, { opacity: 1 }], { duration: t(1800), delay: t(prise + 120), easing: COURBE, fill: 'both' });
+      seq.animer(poussieres, [{ opacity: 0 }, { opacity: 1 }], { duration: t(1600), delay: t(prise + 200), easing: COURBE, fill: 'both' });
+      seq.plusTard(t(prise), function () {
+        frapper(true);
+        etinceler(10, 1);
+      });
+      return prise;
+    }
+
+    /** La flamme revient après un 429 : d’une braise, elle reprend. */
     function rallumer() {
-      flamme('vive');
-      frapper(true);
+      etat('vive');
+      if (reduit()) return;
+      var seq = sequence();
+      allumer(seq, 0, true);
+      seq.fini().then(seq.annuler, seq.annuler);
+    }
+
+    /** Le dessin se trace : la corde descend du haut, puis les traits de la lanterne, dans l’ordre. */
+    function tracer(seq, depart) {
+      seq.animer(corde, [{ transform: 'scaleY(0)' }, { transform: 'none' }], { duration: t(900), delay: t(depart), easing: EXPO, fill: 'both' });
+      // Un peu plus que 1 au départ : un tiret de longueur nulle dessinerait déjà un point (bout rond).
+      traits.forEach(function (trait, i) {
+        seq.animer(trait, [{ strokeDashoffset: 1.02 }, { strokeDashoffset: 0 }], { duration: t(1050), delay: t(depart + 50 + RANGS[i] * 75), easing: COURBE, fill: 'both' });
+      });
+    }
+
+    /**
+     * La caméra : un gros plan sur la flamme (le plan agrandi autour d’elle,
+     * ramenée en haut et au centre de l’écran), puis le recul jusqu’au plan
+     * large ; le bokeh, plus lointain, recule moins vite.
+     */
+    function cadrer(seq, depart, duree) {
+      figer();
+      var flammeEcran = centreFlamme();
+      var boite = plan.getBoundingClientRect();
+      var vise = { x: window.innerWidth / 2, y: window.innerHeight * (etroit.matches ? 0.3 : 0.32) };
+      var echelle = etroit.matches ? 1.9 : 2.4;
+      plan.style.transformOrigin = (flammeEcran.x - boite.left).toFixed(1) + 'px ' + (flammeEcran.y - boite.top).toFixed(1) + 'px';
+      seq.animer(plan, [
+        { transform: 'translate(' + (vise.x - flammeEcran.x).toFixed(1) + 'px, ' + (vise.y - flammeEcran.y).toFixed(1) + 'px) scale(' + echelle + ')' },
+        { transform: 'none' },
+      ], { duration: t(duree), delay: t(depart), easing: EXPO, fill: 'both' });
+      seq.animer(bokeh, [{ transform: 'scale(1.45)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: t(duree + 300), delay: t(depart - 150), easing: EXPO, fill: 'both' });
+    }
+    function decadrer() {
+      plan.style.removeProperty('transform-origin');
+    }
+
+    /** Le centre de la flamme à l’écran, d’après la boîte du dessin (indépendant de l’état de la flamme). */
+    function centreFlamme() {
+      var boite = lanterne.getBoundingClientRect();
+      return { x: boite.left + boite.width / 2, y: boite.top + boite.height * 0.675 };
     }
 
     /* Le balancier : un pendule amorti autour du point d’attache, et l’air de
-       l’atelier qui le berce. Angle en degrés, vitesse en degrés par seconde. */
+       l’atelier qui le berce. Angle en degrés, vitesse en degrés par seconde.
+       La même boucle fait suivre la main aux calques (parallaxe) et écarte
+       l’ombre de la carte. */
     var angle = 0;
     var vitesse = 0;
     var dernier = 0;
@@ -146,6 +308,12 @@
     var actif = false;
     var RAIDEUR = 9;   // ≈ 2,1 s par aller-retour
     var AMORTI = 0.85; // revient au calme en cinq ou six secondes
+    var px = 0;
+    var py = 0;
+    var cibleX = 0;
+    var cibleY = 0;
+    var ecritX = 0;
+    var ecritY = 0;
 
     function pas(instant) {
       var dt = Math.min(0.05, (instant - dernier) / 1000 || 0.016);
@@ -154,6 +322,16 @@
       vitesse += (-RAIDEUR * (angle - air) - AMORTI * vitesse) * dt;
       angle += vitesse * dt;
       suspension.style.transform = 'rotate(' + angle.toFixed(3) + 'deg)';
+      if (carte) carte.style.setProperty('--balance', angle.toFixed(2));
+      var lissage = Math.min(1, dt * 3.5);
+      px += (cibleX - px) * lissage;
+      py += (cibleY - py) * lissage;
+      if (Math.abs(px - ecritX) > 0.002 || Math.abs(py - ecritY) > 0.002) {
+        ecritX = px;
+        ecritY = py;
+        calques.style.setProperty('--px', px.toFixed(3));
+        calques.style.setProperty('--py', py.toFixed(3));
+      }
       boucle = window.requestAnimationFrame(pas);
     }
     function lancer(angleInitial) {
@@ -172,6 +350,7 @@
       angle = 0;
       vitesse = 0;
       suspension.style.transform = '';
+      if (carte) carte.style.removeProperty('--balance');
     }
     function pousser(impulsion) {
       if (reduit()) return;
@@ -196,13 +375,24 @@
       var boite = lanterne.getBoundingClientRect();
       pousser(evenement.clientX < boite.left + boite.width / 2 ? -42 : 42);
       frapper(true);
+      etinceler(4, 0.6);
+    });
+
+    /* La parallaxe : les calques lointains suivent la main plus que le plan. */
+    document.addEventListener('pointermove', function (evenement) {
+      if (evenement.pointerType !== 'mouse' || reduit()) return;
+      cibleX = (evenement.clientX / window.innerWidth) * 2 - 1;
+      cibleY = (evenement.clientY / window.innerHeight) * 2 - 1;
+    });
+    document.documentElement.addEventListener('pointerleave', function () {
+      cibleX = 0;
+      cibleY = 0;
     });
 
     /* La poussière qui danse dans la lumière : positions, tailles et durées
        tirées au sort, en multiples de --d-scene. */
     function semer(nombre) {
-      var conteneur = $('poussieres');
-      conteneur.textContent = '';
+      poussieres.textContent = '';
       for (var i = 0; i < nombre; i++) {
         var grain = document.createElement('span');
         grain.className = 'poussiere';
@@ -216,29 +406,76 @@
         style.setProperty('--dy', (-25 - Math.random() * 80).toFixed(0) + 'px');
         style.setProperty('--duree', 'calc(var(--d-scene) * ' + duree.toFixed(1) + ')');
         style.setProperty('--retard', 'calc(var(--d-scene) * -' + (Math.random() * duree).toFixed(1) + ')');
-        conteneur.appendChild(grain);
+        poussieres.appendChild(grain);
       }
     }
 
     /* Le liseré : la lumière accrochée au bord de la carte suit la main. */
-    function liserer(carte) {
-      carte.addEventListener('pointermove', function (evenement) {
+    function liserer(element) {
+      element.addEventListener('pointermove', function (evenement) {
         if (evenement.pointerType !== 'mouse') return;
-        var boite = carte.getBoundingClientRect();
-        carte.style.setProperty('--mx', (((evenement.clientX - boite.left) / boite.width) * 100).toFixed(1) + '%');
-        carte.style.setProperty('--my', (((evenement.clientY - boite.top) / boite.height) * 100).toFixed(1) + '%');
+        var boite = element.getBoundingClientRect();
+        element.style.setProperty('--mx', (((evenement.clientX - boite.left) / boite.width) * 100).toFixed(1) + '%');
+        element.style.setProperty('--my', (((evenement.clientY - boite.top) / boite.height) * 100).toFixed(1) + '%');
       });
-      carte.addEventListener('pointerleave', function () {
-        carte.style.removeProperty('--mx');
-        carte.style.removeProperty('--my');
+      element.addEventListener('pointerleave', function () {
+        element.style.removeProperty('--mx');
+        element.style.removeProperty('--my');
       });
     }
 
-    /** Le centre de la flamme à l’écran : l’origine de la lumière qui ouvre l’atelier. */
-    function centreFlamme() {
-      var boite = entree.querySelector('.flamme__corps').getBoundingClientRect();
-      return { x: Math.round(boite.left + boite.width / 2), y: Math.round(boite.top + boite.height * 0.62) };
+    /* L’anneau de focus : il glisse d’un champ à l’autre de la carte. Le
+       contour natif ne s’efface que quand l’anneau est posé (CSS :has). */
+    function anneau(element) {
+      var bague = document.createElement('span');
+      bague.className = 'anneau';
+      bague.setAttribute('aria-hidden', 'true');
+      element.appendChild(bague);
+      var pose = null;
+      function cible(champ) {
+        var boite = element.getBoundingClientRect();
+        var r = champ.getBoundingClientRect();
+        return { left: r.left - boite.left - 2, top: r.top - boite.top - 2, width: r.width + 4, height: r.height + 4 };
+      }
+      function geometrie(g) {
+        return { left: g.left + 'px', top: g.top + 'px', width: g.width + 'px', height: g.height + 'px' };
+      }
+      element.addEventListener('focusin', function (evenement) {
+        var champ = evenement.target;
+        if (!champ.matches('.entree__formulaire input:not(.code__saisie), .code[data-mode="secours"] .code__saisie')) {
+          bague.removeAttribute('data-actif');
+          pose = null;
+          return;
+        }
+        var arrivee = cible(champ);
+        if (pose && !reduit()) bague.animate([geometrie(pose), geometrie(arrivee)], { duration: t(450), easing: EXPO });
+        Object.assign(bague.style, geometrie(arrivee));
+        bague.setAttribute('data-actif', '');
+        pose = arrivee;
+      });
+      element.addEventListener('focusout', function (evenement) {
+        var suivant = evenement.relatedTarget;
+        if (!suivant || !element.contains(suivant) || !suivant.matches('input')) {
+          bague.removeAttribute('data-actif');
+          pose = null;
+        }
+      });
     }
+
+    /* L’onde : la lumière part du point où l’on appuie sur un bouton principal. */
+    document.addEventListener('pointerdown', function (evenement) {
+      var bouton = evenement.target.closest && evenement.target.closest('.entree__action');
+      if (!bouton || bouton.disabled || reduit()) return;
+      var boite = bouton.getBoundingClientRect();
+      var onde = document.createElement('span');
+      onde.className = 'onde';
+      onde.style.left = evenement.clientX - boite.left + 'px';
+      onde.style.top = evenement.clientY - boite.top + 'px';
+      bouton.appendChild(onde);
+      onde.animate([{ transform: 'scale(0)', opacity: 0.9 }, { transform: 'scale(1)', opacity: 0 }], { duration: t(700), easing: EXPO }).onfinish = function () {
+        onde.remove();
+      };
+    });
 
     document.addEventListener('visibilitychange', function () {
       if (document.hidden) arreter();
@@ -246,46 +483,211 @@
     });
 
     return {
-      flamme: flamme, palier: palier, frapper: frapper, vaciller: vaciller, rallumer: rallumer,
-      lancer: lancer, arreter: arreter, figer: figer, semer: semer, liserer: liserer, centreFlamme: centreFlamme,
+      etat: etat, palier: palier, suivreCarte: suivreCarte, frapper: frapper, trainer: trainer,
+      etinceler: etinceler, vaciller: vaciller, allumer: allumer, rallumer: rallumer, tracer: tracer,
+      cadrer: cadrer, decadrer: decadrer, centreFlamme: centreFlamme, lancer: lancer, arreter: arreter,
+      figer: figer, semer: semer, liserer: liserer, anneau: anneau,
     };
   })();
 
-  /* ===== L’ouverture : une fois par session, abrégée par un geste ===== */
-  var ouverture = (function () {
-    var fin = 0;
-    var DUREES = { complete: 7.2, courte: 2.9 };
+  /* ===== Les titres, lettre à lettre =====
+   * Un calque de lettres posé sur le texte réel, chaque lettre à sa place
+   * exacte (mesurée par Range, crénage compris) ; le vrai texte devient
+   * transparent le temps de l’animation, puis revient. Les lecteurs d’écran
+   * lisent le titre, jamais le calque (aria-hidden).
+   */
+  var titres = (function () {
+    /** Le vrai texte revient (le calque de lettres s’en va), sans toucher au mouvement en cours du titre. */
+    function rendreTexte(titre) {
+      var calque = titre.querySelector('.titre-lettres');
+      if (calque) calque.remove();
+      titre.classList.remove('titre--decoupe');
+    }
+    function nettoyer(titre) {
+      rendreTexte(titre);
+      titre.style.removeProperty('transform-origin');
+    }
+    function decouper(titre) {
+      nettoyer(titre);
+      var noeud = null;
+      for (var i = 0; i < titre.childNodes.length; i++) {
+        if (titre.childNodes[i].nodeType === 3 && titre.childNodes[i].textContent.trim()) {
+          noeud = titre.childNodes[i];
+          break;
+        }
+      }
+      if (!noeud) return null;
+      var boite = titre.getBoundingClientRect();
+      var calque = document.createElement('span');
+      calque.className = 'titre-lettres';
+      calque.setAttribute('aria-hidden', 'true');
+      var plage = document.createRange();
+      var texte = noeud.textContent;
+      var lettres = [];
+      var etendue = { gauche: Infinity, haut: Infinity, droite: -Infinity, bas: -Infinity };
+      for (var j = 0; j < texte.length; j++) {
+        if (/\s/.test(texte.charAt(j))) continue;
+        plage.setStart(noeud, j);
+        plage.setEnd(noeud, j + 1);
+        var r = plage.getBoundingClientRect();
+        if (!r.width) continue;
+        var lettre = document.createElement('span');
+        lettre.className = 'titre-lettres__lettre';
+        lettre.textContent = texte.charAt(j);
+        lettre.style.left = (r.left - boite.left).toFixed(2) + 'px';
+        lettre.style.top = (r.top - boite.top).toFixed(2) + 'px';
+        lettre.style.lineHeight = r.height.toFixed(2) + 'px';
+        calque.appendChild(lettre);
+        lettres.push(lettre);
+        etendue.gauche = Math.min(etendue.gauche, r.left);
+        etendue.haut = Math.min(etendue.haut, r.top);
+        etendue.droite = Math.max(etendue.droite, r.right);
+        etendue.bas = Math.max(etendue.bas, r.bottom);
+      }
+      titre.appendChild(calque);
+      titre.classList.add('titre--decoupe');
+      return { lettres: lettres, etendue: etendue, boite: boite };
+    }
+    function couleurs(titre) {
+      return { finale: getComputedStyle(titre).color, eclairee: jeton('--titre-eclaire', titre), lueur: jeton('--titre-lueur', titre) };
+    }
+    function rendre(animations, titre) {
+      var fin = function () { nettoyer(titre); };
+      Promise.all(animations.map(function (animation) { return animation.finished; })).then(fin, fin);
+    }
 
-    function enCours() {
-      return racine.hasAttribute('data-ouverture');
+    /** Les lettres montent de leur ligne, une à une, et la lumière les traverse. */
+    function monter(seq, titre, depart) {
+      if (!titre || reduit()) return;
+      var c = couleurs(titre);
+      var d = decouper(titre);
+      if (!d) return;
+      var animations = d.lettres.map(function (lettre, rang) {
+        return seq.animer(lettre, [
+          { opacity: 0, transform: 'translateY(0.42em) rotate(5deg)', filter: 'blur(6px)', color: c.eclairee, textShadow: '0 0 0.35em ' + c.lueur },
+          { opacity: 1, transform: 'none', filter: 'blur(0px)', color: c.eclairee, textShadow: '0 0 0.35em ' + c.lueur, offset: 0.5 },
+          { opacity: 1, transform: 'none', filter: 'blur(0px)', color: c.finale, textShadow: '0 0 0 transparent' },
+        ], { duration: t(1000), delay: t(depart + rang * 24), easing: EXPO, fill: 'backwards' });
+      });
+      rendre(animations, titre);
     }
-    function abreger() {
-      window.clearTimeout(fin);
-      racine.removeAttribute('data-ouverture');
-      document.removeEventListener('keydown', abreger, true);
-      document.removeEventListener('pointerdown', abreger, true);
+
+    /**
+     * Le carton-titre du générique : le titre, seul au centre dans le noir, les
+     * lettres qui se resserrent ; la flamme prend et sa lumière les traverse de
+     * droite à gauche ; à l’aube, elles reprennent leur encre et le titre glisse
+     * à sa place pendant que la caméra recule.
+     */
+    function carton(seq, titre, temps) {
+      var c = couleurs(titre);
+      var sombre = jeton('--lune');
+      var eclairee = jeton('--lanterne-survol');
+      var lueur = jeton('--lanterne-eclat');
+      var d = decouper(titre);
+      if (!d) return;
+      var e = d.etendue;
+      var ex = (e.gauche + e.droite) / 2;
+      var ey = (e.haut + e.bas) / 2;
+      var cx = window.innerWidth / 2;
+      var cy = window.innerHeight * (etroit.matches ? 0.6 : 0.62);
+      var echelle = etroit.matches ? 1.08 : 1.06;
+      titre.style.transformOrigin = (ex - d.boite.left).toFixed(1) + 'px ' + (ey - d.boite.top).toFixed(1) + 'px';
+      seq.animer(titre, [
+        { transform: 'translate(' + (cx - ex).toFixed(1) + 'px, ' + (cy - ey).toFixed(1) + 'px) scale(' + echelle + ')' },
+        { transform: 'none' },
+      ], { duration: t(temps.duree), delay: t(temps.glisse), easing: EXPO, fill: 'both' });
+      var n = d.lettres.length;
+      d.lettres.forEach(function (lettre, rang) {
+        var ecart = ((rang - (n - 1) / 2) * 0.1).toFixed(3);
+        seq.animer(lettre, [
+          { opacity: 0, transform: 'translateX(' + ecart + 'em) translateY(0.25em)', filter: 'blur(8px)', color: sombre },
+          { opacity: 0.45, transform: 'none', filter: 'blur(0px)', color: sombre },
+        ], { duration: t(1100), delay: t(temps.apparition + rang * 34), easing: EXPO, fill: 'both' });
+        seq.animer(lettre, [
+          { opacity: 0.45, color: sombre, textShadow: '0 0 0 transparent' },
+          { opacity: 1, color: eclairee, textShadow: '0 0 0.4em ' + lueur },
+        ], { duration: t(600), delay: t(temps.lumiere + (n - 1 - rang) * 26), easing: COURBE, fill: 'forwards' });
+        seq.animer(lettre, [
+          { opacity: 1, color: eclairee, textShadow: '0 0 0.4em ' + lueur },
+          { opacity: 1, color: c.finale, textShadow: '0 0 0 transparent' },
+        ], { duration: t(1200), delay: t(temps.aube + rang * 12), easing: COURBE, fill: 'forwards' });
+      });
     }
-    function suivre(mode) {
-      window.clearTimeout(fin);
-      fin = window.setTimeout(abreger, dScene() * DUREES[mode]);
-      document.addEventListener('keydown', abreger, true);
-      document.addEventListener('pointerdown', abreger, true);
+
+    return { rendreTexte: rendreTexte, nettoyer: nettoyer, monter: monter, carton: carton };
+  })();
+
+  /* ===== Gestes communs ===== */
+  function apparaitre(seq, element, depart, duree, montee, remplissage) {
+    return seq.animer(element, [
+      { opacity: 0, transform: 'translateY(' + (montee || 0) + 'px)' },
+      { opacity: 1, transform: 'none' },
+    ], { duration: t(duree), delay: t(depart), easing: EXPO, fill: remplissage || 'backwards' });
+  }
+
+  /** La carte se pose : elle sort du flou et se dépose sur un ressort. */
+  function poserCarte(seq, carte, depart, remplissage) {
+    seq.animer(carte, [
+      { opacity: 0, transform: 'translateY(48px) scale(0.96)', filter: 'blur(10px)' },
+      { opacity: 1, transform: 'none', filter: 'blur(0px)' },
+    ], { duration: t(1100), delay: t(depart), easing: RESSORT, fill: remplissage || 'backwards' });
+  }
+
+  /** La lumière coule du haut de la carte le long de ses deux bords et se rejoint en bas. */
+  function tracerCarte(seq, carte, depart) {
+    if (reduit()) return;
+    seq.animer(carte.querySelector('.carte__trace'), [
+      { '--trace': '0deg', opacity: 1 },
+      { '--trace': '180deg', opacity: 1, offset: 0.7 },
+      { '--trace': '180deg', opacity: 0 },
+    ], { duration: t(1300), delay: t(depart), easing: COURBE, fill: 'backwards' });
+  }
+
+  /** Les champs de la carte arrivent un à un. */
+  function animerChamps(seq, carte, depart, remplissage) {
+    if (reduit()) return;
+    var elements = carte.querySelectorAll('.entree__formulaire fieldset > :not(legend), :scope > .bo-enrollment, :scope > .bo-recovery-codes, :scope > .bo-actions');
+    Array.prototype.forEach.call(elements, function (element, rang) {
+      seq.animer(element, [
+        { opacity: 0, transform: 'translateY(14px)' },
+        { opacity: 1, transform: 'none' },
+      ], { duration: t(700), delay: t(depart + rang * 80), easing: EXPO, fill: remplissage || 'backwards' });
+    });
+  }
+
+  /* ===== Les bandes de cinéma : le générique, et le passage dans l’atelier ===== */
+  var bandes = (function () {
+    var haut = document.querySelector('.bande--haut');
+    var bas = document.querySelector('.bande--bas');
+    var CACHE_HAUT = 'translateY(-101%)';
+    var CACHE_BAS = 'translateY(101%)';
+    function glisser(seq, depart, duree, dedans, remplissage) {
+      var options = { duration: t(duree), delay: t(depart), easing: EXPO, fill: remplissage || 'forwards' };
+      seq.animer(haut, dedans ? [{ transform: CACHE_HAUT }, { transform: 'none' }] : [{ transform: 'none' }, { transform: CACHE_HAUT }], options);
+      seq.animer(bas, dedans ? [{ transform: CACHE_BAS }, { transform: 'none' }] : [{ transform: 'none' }, { transform: CACHE_BAS }], options);
     }
-    function jouer(mode) {
-      abreger();
-      if (reduit()) return;
-      void entree.offsetWidth;
-      racine.setAttribute('data-ouverture', mode);
-      scene.lancer(mode === 'complete' ? 7 : 2.5);
-      suivre(mode);
-    }
-    return { enCours: enCours, abreger: abreger, suivre: suivre, jouer: jouer };
+    return {
+      entrer: function (seq, depart) {
+        if (reduit()) return;
+        racine.setAttribute('data-bandes', '');
+        glisser(seq, depart, 550, true);
+      },
+      sortir: function (seq, depart, remplissage) { if (!reduit()) glisser(seq, depart, 850, false, remplissage); },
+      /** Les bandes rangées : elles ne restent pas sous l’écran entre deux passages. */
+      ranger: function () { racine.removeAttribute('data-bandes'); },
+    };
   })();
 
   /* ===== Écrans et étapes ===== */
   var sections = { connexion: $('bo-login'), verification: $('bo-two-factor'), codes: $('bo-recovery') };
   var etapes = $('etapes');
   var inscription = false;
+
+  function repereCourant() {
+    var repere = etapes.querySelector('[data-etat="courante"] .etapes__repere');
+    var boite = repere && repere.getBoundingClientRect();
+    return boite && boite.width ? boite : null;
+  }
 
   /** L’étape courante, et la lumière qui avance : faite, courante, à venir. */
   function marquerEtapes(ecran) {
@@ -310,31 +712,184 @@
     });
   }
 
+  /** La lumière voyage du repère de l’étape quittée à celui de la nouvelle. */
+  function voyager(avant) {
+    var apres = repereCourant();
+    if (!avant || !apres || reduit()) return;
+    var cadre = $('etapes-cadre').getBoundingClientRect();
+    var x0 = avant.left + avant.width / 2 - cadre.left;
+    var y0 = avant.top + avant.height / 2 - cadre.top;
+    var x1 = apres.left + apres.width / 2 - cadre.left;
+    var y1 = apres.top + apres.height / 2 - cadre.top;
+    $('etapes-lumiere').animate([
+      { transform: 'translate(' + x0 + 'px, ' + y0 + 'px) scale(0.5)', opacity: 0 },
+      { transform: 'translate(' + x0 + 'px, ' + y0 + 'px) scale(1)', opacity: 1, offset: 0.12 },
+      { transform: 'translate(' + x1 + 'px, ' + y1 + 'px) scale(1.15)', opacity: 1, offset: 0.82 },
+      { transform: 'translate(' + x1 + 'px, ' + y1 + 'px) scale(0.6)', opacity: 0 },
+    ], { duration: t(1100), easing: 'cubic-bezier(0.65, 0, 0.35, 1)' });
+  }
+
   /**
-   * Change d’écran. Avec View Transitions, le récit sort par le haut et le
-   * suivant monte, la carte se redimensionne ; sinon un fondu monté.
+   * Change d’écran. Avec View Transitions, l’ancien récit monte et s’efface,
+   * l’ancienne carte se dissout dans la lumière et la nouvelle en émerge ; les
+   * lettres du titre, le tracé de la carte, ses champs et la lumière des
+   * étapes arrivent ensuite, dans le rendu vivant de la transition.
    */
   function montrer(ecran, instantane) {
-    if (ouverture.enCours()) ouverture.abreger();
+    if (generique.enCours()) generique.abreger();
+    var avant = repereCourant();
+    var section = sections[ecran];
+    var carte = section.querySelector('.entree__carte');
     function changer() {
       Object.keys(sections).forEach(function (cle) { sections[cle].hidden = cle !== ecran; });
       entree.dataset.ecran = ecran;
       marquerEtapes(ecran);
       scene.palier(ecran === 'connexion' ? 1 : ecran === 'verification' ? 2 : 3);
+      scene.suivreCarte(carte);
     }
     if (instantane || reduit()) {
       changer();
       return Promise.resolve();
     }
+    var seq = sequence();
+    function arrivee() {
+      titres.monter(seq, section.querySelector('.entree__titre'), 140);
+      tracerCarte(seq, carte, 120);
+      animerChamps(seq, carte, 240);
+      voyager(avant);
+      scene.frapper(true);
+      scene.trainer(false);
+    }
     if (typeof document.startViewTransition === 'function') {
       var transition = document.startViewTransition(changer);
+      transition.updateCallbackDone.then(arrivee, function () {});
       return transition.finished.catch(function () {});
     }
     changer();
-    var section = sections[ecran];
-    rejouer(section, 'data-arrivee');
-    return attendre(dScene() * 1.75).then(function () { section.removeAttribute('data-arrivee'); });
+    arrivee();
+    return attendre(t(900));
   }
+
+  /* ===== Le générique =====
+   * Complet (première visite de l’onglet, ≈ 4,7 s), toujours de nuit : le noir
+   * et les bandes ; le titre seul au centre ; l’étincelle crache deux fois et
+   * prend ; en gros plan, la lanterne se dessine autour de la flamme ; la
+   * caméra recule jusqu’au plan large et le titre glisse à sa place ; la carte
+   * se pose et sa lumière coule le long des bords ; les champs, le texte, les
+   * étapes ; les bandes s’ouvrent. S’il fait jour, le jour se lève alors depuis
+   * la lanterne, du geste de la bascule du thème. Court (visites suivantes,
+   * ≈ 1,9 s) : l’allumage, le titre, la carte. Une touche ou un clic abrège.
+   */
+  var generique = (function () {
+    var seq = null;
+    var actif = false;
+
+    function enCours() {
+      return actif;
+    }
+    function abreger() {
+      if (!actif) return;
+      actif = false;
+      seq.annuler();
+      [$('bo-login-title'), $('bo-two-factor-title'), $('bo-recovery-title')].forEach(titres.nettoyer);
+      scene.decadrer();
+      racine.removeAttribute('data-ouverture');
+      racine.removeAttribute('data-pilote');
+      entree.removeAttribute('data-aube');
+      document.removeEventListener('keydown', abreger, true);
+      document.removeEventListener('pointerdown', abreger, true);
+      scene.lancer();
+      if (pointeurFin.matches && !$('regie').open && document.activeElement === document.body) adresse.focus({ preventScroll: true });
+    }
+    function preparer(mode) {
+      seq = sequence();
+      actif = true;
+      racine.setAttribute('data-ouverture', mode);
+      racine.setAttribute('data-pilote', '');
+      entree.removeAttribute('data-aube');
+      document.addEventListener('keydown', abreger, true);
+      document.addEventListener('pointerdown', abreger, true);
+    }
+    function complet() {
+      var section = sections.connexion;
+      var carte = section.querySelector('.entree__carte');
+      preparer('complete');
+      scene.cadrer(seq, 2500, 1350);
+      scene.lancer(4);
+      seq.animer($('noir'), [
+        { opacity: 1 },
+        { opacity: 1, offset: 0.46 },
+        { opacity: 0.6, offset: 0.62 },
+        { opacity: 0.6, offset: 0.7 },
+        { opacity: 0 },
+      ], { duration: t(3600), fill: 'both' });
+      scene.tracer(seq, 1450);
+      var prise = scene.allumer(seq, 1100, false);
+      titres.carton(seq, $('bo-login-title'), { apparition: 250, lumiere: prise + 60, aube: 2650, glisse: 2550, duree: 1300 });
+      var jour = racine.getAttribute('data-theme') !== 'nuit' && racine.getAttribute('data-scene-jour') !== 'veille';
+      seq.plusTard(t(jour ? 3400 : 2500), function () { lever(jour); });
+      apparaitre(seq, entree.querySelector('.entree__entete'), 3000, 800, 0, 'both');
+      apparaitre(seq, entree.querySelector('.entree__surtitre'), 3300, 800, 12, 'both');
+      poserCarte(seq, carte, 3100, 'both');
+      tracerCarte(seq, carte, 3250);
+      animerChamps(seq, carte, 3350, 'both');
+      apparaitre(seq, section.querySelector('.entree__texte'), 3400, 900, 16, 'both');
+      apparaitre(seq, $('etapes-cadre'), 3550, 800, 0, 'both');
+      apparaitre(seq, entree.querySelector('.entree__pied'), 3700, 800, 0, 'both');
+      bandes.sortir(seq, 3750, 'both');
+      seq.plusTard(t(4700), abreger);
+    }
+    /**
+     * L’aube. La nuit, rien ne change. Le jour, la lumière part de la lanterne
+     * et gagne l’écran (View Transition « vers le jour », celle de la bascule) :
+     * dedans, l’entrée a repris ses couleurs de jour et le vrai titre son encre.
+     */
+    function lever(jour) {
+      if (!jour) {
+        entree.setAttribute('data-aube', '');
+        return;
+      }
+      var changer = function () {
+        titres.rendreTexte($('bo-login-title'));
+        entree.setAttribute('data-aube', '');
+      };
+      if (typeof document.startViewTransition !== 'function') {
+        changer();
+        return;
+      }
+      var flamme = scene.centreFlamme();
+      racine.style.setProperty('--vt-x', Math.round(flamme.x) + 'px');
+      racine.style.setProperty('--vt-y', Math.round(flamme.y) + 'px');
+      racine.setAttribute('data-transition-theme', 'vers-jour');
+      var transition = document.startViewTransition(changer);
+      transition.finished.catch(function () {}).then(function () {
+        racine.removeAttribute('data-transition-theme');
+        racine.style.removeProperty('--vt-x');
+        racine.style.removeProperty('--vt-y');
+      });
+    }
+    function court() {
+      var carte = sections.connexion.querySelector('.entree__carte');
+      preparer('courte');
+      scene.lancer(2.5);
+      scene.allumer(seq, 0, true);
+      titres.monter(seq, $('bo-login-title'), 160);
+      poserCarte(seq, carte, 220, 'both');
+      tracerCarte(seq, carte, 380);
+      animerChamps(seq, carte, 420, 'both');
+      seq.plusTard(t(1900), abreger);
+    }
+    function jouer(mode) {
+      if (actif) abreger();
+      if (reduit()) {
+        racine.removeAttribute('data-ouverture');
+        return;
+      }
+      // Les lettres se mesurent dans la police finale : on l’attend, 300 ms au plus.
+      Promise.race([document.fonts.ready, attendre(300)]).then(mode === 'complete' ? complet : court);
+    }
+    return { jouer: jouer, abreger: abreger, enCours: enCours };
+  })();
 
   /* ===== 1. Connexion ===== */
   var formulaireConnexion = $('bo-login-form');
@@ -369,7 +924,7 @@
   function refuser(carte) {
     if (reduit()) return;
     rejouer(carte, 'data-refus');
-    window.setTimeout(function () { carte.removeAttribute('data-refus'); }, dScene() * 1.2);
+    window.setTimeout(function () { carte.removeAttribute('data-refus'); }, t(480));
   }
 
   formulaireConnexion.addEventListener('submit', function (evenement) {
@@ -377,13 +932,12 @@
     if (formulaireConnexion.dataset.busy === 'true') return;
     annoncer('');
     occuper(formulaireConnexion, retourConnexion, 'Connexion…');
-    scene.flamme('attente');
+    scene.etat('attente');
     serveur.connexion(adresse.value.trim(), motDePasse.value).then(function (reponse) {
       liberer(formulaireConnexion);
       motDePasse.value = '';
       dire(retourConnexion, '');
-      scene.flamme('vive');
-      scene.frapper(true);
+      scene.etat('vive');
       if (reponse.two_factor_required) return afficherVerification(Boolean(reponse.enrollment_required));
       return ouvrirAtelier();
     }).catch(function (erreur) {
@@ -392,7 +946,7 @@
         bloquer(erreur.retryAfter || 60);
         return;
       }
-      scene.flamme('vive');
+      scene.etat('vive');
       scene.vaciller();
       refuser(carteConnexion);
       dire(retourConnexion, erreur.message, 'error');
@@ -409,7 +963,7 @@
   function bloquer(secondes) {
     var fin = Date.now() + secondes * 1000;
     var groupe = formulaireConnexion.querySelector('fieldset');
-    scene.flamme('soufflee');
+    scene.etat('soufflee');
     scene.vaciller();
     groupe.disabled = true;
     dire(retourConnexion, 'Trop de tentatives. Patientez avant de réessayer' + NBSP + ': nouvel essai possible dans ' + secondes + NBSP + 'secondes.', 'error');
@@ -534,12 +1088,12 @@
       return;
     }
     occuper(formulaireCode, retourCode, inscription ? 'Activation de la vérification…' : 'Vérification du code…');
-    scene.flamme('attente');
+    scene.etat('attente');
     serveur.verification(code).then(function (reponse) {
       zoneCode.dataset.etat = 'accepte';
-      scene.flamme('vive');
+      scene.etat('vive');
       scene.frapper(true);
-      return attendre(dScene() * 1.2).then(function () {
+      return attendre(t(480)).then(function () {
         liberer(formulaireCode);
         dire(retourCode, '');
         if (inscription && reponse.recovery_codes) return afficherCodes(reponse.recovery_codes);
@@ -547,14 +1101,14 @@
       });
     }).catch(function (erreur) {
       liberer(formulaireCode);
-      scene.flamme('vive');
+      scene.etat('vive');
       scene.vaciller();
       zoneCode.dataset.etat = 'refus';
       dire(retourCode, erreur.message, 'error');
       window.setTimeout(function () {
         viderCode();
         saisie.focus();
-      }, dScene() * 1.6);
+      }, t(640));
     });
   });
 
@@ -568,7 +1122,7 @@
     inscription = premiere;
     verification.toggleAttribute('data-inscription', premiere);
     $('bo-enrollment').hidden = !premiere;
-    composerTitre($('bo-two-factor-title'), premiere ? 'Configurer la vérification en deux étapes' : 'Vérifier la connexion');
+    $('bo-two-factor-title').textContent = premiere ? 'Configurer la vérification en deux étapes' : 'Vérifier la connexion';
     $('bo-two-factor-help').textContent = premiere
       ? 'Ajoutez le backoffice à votre application d’authentification pour protéger les prochaines connexions.'
       : 'Saisissez le code de votre application d’authentification ou un code de secours.';
@@ -609,6 +1163,9 @@
       attente.hidden = true;
       details.hidden = false;
       rejouer(image.parentElement, 'data-balaye');
+      if (!reduit()) {
+        details.animate([{ opacity: 0, transform: 'translateY(10px)', filter: 'blur(6px)' }, { opacity: 1, transform: 'none', filter: 'blur(0px)' }], { duration: t(800), easing: EXPO });
+      }
       saisie.disabled = false;
       boutonCode.disabled = false;
       dire(retourCode, '');
@@ -693,9 +1250,16 @@
     ouvrirAtelier();
   });
 
-  /* ===== L’atelier s’ouvre, et se referme ===== */
+  /* ===== L’atelier s’ouvre, et se referme =====
+   * Ouvrir : la flamme s’embrase et crache ses étincelles, les bandes de
+   * cinéma entrent, la caméra pousse dans la flamme (zoom, flou, surexposé) ;
+   * la lumière part d’elle et découvre l’atelier, qui se met au point ; les
+   * bandes s’ouvrent. Fermer (déconnexion) : le geste inverse, la lumière
+   * rentre dans la lanterne et l’entrée se remet au point.
+   */
   var atelier = $('atelier');
   var front = $('front-lumiere');
+  var seqAtelier = null;
 
   function viser(origine) {
     [atelier, front].forEach(function (calque) {
@@ -704,13 +1268,22 @@
     });
   }
 
-  /**
-   * La flamme s’embrase, puis la lumière part d’elle et gagne l’écran : elle
-   * découvre l’atelier. Au portage, le chargement des rubriques
-   * (ouvrirWorkspace) se fait pendant ce temps.
-   */
+  /** La caméra pousse dans la flamme (vers l’avant) ou en revient. */
+  function pousserCamera(seq, depart, duree, versAvant) {
+    var origine = scene.centreFlamme();
+    var boite = entree.getBoundingClientRect();
+    entree.style.transformOrigin = (origine.x - boite.left).toFixed(1) + 'px ' + (origine.y - boite.top).toFixed(1) + 'px';
+    var loin = { transform: 'scale(1.75)', filter: 'blur(8px) brightness(1.65)' };
+    var pres = { transform: 'none', filter: 'none' };
+    seq.animer(entree, versAvant ? [pres, loin] : [loin, pres], {
+      duration: t(duree), delay: t(depart), easing: versAvant ? EXPO_ENTREE : EXPO, fill: versAvant ? 'forwards' : 'backwards',
+    });
+    return origine;
+  }
+
   function ouvrirAtelier() {
     marquerEtapes('atelier');
+    if (seqAtelier) seqAtelier.annuler();
     if (reduit()) {
       atelier.hidden = false;
       entree.hidden = true;
@@ -718,27 +1291,39 @@
       $('atelier-titre').focus();
       return Promise.resolve();
     }
-    scene.flamme('embrasee');
+    var seq = (seqAtelier = sequence());
+    scene.etat('embrasee');
     scene.frapper(true);
-    return attendre(dScene() * 0.9).then(function () {
-      viser(scene.centreFlamme());
+    scene.trainer(true);
+    scene.etinceler(14, 1.5);
+    bandes.entrer(seq, 0);
+    // La poussée accélère dans la flamme ; la lumière jaillit pendant qu’elle s’achève.
+    var origine = pousserCamera(seq, 100, 1300, true);
+    seq.plusTard(t(650), function () {
+      viser(origine);
       atelier.hidden = false;
-      atelier.removeAttribute('data-installe');
       atelier.dataset.revele = 'ouverture';
       front.dataset.revele = 'ouverture';
-      return attendre(dScene() * 3);
-    }).then(function () {
+      rejouer(atelier, 'data-installe');
+      // La mise au point : l’atelier arrive flou et un peu trop près, puis se pose.
+      seq.animer(atelier, [{ transform: 'scale(1.08)', filter: 'blur(10px)' }, { transform: 'none', filter: 'none' }], { duration: t(1600), easing: EXPO, fill: 'backwards' });
+    });
+    bandes.sortir(seq, 1950);
+    return attendre(t(2800)).then(function () {
+      if (seqAtelier !== seq) return;
       delete atelier.dataset.revele;
       delete front.dataset.revele;
-      rejouer(atelier, 'data-installe');
       entree.hidden = true;
+      seq.annuler();
+      bandes.ranger();
+      entree.style.removeProperty('transform-origin');
       scene.arreter();
       $('atelier-titre').focus();
     });
   }
 
-  /** La déconnexion : la lumière revient dans la lanterne, l’entrée réapparaît. */
   $('bo-logout').addEventListener('click', function () {
+    if (seqAtelier) seqAtelier.annuler();
     remettreAZero(true);
     annoncer('Vous êtes déconnecté.');
     if (reduit()) {
@@ -746,14 +1331,22 @@
       adresse.focus();
       return;
     }
+    var seq = (seqAtelier = sequence());
     scene.lancer();
-    viser(scene.centreFlamme());
+    bandes.entrer(seq, 0);
+    var origine = pousserCamera(seq, 350, 1400, false);
+    viser(origine);
     atelier.dataset.revele = 'fermeture';
     front.dataset.revele = 'fermeture';
-    attendre(dScene() * 2.5).then(function () {
+    bandes.sortir(seq, 1350);
+    attendre(t(2200)).then(function () {
+      if (seqAtelier !== seq) return;
       atelier.hidden = true;
       delete atelier.dataset.revele;
       delete front.dataset.revele;
+      seq.annuler();
+      bandes.ranger();
+      entree.style.removeProperty('transform-origin');
       scene.frapper(true);
       adresse.focus();
     });
@@ -799,10 +1392,10 @@
       var etat = graine >>> 0;
       function alea() {
         etat = (etat + 0x6d2b79f5) >>> 0;
-        var t = etat;
-        t = Math.imul(t ^ (t >>> 15), t | 1);
-        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        var x = etat;
+        x = Math.imul(x ^ (x >>> 15), x | 1);
+        x ^= x + Math.imul(x ^ (x >>> 7), x | 61);
+        return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
       }
       for (var y = 0; y < n; y++) {
         m[y] = [];
@@ -842,7 +1435,6 @@
       return 'data:image/svg+xml,' + encodeURIComponent(svg);
     }
     return {
-      ErreurApi: ErreurApi,
       codes: codes,
       connexion: function (email, motDePasseSaisi) {
         return attendre(950).then(function () {
@@ -877,7 +1469,7 @@
   /* ===== Régie : hors design, pour parcourir les états ===== */
   /** Revient à l’écran de connexion ; `garderAtelier` laisse l’atelier se refermer de lui-même. */
   function remettreAZero(garderAtelier) {
-    ouverture.abreger();
+    generique.abreger();
     window.clearTimeout(compteARebours);
     window.clearTimeout(envoiAuto);
     [formulaireConnexion, formulaireCode].forEach(liberer);
@@ -892,25 +1484,28 @@
     choisirMode('application');
     inscription = false;
     verification.removeAttribute('data-inscription');
-    composerTitre($('bo-two-factor-title'), 'Vérifier la connexion');
+    $('bo-two-factor-title').textContent = 'Vérifier la connexion';
     $('bo-enrollment').hidden = true;
     saisie.disabled = false;
     boutonCode.disabled = false;
     if (!garderAtelier) {
+      if (seqAtelier) seqAtelier.annuler();
+      bandes.ranger();
       atelier.hidden = true;
       delete atelier.dataset.revele;
       delete front.dataset.revele;
+      entree.style.removeProperty('transform-origin');
     }
     entree.hidden = false;
-    scene.flamme('vive');
+    scene.etat('vive');
     montrer('connexion', true);
     scene.lancer();
     window.scrollTo(0, 0);
   }
 
   var regie = {
-    ouverture: function () { remettreAZero(); ouverture.jouer('complete'); },
-    'ouverture-courte': function () { remettreAZero(); ouverture.jouer('courte'); },
+    ouverture: function () { remettreAZero(); generique.jouer('complete'); },
+    'ouverture-courte': function () { remettreAZero(); generique.jouer('courte'); },
     connexion: function () { remettreAZero(); adresse.focus(); },
     erreur: function () {
       remettreAZero();
@@ -968,7 +1563,7 @@
   $('regie-reduit').addEventListener('change', function (evenement) {
     racine.classList.toggle('mouvement-reduit', evenement.currentTarget.checked);
     if (evenement.currentTarget.checked) {
-      ouverture.abreger();
+      generique.abreger();
       scene.figer();
     } else {
       scene.semer(18);
@@ -977,21 +1572,19 @@
   });
 
   /* ===== Démarrage ===== */
-  // Les titres arrivent déjà découpés en mots (HTML) : rien ne clignote avant ce script.
-  entree.querySelectorAll('.entree__carte').forEach(scene.liserer);
+  entree.querySelectorAll('.entree__carte').forEach(function (carte) {
+    scene.liserer(carte);
+    scene.anneau(carte);
+  });
+  scene.suivreCarte(carteConnexion);
   if (!reduit()) scene.semer(18);
   horodater();
   window.setInterval(horodater, 15000);
 
-  var mode = racine.getAttribute('data-ouverture');
-  if (mode) {
-    scene.lancer(mode === 'complete' ? 7 : 2.5);
-    ouverture.suivre(mode);
-  } else {
-    scene.lancer(0.8);
-  }
-
-  var demande = new URLSearchParams(window.location.search).get('scene');
-  if (demande && regie[demande]) regie[demande]();
-  else if (pointeurFin.matches) adresse.focus({ preventScroll: true });
+  var ouvertureDemandee = racine.getAttribute('data-ouverture');
+  var sceneDemandee = new URLSearchParams(window.location.search).get('scene');
+  if (ouvertureDemandee) generique.jouer(ouvertureDemandee);
+  else scene.lancer(0.8);
+  if (sceneDemandee && regie[sceneDemandee]) regie[sceneDemandee]();
+  else if (!ouvertureDemandee && pointeurFin.matches) adresse.focus({ preventScroll: true });
 })();
