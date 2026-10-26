@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { VITRINE } from '../../src/config/projets';
 import { NOMBRE_CERTIFICATIONS } from '../../src/config/formation';
-import { jsonLd, noeudAriane, noeudPage, noeudPersonne, noeudProjet, noeudSite, titreCourt, titreDePage } from '../../src/lib/seo';
+import { dateHeureParis, jsonLd, noeudAriane, noeudPage, noeudPersonne, noeudProjet, noeudSite, titreCourt, titreDePage } from '../../src/lib/seo';
 import { SITE } from '../../src/config/site';
 import { DELAI_BUILD, pagesConstruites } from './support/dist';
 
@@ -60,8 +60,16 @@ describe('JSON-LD', () => {
 
   it('nomme le site sur l’accueil et date chaque page', () => {
     expect(noeudSite()).toMatchObject({ '@type': 'WebSite', '@id': 'https://charles-lindecker.com/#site', name: 'Charles Lindecker', url: 'https://charles-lindecker.com/', alternateName: 'charles-lindecker.com' });
-    expect(noeudPage({ chemin: '/', titre: 't', description: 'd', maj: '2026-10-15' })).toMatchObject({ '@type': 'ProfilePage', dateModified: '2026-10-15', isPartOf: { '@id': 'https://charles-lindecker.com/#site' } });
+    expect(noeudPage({ chemin: '/', titre: 't', description: 'd', maj: '2026-10-15' })).toMatchObject({ '@type': 'ProfilePage', dateModified: '2026-10-15T00:00:00+02:00', isPartOf: { '@id': 'https://charles-lindecker.com/#site' } });
     expect(noeudPage({ chemin: '/contact', titre: 't', description: 'd' })).not.toHaveProperty('dateModified');
+  });
+
+  it('date en date-heure ISO 8601 à minuit, heure de Paris : Google refuse une date seule pour une ProfilePage', () => {
+    expect(dateHeureParis('2026-11-02')).toBe('2026-11-02T00:00:00+01:00');
+    expect(dateHeureParis('2026-07-14')).toBe('2026-07-14T00:00:00+02:00');
+    // Jours de changement d’heure : minuit précède le passage, à 01:00 UTC.
+    expect(dateHeureParis('2026-10-25')).toBe('2026-10-25T00:00:00+02:00');
+    expect(dateHeureParis('2026-03-29')).toBe('2026-03-29T00:00:00+01:00');
   });
 
   it('décrit /projets comme la liste des projets de la vitrine, dans son ordre', () => {
