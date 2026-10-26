@@ -1,0 +1,2425 @@
+/*
+ * Maquette « L’atelier s’allume » : la page de connexion du backoffice.
+ *
+ * Direction « Lanterne » (DESIGN.md). Les jetons ci-dessous recopient
+ * site/src/styles/jetons.css ; ceux qui portent « nouveau » n’existent pas
+ * encore et rejoindraient jetons.css au portage, jour et nuit. Hors de ce
+ * bloc, aucune couleur, taille de texte, rayon, ombre ni durée en dur : seules
+ * restent les coordonnées des dessins et les proportions de mise en page.
+ *
+ * Plan : polices · jetons · base · coque · scène (décor, lanterne, flamme) ·
+ * mise en page de l’entrée · carte et champs · code à six chiffres ·
+ * configuration · codes de secours · étapes · ouverture · transitions ·
+ * atelier · bascule et allumage · régie · points de rupture · mouvement réduit.
+ */
+
+/* ===== Polices : celles de la maquette C, auto-hébergées ===== */
+@font-face {
+  font-family: 'Instrument Serif';
+  src: url('../refonte/c-lanterne/polices/instrument-serif.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Instrument Serif';
+  src: url('../refonte/c-lanterne/polices/instrument-serif-italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Instrument Sans';
+  src: url('../refonte/c-lanterne/polices/instrument-sans-var.woff2') format('woff2');
+  font-weight: 400 700;
+  font-stretch: 75% 100%;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ===== Jetons ===== */
+/* La position du liseré sur la carte : enregistrée pour glisser, pas sauter. */
+@property --mx {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 50%;
+}
+
+@property --my {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 0%;
+}
+
+@property --rayon {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+:root {
+  color-scheme: light;
+  --police-titre: 'Instrument Serif', Georgia, serif;
+  --police-texte: 'Instrument Sans', system-ui, sans-serif;
+
+  /* Jour « aube » (jetons.css) */
+  --fond: #ece9e3;
+  --surface: #fbfaf7;
+  --acte: #dcd6cb;
+  --encre: #141312;
+  --eteint: #59544c;
+  --trait: #7b7368;
+  --filet: #d2ccc1;
+  --accent: #1f4fd1;
+  --accent-texte: #ffffff;
+  --accent-survol: #173fae;
+  --laiton: #7a4f10;
+  --erreur: #a4271a;
+  --surligneur: #f2cf3a;
+  --sur-surligneur: #141312;
+  --focus: #1f4fd1;
+  --emplacement: #e3ded4;
+  --lumiere: rgb(255 253 246 / 0.95);
+  --veille: #15171d;
+  --ombre-1: 0 1px 0 rgb(20 19 18 / 0.04), 0 10px 28px -16px rgb(20 19 18 / 0.28);
+  --ombre-2: 0 30px 70px -30px rgb(20 19 18 / 0.45);
+  --lanterne: #f0b24a;
+  --lanterne-survol: #f6c670;
+  --lanterne-halo: rgb(240 178 74 / 0.22);
+  --lanterne-eclat: rgb(240 178 74 / 0.55);
+  --suie: #0b0d12;
+  --lune: #e4e7ee;
+  --veille-nuit: #141a2b;
+  --cadre-barre: #14161d;
+  --cadre-point: #3a4152;
+  --papier-logo: #ffffff;
+  --bouton: var(--accent);
+  --bouton-texte: var(--accent-texte);
+  --bouton-survol: var(--accent-survol);
+
+  /* Nouveau : la scène d’entrée, le jour. La lanterne pose une flaque claire
+     et chaude sur la pierre ; les bords s’assombrissent comme un plan de
+     cinéma. */
+  --scene-ombre: rgb(20 19 18 / 0.14);         /* vignette des bords */
+  --scene-ciel: rgb(255 253 246 / 0);          /* pas de clair de lune le jour */
+  --scene-chaleur: rgb(255 248 232 / 0.6);     /* la pièce que la lanterne réchauffe */
+  --halo-scene: rgb(255 250 238 / 0.92);       /* la lumière portée de la lanterne */
+  --halo-coeur: rgb(240 178 74 / 0.34);        /* son cœur chaud */
+  --vitre-allumee: rgb(240 178 74 / 0.18);     /* la vitre éclairée de l’intérieur */
+  --flamme-coeur: #fff1cf;                     /* le blanc de la flamme */
+  --poussiere: rgb(122 79 16 / 0.5);           /* poussière dans la lumière (laiton) */
+  --lisere: rgb(240 178 74 / 0.6);             /* la lumière accrochée au bord de la carte */
+  --ombre-portee: 0 44px 50px -36px rgb(20 19 18 / 0.32);  /* la carte, éclairée d’en haut */
+  --reflet: rgb(255 255 255 / 0.32);           /* reflet qui court sur le bouton en attente */
+  --grain: 0.05;                               /* opacité du grain de pellicule */
+
+  /* Échelle (jetons.css) */
+  --t-xs: 0.875rem;
+  --t-s: 1rem;
+  --t-m: clamp(1.0625rem, 1rem + 0.2vw, 1.125rem);
+  --t-l: clamp(1.1875rem, 1.05rem + 0.5vw, 1.375rem);
+  --t-xl: clamp(1.625rem, 1.3rem + 0.9vw, 2.125rem);
+  --t-2xl: clamp(2rem, 1.4rem + 1.6vw, 2.875rem);
+  --t-3xl: clamp(2.5rem, 1.6rem + 2.8vw, 4.25rem);
+  --t-4xl: clamp(2.875rem, 1.1rem + 5.4vw, 5.75rem);
+  --ls-titre: -0.01em;
+  --ls-affiche: -0.018em;
+  --ls-petit: 0.01em;
+
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+  --s7: 48px;
+  --s8: 64px;
+  --s9: 96px;
+  --gouttiere: clamp(16px, 3.6vw, 48px);
+  --largeur: 1344px;
+  --mesure: 35rem;
+
+  --r1: 4px;
+  --r2: 6px;
+  --r3: 999px;
+
+  --courbe: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --d-ui: 200ms;
+  --d-scene: 400ms;
+
+  --entete: 64px;
+
+  /* Nouveau : mise en page de l’entrée. */
+  --colonne-carte: 36rem;                      /* la colonne éclairée */
+  --carte-connexion: 27rem;                    /* connexion et vérification */
+  --carte-configuration: 34rem;                /* première configuration de la 2FA */
+  --carte-codes: 36rem;                        /* codes de secours */
+  --entree-espace: clamp(32px, 5vw, 96px);     /* entre le récit et la carte */
+  --lanterne-largeur: 144px;                   /* le dessin, proportions 120 × 200 */
+  --lanterne-trait: 1.25;                      /* ≈ 1,5 px à l’écran */
+  --lanterne-ecart: var(--s6);                 /* entre le socle et la carte */
+  --rangee-lanterne: calc(var(--lanterne-largeur) * 5 / 3 + var(--lanterne-ecart));
+}
+
+/* Nuit « clair de lune » (jetons.css), et la scène sombre du jour en option
+   (`data-scene-jour="veille"`) : la nuit entre dans le jour, comme un acte de
+   veille. */
+:root[data-theme='nuit'],
+:root[data-scene-jour='veille'] .entree {
+  color-scheme: dark;
+  --fond: #0b0d12;
+  --surface: #1a1e29;
+  --acte: #12151c;
+  --encre: #e4e7ee;
+  --eteint: #9ea3ad;
+  --trait: #687083;
+  --filet: #262b37;
+  --accent: #a9bbff;
+  --accent-texte: #0b0d12;
+  --accent-survol: #c7d2ff;
+  --laiton: #f0b24a;
+  --erreur: #ff9d8a;
+  --surligneur: #e8c75a;
+  --sur-surligneur: #0b0d12;
+  --focus: #f0b24a;
+  --emplacement: #12151c;
+  --lumiere: rgb(240 178 74 / 0.16);
+  --ombre-1: 0 0 0 1px #262b37;
+  --ombre-2: 0 0 90px -20px rgb(240 178 74 / 0.28);
+  --bouton: var(--lanterne);
+  --bouton-texte: var(--suie);
+  --bouton-survol: var(--lanterne-survol);
+
+  /* Nouveau : la scène, la nuit. Un clair de lune bleuté tombe du haut à
+     gauche, la lanterne est la seule lumière chaude, à droite. */
+  --scene-ombre: rgb(0 0 0 / 0.6);
+  --scene-ciel: rgb(169 187 255 / 0.1);
+  --scene-chaleur: rgb(240 178 74 / 0.07);
+  --halo-scene: rgb(240 178 74 / 0.2);
+  --halo-coeur: rgb(240 178 74 / 0.58);
+  --vitre-allumee: rgb(240 178 74 / 0.3);
+  --poussiere: rgb(240 178 74 / 0.7);
+  --lisere: rgb(240 178 74 / 0.7);
+  --ombre-portee: 0 48px 64px -32px rgb(0 0 0 / 0.75);
+  --reflet: rgb(255 255 255 / 0.4);
+  --grain: 0.07;
+}
+
+/* La scène sombre du jour garde la pierre de veille, plus neutre que la
+   suie : on reste « le jour », dans un atelier fermé. */
+:root[data-scene-jour='veille']:not([data-theme='nuit']) .entree {
+  --fond: var(--veille);
+  --surface: #1e2028;
+  --scene-ciel: rgb(255 250 238 / 0.05);
+}
+
+/* Sans JavaScript, la préférence du système décide (jetons.css). */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --fond: #0b0d12;
+    --surface: #1a1e29;
+    --encre: #e4e7ee;
+    --eteint: #9ea3ad;
+    --trait: #687083;
+    --filet: #262b37;
+    --accent: #a9bbff;
+    --accent-texte: #0b0d12;
+    --accent-survol: #c7d2ff;
+    --erreur: #ff9d8a;
+    --focus: #f0b24a;
+    --emplacement: #12151c;
+    --lumiere: rgb(240 178 74 / 0.16);
+    --ombre-2: 0 0 90px -20px rgb(240 178 74 / 0.28);
+    --bouton: var(--lanterne);
+    --bouton-texte: var(--suie);
+    --bouton-survol: var(--lanterne-survol);
+    --scene-ombre: rgb(0 0 0 / 0.6);
+    --scene-ciel: rgb(169 187 255 / 0.1);
+    --scene-chaleur: rgb(240 178 74 / 0.07);
+    --halo-scene: rgb(240 178 74 / 0.2);
+    --halo-coeur: rgb(240 178 74 / 0.58);
+    --vitre-allumee: rgb(240 178 74 / 0.3);
+    --poussiere: rgb(240 178 74 / 0.7);
+    --lisere: rgb(240 178 74 / 0.7);
+    --ombre-portee: 0 48px 64px -32px rgb(0 0 0 / 0.75);
+    --grain: 0.07;
+  }
+}
+
+@media (max-width: 860px) {
+  :root {
+    --entete: 60px;
+    --lanterne-largeur: 76px;
+    --lanterne-trait: 2.3;
+    --lanterne-ecart: var(--s5);
+  }
+}
+
+/* ===== Base ===== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  background: var(--fond);
+  font-synthesis: style small-caps;
+}
+
+body {
+  margin: 0;
+  background: var(--fond);
+  color: var(--encre);
+  font-family: var(--police-texte);
+  font-size: var(--t-s);
+  line-height: 1.55;
+  font-variant-numeric: lining-nums proportional-nums;
+  -webkit-font-smoothing: antialiased;
+  font-kerning: normal;
+  overflow-x: clip;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: var(--police-titre);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: var(--ls-titre);
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+
+a:hover {
+  color: var(--accent-survol);
+  text-decoration-thickness: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: var(--r1);
+}
+
+::selection {
+  background: var(--surligneur);
+  color: var(--sur-surligneur);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+.bo [hidden] {
+  display: none !important;
+}
+
+.sr {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.evitement {
+  position: absolute;
+  left: var(--s4);
+  top: -100px;
+  z-index: 30;
+  padding: var(--s3) var(--s4);
+  border-radius: var(--r1);
+  background: var(--bouton);
+  color: var(--bouton-texte);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.evitement:focus {
+  top: var(--s3);
+}
+
+.bo-muted {
+  color: var(--eteint);
+}
+
+.bo-code {
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: var(--t-xs);
+}
+
+/* ===== Coque : en-tête et pied (backoffice.css) ===== */
+.bo-cadre {
+  width: 100%;
+  max-width: calc(var(--largeur) + 2 * var(--gouttiere));
+  margin-inline: auto;
+  padding-inline: var(--gouttiere);
+}
+
+.bo-entete {
+  background: var(--fond);
+  border-bottom: 1px solid var(--filet);
+}
+
+.bo-entete__barre {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2) var(--s5);
+  min-height: var(--entete);
+  padding-block: var(--s2);
+}
+
+.bo-marque {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s3);
+  min-height: 44px;
+  color: var(--encre);
+  text-decoration: none;
+  border-radius: var(--r1);
+}
+
+.bo-marque:hover {
+  color: var(--encre);
+}
+
+.bo-marque__embleme {
+  position: relative;
+  width: 52px;
+  flex: none;
+}
+
+.bo-marque__embleme img {
+  width: 100%;
+  height: auto;
+}
+
+/* La flamme de l’emblème s’entoure d’un halo la nuit (Logo.astro). */
+.bo-marque__embleme::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 54%;
+  width: 44px;
+  height: 44px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--lanterne-eclat), transparent);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.bo-marque__texte {
+  display: grid;
+  font-size: var(--t-s);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.bo-marque__lieu {
+  font-size: var(--t-xs);
+  font-weight: 400;
+  color: var(--eteint);
+}
+
+.nuit-seulement {
+  display: none;
+}
+
+:root[data-theme='nuit'] .jour-seulement,
+:root[data-scene-jour='veille'] .entree .jour-seulement {
+  display: none;
+}
+
+:root[data-theme='nuit'] .nuit-seulement,
+:root[data-scene-jour='veille'] .entree .nuit-seulement {
+  display: block;
+}
+
+:root[data-theme='nuit'] .bo-marque__embleme::after,
+:root[data-scene-jour='veille'] .entree .bo-marque__embleme::after {
+  opacity: 1;
+}
+
+.bo-entete__outils {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  margin-left: auto;
+}
+
+.bo-pied {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s2) var(--s4);
+  padding-block: var(--s4);
+  border-top: 1px solid var(--filet);
+  color: var(--eteint);
+  font-size: var(--t-xs);
+}
+
+.bo-pied a {
+  display: inline-block;
+  padding-block: var(--s3);
+  font-weight: 600;
+}
+
+.bo-surtitre {
+  font-family: var(--police-texte);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-petit);
+  line-height: 1.4;
+  color: var(--eteint);
+}
+
+/* ===== Boutons, champs et retours (backoffice.css) ===== */
+.bo-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s2);
+  width: fit-content;
+  max-width: 100%;
+  min-height: 44px;
+  padding: var(--s2) var(--s4);
+  border: 0;
+  border-radius: var(--r3);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--trait);
+  color: var(--accent);
+  font-size: var(--t-s);
+  font-weight: 600;
+  letter-spacing: var(--ls-petit);
+  line-height: 1.25;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--d-ui) var(--courbe), box-shadow var(--d-ui) var(--courbe), color var(--d-ui) var(--courbe), scale var(--d-ui) var(--courbe);
+}
+
+.bo-button:hover {
+  color: var(--accent-survol);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.bo-button:active:not(:disabled) {
+  scale: 0.98;
+}
+
+.bo-button--primary,
+.bo-button--primary:hover {
+  box-shadow: none;
+  color: var(--bouton-texte);
+}
+
+.bo-button--primary {
+  background: var(--bouton);
+}
+
+.bo-button--primary:hover {
+  background: var(--bouton-survol);
+}
+
+.bo-button--quiet,
+.bo-button--quiet:hover {
+  box-shadow: none;
+  padding-inline: var(--s3);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+
+.bo-button--quiet:hover {
+  text-decoration-thickness: 2px;
+}
+
+.bo-button--petit {
+  padding-inline: var(--s3);
+  font-size: var(--t-xs);
+}
+
+.bo-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.bo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s3);
+}
+
+.bo fieldset {
+  display: grid;
+  gap: var(--s4);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.bo label {
+  display: block;
+  margin-bottom: var(--s2);
+  font-size: var(--t-s);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.bo-champ {
+  min-width: 0;
+}
+
+.bo-help {
+  margin-top: var(--s2);
+  color: var(--eteint);
+  font-size: var(--t-xs);
+  line-height: 1.5;
+}
+
+.bo-carte {
+  min-width: 0;
+  padding: var(--s5);
+  background: var(--surface);
+  border: 1px solid var(--filet);
+  border-radius: var(--r2);
+}
+
+.bo-retour {
+  margin: 0;
+  font-size: var(--t-s);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.bo-retour:not(:empty) {
+  margin-top: var(--s4);
+  padding: var(--s1) 0 var(--s1) var(--s3);
+  border-left: 2px solid var(--trait);
+  color: var(--eteint);
+  animation: retour-vient var(--d-ui) var(--courbe);
+}
+
+.bo-retour[data-state='success']:not(:empty) {
+  border-left-color: var(--encre);
+  color: var(--encre);
+}
+
+.bo-retour[data-state='error']:not(:empty) {
+  border-left-color: var(--erreur);
+  color: var(--erreur);
+}
+
+@keyframes retour-vient {
+  from {
+    opacity: 0;
+    translate: 0 calc(-1 * var(--s1));
+  }
+}
+
+.bo-notice {
+  max-width: var(--mesure);
+  margin-top: var(--s4);
+  padding: var(--s3) var(--s4);
+  border-left: 2px solid var(--trait);
+  background: var(--surface);
+  border-radius: 0 var(--r1) var(--r1) 0;
+}
+
+.bo-notice[data-state='error'] {
+  border-left-color: var(--erreur);
+  color: var(--erreur);
+}
+
+.bo-notice[data-state='success'] {
+  border-left-color: var(--encre);
+}
+
+/* ===== La scène : décor, lanterne et lumière ===== */
+.entree {
+  /* Résolus ici, où vivent les jetons de la scène sombre du jour. */
+  --trait-lanterne: var(--encre);
+  /* L’axe de la lanterne : le milieu de la colonne de la carte. */
+  --lanterne-x: calc(50% + min(50% - var(--gouttiere), var(--largeur) / 2) - var(--colonne-carte) / 2);
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: clip;
+  background: var(--fond);
+  color: var(--encre);
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Le ciel : un clair de lune qui tombe du haut à gauche (la nuit) et une
+   vignette qui ferme le cadre. */
+.scene__ciel {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(75% 65% at 10% -15%, var(--scene-ciel), transparent 70%),
+    radial-gradient(48% 60% at var(--lanterne-x) 38%, var(--scene-chaleur), transparent 80%),
+    radial-gradient(130% 95% at 62% 38%, transparent 52%, var(--scene-ombre));
+}
+
+/* Le grain de pellicule : un bruit fixe, décalé huit fois par seconde. */
+.scene__grain {
+  position: absolute;
+  inset: -40%;
+  opacity: var(--grain);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 200px;
+  mix-blend-mode: overlay;
+  animation: grain steps(1) calc(var(--d-scene) * 2.5) infinite;
+}
+
+@keyframes grain {
+  0% { translate: 0 0; }
+  12.5% { translate: -3% 2%; }
+  25% { translate: 2% -4%; }
+  37.5% { translate: -5% -1%; }
+  50% { translate: 4% 3%; }
+  62.5% { translate: -2% 5%; }
+  75% { translate: 5% -2%; }
+  87.5% { translate: -4% -5%; }
+}
+
+/* La suspension : la corde part du haut de l’écran, la lanterne pend au-dessus
+   de la carte. Le pivot du balancier est le point d’attache (scripts : le
+   balancier amorti, `rotate`). Elle se centre sur la colonne de la carte. */
+.suspension {
+  position: absolute;
+  top: 0;
+  left: calc(var(--lanterne-x) - var(--lanterne-largeur) / 2);
+  z-index: 1;
+  width: var(--lanterne-largeur);
+  height: calc(var(--entete) + var(--rangee-lanterne) - var(--lanterne-ecart));
+  transform-origin: 50% 0;
+}
+
+.suspension__corde {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1.5px;
+  bottom: calc(var(--lanterne-largeur) * 5 / 3 * 0.975);
+  translate: -50% 0;
+  background: linear-gradient(to bottom, transparent, var(--trait-lanterne) 45%);
+  transform-origin: 50% 0;
+  opacity: 0.85;
+}
+
+.suspension__lanterne {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  aspect-ratio: 120 / 200;
+  cursor: grab;
+  pointer-events: auto;
+}
+
+.lanterne {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Le trait garde environ 1,5 px à l’écran : le dessin fait 120 unités de
+   large, rendu à --lanterne-largeur (épaisseur plus forte quand il rétrécit). */
+.lanterne__traits {
+  fill: none;
+  stroke: var(--trait-lanterne);
+  stroke-width: var(--lanterne-trait, 1.5);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lanterne__vitre {
+  fill: var(--vitre-allumee);
+  opacity: var(--vitre, 1);
+  transition: opacity calc(var(--d-scene) * 2) var(--courbe);
+}
+
+/* Le halo : la lumière portée, centrée sur la flamme (60, 135 dans le dessin).
+   Le niveau suit l’étape (`data-palier`) et l’état de la flamme. */
+.lanterne__halo {
+  position: absolute;
+  left: 50%;
+  top: 67.5%;
+  width: calc(var(--lanterne-largeur) * 6.2);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  scale: calc(var(--halo-palier, 1) * var(--halo-etat, 1));
+  opacity: var(--halo-opacite, 1);
+  pointer-events: none;
+  transition: scale calc(var(--d-scene) * 2) var(--courbe), opacity calc(var(--d-scene) * 2) var(--courbe);
+}
+
+.lanterne__halo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--halo-coeur), var(--halo-scene) 20%, transparent);
+  animation: halo-respire calc(var(--d-scene) * 9.7) ease-in-out infinite;
+}
+
+@keyframes halo-respire {
+  0%, 100% { opacity: 1; scale: 1; }
+  23% { opacity: 0.9; scale: 0.985; }
+  41% { opacity: 0.97; scale: 1.01; }
+  68% { opacity: 0.86; scale: 0.97; }
+  84% { opacity: 0.95; scale: 1; }
+}
+
+/* La poussière qui danse dans la lumière (scripts : positions et durées). */
+.lanterne__poussieres {
+  position: absolute;
+  left: 50%;
+  top: 67.5%;
+  width: calc(var(--lanterne-largeur) * 4.6);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  -webkit-mask-image: radial-gradient(closest-side, currentColor 35%, transparent);
+  mask-image: radial-gradient(closest-side, currentColor 35%, transparent);
+  pointer-events: none;
+}
+
+.poussiere {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--taille);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--poussiere);
+  opacity: 0;
+  animation: poussiere var(--duree) linear var(--retard) infinite;
+}
+
+@keyframes poussiere {
+  0% { opacity: 0; translate: 0 0; }
+  25% { opacity: var(--o); }
+  75% { opacity: var(--o); }
+  100% { opacity: 0; translate: var(--dx) var(--dy); }
+}
+
+/* L’éclat : la flamme qui sursaute à chaque frappe (scripts). */
+.lanterne__eclat {
+  position: absolute;
+  left: 50%;
+  top: 67.5%;
+  width: calc(var(--lanterne-largeur) * 2.2);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--lanterne-eclat), transparent);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* La flamme : trois enveloppes. `.flamme` porte l’état (niveau, allumage),
+   `.flamme__sursaut` le sursaut d’une frappe ou d’une erreur (scripts),
+   `.flamme__vacille` le vacillement continu. */
+.flamme,
+.flamme__sursaut,
+.flamme__vacille,
+.flamme__coeur {
+  transform-box: fill-box;
+  transform-origin: 50% 88%;
+}
+
+.flamme {
+  scale: var(--flamme-niveau, 1);
+  opacity: var(--flamme-opacite, 1);
+  transition: scale calc(var(--d-scene) * 1.5) var(--courbe), opacity calc(var(--d-scene) * 1.5) var(--courbe);
+}
+
+.flamme__corps {
+  fill: var(--lanterne);
+}
+
+.flamme__coeur {
+  fill: var(--flamme-coeur);
+  animation: coeur calc(var(--d-scene) * 2.9) ease-in-out infinite;
+}
+
+.flamme__vacille {
+  animation: vacille calc(var(--d-scene) * 4.3) ease-in-out infinite;
+}
+
+@keyframes vacille {
+  0%, 100% { transform: scale(1, 1) skewX(0deg); }
+  17% { transform: scale(0.96, 1.04) skewX(-2deg); }
+  33% { transform: scale(1.03, 0.97) skewX(1.2deg); }
+  52% { transform: scale(0.98, 1.05) skewX(-0.6deg); }
+  71% { transform: scale(1.02, 0.96) skewX(1.8deg); }
+  86% { transform: scale(0.99, 1.02) skewX(-1deg); }
+}
+
+@keyframes coeur {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  38% { opacity: 0.82; transform: scale(0.92, 1.06); }
+  64% { opacity: 0.95; transform: scale(1.05, 0.95); }
+}
+
+.lanterne__fumee {
+  fill: none;
+  stroke: var(--trait);
+  stroke-width: calc(var(--lanterne-trait, 1.5) * 0.8);
+  stroke-linecap: round;
+  stroke-dasharray: 0.32 1.4;
+  stroke-dashoffset: 0.32;
+  opacity: 0;
+}
+
+/* États de la flamme (`data-flamme` de l’entrée). */
+.entree[data-flamme='attente'] .flamme__vacille {
+  animation-duration: calc(var(--d-scene) * 1.6);
+}
+
+.entree[data-flamme='attente'] .lanterne__halo::before {
+  animation-duration: calc(var(--d-scene) * 2.4);
+}
+
+/* Trop de tentatives : la flamme est soufflée, il reste une braise et un filet
+   de fumée ; elle se rallume à la fin de l’attente. */
+.entree[data-flamme='soufflee'] {
+  --flamme-niveau: 0.16;
+  --halo-etat: 0.45;
+  --halo-opacite: 0.22;
+  --vitre: 0.12;
+}
+
+.entree[data-flamme='soufflee'] .flamme__vacille {
+  animation: braise calc(var(--d-scene) * 5) ease-in-out infinite;
+}
+
+.entree[data-flamme='soufflee'] .lanterne__fumee {
+  animation: fumee calc(var(--d-scene) * 6.5) var(--courbe) infinite;
+}
+
+@keyframes braise {
+  50% { opacity: 0.45; }
+}
+
+@keyframes fumee {
+  0% { opacity: 0; stroke-dashoffset: 0.32; }
+  12% { opacity: 0.8; }
+  100% { opacity: 0; stroke-dashoffset: -1.1; }
+}
+
+/* L’atelier s’ouvre : la flamme s’embrase avant que la lumière gagne l’écran. */
+.entree[data-flamme='embrasee'] {
+  --flamme-niveau: 1.4;
+  --halo-etat: 2.6;
+  --halo-opacite: 1;
+}
+
+/* La lumière grandit à chaque étape franchie. */
+.entree[data-palier='2'] {
+  --halo-palier: 1.14;
+}
+
+.entree[data-palier='3'] {
+  --halo-palier: 1.28;
+}
+
+/* ===== Mise en page de l’entrée =====
+   Deux colonnes au-delà de 1 100 px : le récit à gauche, la carte éclairée à
+   droite sous la lanterne. Chaque écran (section) se pose sur la grille par
+   sous-grille : son récit dans la colonne de gauche, sa carte à droite. */
+.entree__entete {
+  position: relative;
+  z-index: 3;
+  background: transparent;
+  border-bottom-color: transparent;
+}
+
+.entree__corps {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns:
+    [recit-debut] minmax(0, 1fr)
+    [recit-fin] var(--entree-espace)
+    [carte-debut] minmax(0, var(--colonne-carte)) [carte-fin];
+  grid-template-rows:
+    [lanterne] var(--rangee-lanterne)
+    [surtitre carte-haut] auto
+    [titre] auto
+    [etapes] auto
+    [reste] 1fr [fin];
+  align-content: start;
+  width: 100%;
+  max-width: calc(var(--largeur) + 2 * var(--gouttiere));
+  margin-inline: auto;
+  padding: 0 var(--gouttiere) var(--s7);
+}
+
+.entree__corps:focus {
+  outline: none;
+}
+
+/* Les cases vides de la grille laissent passer le pointeur jusqu’à la
+   lanterne, qu’on peut pousser. */
+.entree__corps {
+  pointer-events: none;
+}
+
+.entree__corps > * {
+  pointer-events: auto;
+}
+
+.entree__surtitre {
+  grid-column: recit-debut / recit-fin;
+  grid-row: surtitre;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--s3);
+}
+
+.entree__horodatage {
+  color: var(--eteint);
+  font-size: var(--t-xs);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.entree__horodatage::before {
+  content: '—';
+  margin-right: var(--s3);
+}
+
+.entree__surtitre .bo-notice {
+  flex-basis: 100%;
+  margin-bottom: var(--s2);
+}
+
+.entree__etape {
+  grid-column: recit-debut / carte-fin;
+  grid-row: surtitre / fin;
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-template-rows: subgrid;
+}
+
+.entree__recit {
+  grid-column: recit-debut / recit-fin;
+  grid-row: titre;
+  margin-top: var(--s4);
+}
+
+.entree__titre {
+  font-size: var(--t-3xl);
+  line-height: 0.98;
+  letter-spacing: var(--ls-affiche);
+  max-width: 11ch;
+}
+
+/* Un titre reçoit le focus pour les lecteurs d’écran à chaque écran : il
+   n’est pas une commande, pas de contour (global.css, .cible-sommaire). */
+.entree__titre:focus {
+  outline: none;
+}
+
+#bo-login .entree__titre,
+#bo-two-factor:not([data-inscription]) .entree__titre {
+  font-size: var(--t-4xl);
+  line-height: 0.95;
+}
+
+#bo-two-factor[data-inscription] .entree__titre,
+#bo-recovery .entree__titre {
+  max-width: 15ch;
+}
+
+/* Un titre se compose mot à mot (scripts : `.mot`) ; la marge garde les
+   accents et les jambages hors de la découpe. */
+.mot {
+  display: inline-block;
+  overflow: clip;
+  padding-block: 0.14em;
+  margin-block: -0.14em;
+  vertical-align: top;
+}
+
+.mot > span {
+  display: inline-block;
+}
+
+/* Le rang de chaque mot, pour l’ouverture (les titres écrits par les scripts
+   le reçoivent aussi en propriété). */
+.mot:nth-of-type(2) > span { --i: 1; }
+.mot:nth-of-type(3) > span { --i: 2; }
+.mot:nth-of-type(4) > span { --i: 3; }
+.mot:nth-of-type(5) > span { --i: 4; }
+.mot:nth-of-type(6) > span { --i: 5; }
+.mot:nth-of-type(7) > span { --i: 6; }
+
+.entree__texte {
+  max-width: 30rem;
+  margin-top: var(--s5);
+  color: var(--eteint);
+  font-size: var(--t-l);
+  line-height: 1.5;
+}
+
+/* ===== La carte éclairée ===== */
+.entree__carte {
+  --carte: var(--carte-connexion);
+  grid-column: carte-debut / carte-fin;
+  grid-row: carte-haut / fin;
+  justify-self: center;
+  align-self: start;
+  position: relative;
+  width: 100%;
+  max-width: var(--carte);
+  padding: var(--s6);
+  box-shadow: var(--ombre-2), var(--ombre-portee);
+  transition: max-width calc(var(--d-scene) * 1.5) var(--courbe), --mx var(--d-scene) var(--courbe), --my var(--d-scene) var(--courbe);
+}
+
+#bo-two-factor[data-inscription] .entree__carte {
+  --carte: var(--carte-configuration);
+}
+
+#bo-recovery .entree__carte {
+  --carte: var(--carte-codes);
+}
+
+/* La zone éclairée (global.css) : une flaque derrière la carte. */
+.foyer {
+  isolation: isolate;
+}
+
+.foyer::before {
+  content: '';
+  position: absolute;
+  inset: -18% -14%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(closest-side, var(--lumiere), transparent);
+}
+
+/* Le liseré : la lumière de la lanterne accroche le bord haut de la carte, et
+   suit la main quand le pointeur passe dessus (scripts : --mx, --my). */
+.entree__carte::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  padding: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(calc(var(--lanterne-largeur) * 2.4) circle at var(--mx) var(--my), var(--lisere), transparent 72%);
+  -webkit-mask: linear-gradient(currentColor 0 0) content-box, linear-gradient(currentColor 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(currentColor 0 0) content-box exclude, linear-gradient(currentColor 0 0);
+  transition: opacity var(--d-scene) var(--courbe);
+}
+
+.entree__formulaire fieldset {
+  gap: var(--s5);
+}
+
+.entree__formulaire input:not([type='checkbox']) {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  padding: var(--s2) var(--s3);
+  border: 1px solid var(--trait);
+  border-radius: var(--r1);
+  background: var(--fond);
+  color: var(--encre);
+  font: inherit;
+  font-size: var(--t-s);
+  transition: border-color var(--d-ui) var(--courbe), box-shadow var(--d-ui) var(--courbe);
+}
+
+.entree__formulaire input:hover {
+  border-color: var(--encre);
+}
+
+.entree__formulaire input:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-color: var(--encre);
+}
+
+.entree__formulaire input[aria-invalid='true'] {
+  border-color: var(--erreur);
+}
+
+.entree__formulaire .bo-actions {
+  margin-top: var(--s2);
+}
+
+.entree__action {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  min-height: 48px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* En attente : un reflet court sur le bouton, comme la lumière sur le métal. */
+.entree__action::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, var(--reflet) 50%, transparent 70%);
+  translate: -100% 0;
+  pointer-events: none;
+}
+
+[aria-busy='true'] .entree__action::after,
+.entree__action[aria-busy='true']::after {
+  animation: reflet calc(var(--d-scene) * 3) var(--courbe) infinite;
+}
+
+@keyframes reflet {
+  to { translate: 100% 0; }
+}
+
+[aria-busy='true'] .entree__action,
+.entree__action[aria-busy='true'] {
+  cursor: progress;
+  opacity: 1;
+}
+
+/* Flamme soufflée : la flaque sous la carte s’éteint avec elle, et le bouton
+   qui compte les secondes passe au contour, sans lumière. */
+.entree__carte::before {
+  transition: opacity calc(var(--d-scene) * 2) var(--courbe);
+}
+
+.entree[data-flamme='soufflee'] .entree__carte::before {
+  opacity: 0.2;
+}
+
+.entree[data-flamme='soufflee'] .entree__carte::after {
+  opacity: 0.2;
+}
+
+.entree[data-flamme='soufflee'] .entree__carte {
+  box-shadow: var(--ombre-1);
+}
+
+.entree[data-flamme='soufflee'] .entree__action:disabled {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--trait);
+  color: var(--eteint);
+  opacity: 1;
+}
+
+/* Mot de passe : afficher ou masquer, et l’avertissement des majuscules. */
+.champ-secret {
+  position: relative;
+}
+
+.entree__formulaire .champ-secret input {
+  padding-right: calc(var(--s9) + var(--s2));
+}
+
+.champ-secret__voir {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  bottom: 2px;
+  min-width: 44px;
+  padding-inline: var(--s3);
+  border: 0;
+  border-radius: var(--r1);
+  background: transparent;
+  color: var(--accent);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-petit);
+  cursor: pointer;
+}
+
+.champ-secret__voir:hover {
+  color: var(--accent-survol);
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+}
+
+.champ-maj {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  color: var(--encre);
+  font-weight: 600;
+  animation: retour-vient var(--d-ui) var(--courbe);
+}
+
+.champ-maj__signe {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--trait);
+  border-radius: var(--r1);
+  font-size: var(--t-xs);
+  line-height: 1;
+}
+
+/* Le refus : la carte se dérobe à peine (scripts, sauf mouvement réduit). */
+@keyframes refus {
+  0%, 100% { translate: 0 0; }
+  18% { translate: -7px 0; }
+  36% { translate: 6px 0; }
+  54% { translate: -4px 0; }
+  72% { translate: 2px 0; }
+}
+
+.entree__carte[data-refus] {
+  animation: refus calc(var(--d-scene) * 1.1) var(--courbe);
+}
+
+/* ===== Le code à six chiffres =====
+   Un seul vrai champ (le contrat, l’autoremplissage `one-time-code`, le
+   collage) ; les six cases en sont l’image, mise à jour par les scripts. */
+.code {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.code__cases {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+}
+
+.code__case {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 58px;
+  border: 1px solid var(--trait);
+  border-radius: var(--r1);
+  background: var(--fond);
+  font-size: var(--t-xl);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums lining-nums;
+  line-height: 1;
+  transition: border-color var(--d-ui) var(--courbe), box-shadow var(--d-ui) var(--courbe), background-color var(--d-ui) var(--courbe);
+}
+
+.code__tiret {
+  width: 10px;
+  height: 2px;
+  border-radius: var(--r1);
+  background: var(--trait);
+}
+
+.code__case[data-plein] {
+  border-color: var(--encre);
+}
+
+.code__case[data-pose] {
+  animation: chiffre-pose calc(var(--d-ui) * 1.5) var(--courbe);
+}
+
+@keyframes chiffre-pose {
+  from { scale: 1.14; box-shadow: 0 0 0 4px var(--lanterne-halo); }
+}
+
+/* La case active : le contour de focus et un curseur qui bat. */
+.code:has(.code__saisie:focus-visible) .code__case[data-active] {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.code:has(.code__saisie:focus) .code__case[data-active]:not([data-plein])::after {
+  content: '';
+  width: 2px;
+  height: 26px;
+  border-radius: var(--r1);
+  background: var(--encre);
+  animation: curseur calc(var(--d-scene) * 2.6) steps(1) infinite;
+}
+
+@keyframes curseur {
+  50% { opacity: 0; }
+}
+
+.code[data-etat='refus'] .code__case {
+  border-color: var(--erreur);
+  color: var(--erreur);
+}
+
+.code[data-etat='refus'] .code__cases {
+  animation: refus calc(var(--d-scene) * 1.1) var(--courbe);
+}
+
+/* Code juste : les cases s’allument l’une après l’autre. */
+.code[data-etat='accepte'] .code__case {
+  border-color: var(--lanterne);
+  box-shadow: 0 0 0 3px var(--lanterne-halo), 0 0 22px var(--lanterne-halo);
+  transition-delay: calc(var(--rang, 0) * var(--d-ui) / 3);
+}
+
+.code__case:nth-child(1) { --rang: 0; }
+.code__case:nth-child(2) { --rang: 1; }
+.code__case:nth-child(3) { --rang: 2; }
+.code__case:nth-child(5) { --rang: 3; }
+.code__case:nth-child(6) { --rang: 4; }
+.code__case:nth-child(7) { --rang: 5; }
+
+/* Le vrai champ couvre les cases, invisible : clic, collage et focus passent.
+   (`.code` en plus : la règle générale des champs ne doit pas l’emporter.) */
+.entree__formulaire .code .code__saisie {
+  position: absolute;
+  inset: 0;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: transparent;
+  caret-color: transparent;
+  font-size: var(--t-s);
+  letter-spacing: 2.4em;
+  cursor: text;
+}
+
+.entree__formulaire .code .code__saisie:focus-visible {
+  outline: none;
+}
+
+.entree__formulaire .code .code__saisie::selection {
+  background: transparent;
+}
+
+/* Code de secours : le champ redevient un champ, en capitales à chasse fixe. */
+.code[data-mode='secours'] {
+  width: 100%;
+}
+
+.code[data-mode='secours'] .code__cases {
+  display: none;
+}
+
+.entree__formulaire .code[data-mode='secours'] .code__saisie {
+  position: static;
+  min-height: 48px;
+  padding: var(--s2) var(--s3);
+  border: 1px solid var(--trait);
+  background: var(--fond);
+  color: var(--encre);
+  caret-color: auto;
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: var(--t-s);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.entree__formulaire .code[data-mode='secours'] .code__saisie:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.entree__formulaire .code[data-mode='secours'] .code__saisie::placeholder {
+  color: var(--eteint);
+  opacity: 0.7;
+}
+
+.code[data-mode='secours'] + .bo-help {
+  display: none;
+}
+
+.code__mode {
+  margin-top: var(--s2);
+  margin-left: calc(-1 * var(--s3));
+}
+
+/* ===== Première configuration : QR code, clé, puis le code ===== */
+.inscription {
+  display: grid;
+  gap: var(--s5);
+  margin: 0 0 var(--s5);
+  padding: 0;
+  list-style: none;
+  counter-reset: pas;
+}
+
+.inscription__pas {
+  position: relative;
+  padding-left: var(--s7);
+  counter-increment: pas;
+}
+
+.inscription__pas::before {
+  content: counter(pas);
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--trait);
+  border-radius: 50%;
+  color: var(--encre);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.inscription__pas + .inscription__pas::after {
+  content: '';
+  position: absolute;
+  left: 15px;
+  bottom: calc(100% + var(--s1));
+  height: calc(var(--s5) - var(--s2));
+  border-left: 1px dashed var(--trait);
+}
+
+.inscription__consigne {
+  padding-top: var(--s1);
+}
+
+/* Le QR code et son aide côte à côte, puis la clé sur toute la largeur : elle
+   tient entière sur une ligne (32 caractères groupés par quatre). */
+.inscription__details {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--s4) var(--s5);
+  margin-top: var(--s4);
+}
+
+.inscription__aide {
+  margin: 0;
+}
+
+.cle {
+  grid-column: 1 / -1;
+}
+
+/* Le QR code sur sa plaque claire ; la lumière le balaie à son arrivée. */
+.qr {
+  position: relative;
+  overflow: hidden;
+  width: 168px;
+  padding: var(--s2);
+  border: 1px solid var(--filet);
+  border-radius: var(--r1);
+  background: var(--papier-logo);
+}
+
+.qr img {
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.qr__balayage {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 40%;
+  background: linear-gradient(to bottom, transparent, var(--lanterne-halo) 70%, var(--lanterne-eclat) 98%, transparent);
+  translate: 0 -100%;
+  pointer-events: none;
+}
+
+.qr[data-balaye] .qr__balayage {
+  animation: balayage calc(var(--d-scene) * 3) var(--courbe) both;
+}
+
+@keyframes balayage {
+  from { translate: 0 -100%; }
+  to { translate: 0 260%; }
+}
+
+/* En préparation : une plaque vide que la lumière parcourt en boucle. */
+.qr--attente {
+  aspect-ratio: 1;
+  margin-top: var(--s4);
+  background: var(--emplacement);
+}
+
+.qr--attente .qr__balayage {
+  animation: balayage calc(var(--d-scene) * 3.5) var(--courbe) infinite;
+}
+
+.cle label {
+  font-size: var(--t-xs);
+}
+
+.cle__ligne {
+  display: flex;
+  gap: var(--s2);
+}
+
+.cle__ligne .bo-code {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: var(--s2) var(--s3);
+  border: 1px solid var(--trait);
+  border-radius: var(--r1);
+  background: var(--fond);
+  color: var(--encre);
+  letter-spacing: 0.06em;
+}
+
+/* ===== Codes de secours ===== */
+.bo-recovery-codes {
+  display: grid;
+  gap: var(--s1);
+  margin: 0 0 var(--s5);
+  padding: 0;
+  list-style: none;
+  counter-reset: code;
+}
+
+.bo-recovery-codes li {
+  counter-increment: code;
+  display: grid;
+  grid-template-columns: var(--s6) minmax(0, 1fr);
+  align-items: center;
+  padding: var(--s2) var(--s3);
+  border: 1px solid var(--filet);
+  border-radius: var(--r1);
+  background: var(--fond);
+}
+
+.bo-recovery-codes li::before {
+  content: counter(code, decimal-leading-zero);
+  color: var(--eteint);
+  font-size: var(--t-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.bo-recovery-codes code {
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: var(--t-xs);
+  letter-spacing: 0.03em;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+/* Les codes apparaissent un à un, comme si la lumière passait dessus. */
+.bo-recovery-codes[data-revele] li {
+  animation: code-eclaire calc(var(--d-scene) * 2) var(--courbe) both;
+  animation-delay: calc(var(--rang, 0) * var(--d-ui) / 2);
+}
+
+@keyframes code-eclaire {
+  0% { opacity: 0; translate: calc(-1 * var(--s2)) 0; }
+  45% { opacity: 1; box-shadow: 0 0 0 3px var(--lanterne-halo); border-color: var(--lanterne); }
+  100% { opacity: 1; translate: 0 0; }
+}
+
+#bo-recovery .bo-actions .entree__action {
+  width: auto;
+  flex: 1 1 100%;
+}
+
+/* ===== Les étapes : un repère, un mot ; la lumière avance ===== */
+.etapes {
+  grid-column: recit-debut / recit-fin;
+  grid-row: etapes;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2) var(--s3);
+  margin: var(--s7) 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--eteint);
+  font-size: var(--t-xs);
+  line-height: 1.4;
+}
+
+.etapes__etape {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+}
+
+.etapes__etape + .etapes__etape::before {
+  content: '';
+  width: var(--s6);
+  height: 1px;
+  margin-right: var(--s1);
+  background: var(--filet);
+  transition: background-color calc(var(--d-scene) * 2) var(--courbe);
+}
+
+.etapes__etape[data-etat='faite'] + .etapes__etape::before {
+  background: var(--trait-lanterne);
+}
+
+.etapes__repere {
+  width: 10px;
+  height: 10px;
+  flex: none;
+  border: 1.5px solid var(--trait);
+  border-radius: 50%;
+  transition: background-color var(--d-scene) var(--courbe), border-color var(--d-scene) var(--courbe), box-shadow var(--d-scene) var(--courbe);
+}
+
+.etapes__etape[data-etat='faite'] .etapes__repere {
+  border-color: var(--encre);
+  background: var(--encre);
+}
+
+/* L’étape en cours porte la lumière : un point de lanterne. */
+.etapes__etape[data-etat='courante'] .etapes__repere {
+  border-color: var(--lanterne);
+  background: var(--lanterne);
+  box-shadow: 0 0 0 4px var(--lanterne-halo), 0 0 16px var(--lanterne-eclat);
+}
+
+.etapes__etape[data-etat='courante'] .etapes__nom {
+  color: var(--encre);
+  font-weight: 600;
+}
+
+/* ===== L’ouverture : la scène se compose une fois par session =====
+   `data-ouverture` (posé par theme.js avant le premier rendu) : complète à la
+   première visite, courte ensuite, aucune en mouvement réduit. L’état final
+   est l’état par défaut : retirer l’attribut abrège tout. */
+:root[data-ouverture='complete'] {
+  --t-allumage: calc(var(--d-scene) * 3.75);
+  --t-carte: calc(var(--d-scene) * 4.25);
+  --t-titre: calc(var(--d-scene) * 4.5);
+  --t-reste: calc(var(--d-scene) * 5.25);
+}
+
+:root[data-ouverture='courte'] {
+  --t-allumage: 0s;
+  --t-carte: calc(var(--d-scene) * 0.5);
+  --t-titre: calc(var(--d-scene) * 0.6);
+  --t-reste: var(--d-scene);
+}
+
+:root[data-ouverture='complete'] .entree__entete {
+  animation: apparition calc(var(--d-scene) * 2) var(--courbe) both;
+}
+
+:root[data-ouverture='complete'] .suspension__corde {
+  animation: corde calc(var(--d-scene) * 1.5) var(--courbe) both;
+}
+
+:root[data-ouverture='complete'] .lanterne__traits > * {
+  stroke-dasharray: 1;
+  animation: trace calc(var(--d-scene) * 2.5) var(--courbe) both;
+  animation-delay: calc(var(--d-scene) * (0.75 + var(--rang, 0) * 0.15));
+}
+
+/* Ordre du tracé : anneau, col, toit, montants, traverses, fenêtre, bougie,
+   socle, pieds (les paires se tracent ensemble). */
+.lanterne__traits > :nth-child(1) { --rang: 0; }
+.lanterne__traits > :nth-child(2) { --rang: 1; }
+.lanterne__traits > :nth-child(3) { --rang: 2; }
+.lanterne__traits > :nth-child(4),
+.lanterne__traits > :nth-child(5) { --rang: 3; }
+.lanterne__traits > :nth-child(6),
+.lanterne__traits > :nth-child(7) { --rang: 4; }
+.lanterne__traits > :nth-child(8) { --rang: 5; }
+.lanterne__traits > :nth-child(9) { --rang: 6; }
+.lanterne__traits > :nth-child(10) { --rang: 7; }
+.lanterne__traits > :nth-child(11),
+.lanterne__traits > :nth-child(12) { --rang: 8; }
+
+:root[data-ouverture] .flamme {
+  animation: allumage calc(var(--d-scene) * 1.5) var(--courbe) both;
+  animation-delay: var(--t-allumage);
+}
+
+:root[data-ouverture] .lanterne__halo,
+:root[data-ouverture] .lanterne__poussieres {
+  animation: eclat calc(var(--d-scene) * 2.5) var(--courbe) both;
+  animation-delay: var(--t-allumage);
+}
+
+:root[data-ouverture] .lanterne__vitre {
+  animation: apparition calc(var(--d-scene) * 1.5) var(--courbe) both;
+  animation-delay: var(--t-allumage);
+}
+
+:root[data-ouverture] .entree__carte {
+  animation: carte-vient calc(var(--d-scene) * 2) var(--courbe) both;
+  animation-delay: var(--t-carte);
+}
+
+:root[data-ouverture] .entree__etape:not([hidden]) .mot > span {
+  animation: mot-monte calc(var(--d-scene) * 1.75) var(--courbe) both;
+  animation-delay: calc(var(--t-titre) + var(--i, 0) * var(--d-scene) * 0.18);
+}
+
+:root[data-ouverture] .entree__surtitre,
+:root[data-ouverture] .entree__texte,
+:root[data-ouverture] .etapes,
+:root[data-ouverture] .entree__pied {
+  animation: apparition calc(var(--d-scene) * 1.75) var(--courbe) both;
+  animation-delay: var(--t-reste);
+}
+
+@keyframes apparition {
+  from { opacity: 0; }
+}
+
+@keyframes corde {
+  from { transform: scaleY(0); }
+}
+
+@keyframes trace {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes allumage {
+  0% { scale: 0.15; opacity: 0; }
+  55% { scale: 1.3; opacity: 1; }
+  100% { scale: 1; opacity: 1; }
+}
+
+@keyframes eclat {
+  0% { opacity: 0; scale: 0.3; }
+  40% { opacity: 1; scale: 1.18; }
+  100% { opacity: 1; scale: 1; }
+}
+
+@keyframes carte-vient {
+  from { opacity: 0; translate: 0 var(--s5); filter: blur(8px); }
+}
+
+@keyframes mot-monte {
+  from { translate: 0 110%; }
+}
+
+/* ===== D’un écran à l’autre : View Transitions, sinon un fondu monté ===== */
+.entree__etape:not([hidden]) > .entree__recit {
+  view-transition-name: entree-recit;
+}
+
+.entree__etape:not([hidden]) > .entree__carte {
+  view-transition-name: entree-carte;
+}
+
+/* Pendant l’allumage du thème, la page entière suit le masque : rien ne se
+   capture à part. */
+:root[data-transition-theme] .entree__etape > * {
+  view-transition-name: none;
+}
+
+::view-transition-group(entree-carte) {
+  animation-duration: calc(var(--d-scene) * 1.5);
+  animation-timing-function: var(--courbe);
+}
+
+::view-transition-old(entree-carte),
+::view-transition-new(entree-carte) {
+  animation-duration: calc(var(--d-scene) * 1.25);
+  animation-timing-function: var(--courbe);
+}
+
+::view-transition-old(entree-recit) {
+  animation: recit-part var(--d-scene) var(--courbe) both;
+}
+
+::view-transition-new(entree-recit) {
+  animation: recit-vient calc(var(--d-scene) * 1.75) var(--courbe) both;
+}
+
+@keyframes recit-part {
+  to { opacity: 0; translate: 0 calc(-1 * var(--s5)); filter: blur(4px); }
+}
+
+@keyframes recit-vient {
+  from { opacity: 0; translate: 0 var(--s6); filter: blur(6px); }
+}
+
+.entree__etape[data-arrivee] > .entree__recit {
+  animation: recit-vient calc(var(--d-scene) * 1.75) var(--courbe) both;
+}
+
+.entree__etape[data-arrivee] > .entree__carte {
+  animation: carte-vient calc(var(--d-scene) * 1.5) var(--courbe) both;
+}
+
+/* ===== L’atelier s’ouvre : la lumière part de la flamme et gagne l’écran =====
+   Le même geste que l’allumage du thème (theme-transition.css) : un masque
+   radial, et un front de lumière ambre à son bord. */
+.atelier {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  overflow: auto;
+  background: var(--fond);
+  color: var(--encre);
+}
+
+.atelier[data-revele] {
+  -webkit-mask-image: radial-gradient(circle at var(--ox, 50%) var(--oy, 30%), currentColor var(--rayon), transparent calc(var(--rayon) + 70px));
+  mask-image: radial-gradient(circle at var(--ox, 50%) var(--oy, 30%), currentColor var(--rayon), transparent calc(var(--rayon) + 70px));
+}
+
+.atelier[data-revele='ouverture'] {
+  animation: ouverture calc(var(--d-scene) * 3) var(--courbe) both;
+}
+
+.atelier[data-revele='fermeture'] {
+  animation: fermeture calc(var(--d-scene) * 2.5) var(--courbe) both;
+}
+
+.front-lumiere {
+  position: fixed;
+  inset: 0;
+  z-index: 11;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at var(--ox, 50%) var(--oy, 30%), transparent calc(var(--rayon) - 20px), var(--lanterne-eclat) calc(var(--rayon) + 35px), var(--lanterne-halo) calc(var(--rayon) + 80px), transparent calc(var(--rayon) + 160px));
+}
+
+.front-lumiere[data-revele='ouverture'] {
+  animation: ouverture calc(var(--d-scene) * 3) var(--courbe) both, front calc(var(--d-scene) * 3) var(--courbe) both;
+}
+
+.front-lumiere[data-revele='fermeture'] {
+  animation: fermeture calc(var(--d-scene) * 2.5) var(--courbe) both, front calc(var(--d-scene) * 2.5) var(--courbe) both;
+}
+
+@keyframes ouverture {
+  from { --rayon: 0px; }
+  to { --rayon: 160vmax; }
+}
+
+@keyframes fermeture {
+  from { --rayon: 160vmax; }
+  to { --rayon: -80px; }
+}
+
+@keyframes front {
+  0% { opacity: 0; }
+  12% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* L’atelier, aperçu simplifié : la coque du backoffice, une liste qui charge. */
+.atelier .bo-navigation {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.atelier .bo-navigation ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.atelier .bo-navigation a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  min-height: 44px;
+  padding-inline: var(--s3);
+  color: var(--encre);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.atelier .bo-navigation a[aria-current='page'] {
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--encre);
+}
+
+.bo-compte {
+  min-width: 24px;
+  padding: 0 var(--s1);
+  border: 1px solid var(--encre);
+  border-radius: var(--r1);
+  background: var(--encre);
+  color: var(--fond);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.atelier__corps {
+  padding-block: var(--s5) var(--s8);
+}
+
+.atelier__entete {
+  margin: var(--s3) 0 var(--s5);
+}
+
+.atelier__titre {
+  font-size: var(--t-2xl);
+}
+
+.atelier__titre:focus {
+  outline: none;
+}
+
+.bo-rubrique__description {
+  margin-top: var(--s2);
+  color: var(--eteint);
+}
+
+.atelier__grille {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: var(--s6);
+  align-items: start;
+}
+
+.atelier__liste {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--filet);
+}
+
+.atelier__liste li {
+  display: grid;
+  gap: var(--s2);
+  padding: var(--s4) 0;
+  border-bottom: 1px solid var(--filet);
+}
+
+.atelier__liste span {
+  height: 12px;
+  border-radius: var(--r1);
+  background: linear-gradient(90deg, var(--emplacement) 0 40%, var(--surface) 50%, var(--emplacement) 60% 100%);
+  background-size: 300% 100%;
+  animation: miroite calc(var(--d-scene) * 4) linear infinite;
+}
+
+.atelier__liste span:first-child {
+  width: 42%;
+}
+
+.atelier__liste span:last-child {
+  width: 78%;
+  opacity: 0.6;
+}
+
+@keyframes miroite {
+  from { background-position: 100% 0; }
+  to { background-position: 0 0; }
+}
+
+.atelier__detail {
+  min-height: 280px;
+  display: grid;
+  place-items: center;
+}
+
+.atelier[data-installe] .atelier__entete,
+.atelier[data-installe] .atelier__grille {
+  animation: recit-vient calc(var(--d-scene) * 1.5) var(--courbe) both;
+}
+
+.atelier[data-installe] .atelier__grille {
+  animation-delay: calc(var(--d-scene) * 0.3);
+}
+
+/* ===== La bascule lanterne et l’allumage (BasculeLanterne.astro,
+   theme-transition.css) ===== */
+.bascule {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--filet);
+  border-radius: var(--r3);
+  background: var(--surface);
+  color: var(--encre);
+  cursor: pointer;
+  transition: border-color var(--d-ui) var(--courbe), background-color var(--d-ui) var(--courbe);
+}
+
+.bascule:hover {
+  border-color: var(--trait);
+}
+
+.bascule svg {
+  width: 26px;
+  height: 26px;
+  overflow: visible;
+}
+
+.bascule .lt-flamme {
+  fill: transparent;
+  stroke: currentColor;
+  transform-origin: 12px 15.6px;
+  transform: scale(0.7);
+  transition: fill var(--d-scene) var(--courbe), stroke var(--d-scene) var(--courbe), transform var(--d-scene) var(--courbe);
+}
+
+.bascule .lt-halo {
+  fill: var(--lanterne);
+  opacity: 0;
+  transform-origin: 12px 14.5px;
+  transform: scale(0.3);
+  transition: opacity var(--d-scene) var(--courbe), transform var(--d-scene) var(--courbe);
+}
+
+:root[data-theme='nuit'] .bascule {
+  border-color: var(--cadre-point);
+  background: var(--cadre-barre);
+  color: var(--lune);
+}
+
+:root[data-theme='nuit'] .bascule .lt-flamme {
+  fill: var(--lanterne);
+  stroke: var(--lanterne);
+  transform: scale(1);
+}
+
+:root[data-theme='nuit'] .bascule .lt-halo {
+  opacity: 0.28;
+  transform: scale(1);
+}
+
+:root[data-transition-theme]::view-transition-group(root) {
+  animation-duration: calc(var(--d-scene) * 2);
+}
+
+:root[data-transition-theme]::view-transition-old(root),
+:root[data-transition-theme]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+:root[data-transition-theme]::view-transition-image-pair(root) {
+  background: color-mix(in srgb, var(--lanterne) 50%, var(--suie));
+}
+
+:root[data-transition-theme='vers-nuit']::view-transition-new(root) {
+  -webkit-mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0%), transparent calc(var(--rayon) + 40px), currentColor calc(var(--rayon) + 80px));
+  mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0%), transparent calc(var(--rayon) + 40px), currentColor calc(var(--rayon) + 80px));
+  animation: tombee-de-la-nuit calc(var(--d-scene) * 2) var(--courbe) both;
+}
+
+:root[data-transition-theme='vers-nuit']::view-transition-old(root) {
+  -webkit-mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0%), currentColor var(--rayon), transparent calc(var(--rayon) + 40px));
+  mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0%), currentColor var(--rayon), transparent calc(var(--rayon) + 40px));
+  animation: tombee-de-la-nuit calc(var(--d-scene) * 2) var(--courbe) both;
+}
+
+:root[data-transition-theme='vers-jour']::view-transition-new(root) {
+  -webkit-mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0%), currentColor var(--rayon), transparent calc(var(--rayon) + 40px));
+  mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0%), currentColor var(--rayon), transparent calc(var(--rayon) + 40px));
+  animation: lever-du-jour calc(var(--d-scene) * 2) var(--courbe) both;
+}
+
+:root[data-transition-theme='vers-jour']::view-transition-old(root) {
+  -webkit-mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0%), transparent calc(var(--rayon) + 40px), currentColor calc(var(--rayon) + 80px));
+  mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0%), transparent calc(var(--rayon) + 40px), currentColor calc(var(--rayon) + 80px));
+  animation: lever-du-jour calc(var(--d-scene) * 2) var(--courbe) both;
+}
+
+@keyframes tombee-de-la-nuit {
+  from { --rayon: 160vmax; }
+  to { --rayon: -80px; }
+}
+
+@keyframes lever-du-jour {
+  from { --rayon: -80px; }
+  to { --rayon: 160vmax; }
+}
+
+:root[data-transition-theme='couleurs'],
+:root[data-transition-theme='couleurs'] *,
+:root[data-transition-theme='couleurs'] *::before,
+:root[data-transition-theme='couleurs'] *::after {
+  transition-property: color, background-color, border-color, fill, stroke, opacity;
+  transition-duration: calc(var(--d-scene) * 2);
+  transition-timing-function: var(--courbe);
+}
+
+/* ===== Régie de la maquette : hors design ===== */
+:root[data-sans-regie] .regie {
+  display: none;
+}
+
+.regie {
+  position: fixed;
+  right: var(--s4);
+  bottom: var(--s4);
+  z-index: 20;
+  max-width: min(22rem, calc(100vw - 2 * var(--s4)));
+  border: 1px dashed var(--accent);
+  border-radius: var(--r2);
+  background: var(--surface);
+  color: var(--encre);
+  font-size: var(--t-xs);
+  box-shadow: var(--ombre-1);
+}
+
+.regie summary {
+  padding: var(--s2) var(--s3);
+  color: var(--accent);
+  font-weight: 600;
+  cursor: pointer;
+  list-style-position: inside;
+}
+
+.regie__panneau {
+  display: grid;
+  gap: var(--s2);
+  max-height: min(70vh, 34rem);
+  overflow: auto;
+  padding: 0 var(--s3) var(--s3);
+}
+
+.regie__note {
+  color: var(--eteint);
+  line-height: 1.45;
+}
+
+.regie__groupe {
+  margin-top: var(--s2);
+  font-weight: 600;
+}
+
+.regie__scenes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s1);
+}
+
+.regie__scenes button {
+  min-height: 32px;
+  padding: 0 var(--s2);
+  border: 1px solid var(--filet);
+  border-radius: var(--r1);
+  background: var(--fond);
+  color: var(--encre);
+  font-size: var(--t-xs);
+  cursor: pointer;
+}
+
+.regie__scenes button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.bo .regie__case {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  margin: 0;
+  font-size: var(--t-xs);
+  font-weight: 400;
+  cursor: pointer;
+}
+
+/* ===== Points de rupture ===== */
+@media (max-width: 1100px) {
+  :root {
+    --colonne-carte: 28rem;
+  }
+
+  #bo-login .entree__titre,
+  #bo-two-factor:not([data-inscription]) .entree__titre {
+    font-size: var(--t-3xl);
+  }
+
+  .inscription__details {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Mobile : une colonne. La lanterne pend au milieu, sous l’en-tête ; le récit,
+   les étapes, puis la carte. */
+@media (max-width: 860px) {
+  .entree__corps {
+    grid-template-columns: [recit-debut carte-debut] minmax(0, 1fr) [recit-fin carte-fin];
+    grid-template-rows:
+      [lanterne] var(--rangee-lanterne)
+      [surtitre] auto
+      [titre] auto
+      [etapes] auto
+      [carte-haut] auto [fin];
+    padding-bottom: var(--s6);
+  }
+
+  .entree {
+    --lanterne-x: 50%;
+  }
+
+  .entree__recit {
+    margin-top: var(--s2);
+  }
+
+  .entree__titre {
+    max-width: 12ch;
+  }
+
+  .entree__texte {
+    margin-top: var(--s3);
+    font-size: var(--t-m);
+  }
+
+  .etapes {
+    margin-top: var(--s5);
+  }
+
+  .etapes__etape + .etapes__etape::before {
+    width: var(--s5);
+  }
+
+  /* Sur mobile, les repères seuls, et le nom de l’étape en cours : les autres
+     noms restent dits aux lecteurs d’écran. */
+  .etapes__etape:not([data-etat='courante']) .etapes__nom {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .entree__carte {
+    justify-self: stretch;
+    max-width: none;
+    margin-top: var(--s5);
+    padding: var(--s5);
+  }
+
+  /* La configuration récupère la largeur de la carte sous l’intitulé numéroté,
+     et la clé prend sa ligne entière, « Copier » dessous : elle tient d’un
+     seul tenant. */
+  .inscription__details {
+    margin-left: calc(-1 * var(--s7));
+  }
+
+  .cle__ligne {
+    flex-wrap: wrap;
+  }
+
+  .cle__ligne .bo-code {
+    flex-basis: 100%;
+    padding-inline: var(--s2);
+    letter-spacing: 0;
+  }
+
+  .bo-marque__embleme {
+    width: 44px;
+  }
+
+  .bascule,
+  :root[data-theme='nuit'] .bascule {
+    border-color: transparent;
+    background: none;
+  }
+
+  .code__case {
+    width: 42px;
+    height: 52px;
+  }
+
+  .code__cases {
+    gap: var(--s1);
+  }
+
+  .atelier__grille {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 400px) {
+  .code__case {
+    width: 38px;
+  }
+
+  .bo-marque__lieu {
+    display: none;
+  }
+}
+
+/* ===== Mouvement réduit : l’état final, sans transition ni allumage =====
+   theme.js pose `.mouvement-reduit` d’après prefers-reduced-motion (et la
+   régie le simule). */
+:root.mouvement-reduit *,
+:root.mouvement-reduit *::before,
+:root.mouvement-reduit *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+:root.mouvement-reduit .lanterne__poussieres,
+:root.mouvement-reduit .scene__grain {
+  display: none;
+}
+
+:root.mouvement-reduit .suspension__lanterne {
+  cursor: default;
+}
+
+/* ===== Impression : la carte seule, encre sur papier ===== */
+@media print {
+  .scene,
+  .regie,
+  .atelier,
+  .front-lumiere,
+  .bascule {
+    display: none !important;
+  }
+
+  .foyer::before,
+  .entree__carte::after {
+    display: none;
+  }
+}
