@@ -209,9 +209,23 @@ export function noeudProjet(chemin: string, description: string, image?: string)
 }
 
 /**
+ * Le jour `AAAA-MM-JJ` en date-heure ISO 8601 : minuit à Paris, avec son
+ * décalage d’heure d’été ou d’hiver. Google refuse une date seule dans le
+ * dateModified d’une ProfilePage. Le décalage se lit à 00:00 UTC, avant le
+ * changement d’heure, qui a lieu à 01:00 UTC.
+ */
+export function dateHeureParis(jour: string): string {
+  const decalage = new Intl.DateTimeFormat('en-US', { timeZone: 'Europe/Paris', timeZoneName: 'longOffset' })
+    .formatToParts(new Date(`${jour}T00:00:00Z`))
+    .find((partie) => partie.type === 'timeZoneName')
+    ?.value.replace('GMT', '');
+  return `${jour}T00:00:00${decalage || 'Z'}`;
+}
+
+/**
  * La page : le profil de Charles sur l’accueil, la liste des projets de la
  * vitrine sur /projets, une page web ailleurs ; `maj`, la date de son dernier
- * contenu (config/pages.ts), devient dateModified.
+ * contenu (config/pages.ts), devient dateModified, en date-heure.
  */
 export function noeudPage({ chemin, titre, description, maj }: { chemin: string; titre: string; description: string; maj?: string }) {
   const url = absolue(chemin);
@@ -223,7 +237,7 @@ export function noeudPage({ chemin, titre, description, maj }: { chemin: string;
     name: titre,
     description,
     inLanguage: SITE.langue,
-    ...(maj && { dateModified: maj }),
+    ...(maj && { dateModified: dateHeureParis(maj) }),
     isPartOf: chemin === '/' ? { '@id': SITE_ID } : { '@type': 'WebSite', '@id': SITE_ID, url: `${SITE.url}/`, name: SITE.nom },
     ...(chemin === '/' ? { mainEntity: { '@id': PERSONNE_ID } } : { about: { '@id': PERSONNE_ID } }),
     ...(chemin !== '/' && { breadcrumb: { '@id': `${url}#ariane` } }),
