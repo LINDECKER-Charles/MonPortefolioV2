@@ -1,10 +1,11 @@
 # Connexion au backoffice — « L’atelier s’allume »
 
 Maquette de la page de connexion de `/backoffice`, mise en scène comme un générique de film,
-dans la direction « Lanterne » (`DESIGN.md`). Maquette statique, à valider avant le portage
-dans le site : [`index.html`](index.html), [`style.css`](style.css), [`theme.js`](theme.js)
-(thème et ouverture, avant le premier rendu) et [`entree.js`](entree.js) (la scène, sa
-chorégraphie, le parcours, et un serveur simulé).
+dans la direction « Lanterne » (`DESIGN.md`) : [`index.html`](index.html),
+[`style.css`](style.css), [`theme.js`](theme.js) (thème et ouverture, avant le premier rendu)
+et [`entree.js`](entree.js) (la scène, sa chorégraphie, le parcours, et un serveur simulé).
+**Portée dans le site le 27/10/2026** (section « Portage dans le site ») : la maquette reste la
+référence du mouvement, le site fait foi pour le reste.
 
 ## La voir
 
@@ -126,67 +127,60 @@ quelques étincelles) ; les calques suivent la main en **parallaxe**.
   refus et code de secours, 429, mot de passe, bascule de thème, générique complet et court
   jusqu’à leur état final, générique abrégé, mouvement réduit), sans erreur JavaScript.
 
-## Écarts au système, à valider
+## Écarts au système, acceptés au portage
 
 1. **Trois courbes de plus** : le système n’en a qu’une (`--courbe`). Le motion en demande
-   d’autres, posées en jetons : `--courbe-expo` (l’arrivée d’un plan), `--courbe-entree`
-   (l’accélération dans la lumière), `--courbe-ressort` (la carte qui se pose, un ressort
-   amorti en `linear()`, repli automatique sur `--courbe-expo`).
+   d’autres, posées en jetons et réservées à l’entrée : `--courbe-expo` (l’arrivée d’un
+   plan), `--courbe-entree` (l’accélération dans la lumière), `--courbe-ressort` (la carte
+   qui se pose, un ressort amorti en `linear()`, repli automatique sur `--courbe-expo`).
 2. **Le titre en `--t-4xl`**, la taille de l’accroche de l’accueil, pour la connexion et la
    vérification.
 3. **Le générique se joue de nuit**, même le jour, et finit sur le lever du jour depuis la
-   lanterne (la scène de jour reste la pierre). La régie garde l’option d’une scène sombre en
-   permanence.
+   lanterne (la scène de jour reste la pierre). L’option d’une scène sombre en permanence
+   n’a pas été portée.
 4. **Bandes de cinéma, traînée d’objectif, bokeh** : un vocabulaire de cinéma que le site
    n’emploie pas ailleurs ; ils restent réservés à cette page.
 
-## Portage dans le site (proposition)
+## Portage dans le site (27/10/2026)
 
 Contrats gardés : identifiants et libellés lus par `scripts/backoffice.ts`,
-`tests/e2e/backoffice.spec.ts` et `scripts/test-backoffice.mjs`, routes et messages du
-backend. Aucun changement côté Rust.
+`tests/e2e/backoffice.spec.ts`, `tests/e2e/blog.spec.ts` et `scripts/test-backoffice.mjs`,
+routes et messages du backend. Aucun changement côté Rust.
 
-1. **`ConnexionBackoffice.astro`** : chaque écran devient un récit et une carte, sur la grille
-   de l’entrée. Nouveaux identifiants : `bo-password-voir`, `bo-password-maj`,
-   `bo-two-factor-label`, `bo-two-factor-saisie`, `bo-two-factor-mode`, `bo-two-factor-copy`,
-   `bo-enrollment-attente`, `bo-recovery-download`, `etapes`. `#bo-recovery-codes` devient une
-   liste ordonnée ; la clé manuelle s’affiche groupée.
-2. **La scène** dans `BackofficePage.astro`, tant que la session n’est pas ouverte ; la
-   chorégraphie dans un module à part (`scripts/backoffice-entree.ts`), appelé par
-   `backoffice.ts`, qui garde ses appels, ses verrous et ses retours.
-3. **L’ouverture avant le premier rendu** : un petit script synchrone propre au backoffice
-   (`public/backoffice-entree.js`, comme `/theme.js`) pose `data-ouverture` d’après
-   `sessionStorage` et le mouvement réduit. `/theme.js` reste intact.
-4. **Session déjà ouverte** : la vérification de `/session` court pendant le générique ;
-   valide, la flamme s’embrase aussitôt et l’atelier s’ouvre, sans attendre la fin.
-5. **429** : `ErreurApi` porte `Retry-After` ; vérifier que le relais Node le transmet pour
-   `/api/backoffice/login` (il le fait déjà pour le formulaire de contact).
-6. **Jetons** : les nouveaux (`--scene-*`, `--halo-*`, `--rayon-lumiere`, `--trainee`,
-   `--bokeh-*`, `--vitre-allumee`, `--flamme-coeur`, `--poussiere`, `--lisere`,
-   `--titre-eclaire`, `--titre-lueur`, `--ombre-portee-couleur`, `--eclat-interieur`,
-   `--anneau-halo`, `--reflet`, `--grain`, `--bande-hauteur`, et les trois courbes) rejoignent
-   `jetons.css`, jour et nuit.
-7. **Budgets** (15 Ko de JS et 30 Ko de CSS gzip par page) : c’est le vrai sujet. La maquette
-   pèse 16 Ko de JS gzip (non minifié et très commenté, parcours de connexion compris, qui
-   existe déjà dans `backoffice.ts`) et 16 Ko de CSS gzip (dont les jetons et primitives déjà
-   présents). Estimation après portage : **+ 6 à 8 Ko de JS et + 8 Ko de CSS** sur la page du
-   backoffice, qui dépasserait son budget de JS. Deux voies : charger la chorégraphie
-   **après le premier rendu** (`import()` : le formulaire fonctionne sans elle, la scène
-   arrive en état final puis s’anime), ou donner au backoffice, page privée hors index, **son
-   propre budget**. À mesurer au build, puis à trancher.
-8. **Tests** : mettre à jour les deux parcours du backoffice ; ajouter le mouvement réduit, le
-   générique abrégé, le compte à rebours du 429, le collage d’un code et le code de secours.
+- **Balisage** : `SceneEntree.astro` (la scène, le front de lumière, les bandes) et
+  `ConnexionBackoffice.astro` (trois écrans, chacun un récit et une carte, puis les étapes).
+  Classes préfixées (`bo-scene`, `bo-entree__*`, `bo-code-saisie`…). Nouveaux identifiants :
+  `bo-password-voir`, `bo-password-maj`, `bo-two-factor-saisie`, `bo-two-factor-auto`,
+  `bo-two-factor-mode`, `bo-two-factor-copy`, `bo-recovery-download`, `bo-etapes`,
+  `bo-horodatage`. Ce qui ne marche qu’avec le module est `hidden` jusqu’à son chargement.
+- **Écarts à la proposition** : l’étiquette du code reste « Code de vérification » (le mode
+  secours se dit par sa bascule et son exemple) ; la plaque d’attente du QR code se déduit du
+  DOM en CSS (`:has`) ; la clé s’affiche brute (la valeur du champ est le secret) ; les codes
+  de secours se coupent entre deux groupes (`<wbr>`) ; l’atelier n’est pas un calque à part :
+  les passages sont des View Transitions de la vraie page.
+- **Session déjà ouverte** : un indice (`localStorage`, « cl-backoffice-session », jamais un
+  secret) fait attendre la vérification sans générique ; une session trouvée pendant le
+  générique l’abrège et ouvre l’atelier d’un coup.
+- **Avant le premier rendu** : `public/backoffice-entree.js`, après `/theme.js`, intact.
+- **Scripts** : `backoffice.ts` reste maître de la session et du DOM ; chaque changement
+  d’écran passe par `jouer(geste, maj)`, confié au module `backoffice-entree.ts` (avec
+  `backoffice-scene.ts`, `backoffice-saisie.ts`, `backoffice-mouvement.ts`) s’il est chargé.
+  L’envoi au sixième chiffre et `Retry-After` (`ErreurApi.attente`) vivent dans
+  `backoffice.ts` ; le compte à rebours et la flamme soufflée, dans le module, qui observe les
+  retours (`data-state`, `data-attente`).
+- **Budgets mesurés au build** : JS de la page 14 972 o sur 15 360 (script synchrone 418 o,
+  `backoffice.ts` + 460 o) ; CSS 19,8 Ko sur 30 ; le module, chargé à la demande comme
+  l’atelier du blog, pèse 9,6 Ko gzip, hors budget de la page.
+- **Tests** : `tests/e2e/backoffice.spec.ts` (code envoyé seul au sixième chiffre, mot de
+  passe, 429, clé, téléchargement, code de secours, code refusé, session mémorisée, générique
+  et passages sans mouvement réduit).
 
-## Choix à trancher
+## Choix retenus
 
-1. **Le générique** : sa durée (≈ 4,7 s, une fois par onglet), ou une fois par jour, ou
-   toujours court ?
-2. **La nuit du générique le jour**, puis le lever du jour depuis la lanterne : d’accord ?
-3. **Les bandes de cinéma** : au générique et au passage dans l’atelier, ou seulement au
-   générique, ou jamais ?
-4. **L’envoi au sixième chiffre** : plus rapide, annoncé sous le champ (WCAG 3.2.2) ; ou le
-   bouton seul.
-5. **Le budget** : chorégraphie chargée après le premier rendu, ou budget propre au
-   backoffice ?
-6. **Grain, bokeh, horodatage** : purement décoratifs ; on peut retirer chacun sans rien
-   perdre.
+1. **Le générique** : complet à la première visite de l’onglet (≈ 4,7 s), court ensuite.
+2. **La nuit du générique le jour**, puis le lever du jour depuis la lanterne.
+3. **Les bandes de cinéma** : au générique et aux deux passages de l’atelier.
+4. **L’envoi au sixième chiffre**, annoncé sous le champ (WCAG 3.2.2), après 250 ms (une
+   saisie qui continue l’annule) ; jamais en saisie d’un code de secours.
+5. **Le budget** : chorégraphie chargée à la demande, hors du budget de la page.
+6. **Grain, bokeh, horodatage** : gardés.
