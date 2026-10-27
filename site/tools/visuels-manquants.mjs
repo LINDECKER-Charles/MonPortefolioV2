@@ -136,7 +136,7 @@ export async function verifierLivres(racine = SITE, visuels = VISUELS, depot = p
       if (nom && (meta.width !== nom.largeur || meta.height !== nom.hauteur)) dire(`${meta.width} × ${meta.height} au lieu de ${nom.largeur} × ${nom.hauteur} (nom)`);
       if (visuel.largeur && visuel.hauteur && !visuel.declinaisons?.length && (meta.width !== visuel.largeur || meta.height !== visuel.hauteur)) dire(`${meta.width} × ${meta.height} au lieu de ${visuel.largeur} × ${visuel.hauteur} (registre)`);
       if (visuel.ratio && (visuel.methode === 'IMG' || visuel.methode === 'OG' || nom) && Math.abs(meta.width / meta.height / ratioDe(visuel.ratio) - 1) > 0.01) dire(`ratio ${meta.width} / ${meta.height} au lieu de ${visuel.ratio}`);
-      if (visuel.methode !== 'IMG') continue;
+      if (visuel.methode !== 'IMG' && visuel.methode !== 'ART') continue;
       const plafond = plafondPoids(meta.width, meta.height);
       /** Poids et fond d’un rendu : le jour, puis la nuit. */
       const verifierRendu = async (f, m) => {

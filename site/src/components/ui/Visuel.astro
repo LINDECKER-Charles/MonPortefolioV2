@@ -162,7 +162,7 @@ const rendus = imageNuit
 /** La source neutre d’un rendu : celle du thème qu’il ne montre pas, ou celle de l’emplacement masqué. */
 const neutre = (propre: string | undefined) => [propre, masque].filter(Boolean).join(', ') || undefined;
 
-const NATURE = { IMG: 'Image à générer', SVG: 'Dessin à faire', FIG: 'Figure à coder', CAP: 'Capture à faire', PHO: 'Photo réelle', OG: 'Image de partage' } as const;
+const NATURE = { IMG: 'Image à générer', ART: 'Illustration à générer', SVG: 'Dessin à faire', FIG: 'Figure à coder', CAP: 'Capture à faire', PHO: 'Photo réelle', OG: 'Image de partage' } as const;
 const reprise = visuel.reprend?.length ? `reprend ${visuel.reprend.join(', ')}` : '';
 const mobile = ratioMobile && !/mobile/.test(visuel.format) ? `${ratioMobile.replace(' / ', ':')} sur mobile` : '';
 const format = [visuel.format, mobile, reprise].filter(Boolean).join(' · ');

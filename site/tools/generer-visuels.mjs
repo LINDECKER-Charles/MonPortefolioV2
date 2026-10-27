@@ -72,12 +72,13 @@ export const SERIES = {
   parcours: 'Parcours : hub, professionnel, compétences, formation',
   contact: 'Contact',
   blog: 'Blog',
-  etats: 'États : 404 et hors ligne',
+  etats: 'États : 404, hors ligne et connexion privée',
 };
 
 /** Ce que demande chaque méthode, dit en une ligne de fiche. */
 const TRAVAIL = {
   IMG: 'à générer (image)',
+  ART: 'illustration générée selon sa direction dédiée',
   SVG: 'à dessiner (vectoriel)',
   FIG: 'figure codée depuis des données, rien à générer',
   CAP: 'capture réelle, rien à générer',
@@ -148,7 +149,8 @@ export function rendreCommande(visuels = VISUELS, racine = SITE) {
   const imagesAFaire = images.filter((v) => !livres.has(v.id));
   const imagesLivrees = images.filter((v) => livres.has(v.id));
   const reprisesImages = visuels.filter((v) => v.methode === 'IMG' && estReprise(v));
-  const equipe = visuels.filter((v) => v.methode !== 'IMG' && !estReprise(v));
+  const arts = visuels.filter((v) => v.methode === 'ART' && !estReprise(v));
+  const equipe = visuels.filter((v) => v.methode !== 'IMG' && v.methode !== 'ART' && !estReprise(v));
   const equipeAFaire = equipe.filter((v) => !livres.has(v.id));
   const equipeFaite = equipe.filter((v) => livres.has(v.id));
   const autresReprises = visuels.filter((v) => v.methode !== 'IMG' && estReprise(v));
@@ -159,6 +161,7 @@ export function rendreCommande(visuels = VISUELS, racine = SITE) {
 
   sortie.push('## La mission', '');
   sortie.push(`Tu produis **uniquement les images générées (IMG)** de la refonte du portfolio de Charles Lindecker : la **partie 1** en donne la file, « socle » d’abord, puis les fiches. Les autres fiches (dessins vectoriels, figures codées, captures, photos, images de partage) sont du contexte : l’équipe s’en charge (**partie 2**).`, '');
+  if (arts.length) sortie.push('Les illustrations **ART** suivent une direction dédiée explicitement demandée, décrite dans leur fiche et leur README de provenance. Elles sont répertoriées séparément et ne relèvent pas des consignes de production Lanterne ci-dessous.', '');
   sortie.push('**Ce document est la seule référence de la série.** Il porte les retours de Charles sur la planche d’essai du 13 octobre 2026 (moins « image générée », une vraie version de nuit) et remplace toute consigne antérieure. Lis-le de haut en bas avant la première image.', '');
   sortie.push(`- **Deux masters par image**, dessinés au même cadrage au pixel près, dans les trois mêmes couleurs de clé : le jour ${code('<ID>.png')}, puis la nuit ${code('<ID>.nuit.png')}, faite **en édition depuis le master de jour** (section « Version de nuit »). Le site affiche l’un ou l’autre selon le thème.`);
   sortie.push(`- Le registre recense **${visuels.length} emplacements** (${socle.length} « socle », ${visuels.length - socle.length} « élargi »), dont **${images.length} images à générer** : ${imagesAFaire.length} restent à livrer, dont ${imagesAFaire.filter((v) => v.priorite === 'socle').length} « socle ».`);
@@ -280,6 +283,12 @@ export function rendreCommande(visuels = VISUELS, racine = SITE) {
   }
   sortie.push('');
   parSerie(sortie, equipeAFaire);
+
+  if (arts.length) {
+    sortie.push('## Illustrations de direction dédiée (ART)', '');
+    sortie.push('Ces illustrations générées sont des exceptions documentées, limitées à leur emplacement. Leurs fichiers conservent les couleurs du master et suivent les contrôles de dimensions, de transparence et de poids du registre. La fiche indique le prompt de référence et les éventuelles déclinaisons.', '');
+    parSerie(sortie, arts);
+  }
 
   sortie.push('## Contexte : déjà faits, photos et reprises', '');
   sortie.push('Fiches pour mémoire : rien à produire.', '');
