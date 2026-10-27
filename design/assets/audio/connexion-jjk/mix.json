@@ -1,0 +1,409 @@
+{
+  "fichier": "site/public/audio/connexion-jjk.mp3",
+  "sha256": "20183e6cb7ede3bc03d863bc64190e8b25e4ed6e4baba4aa2e08337756c1718a",
+  "octets": 427337,
+  "duree": 21.3,
+  "frequence": 48000,
+  "canaux": 2,
+  "bitrate": 160000,
+  "lufsIntegres": -18.76,
+  "truePeakDbtp": -2.23,
+  "loudnessRangeLu": 8.5,
+  "parPlan": [
+    {
+      "plan": "invocation",
+      "debut": 0,
+      "duree": 1.8,
+      "creteDbfs": -10.15,
+      "rmsDbfs": -22.38,
+      "creteLineaire": 0.3106720447540283
+    },
+    {
+      "plan": "signes",
+      "debut": 1.8,
+      "duree": 2.2,
+      "creteDbfs": -3.24,
+      "rmsDbfs": -17.25,
+      "creteLineaire": 0.6884109973907471
+    },
+    {
+      "plan": "regard",
+      "debut": 4,
+      "duree": 1.6,
+      "creteDbfs": -8.52,
+      "rmsDbfs": -23.1,
+      "creteLineaire": 0.37515339255332947
+    },
+    {
+      "plan": "revelation",
+      "debut": 5.6,
+      "duree": 3.2,
+      "creteDbfs": -2.45,
+      "rmsDbfs": -17.31,
+      "creteLineaire": 0.7545492649078369
+    },
+    {
+      "plan": "duel",
+      "debut": 8.8,
+      "duree": 2.6,
+      "creteDbfs": -2.43,
+      "rmsDbfs": -20.63,
+      "creteLineaire": 0.7561678886413574
+    },
+    {
+      "plan": "adaptation",
+      "debut": 11.4,
+      "duree": 2.6,
+      "creteDbfs": -9.28,
+      "rmsDbfs": -22.63,
+      "creteLineaire": 0.34366539120674133
+    },
+    {
+      "plan": "expansion",
+      "debut": 14,
+      "duree": 2.8,
+      "creteDbfs": -2.42,
+      "rmsDbfs": -15.56,
+      "creteLineaire": 0.7570438981056213
+    },
+    {
+      "plan": "silence",
+      "debut": 16.8,
+      "duree": 1,
+      "creteDbfs": null,
+      "rmsDbfs": null,
+      "creteLineaire": 0
+    },
+    {
+      "plan": "final",
+      "debut": 17.8,
+      "duree": 3.5,
+      "creteDbfs": -13.26,
+      "rmsDbfs": -26.92,
+      "creteLineaire": 0.217168390750885
+    }
+  ],
+  "gestes": [
+    {
+      "plan": "invocation",
+      "role": "drone",
+      "duree": 16.720000000000002,
+      "prise": 12,
+      "hauteur": 0.7,
+      "niveau": 0.16,
+      "entree": 0.55,
+      "sortie": 0.5,
+      "grave": 35,
+      "aigu": 650
+    },
+    {
+      "plan": "invocation",
+      "role": "horn",
+      "retard": 0.08,
+      "duree": 1.65,
+      "hauteur": 0.63,
+      "niveau": 0.26,
+      "entree": 0.25,
+      "sortie": 0.4,
+      "aigu": 1100,
+      "echo": true
+    },
+    {
+      "plan": "signes",
+      "role": "deep",
+      "retard": 0.04,
+      "duree": 0.7,
+      "ancre": "impact",
+      "hauteur": 0.72,
+      "niveau": 0.5,
+      "aigu": 900,
+      "sortie": 0.28
+    },
+    {
+      "plan": "signes",
+      "role": "deep",
+      "retard": 0.74,
+      "duree": 0.7,
+      "ancre": "impact",
+      "hauteur": 0.7999999999999999,
+      "niveau": 0.5,
+      "aigu": 900,
+      "sortie": 0.28
+    },
+    {
+      "plan": "signes",
+      "role": "deep",
+      "retard": 1.44,
+      "duree": 0.7,
+      "ancre": "impact",
+      "hauteur": 0.88,
+      "niveau": 0.5,
+      "aigu": 900,
+      "sortie": 0.28
+    },
+    {
+      "plan": "regard",
+      "role": "reverse",
+      "duree": 1.53,
+      "ancre": "avant",
+      "niveau": 0.38,
+      "grave": 220,
+      "aigu": 6000,
+      "entree": 0.12,
+      "sortie": 0.035,
+      "pan": -0.12
+    },
+    {
+      "plan": "revelation",
+      "role": "impact",
+      "duree": 2.9,
+      "ancre": "impact",
+      "hauteur": 0.72,
+      "niveau": 0.8,
+      "grave": 30,
+      "aigu": 3200,
+      "sortie": 0.8
+    },
+    {
+      "plan": "revelation",
+      "role": "horn",
+      "retard": 0.08,
+      "duree": 2.8,
+      "hauteur": 0.68,
+      "niveau": 0.36,
+      "aigu": 1600,
+      "entree": 0.07,
+      "sortie": 0.7,
+      "echo": true
+    },
+    {
+      "plan": "revelation",
+      "role": "bell",
+      "retard": 0.1,
+      "duree": 2.5,
+      "ancre": "impact",
+      "hauteur": 0.54,
+      "niveau": 0.12,
+      "aigu": 2800,
+      "sortie": 0.9,
+      "pan": 0.15
+    },
+    {
+      "plan": "duel",
+      "role": "whoosh",
+      "retard": 0.02,
+      "duree": 0.72,
+      "ancre": "avant",
+      "hauteur": 1.1,
+      "niveau": 0.6,
+      "grave": 170,
+      "aigu": 7800,
+      "pan": -0.35
+    },
+    {
+      "plan": "duel",
+      "role": "slash",
+      "retard": 0.75,
+      "duree": 0.85,
+      "ancre": "avant",
+      "hauteur": 0.9,
+      "niveau": 0.62,
+      "grave": 170,
+      "aigu": 7800,
+      "pan": 0.35
+    },
+    {
+      "plan": "duel",
+      "role": "whoosh",
+      "retard": 1.58,
+      "duree": 0.9,
+      "ancre": "avant",
+      "hauteur": 0.72,
+      "niveau": 0.68,
+      "grave": 100,
+      "aigu": 6500,
+      "pan": -0.1
+    },
+    {
+      "plan": "duel",
+      "role": "deep",
+      "retard": 1.91,
+      "duree": 0.62,
+      "ancre": "impact",
+      "hauteur": 0.7,
+      "niveau": 0.55,
+      "aigu": 800,
+      "sortie": 0.2
+    },
+    {
+      "plan": "adaptation",
+      "role": "bell",
+      "retard": 0.02,
+      "duree": 2.5,
+      "ancre": "impact",
+      "hauteur": 0.72,
+      "niveau": 0.52,
+      "grave": 130,
+      "aigu": 5400,
+      "sortie": 0.7,
+      "echo": true
+    },
+    {
+      "plan": "adaptation",
+      "role": "slash",
+      "retard": 0.72,
+      "duree": 0.55,
+      "ancre": "impact",
+      "hauteur": 0.62,
+      "niveau": 0.17,
+      "grave": 450,
+      "aigu": 4300,
+      "sortie": 0.3,
+      "pan": -0.2
+    },
+    {
+      "plan": "adaptation",
+      "role": "slash",
+      "retard": 1.46,
+      "duree": 0.55,
+      "ancre": "impact",
+      "hauteur": 0.8,
+      "niveau": 0.17,
+      "grave": 450,
+      "aigu": 4300,
+      "sortie": 0.3,
+      "pan": 0.2
+    },
+    {
+      "plan": "expansion",
+      "role": "reverse",
+      "duree": 1.43,
+      "ancre": "avant",
+      "hauteur": 0.8,
+      "niveau": 0.54,
+      "grave": 120,
+      "aigu": 6500,
+      "entree": 0.1,
+      "sortie": 0.025
+    },
+    {
+      "plan": "expansion",
+      "role": "impact",
+      "retard": 1.44,
+      "duree": 1.27,
+      "ancre": "impact",
+      "hauteur": 0.58,
+      "niveau": 1,
+      "grave": 28,
+      "aigu": 4500,
+      "sortie": 0.32
+    },
+    {
+      "plan": "expansion",
+      "role": "horn",
+      "retard": 1.46,
+      "duree": 1.23,
+      "hauteur": 0.5,
+      "niveau": 0.4,
+      "aigu": 1300,
+      "sortie": 0.3
+    },
+    {
+      "plan": "expansion",
+      "role": "slash",
+      "retard": 1.47,
+      "duree": 1.1,
+      "ancre": "impact",
+      "hauteur": 0.7,
+      "niveau": 0.27,
+      "grave": 900,
+      "aigu": 6000,
+      "sortie": 0.5,
+      "pan": 0.16
+    },
+    {
+      "plan": "final",
+      "role": "bell",
+      "retard": 0.08,
+      "duree": 3.4,
+      "ancre": "impact",
+      "hauteur": 0.72,
+      "niveau": 0.32,
+      "grave": 180,
+      "aigu": 4000,
+      "entree": 0.1,
+      "sortie": 1.1,
+      "pan": -0.18,
+      "echo": true
+    },
+    {
+      "plan": "final",
+      "role": "bell",
+      "retard": 0.2,
+      "duree": 3.1,
+      "ancre": "impact",
+      "hauteur": 1.08,
+      "niveau": 0.13,
+      "grave": 350,
+      "aigu": 4000,
+      "entree": 0.2,
+      "sortie": 1.2,
+      "pan": 0.18,
+      "echo": true
+    },
+    {
+      "plan": "final",
+      "role": "horn",
+      "retard": 0.08,
+      "duree": 3.3,
+      "hauteur": 0.55,
+      "niveau": 0.12,
+      "aigu": 550,
+      "entree": 0.45,
+      "sortie": 1.1
+    }
+  ],
+  "ffmpeg": "ffmpeg version 7.1-essentials_build-www.gyan.dev Copyright (c) 2000-2024 the FFmpeg developers",
+  "sources": [
+    {
+      "role": "drone",
+      "sha256": "a42a6177f52bffcb70f148ec19c4ac152e08fd43b36bdbbb7b88bc790246fc5f",
+      "originalSha256": "da1c5601a57bf855966d0776ab6be8355cafe2a34fa80fe2b8f8cf4579baad9f"
+    },
+    {
+      "role": "deep",
+      "sha256": "ac9ff0628580ef9bb969c9e8282e299016fc563352ae2d86bd82070f3fee8926",
+      "originalSha256": "ac9ff0628580ef9bb969c9e8282e299016fc563352ae2d86bd82070f3fee8926"
+    },
+    {
+      "role": "reverse",
+      "sha256": "49e39be6c30203a7d83e1c813f8df8e383f089132fb34fa7d34f9db3ffa10730",
+      "originalSha256": "a6a4ef9386147b409e38bac1a94c1feac9d9a32fd366dc8d6cafa774c3431843"
+    },
+    {
+      "role": "bell",
+      "sha256": "28d84e260ce8e0858cf2acc49b166878f48923131e0c01114f64ec99e8985e38",
+      "originalSha256": "15fd35e33ef53dd2c2387bfd969586b1da698b744002d251f1906fcd1741f4fb"
+    },
+    {
+      "role": "whoosh",
+      "sha256": "fd2c16561e8dfaeb4883f0614efb26cbb6e60e75629ab9c5a14dd4a4a0b19539",
+      "originalSha256": "e1de4e011ee6369aed772202a979590f03261e3607147bd2f04eda58ba5746eb"
+    },
+    {
+      "role": "slash",
+      "sha256": "b56fc9317def91ce75a988bdf0e23797d0ee8631c33484babed4a35512573c45",
+      "originalSha256": "b56fc9317def91ce75a988bdf0e23797d0ee8631c33484babed4a35512573c45"
+    },
+    {
+      "role": "impact",
+      "sha256": "772e4afc9e793228f1c612a4d08f048ac1cd08d910023579842ed906bb4e9e6f",
+      "originalSha256": "772e4afc9e793228f1c612a4d08f048ac1cd08d910023579842ed906bb4e9e6f"
+    },
+    {
+      "role": "horn",
+      "sha256": "a32d6ab2fa65420a8decff0980d6a9772222d63582fa5c41f62385056dc46b98",
+      "originalSha256": "6b16fbf3e94f3463db7ba2300893e3725cdae69204cd75961c42965f5157cf33"
+    }
+  ]
+}
