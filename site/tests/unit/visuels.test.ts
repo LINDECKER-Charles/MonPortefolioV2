@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { afterAll, describe, expect, it } from 'vitest';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import Visuel from '../../src/components/ui/Visuel.astro';
@@ -33,7 +34,7 @@ import { confidentialite } from '../support/prive';
  * dit où chaque entrée est posée.
  */
 
-const SITE = new URL('../../', import.meta.url).pathname;
+const SITE = fileURLToPath(new URL('../../', import.meta.url));
 const SRC = path.join(SITE, 'src');
 /** Marques refusées, plus celles du cadrage privé (tests/support/prive.ts). */
 const MARQUES = new RegExp(String.raw`\b(?:pvz|plants vs\.? zombies|riot|league of legends|sony|fromsoftware|trello|b-hive|claude|codex|elan formation|atis|mission locale|shrek|gwent|bloodborne|omnicard|unreal|unity|${confidentialite().marques.join('|')})\b|\b42\b`, 'i');
@@ -166,7 +167,7 @@ describe('registre des visuels : où chaque entrée est posée', () => {
     for (const fichier of fichiers) {
       const source = readFileSync(fichier, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/<!--[\s\S]*?-->/g, '');
       const motifs = [/<(?:Visuel|Scene)\b[^>]*?\bid=["']([A-Z]{3}-\w+)["']/g, /\bvisuel:\s*['"]([A-Z]{3}-\w+)['"]/g, /visuelParId\(\s*['"]([A-Z]{3}-\w+)['"]\s*\)/g];
-      for (const motif of motifs) for (const m of source.matchAll(motif)) appels.push([path.relative(SRC, fichier), m[1]]);
+      for (const motif of motifs) for (const m of source.matchAll(motif)) appels.push([path.relative(SRC, fichier).replaceAll('\\', '/'), m[1]]);
     }
     expect(appels.length).toBeGreaterThan(60);
     const ecarts = appels.flatMap(([fichier, id]) => {

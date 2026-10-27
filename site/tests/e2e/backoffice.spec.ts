@@ -531,7 +531,8 @@ test('nouvel accès MCP en un geste : Rédaction sans les demandes, commande pr�
   await expect(page.locator('#bo-secret [data-serveur-mcp]')).toHaveText('portfolio-local');
   await page.getByRole('button', { name: 'Copier la commande', exact: true }).click();
   await expect(page.locator('#bo-secret-retour')).toHaveText('Commande copiée. Collez-la dans un terminal.');
-  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(commande);
+  // Le presse-papiers Windows restitue les sauts de ligne en CRLF.
+  expect((await page.evaluate(() => navigator.clipboard.readText())).replace(/\r\n/g, '\n')).toBe(commande);
   await accessibilite(page);
 
   // La vérification suit Claude Code (révision 2026-07-28), avec le secret et sans cookie.

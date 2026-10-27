@@ -979,8 +979,11 @@ describe('exécution directe', () => {
 
     const debut = Date.now();
     enfant.kill('SIGTERM');
-    const { code } = await fin;
-    assert.equal(code, 0);
+    const { code, signal } = await fin;
+    // Windows termine directement l’enfant : le gestionnaire POSIX de SIGTERM
+    // n’y reçoit pas le signal et ne peut pas fixer le code de sortie à zéro.
+    if (process.platform === 'win32') assert.deepEqual({ code, signal }, { code: null, signal: 'SIGTERM' });
+    else assert.equal(code, 0);
     assert.ok(Date.now() - debut < 3_000, 'arrêt sans attendre le délai de grâce');
   });
 });
