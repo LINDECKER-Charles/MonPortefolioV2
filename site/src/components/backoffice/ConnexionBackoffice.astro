@@ -7,6 +7,15 @@
  * lanterne de la scène (SceneEntree.astro) ; chaque carte porte son retour à
  * côté du bouton.
  *
+ * Deux habits, un seul jeu de formulaires. Par défaut, la lanterne. Sur
+ * demande, l’entrée Jujutsu Kaisen : `data-entree-jjk` sur <html>, posé par
+ * le bouton discret du pied de page (scripts/connexion-jjk.ts) et relu avant
+ * le premier rendu (public/backoffice-entree.js). Le sanctuaire
+ * (`.bo-sanctuaire`) enveloppe toujours les trois écrans : hors de ce mode, il
+ * n’est qu’un passage (`display: contents`) et ses décors (`jjk-*`,
+ * `sanctuaire-*`, `.jjk-seul`) se taisent. Sa mise en scène
+ * (scripts/connexion-sanctuaire.ts) ne se charge qu’une fois ce mode choisi.
+ *
  * Identifiants et libellés : contrat de scripts/backoffice.ts et des tests
  * (tests/e2e/backoffice.spec.ts, tests/e2e/blog.spec.ts). Le champ du code
  * reste un seul vrai champ ; ses six cases (`aria-hidden`) en sont l’image,
@@ -14,113 +23,182 @@
  * (afficher le mot de passe, copier la clé, télécharger les codes, code de
  * secours, étapes) est `hidden` jusqu’à son chargement.
  *
- * Styles : styles/backoffice-entree.css.
+ * Styles : styles/backoffice-entree.css (la lanterne),
+ * styles/connexion-sanctuaire.css (le sanctuaire).
  */
 import Retour from './Retour.astro';
+import RoueAdaptation from './RoueAdaptation.astro';
+import CinemaJjk from './CinemaJjk.astro';
+import Visuel from '../ui/Visuel.astro';
+import '../../styles/connexion-sanctuaire.css';
 ---
 
-<section class="bo-entree__ecran" id="bo-login" aria-labelledby="bo-login-title" data-retour="bo-login-retour">
-  <div class="bo-entree__recit">
-    <h2 class="bo-entree__titre" id="bo-login-title">Entrer dans l’atelier</h2>
-    <p class="bo-entree__texte">Cet espace est réservé à l’administration du portfolio.</p>
-  </div>
-  <div class="bo-carte bo-entree__carte foyer">
-    <span class="bo-entree__trace" aria-hidden="true"></span>
-    <form id="bo-login-form" class="bo-entree__formulaire">
-      <fieldset disabled><legend class="sr">Connexion</legend>
-        <div class="bo-champ">
-          <label for="bo-login-email">Adresse e-mail de connexion</label>
-          <input id="bo-login-email" name="email" type="email" autocomplete="username" maxlength="254" spellcheck="false" required />
-        </div>
-        <div class="bo-champ">
-          <label for="bo-password">Mot de passe</label>
-          <div class="bo-motdepasse">
-            <input id="bo-password" name="password" type="password" autocomplete="current-password" required />
-            <button class="bo-motdepasse__voir" id="bo-password-voir" type="button" aria-controls="bo-password" hidden>Afficher<span class="sr"> le mot de passe</span></button>
-          </div>
-          <p class="bo-help bo-majuscules" id="bo-password-maj" hidden><span class="bo-majuscules__signe" aria-hidden="true">⇪</span> Majuscules activées</p>
-        </div>
-        <div class="bo-actions"><button class="bo-button bo-button--primary bo-entree__action" id="bo-login-submit" type="submit">Se connecter</button></div>
-      </fieldset>
-    </form>
-    <Retour id="bo-login-retour" />
-  </div>
-</section>
+<div class="bo-sanctuaire" data-sanctuaire data-technique="ombres" data-phase="idle" data-motion="paused">
+  <div class="jjk-grain" aria-hidden="true"></div>
+  <header class="jjk-entete">
+    <a href="/" class="jjk-marque" aria-label="Jujutsu Kaisen, revenir au portfolio de Charles Lindecker"><span lang="ja" aria-hidden="true">呪術廻戦</span><span>JUJUTSU KAISEN<small>Le portfolio · côté occulte</small></span></a>
+    <div class="jjk-entete__droite"><span>Charles Lindecker <span aria-hidden="true">/</span> Backoffice</span><button type="button" class="jjk-cinema-raccourci" data-cinema-open disabled><span aria-hidden="true">▷</span> Mode cinématique</button><a href="/">Retour au portfolio <span aria-hidden="true">→</span></a></div>
+  </header>
 
-<section class="bo-entree__ecran" id="bo-two-factor" aria-labelledby="bo-two-factor-title" data-retour="bo-two-factor-retour" hidden>
-  <div class="bo-entree__recit">
-    <h2 class="bo-entree__titre" id="bo-two-factor-title" tabindex="-1">Vérifier la connexion</h2>
-    <p class="bo-entree__texte" id="bo-two-factor-help">Saisissez le code de votre application d’authentification ou un code de secours.</p>
-  </div>
-  <div class="bo-carte bo-entree__carte foyer">
-    <span class="bo-entree__trace" aria-hidden="true"></span>
-    <div class="bo-enrollment" id="bo-enrollment" hidden>
-      <ol class="bo-inscription">
-        <li class="bo-inscription__pas">
-          <p class="bo-inscription__consigne">Ajoutez un compte dans votre application d’authentification en scannant ce QR code.</p>
-          <div class="bo-inscription__details" id="bo-enrollment-details" hidden>
-            <div class="bo-qr">
-              <img id="bo-two-factor-qr" width="240" height="240" alt="QR code à scanner dans l’application d’authentification" hidden />
-              <span class="bo-qr__balayage" aria-hidden="true"></span>
-            </div>
-            <p class="bo-help bo-inscription__aide" id="bo-two-factor-secret-help">Si vous ne pouvez pas scanner le QR code, ajoutez la clé ci-dessous dans l’application, avec un code renouvelé toutes les 30&nbsp;secondes.</p>
-            <div class="bo-champ bo-cle">
-              <label for="bo-two-factor-secret">Clé à saisir manuellement</label>
-              <div class="bo-cle__ligne">
-                <input id="bo-two-factor-secret" class="bo-code" readonly autocomplete="off" spellcheck="false" aria-describedby="bo-two-factor-secret-help" />
-                <button class="bo-button bo-button--petit" id="bo-two-factor-copy" type="button" hidden>Copier<span class="sr"> la clé</span></button>
+  <aside class="sanctuaire-scene" aria-label="Mahoraga, le Général divin">
+    <div class="jjk-scene-decor" aria-hidden="true"><Visuel id="JJK-02" alt="" sizes="(max-width: 760px) 100vw, 65vw" /></div>
+    <div class="sanctuaire-scene__trame" aria-hidden="true"></div>
+    <div class="jjk-masthead"><span class="jjk-surtexte">Technique des Dix Ombres</span><p class="jjk-nom">MAHORAGA</p><span class="jjk-classe">Classe<br />spéciale</span></div>
+    <button type="button" class="jjk-invocation-rapide" data-cinema-open disabled><span aria-hidden="true">▷</span> Voir l’invocation</button>
+    <div class="sanctuaire-figure" data-wheel-surface>
+      <div class="jjk-aura" aria-hidden="true"></div>
+      <svg class="jjk-traces" viewBox="0 0 700 700" aria-hidden="true"><path d="M35 620 265 400 168 448 560 40M110 680 300 530 270 555 660 188M18 175 198 286 172 234 631 611" /><path d="M71 595 430 173M210 650 588 233" /></svg>
+      <div class="jjk-personnage" aria-hidden="true"><Visuel id="JJK-01" alt="" sizes="(max-width: 760px) 320px, 52vw" /></div>
+      <div class="sanctuaire-figure__roue"><RoueAdaptation /></div>
+      <div class="sanctuaire-onde" aria-hidden="true"></div>
+      <span class="jjk-kanji" lang="ja" aria-hidden="true">魔虚羅</span>
+      <span class="jjk-sceau" lang="ja" aria-hidden="true">調伏</span>
+    </div>
+    <div class="jjk-legende-personnage"><span class="jjk-surtexte">Général divin</span><p>L’adaptation<br /><em>est absolue.</em></p></div>
+    <div class="jjk-techniques"><p class="jjk-surtexte">Choisissez votre technique</p><div role="group" aria-label="Technique innée">
+      <button type="button" data-technique="ombres" aria-pressed="true"><span class="jjk-technique__glyph" lang="ja" aria-hidden="true">影</span><span>Dix Ombres<small>Adaptation</small></span><span aria-hidden="true">01</span></button>
+      <button type="button" data-technique="infini" aria-pressed="false"><span class="jjk-technique__glyph" aria-hidden="true">∞</span><span>Infini<small>Expansion</small></span><span aria-hidden="true">02</span></button>
+      <button type="button" data-technique="sanctuaire" aria-pressed="false"><span class="jjk-technique__glyph" lang="ja" aria-hidden="true">斬</span><span>Sanctuaire<small>Entaille</small></span><span aria-hidden="true">03</span></button>
+    </div></div>
+  </aside>
+
+  <div class="sanctuaire-acces">
+    <div class="jjk-dossier"><span>Dossier d’exorciste</span><span class="jjk-accreditation">Accès privé</span></div>
+    <div class="jjk-forme-sceau" aria-hidden="true"><span lang="ja">封</span><svg viewBox="0 0 100 100"><path d="m50 4 40 23v46L50 96 10 73V27Z"/><circle cx="50" cy="50" r="39" /></svg></div>
+    <div class="sanctuaire-acces__repere"><span>Authentification</span><span class="sanctuaire-acces__numero" aria-hidden="true" data-auth-number>01 / 03</span></div>
+    <div class="sanctuaire-formulaires">
+      <section class="bo-entree__ecran" id="bo-login" aria-labelledby="bo-login-title" data-retour="bo-login-retour">
+        <div class="bo-entree__recit">
+          <p class="sanctuaire-etape jjk-seul">Le territoire est scellé</p>
+          <p class="jjk-titre jjk-seul" aria-hidden="true">Franchir<br />le voile<span>.</span></p>
+          <h2 class="bo-entree__titre" id="bo-login-title">Entrer dans l’atelier</h2>
+          <p class="bo-entree__texte">Cet espace est réservé à l’administration du portfolio.</p>
+          <p class="jjk-texte jjk-seul">Identifiez-vous pour accéder à votre territoire.</p>
+        </div>
+        <div class="bo-carte bo-entree__carte foyer">
+          <span class="bo-entree__trace" aria-hidden="true"></span>
+          <form id="bo-login-form" class="bo-entree__formulaire">
+            <fieldset disabled><legend class="sr">Connexion</legend>
+              <div class="bo-champ">
+                <label for="bo-login-email">Adresse e-mail de connexion</label>
+                <svg class="jjk-icone jjk-seul" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 6 9 7 9-7" /></svg>
+                <input id="bo-login-email" name="email" type="email" autocomplete="username" maxlength="254" spellcheck="false" required />
               </div>
-            </div>
-          </div>
-          <div class="bo-qr bo-qr--attente" aria-hidden="true"><span class="bo-qr__balayage"></span></div>
-          <button class="bo-button" id="bo-two-factor-retry" type="button" hidden>Réessayer la configuration</button>
-        </li>
-        <li class="bo-inscription__pas">
-          <p class="bo-inscription__consigne">Saisissez ensuite le code à six chiffres pour confirmer l’activation.</p>
-        </li>
-      </ol>
-    </div>
-    <form id="bo-two-factor-form" class="bo-entree__formulaire">
-      <fieldset><legend class="sr">Vérification en deux étapes</legend>
-        <div class="bo-champ">
-          <label for="bo-two-factor-code">Code de vérification</label>
-          <div class="bo-code-saisie" id="bo-two-factor-saisie">
-            <input id="bo-two-factor-code" class="bo-code bo-code-saisie__champ" name="code" type="text" autocomplete="one-time-code" maxlength="64" spellcheck="false" required aria-describedby="bo-two-factor-help bo-two-factor-auto" />
-            <div class="bo-code-saisie__cases" aria-hidden="true">
-              <span class="bo-code-saisie__case"></span><span class="bo-code-saisie__case"></span><span class="bo-code-saisie__case"></span>
-              <span class="bo-code-saisie__tiret"></span>
-              <span class="bo-code-saisie__case"></span><span class="bo-code-saisie__case"></span><span class="bo-code-saisie__case"></span>
-            </div>
-          </div>
-          <p class="bo-help" id="bo-two-factor-auto">Le code est vérifié dès le sixième chiffre.</p>
-          <button class="bo-button bo-button--quiet bo-button--petit bo-code-saisie__mode" id="bo-two-factor-mode" type="button" aria-controls="bo-two-factor-code" hidden>Utiliser un code de secours</button>
+              <div class="bo-champ">
+                <label for="bo-password">Mot de passe</label>
+                <div class="bo-motdepasse">
+                  <svg class="jjk-icone jjk-seul" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3" /></svg>
+                  <input id="bo-password" name="password" type="password" autocomplete="current-password" required />
+                  <button class="bo-motdepasse__voir" id="bo-password-voir" type="button" aria-controls="bo-password" hidden>Afficher<span class="sr"> le mot de passe</span></button>
+                </div>
+                <p class="bo-help bo-majuscules" id="bo-password-maj" hidden><span class="bo-majuscules__signe" aria-hidden="true">⇪</span> Majuscules activées</p>
+              </div>
+              <div class="bo-actions"><button class="bo-button bo-button--primary bo-entree__action" id="bo-login-submit" type="submit">Se connecter</button></div>
+            </fieldset>
+          </form>
+          <Retour id="bo-login-retour" />
         </div>
-        <div class="bo-actions">
-          <button class="bo-button bo-button--primary bo-entree__action" id="bo-two-factor-submit" type="submit">Vérifier le code</button>
-          <button class="bo-button bo-button--quiet" id="bo-two-factor-back" type="button">Revenir à la connexion</button>
-        </div>
-      </fieldset>
-    </form>
-    <Retour id="bo-two-factor-retour" />
-  </div>
-</section>
+      </section>
 
-<section class="bo-entree__ecran" id="bo-recovery" aria-labelledby="bo-recovery-title" data-retour="bo-recovery-retour" hidden>
-  <div class="bo-entree__recit">
-    <h2 class="bo-entree__titre" id="bo-recovery-title" tabindex="-1">Conservez vos codes de secours</h2>
-    <p class="bo-entree__texte">La vérification en deux étapes est activée. Chaque code permet une seule connexion si vous perdez l’accès à votre application. Gardez-les dans un endroit sûr&nbsp;: ils ne seront plus affichés après avoir quitté cet écran.</p>
-  </div>
-  <div class="bo-carte bo-entree__carte foyer">
-    <span class="bo-entree__trace" aria-hidden="true"></span>
-    <ol class="bo-recovery-codes" id="bo-recovery-codes" aria-label="Codes de secours"></ol>
-    <div class="bo-actions">
-      <button class="bo-button" id="bo-recovery-copy" type="button">Copier les codes</button>
-      <button class="bo-button" id="bo-recovery-download" type="button" hidden>Télécharger<span class="sr"> les codes</span></button>
-      <button class="bo-button bo-button--primary bo-entree__action" id="bo-recovery-continue" type="button">J’ai conservé mes codes</button>
+      <section class="bo-entree__ecran" id="bo-two-factor" aria-labelledby="bo-two-factor-title" data-retour="bo-two-factor-retour" hidden>
+        <div class="bo-entree__recit">
+          <p class="sanctuaire-etape jjk-seul">Deuxième passage</p>
+          <h2 class="bo-entree__titre" id="bo-two-factor-title" tabindex="-1">Vérifier la connexion</h2>
+          <p class="bo-entree__texte" id="bo-two-factor-help">Saisissez le code de votre application d’authentification ou un code de secours.</p>
+        </div>
+        <div class="bo-carte bo-entree__carte foyer">
+          <span class="bo-entree__trace" aria-hidden="true"></span>
+          <div class="bo-enrollment" id="bo-enrollment" hidden>
+            <ol class="bo-inscription">
+              <li class="bo-inscription__pas">
+                <p class="bo-inscription__consigne">Ajoutez un compte dans votre application d’authentification en scannant ce QR code.</p>
+                <div class="bo-inscription__details" id="bo-enrollment-details" hidden>
+                  <div class="bo-qr">
+                    <img id="bo-two-factor-qr" width="240" height="240" alt="QR code à scanner dans l’application d’authentification" hidden />
+                    <span class="bo-qr__balayage" aria-hidden="true"></span>
+                  </div>
+                  <p class="bo-help bo-inscription__aide" id="bo-two-factor-secret-help">Si vous ne pouvez pas scanner le QR code, ajoutez la clé ci-dessous dans l’application, avec un code renouvelé toutes les 30&nbsp;secondes.</p>
+                  <div class="bo-champ bo-cle">
+                    <label for="bo-two-factor-secret">Clé à saisir manuellement</label>
+                    <div class="bo-cle__ligne">
+                      <input id="bo-two-factor-secret" class="bo-code" readonly autocomplete="off" spellcheck="false" aria-describedby="bo-two-factor-secret-help" />
+                      <button class="bo-button bo-button--petit" id="bo-two-factor-copy" type="button" hidden>Copier<span class="sr"> la clé</span></button>
+                    </div>
+                  </div>
+                </div>
+                <div class="bo-qr bo-qr--attente" aria-hidden="true"><span class="bo-qr__balayage"></span></div>
+                <button class="bo-button" id="bo-two-factor-retry" type="button" hidden>Réessayer la configuration</button>
+              </li>
+              <li class="bo-inscription__pas">
+                <p class="bo-inscription__consigne">Saisissez ensuite le code à six chiffres pour confirmer l’activation.</p>
+              </li>
+            </ol>
+          </div>
+          <form id="bo-two-factor-form" class="bo-entree__formulaire">
+            <fieldset><legend class="sr">Vérification en deux étapes</legend>
+              <div class="bo-champ">
+                <label for="bo-two-factor-code">Code de vérification</label>
+                <div class="bo-code-saisie" id="bo-two-factor-saisie">
+                  <input id="bo-two-factor-code" class="bo-code bo-code-saisie__champ" name="code" type="text" autocomplete="one-time-code" maxlength="64" spellcheck="false" required aria-describedby="bo-two-factor-help bo-two-factor-auto" />
+                  <div class="bo-code-saisie__cases" aria-hidden="true">
+                    <span class="bo-code-saisie__case"></span><span class="bo-code-saisie__case"></span><span class="bo-code-saisie__case"></span>
+                    <span class="bo-code-saisie__tiret"></span>
+                    <span class="bo-code-saisie__case"></span><span class="bo-code-saisie__case"></span><span class="bo-code-saisie__case"></span>
+                  </div>
+                </div>
+                <p class="bo-help" id="bo-two-factor-auto">Le code est vérifié dès le sixième chiffre.</p>
+                <button class="bo-button bo-button--quiet bo-button--petit bo-code-saisie__mode" id="bo-two-factor-mode" type="button" aria-controls="bo-two-factor-code" hidden>Utiliser un code de secours</button>
+              </div>
+              <div class="bo-actions">
+                <button class="bo-button bo-button--primary bo-entree__action" id="bo-two-factor-submit" type="submit">Vérifier le code</button>
+                <button class="bo-button bo-button--quiet" id="bo-two-factor-back" type="button">Revenir à la connexion</button>
+              </div>
+            </fieldset>
+          </form>
+          <Retour id="bo-two-factor-retour" />
+        </div>
+      </section>
+
+      <section class="bo-entree__ecran" id="bo-recovery" aria-labelledby="bo-recovery-title" data-retour="bo-recovery-retour" hidden>
+        <div class="bo-entree__recit">
+          <p class="sanctuaire-etape jjk-seul">Gardez vos clés</p>
+          <h2 class="bo-entree__titre" id="bo-recovery-title" tabindex="-1">Conservez vos codes de secours</h2>
+          <p class="bo-entree__texte">La vérification en deux étapes est activée. Chaque code permet une seule connexion si vous perdez l’accès à votre application. Gardez-les dans un endroit sûr&nbsp;: ils ne seront plus affichés après avoir quitté cet écran.</p>
+        </div>
+        <div class="bo-carte bo-entree__carte foyer">
+          <span class="bo-entree__trace" aria-hidden="true"></span>
+          <ol class="bo-recovery-codes" id="bo-recovery-codes" aria-label="Codes de secours"></ol>
+          <div class="bo-actions">
+            <button class="bo-button" id="bo-recovery-copy" type="button">Copier les codes</button>
+            <button class="bo-button" id="bo-recovery-download" type="button" hidden>Télécharger<span class="sr"> les codes</span></button>
+            <button class="bo-button bo-button--primary bo-entree__action" id="bo-recovery-continue" type="button">J’ai conservé mes codes</button>
+          </div>
+          <Retour id="bo-recovery-retour" />
+        </div>
+      </section>
     </div>
-    <Retour id="bo-recovery-retour" />
+    <div class="sanctuaire-legende"><span aria-hidden="true"></span><p data-wheel-caption>Le Général divin attend son invocation.</p></div>
+    <div class="jjk-experience"><span class="jjk-surtexte">Avant de franchir le voile</span><button type="button" class="jjk-cinema-lancer" data-cinema-open disabled><span class="jjk-cinema-lancer__lecture" aria-hidden="true">▷</span><span>Mode cinématique<small>L’invocation de Mahoraga</small></span><span aria-hidden="true">↗</span></button><button type="button" id="bo-domain-trigger" class="jjk-domaine-button" disabled><span lang="ja" aria-hidden="true">領域展開</span><span>Déployer le territoire <span aria-hidden="true">↗</span></span></button></div>
   </div>
-</section>
+
+  <footer class="jjk-pied"><div class="jjk-pied__marque"><span>Jujutsu Kaisen <span aria-hidden="true">/</span> Espace privé</span><button type="button" class="sanctuaire-commande jjk-retour-lanterne" data-entree-jjk-bascule hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v3m-5 3h10l-1 11H8Zm3 4v4m4-4v4" /></svg>Revenir à la lanterne</button></div><div class="sanctuaire-commandes">
+    <button type="button" class="sanctuaire-commande" id="bo-wheel-replay" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2 6M20 4v7h-7" /></svg>Faire tourner la roue</button>
+    <button type="button" class="sanctuaire-commande" id="bo-sound-toggle" aria-label="Activer le son" aria-pressed="false" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m11 5-6 5H2v4h3l6 5Zm4 3q6 4 0 8m3-11q9 7 0 14"/></svg><span data-sound-label>Son désactivé</span></button>
+    <button type="button" class="sanctuaire-commande sanctuaire-pause" id="bo-motion-toggle" aria-label="Mettre les animations en pause" aria-pressed="false" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path class="sanctuaire-pause__pause" d="M8 5v14M16 5v14" /><path class="sanctuaire-pause__lecture" d="m9 5 10 7-10 7Z" /></svg></button>
+  </div></footer>
+  <div class="jjk-territoire" aria-hidden="true">
+    <div class="jjk-territoire__sol"></div>
+    <svg class="jjk-territoire__profondeur" viewBox="0 0 800 800">
+      {[140, 195, 250, 305, 360].map((rayon, index) => <circle cx="400" cy="400" r={rayon} style={`--anneau: ${index}`} />)}
+      <path d="M400 10v160m0 460v160M10 400h160m460 0h160M124 124l113 113m326 326 113 113M124 676l113-113m326-326 113-113" />
+    </svg>
+    <div class="jjk-territoire__cercle"></div>
+    <div class="jjk-territoire__signes" lang="ja">{['影', '界', '呪', '術', '影', '界', '呪', '術'].map((signe, index) => <span style={`--signe: ${index}`}>{signe}</span>)}</div>
+    <div class="jjk-territoire__texte"><span lang="ja">領域展開</span><strong>Extension du territoire</strong><span data-technique-name>Dix Ombres</span></div>
+    <div class="jjk-territoire__entaille"></div>
+    <div class="jjk-territoire__coupes">{Array.from({ length: 5 }, (_, index) => <span style={`--coupe: ${index}`}></span>)}</div>
+  </div>
+</div>
 
 <div class="bo-etapes-cadre" id="bo-etapes" hidden>
   <ol class="bo-etapes" aria-label="Étapes de la connexion">
@@ -131,3 +209,11 @@ import Retour from './Retour.astro';
   </ol>
   <span class="bo-etapes__lumiere" aria-hidden="true"></span>
 </div>
+<div class="sanctuaire-passage" aria-hidden="true" hidden><span></span></div>
+<p id="bo-cinema-retour" class="jjk-cinema-retour" role="status" hidden></p>
+<CinemaJjk />
+
+<script>
+  import { brancherEntreeJjk } from '../../scripts/connexion-jjk';
+  brancherEntreeJjk();
+</script>

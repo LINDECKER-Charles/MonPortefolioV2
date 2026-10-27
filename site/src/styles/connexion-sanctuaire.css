@@ -1,0 +1,309 @@
+/* Connexion JJK : encrage manga et techniques, indépendants de l’authentification.
+   Un habit de l’entrée, sur demande : `data-entree-jjk` sur <html>
+   (scripts/connexion-jjk.ts, relu avant le rendu par public/backoffice-entree.js).
+   Hors de lui, le sanctuaire n’est qu’un passage autour des trois écrans de la
+   lanterne, et ses décors se taisent ; atelier ouvert, il disparaît.
+   Tous les jetons sont centralisés ; la pause et le mouvement réduit restent prioritaires. */
+:root:not([data-entree-jjk]) :is(.bo-sanctuaire, .sanctuaire-acces, .sanctuaire-formulaires) { display: contents; color: inherit; }
+:root:not([data-entree-jjk]) :is(.jjk-grain, .jjk-entete, .sanctuaire-scene, .jjk-dossier, .jjk-forme-sceau, .sanctuaire-acces__repere, .sanctuaire-legende, .jjk-experience, .jjk-pied, .jjk-territoire, .jjk-seul) { display: none; }
+.bo:not([data-entree]) .bo-sanctuaire { display: none; }
+:root[data-entree-jjk] .bo[data-entree], .sanctuaire-passage {
+  --fond: var(--jjk-encre); --surface: var(--jjk-surface); --encre: var(--jjk-papier);
+  --eteint: var(--jjk-muet); --trait: var(--jjk-trait); --filet: var(--jjk-filet);
+  --accent: var(--jjk-or); --accent-texte: var(--jjk-encre); --accent-survol: var(--jjk-papier);
+  --focus: var(--jjk-or); --erreur: var(--jjk-rouge-clair); --laiton: var(--jjk-or);
+  color-scheme: dark;
+}
+/* La coque de la lanterne s’efface : ni scène, ni en-tête, ni pied, ni étapes. */
+:root[data-entree-jjk] .bo[data-entree] { display: block; background: var(--jjk-encre); }
+:root[data-entree-jjk] .bo[data-entree] :is(.bo-scene, .bo-entete, .bo-pied, .bo-etapes-cadre, .bo-entree__horodatage, .bo-front-lumiere, .bo-bandes) { display: none; }
+:root[data-entree-jjk] .bo[data-entree] > .bo-main { display: block; position: relative; max-width: none; padding: 0; pointer-events: auto; }
+:root[data-entree-jjk] .bo[data-entree] .bo-tete { display: block; }
+:root[data-entree-jjk] .bo[data-entree] .bo-surtitre { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+:root[data-entree-jjk] .bo[data-entree] #bo-notice:not([hidden]) { margin: 0; padding: var(--s3) var(--gouttiere); border: 0; border-bottom: 1px solid var(--filet); border-radius: var(--jjk-rayon); }
+:root[data-session-probable][data-entree-jjk] .bo-sanctuaire { visibility: hidden; }
+.bo-sanctuaire {
+  --jjk-energie: var(--jjk-or); --jjk-lueur-active: var(--jjk-lueur);
+  position: relative; display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(360px, 1fr);
+  grid-template-rows: auto minmax(700px, 1fr) auto; min-height: 100svh;
+  padding-inline: var(--gouttiere); background: var(--jjk-encre); color: var(--jjk-papier);
+  overflow: clip; isolation: isolate;
+}
+.bo-sanctuaire[data-technique='infini'], .sanctuaire-passage[data-technique='infini'] { --jjk-energie: var(--jjk-cyan); --jjk-lueur-active: var(--jjk-lueur-infini); }
+.bo-sanctuaire[data-technique='sanctuaire'], .sanctuaire-passage[data-technique='sanctuaire'] { --jjk-energie: var(--jjk-rouge-clair); --jjk-lueur-active: var(--jjk-lueur-sanctuaire); }
+.jjk-grain { position: absolute; inset: 0; z-index: 9; pointer-events: none; opacity: .55; background: repeating-linear-gradient(0deg, transparent 0 3px, var(--jjk-trame) 3px 4px); }
+.jjk-entete { grid-column: 1 / -1; position: relative; z-index: 10; display: flex; justify-content: space-between; align-items: center; gap: var(--s6); min-height: 94px; border-bottom: 1px solid var(--jjk-filet); }
+.jjk-marque { display: flex; align-items: center; gap: var(--s4); text-decoration: none; color: var(--jjk-papier); }
+.jjk-marque > span:first-child { font-size: var(--jjk-t-logo); font-weight: 800; transform: skew(-8deg); line-height: 1; }
+.jjk-marque > span:last-child { padding-left: var(--s4); border-left: 2px solid var(--jjk-rouge); font-size: var(--t-xs); font-weight: 700; letter-spacing: var(--ls-petit); }
+.jjk-marque small { display: block; color: var(--jjk-muet); font-size: var(--t-xs); font-weight: 400; letter-spacing: var(--ls-0); margin-top: var(--s1); }
+.jjk-entete__droite { display: flex; align-items: center; gap: var(--s8); font-size: var(--t-xs); }
+.jjk-entete__droite > span { color: var(--jjk-muet); }
+.jjk-entete__droite a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; color: var(--jjk-papier); }
+.jjk-entete__droite a:hover { color: var(--jjk-energie); }
+.sanctuaire-scene { position: relative; min-height: 700px; border-right: 1px solid var(--jjk-filet); overflow: hidden; isolation: isolate; }
+.sanctuaire-scene__trame { position: absolute; inset: 0; opacity: .28; background-image: radial-gradient(var(--jjk-trait) .7px, transparent .7px); background-size: 8px 8px; mask-image: radial-gradient(ellipse, currentColor, transparent 70%); }
+.jjk-masthead { position: absolute; top: 32px; left: 0; right: 24px; z-index: 2; pointer-events: none; }
+.jjk-surtexte { display: block; font-size: var(--t-xs); text-transform: uppercase; letter-spacing: var(--jjk-ls-large); line-height: 1.4; color: var(--jjk-muet); }
+.jjk-nom { margin: var(--s4) 0 0; font-family: var(--police-texte); font-size: var(--jjk-t-display); font-weight: 700; letter-spacing: var(--jjk-ls-titre); line-height: .85; transform: skew(-6deg); transform-origin: left; opacity: .92; }
+.jjk-classe { position: absolute; right: 0; top: 6px; padding: var(--s2) var(--s3); border: 1px solid var(--jjk-rouge); color: var(--jjk-rouge-clair); font-size: var(--t-xs); text-transform: uppercase; line-height: 1.1; transform: rotate(8deg); }
+.sanctuaire-figure { position: absolute; inset: 0; perspective: 1000px; }
+.jjk-personnage { position: absolute; width: min(80%, 610px); left: 11%; top: 125px; mask-image: linear-gradient(currentColor 0 62%, transparent 88%); pointer-events: none; }
+.jjk-personnage .visuel { overflow: visible; border-radius: var(--jjk-rayon); }
+.sanctuaire-figure__roue { position: absolute; width: min(51%, 390px); left: 23%; top: 61px; z-index: 3; transform: rotateX(var(--regard-y, 0deg)) rotateY(var(--regard-x, 0deg)); transition: transform var(--d-scene) var(--courbe); }
+.jjk-aura { position: absolute; inset: 15% 5% 6% 0; background: radial-gradient(ellipse at 52% 40%, var(--jjk-lueur-active), transparent 66%); transition: background var(--d-scene) var(--courbe); }
+.jjk-aura::after { content: ''; position: absolute; inset: 25% 8%; border: 1px solid var(--jjk-energie); border-radius: var(--r3); opacity: .15; transform: rotateX(65deg) rotate(-15deg); animation: jjk-brume var(--jjk-d-brume) ease-in-out infinite alternate; }
+.jjk-traces { position: absolute; width: 100%; height: 100%; fill: none; stroke: var(--jjk-energie); stroke-width: 1; opacity: .14; transition: opacity var(--d-scene) var(--courbe); }
+[data-technique='sanctuaire'] .jjk-traces { opacity: .6; stroke-width: 2; }
+[data-technique='infini'] .jjk-aura::after { opacity: .5; border-color: var(--jjk-violet); }
+.jjk-kanji { position: absolute; right: 24px; top: 30%; writing-mode: vertical-rl; font-size: var(--jjk-t-kanji); font-weight: 700; font-family: var(--police-titre); opacity: .16; line-height: 1; }
+.jjk-sceau { position: absolute; top: 50%; left: 4%; border: 3px double var(--jjk-rouge); color: var(--jjk-rouge-clair); padding: var(--s2); font-size: var(--t-xl); line-height: 1; transform: rotate(-12deg); }
+.jjk-legende-personnage { position: absolute; left: 0; bottom: 154px; z-index: 4; pointer-events: none; }
+.jjk-legende-personnage p { margin: var(--s2) 0 0; font-family: var(--police-titre); font-size: var(--t-2xl); line-height: 1.04; letter-spacing: var(--ls-titre); }
+.jjk-legende-personnage em { color: var(--jjk-energie); transition: color var(--d-scene) var(--courbe); }
+.jjk-techniques { position: absolute; bottom: 32px; left: 0; right: 32px; z-index: 5; }
+.jjk-techniques > p { margin: 0 0 var(--s3); }
+.jjk-techniques > div { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.jjk-techniques button { position: relative; display: flex; gap: var(--s3); align-items: center; min-height: 76px; padding: var(--s3); border: 1px solid var(--jjk-filet); border-radius: var(--jjk-rayon); background: var(--jjk-encre); color: var(--jjk-papier); font-size: var(--t-s); text-align: left; cursor: pointer; transition: background var(--d-ui), border-color var(--d-ui); }
+.jjk-techniques button + button { border-left: 0; }
+.jjk-techniques button::after { position: absolute; content: ''; bottom: 0; left: 0; right: 0; height: 2px; background: var(--jjk-energie); transform: scaleX(0); transition: transform var(--d-scene) var(--courbe); transform-origin: left; }
+.jjk-techniques button[aria-pressed='true'] { background: color-mix(in srgb, var(--jjk-energie) 10%, var(--jjk-encre)); }
+.jjk-techniques button[aria-pressed='true']::after, .jjk-techniques button:hover::after { transform: scaleX(1); }
+.jjk-techniques small { display: block; margin-top: var(--s1); font-size: var(--t-xs); color: var(--jjk-muet); }
+.jjk-technique__glyph { color: var(--jjk-energie); font-size: var(--t-xl); line-height: 1; }
+.jjk-techniques button > span:last-child { margin-left: auto; align-self: flex-start; font-size: var(--t-xs); color: var(--jjk-muet); }
+.sanctuaire-acces { position: relative; align-self: center; padding: 32px 0 32px clamp(24px, 4vw, 64px); }
+.jjk-dossier { display: flex; justify-content: space-between; align-items: center; gap: var(--s4); font-size: var(--t-xs); color: var(--jjk-muet); margin-bottom: 64px; }
+.jjk-accreditation { display: inline-flex; align-items: center; gap: var(--s2); }
+.jjk-accreditation::before { content: ''; width: 5px; height: 5px; background: var(--jjk-energie); transform: rotate(45deg); }
+.jjk-forme-sceau { position: absolute; width: 84px; right: 0; top: 100px; color: var(--jjk-energie); transform: rotate(10deg); opacity: .7; pointer-events: none; }
+.jjk-forme-sceau span { position: absolute; inset: 0; display: grid; place-items: center; font-size: var(--jjk-t-cachet); }
+.jjk-forme-sceau svg { display: block; width: 100%; fill: none; stroke: currentColor; stroke-width: .8; }
+.sanctuaire-acces__repere { display: flex; justify-content: space-between; gap: var(--s4); padding-bottom: var(--s3); border-bottom: 1px solid var(--jjk-filet); margin-bottom: var(--s6); font-size: var(--t-xs); text-transform: uppercase; letter-spacing: var(--ls-petit); color: var(--jjk-muet); }
+.sanctuaire-acces__numero { color: var(--jjk-energie); font-variant-numeric: tabular-nums; }
+/* Les trois écrans de l’entrée, communs aux deux habits, en dossier d’exorciste :
+   le récit au-dessus, la carte sans cadre, les champs encrés. */
+:root[data-entree-jjk] .bo-sanctuaire .bo-entree__ecran { display: block; }
+:root[data-entree-jjk] .bo-sanctuaire .bo-entree__recit { margin: 0; }
+:root[data-entree-jjk] .bo-sanctuaire .bo-entree__carte { max-width: none; width: 100%; margin: 0; padding: 0; border: 0; border-radius: var(--jjk-rayon); background: transparent; box-shadow: var(--ombre-0); }
+:root[data-entree-jjk] .bo-sanctuaire :is(.bo-entree__trace, .bo-anneau) { display: none; }
+:root[data-entree-jjk] .bo-sanctuaire .foyer::before, :root[data-entree-jjk] .bo-sanctuaire .bo-entree__carte::after { display: none; }
+.sanctuaire-etape { margin: 0 0 var(--s3); font-size: var(--t-xs); color: var(--jjk-energie); }
+:root[data-entree-jjk] .bo-sanctuaire :is(.jjk-titre, .bo-entree__titre) { max-width: none; margin: 0; font-family: var(--police-texte); font-size: var(--jjk-t-form); font-weight: 700; text-transform: uppercase; letter-spacing: var(--jjk-ls-titre); line-height: .95; }
+:root[data-entree-jjk] .bo-sanctuaire .jjk-titre > span { color: var(--jjk-rouge-clair); }
+/* La connexion montre « Franchir le voile » ; les lecteurs d’écran gardent le titre de l’entrée. */
+:root[data-entree-jjk] .bo-sanctuaire #bo-login .bo-entree__titre { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+:root[data-entree-jjk] .bo-sanctuaire #bo-login .bo-entree__texte { display: none; }
+:root[data-entree-jjk] .bo-sanctuaire :is(#bo-two-factor, #bo-recovery) .bo-entree__titre { font-size: var(--t-xl); letter-spacing: var(--ls-titre); line-height: 1.1; }
+:root[data-entree-jjk] .bo-sanctuaire :is(.bo-entree__texte, .jjk-texte) { max-width: none; margin: var(--s4) 0 var(--s5); font-size: var(--t-s); line-height: 1.5; color: var(--jjk-muet); }
+:root[data-entree-jjk] .bo-sanctuaire .bo-entree__formulaire fieldset { gap: var(--s4); }
+:root[data-entree-jjk] .bo-sanctuaire .bo-champ label { font-size: var(--t-xs); font-weight: 500; }
+:root[data-entree-jjk] .bo-sanctuaire .bo-entree__formulaire input { min-height: 54px; border: 1px solid var(--jjk-trait); border-radius: var(--jjk-rayon); background: var(--jjk-surface); color: var(--jjk-papier); }
+:root[data-entree-jjk] .bo-sanctuaire .bo-entree__carte .bo-entree__formulaire input:focus-visible { border-color: var(--jjk-energie); outline-color: var(--jjk-energie); }
+:root[data-entree-jjk] .bo-sanctuaire :is(.bo-champ:has(> .jjk-icone), .bo-motdepasse) { position: relative; }
+:root[data-entree-jjk] .bo-sanctuaire .jjk-icone { display: block; position: absolute; z-index: 1; left: 16px; bottom: 18px; width: 18px; height: 18px; fill: none; stroke: var(--jjk-muet); stroke-width: 1.5; pointer-events: none; transition: stroke var(--d-ui); }
+:root[data-entree-jjk] .bo-sanctuaire .bo-motdepasse > .jjk-icone { bottom: auto; top: 50%; translate: 0 -50%; }
+:root[data-entree-jjk] .bo-sanctuaire :is(.bo-champ, .bo-motdepasse):focus-within > .jjk-icone { stroke: var(--jjk-energie); }
+:root[data-entree-jjk] .bo-sanctuaire .bo-entree__formulaire .jjk-icone + input { padding-left: 48px; }
+:root[data-entree-jjk] .bo-sanctuaire .bo-motdepasse__voir { color: var(--jjk-muet); }
+:root[data-entree-jjk] .bo-sanctuaire .bo-motdepasse__voir:hover { color: var(--jjk-papier); }
+:root[data-entree-jjk] .bo-sanctuaire .bo-majuscules { color: var(--jjk-energie); }
+:root[data-entree-jjk] .bo-sanctuaire .bo-button { border-radius: var(--jjk-rayon); }
+:root[data-entree-jjk] .bo-sanctuaire .bo-button--primary { background: var(--jjk-rouge); color: var(--jjk-papier); box-shadow: inset 0 0 0 1px var(--jjk-rouge); }
+:root[data-entree-jjk] .bo-sanctuaire .bo-button--primary:hover:not(:disabled) { background: var(--jjk-papier); color: var(--jjk-encre); box-shadow: inset 0 0 0 1px var(--jjk-papier); }
+/* Le bouton principal : pleine largeur, libellé à gauche, flèche à droite (un masque, hors du nom accessible). */
+:root[data-entree-jjk] .bo-sanctuaire .bo-entree__action { justify-content: flex-start; min-height: 56px; padding-inline: var(--s5) calc(var(--s5) + var(--s6)); text-align: left; transition: background var(--d-ui), color var(--d-ui), transform var(--d-ui); }
+:root[data-entree-jjk] .bo-sanctuaire .bo-entree__action::before { content: ''; position: absolute; right: var(--s5); top: 50%; width: 24px; height: 24px; translate: 0 -50%; background: currentColor; mask: var(--jjk-fleche) center / contain no-repeat; transition: transform var(--d-ui); }
+:root[data-entree-jjk] .bo-sanctuaire .bo-entree__action:hover:not(:disabled)::before { transform: translateX(4px); }
+:root[data-entree-jjk] .bo-sanctuaire .bo-entree__action:active { transform: scale(.985); }
+:root[data-entree-jjk] .bo-sanctuaire .bo-entree__action:disabled::before { display: none; }
+:root[data-entree-jjk] .bo-sanctuaire .bo-retour { margin-block: var(--s3); font-size: var(--t-xs); }
+.sanctuaire-legende { display: flex; align-items: baseline; gap: var(--s3); margin: var(--s2) 0 var(--s6); color: var(--jjk-muet); font-size: var(--t-xs); }
+.sanctuaire-legende > span { flex: 0 0 5px; height: 5px; transform: rotate(45deg); background: var(--jjk-energie); }
+.sanctuaire-legende p { margin: 0; }
+[data-phase='error'] .sanctuaire-legende { color: var(--jjk-rouge-clair); }
+.jjk-experience { display: grid; gap: var(--s3); border-top: 1px solid var(--jjk-filet); padding-top: var(--s4); }
+.jjk-experience > .jjk-surtexte { letter-spacing: var(--ls-0); text-transform: none; }
+.jjk-domaine-button { display: flex; justify-content: space-between; align-items: center; gap: var(--s4); min-height: 64px; width: 100%; padding: 0; border: 0; border-bottom: 1px solid var(--jjk-filet); border-radius: var(--jjk-rayon); background: transparent; color: var(--jjk-papier); cursor: pointer; }
+.jjk-domaine-button > span:first-child { font-size: var(--t-xl); font-weight: 700; color: var(--jjk-energie); }
+.jjk-domaine-button > span:last-child { font-size: var(--t-xs); }
+.jjk-domaine-button:hover { border-bottom-color: var(--jjk-energie); }
+.jjk-domaine-button:disabled { opacity: .5; cursor: default; }
+.jjk-pied { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: var(--s6); min-height: 70px; border-top: 1px solid var(--jjk-filet); color: var(--jjk-muet); font-size: var(--t-xs); }
+.sanctuaire-commandes { display: flex; align-items: center; gap: var(--s6); }
+.sanctuaire-commande { display: inline-flex; align-items: center; justify-content: center; gap: var(--s2); min-height: 44px; padding: var(--s2) 0; border: 0; background: transparent; color: var(--jjk-muet); font-size: var(--t-xs); cursor: pointer; }
+.sanctuaire-commande:hover { color: var(--jjk-energie); }
+.sanctuaire-commande:disabled { opacity: .5; cursor: default; }
+.sanctuaire-commande svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+.sanctuaire-pause { width: 44px; }
+.sanctuaire-pause__lecture { display: none; }
+.sanctuaire-pause[aria-pressed='true'] .sanctuaire-pause__pause { display: none; }
+.sanctuaire-pause[aria-pressed='true'] .sanctuaire-pause__lecture { display: initial; }
+.sanctuaire-onde { position: absolute; inset: 13% 25% 35%; border: 1px solid var(--jjk-energie); border-radius: var(--r3); pointer-events: none; opacity: 0; }
+[data-impact='true'] .sanctuaire-onde { animation: sanctuaire-onde calc(var(--d-recit) * 2) var(--courbe) both; }
+.jjk-territoire { display: none; position: fixed; inset: 0; z-index: 30; pointer-events: none; background: var(--jjk-voile); overflow: hidden; }
+[data-domain='active'] .jjk-territoire { display: grid; place-items: center; animation: jjk-territoire var(--jjk-d-territoire) var(--courbe) both; }
+.jjk-territoire__cercle { position: absolute; width: min(86vw, 900px); aspect-ratio: 1; border: 1px solid var(--jjk-energie); border-radius: var(--r3); background: repeating-conic-gradient(from 0deg, transparent 0deg 44deg, var(--jjk-lueur-active) 44deg 45deg); box-shadow: var(--jjk-ombre); animation: jjk-expansion var(--jjk-d-territoire) var(--courbe) both; }
+.jjk-territoire__cercle::before, .jjk-territoire__cercle::after { content: ''; position: absolute; inset: 8%; border: 1px dashed var(--jjk-energie); border-radius: inherit; opacity: .5; }
+.jjk-territoire__cercle::after { inset: 23%; transform: rotate(22.5deg); border-style: solid; }
+.jjk-territoire__texte { z-index: 1; display: grid; gap: var(--s4); text-align: center; padding: var(--s6); animation: jjk-incantation var(--jjk-d-territoire) var(--courbe) both; }
+.jjk-territoire__texte > span:first-child { font-size: var(--jjk-t-territoire); font-weight: 700; line-height: 1.1; }
+.jjk-territoire__texte strong { font-size: var(--t-l); text-transform: uppercase; letter-spacing: var(--jjk-ls-large); }
+.jjk-territoire__texte > span:last-child { font-size: var(--t-s); color: var(--jjk-energie); }
+.jjk-territoire__entaille { position: absolute; inset: -100%; opacity: .3; transform: rotate(-35deg); background: linear-gradient(transparent 49.9%, var(--jjk-energie) 50%, transparent 50.1%); }
+[data-technique='infini'] .jjk-territoire__cercle { border: 3px double var(--jjk-violet); background: radial-gradient(transparent 38%, var(--jjk-lueur-active) 65%, transparent 72%); }
+[data-technique='sanctuaire'] .jjk-territoire__entaille { background: repeating-linear-gradient(transparent 0 90px, var(--jjk-energie) 90px 91px, transparent 91px 180px); }
+.sanctuaire-passage { position: fixed; inset: 0; z-index: 40; overflow: hidden; pointer-events: none; }
+.sanctuaire-passage > span { position: absolute; inset: -100%; background: linear-gradient(115deg, transparent 35%, var(--jjk-energie) 49.9% 50.1%, var(--jjk-voile) 50.2% 65%, transparent 75%); animation: jjk-passage var(--d-recit) var(--courbe) both; }
+[data-motion='paused'] .sanctuaire-scene *, [data-motion='paused'] .sanctuaire-scene *::after { animation-play-state: paused !important; }
+[data-motion='paused'] .sanctuaire-figure__roue { transition: none; }
+@keyframes jjk-tour { to { transform: rotate(360deg); } }
+@keyframes jjk-brume { to { transform: rotateX(65deg) rotate(25deg) scale(1.15); opacity: .4; } }
+@keyframes sanctuaire-onde { 0% { transform: scale(.7); opacity: .7; } 100% { transform: scale(2); opacity: 0; } }
+@keyframes jjk-territoire { 0% { opacity: 0; clip-path: circle(0%); } 28%, 75% { opacity: 1; clip-path: circle(90%); } 100% { opacity: 0; clip-path: circle(100%); } }
+@keyframes jjk-expansion { from { transform: scale(.3) rotate(-35deg); } to { transform: scale(1.4) rotate(25deg); } }
+@keyframes jjk-incantation { 0%, 12% { opacity: 0; transform: scale(.9); } 30%, 70% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.1); } }
+@keyframes jjk-passage { 0% { transform: translateX(-45%); opacity: 0; } 15%, 65% { opacity: 1; } 100% { transform: translateX(45%); opacity: 0; } }
+@keyframes jjk-arrivee { from { opacity: 0; translate: 0 24px; } to { opacity: 1; translate: 0 0; } }
+@media (prefers-reduced-motion: no-preference) {
+  [data-initialise='true'] .jjk-personnage { animation: jjk-arrivee var(--jjk-d-entree) var(--courbe) both; }
+  :root[data-entree-jjk] [data-initialise='true'] .bo-entree__ecran:not([hidden]) :is(.bo-entree__recit > *, .bo-entree__formulaire) { animation: jjk-arrivee var(--d-scene) var(--courbe) both; }
+}
+@media (min-width: 1600px) { .bo-sanctuaire { padding-inline: max(var(--gouttiere), calc((100vw - 1500px) / 2)); } }
+@media (max-width: 1100px) {
+  .bo-sanctuaire { grid-template-columns: minmax(0, 1.2fr) minmax(330px, 1fr); }
+  .sanctuaire-acces { padding-left: var(--s6); }
+  .jjk-entete__droite > span, .jjk-classe { display: none; }
+  .jjk-techniques button { gap: var(--s2); padding: var(--s2); font-size: var(--t-xs); }
+  .jjk-techniques button > span:last-child { display: none; }
+  .jjk-personnage { width: 110%; max-width: none; left: -5%; top: 140px; }
+  .sanctuaire-figure__roue { width: 66%; left: 17%; top: 90px; }
+  .jjk-pied { gap: var(--s3); }
+  .sanctuaire-commandes { gap: var(--s3); }
+}
+@media (max-width: 760px) {
+  .bo-sanctuaire { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto auto; padding-inline: var(--s6); }
+  .jjk-entete { min-height: 78px; }
+  .jjk-marque { gap: var(--s3); }
+  .jjk-marque > span:last-child { padding-left: var(--s3); }
+  .jjk-marque small, .jjk-entete__droite { display: none; }
+  .sanctuaire-scene { min-height: 410px; border-right: 0; border-bottom: 1px solid var(--jjk-filet); }
+  .jjk-masthead { top: 24px; right: 0; }
+  .jjk-masthead .jjk-surtexte { letter-spacing: var(--ls-0); }
+  .jjk-nom { margin-top: var(--s2); }
+  .jjk-personnage { width: 290px; left: auto; right: -15px; top: 65px; mask-image: linear-gradient(currentColor 0 52%, transparent 75%); }
+  .sanctuaire-figure__roue { width: 180px; top: 17px; left: auto; right: 36px; }
+  .jjk-kanji { right: 0; top: 32%; }
+  .jjk-sceau { left: 0; top: 34%; font-size: var(--t-l); }
+  .jjk-legende-personnage { bottom: 122px; }
+  .jjk-legende-personnage p { font-size: var(--t-xl); }
+  .jjk-legende-personnage .jjk-surtexte { font-size: var(--t-xs); letter-spacing: var(--ls-0); }
+  .jjk-techniques { bottom: 24px; right: 0; }
+  .jjk-techniques > p { font-size: var(--t-xs); letter-spacing: var(--ls-0); }
+  .jjk-techniques button { min-height: 64px; gap: var(--s2); }
+  .jjk-techniques small { display: none; }
+  .jjk-technique__glyph { font-size: var(--t-l); }
+  .sanctuaire-acces { padding: var(--s6) 0; }
+  .jjk-dossier { margin-bottom: var(--s6); }
+  .jjk-forme-sceau { top: 84px; width: 65px; }
+  .sanctuaire-acces__repere { display: none; }
+  :root[data-entree-jjk] .bo-sanctuaire :is(.bo-entree__texte, .jjk-texte) { margin: var(--s3) 0 var(--s5); }
+  .jjk-pied { flex-direction: column; align-items: stretch; padding-block: var(--s4); gap: var(--s2); }
+  .sanctuaire-commandes { justify-content: space-between; gap: var(--s2); }
+  .sanctuaire-commande { gap: var(--s1); }
+  .jjk-territoire__texte strong { font-size: var(--t-s); }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root[data-entree-jjk] .bo-sanctuaire *, :root[data-entree-jjk] .bo-sanctuaire *::before, :root[data-entree-jjk] .bo-sanctuaire *::after, .sanctuaire-passage * { animation: none !important; transition: none !important; }
+  .jjk-territoire, .sanctuaire-passage { display: none !important; }
+}
+@media print {
+  .bo-sanctuaire { display: block; }
+  .sanctuaire-scene, .jjk-entete, .jjk-pied, .jjk-experience, .jjk-territoire, .sanctuaire-passage { display: none; }
+}
+/* Ajustements de composition : le visage reste dégagé sous la roue. */
+.sanctuaire-figure__roue { width: min(38%, 290px); left: 34%; top: 10px; }
+.jjk-personnage { width: min(76%, 580px); left: 17%; }
+.jjk-dossier { margin-bottom: var(--s5); }
+.jjk-forme-sceau { top: 170px; width: 72px; }
+.sanctuaire-acces__repere { margin-bottom: var(--s5); }
+.sanctuaire-legende { margin-bottom: var(--s5); }
+.jjk-legende-personnage::before { content: ''; position: absolute; inset: -12px -36px -12px -12px; z-index: -1; background: linear-gradient(90deg, var(--jjk-encre), transparent); }
+[data-wheel-motion='paused'] *, [data-wheel-motion='paused'] *::after { animation-play-state: paused !important; }
+[data-wheel-motion='paused'] .roue-adaptation__orientation { transition: none; }
+@media (max-width: 1100px) and (min-width: 761px) {
+  .jjk-personnage { width: 110%; left: -5%; }
+  .sanctuaire-figure__roue { width: 50%; left: 25%; top: 32px; }
+}
+@media (max-width: 760px) {
+  .bo-sanctuaire { padding-inline: var(--s5); }
+  .sanctuaire-scene { min-height: 360px; }
+  .jjk-personnage { width: 280px; left: auto; right: -38px; top: 35px; }
+  .sanctuaire-figure__roue { width: 148px; left: auto; right: 20px; top: 0; }
+  .jjk-forme-sceau { top: 84px; width: 65px; }
+  .jjk-legende-personnage { bottom: 110px; }
+  .jjk-techniques { bottom: 20px; }
+  .jjk-techniques button { padding: var(--s2) 6px; gap: var(--s1); }
+  .jjk-techniques button > span:nth-child(2) { white-space: nowrap; }
+  .jjk-technique__glyph { font-size: var(--t-s); }
+  .jjk-techniques > p { margin-bottom: var(--s2); }
+  .sanctuaire-acces { padding-block: var(--s5); }
+}
+
+/* Profondeur du territoire : anneaux, sceaux et traits d’encre orchestrés. */
+.sanctuaire-figure { z-index: 1; }
+.jjk-masthead { z-index: 0; }
+.jjk-techniques > p { position: relative; width: fit-content; background: var(--jjk-encre); padding: var(--s1) var(--s2) var(--s1) 0; }
+.jjk-territoire__sol { position: absolute; inset: -50%; background: repeating-linear-gradient(0deg, transparent 0 79px, var(--jjk-energie) 79px 80px), repeating-linear-gradient(90deg, transparent 0 79px, var(--jjk-energie) 79px 80px); opacity: .1; transform: perspective(500px) rotateX(65deg) translateY(45%); mask-image: radial-gradient(currentColor, transparent 65%); }
+.jjk-territoire__profondeur { position: absolute; width: min(100vw, 1000px); overflow: visible; fill: none; stroke: var(--jjk-energie); stroke-width: .65; }
+.jjk-territoire__profondeur circle { transform-origin: 400px 400px; animation: jjk-profondeur var(--jjk-d-territoire) var(--courbe) both; animation-delay: calc(var(--anneau) * var(--d-ui) * .3); }
+.jjk-territoire__signes { position: absolute; width: min(80vw, 780px); aspect-ratio: 1; animation: jjk-signes var(--jjk-d-territoire) var(--courbe) both; }
+.jjk-territoire__signes span { position: absolute; top: 50%; left: 50%; font-size: var(--t-xl); color: var(--jjk-energie); opacity: .7; transform: translate(-50%, -50%) rotate(calc(var(--signe) * 45deg)) translateY(max(-36vw, -350px)); }
+.jjk-territoire__coupes { position: absolute; inset: -50%; opacity: .4; transform: rotate(-28deg); pointer-events: none; }
+.jjk-territoire__coupes span { position: absolute; left: 0; right: 0; top: calc(30% + var(--coupe) * 10%); height: 1px; background: var(--jjk-energie); transform-origin: left; animation: jjk-coupe var(--jjk-d-territoire) var(--courbe) both; animation-delay: calc(var(--coupe) * var(--d-ui) * .35); }
+[data-technique='ombres'] .jjk-territoire__coupes, [data-technique='infini'] .jjk-territoire__coupes { display: none; }
+[data-technique='infini'] .jjk-territoire__profondeur { stroke: var(--jjk-violet); stroke-width: 1.5; }
+[data-technique='infini'] .jjk-territoire__signes { opacity: .3; }
+[data-technique='sanctuaire'] .jjk-territoire__profondeur { opacity: .3; }
+@keyframes jjk-profondeur { 0% { transform: scale(.1); opacity: 0; } 20% { opacity: .8; } 100% { transform: scale(2.5); opacity: 0; } }
+@keyframes jjk-signes { from { transform: rotate(-35deg) scale(.5); opacity: 0; } 25%, 70% { opacity: 1; } to { transform: rotate(35deg) scale(1.2); opacity: 0; } }
+@keyframes jjk-coupe { 0%, 20% { transform: scaleX(0); } 45%, 80% { transform: scaleX(1); opacity: 1; } 100% { transform: scaleX(1); opacity: 0; } }
+@media (max-width: 350px) { .jjk-technique__glyph { display: none; } }
+
+/* Les accès à la cinématique et son décor, sur la connexion (la cinématique elle-même :
+   connexion-cinema.css, chargée à son ouverture). */
+.jjk-cinema-retour { position: fixed; z-index: 30; bottom: var(--s5); left: 50%; transform: translateX(-50%); width: min(90vw, 440px); margin: 0; padding: var(--s4); border: 1px solid var(--jjk-rouge-clair); color: var(--jjk-papier); background: var(--jjk-surface); font-size: var(--t-s); }
+/* L’affiche reçoit le même décor et deux accès explicites à la cinématique. */
+.jjk-scene-decor { position: absolute; inset: 0; opacity: .55; mask-image: linear-gradient(transparent, currentColor 20% 70%, transparent); }
+.jjk-scene-decor .visuel, .jjk-scene-decor picture, .jjk-scene-decor img { width: 100%; height: 100%; }
+.jjk-scene-decor img { object-fit: cover; object-position: 50% 50%; }
+.jjk-cinema-raccourci { display: inline-flex; gap: var(--s2); align-items: center; color: var(--jjk-papier); background: transparent; border: 1px solid var(--jjk-rouge); padding: var(--s2) var(--s3); min-height: 44px; border-radius: var(--jjk-rayon); font-size: var(--t-xs); cursor: pointer; }
+.jjk-cinema-raccourci:hover { background: var(--jjk-rouge); }
+.jjk-cinema-lancer { display: flex; align-items: center; gap: var(--s4); padding: var(--s4); width: 100%; min-height: 84px; border: 1px solid var(--jjk-trait); border-left: 3px solid var(--jjk-rouge); color: var(--jjk-papier); background: var(--jjk-surface); font-size: var(--t-s); border-radius: var(--jjk-rayon); text-align: left; cursor: pointer; }
+.jjk-cinema-lancer small { display: block; font-size: var(--t-xs); color: var(--jjk-muet); margin-top: var(--s1); }
+.jjk-cinema-lancer > span:last-child { margin-left: auto; }
+.jjk-cinema-lancer__lecture { font-size: var(--t-xl); color: var(--jjk-rouge-clair); }
+.jjk-cinema-lancer:hover { border-color: var(--jjk-rouge-clair); }
+.jjk-cinema-lancer:disabled, .jjk-cinema-raccourci:disabled { opacity: .5; cursor: default; }
+@media (max-width: 1100px) { .jjk-entete__droite { gap: var(--s4); } }
+.jjk-invocation-rapide { position: absolute; z-index: 7; top: 200px; left: 0; display: flex; align-items: center; gap: var(--s2); min-height: 44px; padding: var(--s2) var(--s3); font-size: var(--t-xs); color: var(--jjk-papier); background: var(--jjk-encre); border: 1px solid var(--jjk-rouge); border-radius: var(--jjk-rayon); cursor: pointer; }
+.jjk-invocation-rapide:hover { background: var(--jjk-rouge); }
+.jjk-invocation-rapide:disabled { opacity: .5; cursor: default; }
+@media (max-width: 760px) {
+  .jjk-invocation-rapide { top: 110px; }
+  .bo-sanctuaire .jjk-sceau { left: auto; right: 0; top: 45%; }
+}
+@media (max-width: 350px) {
+  .sanctuaire-commandes { flex-wrap: wrap; justify-content: flex-start; }
+  .sanctuaire-pause { margin-left: auto; }
+}
+
+/* Le retour à la lanterne, à côté de la marque du pied (scripts/connexion-jjk.ts). */
+.jjk-pied__marque { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--s5); }
+.jjk-retour-lanterne { color: var(--jjk-or); }
+
+/* Changer d’habit : le nouveau tranche l’ancien, une entaille d’encre en diagonale
+   (scripts/connexion-jjk.ts ; jamais en mouvement réduit). */
+:root[data-transition-entree='habit']::view-transition-old(root) { animation: none; mix-blend-mode: normal; }
+:root[data-transition-entree='habit']::view-transition-new(root) { animation: jjk-habit calc(var(--d-scene) * 2) var(--courbe) both; mix-blend-mode: normal; }
+@keyframes jjk-habit { from { clip-path: polygon(0 0, 0 0, -40% 100%, -40% 100%); } to { clip-path: polygon(0 0, 140% 0, 100% 100%, -40% 100%); } }

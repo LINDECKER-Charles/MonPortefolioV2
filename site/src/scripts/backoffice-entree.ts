@@ -28,6 +28,10 @@
  * Styles : styles/backoffice-entree.css ; scène : backoffice-scene.ts ;
  * champs : backoffice-saisie.ts ; temps, courbes, titres :
  * backoffice-mouvement.ts.
+ *
+ * L’entrée JJK (`data-entree-jjk` sur <html>, connexion-jjk.ts) : ce module
+ * reste chargé pour les champs, communs aux deux habits, mais la lanterne se
+ * tait : ni générique, ni scène, et chaque geste s’applique d’un coup.
  */
 import {
   COURBES, animerChamps, apparaitre, attendre, carton, monter, nettoyerTitre, poserCarte, reduit, rendreTexte,
@@ -55,6 +59,8 @@ const racine = document.documentElement;
 const page = document.body;
 const $ = <T extends HTMLElement = HTMLElement>(id: string): T => document.getElementById(id) as T;
 const transitions = typeof document.startViewTransition === 'function';
+/** L’entrée JJK est affichée (connexion-jjk.ts) : elle a sa propre mise en scène, la lanterne se tait. */
+const enJjk = () => racine.hasAttribute('data-entree-jjk');
 const pointeurFin = window.matchMedia('(pointer: fine)');
 
 /** Un geste animé est-il possible ? Sinon, la mise à jour se fait d’un coup. */
@@ -492,7 +498,7 @@ export function brancherEntree(): Entree {
     if (affichee) {
       suivre(ecranAffiche());
       scene?.lancer();
-      horodatage.lancer();
+      if (!enJjk()) horodatage.lancer();
     } else {
       ecran = 'atelier';
       generique.abreger();
@@ -514,15 +520,30 @@ export function brancherEntree(): Entree {
     const observateur = new MutationObserver(() => {
       if (racine.hasAttribute('data-session-probable')) return;
       observateur.disconnect();
-      if (page.hasAttribute('data-entree')) generique.jouer('courte');
+      if (page.hasAttribute('data-entree') && !enJjk()) generique.jouer('courte');
     });
     observateur.observe(racine, { attributes: true, attributeFilter: ['data-session-probable'] });
   }
 
+  // L’entrée JJK prend la place, ou la rend : la lanterne s’éteint, ou se rallume.
+  new MutationObserver(() => {
+    if (!page.hasAttribute('data-entree')) return;
+    if (enJjk()) {
+      generique.abreger();
+      nettoyerOuverture();
+      scene?.arreter();
+      horodatage.arreter();
+    } else {
+      suivre(ecranAffiche());
+      scene?.lancer();
+      horodatage.lancer();
+    }
+  }).observe(racine, { attributes: true, attributeFilter: ['data-entree-jjk'] });
+
   /* ===== Démarrage ===== */
   if (!reduit()) scene?.semer(18);
   suivre(ecran);
-  if (ecran === 'atelier') nettoyerOuverture();
+  if (ecran === 'atelier' || enJjk()) nettoyerOuverture();
   else {
     horodatage.lancer();
     const ouverture = racine.getAttribute('data-ouverture');
@@ -542,6 +563,11 @@ export function brancherEntree(): Entree {
         faite = true;
         maj();
       };
+      // En mode JJK, la mise à jour se fait d’un coup : les observateurs ci-dessus suivent l’écran.
+      if (enJjk()) {
+        une();
+        return;
+      }
       try {
         if (geste === 'atelier') await ouvrirAtelier(une);
         else if (geste === 'sortie') await fermerAtelier(une);

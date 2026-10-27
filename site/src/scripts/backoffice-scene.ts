@@ -257,7 +257,8 @@ export function brancherScene(): Scene | undefined {
 
   function lancer(angleInitial?: number): void {
     if (typeof angleInitial === 'number') angle = angleInitial;
-    if (actif || reduit() || document.hidden || !page.hasAttribute('data-entree')) return;
+    // L’entrée JJK (connexion-jjk.ts) cache la scène : rien ne tourne pour elle.
+    if (actif || reduit() || document.hidden || !page.hasAttribute('data-entree') || document.documentElement.hasAttribute('data-entree-jjk')) return;
     actif = true;
     dernier = performance.now();
     boucle = window.requestAnimationFrame(pas);

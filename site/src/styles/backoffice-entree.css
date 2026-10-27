@@ -156,6 +156,46 @@
   grid-template-rows: subgrid;
 }
 
+/* L’entrée Jujutsu Kaisen, sur demande (scripts/connexion-jjk.ts) : un bouton
+   discret au bout du pied, seulement sur l’entrée. */
+.bo-pied__fin {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2) var(--s4);
+}
+
+.bo-pied__jjk {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s1);
+  min-height: 32px;
+  padding: 0 var(--s2);
+  border: 1px solid transparent;
+  border-radius: var(--r3);
+  background: transparent;
+  color: var(--eteint);
+  font: inherit;
+  font-size: var(--t-xs);
+  letter-spacing: var(--ls-petit);
+  cursor: pointer;
+  transition: border-color var(--d-ui) var(--courbe), color var(--d-ui) var(--courbe);
+}
+
+.bo-pied__jjk:hover {
+  border-color: var(--filet);
+  color: var(--encre);
+}
+
+.bo-pied__jjk > [lang='ja'] {
+  font-size: var(--t-s);
+  line-height: 1;
+}
+
+.bo:not([data-entree]) .bo-pied__jjk {
+  display: none;
+}
+
 /* Hors de l’entrée (l’atelier ouvert), la scène et ce qui l’accompagne se taisent. */
 .bo:not([data-entree]) :is(.bo-scene, .bo-etapes-cadre, .bo-entree__horodatage) {
   display: none;

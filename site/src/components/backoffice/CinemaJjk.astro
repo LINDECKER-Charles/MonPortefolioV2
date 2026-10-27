@@ -1,0 +1,53 @@
+---
+/**
+ * Opening en neuf plans : décors, personnages, montage manga et caméra indépendants.
+ * Ses styles (styles/connexion-cinema.css) arrivent avec scripts/connexion-cinema.ts,
+ * à la première ouverture : le dialog fermé n’en a pas besoin.
+ */
+import Visuel from '../ui/Visuel.astro';
+import RoueAdaptation from './RoueAdaptation.astro';
+const fragments = Array.from({ length: 18 }, (_, index) => index);
+const chapitres = ['Invocation', 'Les dix ombres', 'Le regard', 'Le général divin', 'Le duel', 'L’adaptation', 'Le territoire', 'Le silence', 'Le voile est levé'];
+const plans = ['invocation', 'signes', 'regard', 'revelation', 'duel', 'adaptation', 'expansion', 'silence', 'final'];
+---
+<dialog id="bo-cinema" class="jjk-cinema" aria-labelledby="bo-cinema-title" data-cinema-state="closed" data-technique="ombres">
+  <div class="jjk-film" data-cinema-stage data-shot="invocation">
+    <div class="jjk-film__image" aria-hidden="true">
+      <div class="jjk-film__decor"><Visuel id="JJK-02" alt="" sizes="(max-width: 760px) 1672px, 100vw" masqueSansScript /></div>
+      <div class="jjk-film__lune"></div>
+      <div class="jjk-film__ombre"></div>
+      <div class="jjk-film__personnage"><Visuel id="JJK-01" alt="" sizes="(max-width: 760px) 100vw, 65vw" masqueSansScript /></div>
+      <div class="jjk-film__roue"><RoueAdaptation prefix="roue-cinema" /></div>
+      <div class="jjk-film__signes"><Visuel id="JJK-05" alt="" sizes="1672px" masqueSansScript /><div class="jjk-film__rituel"><span lang="ja">十種影法術</span><strong>Les dix ombres</strong><small>Un seul geste. Aucune marche arrière.</small></div></div>
+      <div class="jjk-film__duel"><Visuel id="JJK-04" alt="" sizes="1672px" masqueSansScript /><div class="jjk-film__duel-titre"><span>Le roi des fléaux</span><strong>宿儺</strong><em>contre le général divin</em></div><i></i><i></i><i></i></div>
+      <div class="jjk-film__regard"><Visuel id="JJK-03" alt="" sizes="1672px" masqueSansScript /><span lang="ja">適応</span></div>
+      <div class="jjk-film__orbite"><svg viewBox="0 0 600 600"><defs><path id="cinema-orbite-texte" d="M300 45a255 255 0 1 1-.1 0" /></defs><circle cx="300" cy="300" r="285" /><circle cx="300" cy="300" r="268" /><text><textPath href="#cinema-orbite-texte">WITH THIS TREASURE I SUMMON · EIGHT-HANDLED SWORD · DIVERGENT SILA DIVINE GENERAL · </textPath></text></svg></div>
+      <div class="jjk-film__adaptation"><span lang="ja">適応完了</span><strong>Chaque attaque.<br />Une nouvelle adaptation.</strong><div>{Array.from({ length: 8 }, (_, i) => <i style={`--cran:${i}`}></i>)}</div></div>
+      <div class="jjk-film__vitesse"><svg viewBox="0 0 1600 900" preserveAspectRatio="none">{fragments.map((i) => <path d={`M800 450 ${i % 2 ? 0 : 1600} ${i * 53}`} />)}</svg></div>
+      <div class="jjk-film__debris">{fragments.map((i) => <i style={`--fragment:${i}; --depart:${(i * 17 + 7) % 100}%; --hauteur:${(i * 31) % 100}%`}></i>)}</div>
+      <div class="jjk-film__encre"></div>
+      <div class="jjk-film__fractures"><span></span><span></span><span></span></div>
+      <div class="jjk-film__appel"><small>Tokyo · Shibuya · 23 h 07</small><span lang="ja">布瑠部由良由良</span><p>Par ce trésor, je t’invoque.</p><i></i><b aria-hidden="true">召喚</b></div>
+      <div class="jjk-film__nom"><span>Général divin · Huit poignées</span><strong>MAHORAGA</strong><span lang="ja">魔虚羅</span></div>
+      <div class="jjk-film__expansion"><span lang="ja">領域展開</span><strong>Extension du territoire</strong><i></i><i></i><i></i></div>
+      <div class="jjk-film__silence"><span>Le monde retient son souffle.</span><i></i></div>
+      <div class="jjk-film__coupe"></div>
+      <div class="jjk-film__pluie">{Array.from({ length: 32 }, (_, i) => <i style={`--pluie:${i}; --x:${(i * 43) % 100}%; --y:${(i * 29) % 100}%`}></i>)}</div>
+      <div class="jjk-film__grain"></div>
+      <div class="jjk-film__letterbox jjk-film__letterbox--haut"></div><div class="jjk-film__letterbox jjk-film__letterbox--bas"></div>
+    </div>
+    <div class="jjk-film__fin">
+      <span class="jjk-film__surtitre">Le voile est levé</span>
+      <h3>L’adaptation<br /><em>est absolue.</em></h3>
+      <button type="button" id="bo-cinema-enter">Entrer dans le territoire <span aria-hidden="true">→</span></button>
+      <button type="button" id="bo-cinema-replay">Rejouer l’invocation <span aria-hidden="true">↻</span></button>
+    </div>
+  </div>
+  <header class="jjk-cinema__entete"><h2 id="bo-cinema-title"><span lang="ja" aria-hidden="true">呪術廻戦</span> L’invocation <small data-cinema-loading>Préparation du rituel…</small></h2><button type="button" id="bo-cinema-close" autofocus>Revenir à la connexion <span aria-hidden="true">×</span></button></header>
+  <footer class="jjk-cinema__pied">
+    <div class="jjk-cinema__chapitre"><span class="jjk-film__surtitre">Rituel d’adaptation</span><span data-cinema-chapter role="status" aria-live="polite">Invocation</span></div>
+    <div class="jjk-cinema__timeline"><nav aria-label="Plans de la cinématique">{plans.map((plan, index) => <button type="button" data-cinema-seek={plan} aria-label={`Revoir le plan ${index + 1} — ${chapitres[index]}`} title={chapitres[index]}><span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span></button>)}</nav><span data-cinema-progress aria-hidden="true"></span></div>
+    <div class="jjk-cinema__commandes"><button type="button" id="bo-cinema-fullscreen" aria-label="Passer en plein écran" aria-pressed="false" hidden>⛶</button><button type="button" id="bo-cinema-sound" aria-pressed="false">Activer le son</button><details class="jjk-cinema__mix" hidden><summary>Volume</summary><label for="bo-cinema-volume">Volume du son <output data-cinema-volume for="bo-cinema-volume">70 %</output><input type="range" id="bo-cinema-volume" min="0" max="100" step="5" value="70" /></label></details><button type="button" id="bo-cinema-pause" aria-pressed="false">Mettre en pause</button></div>
+    <p class="jjk-cinema__audio-retour" data-cinema-audio-status role="status" aria-live="polite"></p>
+  </footer>
+</dialog>

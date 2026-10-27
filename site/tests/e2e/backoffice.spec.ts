@@ -3,6 +3,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { MESURE } from './support/serveurs.mjs';
 import { fileDeMesure } from './support/navigateur';
+import { choisirEntreeJjk } from './support/entree-jjk';
 
 test.use({ reducedMotion: 'reduce' });
 
@@ -1137,6 +1138,96 @@ test.describe('l’entrée en mouvement', () => {
     await expect(racine).not.toHaveAttribute('data-transition-entree', { timeout: 8_000 });
     await expect(racine).not.toHaveAttribute('data-bandes', { timeout: 8_000 });
     expect(erreurs).toEqual([]);
+  });
+
+  test('l’entrée JJK n’a pas de générique ; rendue à la lanterne, sa scène se fige', async ({ page }) => {
+    await choisirEntreeJjk(page);
+    await apiDouble(page);
+    const erreurs: string[] = [];
+    page.on('pageerror', (erreur) => erreurs.push(erreur.message));
+    const racine = page.locator('html');
+    const sanctuaire = page.locator('[data-sanctuaire]');
+    await page.goto('/backoffice');
+    await expect(racine).toHaveAttribute('data-entree-jjk', '');
+    for (const attribut of ['data-ouverture', 'data-pilote', 'data-nuit-forcee', 'data-bandes']) await expect(racine).not.toHaveAttribute(attribut);
+    await expect(sanctuaire).toHaveAttribute('data-motion', 'active');
+    await page.getByRole('button', { name: 'Revenir à la lanterne', exact: true }).click();
+    await expect(racine).not.toHaveAttribute('data-entree-jjk');
+    await expect(racine).not.toHaveAttribute('data-transition-entree', { timeout: 8_000 });
+    await expect(sanctuaire).toHaveAttribute('data-motion', 'paused');
+    await expect(page.getByRole('heading', { name: 'Entrer dans l’atelier', level: 2 })).toBeVisible();
+    expect(erreurs).toEqual([]);
+  });
+});
+
+test.describe('l’entrée Jujutsu Kaisen, sur demande', () => {
+  const versJjk = (page: Page) => page.getByRole('button', { name: 'Passer à l’entrée JJK', exact: true });
+  const versLanterne = (page: Page) => page.getByRole('button', { name: 'Revenir à la lanterne', exact: true });
+  const choixMemorise = (page: Page) => page.evaluate(() => localStorage.getItem('cl-backoffice-jjk'));
+
+  test('le bouton discret change d’habit, s’en souvient au rechargement, puis rend la lanterne', async ({ page }) => {
+    await apiDouble(page);
+    const racine = page.locator('html');
+    await page.goto('/backoffice');
+    await expect(page.getByRole('button', { name: 'Se connecter', exact: true })).toBeEnabled();
+    await expect(versJjk(page)).toBeVisible();
+    await expect(versLanterne(page)).toBeHidden();
+    await expect(page.locator('.jjk-entete')).toBeHidden();
+    await expect(page.locator('[data-sanctuaire]')).not.toHaveAttribute('data-initialise');
+
+    await versJjk(page).click();
+    await expect(racine).toHaveAttribute('data-entree-jjk', '');
+    await expect(page.locator('[data-sanctuaire]')).toHaveAttribute('data-initialise', 'true');
+    await expect(page.locator('.jjk-entete')).toBeVisible();
+    await expect(page.locator('.bo-scene')).toBeHidden();
+    await expect(versLanterne(page)).toBeFocused();
+    // Le même formulaire, sous le même titre pour les lecteurs d’écran.
+    await expect(page.getByRole('heading', { name: 'Entrer dans l’atelier', level: 2 })).toBeAttached();
+    await expect(page.getByLabel('Adresse e-mail de connexion', { exact: true })).toBeEditable();
+    expect(await choixMemorise(page)).toBe('1');
+    await accessibilite(page);
+
+    // Rechargée, la page s’ouvre en JJK, sans générique.
+    await page.reload();
+    await expect(racine).toHaveAttribute('data-entree-jjk', '');
+    await expect(racine).not.toHaveAttribute('data-ouverture');
+    await expect(page.locator('.jjk-entete')).toBeVisible();
+
+    await versLanterne(page).click();
+    await expect(racine).not.toHaveAttribute('data-entree-jjk');
+    await expect(page.locator('.jjk-entete')).toBeHidden();
+    await expect(page.locator('.bo-scene')).toBeVisible();
+    await expect(versJjk(page)).toBeFocused();
+    expect(await choixMemorise(page)).toBeNull();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  });
+
+  test('l’habit JJK ne vaut que pour l’entrée : l’atelier reste en lanterne, sans bouton', async ({ page }) => {
+    await choisirEntreeJjk(page);
+    await apiDouble(page);
+    await page.goto('/backoffice');
+    await expect(page.locator('.jjk-entete')).toBeVisible();
+    await connecter(page);
+    await expect(page.locator('[data-sanctuaire]')).toBeHidden();
+    await expect(page.locator('.bo-entete')).toBeVisible();
+    await expect(versJjk(page)).toBeHidden();
+    await expect(versLanterne(page)).toBeHidden();
+    await accessibilite(page);
+    // La déconnexion rend l’entrée dans l’habit choisi.
+    await page.getByRole('button', { name: 'Se déconnecter', exact: true }).click();
+    await expect(page.locator('.jjk-entete')).toBeVisible();
+    await expect(versLanterne(page)).toBeVisible();
+  });
+
+  test('une session ouverte ne télécharge rien de la mise en scène JJK', async ({ page }) => {
+    const scripts: string[] = [];
+    page.on('request', (requete) => { if (requete.resourceType() === 'script') scripts.push(new URL(requete.url()).pathname); });
+    await choisirEntreeJjk(page);
+    await apiDouble(page, { authenticated: true });
+    await page.goto('/backoffice');
+    await expect(page.locator('#bo-workspace')).toBeVisible();
+    await expect(page.locator('#bo-notice')).toBeHidden();
+    expect(scripts.filter((chemin) => /connexion-(sanctuaire|territoire|cinema)/.test(chemin))).toEqual([]);
   });
 });
 

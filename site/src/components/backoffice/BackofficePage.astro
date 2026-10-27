@@ -32,6 +32,12 @@
  * hors du budget de 15 Ko, comme l’atelier du blog : sans lui, la connexion
  * marche, d’un coup.
  *
+ * L’entrée Jujutsu Kaisen : le bouton discret du pied (« JJK »,
+ * `[data-entree-jjk-bascule]`, visible seulement sur l’entrée) pose
+ * `data-entree-jjk` sur <html> et le mémorise (« cl-backoffice-jjk ») ;
+ * /backoffice-entree.js le repose avant le premier rendu, sans générique.
+ * Voir ConnexionBackoffice.astro et scripts/connexion-jjk.ts.
+ *
  * Une nouvelle rubrique : l’ajouter à rubriques.ts, poser sa section
  * `id="bo-panel-<id>"` ici, et son chargement dans scripts/backoffice.ts.
  */
@@ -107,7 +113,7 @@ const COULEUR_NUIT = '#0b0d12';
         <RubriqueStockage />
       </div>
     </main>
-    <footer class="bo-pied bo-cadre"><a href="/">Revenir au portfolio</a><span>Espace privé, hors index</span></footer>
+    <footer class="bo-pied bo-cadre"><a href="/">Revenir au portfolio</a><span class="bo-pied__fin"><span>Espace privé, hors index</span><button class="bo-pied__jjk" type="button" title="Entrée Jujutsu Kaisen" data-entree-jjk-bascule hidden><span lang="ja" aria-hidden="true">呪</span><span class="sr">Passer à l’entrée </span>JJK</button></span></footer>
     <dialog class="bo-dialog" id="bo-confirm" aria-labelledby="bo-confirm-title" aria-describedby="bo-confirm-message bo-confirm-code"><form method="dialog"><h2 id="bo-confirm-title">Confirmer la suppression</h2><p id="bo-confirm-message"></p><pre class="bo-commande bo-dialog__commande" hidden><code id="bo-confirm-code"></code></pre><div class="bo-actions"><button class="bo-button" value="cancel" autofocus>Annuler</button><button class="bo-button bo-button--danger" id="bo-confirm-submit" value="confirm">Supprimer</button></div></form></dialog>
     <DialoguesBlog />
     <script>

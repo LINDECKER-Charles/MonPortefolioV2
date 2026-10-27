@@ -27,6 +27,65 @@
 :root {
   color-scheme: light;
 
+  /* Connexion JJK : direction dédiée demandée le 26 octobre 2026, habit de
+     l’entrée sur demande depuis le 27 (`data-entree-jjk`). Ces jetons ne sont
+     consommés que par l’entrée privée, son passage et sa cinématique. */
+  --jjk-encre: #08090d;
+  --jjk-surface: #121318;
+  --jjk-papier: #ece7df;
+  --jjk-muet: #a5a4ac;
+  --jjk-filet: #34333b;
+  --jjk-trait: #77747c;
+  --jjk-or: #dcc28d;
+  --jjk-rouge: #c1263f;
+  --jjk-rouge-clair: #ff8797;
+  --jjk-cyan: #79e7ff;
+  --jjk-violet: #bda1ff;
+  --jjk-energie: var(--jjk-or);
+  --jjk-lueur: rgb(220 194 141 / 0.16);
+  --jjk-lueur-infini: rgb(121 231 255 / 0.2);
+  --jjk-lueur-sanctuaire: rgb(201 43 68 / 0.22);
+  --jjk-voile: rgb(8 9 13 / 0.94);
+  --jjk-trame: rgb(236 231 223 / 0.035);
+  --jjk-ombre: 0 28px 90px rgb(0 0 0 / 0.5);
+  --jjk-rayon: 0px;
+  --jjk-t-logo: clamp(1.7rem, 2.6vw, 2.6rem);
+  --jjk-t-display: clamp(3rem, 8.5vw, 9rem);
+  --jjk-t-form: clamp(2.4rem, 4.1vw, 4rem);
+  --jjk-t-kanji: clamp(3.2rem, 6vw, 6rem);
+  --jjk-t-cachet: 2.5rem;
+  --jjk-t-territoire: clamp(2.8rem, 8vw, 8rem);
+  --jjk-ls-large: .14em;
+  --jjk-ls-titre: -.065em;
+  --jjk-d-territoire: 2400ms;
+  --jjk-d-entree: 1200ms;
+  --jjk-d-brume: 14000ms;
+  --jjk-cine-invocation: 1800ms;
+  --jjk-cine-signes: 2200ms;
+  --jjk-cine-regard: 1600ms;
+  --jjk-cine-revelation: 3200ms;
+  --jjk-cine-duel: 2600ms;
+  --jjk-cine-adaptation: 2600ms;
+  --jjk-cine-expansion: 2800ms;
+  --jjk-cine-silence: 1000ms;
+  --jjk-cine-cut: 700ms;
+  --jjk-cine-pluie: 1600ms;
+  --jjk-cine-final: 1800ms;
+  --jjk-cine-cran: 280ms;
+  --jjk-cine-glow: 0 0 32px var(--jjk-rouge);
+  --jjk-cine-sceau: clamp(8rem, 26vw, 28rem);
+  --jjk-cine-sous-titre: clamp(1.2rem, 2.5vw, 2.4rem);
+  --jjk-cine-nom: clamp(4rem, 16vw, 15rem);
+  --jjk-cine-kanji: clamp(3rem, 9vw, 9rem);
+  --jjk-cine-incantation: clamp(1.5rem, 5vw, 5rem);
+  --jjk-cine-fin: clamp(2.5rem, 6vw, 6rem);
+  --jjk-cine-ombre: 0 8px 50px rgb(0 0 0 / .85);
+  --jjk-cine-penombre: rgb(8 9 13 / .65);
+  --jjk-cine-brume: rgb(201 43 68 / .35);
+  --jjk-cine-cercle-ombre: inset 0 0 0 18px var(--jjk-lueur);
+  /* La flèche du bouton principal, en masque : hors du nom accessible. */
+  --jjk-fleche: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5'%3E%3Cpath d='M4 12h15m-6-6 6 6-6 6'/%3E%3C/svg%3E");
+
   /* Couleurs, jour « aube » */
   --fond: #ece9e3;            /* pierre */
   --surface: #fbfaf7;         /* 1,16:1 sur le fond */
