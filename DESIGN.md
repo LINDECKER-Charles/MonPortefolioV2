@@ -311,10 +311,12 @@ captures, emplacements de visuels), `r3` pilule (boutons, bascule). Seuls les ca
 dessinent leur propre courbure. Focus : contour de 2 px décalé de 3 px, bleu roi le jour,
 lanterne la nuit.
 
-Illustrations : une seule famille, la **gravure en réserve** (trait clair sur fond sombre la nuit,
-inversé le jour), deux ou trois aplats séparables recolorés par les jetons, la lanterne comme
-seule source de lumière de la scène. Aucun ornement de jeu, aucun cadre doré. Chaque emplacement
-est un `<Visuel id>` du registre `site/src/config/visuels.ts`.
+Illustrations du site public et de l’atelier : une seule famille, la **gravure en réserve** (trait
+clair sur fond sombre la nuit, inversé le jour), deux ou trois aplats séparables recolorés par les
+jetons, la lanterne comme seule source de lumière de la scène. Aucun ornement de jeu, aucun cadre
+doré. Chaque emplacement est un `<Visuel id>` du registre `site/src/config/visuels.ts`. L’entrée
+privée a une exception Jujutsu Kaisen explicitement demandée, sur demande seulement, documentée à
+la fin de ce fichier.
 
 ## Components
 
@@ -382,7 +384,9 @@ Chaque composant est documenté en tête de son fichier.
   codes de secours) est un récit à gauche et une carte éclairée à droite (une colonne sous
   860 px), sur une grille commune, avec les étapes de la connexion sous le récit. Le code à six
   chiffres est un seul champ, dont six cases sont l’image ; le mot de passe s’affiche à la
-  demande. Dans l’atelier, la barre de l’article (`blog/BarreArticle.astro`) est collante :
+  demande. Un second habit, Jujutsu Kaisen, s’active sur demande par un petit bouton discret
+  « JJK » au bout du pied de l’entrée (« Entrée privée — Jujutsu Kaisen », plus bas) ; les
+  rubriques gardent toujours la lanterne. Dans l’atelier, la barre de l’article (`blog/BarreArticle.astro`) est collante :
   Enregistrer et Aperçu restent à portée. Les images de la rédaction s’affichent comme dans
   l’article publié : taille de leurs attributs, au plus la colonne et 800 px de haut, sur la
   plaque claire des logos. La rubrique Stockage (`RubriqueStockage.astro`) est une page de
@@ -415,7 +419,8 @@ la nouvelle en émerge ; l’atelier s’ouvre en poussant dans la flamme et se 
 Au repos, la flamme vacille, la lanterne se balance et suit la main. Trois courbes lui sont
 réservées (`--courbe-expo`, `--courbe-entree`, `--courbe-ressort`), son titre de connexion prend
 la taille de l’accroche (`--t-4xl`), et les bandes de cinéma, la traînée d’objectif, le bokeh et
-le grain n’existent qu’ici. Mouvement réduit : rien de tout cela, l’état final d’emblée.
+le grain n’existent qu’ici. Mouvement réduit : rien de tout cela, l’état final d’emblée. En habit
+JJK non plus : la lanterne se tait, le sanctuaire a sa propre mise en scène.
 
 ## Do's and Don'ts
 
@@ -431,8 +436,155 @@ le grain n’existent qu’ici. Mouvement réduit : rien de tout cela, l’état
 
 - Don’t réintroduire D « Mode d’emploi », A « Édition reliée » ni le reste de B ; « mode
   d’emploi » ne reste qu’en clin d’œil (pied de page, 404).
-- Don’t ajouter d’ornement, de cadre doré ni de lexique de jeu : la nuit ne doit jamais rappeler
-  Nocturne.
+- Don’t ajouter d’ornement, de cadre doré ni de lexique de jeu au site public et à l’atelier : la
+  nuit ne doit jamais rappeler Nocturne. L’exception JJK se limite à l’entrée privée, sur demande.
 - Don’t mettre le bleu roi sur ce qui ne se clique pas, ni surligner deux chiffres d’une preuve.
 - Don’t présenter une image générée comme une capture ou une donnée.
 - Don’t recadrer une capture au point de masquer ce qu’elle prouve.
+
+## Entrée privée — Jujutsu Kaisen (26 et 27 octobre 2026)
+
+Charles demande explicitement une identité « 100 % JJK » pour l’entrée du backoffice, puis qu’elle
+reste un habit facultatif : la lanterne demeure l’entrée par défaut, et un petit bouton discret
+active le JJK. Cet habit adopte Jujutsu Kaisen, Mahoraga, les Dix Ombres et le vocabulaire des
+territoires. C’est une exception volontaire à Lanterne, limitée à l’entrée (connexion,
+vérification en deux étapes, codes de secours) ; les rubriques ouvertes après connexion gardent
+toujours la lanterne.
+
+**La bascule.** Le bouton « JJK » (un sceau 呪 et trois lettres, en éteint, au bout du pied de
+l’entrée lanterne, absent de l’atelier) pose `data-entree-jjk` sur `<html>` et mémorise le choix
+(`localStorage['cl-backoffice-jjk']`) ; `public/backoffice-entree.js` le repose avant le premier
+rendu, sans générique. « Revenir à la lanterne », au pied du sanctuaire, le retire. Le changement
+d’habit passe par une View Transition, une entaille diagonale (jamais en mouvement réduit), et le
+focus passe au bouton de l’autre habit (`scripts/connexion-jjk.ts`). Sans JavaScript, l’entrée est
+celle de la lanterne.
+
+**Un seul jeu de formulaires.** Les deux habits partagent les trois écrans de
+`ConnexionBackoffice.astro` : identifiants, libellés, retours et comportements des champs
+(`backoffice-saisie.ts` : afficher le mot de passe, majuscules, six cases du code, code de
+secours, compte à rebours d’un 429). Le sanctuaire (`.bo-sanctuaire`) les enveloppe toujours :
+hors du mode JJK, il n’est qu’un passage (`display: contents`, couleur héritée de la page) et ses
+décors se taisent ; en mode JJK, le récit passe au-dessus de la carte, la carte perd son cadre et
+la connexion montre « Franchir le voile » (les lecteurs d’écran gardent « Entrer dans
+l’atelier »). La mise en scène lanterne reste chargée pour les champs, mais se tait : scène
+arrêtée, gestes appliqués d’un coup. La mise en scène JJK (`connexion-sanctuaire.ts`) ne se
+charge qu’une fois l’habit choisi et la session vérifiée : une session ouverte n’en télécharge
+rien.
+
+La scène est sombre, identique en mode jour et en mode nuit : noir encré, blanc os et rouge
+sang, avec des accents liés à la technique sélectionnée. Les valeurs restent centralisées
+dans `jetons.css`, sous les jetons `--jjk-*` et ceux de la roue ; les polices auto-hébergées du
+projet restent utilisées. La composition associe une affiche manga à gauche et un dossier
+d’exorciste à droite : titre Mahoraga monumental, kanjis, sceaux, traits d’encre et formulaire
+nettement lisible. Sur mobile, le personnage devient un frontispice compact et les champs
+restent accessibles sans débordement horizontal.
+
+Mahoraga est l’illustration générée `JJK-01`, posée avec `<Visuel id="JJK-01">`. La méthode
+`ART` du registre documente cette direction dédiée : un master transparent, un rendu WebP de
+1 024 × 1 536 px sous 250 Ko, sans recoloration ni variante jour/nuit. Le prompt et la
+provenance figurent dans `design/assets/visuels/connexion-jjk/README.md`. Le texte visible
+identifie le personnage ; l’image est décorative. La roue à huit branches reste un SVG
+indépendant : moyeu, rayons, segments et anneaux peuvent bouger séparément du personnage.
+
+Le choix de technique (Dix Ombres, Infini ou Sanctuaire) change l’ambiance, les accents et les
+motifs du territoire. Le bouton de déploiement rejoue sa séquence visuelle ; le focus fait
+avancer la roue par crans, la surface réagit au pointeur et les états réels de vérification,
+d’erreur et de double authentification pilotent le retour visuel. Le succès traverse le voile
+sans retarder l’accès. Les mouvements se suspendent à la demande, hors écran, dans un onglet
+masqué et au retour à la lanterne. `prefers-reduced-motion` impose une scène fixe, sans
+déploiement ni transition de succès.
+
+Le son est désactivé par défaut. Son bouton crée un contexte Web Audio uniquement après une
+activation explicite et joue de courts sons synthétisés localement, sans fichier distant.
+La mise en pause, le masquage de l’onglet, le mouvement réduit et le retour à la lanterne
+interrompent le son ; les ressources audio sont libérées à la sortie. Les contrôles ludiques
+n’altèrent ni l’API ni la session, et n’enregistrent aucune donnée de connexion.
+L’authentification conserve ses identifiants, ses libellés, la saisie automatique,
+l’inscription TOTP, les codes de secours et ses retours accessibles. Aucun service distant,
+bibliothèque d’animation ni mesure d’audience n’est ajouté.
+
+Composants : `ConnexionBackoffice.astro`, `RoueAdaptation.astro`. Présentation :
+`connexion-sanctuaire.css`, `roue-adaptation.css`. Interactions : `connexion-jjk.ts` porte la
+bascule et charge le reste ; `connexion-sanctuaire.ts` observe l’authentification ;
+`connexion-territoire.ts` pilote les techniques, le déploiement et l’audio facultatif.
+
+### Mode cinématique (27 octobre 2026)
+
+« Mode cinématique » et « Voir l’invocation » ouvrent une séquence facultative en plein écran,
+dans un `<dialog>` natif. Elle ne démarre jamais automatiquement. Neuf plans composent le
+rituel : invocation (1,8 s), signe des dix ombres (2,2 s), regard (1,6 s), révélation de
+Mahoraga (3,2 s), duel avec Sukuna (2,6 s), adaptation (2,6 s), extension du territoire
+(2,8 s), silence (1 s), puis composition finale conservée jusqu’à une action. Les huit
+premiers plans durent donc 17,8 s de lecture active ; leurs durées sont les jetons
+`--jjk-cine-<plan>`. Le contrôleur lit les unités `s` et `ms`, y compris après minification.
+Un chapitre lisible, une ligne de progression et neuf accès directs accompagnent le montage.
+Le chargement attend le décodage des images ; une fermeture pendant cette préparation annule
+le démarrage. Le plein écran du navigateur est disponible sur ordinateur et se ferme avec
+la scène. La technique choisie sur la connexion détermine les accents de la cinématique.
+
+Les couches se déplacent séparément : décor, personnage, roue SVG, gros plan, incantation,
+titre, traits de vitesse, débris et fractures d’encre. `JJK-01` fournit le personnage détouré ;
+`JJK-02` est le décor du sanctuaire, `JJK-03` le regard, `JJK-04` le duel et `JJK-05` les mains
+du rituel. Le duel reste un panneau panoramique sur téléphone pour conserver les deux
+personnages. La roue d’adaptation se projette en perspective, entourée d’une orbite typographique
+et de huit témoins successifs. Pluie, entailles et mouvements de caméra accompagnent les
+coups ; le silence sépare l’expansion de l’affiche finale. Ces illustrations
+passent par `<Visuel>` et la méthode `ART` du registre, avec leurs prompts et leur provenance
+dans `design/assets/visuels/connexion-jjk/README.md`. Les textes, la roue et les effets restent
+des éléments HTML, SVG et CSS indépendants des images.
+
+« Mettre en pause » suspend à la fois les animations et l’horloge de progression ; « Reprendre
+la lecture » repart du même instant. Un onglet masqué suspend également la lecture, sans
+compter le temps d’absence. La scène de connexion derrière le dialog est arrêtée pendant son
+ouverture. « Revenir à la connexion » et Échap ferment le dialog et restituent le focus au
+bouton d’ouverture. Le clavier suit le comportement modal natif et ne peut pas atteindre les
+champs derrière la scène. À la fin, « Entrer dans le territoire » ferme le dialog et focalise
+l’adresse e-mail ; « Rejouer l’invocation » reprend au premier plan. Si le bouton de pause
+avait le focus au passage à la fin, celui-ci est transféré vers « Entrer dans le territoire ».
+La saisie du formulaire est conservée ; une authentification confirmée pendant la lecture
+ferme immédiatement la cinématique et laisse l’atelier recevoir le focus.
+
+Avec `prefers-reduced-motion`, l’ouverture et le rejeu présentent directement la composition
+finale complète immédiatement, sans attendre les images des plans animés, sans animation ni
+commande de pause. La bande sonore est indépendante du son de la connexion : aucun contexte
+audio n’est créé avant le clic explicite sur « Activer le son ». Un master MP3 local monte huit
+effets de Mixkit sous licence, en vingt-trois couches : drone de cuivre, impacts, aspiration,
+épée, cloche et cor grave. Les sources, empreintes et transformations sont documentées dans
+`design/assets/audio/connexion-jjk/README.md` ; les fichiers bruts restent dans les captures
+locales ignorées, seul le montage intégré au site est livré. `tools/mixer-connexion-jjk.mjs`
+rend le mix et mesure son niveau après encodage. Le master dure 21,3 s, dont la résonance
+finale, et pèse moins de 450 Ko. Il se charge seulement au clic volontaire ; le film attend le
+décodage puis reprend à son instant courant. Web Audio lit le master à la position globale du
+montage, y compris après un saut, un mute ou une pause. Le plan « silence » réserve une seconde
+de silence. Le son se suspend en pause, dans un onglet masqué ou avec le mouvement réduit, et
+ferme son contexte à la sortie. Une nouvelle ouverture reste silencieuse jusqu’à une nouvelle
+activation explicite. Le mouvement réduit masque aussi le son. Un réglage « Volume » accessible
+au clavier donne la main sur le niveau, 70 % par défaut ; les arrêts et reprises utilisent de
+courtes enveloppes pour éviter les clics. Une erreur de téléchargement est annoncée dans la
+scène et offre une nouvelle tentative. L’échec de chargement du contrôleur affiche également
+un retour visible hors de la scène. Les images ne dépendent d’aucun hébergement tiers ; aucune
+vidéo distante ni bibliothèque d’animation n’est ajoutée.
+
+Composant : `components/backoffice/CinemaJjk.astro`. Présentation :
+`styles/connexion-cinema.css`, avec les valeurs centralisées dans `styles/jetons.css`. Cette
+feuille est posée comme fichier (`?url`) à la première ouverture, hors des styles de la page :
+Astro inline dans la page toute feuille importée par un script, et le budget de 30 Ko ne
+tiendrait pas. Les accès à la cinématique, sur la connexion, sont dans `connexion-sanctuaire.css`.
+`scripts/connexion-cinema.ts` gère la feuille, l’horloge, les neuf plans, les commandes et le
+cycle de vie du dialog ; `scripts/connexion-cinema-son.ts` porte la lecture facultative du
+master. Leur branchement dans `scripts/connexion-sanctuaire.ts` garde ces effets indépendants
+des décisions d’accès. Les tests `tests/e2e/connexion-cinema.spec.ts` couvrent le clavier, la
+pause, le rejeu, le mouvement réduit, le mobile, l’authentification pendant la lecture,
+l’activation du son, les chapitres, l’annulation du chargement et le plein écran.
+`connexion-audio.spec.ts` vérifie les positions de départ des sources audio, les
+erreurs/réessais, le volume et le téléchargement strictement volontaire. Les specs JJK
+choisissent l’habit comme son bouton (`tests/e2e/support/entree-jjk.ts`) ; la bascule elle-même
+est vérifiée dans `backoffice.spec.ts`.
+
+Le contrôleur et la partition de la cinématique se chargent seulement à la demande. Les
+modules des accès MCP, des aides de l’atelier et de la consultation (demandes, outils,
+destinataire) attendent une session validée. Le test `tests/e2e/connexion-poids.spec.ts`
+additionne les corps JavaScript réellement reçus, imports différés compris, sauf la mise en
+scène lanterne (hors budget, comme l’atelier du blog) : l’habit JJK puis la cinématique restent
+sous 15 Kio gzip. Le même test vérifie le type MIME et le plafond de 450 Ko du master, après
+activation du son.
