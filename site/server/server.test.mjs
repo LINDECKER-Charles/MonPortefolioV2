@@ -59,6 +59,7 @@ async function distFactice() {
     'demos/exemple.mp4': '0123456789',
     'demos/exemple.webm': 'abcdefghij',
     'demos/vide.mp4': '',
+    'audio/connexion.mp3': 'ID3audio',
     'favicon.ico': 'ICO',
     'favicon.svg': '<svg xmlns="http://www.w3.org/2000/svg"/>',
     'site.webmanifest': '{"name":"Portfolio"}',
@@ -301,6 +302,7 @@ describe('pages et fichiers', () => {
       ['/_astro/app.Ab12Cd34.js', 'public, max-age=31536000, immutable', 'text/javascript; charset=utf-8'],
       ['/_astro/site.Ef56Gh78.css', 'public, max-age=31536000, immutable', 'text/css; charset=utf-8'],
       ['/img/portrait.webp', 'public, max-age=3600', 'image/webp'],
+      ['/audio/connexion.mp3', 'public, max-age=3600', 'audio/mpeg'],
       ['/theme.js', 'public, max-age=3600', 'text/javascript; charset=utf-8'],
       ['/favicon.ico', 'public, max-age=3600', 'image/x-icon'],
       ['/favicon.svg', 'public, max-age=3600', 'image/svg+xml'],
@@ -979,8 +981,11 @@ describe('exécution directe', () => {
 
     const debut = Date.now();
     enfant.kill('SIGTERM');
-    const { code } = await fin;
-    assert.equal(code, 0);
+    const { code, signal } = await fin;
+    // Windows termine directement l’enfant : le gestionnaire POSIX de SIGTERM
+    // n’y reçoit pas le signal et ne peut pas fixer le code de sortie à zéro.
+    if (process.platform === 'win32') assert.deepEqual({ code, signal }, { code: null, signal: 'SIGTERM' });
+    else assert.equal(code, 0);
     assert.ok(Date.now() - debut < 3_000, 'arrêt sans attendre le délai de grâce');
   });
 });

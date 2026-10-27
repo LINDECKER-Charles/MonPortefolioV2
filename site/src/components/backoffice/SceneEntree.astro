@@ -1,0 +1,72 @@
+---
+/**
+ * La scène de l’entrée du backoffice, « l’atelier s’allume » : derrière le
+ * récit et la carte, une seule lumière, la lanterne qui pend au-dessus de la
+ * carte. Décorative, hors de l’arbre d’accessibilité.
+ *
+ * Du fond vers l’avant : le ciel (clair de lune, vignette), la chaleur de la
+ * lanterne, le voile noir du générique, le bokeh lointain, le plan de la
+ * lanterne (la caméra le cadre), le grain de pellicule. Puis, hors de la
+ * scène et fixés à l’écran : le front de lumière du passage dans l’atelier
+ * et les bandes de cinéma.
+ *
+ * La lanterne est celle du logo, redessinée au trait : anneau, col, toit en
+ * cloche, cage, fenêtre en arc brisé, bougie, socle et pieds, un tracé par
+ * trait (`pathLength="1"`), que le générique dessine dans cet ordre. La
+ * flamme a trois enveloppes : son état, ses sursauts, son vacillement.
+ *
+ * Styles : styles/backoffice-entree.css ; mouvement :
+ * scripts/backoffice-entree.ts et scripts/backoffice-scene.ts.
+ */
+---
+
+<div class="bo-scene" aria-hidden="true">
+  <div class="bo-scene__ciel"></div>
+  <div class="bo-scene__chaleur"></div>
+  <div class="bo-scene__noir"></div>
+  <div class="bo-scene__bokeh"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="bo-scene__plan">
+    <div class="bo-suspension">
+      <span class="bo-suspension__corde"></span>
+      <div class="bo-suspension__lanterne">
+        <span class="bo-lanterne__rayons"></span>
+        <span class="bo-lanterne__halo"></span>
+        <span class="bo-lanterne__poussieres"></span>
+        <span class="bo-lanterne__eclat"></span>
+        <svg class="bo-lanterne" viewBox="0 0 120 200" focusable="false">
+          <path class="bo-lanterne__vitre" d="M38 158H82V120C82 109 73 101 60 97C47 101 38 109 38 120Z" />
+          <g class="bo-lanterne__traits">
+            <circle cx="60" cy="13" r="8" pathLength="1" />
+            <path d="M60 21V40" pathLength="1" />
+            <path d="M60 40C51 55 35 66 14 69V78H106V69C85 66 69 55 60 40Z" pathLength="1" />
+            <path d="M21 78V172" pathLength="1" />
+            <path d="M99 78V172" pathLength="1" />
+            <path d="M21 88H99" pathLength="1" />
+            <path d="M21 164H99" pathLength="1" />
+            <path d="M38 158H82V120C82 109 73 101 60 97C47 101 38 109 38 120Z" pathLength="1" />
+            <path d="M54 148H66V158H54Z" pathLength="1" />
+            <path d="M12 172H108V184H12Z" pathLength="1" />
+            <path d="M26 184V192" pathLength="1" />
+            <path d="M94 184V192" pathLength="1" />
+          </g>
+          <path class="bo-lanterne__fumee" d="M60 106C55 98 65 92 60 84C55 76 64 70 60 62" pathLength="1" />
+          <path class="bo-lanterne__fumee bo-lanterne__fumee--2" d="M61 106C66 97 57 90 62 81C67 72 58 66 62 56" pathLength="1" />
+          <g class="bo-flamme">
+            <g class="bo-flamme__sursaut">
+              <g class="bo-flamme__vacille">
+                <path class="bo-flamme__corps" d="M60 112C67 120 71 128 71 136A11 11 0 0 1 49 136C49 128 53 120 60 112Z" />
+                <path class="bo-flamme__coeur" d="M60 125C63.5 129 65 133 65 137A5 5 0 0 1 55 137C55 133 56.5 129 60 125Z" />
+              </g>
+            </g>
+          </g>
+        </svg>
+        <span class="bo-lanterne__trainee"></span>
+        <span class="bo-lanterne__etincelles"></span>
+      </div>
+    </div>
+  </div>
+  <div class="bo-scene__grain"></div>
+</div>
+
+<div class="bo-front-lumiere" aria-hidden="true"></div>
+<div class="bo-bandes" aria-hidden="true"><span class="bo-bande bo-bande--haut"></span><span class="bo-bande bo-bande--bas"></span></div>

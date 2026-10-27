@@ -4,6 +4,7 @@ import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
+import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import { creerServeur } from '../../server/server.mjs';
 import { surveillerConsole } from './support/navigateur';
@@ -32,7 +33,7 @@ type Noeud = { type: string; attrs?: Record<string, unknown>; content?: Noeud[] 
 const fixture = (nom: string) => JSON.parse(readFileSync(new URL(`../fixtures/${nom}`, import.meta.url), 'utf8'));
 const ARTICLE = fixture('article-complet.json');
 const IMAGES: Record<string, Image> = fixture('article-complet-media.json').images;
-const DIST = new URL('../../dist', import.meta.url).pathname;
+const DIST = fileURLToPath(new URL('../../dist', import.meta.url));
 const CHEMIN = `/blog/${ARTICLE.slug}`;
 const REGLES = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'];
 /** Budget d’images d’une page (AGENTS.md, « Budgets ») : 1,5 Mo. */

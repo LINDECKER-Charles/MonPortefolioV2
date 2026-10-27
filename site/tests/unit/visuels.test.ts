@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { afterAll, describe, expect, it } from 'vitest';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import Visuel from '../../src/components/ui/Visuel.astro';
@@ -33,7 +34,7 @@ import { confidentialite } from '../support/prive';
  * dit où chaque entrée est posée.
  */
 
-const SITE = new URL('../../', import.meta.url).pathname;
+const SITE = fileURLToPath(new URL('../../', import.meta.url));
 const SRC = path.join(SITE, 'src');
 /** Marques refusées, plus celles du cadrage privé (tests/support/prive.ts). */
 const MARQUES = new RegExp(String.raw`\b(?:pvz|plants vs\.? zombies|riot|league of legends|sony|fromsoftware|trello|b-hive|claude|codex|elan formation|atis|mission locale|shrek|gwent|bloodborne|omnicard|unreal|unity|${confidentialite().marques.join('|')})\b|\b42\b`, 'i');
@@ -42,11 +43,46 @@ const images = VISUELS.filter((v) => v.methode === 'IMG' && !v.reprend?.length);
 /**
  * L’inventaire figé : tout le registre, sauf les séries des quatre pages
  * entrées dans la vitrine le 14/10/2026 (SERIES_VITRINE_FINALE), que chaque
- * page tient sous son repère. Les compteurs ci-dessous ne comptent que lui :
+ * page tient sous son repère, et les illustrations de direction dédiée (ART).
+ * Les compteurs ci-dessous ne comptent que lui :
  * une page qui ajoute ses entrées n’y touche pas ; les règles, elles, valent
  * pour tout le registre.
  */
-const INVENTAIRE = VISUELS.filter((v) => !SERIES_VITRINE_FINALE.includes(v.serie));
+const INVENTAIRE = VISUELS.filter((v) => !SERIES_VITRINE_FINALE.includes(v.serie) && v.methode !== 'ART');
+
+describe('illustrations JJK de la connexion privée', () => {
+  it('livre un portrait transparent contrôlé, sans déclinaison de thème', async () => {
+    const visuel = visuelParId('JJK-01')!;
+    expect(visuel.methode).toBe('ART');
+    expect(visuel.page).toBe('/backoffice');
+    expect(visuel.alt).toBe('');
+    expect(visuel.fond).toBe('transparent');
+    expect(fichierNuit(visuel)).toBeNull();
+    const fichier = path.join(SITE, visuel.fichier!);
+    const { default: sharp } = await import('sharp');
+    const meta = await sharp(readFileSync(fichier)).metadata();
+    expect([meta.width, meta.height, meta.hasAlpha]).toEqual([1024, 1536, true]);
+    expect(statSync(fichier).size).toBeLessThanOrEqual(plafondPoids(1024, 1536));
+    expect(await verifierLivres(SITE, [visuel])).toEqual([]);
+    expect(existsSync(path.join(SITE, '../design/assets/visuels/connexion-jjk/JJK-01.png'))).toBe(true);
+  });
+
+  it.each(['JJK-02', 'JJK-03'])('livre le panorama opaque %s sous son plafond de poids', async (id) => {
+    const visuel = visuelParId(id)!;
+    expect(visuel.methode).toBe('ART');
+    expect(visuel.page).toBe('/backoffice');
+    expect(visuel.alt).toBe('');
+    expect(visuel.fond).toBe('aplat');
+    expect(fichierNuit(visuel)).toBeNull();
+    const fichier = path.join(SITE, visuel.fichier!);
+    const { default: sharp } = await import('sharp');
+    const meta = await sharp(readFileSync(fichier)).metadata();
+    expect([meta.width, meta.height, meta.hasAlpha]).toEqual([1672, 941, false]);
+    expect(statSync(fichier).size).toBeLessThanOrEqual(plafondPoids(1672, 941));
+    expect(await verifierLivres(SITE, [visuel])).toEqual([]);
+    expect(existsSync(path.join(SITE, `../design/assets/visuels/connexion-jjk/${id}.png`))).toBe(true);
+  });
+});
 
 describe('registre des visuels : l’inventaire', () => {
   it('recense les 176 emplacements de l’inventaire, dont 120 « socle » et 56 « élargi »', () => {
@@ -166,7 +202,7 @@ describe('registre des visuels : où chaque entrée est posée', () => {
     for (const fichier of fichiers) {
       const source = readFileSync(fichier, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/<!--[\s\S]*?-->/g, '');
       const motifs = [/<(?:Visuel|Scene)\b[^>]*?\bid=["']([A-Z]{3}-\w+)["']/g, /\bvisuel:\s*['"]([A-Z]{3}-\w+)['"]/g, /visuelParId\(\s*['"]([A-Z]{3}-\w+)['"]\s*\)/g];
-      for (const motif of motifs) for (const m of source.matchAll(motif)) appels.push([path.relative(SRC, fichier), m[1]]);
+      for (const motif of motifs) for (const m of source.matchAll(motif)) appels.push([path.relative(SRC, fichier).replaceAll('\\', '/'), m[1]]);
     }
     expect(appels.length).toBeGreaterThan(60);
     const ecarts = appels.flatMap(([fichier, id]) => {
@@ -587,9 +623,10 @@ describe('composant Visuel', () => {
     expect(style).toMatch(/@media \(prefers-color-scheme: dark\) \{\s*:global\(:root:not\(\[data-theme\]\)\) \.visuel > :global\(\.visuel__jour\) \{\s*display: none;/);
     expect(style).toMatch(/@media print \{[\s\S]*\.visuel__jour\) \{\s*display: block;[\s\S]*\.visuel__nuit\) \{\s*display: none;/);
     expect(style).toMatch(/\.visuel > :global\(\.visuel__nuit\) \{\s*display: none;/);
-    // Les mêmes portes que les jetons de nuit.
+    // Les mêmes portes que les jetons de nuit, plus le générique du backoffice
+    // (`data-nuit-forcee`), où aucune image n’a de rendu de nuit à montrer.
     const jetons = readFileSync(path.join(SRC, 'styles/jetons.css'), 'utf8');
-    expect(jetons).toMatch(/:root\[data-theme='nuit'\],\s*\.acte-veille,\s*\.acte-bleu \{/);
+    expect(jetons).toMatch(/:root\[data-theme='nuit'\],\s*\.acte-veille,\s*\.acte-bleu,\s*:root\[data-nuit-forcee\] \{/);
     expect(jetons).toMatch(/@media \(prefers-color-scheme: dark\) \{\s*:root:not\(\[data-theme\]\) \{/);
   });
 

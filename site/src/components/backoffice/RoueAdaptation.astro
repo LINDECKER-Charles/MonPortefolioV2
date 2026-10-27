@@ -1,0 +1,144 @@
+---
+/**
+ * Roue d’adaptation : huit branches et leurs orbes, en aplats de manga,
+ * avec un moyeu à huit pétales. Le dessin est vectoriel et décoratif. Ses plans suivent
+ * data-phase / data-motion du sanctuaire ; l’orientation avance par crans via
+ * --roue-angle. Aucune logique d’authentification n’entre dans la figure.
+ */
+import '../../styles/roue-adaptation.css';
+
+interface Props {
+  /** Préfixe unique des ressources SVG quand plusieurs roues partagent la page. */
+  prefix?: string;
+}
+
+const { prefix = 'roue' } = Astro.props;
+const ressource = (nom: string) => `${prefix}-${nom}`;
+const branches = Array.from({ length: 8 }, (_, i) => i);
+const reperes = Array.from({ length: 48 }, (_, i) => i);
+const eclats = Array.from({ length: 16 }, (_, i) => i);
+---
+
+<div class="roue-adaptation" aria-hidden="true">
+  <svg class="roue-adaptation__dessin" viewBox="0 0 640 640" width="640" height="640" focusable="false">
+    <defs>
+      <linearGradient id={ressource('metal')} x1=".12" y1="0" x2=".82" y2="1">
+        <stop offset="0" class="roue-stop-ivoire" />
+        <stop offset=".38" class="roue-stop-ivoire" />
+        <stop offset=".38" class="roue-stop-or" />
+        <stop offset=".78" class="roue-stop-or" />
+        <stop offset=".78" class="roue-stop-ombre" />
+        <stop offset="1" class="roue-stop-ombre" />
+      </linearGradient>
+      <linearGradient id={ressource('tranche')} x1="0" y1="0" x2="1" y2=".6">
+        <stop offset="0" class="roue-stop-or" />
+        <stop offset=".58" class="roue-stop-or" />
+        <stop offset=".58" class="roue-stop-ombre" />
+        <stop offset="1" class="roue-stop-ombre" />
+      </linearGradient>
+      <radialGradient id={ressource('lumiere')}>
+        <stop offset="0" class="roue-stop-or" stop-opacity=".1" />
+        <stop offset=".6" class="roue-stop-or" stop-opacity=".035" />
+        <stop offset="1" class="roue-stop-or" stop-opacity="0" />
+      </radialGradient>
+    </defs>
+
+    <circle class="roue-adaptation__aura" cx="320" cy="320" r="300" fill={`url(#${ressource('lumiere')})`} />
+
+    <g class="roue-adaptation__cartographie" fill="none">
+      <circle cx="320" cy="320" r="284" class="roue-filet" />
+      <circle cx="320" cy="320" r="273" class="roue-filet roue-filet--discret" stroke-dasharray="1 13.3" />
+      <path d="M320 21v25M320 594v25M21 320h25M594 320h25" class="roue-filet roue-filet--repere" />
+      <path d="m106 106 18 18m392 392 18 18M106 534l18-18m392-392 18-18" class="roue-filet" />
+      <g class="roue-adaptation__orbite">
+        <circle cx="320" cy="320" r="266" class="roue-filet" stroke-dasharray="72 64 12 112 36 130" />
+        {branches.map((i) => (
+          <g transform={`rotate(${i * 45 + 22.5} 320 320)`}>
+            <path d="m320 29 3 6-3 6-3-6z" class="roue-or" />
+            <path d="M314 58h12m-6-6v12" class="roue-filet roue-filet--repere" />
+          </g>
+        ))}
+      </g>
+    </g>
+
+    <g class="roue-adaptation__apparition">
+      <g class="roue-adaptation__orientation">
+        <g class="roue-adaptation__corps">
+          <circle cx="320" cy="324" r="199" class="roue-anneau-ombre" />
+          <circle cx="320" cy="320" r="199" fill="none" stroke={`url(#${ressource('metal')})`} stroke-width="27" />
+          <circle cx="320" cy="320" r="215" class="roue-contour-anneau" />
+          <circle cx="320" cy="320" r="183" class="roue-contour-anneau" />
+          <path d="M135 320a185 185 0 0 1 317-130" class="roue-reflet" fill="none" stroke-width="2.5" />
+
+          {branches.map((i) => (
+            <g transform={`rotate(${i * 45} 320 320)`}>
+              <g class="roue-adaptation__branche" style={`--branche: ${i}`}>
+                <path d="M306 275c6-43 5-69 2-99-2-18-6-38-4-59l3-16h26l3 16c2 21-2 41-4 59-3 30-4 56 2 99z" fill={`url(#${ressource('metal')})`} class="roue-contour" />
+                <path d="M324 106h9l3 16c1 18-3 36-5 56-3 38-2 63 3 97h-11c-2-42-3-61 0-99 2-28 5-47 1-70z" class="roue-ombre-plate" />
+                <path d="M309 124c-2 16 0 34 3 51m0 10 1 26m0 11-2 25" class="roue-reflet" fill="none" />
+                <path d="M306 173q14 5 28 0v10q-14 6-28 0zM305 246q15 4 30 0l2 10q-17 5-34 0z" fill={`url(#${ressource('tranche')})`} class="roue-contour" />
+                <path d="m329 133 5 5m-6 2 5 5m-6 2 5 5" class="roue-hachure" fill="none" />
+                <circle cx="320" cy="87" r="29" class="roue-orbe" />
+                <path d="M340 65a29 29 0 0 1-39 43c25 4 43-17 39-43Z" class="roue-ombre-plate" />
+                <path d="M303 82a18 18 0 0 1 18-14" class="roue-reflet" fill="none" stroke-width="4" />
+                <path d="m336 94 5 4m-9 1 5 4m-10 1 5 4" class="roue-hachure" fill="none" />
+                <circle class="roue-adaptation__perle" cx="320" cy="87" r="35" fill="none" />
+              </g>
+            </g>
+          ))}
+
+          <g class="roue-adaptation__graduations">
+            {reperes.map((i) => (
+              <path d={`M320 111v${i % 6 === 0 ? 11 : 5}`} transform={`rotate(${i * 7.5} 320 320)`} class="roue-hachure" />
+            ))}
+          </g>
+          <circle cx="320" cy="320" r="166" fill="none" class="roue-filet roue-filet--interieur" stroke-dasharray="2 7" />
+        </g>
+      </g>
+
+      <g class="roue-adaptation__contre-rotation" fill="none">
+        <circle cx="320" cy="320" r="148" class="roue-filet" stroke-dasharray="55 20 4 20" />
+        <circle cx="320" cy="320" r="139" class="roue-filet roue-filet--discret" />
+        {branches.map((i) => (
+          <g transform={`rotate(${i * 45 + 22.5} 320 320)`}>
+            <path d="m316 177 4-6 4 6-4 6z" class="roue-or" />
+            <path d="M315 190h10m-5-4v8" class="roue-filet" />
+          </g>
+        ))}
+      </g>
+
+      <g class="roue-adaptation__coeur">
+        <circle cx="320" cy="324" r="62" class="roue-profondeur" />
+        <circle cx="320" cy="320" r="60" fill={`url(#${ressource('metal')})`} class="roue-contour" />
+        <circle cx="320" cy="320" r="49" class="roue-coeur-fond" />
+        {branches.map((i) => (
+          <g transform={`rotate(${i * 45} 320 320)`}>
+            <path d="M320 310c-15-11-16-24 0-34 16 10 15 23 0 34Z" class="roue-petale" />
+            <path d="M320 284v12" class="roue-reflet" />
+          </g>
+        ))}
+        <g class="roue-adaptation__sceau" fill="none">
+          <circle cx="320" cy="320" r="18" class="roue-orbe" />
+          <circle cx="320" cy="320" r="9" class="roue-coeur-fond" />
+          <circle cx="317" cy="317" r="3" class="roue-reflet-plein" />
+        </g>
+      </g>
+    </g>
+
+    <g class="roue-adaptation__onde" fill="none">
+      <circle cx="320" cy="320" r="234" class="roue-onde-trait" />
+      <circle cx="320" cy="320" r="243" class="roue-onde-trait roue-onde-trait--fine" />
+    </g>
+    <g class="roue-adaptation__rayonnement" fill="none">
+      {eclats.map((i) => (
+        <path d={`M320 ${i % 2 === 0 ? 66 : 83}v${i % 2 === 0 ? -20 : -9}`} transform={`rotate(${i * 22.5 + 11.25} 320 320)`} class="roue-reflet" />
+      ))}
+    </g>
+    <g class="roue-adaptation__energie" fill="none">
+      {branches.map((i) => (
+        <path d="m323 27-10 21 13 9-17 25 11 13-8 21m10-51 17-12 7-18" transform={`rotate(${i * 45 + 18} 320 320)`} />
+      ))}
+    </g>
+    <circle class="roue-adaptation__cercle-etat" cx="320" cy="320" r="250" fill="none" pathLength="100" />
+  </svg>
+</div>

@@ -1,0 +1,226 @@
+/* Roue Mahoraga : contours d’encre, aplats et hachures, plutôt que métal poli.
+   Les pigments viennent des jetons JJK de la connexion.
+   Les groupes SVG séparent l’arrivée, le cran d’adaptation et les orbites :
+   un changement de phase ne redémarre pas le mouvement ambiant. */
+.roue-adaptation {
+  width: 100%;
+  aspect-ratio: 1;
+  pointer-events: none;
+  contain: layout style;
+}
+
+.roue-adaptation__dessin {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.roue-stop-ivoire { stop-color: var(--jjk-papier); }
+.roue-stop-or { stop-color: var(--jjk-or); }
+.roue-stop-ombre { stop-color: color-mix(in srgb, var(--jjk-or) 48%, var(--jjk-encre)); }
+.roue-or { fill: var(--jjk-energie); }
+.roue-profondeur { fill: var(--jjk-encre); stroke: var(--jjk-encre); }
+.roue-gravure { stroke: color-mix(in srgb, var(--jjk-or) 32%, var(--jjk-encre)); stroke-width: 1; }
+.roue-reflet { stroke: var(--jjk-papier); opacity: .85; stroke-linecap: round; }
+.roue-reflet-plein { fill: var(--jjk-papier); }
+.roue-contour { stroke: var(--jjk-encre); stroke-width: 3.5; stroke-linejoin: round; }
+.roue-anneau-ombre { fill: none; stroke: var(--jjk-encre); stroke-width: 38; }
+.roue-contour-anneau { fill: none; stroke: var(--jjk-encre); stroke-width: 3.5; }
+.roue-ombre-plate { fill: color-mix(in srgb, var(--jjk-or) 56%, var(--jjk-encre)); }
+.roue-hachure { stroke: var(--jjk-encre); stroke-width: 1.5; opacity: .65; }
+.roue-orbe { fill: var(--jjk-or); stroke: var(--jjk-encre); stroke-width: 3.5; }
+.roue-coeur-fond { fill: var(--jjk-encre); }
+.roue-petale { fill: var(--jjk-or); stroke: var(--jjk-encre); stroke-width: 2.5; }
+.roue-filet { stroke: var(--jjk-energie); stroke-width: .9; opacity: .25; }
+.roue-filet--discret { opacity: .15; }
+.roue-filet--repere { opacity: .6; }
+.roue-filet--interieur { opacity: .35; }
+
+.roue-adaptation :is(.roue-adaptation__apparition, .roue-adaptation__cartographie,
+  .roue-adaptation__orientation, .roue-adaptation__orbite,
+  .roue-adaptation__contre-rotation, .roue-adaptation__aura,
+  .roue-adaptation__coeur, .roue-adaptation__cercle-etat,
+  .roue-adaptation__onde, .roue-adaptation__rayonnement,
+  .roue-adaptation__energie) {
+  transform-origin: 320px 320px;
+}
+
+.roue-adaptation__orientation {
+  transform: rotate(var(--roue-angle, 0deg));
+  transition: transform calc(var(--d-scene) * 2.8) var(--courbe);
+}
+
+.roue-adaptation__apparition {
+  animation: roue-revelation var(--d-recit) var(--courbe) both;
+}
+
+.roue-adaptation__cartographie {
+  animation: roue-cartographie calc(var(--d-recit) * 1.3) var(--courbe) both;
+}
+
+.roue-adaptation__orbite {
+  animation: roue-orbite calc(var(--d-scene) * 220) linear infinite;
+}
+
+.roue-adaptation__contre-rotation {
+  animation: roue-orbite calc(var(--d-scene) * 130) linear infinite reverse;
+}
+
+.roue-adaptation__branche {
+  animation: roue-branche calc(var(--d-scene) * 2) var(--courbe) both;
+  animation-delay: calc(var(--branche) * var(--d-ui) * .32);
+}
+
+.roue-adaptation__aura {
+  animation: roue-souffle calc(var(--d-scene) * 15) ease-in-out infinite alternate;
+}
+
+.roue-adaptation__coeur {
+  transition: transform calc(var(--d-scene) * 2) var(--courbe);
+}
+
+.roue-adaptation__perle {
+  stroke: var(--jjk-energie);
+  stroke-width: 1.4;
+  opacity: 0;
+  transition: opacity var(--d-scene) var(--courbe);
+}
+
+.roue-adaptation__cercle-etat {
+  stroke: var(--jjk-energie);
+  stroke-width: 1.8;
+  stroke-dasharray: 0 100;
+  opacity: .7;
+  transform: rotate(-90deg);
+  transition: stroke-dasharray calc(var(--d-scene) * 2) var(--courbe), stroke var(--d-scene) var(--courbe);
+}
+
+.roue-adaptation__onde,
+.roue-adaptation__rayonnement,
+.roue-adaptation__energie {
+  opacity: 0;
+}
+
+.roue-onde-trait { stroke: var(--jjk-energie); stroke-width: 1.6; }
+.roue-onde-trait--fine { stroke-width: .5; }
+.roue-adaptation__energie {
+  stroke: var(--jjk-energie);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: bevel;
+}
+
+[data-sanctuaire][data-phase='identity'] .roue-adaptation__cercle-etat { stroke-dasharray: 25 100; }
+[data-sanctuaire][data-phase='password'] .roue-adaptation__cercle-etat { stroke-dasharray: 50 100; }
+[data-sanctuaire][data-phase='challenge'] .roue-adaptation__cercle-etat { stroke-dasharray: 75 100; }
+[data-sanctuaire][data-phase='success'] .roue-adaptation__cercle-etat { stroke-dasharray: 100 100; }
+
+[data-sanctuaire][data-phase='verifying'] .roue-adaptation__cercle-etat {
+  stroke-dasharray: 12 13;
+  animation: roue-orbite calc(var(--d-scene) * 9) linear infinite;
+}
+
+[data-sanctuaire][data-phase='verifying'] .roue-adaptation__coeur {
+  animation: roue-attente calc(var(--d-scene) * 3) ease-in-out infinite alternate;
+}
+
+[data-sanctuaire]:is([data-phase='password'], [data-phase='challenge'], [data-phase='success']) .roue-adaptation__perle {
+  opacity: .6;
+}
+
+[data-sanctuaire][data-phase='error'] .roue-adaptation__cercle-etat {
+  stroke: var(--erreur);
+  stroke-dasharray: 100 100;
+}
+
+[data-sanctuaire][data-phase='success'] .roue-adaptation__coeur {
+  transform: rotate(90deg);
+}
+
+[data-sanctuaire]:is([data-impact='true'], [data-domain='active'], [data-phase='success']) .roue-adaptation__onde {
+  animation: roue-onde calc(var(--d-scene) * 3.5) var(--courbe) both;
+}
+
+[data-sanctuaire]:is([data-impact='true'], [data-domain='active'], [data-phase='success']) .roue-adaptation__rayonnement {
+  animation: roue-rayonnement calc(var(--d-scene) * 3) var(--courbe) both;
+}
+
+[data-sanctuaire]:is([data-impact='true'], [data-domain='active']) .roue-adaptation__energie {
+  animation: roue-energie calc(var(--d-recit) * 1.2) var(--courbe) both;
+}
+
+[data-sanctuaire][data-domain='active'] .roue-adaptation__perle { opacity: .9; }
+
+[data-sanctuaire][data-motion='paused'] .roue-adaptation * {
+  animation-play-state: paused !important;
+}
+
+/* Sans JavaScript, la gravure est complète, jamais figée au début de son entrée. */
+[data-sanctuaire]:not([data-initialise]) .roue-adaptation * {
+  animation: none;
+}
+
+@keyframes roue-revelation {
+  from { opacity: 0; transform: scale(.86) rotate(-22.5deg); }
+  to { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+@keyframes roue-cartographie {
+  from { opacity: 0; transform: scale(1.08); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes roue-branche {
+  from { opacity: 0; translate: 0 -14px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@keyframes roue-orbite {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes roue-souffle {
+  from { opacity: .45; transform: scale(.94); }
+  to { opacity: 1; transform: scale(1.04); }
+}
+
+@keyframes roue-attente {
+  from { transform: scale(1); }
+  to { transform: scale(1.045); }
+}
+
+@keyframes roue-onde {
+  0% { opacity: 0; transform: scale(.65); }
+  18% { opacity: .7; }
+  100% { opacity: 0; transform: scale(1.28); }
+}
+
+@keyframes roue-rayonnement {
+  0% { opacity: 0; transform: scale(.9); }
+  25% { opacity: .85; }
+  100% { opacity: 0; transform: scale(1.14); }
+}
+
+@keyframes roue-energie {
+  0% { opacity: 0; stroke-dasharray: 0 140; transform: scale(.95) rotate(-3deg); }
+  28% { opacity: .9; stroke-dasharray: 140 140; }
+  100% { opacity: 0; stroke-dasharray: 140 140; transform: scale(1.06) rotate(3deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .roue-adaptation *,
+  .roue-adaptation::before,
+  .roue-adaptation::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .roue-adaptation__apparition,
+  .roue-adaptation__cartographie,
+  .roue-adaptation__branche { opacity: 1; }
+}
+
+@media print {
+  .roue-adaptation { display: none; }
+}

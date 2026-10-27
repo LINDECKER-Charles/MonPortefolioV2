@@ -45,6 +45,14 @@ détaillées, les accès MCP expirent au bout d’un an au plus, le serveur d’
 backoffice, les demandes sont purgées après trois ans, et plus aucune marque « à confirmer » ne
 reste sur le site ([`docs/prive/questions.md`](docs/prive/questions.md), section J).
 
+**Entrée du backoffice (2026-10-27).** La connexion du backoffice devient « l’atelier
+s’allume » : une scène de lanterne, un générique d’ouverture, des passages d’écran en View
+Transitions et l’atelier qui s’ouvre dans la lumière (maquette `design/connexion-backoffice/`,
+règle ci-dessous, « Entrée du backoffice »). Le même jour, à la demande de Charles, elle reçoit un
+second habit, Jujutsu Kaisen (Mahoraga, roue d’adaptation, techniques, territoire, cinématique
+sonorisée), activé par un petit bouton discret « JJK » au pied de l’entrée et mémorisé ; la
+lanterne reste l’entrée par défaut et l’atelier ne change pas (règle « Entrée JJK »).
+
 **Bascule faite (2026-10-15).** La V2 sert `charles-lindecker.com` (`www.` en 301 vers l’apex,
 les adresses de la V1 en 301), son test `test.charles-lindecker.com`, et la V1 est archivée,
 figée, sur `yharnam.charles-lindecker.com` (`archive-v1/`). Le dépôt est public depuis le même
@@ -169,6 +177,34 @@ carte du dépôt et mise en ligne : [`README.md`](README.md).
   rejouent en cliquant directement sur leur dessin ou au clavier
   (`scripts/figure-animations.ts`). Respecter `prefers-reduced-motion` (état final complet, ni
   transition ni allumage) et suspendre la boucle hors écran ou dans un onglet masqué.
+- **Entrée du backoffice** (depuis le 27/10/2026, maquette `design/connexion-backoffice/`) :
+  connexion, vérification en deux étapes et codes de secours sur une scène de lanterne
+  (`SceneEntree.astro`, `ConnexionBackoffice.astro`, `styles/backoffice-entree.css`), tant que
+  `<body>` porte `data-entree` (posé et retiré par `scripts/backoffice.ts`). L’ouverture se pose
+  avant le premier rendu (`public/backoffice-entree.js`, après `/theme.js`) : générique de nuit à
+  la première visite de l’onglet, ouverture courte ensuite, rien en mouvement réduit ni quand une
+  session est probable (« cl-backoffice-session », un indice, jamais un secret). La mise en scène
+  (`scripts/backoffice-entree.ts`, avec `backoffice-scene.ts`, `backoffice-saisie.ts` et
+  `backoffice-mouvement.ts`) se charge à la demande, hors du budget de la page comme l’atelier du
+  blog : sans elle, la connexion marche, d’un coup. `backoffice.ts` reste maître de la session et
+  du DOM ; chaque changement d’écran passe par `jouer(geste, maj)`. Le code part seul au sixième
+  chiffre (jamais un code de secours) ; un 429 compte les secondes de `Retry-After`. Ses trois
+  courbes, son titre en `--t-4xl` et son vocabulaire de cinéma (bandes, traînée, bokeh, grain)
+  ne sortent pas de cette page.
+- **Entrée JJK** (depuis le 27/10/2026, `DESIGN.md`, « Entrée privée — Jujutsu Kaisen ») : la
+  seule exception à « Un seul système », limitée à l’entrée du backoffice et activée seulement par
+  son bouton discret (`[data-entree-jjk-bascule]`, `scripts/connexion-jjk.ts`) : `data-entree-jjk`
+  sur `<html>`, mémorisé dans « cl-backoffice-jjk » et reposé par `public/backoffice-entree.js`,
+  sans générique. Un seul jeu de formulaires pour les deux habits : le sanctuaire
+  (`.bo-sanctuaire`, `styles/connexion-sanctuaire.css`) les enveloppe, en `display: contents`
+  hors du mode JJK ; toute règle JJK qui touche un élément partagé commence par
+  `:root[data-entree-jjk]`. En mode JJK, la mise en scène lanterne reste chargée pour les champs
+  mais se tait. Celle du JJK (`connexion-sanctuaire.ts`, `connexion-territoire.ts`,
+  `connexion-cinema*.ts`) ne se charge qu’en mode JJK, la session vérifiée ; la feuille de la
+  cinématique se pose à son ouverture (`?url`), hors du budget CSS de la page. Ses images sont
+  des `ART` du registre (`JJK-01` à `JJK-05`), son master audio `public/audio/connexion-jjk.mp3`
+  (Mixkit, `design/assets/audio/connexion-jjk/`). Les specs JJK choisissent l’habit par
+  `tests/e2e/support/entree-jjk.ts`.
 - **Liens** : une seule grammaire, dans `lib/liens.ts` (`→` page interne, `↓` ancre, `↗` sortie
   du site ou e-mail), portée par `Bouton`, `LienAction` et `CarteProjet`. L’action principale est
   « Discutons → », vers `/contact`, partout. L’adresse e-mail passe seulement par `CONTACT.email`

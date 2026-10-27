@@ -41,6 +41,18 @@ function contraste(a: string, b: string): number {
 const jour = bloc(':root {');
 const nuit = bloc(":root[data-theme='nuit'],");
 
+describe('la connexion JJK', () => {
+  it('garde les libellés, les erreurs et le bouton principal au contraste AA', () => {
+    for (const fond of ['jjk-encre', 'jjk-surface']) {
+      for (const texte of ['jjk-papier', 'jjk-muet', 'jjk-or', 'jjk-cyan', 'jjk-rouge-clair']) {
+        expect(contraste(jeton(jour, texte), jeton(jour, fond)), `${texte} sur ${fond}`).toBeGreaterThanOrEqual(4.5);
+      }
+    }
+    expect(contraste(jeton(jour, 'jjk-papier'), jeton(jour, 'jjk-rouge'))).toBeGreaterThanOrEqual(4.5);
+    expect(contraste(jeton(jour, 'jjk-trait'), jeton(jour, 'jjk-surface'))).toBeGreaterThanOrEqual(3);
+  });
+});
+
 describe('l’acte de veille, la nuit (règle B6)', () => {
   const suie = jeton(nuit, 'fond');
   const veille = jeton(jour, 'veille-nuit');
