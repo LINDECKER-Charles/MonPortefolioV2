@@ -376,7 +376,13 @@ Chaque composant est documenté en tête de son fichier.
   posé à côté d’elle (`Retour.astro`, région `status`, forme selon `data-state`). Une zone
   éclairée (`.foyer`) par écran : la carte de connexion, la carte de l’accès MCP créé (secret et
   commande à copier), la feuille de rédaction, l’aperçu du résultat de recherche ou la version à
-  publier. Dans l’atelier, la barre de l’article (`blog/BarreArticle.astro`) est collante :
+  publier. L’entrée (depuis le 27 octobre 2026, `SceneEntree.astro`, `ConnexionBackoffice.astro`,
+  `styles/backoffice-entree.css`) pose une scène derrière l’en-tête : une lanterne au trait pend
+  au-dessus de la carte, seule lumière de l’écran ; chaque écran (connexion, vérification,
+  codes de secours) est un récit à gauche et une carte éclairée à droite (une colonne sous
+  860 px), sur une grille commune, avec les étapes de la connexion sous le récit. Le code à six
+  chiffres est un seul champ, dont six cases sont l’image ; le mot de passe s’affiche à la
+  demande. Dans l’atelier, la barre de l’article (`blog/BarreArticle.astro`) est collante :
   Enregistrer et Aperçu restent à portée. Les images de la rédaction s’affichent comme dans
   l’article publié : taille de leurs attributs, au plus la colonne et 800 px de haut, sur la
   plaque claire des logos. La rubrique Stockage (`RubriqueStockage.astro`) est une page de
@@ -398,6 +404,18 @@ arrivée, les règles apparaissent de 1 à 3, le système fait circuler des mess
 qu’il est visible ; les autres scènes se jouent une fois à leur arrivée, puis se rejouent au clic
 ou au clavier. Mouvement réduit : état final complet, sans transition ni allumage ; boucle
 suspendue hors écran et dans un onglet masqué.
+
+**L’entrée du backoffice** (depuis le 27 octobre 2026, maquette `design/connexion-backoffice/`)
+se joue comme un générique de film, et seulement là. À la première visite de l’onglet (≈ 4,7 s),
+toujours de nuit : le titre seul dans le noir, l’étincelle qui prend, la lanterne qui se dessine
+en gros plan, le recul de la caméra, la carte qui se pose, puis, s’il fait jour, le jour qui se
+lève depuis la lanterne (le geste de l’allumage) ; ensuite, une ouverture courte (≈ 1,9 s). Une
+touche ou un clic abrège. D’un écran à l’autre, l’ancienne carte se dissout dans la lumière et
+la nouvelle en émerge ; l’atelier s’ouvre en poussant dans la flamme et se referme en y rentrant.
+Au repos, la flamme vacille, la lanterne se balance et suit la main. Trois courbes lui sont
+réservées (`--courbe-expo`, `--courbe-entree`, `--courbe-ressort`), son titre de connexion prend
+la taille de l’accroche (`--t-4xl`), et les bandes de cinéma, la traînée d’objectif, le bokeh et
+le grain n’existent qu’ici. Mouvement réduit : rien de tout cela, l’état final d’emblée.
 
 ## Do's and Don'ts
 

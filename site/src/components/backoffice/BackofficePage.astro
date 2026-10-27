@@ -9,12 +9,28 @@
  * posé avant le rendu par /theme.js (un fichier : la CSP refuse tout script
  * en ligne), bascule lanterne sans mesure.
  *
- * Structure : en-tête (EnteteBackoffice), sur-titre `h1` « Backoffice », retour
- * de session (#bo-notice : vérification, expiration, déconnexion), entrée
+ * Structure : la scène de l’entrée (SceneEntree), en-tête (EnteteBackoffice),
+ * tête de page (sur-titre `h1` « Backoffice », horodatage, retour de session
+ * #bo-notice : vérification, expiration, déconnexion), entrée
  * (ConnexionBackoffice), puis #bo-workspace : une <section class="bo-rubrique">
  * par rubrique (rubriques.ts), chacune avec son EnTeteRubrique et ses retours
- * locaux (Retour). Styles : styles/backoffice.css, et styles/blog-editor.css
- * pour l’atelier du blog (BlogWorkspace, blog/*), sur les mêmes primitives.
+ * locaux (Retour). Styles : styles/backoffice.css, styles/backoffice-entree.css
+ * pour l’entrée, et styles/blog-editor.css pour l’atelier du blog
+ * (BlogWorkspace, blog/*), sur les mêmes primitives.
+ *
+ * L’entrée : `data-entree` sur <body> tant que la connexion est affichée
+ * (scripts/backoffice.ts). Son ouverture est posée avant le premier rendu par
+ * /backoffice-entree.js, après /theme.js, et jouée par
+ * scripts/backoffice-entree.ts, chargé à part. Une session sans doute ouverte
+ * (« cl-backoffice-session », écrit à l’ouverture de l’atelier, effacé à la
+ * déconnexion ou à l’expiration) : rien ne s’anime, la page attend la
+ * vérification de la session (`data-session-probable`). Sinon : le générique
+ * complet à la première visite de l’onglet (sessionStorage
+ * « cl-backoffice-generique »), l’ouverture courte ensuite, aucune en
+ * mouvement réduit. Le générique se joue de nuit jusqu’à son aube
+ * (`data-nuit-forcee`, styles/jetons.css). Le module de mise en scène est
+ * hors du budget de 15 Ko, comme l’atelier du blog : sans lui, la connexion
+ * marche, d’un coup.
  *
  * Une nouvelle rubrique : l’ajouter à rubriques.ts, poser sa section
  * `id="bo-panel-<id>"` ici, et son chargement dans scripts/backoffice.ts.
@@ -24,8 +40,10 @@ import Favicons from '../layout/Favicons.astro';
 import { SITE } from '../../config/site';
 import '../../styles/global.css';
 import '../../styles/backoffice.css';
+import '../../styles/backoffice-entree.css';
 import '../../styles/blog-editor.css';
 import EnteteBackoffice from './EnteteBackoffice.astro';
+import SceneEntree from './SceneEntree.astro';
 import ConnexionBackoffice from './ConnexionBackoffice.astro';
 import RubriqueDemandes from './RubriqueDemandes.astro';
 import RubriqueEmails from './RubriqueEmails.astro';
@@ -61,19 +79,24 @@ const COULEUR_NUIT = '#0b0d12';
     <meta name="theme-color" content={SITE.couleurTheme} media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content={COULEUR_NUIT} media="(prefers-color-scheme: dark)" />
     <Favicons />
-    {/* Synchrone, avant les styles : le thème est posé avant le premier rendu. */}
+    {/* Synchrones, avant les styles : le thème et l’ouverture de l’entrée sont posés avant le premier rendu. */}
     <script is:inline src="/theme.js"></script>
+    <script is:inline src="/backoffice-entree.js"></script>
     <Font cssVariable="--police-texte" preload />
     <Font cssVariable="--police-titre" preload={[{ style: 'normal' }]} />
   </head>
-  <body class="bo" data-backoffice-page={blogSection ? 'blog' : 'home'} data-blog-section={blogSection ?? 'list'}>
+  <body class="bo" data-entree data-backoffice-page={blogSection ? 'blog' : 'home'} data-blog-section={blogSection ?? 'list'}>
     <a class="evitement bo-skip" href="#contenu">Aller au contenu</a>
+    <SceneEntree />
     <EnteteBackoffice />
     <main class="bo-main bo-cadre" id="contenu" tabindex="-1">
-      <h1 class="bo-surtitre">Backoffice</h1>
-      <p class="bo-notice" id="bo-notice" role="status" aria-live="polite">Vérification de la session…</p>
+      <div class="bo-tete">
+        <h1 class="bo-surtitre">Backoffice</h1>
+        <p class="bo-entree__horodatage" hidden><time id="bo-horodatage"></time></p>
+        <p class="bo-notice" id="bo-notice" role="status" aria-live="polite">Vérification de la session…</p>
+        <noscript><p class="bo-notice">Activez JavaScript pour ouvrir et utiliser le backoffice.</p></noscript>
+      </div>
       <ConnexionBackoffice />
-      <noscript><p class="bo-notice">Activez JavaScript pour ouvrir et utiliser le backoffice.</p></noscript>
 
       <div class="bo-workspace" id="bo-workspace" hidden>
         <RubriqueDemandes />

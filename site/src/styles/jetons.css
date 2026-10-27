@@ -7,10 +7,11 @@
  * Le jour est une aube sur pierre claire ; la nuit, un clair de lune bleuté où
  * la lanterne pose sa lumière chaude sur la zone active.
  *
- * Trois portes d’entrée pour la nuit, mêmes valeurs :
+ * Quatre portes d’entrée pour la nuit, mêmes valeurs :
  *   - `:root[data-theme='nuit']`, posé par /theme.js avant le premier rendu ;
  *   - `prefers-color-scheme: dark` quand le script n’a pas tourné ;
- *   - les actes sombres (`.acte-veille`, `.acte-bleu`), la nuit dans le jour.
+ *   - les actes sombres (`.acte-veille`, `.acte-bleu`), la nuit dans le jour ;
+ *   - le générique de l’entrée du backoffice (`:root[data-nuit-forcee]`), jusqu’à son aube.
  * L’impression repasse en encre sur papier, quel que soit le thème.
  *
  * Contrastes (WCAG 2.x) calculés : design/refonte/c-lanterne/README.md, plus
@@ -133,12 +134,43 @@
   --d-scene: 400ms;
   --d-recit: calc(var(--d-scene) * 4.75);   /* 1,9 s */
 
+  /* Trois courbes réservées à la mise en scène de l’entrée du backoffice
+     (styles/backoffice-entree.css) : l’arrivée d’un plan, la poussée dans la
+     lumière, la carte qui se pose sur un ressort. Partout ailleurs, --courbe. */
+  --courbe-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --courbe-entree: cubic-bezier(0.5, 0, 0.75, 0);
+  --courbe-ressort: linear(0, 0.082 5%, 0.262 10%, 0.471 15%, 0.664 20%, 0.82 25%, 0.932 30%, 1.004 35%, 1.042 40%, 1.057 45%, 1.057 50%, 1.049 55%, 1.037 60%, 1.014 70%, 1.001 80%, 0.997 90%, 1);
+
   --entete: 64px;
 
   /* Le bouton principal : bleu roi le jour, lumière de lanterne la nuit. */
   --bouton: var(--accent);
   --bouton-texte: var(--accent-texte);
   --bouton-survol: var(--accent-survol);
+
+  /* La scène d’entrée du backoffice (components/backoffice/SceneEntree.astro),
+     le jour : la lanterne pose une flaque claire et chaude sur la pierre, les
+     bords s’assombrissent comme un plan de cinéma. */
+  --scene-ombre: rgb(20 19 18 / 0.14);        /* vignette des bords */
+  --scene-ciel: rgb(255 253 246 / 0);         /* pas de clair de lune le jour */
+  --scene-chaleur: rgb(255 244 222 / 0.65);   /* la pièce que la lanterne réchauffe */
+  --halo-scene: rgb(255 240 212 / 0.78);      /* la lumière portée de la lanterne */
+  --halo-coeur: rgb(240 178 74 / 0.4);        /* son cœur chaud */
+  --vitre-allumee: rgb(240 178 74 / 0.18);    /* la vitre éclairée de l’intérieur */
+  --flamme-coeur: #fff1cf;                    /* le blanc de la flamme */
+  --poussiere: rgb(122 79 16 / 0.5);          /* poussière dans la lumière (laiton) */
+  --rayon-lumiere: rgb(255 246 226 / 0.55);   /* les rayons qui passent la cage */
+  --trainee: rgb(240 178 74 / 0.3);           /* la traînée de l’objectif sur la flamme */
+  --bokeh-chaud: rgb(255 236 200 / 0.38);     /* lumières floues, côté lanterne */
+  --bokeh-froid: rgb(255 253 246 / 0.28);     /* lumières floues, côté lune */
+  --lisere: rgb(240 178 74 / 0.6);            /* la lumière accrochée au bord de la carte */
+  --titre-eclaire: var(--laiton);             /* une lettre sous la lumière qui passe */
+  --titre-lueur: rgb(240 178 74 / 0.35);
+  --ombre-portee: rgb(20 19 18 / 0.32);       /* la carte, éclairée d’en haut */
+  --eclat-interieur: rgb(255 250 240 / 0.62); /* la lumière qui ouvre l’atelier */
+  --anneau-halo: rgb(31 79 209 / 0.16);       /* l’anneau de focus qui glisse */
+  --reflet: rgb(255 253 246 / 0.32);          /* reflet et onde sur le bouton */
+  --grain: 0.05;                              /* opacité du grain de pellicule */
 }
 
 @media (max-width: 860px) {
@@ -149,10 +181,13 @@
 }
 
 /* Nuit « clair de lune ». Les mêmes jetons servent aux actes sombres du jour :
-   la nuit entre dans le jour là où les captures l’attendent. */
+   la nuit entre dans le jour là où les captures l’attendent. Le générique du
+   backoffice se joue aussi de nuit, jusqu’à son aube (`data-nuit-forcee`,
+   public/backoffice-entree.js). */
 :root[data-theme='nuit'],
 .acte-veille,
-.acte-bleu {
+.acte-bleu,
+:root[data-nuit-forcee] {
   color-scheme: dark;
   --fond: #0b0d12;
   --surface: #1a1e29;         /* 1,17:1 sur le fond */
@@ -178,6 +213,28 @@
   --bouton: var(--lanterne);
   --bouton-texte: var(--suie);  /* 10,3:1 */
   --bouton-survol: var(--lanterne-survol);
+
+  /* La scène d’entrée du backoffice, la nuit : un clair de lune bleuté tombe
+     du haut à gauche, la lanterne est la seule lumière chaude. */
+  --scene-ombre: rgb(0 0 0 / 0.6);
+  --scene-ciel: rgb(169 187 255 / 0.1);
+  --scene-chaleur: rgb(240 178 74 / 0.07);
+  --halo-scene: rgb(240 178 74 / 0.2);
+  --halo-coeur: rgb(240 178 74 / 0.58);
+  --vitre-allumee: rgb(240 178 74 / 0.3);
+  --poussiere: rgb(240 178 74 / 0.7);
+  --rayon-lumiere: rgb(240 178 74 / 0.08);
+  --trainee: rgb(240 178 74 / 0.55);
+  --bokeh-chaud: rgb(240 178 74 / 0.14);
+  --bokeh-froid: rgb(169 187 255 / 0.08);
+  --lisere: rgb(240 178 74 / 0.7);
+  --titre-eclaire: var(--lanterne-survol);
+  --titre-lueur: rgb(240 178 74 / 0.55);
+  --ombre-portee: rgb(0 0 0 / 0.75);
+  --eclat-interieur: rgb(255 214 150 / 0.62);
+  --anneau-halo: rgb(240 178 74 / 0.3);
+  --reflet: rgb(255 253 246 / 0.4);
+  --grain: 0.07;
 }
 
 /* Sans JavaScript, la préférence du système décide. */
@@ -208,6 +265,25 @@
     --bouton: var(--lanterne);
     --bouton-texte: var(--suie);
     --bouton-survol: var(--lanterne-survol);
+    --scene-ombre: rgb(0 0 0 / 0.6);
+    --scene-ciel: rgb(169 187 255 / 0.1);
+    --scene-chaleur: rgb(240 178 74 / 0.07);
+    --halo-scene: rgb(240 178 74 / 0.2);
+    --halo-coeur: rgb(240 178 74 / 0.58);
+    --vitre-allumee: rgb(240 178 74 / 0.3);
+    --poussiere: rgb(240 178 74 / 0.7);
+    --rayon-lumiere: rgb(240 178 74 / 0.08);
+    --trainee: rgb(240 178 74 / 0.55);
+    --bokeh-chaud: rgb(240 178 74 / 0.14);
+    --bokeh-froid: rgb(169 187 255 / 0.08);
+    --lisere: rgb(240 178 74 / 0.7);
+    --titre-eclaire: var(--lanterne-survol);
+    --titre-lueur: rgb(240 178 74 / 0.55);
+    --ombre-portee: rgb(0 0 0 / 0.75);
+    --eclat-interieur: rgb(255 214 150 / 0.62);
+    --anneau-halo: rgb(240 178 74 / 0.3);
+    --reflet: rgb(255 253 246 / 0.4);
+    --grain: 0.07;
   }
 }
 
