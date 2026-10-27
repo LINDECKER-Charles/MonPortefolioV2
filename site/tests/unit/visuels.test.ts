@@ -588,9 +588,10 @@ describe('composant Visuel', () => {
     expect(style).toMatch(/@media \(prefers-color-scheme: dark\) \{\s*:global\(:root:not\(\[data-theme\]\)\) \.visuel > :global\(\.visuel__jour\) \{\s*display: none;/);
     expect(style).toMatch(/@media print \{[\s\S]*\.visuel__jour\) \{\s*display: block;[\s\S]*\.visuel__nuit\) \{\s*display: none;/);
     expect(style).toMatch(/\.visuel > :global\(\.visuel__nuit\) \{\s*display: none;/);
-    // Les mêmes portes que les jetons de nuit.
+    // Les mêmes portes que les jetons de nuit, plus le générique du backoffice
+    // (`data-nuit-forcee`), où aucune image n’a de rendu de nuit à montrer.
     const jetons = readFileSync(path.join(SRC, 'styles/jetons.css'), 'utf8');
-    expect(jetons).toMatch(/:root\[data-theme='nuit'\],\s*\.acte-veille,\s*\.acte-bleu \{/);
+    expect(jetons).toMatch(/:root\[data-theme='nuit'\],\s*\.acte-veille,\s*\.acte-bleu,\s*:root\[data-nuit-forcee\] \{/);
     expect(jetons).toMatch(/@media \(prefers-color-scheme: dark\) \{\s*:root:not\(\[data-theme\]\) \{/);
   });
 
