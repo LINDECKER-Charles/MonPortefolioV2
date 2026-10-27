@@ -1,5 +1,6 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
   fichierMaster,
@@ -30,14 +31,14 @@ import { confidentialite } from '../support/prive';
 
 /** Marques refusées, plus celles du cadrage privé (tests/support/prive.ts). */
 const MARQUES = new RegExp(String.raw`\b(?:pvz|plants vs\.? zombies|riot|league of legends|sony|fromsoftware|trello|b-hive|claude|codex|elan formation|atis|mission locale|shrek|gwent|bloodborne|omnicard|unreal|unity|${confidentialite().marques.join('|')})\b|\b42\b`, 'i');
-const DEPOT = new URL('../../../', import.meta.url).pathname;
+const DEPOT = fileURLToPath(new URL('../../../', import.meta.url));
 
 describe('commande de production des visuels', () => {
   const doc = rendreCommande();
   const partie = (debut: string, fin: string) => doc.slice(doc.indexOf(debut), doc.indexOf(fin));
 
   it('est à jour avec le registre et le disque', () => {
-    expect(readFileSync(SORTIE, 'utf8'), `lancer ${COMMANDE} dans site/`).toBe(doc);
+    expect(readFileSync(SORTIE, 'utf8').replaceAll('\r\n', '\n'), `lancer ${COMMANDE} dans site/`).toBe(doc);
   });
 
   it('porte une fiche par visuel, les règles communes et le fichier attendu', () => {
@@ -98,7 +99,7 @@ describe('commande de production des visuels', () => {
     const dossier = `${DEPOT}design/assets/visuels`;
     const readmes = readdirSync(dossier, { withFileTypes: true })
       .filter((d) => d.isDirectory())
-      .map((d) => readFileSync(`${dossier}/${d.name}/README.md`, 'utf8'))
+      .map((d) => readFileSync(`${dossier}/${d.name}/README.md`, 'utf8').replaceAll('\r\n', '\n'))
       .join('\n');
     // Le bloc de style ouvre chaque prompt consigné, de jour comme de nuit, tel quel.
     const blocs = readmes.split('\n').filter((ligne) => ligne.startsWith('Reserve wood engraving'));

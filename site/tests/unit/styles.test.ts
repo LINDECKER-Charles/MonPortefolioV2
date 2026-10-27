@@ -1,5 +1,6 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
 /**
@@ -22,7 +23,7 @@ import { describe, expect, it } from 'vitest';
  * depuis la migration des scènes, le 13 octobre 2026.
  */
 
-const SRC = new URL('../../src/', import.meta.url).pathname;
+const SRC = fileURLToPath(new URL('../../src/', import.meta.url));
 const EXCLUS = new Set(['styles/jetons.css']);
 const FIGURES_SVG = new Set([
   'components/accueil/FigureGwent.astro',
@@ -60,7 +61,7 @@ function lignesDeStyle(chemin: string): { ligne: number; texte: string }[] {
 
 describe('styles du site (règle T13)', () => {
   const sources = fichiers(SRC)
-    .map((chemin) => ({ chemin, nom: relative(SRC, chemin) }))
+    .map((chemin) => ({ chemin, nom: relative(SRC, chemin).replaceAll('\\', '/') }))
     .filter(({ nom }) => !EXCLUS.has(nom));
 
   it('trouve les feuilles et les composants à vérifier', () => {

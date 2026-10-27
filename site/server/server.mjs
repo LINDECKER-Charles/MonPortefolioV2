@@ -63,6 +63,7 @@ const TYPES = new Map([
   ['.gif', 'image/gif'],
   ['.mp4', 'video/mp4'],
   ['.webm', 'video/webm'],
+  ['.mp3', 'audio/mpeg'],
   ['.ico', 'image/x-icon'],
   ['.woff2', 'font/woff2'],
   ['.woff', 'font/woff'],

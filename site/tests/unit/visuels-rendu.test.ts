@@ -143,7 +143,8 @@ describe('rendu des masters', () => {
     expect(repli).toBe(true);
     expect(ecrits.map((e: { fichier: string }) => e.fichier)).toEqual([v.fichier, fichierNuit(v)]);
     for (const { fichier, poids, plafond } of ecrits) {
-      const meta = await sharp(path.join(site, fichier)).metadata();
+      // Le cache natif de sharp ne doit pas garder le fichier ouvert sous Windows.
+      const meta = await sharp(readFileSync(path.join(site, fichier))).metadata();
       expect([meta.width, meta.height, meta.hasAlpha], fichier).toEqual([360, 360, true]);
       expect(poids, fichier).toBeLessThan(plafond);
     }

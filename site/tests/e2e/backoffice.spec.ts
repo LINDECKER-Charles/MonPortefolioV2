@@ -1,7 +1,9 @@
+import { readFile } from 'node:fs/promises';
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { MESURE } from './support/serveurs.mjs';
 import { fileDeMesure } from './support/navigateur';
+import { choisirEntreeJjk } from './support/entree-jjk';
 
 test.use({ reducedMotion: 'reduce' });
 
@@ -263,13 +265,13 @@ test('la première connexion configure la 2FA avant l’accès et affiche les co
   await expect(page.locator('#bo-workspace')).toBeHidden();
   expect(etat.consultations).toEqual(['/session']);
   await accessibilite(page);
+  // Le sixième chiffre envoie le code, sans passer par le bouton.
+  await expect(page.getByRole('button', { name: 'Activer la vérification', exact: true })).toBeVisible();
   await page.getByLabel('Code de vérification').fill('000000');
-  await page.getByRole('button', { name: 'Activer la vérification', exact: true }).click();
   await expect(page.locator('#bo-two-factor-retour')).toHaveText('Le code est incorrect ou a déjà été utilisé.');
   await expect(page.getByLabel('Clé à saisir manuellement')).toHaveValue(CLE_DEUX_FACTEURS);
   await expect(page.locator('#bo-login')).toBeHidden();
   await page.getByLabel('Code de vérification').fill('123456');
-  await page.getByRole('button', { name: 'Activer la vérification', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Conservez vos codes de secours' })).toBeVisible();
   await expect(page.locator('#bo-recovery-codes code')).toHaveText(CODES_SECOURS);
   await expect(page.locator('#bo-workspace')).toBeHidden();
@@ -303,7 +305,8 @@ test('les connexions suivantes acceptent un code d’application ou un code de s
     await expect(page.locator('#bo-workspace')).toBeHidden();
     await accessibilite(page);
     await page.getByLabel('Code de vérification').fill(code);
-    await page.getByRole('button', { name: 'Vérifier le code', exact: true }).click();
+    // Six chiffres partent seuls ; un code de secours se valide au bouton.
+    if (!/^\d{6}$/.test(code)) await page.getByRole('button', { name: 'Vérifier le code', exact: true }).click();
     await expect(page.locator('#bo-workspace')).toBeVisible();
     await expect(page.locator('#bo-two-factor-code')).toHaveValue('');
     await expect(page.locator('#bo-recovery-codes')).toBeEmpty();
@@ -326,7 +329,6 @@ test('une préparation interrompue peut être relancée et un défi expiré revi
   await expect(page.getByLabel('Clé à saisir manuellement')).toHaveValue(CLE_DEUX_FACTEURS);
   etat.challenge = false;
   await page.getByLabel('Code de vérification').fill('123456');
-  await page.getByRole('button', { name: 'Activer la vérification', exact: true }).click();
   await expect(page.locator('#bo-login')).toBeVisible();
   await expect(page.locator('#bo-two-factor')).toBeHidden();
   await expect(page.locator('#bo-two-factor-secret')).toHaveValue('');
@@ -366,7 +368,6 @@ test('une ancienne préparation ne remplace pas le secret d’une nouvelle conne
   await reponseObsolete;
   await expect(page.getByLabel('Clé à saisir manuellement')).toHaveValue(CLE_DEUX_FACTEURS);
   await page.getByLabel('Code de vérification').fill('123456');
-  await page.getByRole('button', { name: 'Activer la vérification', exact: true }).click();
   await expect(page.locator('#bo-recovery-codes code')).toHaveText(CODES_SECOURS);
   await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true })));
   await expect(page.locator('#bo-recovery-codes')).toBeEmpty();
@@ -531,7 +532,8 @@ test('nouvel accès MCP en un geste : Rédaction sans les demandes, commande pr�
   await expect(page.locator('#bo-secret [data-serveur-mcp]')).toHaveText('portfolio-local');
   await page.getByRole('button', { name: 'Copier la commande', exact: true }).click();
   await expect(page.locator('#bo-secret-retour')).toHaveText('Commande copiée. Collez-la dans un terminal.');
-  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(commande);
+  // Le presse-papiers Windows restitue les sauts de ligne en CRLF.
+  expect((await page.evaluate(() => navigator.clipboard.readText())).replace(/\r\n/g, '\n')).toBe(commande);
   await accessibilite(page);
 
   // La vérification suit Claude Code (révision 2026-07-28), avec le secret et sans cookie.
@@ -950,7 +952,8 @@ for (const theme of ['jour', 'nuit'] as const) {
       await page.goto('/backoffice');
       await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
       await expect(page.getByRole('button', { name: 'Se connecter', exact: true })).toBeEnabled();
-      await expect(page.locator('#bo-login')).toHaveClass(/foyer/);
+      await expect(page.locator('#bo-login .bo-entree__carte')).toHaveClass(/foyer/);
+      await expect(page.locator('.foyer:visible')).toHaveCount(1);
       await accessibilite(page);
     });
 
@@ -985,6 +988,248 @@ for (const theme of ['jour', 'nuit'] as const) {
     });
   });
 }
+
+/** Jusqu’à l’écran de vérification en deux étapes. */
+async function versDeuxFacteurs(page: Page) {
+  await page.getByLabel('Adresse e-mail de connexion', { exact: true }).fill('admin@example.test');
+  await page.getByLabel('Mot de passe', { exact: true }).fill('mot-de-passe-test');
+  await page.getByRole('button', { name: 'Se connecter', exact: true }).click();
+  await expect(page.locator('#bo-two-factor')).toBeVisible();
+}
+
+test.describe('l’entrée : ce que les champs disent et font', () => {
+  test('le mot de passe s’affiche à la demande et part masqué', async ({ page }) => {
+    await apiDouble(page);
+    await page.goto('/backoffice');
+    const motDePasse = page.getByLabel('Mot de passe', { exact: true });
+    await motDePasse.fill('mot-de-passe-test');
+    await page.getByRole('button', { name: 'Afficher le mot de passe', exact: true }).click();
+    await expect(motDePasse).toHaveAttribute('type', 'text');
+    await expect(page.getByRole('button', { name: 'Masquer le mot de passe', exact: true })).toBeVisible();
+    await page.getByLabel('Adresse e-mail de connexion', { exact: true }).fill('admin@example.test');
+    await page.getByRole('button', { name: 'Se connecter', exact: true }).click();
+    await expect(page.locator('#bo-workspace')).toBeVisible();
+    await expect(page.locator('#bo-password')).toHaveAttribute('type', 'password');
+  });
+
+  test('trop de tentatives : le bouton compte les secondes, la flamme est soufflée, puis la main revient', async ({ page }) => {
+    await apiDouble(page);
+    await page.route('**/api/backoffice/login', (route) => route.fulfill({
+      status: 429, contentType: 'application/json', headers: { 'Retry-After': '2' },
+      body: JSON.stringify({ code: 'RATE_LIMITED', message: 'Trop de tentatives. Patientez avant de réessayer.' }),
+    }));
+    await page.goto('/backoffice');
+    await page.getByLabel('Adresse e-mail de connexion', { exact: true }).fill('admin@example.test');
+    await page.getByLabel('Mot de passe', { exact: true }).fill('mot-de-passe-test');
+    await page.getByRole('button', { name: 'Se connecter', exact: true }).click();
+    await expect(page.locator('#bo-login-retour')).toHaveText('Trop de tentatives. Patientez avant de réessayer.');
+    await expect(page.locator('#bo-login-submit')).toHaveText(/^Réessayer dans [12]\s+s$/);
+    await expect(page.getByLabel('Mot de passe', { exact: true })).toBeDisabled();
+    await expect(page.locator('body')).toHaveAttribute('data-flamme', 'soufflee');
+    await expect(page.getByRole('button', { name: 'Se connecter', exact: true })).toBeEnabled();
+    await expect(page.locator('#bo-login-retour')).toHaveText('Vous pouvez réessayer.');
+    await expect(page.locator('body')).not.toHaveAttribute('data-flamme');
+    await accessibilite(page);
+  });
+
+  test('la clé se copie et les codes de secours se téléchargent, numérotés', async ({ page, context }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    await apiDouble(page, { twoFactor: true, enrollment: true });
+    await page.goto('/backoffice');
+    await versDeuxFacteurs(page);
+    await expect(page.getByLabel('Clé à saisir manuellement')).toHaveValue(CLE_DEUX_FACTEURS);
+    await page.getByRole('button', { name: 'Copier la clé', exact: true }).click();
+    await expect(page.locator('#bo-two-factor-retour')).toHaveText('La clé est copiée. Ajoutez-la dans votre application d’authentification.');
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(CLE_DEUX_FACTEURS);
+    // Un code de configuration n’a que six chiffres : pas de code de secours ici.
+    await expect(page.getByRole('button', { name: 'Utiliser un code de secours' })).toBeHidden();
+    await page.getByLabel('Code de vérification').fill('123456');
+    await expect(page.locator('#bo-recovery-codes code')).toHaveText(CODES_SECOURS);
+    const telechargement = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Télécharger les codes', exact: true }).click();
+    const fichier = await telechargement;
+    expect(fichier.suggestedFilename()).toBe('codes-de-secours-backoffice.txt');
+    const contenu = await readFile(await fichier.path(), 'utf8');
+    CODES_SECOURS.forEach((code, rang) => expect(contenu).toContain(`0${rang + 1}  ${code}`));
+    await expect(page.locator('#bo-recovery-retour')).toHaveText('Le fichier des codes est téléchargé. Rangez-le dans un endroit sûr.');
+    await accessibilite(page);
+  });
+
+  test('un code de secours se saisit en clair et ne part pas seul au sixième caractère', async ({ page }) => {
+    const etat = await apiDouble(page, { twoFactor: true });
+    await page.goto('/backoffice');
+    await versDeuxFacteurs(page);
+    await page.getByRole('button', { name: 'Utiliser un code de secours', exact: true }).click();
+    await expect(page.locator('#bo-two-factor-saisie')).toHaveAttribute('data-mode', 'secours');
+    await expect(page.getByLabel('Code de vérification')).toBeFocused();
+    await page.keyboard.type('123456');
+    await page.waitForTimeout(600);
+    expect(etat.mutations.filter(({ path }) => path === '/2fa/verify')).toEqual([]);
+    await page.getByLabel('Code de vérification').fill(CODES_SECOURS[1]!);
+    await accessibilite(page);
+    await page.getByRole('button', { name: 'Vérifier le code', exact: true }).click();
+    await expect(page.locator('#bo-workspace')).toBeVisible();
+    expect(etat.mutations.filter(({ path }) => path === '/2fa/verify').map(({ body }) => body)).toEqual([{ code: CODES_SECOURS[1] }]);
+  });
+
+  test('un code refusé reste sélectionné : le suivant le remplace', async ({ page }) => {
+    await apiDouble(page, { twoFactor: true });
+    await page.goto('/backoffice');
+    await versDeuxFacteurs(page);
+    const champ = page.getByLabel('Code de vérification');
+    await champ.pressSequentially('000000');
+    await expect(page.locator('#bo-two-factor-retour')).toHaveText('Le code est incorrect ou a déjà été utilisé.');
+    await expect(page.locator('#bo-two-factor-saisie')).toHaveAttribute('data-etat', 'refus');
+    await expect(champ).toBeFocused();
+    await page.keyboard.type('123456');
+    await expect(page.locator('#bo-workspace')).toBeVisible();
+  });
+
+  test('une session ouverte se mémorise : la page suivante l’attend au lieu de jouer l’entrée', async ({ page }) => {
+    await apiDouble(page);
+    await page.goto('/backoffice');
+    await connecter(page);
+    await expect(page.locator('body')).not.toHaveAttribute('data-entree');
+    expect(await page.evaluate(() => localStorage.getItem('cl-backoffice-session'))).toBe('1');
+    let liberer!: () => void;
+    const reponse = new Promise<void>((fin) => { liberer = fin; });
+    await page.route('**/api/backoffice/session', async (route) => { await reponse; await route.fallback(); });
+    await page.reload();
+    await expect(page.locator('html')).toHaveAttribute('data-session-probable', '');
+    await expect(page.locator('#bo-notice')).toHaveText('Vérification de la session…');
+    await expect(page.locator('#bo-login')).toBeHidden();
+    liberer();
+    await expect(page.locator('#bo-workspace')).toBeVisible();
+    await expect(page.locator('html')).not.toHaveAttribute('data-session-probable');
+    await page.getByRole('button', { name: 'Se déconnecter', exact: true }).click();
+    await expect(page.locator('#bo-login')).toBeVisible();
+    await expect(page.locator('body')).toHaveAttribute('data-entree', '');
+    expect(await page.evaluate(() => localStorage.getItem('cl-backoffice-session'))).toBeNull();
+  });
+});
+
+test.describe('l’entrée en mouvement', () => {
+  test.use({ reducedMotion: 'no-preference' });
+
+  test('le générique se joue une fois par onglet, s’abrège d’une touche, puis l’atelier s’ouvre et se referme', async ({ page }) => {
+    await apiDouble(page);
+    const erreurs: string[] = [];
+    page.on('pageerror', (erreur) => erreurs.push(erreur.message));
+    const racine = page.locator('html');
+    await page.goto('/backoffice');
+    await expect(racine).toHaveAttribute('data-ouverture', 'complete');
+    await expect(racine).toHaveAttribute('data-pilote', '');
+    await page.keyboard.press('Shift');
+    for (const attribut of ['data-ouverture', 'data-pilote', 'data-nuit-forcee', 'data-bandes']) await expect(racine).not.toHaveAttribute(attribut);
+    await expect(page.locator('#bo-login-title .bo-titre-lettres')).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'Entrer dans l’atelier', level: 2 })).toBeVisible();
+    await expect(page.getByRole('list', { name: 'Étapes de la connexion' }).locator('[aria-current="step"]')).toContainText('Connexion');
+    // La visite suivante du même onglet : l’ouverture courte, qui finit seule.
+    await page.reload();
+    await expect(racine).toHaveAttribute('data-ouverture', 'courte');
+    await expect(racine).not.toHaveAttribute('data-ouverture', { timeout: 8_000 });
+    await connecter(page);
+    await expect(page.getByRole('heading', { name: 'Demandes de contact', level: 2 })).toBeFocused();
+    await expect(racine).not.toHaveAttribute('data-transition-entree', { timeout: 8_000 });
+    await expect(racine).not.toHaveAttribute('data-bandes', { timeout: 8_000 });
+    await page.getByRole('button', { name: 'Se déconnecter', exact: true }).click();
+    await expect(page.locator('#bo-login')).toBeVisible();
+    await expect(page.locator('#bo-notice')).toHaveText('Vous êtes déconnecté.');
+    await expect(racine).not.toHaveAttribute('data-transition-entree', { timeout: 8_000 });
+    await expect(racine).not.toHaveAttribute('data-bandes', { timeout: 8_000 });
+    expect(erreurs).toEqual([]);
+  });
+
+  test('l’entrée JJK n’a pas de générique ; rendue à la lanterne, sa scène se fige', async ({ page }) => {
+    await choisirEntreeJjk(page);
+    await apiDouble(page);
+    const erreurs: string[] = [];
+    page.on('pageerror', (erreur) => erreurs.push(erreur.message));
+    const racine = page.locator('html');
+    const sanctuaire = page.locator('[data-sanctuaire]');
+    await page.goto('/backoffice');
+    await expect(racine).toHaveAttribute('data-entree-jjk', '');
+    for (const attribut of ['data-ouverture', 'data-pilote', 'data-nuit-forcee', 'data-bandes']) await expect(racine).not.toHaveAttribute(attribut);
+    await expect(sanctuaire).toHaveAttribute('data-motion', 'active');
+    await page.getByRole('button', { name: 'Revenir à la lanterne', exact: true }).click();
+    await expect(racine).not.toHaveAttribute('data-entree-jjk');
+    await expect(racine).not.toHaveAttribute('data-transition-entree', { timeout: 8_000 });
+    await expect(sanctuaire).toHaveAttribute('data-motion', 'paused');
+    await expect(page.getByRole('heading', { name: 'Entrer dans l’atelier', level: 2 })).toBeVisible();
+    expect(erreurs).toEqual([]);
+  });
+});
+
+test.describe('l’entrée Jujutsu Kaisen, sur demande', () => {
+  const versJjk = (page: Page) => page.getByRole('button', { name: 'Passer à l’entrée JJK', exact: true });
+  const versLanterne = (page: Page) => page.getByRole('button', { name: 'Revenir à la lanterne', exact: true });
+  const choixMemorise = (page: Page) => page.evaluate(() => localStorage.getItem('cl-backoffice-jjk'));
+
+  test('le bouton discret change d’habit, s’en souvient au rechargement, puis rend la lanterne', async ({ page }) => {
+    await apiDouble(page);
+    const racine = page.locator('html');
+    await page.goto('/backoffice');
+    await expect(page.getByRole('button', { name: 'Se connecter', exact: true })).toBeEnabled();
+    await expect(versJjk(page)).toBeVisible();
+    await expect(versLanterne(page)).toBeHidden();
+    await expect(page.locator('.jjk-entete')).toBeHidden();
+    await expect(page.locator('[data-sanctuaire]')).not.toHaveAttribute('data-initialise');
+
+    await versJjk(page).click();
+    await expect(racine).toHaveAttribute('data-entree-jjk', '');
+    await expect(page.locator('[data-sanctuaire]')).toHaveAttribute('data-initialise', 'true');
+    await expect(page.locator('.jjk-entete')).toBeVisible();
+    await expect(page.locator('.bo-scene')).toBeHidden();
+    await expect(versLanterne(page)).toBeFocused();
+    // Le même formulaire, sous le même titre pour les lecteurs d’écran.
+    await expect(page.getByRole('heading', { name: 'Entrer dans l’atelier', level: 2 })).toBeAttached();
+    await expect(page.getByLabel('Adresse e-mail de connexion', { exact: true })).toBeEditable();
+    expect(await choixMemorise(page)).toBe('1');
+    await accessibilite(page);
+
+    // Rechargée, la page s’ouvre en JJK, sans générique.
+    await page.reload();
+    await expect(racine).toHaveAttribute('data-entree-jjk', '');
+    await expect(racine).not.toHaveAttribute('data-ouverture');
+    await expect(page.locator('.jjk-entete')).toBeVisible();
+
+    await versLanterne(page).click();
+    await expect(racine).not.toHaveAttribute('data-entree-jjk');
+    await expect(page.locator('.jjk-entete')).toBeHidden();
+    await expect(page.locator('.bo-scene')).toBeVisible();
+    await expect(versJjk(page)).toBeFocused();
+    expect(await choixMemorise(page)).toBeNull();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  });
+
+  test('l’habit JJK ne vaut que pour l’entrée : l’atelier reste en lanterne, sans bouton', async ({ page }) => {
+    await choisirEntreeJjk(page);
+    await apiDouble(page);
+    await page.goto('/backoffice');
+    await expect(page.locator('.jjk-entete')).toBeVisible();
+    await connecter(page);
+    await expect(page.locator('[data-sanctuaire]')).toBeHidden();
+    await expect(page.locator('.bo-entete')).toBeVisible();
+    await expect(versJjk(page)).toBeHidden();
+    await expect(versLanterne(page)).toBeHidden();
+    await accessibilite(page);
+    // La déconnexion rend l’entrée dans l’habit choisi.
+    await page.getByRole('button', { name: 'Se déconnecter', exact: true }).click();
+    await expect(page.locator('.jjk-entete')).toBeVisible();
+    await expect(versLanterne(page)).toBeVisible();
+  });
+
+  test('une session ouverte ne télécharge rien de la mise en scène JJK', async ({ page }) => {
+    const scripts: string[] = [];
+    page.on('request', (requete) => { if (requete.resourceType() === 'script') scripts.push(new URL(requete.url()).pathname); });
+    await choisirEntreeJjk(page);
+    await apiDouble(page, { authenticated: true });
+    await page.goto('/backoffice');
+    await expect(page.locator('#bo-workspace')).toBeVisible();
+    await expect(page.locator('#bo-notice')).toBeHidden();
+    expect(scripts.filter((chemin) => /connexion-(sanctuaire|territoire|cinema)/.test(chemin))).toEqual([]);
+  });
+});
 
 test('une session expirée efface les données privées et revient à la connexion', async ({ page }) => {
   const etat = await apiDouble(page, { authenticated: true });

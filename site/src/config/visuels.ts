@@ -62,7 +62,7 @@
  * image de partage.
  */
 
-export type MethodeVisuel = 'IMG' | 'SVG' | 'FIG' | 'CAP' | 'PHO' | 'OG';
+export type MethodeVisuel = 'IMG' | 'ART' | 'SVG' | 'FIG' | 'CAP' | 'PHO' | 'OG';
 export type PrioriteVisuel = 'socle' | 'elargi';
 export type SerieVisuel =
   | 'global'
@@ -3699,6 +3699,106 @@ export const VISUELS: readonly EntreeVisuel[] = [
     alt: '',
     fichier: 'src/assets/visuels/etats/ERR-02.svg',
   },
+  {
+    id: 'JJK-01',
+    serie: 'etats',
+    page: '/backoffice',
+    emplacement: 'Scène de connexion privée, personnage sous la roue animée',
+    sujet: 'Mahoraga, le shikigami de Jujutsu Kaisen',
+    composition: 'Portrait de trois quarts, musculature ivoire et ombres encrées, quatre excroissances faciales en forme d’ailes, sourire denté, cordage sur le torse et hakama noir. Silhouette isolée sur fond transparent, tête centrée, espace libre au-dessus pour la roue dessinée séparément en SVG. Aucun texte ni roue dans l’image.',
+    cadrage: 'Portrait 2:3, tête et épaules entièrement dans le cadre ; le personnage occupe les quatre cinquièmes inférieurs.',
+    fond: 'transparent',
+    format: '2:3, 1024 × 1536, fond transparent',
+    ratio: '2 / 3',
+    largeur: 1024,
+    hauteur: 1536,
+    methode: 'ART',
+    priorite: 'socle',
+    pose: ['components/backoffice/ConnexionBackoffice.astro', 'components/backoffice/CinemaJjk.astro'],
+    alt: '',
+    fichier: 'src/assets/visuels/etats/JJK-01_1024x1536.webp',
+    note: 'Illustration générée pour la direction JJK explicitement demandée le 26 octobre 2026, limitée à la connexion privée. Un seul rendu transparent constant, sans déclinaison jour/nuit ni recoloration Lanterne. Master et prompt dans design/assets/visuels/connexion-jjk/README.md. Le texte visible identifie le personnage ; l’image est décorative.',
+  },
+  {
+    id: 'JJK-02',
+    serie: 'etats',
+    page: '/backoffice',
+    emplacement: 'Décor panoramique de la cinématique et atmosphère de la connexion privée',
+    sujet: 'Shibuya dévasté de nuit, sanctuaire et torii monumentaux dans une direction Jujutsu Kaisen',
+    composition: 'Vue cinématographique basse dans une avenue détruite, torii gigantesque et sanctuaire au loin, immeubles brisés sur les côtés. Une voie centrale dégagée accueille le personnage superposé par l’interface. Encre noire dominante, arêtes ivoire, ciel et horizon rouge sang derrière le sanctuaire, hachures manga détaillées. Aucun personnage, aucune roue, aucun texte.',
+    cadrage: 'Panorama proche de 16:9, plein cadre ; la perspective conduit au centre, avec des marges sombres et un premier plan dégagé.',
+    fond: 'aplat',
+    format: '16:9, 1672 × 941, fond opaque',
+    ratio: '16 / 9',
+    largeur: 1672,
+    hauteur: 941,
+    methode: 'ART',
+    priorite: 'socle',
+    pose: ['components/backoffice/CinemaJjk.astro', 'components/backoffice/ConnexionBackoffice.astro'],
+    alt: '',
+    fichier: 'src/assets/visuels/etats/JJK-02_1672x941.webp',
+    note: 'Décor généré le 27 octobre 2026 pour le mode cinématique JJK explicitement demandé, limité à la connexion privée. Un seul rendu opaque constant, sans déclinaison jour/nuit ni recoloration Lanterne. Master et prompt dans design/assets/visuels/connexion-jjk/README.md. Image décorative, séparée du personnage JJK-01 et de la roue SVG.',
+  },
+  {
+    id: 'JJK-03',
+    serie: 'etats',
+    page: '/backoffice',
+    emplacement: 'Très gros plan du visage pendant la cinématique de connexion privée',
+    sujet: 'Mahoraga, visage aux quatre excroissances ailées et sourire immense, en très gros plan',
+    composition: 'Le visage du personnage JJK-01 redessiné en très gros plan paysage, crâne ivoire, quatre excroissances osseuses ailées à la place des yeux, sourire denté entièrement visible, inclinaison légère. Les ailes débordent sur les côtés du cadre. Traits manga noirs, hachures détaillées et ombres profondes sur fond papier ivoire opaque, aucun texte ni roue.',
+    cadrage: 'Panorama proche de 16:9, visage et crâne sur presque toute la hauteur, ailes sur toute la largeur ; dessin à la définition native, sans agrandissement du portrait en pied.',
+    fond: 'aplat',
+    format: '16:9, 1672 × 941, fond opaque',
+    ratio: '16 / 9',
+    largeur: 1672,
+    hauteur: 941,
+    methode: 'ART',
+    priorite: 'socle',
+    pose: ['components/backoffice/CinemaJjk.astro'],
+    alt: '',
+    fichier: 'src/assets/visuels/etats/JJK-03_1672x941.webp',
+    note: 'Gros plan généré le 27 octobre 2026 en édition depuis le master JJK-01 pour préserver le même personnage. Direction JJK explicitement demandée, limitée à la cinématique privée. Un seul rendu opaque constant, sans recoloration ni variante jour/nuit. Master et prompt dans design/assets/visuels/connexion-jjk/README.md. Image décorative.',
+  },
+  {
+    id: 'JJK-04',
+    serie: 'etats',
+    page: '/backoffice',
+    emplacement: 'Plan de combat de la cinématique de connexion privée',
+    sujet: 'Mahoraga face à Ryomen Sukuna dans Shibuya dévasté',
+    composition: 'Mahoraga colossal à gauche, visage aux quatre ailes osseuses et roue à huit poignées, affronte Sukuna aux cheveux roses et marques faciales à droite au premier plan. Une immense entaille d’énergie rouge traverse la composition en diagonale ; ruines urbaines, asphalte brisé et projections de gravats. Dessin d’animation japonais au trait encré détaillé, ombres en aplats noirs, ivoire et rouge profond, sans texte ni interface.',
+    cadrage: 'Panorama proche de 16:9, contre-plongée dynamique, silhouettes immédiatement lisibles de part et d’autre de la diagonale.',
+    fond: 'aplat',
+    format: '16:9, 1672 × 941, fond opaque',
+    ratio: '16 / 9',
+    largeur: 1672,
+    hauteur: 941,
+    methode: 'ART',
+    priorite: 'socle',
+    pose: ['components/backoffice/CinemaJjk.astro'],
+    alt: '',
+    fichier: 'src/assets/visuels/etats/JJK-04_1672x941.webp',
+    note: 'Tableau de combat généré le 27 octobre 2026 pour la cinématique JJK explicitement demandée. Illustration originale générée, pas une capture ni une scène officielle de l’animation. Un seul rendu opaque constant. Master et prompt dans design/assets/visuels/connexion-jjk/README.md. Image décorative.',
+  },
+  {
+    id: 'JJK-05',
+    serie: 'etats',
+    page: '/backoffice',
+    emplacement: 'Plan du signe rituel de la cinématique de connexion privée',
+    sujet: 'Les mains de Megumi Fushiguro forment un signe animal de la technique des Dix Ombres',
+    composition: 'Deux mains pâles entrelacées au centre du cadre, tendons et jointures dessinés précisément, manches sombres aux deux poignets. Une énergie d’encre fluide entoure les doigts et suggère une silhouette de loup sous le geste. Lumière ivoire sur la peau, ombres presque noires, rares filaments rouges, dessin d’animation japonais en aplats et hachures ; aucun visage, texte ou roue.',
+    cadrage: 'Panorama proche de 16:9, très gros plan du geste sur fond sombre, mains dominantes dans les deux tiers centraux.',
+    fond: 'aplat',
+    format: '16:9, 1672 × 941, fond opaque',
+    ratio: '16 / 9',
+    largeur: 1672,
+    hauteur: 941,
+    methode: 'ART',
+    priorite: 'socle',
+    pose: ['components/backoffice/CinemaJjk.astro'],
+    alt: '',
+    fichier: 'src/assets/visuels/etats/JJK-05_1672x941.webp',
+    note: 'Plan rituel généré le 27 octobre 2026 pour la cinématique JJK explicitement demandée. Illustration originale générée, pas une capture ni une scène officielle de l’animation. Un seul rendu opaque constant. Master et prompt dans design/assets/visuels/connexion-jjk/README.md. Image décorative.',
+  },
 ];
 
 const PAR_ID: ReadonlyMap<string, EntreeVisuel> = new Map(VISUELS.map((v) => [v.id, v]));
@@ -3809,7 +3909,7 @@ export function positionLanterne(visuel: EntreeVisuel): readonly [number, number
 /** Qui produit le fichier : Codex pour une image générée, sinon l’équipe, sauf ce que seul Charles peut faire. */
 export function producteur(visuel: EntreeVisuel): 'codex' | 'equipe' | 'charles' {
   if (visuel.auteur) return visuel.auteur;
-  return visuel.methode === 'IMG' ? 'codex' : 'equipe';
+  return visuel.methode === 'IMG' || visuel.methode === 'ART' ? 'codex' : 'equipe';
 }
 
 /** Ordre des séries dans les listes et dans la commande de production. */
@@ -3834,6 +3934,7 @@ export function sujetPourGenerateur(visuel: EntreeVisuel): string {
 /** Ce que chaque méthode produit, et qui s’en charge. */
 export const METHODES: Readonly<Record<MethodeVisuel, { nom: string; consigne: string }>> = {
   IMG: { nom: 'Image générée', consigne: 'Générer avec Codex deux masters en trois couleurs de clé, au même cadrage au pixel près : le jour, puis la nuit en édition depuis le jour (règle 6). Les déposer dans `design/assets/visuels/<série>/`, puis lancer `npm run visuels:rendre <ID>` dans `site/`.' },
+  ART: { nom: 'Illustration générée de direction dédiée', consigne: 'Suivre la direction explicitement demandée dans la fiche et son README de provenance. Conserver le master PNG et livrer un WebP compressé sans recoloration, avec les dimensions, la transparence et le plafond de poids du registre. Cette exception ne modifie pas la production Lanterne (IMG).' },
   SVG: { nom: 'Dessin vectoriel', consigne: 'Dessiner à la main : trait constant, `currentColor`, sans `<text>`, un `<title>` neutre en français. Ne jamais vectoriser une image générée. Un lot est un sprite : un `<symbol id>` par pièce, aux identifiants de la fiche.' },
   FIG: { nom: 'Figure codée', consigne: 'Coder depuis des données sourcées. Jamais générée : pas de fichier image à produire ici.' },
   CAP: { nom: 'Capture réelle', consigne: 'Capturer l’application ou la page réelle. Jamais une image générée présentée comme une capture.' },

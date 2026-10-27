@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Backoffice — Charles Lindecker</title>
+  <meta name="description" content="Maquette de la page de connexion du backoffice : l’atelier s’allume.">
+  <link rel="icon" href="../assets/marque/favicon.svg">
+  <link rel="preload" href="../refonte/c-lanterne/polices/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../refonte/c-lanterne/polices/instrument-sans-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <!-- Synchrone, avant le premier rendu : le thème et l’état de l’ouverture. -->
+  <script src="theme.js"></script>
+</head>
+<body class="bo">
+<a class="evitement" href="#contenu">Aller au contenu</a>
+
+<!-- ===== L’entrée de l’atelier : une scène, une seule lumière ===== -->
+<div class="entree" id="entree" data-ecran="connexion" data-flamme="vive" data-palier="1">
+
+  <!-- Le décor, du fond vers l’avant : ciel (clair de lune, vignette), chaleur
+       de la lanterne, voile noir du générique, bokeh lointain, le plan de la
+       lanterne (la caméra le cadre), grain de pellicule. Décoratif, hors de
+       l’arbre d’accessibilité. -->
+  <div class="scene" id="scene" aria-hidden="true">
+    <div class="scene__ciel"></div>
+    <div class="scene__chaleur"></div>
+    <div class="scene__noir" id="noir"></div>
+    <div class="bokeh" id="bokeh"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <div class="plan" id="plan">
+      <div class="suspension" id="suspension">
+        <span class="suspension__corde"></span>
+        <div class="suspension__lanterne" id="lanterne">
+          <span class="lanterne__rayons"></span>
+          <span class="lanterne__halo"></span>
+          <span class="lanterne__poussieres" id="poussieres"></span>
+          <span class="lanterne__eclat"></span>
+          <svg class="lanterne" viewBox="0 0 120 200" focusable="false">
+            <path class="lanterne__vitre" d="M38 158H82V120C82 109 73 101 60 97C47 101 38 109 38 120Z"/>
+            <!-- La lanterne du logo (GLO-01) redessinée au trait : anneau, col, toit
+                 en cloche, cage, fenêtre en arc brisé, bougie, socle et pieds. Un
+                 tracé par trait : l’ouverture les dessine dans cet ordre. -->
+            <g class="lanterne__traits">
+              <circle cx="60" cy="13" r="8" pathLength="1"/>
+              <path d="M60 21V40" pathLength="1"/>
+              <path d="M60 40C51 55 35 66 14 69V78H106V69C85 66 69 55 60 40Z" pathLength="1"/>
+              <path d="M21 78V172" pathLength="1"/>
+              <path d="M99 78V172" pathLength="1"/>
+              <path d="M21 88H99" pathLength="1"/>
+              <path d="M21 164H99" pathLength="1"/>
+              <path d="M38 158H82V120C82 109 73 101 60 97C47 101 38 109 38 120Z" pathLength="1"/>
+              <path d="M54 148H66V158H54Z" pathLength="1"/>
+              <path d="M12 172H108V184H12Z" pathLength="1"/>
+              <path d="M26 184V192" pathLength="1"/>
+              <path d="M94 184V192" pathLength="1"/>
+            </g>
+            <path class="lanterne__fumee" d="M60 106C55 98 65 92 60 84C55 76 64 70 60 62" pathLength="1"/>
+            <path class="lanterne__fumee lanterne__fumee--2" d="M61 106C66 97 57 90 62 81C67 72 58 66 62 56" pathLength="1"/>
+            <g class="flamme">
+              <g class="flamme__sursaut">
+                <g class="flamme__vacille">
+                  <path class="flamme__corps" d="M60 112C67 120 71 128 71 136A11 11 0 0 1 49 136C49 128 53 120 60 112Z"/>
+                  <path class="flamme__coeur" d="M60 125C63.5 129 65 133 65 137A5 5 0 0 1 55 137C55 133 56.5 129 60 125Z"/>
+                </g>
+              </g>
+            </g>
+          </svg>
+          <span class="lanterne__trainee"></span>
+          <span class="lanterne__etincelles" id="etincelles"></span>
+        </div>
+      </div>
+    </div>
+    <div class="scene__grain"></div>
+  </div>
+
+  <header class="bo-entete entree__entete">
+    <div class="bo-cadre bo-entete__barre">
+      <a class="bo-marque" href="../refonte/c-lanterne/accueil.html" aria-label="Charles Lindecker, revenir au portfolio">
+        <span class="bo-marque__embleme" aria-hidden="true">
+          <img class="jour-seulement" src="../../site/src/assets/marque/logo-symbole.webp" alt="" width="352" height="245">
+          <img class="nuit-seulement" src="../assets/marque/logo-symbole-nuit.png" alt="" width="352" height="245">
+        </span>
+        <span class="bo-marque__texte">Charles Lindecker<span class="bo-marque__lieu">Le portfolio, côté atelier</span></span>
+      </a>
+      <div class="bo-entete__outils">
+        <button class="bascule" type="button" data-theme-bascule aria-pressed="false" aria-label="Mode nuit" title="Passer en mode nuit">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <circle class="lt-halo" cx="12" cy="14.5" r="11.5" fill="#f0b24a" opacity="0"/>
+            <path class="lt-trait" d="M10.3 4.4a1.7 1.7 0 0 1 3.4 0M12 4.4v1.4M7.9 9.3 12 5.8l4.1 3.5ZM8.8 9.3v8.4M15.2 9.3v8.4M7.4 17.7h9.2M9.2 20.3h5.6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path class="lt-flamme" d="M12 11c1.6 1.7 2.2 3 2.2 4.1a2.2 2.2 0 0 1-4.4 0c0-1.1.6-2.4 2.2-4.1Z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="bo-main entree__corps" id="contenu" tabindex="-1">
+    <div class="entree__surtitre">
+      <h1 class="bo-surtitre">Backoffice</h1>
+      <p class="entree__horodatage"><time id="horodatage" datetime="2026-10-26T21:04">lundi 26 octobre, 21&nbsp;h&nbsp;04</time></p>
+      <p class="bo-notice" id="bo-notice" role="status" aria-live="polite" hidden></p>
+    </div>
+
+    <!-- 1. Connexion -->
+    <section class="entree__etape" id="bo-login" aria-labelledby="bo-login-title" data-retour="bo-login-retour">
+      <div class="entree__recit">
+        <h2 class="entree__titre" id="bo-login-title">Entrer dans l’atelier</h2>
+        <p class="entree__texte">Cet espace est réservé à l’administration du portfolio.</p>
+      </div>
+      <div class="bo-carte entree__carte foyer">
+        <span class="carte__trace" aria-hidden="true"></span>
+        <form id="bo-login-form" class="entree__formulaire">
+          <fieldset><legend class="sr">Connexion</legend>
+            <div class="bo-champ">
+              <label for="bo-login-email">Adresse e-mail de connexion</label>
+              <input id="bo-login-email" name="email" type="email" autocomplete="username" maxlength="254" spellcheck="false" required>
+            </div>
+            <div class="bo-champ">
+              <label for="bo-password">Mot de passe</label>
+              <div class="champ-secret">
+                <input id="bo-password" name="password" type="password" autocomplete="current-password" required aria-describedby="bo-password-maj">
+                <button class="champ-secret__voir" id="bo-password-voir" type="button" aria-controls="bo-password">Afficher<span class="sr"> le mot de passe</span></button>
+              </div>
+              <p class="bo-help champ-maj" id="bo-password-maj" hidden><span class="champ-maj__signe" aria-hidden="true">⇪</span> Majuscules activées</p>
+            </div>
+            <div class="bo-actions">
+              <button class="bo-button bo-button--primary entree__action" id="bo-login-submit" type="submit"><span class="entree__action-texte">Se connecter</span></button>
+            </div>
+          </fieldset>
+        </form>
+        <p class="bo-retour" id="bo-login-retour" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <!-- 2. Vérification en deux étapes : code, ou première configuration -->
+    <section class="entree__etape" id="bo-two-factor" aria-labelledby="bo-two-factor-title" data-retour="bo-two-factor-retour" hidden>
+      <div class="entree__recit">
+        <h2 class="entree__titre" id="bo-two-factor-title" tabindex="-1">Vérifier la connexion</h2>
+        <p class="entree__texte" id="bo-two-factor-help">Saisissez le code de votre application d’authentification ou un code de secours.</p>
+      </div>
+      <div class="bo-carte entree__carte foyer">
+        <span class="carte__trace" aria-hidden="true"></span>
+        <div class="bo-enrollment" id="bo-enrollment" hidden>
+          <ol class="inscription">
+            <li class="inscription__pas">
+              <p class="inscription__consigne">Ajoutez un compte dans votre application d’authentification en scannant ce QR code.</p>
+              <div class="inscription__details" id="bo-enrollment-details" hidden>
+                <div class="qr">
+                  <img id="bo-two-factor-qr" width="240" height="240" alt="QR code à scanner dans l’application d’authentification" hidden>
+                  <span class="qr__balayage" aria-hidden="true"></span>
+                </div>
+                <p class="bo-help inscription__aide" id="bo-two-factor-secret-help">Si vous ne pouvez pas scanner le QR code, ajoutez la clé ci-dessous dans l’application, avec un code renouvelé toutes les 30&nbsp;secondes.</p>
+                <div class="bo-champ cle">
+                  <label for="bo-two-factor-secret">Clé à saisir manuellement</label>
+                  <div class="cle__ligne">
+                    <input id="bo-two-factor-secret" class="bo-code" readonly autocomplete="off" spellcheck="false" aria-describedby="bo-two-factor-secret-help">
+                    <button class="bo-button bo-button--petit" id="bo-two-factor-copy" type="button">Copier<span class="sr"> la clé</span></button>
+                  </div>
+                </div>
+              </div>
+              <div class="qr qr--attente" id="bo-enrollment-attente" aria-hidden="true"><span class="qr__balayage"></span></div>
+              <button class="bo-button" id="bo-two-factor-retry" type="button" hidden>Réessayer la configuration</button>
+            </li>
+            <li class="inscription__pas">
+              <p class="inscription__consigne">Saisissez ensuite le code à six chiffres pour confirmer l’activation.</p>
+            </li>
+          </ol>
+        </div>
+        <form id="bo-two-factor-form" class="entree__formulaire" novalidate>
+          <fieldset><legend class="sr">Vérification en deux étapes</legend>
+            <div class="bo-champ">
+              <label for="bo-two-factor-code" id="bo-two-factor-label">Code de vérification</label>
+              <div class="code" id="bo-two-factor-saisie" data-mode="application">
+                <input id="bo-two-factor-code" class="bo-code code__saisie" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" spellcheck="false" required aria-describedby="bo-two-factor-help bo-two-factor-auto">
+                <div class="code__cases" aria-hidden="true">
+                  <span class="code__case"></span><span class="code__case"></span><span class="code__case"></span>
+                  <span class="code__tiret"></span>
+                  <span class="code__case"></span><span class="code__case"></span><span class="code__case"></span>
+                </div>
+              </div>
+              <p class="bo-help" id="bo-two-factor-auto">Le code est vérifié dès le sixième chiffre.</p>
+              <button class="bo-button bo-button--quiet bo-button--petit code__mode" id="bo-two-factor-mode" type="button" aria-controls="bo-two-factor-code">Utiliser un code de secours</button>
+            </div>
+            <div class="bo-actions">
+              <button class="bo-button bo-button--primary entree__action" id="bo-two-factor-submit" type="submit"><span class="entree__action-texte">Vérifier le code</span></button>
+              <button class="bo-button bo-button--quiet" id="bo-two-factor-back" type="button">Revenir à la connexion</button>
+            </div>
+          </fieldset>
+        </form>
+        <p class="bo-retour" id="bo-two-factor-retour" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <!-- 3. Codes de secours, montrés une seule fois -->
+    <section class="entree__etape entree__etape--large" id="bo-recovery" aria-labelledby="bo-recovery-title" data-retour="bo-recovery-retour" hidden>
+      <div class="entree__recit">
+        <h2 class="entree__titre" id="bo-recovery-title" tabindex="-1">Conservez vos codes de secours</h2>
+        <p class="entree__texte">La vérification en deux étapes est activée. Chaque code permet une seule connexion si vous perdez l’accès à votre application. Gardez-les dans un endroit sûr&nbsp;: ils ne seront plus affichés après avoir quitté cet écran.</p>
+      </div>
+      <div class="bo-carte entree__carte foyer">
+        <span class="carte__trace" aria-hidden="true"></span>
+        <ol class="bo-recovery-codes" id="bo-recovery-codes" aria-label="Codes de secours"></ol>
+        <div class="bo-actions">
+          <button class="bo-button" id="bo-recovery-copy" type="button">Copier les codes</button>
+          <button class="bo-button" id="bo-recovery-download" type="button">Télécharger</button>
+          <button class="bo-button bo-button--primary entree__action" id="bo-recovery-continue" type="button"><span class="entree__action-texte">J’ai conservé mes codes</span></button>
+        </div>
+        <p class="bo-retour" id="bo-recovery-retour" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="etapes-cadre" id="etapes-cadre">
+      <ol class="etapes" id="etapes" aria-label="Étapes de la connexion">
+        <li class="etapes__etape" data-etape="connexion" data-etat="courante" aria-current="step"><span class="etapes__repere" aria-hidden="true"></span><span class="etapes__nom">Connexion</span></li>
+        <li class="etapes__etape" data-etape="verification" data-etat="a-venir"><span class="etapes__repere" aria-hidden="true"></span><span class="etapes__nom">Vérification</span></li>
+        <li class="etapes__etape" data-etape="codes" data-etat="a-venir" hidden><span class="etapes__repere" aria-hidden="true"></span><span class="etapes__nom">Codes de secours</span></li>
+        <li class="etapes__etape" data-etape="atelier" data-etat="a-venir"><span class="etapes__repere" aria-hidden="true"></span><span class="etapes__nom">Atelier</span></li>
+      </ol>
+      <span class="etapes__lumiere" id="etapes-lumiere" aria-hidden="true"></span>
+    </div>
+  </main>
+
+  <footer class="bo-pied bo-cadre entree__pied"><a href="../refonte/c-lanterne/accueil.html">Revenir au portfolio</a><span>Espace privé, hors index</span></footer>
+</div>
+
+<!-- ===== L’atelier, aperçu simplifié (maquette) : ce que la lumière découvre ===== -->
+<div class="atelier" id="atelier" hidden>
+  <header class="bo-entete">
+    <div class="bo-cadre bo-entete__barre">
+      <a class="bo-marque" href="#" aria-label="Charles Lindecker, revenir au portfolio">
+        <span class="bo-marque__embleme" aria-hidden="true">
+          <img class="jour-seulement" src="../../site/src/assets/marque/logo-symbole.webp" alt="" width="352" height="245">
+          <img class="nuit-seulement" src="../assets/marque/logo-symbole-nuit.png" alt="" width="352" height="245">
+        </span>
+        <span class="bo-marque__texte">Charles Lindecker<span class="bo-marque__lieu">Le portfolio, côté atelier</span></span>
+      </a>
+      <nav class="bo-navigation" aria-label="Rubriques du backoffice">
+        <ul>
+          <li><a href="#" aria-current="page">Demandes<span class="bo-compte" data-nombre="2" aria-hidden="true">2</span></a></li>
+          <li><a href="#">E-mails</a></li>
+          <li><a href="#">Boîte à outils</a></li>
+          <li><a href="#">Accès MCP</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Stockage</a></li>
+        </ul>
+      </nav>
+      <div class="bo-entete__outils">
+        <button class="bo-button bo-button--quiet" id="bo-logout" type="button">Se déconnecter</button>
+      </div>
+    </div>
+  </header>
+  <main class="bo-cadre atelier__corps">
+    <p class="bo-surtitre">Backoffice</p>
+    <div class="atelier__entete">
+      <h2 class="atelier__titre" id="atelier-titre" tabindex="-1">Demandes de contact</h2>
+      <p class="bo-rubrique__description">Un message reste ici, même si sa notification par e-mail échoue.</p>
+    </div>
+    <div class="atelier__grille">
+      <ul class="atelier__liste" aria-label="Demandes de contact (aperçu)">
+        <li><span></span><span></span></li><li><span></span><span></span></li><li><span></span><span></span></li><li><span></span><span></span></li><li><span></span><span></span></li>
+      </ul>
+      <div class="bo-carte atelier__detail"><p class="bo-muted">Choisissez une demande</p></div>
+    </div>
+  </main>
+</div>
+
+<!-- Le front de lumière de l’ouverture et de la fermeture de l’atelier. -->
+<div class="front-lumiere" id="front-lumiere" aria-hidden="true"></div>
+
+<!-- Les bandes de cinéma : le générique et le passage dans l’atelier. -->
+<div class="bandes" aria-hidden="true"><span class="bande bande--haut"></span><span class="bande bande--bas"></span></div>
+
+<!-- ===== Régie : hors design, pour parcourir les états de la maquette ===== -->
+<details class="regie" id="regie">
+  <summary>Régie de la maquette</summary>
+  <div class="regie__panneau">
+    <p class="regie__note">Hors design. Tout mot de passe mène à la vérification, sauf «&nbsp;erreur&nbsp;» (refus) et «&nbsp;bloque&nbsp;» (trop de tentatives). Code «&nbsp;000000&nbsp;»&nbsp;: refusé. Un clic ou une touche abrège le générique.</p>
+    <p class="regie__groupe">Scènes</p>
+    <div class="regie__scenes">
+      <button type="button" data-regie="ouverture">Générique complet</button>
+      <button type="button" data-regie="ouverture-courte">Ouverture courte</button>
+      <button type="button" data-regie="connexion">Connexion</button>
+      <button type="button" data-regie="erreur">Mot de passe refusé</button>
+      <button type="button" data-regie="bloque">Trop de tentatives</button>
+      <button type="button" data-regie="verification">Vérification</button>
+      <button type="button" data-regie="secours">Code de secours</button>
+      <button type="button" data-regie="inscription">Configuration 2FA</button>
+      <button type="button" data-regie="codes">Codes de secours</button>
+      <button type="button" data-regie="expiree">Session expirée</button>
+      <button type="button" data-regie="atelier">Entrée dans l’atelier</button>
+    </div>
+    <p class="regie__groupe">Réglages</p>
+    <label class="regie__case"><input type="checkbox" id="regie-veille"> Scène sombre le jour</label>
+    <label class="regie__case"><input type="checkbox" id="regie-reduit"> Mouvement réduit</label>
+    <label class="regie__case"><input type="checkbox" id="regie-lent"> Ralenti (×&nbsp;3)</label>
+    <label class="regie__case"><input type="checkbox" id="regie-premiere"> Première connexion (configurer la 2FA)</label>
+  </div>
+</details>
+
+<script src="entree.js"></script>
+</body>
+</html>

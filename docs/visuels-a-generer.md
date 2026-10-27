@@ -6,10 +6,12 @@
 
 Tu produis **uniquement les images générées (IMG)** de la refonte du portfolio de Charles Lindecker : la **partie 1** en donne la file, « socle » d’abord, puis les fiches. Les autres fiches (dessins vectoriels, figures codées, captures, photos, images de partage) sont du contexte : l’équipe s’en charge (**partie 2**).
 
+Les illustrations **ART** suivent une direction dédiée explicitement demandée, décrite dans leur fiche et leur README de provenance. Elles sont répertoriées séparément et ne relèvent pas des consignes de production Lanterne ci-dessous.
+
 **Ce document est la seule référence de la série.** Il porte les retours de Charles sur la planche d’essai du 13 octobre 2026 (moins « image générée », une vraie version de nuit) et remplace toute consigne antérieure. Lis-le de haut en bas avant la première image.
 
 - **Deux masters par image**, dessinés au même cadrage au pixel près, dans les trois mêmes couleurs de clé : le jour `<ID>.png`, puis la nuit `<ID>.nuit.png`, faite **en édition depuis le master de jour** (section « Version de nuit »). Le site affiche l’un ou l’autre selon le thème.
-- Le registre recense **182 emplacements** (126 « socle », 56 « élargi »), dont **74 images à générer** : 0 restent à livrer, dont 0 « socle ».
+- Le registre recense **187 emplacements** (131 « socle », 56 « élargi »), dont **74 images à générer** : 0 restent à livrer, dont 0 « socle ».
 - **Socle** : posé sur une page du site, qui affiche un cadre hachuré tant que le fichier manque. À produire d’abord.
 - **Élargi** : aucune page ne l’attend encore ; chaque fiche dit pourquoi. Peut suivre.
 - **Le prompt de jour** se rédige en anglais : le bloc de style, la phrase de fond, puis la traduction des seuls champs **Sujet** et **Composition** de la fiche, le calage de la lanterne quand la fiche la place, enfin le prompt négatif. Le champ **Emplacement** donne le contexte et peut nommer une marque ou un jeu : il ne va jamais dans un prompt.
@@ -149,6 +151,7 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 | Méthode | Nature | Consigne |
 |---|---|---|
 | IMG | Image générée | Générer avec Codex deux masters en trois couleurs de clé, au même cadrage au pixel près : le jour, puis la nuit en édition depuis le jour (règle 6). Les déposer dans `design/assets/visuels/<série>/`, puis lancer `npm run visuels:rendre <ID>` dans `site/`. |
+| ART | Illustration générée de direction dédiée | Suivre la direction explicitement demandée dans la fiche et son README de provenance. Conserver le master PNG et livrer un WebP compressé sans recoloration, avec les dimensions, la transparence et le plafond de poids du registre. Cette exception ne modifie pas la production Lanterne (IMG). |
 | SVG | Dessin vectoriel | Dessiner à la main : trait constant, `currentColor`, sans `<text>`, un `<title>` neutre en français. Ne jamais vectoriser une image générée. Un lot est un sprite : un `<symbol id>` par pièce, aux identifiants de la fiche. |
 | FIG | Figure codée | Coder depuis des données sourcées. Jamais générée : pas de fichier image à produire ici. |
 | CAP | Capture réelle | Capturer l’application ou la page réelle. Jamais une image générée présentée comme une capture. |
@@ -172,23 +175,23 @@ Chaque image générée appartient à une seule série : mêmes angle, horizon, 
 
 | Série | Emplacements | Socle | Méthodes |
 |---|---|---|---|
-| Identité et éléments globaux | 13 | 6 | IMG 0 · SVG 11 · FIG 0 · CAP 0 · PHO 0 · OG 2 |
-| Accueil | 23 | 17 | IMG 15 · SVG 3 · FIG 3 · CAP 1 · PHO 1 · OG 0 |
-| Projets (vitrine) | 12 | 9 | IMG 10 · SVG 0 · FIG 0 · CAP 2 · PHO 0 · OG 0 |
-| PvZ Fusion | 26 | 17 | IMG 13 · SVG 0 · FIG 6 · CAP 6 · PHO 0 · OG 1 |
-| League Of Data Base | 24 | 16 | IMG 3 · SVG 9 · FIG 6 · CAP 6 · PHO 0 · OG 0 |
-| Omnicard | 13 | 4 | IMG 2 · SVG 2 · FIG 3 · CAP 5 · PHO 0 · OG 1 |
-| Bloodborne Legendary Run | 16 | 8 | IMG 4 · SVG 6 · FIG 1 · CAP 4 · PHO 0 · OG 1 |
-| gup | 7 | 6 | IMG 2 · SVG 1 · FIG 3 · CAP 1 · PHO 0 · OG 0 |
-| GitHealth | 1 | 1 | IMG 0 · SVG 0 · FIG 0 · CAP 1 · PHO 0 · OG 0 |
-| AutoTicket | 2 | 2 | IMG 0 · SVG 0 · FIG 1 · CAP 1 · PHO 0 · OG 0 |
-| Sillage | 1 | 1 | IMG 0 · SVG 0 · FIG 0 · CAP 1 · PHO 0 · OG 0 |
-| Relais | 2 | 2 | IMG 0 · SVG 0 · FIG 1 · CAP 1 · PHO 0 · OG 0 |
-| Parcours : hub, professionnel, compétences, formation | 33 | 30 | IMG 24 · SVG 4 · FIG 3 · CAP 1 · PHO 1 · OG 0 |
-| Contact | 4 | 4 | IMG 3 · SVG 0 · FIG 0 · CAP 0 · PHO 1 · OG 0 |
-| Blog | 2 | 1 | IMG 2 · SVG 0 · FIG 0 · CAP 0 · PHO 0 · OG 0 |
-| États : 404 et hors ligne | 3 | 2 | IMG 1 · SVG 1 · FIG 0 · CAP 0 · PHO 1 · OG 0 |
-| **Total** | **182** | **126** | IMG 79 · SVG 37 · FIG 27 · CAP 30 · PHO 4 · OG 5 |
+| Identité et éléments globaux | 13 | 6 | IMG 0 · ART 0 · SVG 11 · FIG 0 · CAP 0 · PHO 0 · OG 2 |
+| Accueil | 23 | 17 | IMG 15 · ART 0 · SVG 3 · FIG 3 · CAP 1 · PHO 1 · OG 0 |
+| Projets (vitrine) | 12 | 9 | IMG 10 · ART 0 · SVG 0 · FIG 0 · CAP 2 · PHO 0 · OG 0 |
+| PvZ Fusion | 26 | 17 | IMG 13 · ART 0 · SVG 0 · FIG 6 · CAP 6 · PHO 0 · OG 1 |
+| League Of Data Base | 24 | 16 | IMG 3 · ART 0 · SVG 9 · FIG 6 · CAP 6 · PHO 0 · OG 0 |
+| Omnicard | 13 | 4 | IMG 2 · ART 0 · SVG 2 · FIG 3 · CAP 5 · PHO 0 · OG 1 |
+| Bloodborne Legendary Run | 16 | 8 | IMG 4 · ART 0 · SVG 6 · FIG 1 · CAP 4 · PHO 0 · OG 1 |
+| gup | 7 | 6 | IMG 2 · ART 0 · SVG 1 · FIG 3 · CAP 1 · PHO 0 · OG 0 |
+| GitHealth | 1 | 1 | IMG 0 · ART 0 · SVG 0 · FIG 0 · CAP 1 · PHO 0 · OG 0 |
+| AutoTicket | 2 | 2 | IMG 0 · ART 0 · SVG 0 · FIG 1 · CAP 1 · PHO 0 · OG 0 |
+| Sillage | 1 | 1 | IMG 0 · ART 0 · SVG 0 · FIG 0 · CAP 1 · PHO 0 · OG 0 |
+| Relais | 2 | 2 | IMG 0 · ART 0 · SVG 0 · FIG 1 · CAP 1 · PHO 0 · OG 0 |
+| Parcours : hub, professionnel, compétences, formation | 33 | 30 | IMG 24 · ART 0 · SVG 4 · FIG 3 · CAP 1 · PHO 1 · OG 0 |
+| Contact | 4 | 4 | IMG 3 · ART 0 · SVG 0 · FIG 0 · CAP 0 · PHO 1 · OG 0 |
+| Blog | 2 | 1 | IMG 2 · ART 0 · SVG 0 · FIG 0 · CAP 0 · PHO 0 · OG 0 |
+| États : 404, hors ligne et connexion privée | 8 | 7 | IMG 1 · ART 5 · SVG 1 · FIG 0 · CAP 0 · PHO 1 · OG 0 |
+| **Total** | **187** | **131** | IMG 79 · ART 5 · SVG 37 · FIG 27 · CAP 30 · PHO 4 · OG 5 |
 
 ## Partie 1 — Commande Codex : les images à générer
 
@@ -1592,7 +1595,7 @@ Rien ici n’est à générer : les dessins vectoriels s’écrivent à la main,
 | équipe Omnicard | — | OMN-06 (SVG), OMN-07 (FIG), OMN-C5 (CAP), OMN-OG (OG) |
 | équipe Bloodborne Legendary Run | — | BLR-02 (SVG), BLR-C1 (CAP), BLR-C2 (CAP), BLR-C3 (CAP), BLR-OG (OG) |
 | équipe Parcours : hub, professionnel, compétences, formation | — | PRO-07 (SVG), FOR-08 (SVG) |
-| équipe États : 404 et hors ligne | — | ERR-02 (SVG) |
+| équipe États : 404, hors ligne et connexion privée | — | ERR-02 (SVG) |
 | Charles | — | PVZ-C4 (CAP), PVZ-C5 (CAP), PVZ-C6 (CAP), LOD-C4 (CAP), LOD-C5 (CAP), LOD-C6 (CAP), OMN-08 (CAP), OMN-C2 (CAP), OMN-C3 (CAP), OMN-C4 (CAP) |
 
 ### Identité et éléments globaux
@@ -2092,12 +2095,12 @@ Rien ici n’est à générer : les dessins vectoriels s’écrivent à la main,
 - **Pièces du fichier** (5) : `FOR-08-web`, `FOR-08-python`, `FOR-08-api-donnees`, `FOR-08-csharp`, `FOR-08-anglais`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
 
-### États : 404 et hors ligne
+### États : 404, hors ligne et connexion privée
 
 #### ERR-02 · La lanterne éteinte
 
 - **Priorité** : élargi · **Méthode** : SVG, à dessiner (vectoriel)
-- **Produit par** : équipe États : 404 et hors ligne
+- **Produit par** : équipe États : 404, hors ligne et connexion privée
 - **Emplacement** : toutes les pages · Maintenance, hors ligne _(contexte : ne pas le recopier dans un prompt)_
 - **Élargi, non posé** : le site n’a pas encore de page de maintenance.
 - **Sujet** : La lanterne éteinte
@@ -2105,6 +2108,82 @@ Rien ici n’est à générer : les dessins vectoriels s’écrivent à la main,
 - **Format** : 1:1, viewBox 24
 - **Fichier attendu** : `site/src/assets/visuels/etats/ERR-02.svg`
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+
+## Illustrations de direction dédiée (ART)
+
+Ces illustrations générées sont des exceptions documentées, limitées à leur emplacement. Leurs fichiers conservent les couleurs du master et suivent les contrôles de dimensions, de transparence et de poids du registre. La fiche indique le prompt de référence et les éventuelles déclinaisons.
+
+### États : 404, hors ligne et connexion privée
+
+#### JJK-01 · Mahoraga, le shikigami de Jujutsu Kaisen
+
+- **Priorité** : socle · **Méthode** : ART, illustration générée selon sa direction dédiée
+- **Produit par** : Codex
+- **Emplacement** : `/backoffice` · Scène de connexion privée, personnage sous la roue animée _(contexte : ne pas le recopier dans un prompt)_
+- **Posé dans** : `src/components/backoffice/ConnexionBackoffice.astro`, `src/components/backoffice/CinemaJjk.astro`
+- **Sujet** : Mahoraga, le shikigami de Jujutsu Kaisen
+- **Composition** : Portrait de trois quarts, musculature ivoire et ombres encrées, quatre excroissances faciales en forme d’ailes, sourire denté, cordage sur le torse et hakama noir. Silhouette isolée sur fond transparent, tête centrée, espace libre au-dessus pour la roue dessinée séparément en SVG. Aucun texte ni roue dans l’image.
+- **Cadrage (pour vérifier)** : Portrait 2:3, tête et épaules entièrement dans le cadre ; le personnage occupe les quatre cinquièmes inférieurs.
+- **Format** : 2:3, 1024 × 1536, fond transparent
+- **Fichier attendu** : `site/src/assets/visuels/etats/JJK-01_1024x1536.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Illustration générée pour la direction JJK explicitement demandée le 26 octobre 2026, limitée à la connexion privée. Un seul rendu transparent constant, sans déclinaison jour/nuit ni recoloration Lanterne. Master et prompt dans design/assets/visuels/connexion-jjk/README.md. Le texte visible identifie le personnage ; l’image est décorative.
+
+#### JJK-02 · Shibuya dévasté de nuit, sanctuaire et torii monumentaux dans une direction Jujutsu Kaisen
+
+- **Priorité** : socle · **Méthode** : ART, illustration générée selon sa direction dédiée
+- **Produit par** : Codex
+- **Emplacement** : `/backoffice` · Décor panoramique de la cinématique et atmosphère de la connexion privée _(contexte : ne pas le recopier dans un prompt)_
+- **Posé dans** : `src/components/backoffice/CinemaJjk.astro`, `src/components/backoffice/ConnexionBackoffice.astro`
+- **Sujet** : Shibuya dévasté de nuit, sanctuaire et torii monumentaux dans une direction Jujutsu Kaisen
+- **Composition** : Vue cinématographique basse dans une avenue détruite, torii gigantesque et sanctuaire au loin, immeubles brisés sur les côtés. Une voie centrale dégagée accueille le personnage superposé par l’interface. Encre noire dominante, arêtes ivoire, ciel et horizon rouge sang derrière le sanctuaire, hachures manga détaillées. Aucun personnage, aucune roue, aucun texte.
+- **Cadrage (pour vérifier)** : Panorama proche de 16:9, plein cadre ; la perspective conduit au centre, avec des marges sombres et un premier plan dégagé.
+- **Format** : 16:9, 1672 × 941, fond opaque
+- **Fichier attendu** : `site/src/assets/visuels/etats/JJK-02_1672x941.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Décor généré le 27 octobre 2026 pour le mode cinématique JJK explicitement demandé, limité à la connexion privée. Un seul rendu opaque constant, sans déclinaison jour/nuit ni recoloration Lanterne. Master et prompt dans design/assets/visuels/connexion-jjk/README.md. Image décorative, séparée du personnage JJK-01 et de la roue SVG.
+
+#### JJK-03 · Mahoraga, visage aux quatre excroissances ailées et sourire immense, en très gros plan
+
+- **Priorité** : socle · **Méthode** : ART, illustration générée selon sa direction dédiée
+- **Produit par** : Codex
+- **Emplacement** : `/backoffice` · Très gros plan du visage pendant la cinématique de connexion privée _(contexte : ne pas le recopier dans un prompt)_
+- **Posé dans** : `src/components/backoffice/CinemaJjk.astro`
+- **Sujet** : Mahoraga, visage aux quatre excroissances ailées et sourire immense, en très gros plan
+- **Composition** : Le visage du personnage JJK-01 redessiné en très gros plan paysage, crâne ivoire, quatre excroissances osseuses ailées à la place des yeux, sourire denté entièrement visible, inclinaison légère. Les ailes débordent sur les côtés du cadre. Traits manga noirs, hachures détaillées et ombres profondes sur fond papier ivoire opaque, aucun texte ni roue.
+- **Cadrage (pour vérifier)** : Panorama proche de 16:9, visage et crâne sur presque toute la hauteur, ailes sur toute la largeur ; dessin à la définition native, sans agrandissement du portrait en pied.
+- **Format** : 16:9, 1672 × 941, fond opaque
+- **Fichier attendu** : `site/src/assets/visuels/etats/JJK-03_1672x941.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Gros plan généré le 27 octobre 2026 en édition depuis le master JJK-01 pour préserver le même personnage. Direction JJK explicitement demandée, limitée à la cinématique privée. Un seul rendu opaque constant, sans recoloration ni variante jour/nuit. Master et prompt dans design/assets/visuels/connexion-jjk/README.md. Image décorative.
+
+#### JJK-04 · Mahoraga face à Ryomen Sukuna dans Shibuya dévasté
+
+- **Priorité** : socle · **Méthode** : ART, illustration générée selon sa direction dédiée
+- **Produit par** : Codex
+- **Emplacement** : `/backoffice` · Plan de combat de la cinématique de connexion privée _(contexte : ne pas le recopier dans un prompt)_
+- **Posé dans** : `src/components/backoffice/CinemaJjk.astro`
+- **Sujet** : Mahoraga face à Ryomen Sukuna dans Shibuya dévasté
+- **Composition** : Mahoraga colossal à gauche, visage aux quatre ailes osseuses et roue à huit poignées, affronte Sukuna aux cheveux roses et marques faciales à droite au premier plan. Une immense entaille d’énergie rouge traverse la composition en diagonale ; ruines urbaines, asphalte brisé et projections de gravats. Dessin d’animation japonais au trait encré détaillé, ombres en aplats noirs, ivoire et rouge profond, sans texte ni interface.
+- **Cadrage (pour vérifier)** : Panorama proche de 16:9, contre-plongée dynamique, silhouettes immédiatement lisibles de part et d’autre de la diagonale.
+- **Format** : 16:9, 1672 × 941, fond opaque
+- **Fichier attendu** : `site/src/assets/visuels/etats/JJK-04_1672x941.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Tableau de combat généré le 27 octobre 2026 pour la cinématique JJK explicitement demandée. Illustration originale générée, pas une capture ni une scène officielle de l’animation. Un seul rendu opaque constant. Master et prompt dans design/assets/visuels/connexion-jjk/README.md. Image décorative.
+
+#### JJK-05 · Les mains de Megumi Fushiguro forment un signe animal de la technique des Dix Ombres
+
+- **Priorité** : socle · **Méthode** : ART, illustration générée selon sa direction dédiée
+- **Produit par** : Codex
+- **Emplacement** : `/backoffice` · Plan du signe rituel de la cinématique de connexion privée _(contexte : ne pas le recopier dans un prompt)_
+- **Posé dans** : `src/components/backoffice/CinemaJjk.astro`
+- **Sujet** : Les mains de Megumi Fushiguro forment un signe animal de la technique des Dix Ombres
+- **Composition** : Deux mains pâles entrelacées au centre du cadre, tendons et jointures dessinés précisément, manches sombres aux deux poignets. Une énergie d’encre fluide entoure les doigts et suggère une silhouette de loup sous le geste. Lumière ivoire sur la peau, ombres presque noires, rares filaments rouges, dessin d’animation japonais en aplats et hachures ; aucun visage, texte ou roue.
+- **Cadrage (pour vérifier)** : Panorama proche de 16:9, très gros plan du geste sur fond sombre, mains dominantes dans les deux tiers centraux.
+- **Format** : 16:9, 1672 × 941, fond opaque
+- **Fichier attendu** : `site/src/assets/visuels/etats/JJK-05_1672x941.webp`
+- **Alt prévu** (pour le HTML, jamais pour un prompt) : aucun, visuel décoratif
+- **Note** : Plan rituel généré le 27 octobre 2026 pour la cinématique JJK explicitement demandée. Illustration originale générée, pas une capture ni une scène officielle de l’animation. Un seul rendu opaque constant. Master et prompt dans design/assets/visuels/connexion-jjk/README.md. Image décorative.
 
 ## Contexte : déjà faits, photos et reprises
 
@@ -2961,12 +3040,12 @@ Fiches pour mémoire : rien à produire.
 - **Alt prévu** (pour le HTML, jamais pour un prompt) : « Charles Lindecker en chemise bleu roi, devant une friche industrielle. »
 - **Note** : Livré le 13 octobre 2026 : recadrage déterministe de design/assets/photos/sources/1536x2304_charles-2.webp (zone 300, 300, 1 080 × 1 350), jamais régénéré. Photo autorisée sur Contact par défaut de la question Q10.
 
-### États : 404 et hors ligne
+### États : 404, hors ligne et connexion privée
 
 #### ERR-PHO · Portrait de Charles qui regarde ailleurs
 
 - **Priorité** : socle · **Méthode** : PHO, photo réelle, traitements déterministes seulement
-- **Produit par** : équipe États : 404 et hors ligne
+- **Produit par** : équipe États : 404, hors ligne et connexion privée
 - **Emplacement** : `/404` · 404, médaillon dans la colonne du titre, à droite du chapeau et du bouton « Revenir à l’accueil », le regard tourné vers eux ; l’illustration ERR-01 est à côté (dessous sur mobile) _(contexte : ne pas le recopier dans un prompt)_
 - **Posé dans** : `src/pages/404.astro`
 - **Sujet** : Portrait de Charles qui regarde ailleurs
