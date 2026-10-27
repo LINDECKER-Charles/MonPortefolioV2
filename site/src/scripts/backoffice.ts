@@ -1,12 +1,13 @@
 /**
- * Le backoffice : session, navigation entre rubriques et rubriques simples
- * (demandes, adresse, boîte à outils). Les accès MCP vivent dans
+ * Le backoffice : session et navigation. Demandes, outils et destinataire sont
+ * chargés après connexion dans backoffice-consultation.ts. Les accès MCP vivent dans
  * backoffice-acces.ts, le serveur d’envoi des e-mails dans backoffice-envoi.ts, l’atelier du blog dans blog-editor.ts (chargé à la
  * demande) ; sa barre, ses retours et ses aides d’erreur dans
  * backoffice-atelier.ts.
  *
- * Les rubriques Stockage et E-mails vivent dans backoffice-stockage.ts et
- * backoffice-envoi.ts, chargés à leur première visite.
+ * Les accès MCP et les aides de l’atelier sont chargés après validation de la session. Les rubriques
+ * Stockage et E-mails vivent dans backoffice-stockage.ts et backoffice-envoi.ts,
+ * chargés à leur première visite.
  *
  * Les textes reçus de l’API sont toujours insérés comme texte.
  *
@@ -31,26 +32,13 @@ import type { BlogWorkspace } from './blog-editor';
 import type { Entree, Geste } from './backoffice-entree';
 import type { RubriqueStockage } from './backoffice-stockage';
 import type { RubriqueEnvoi } from './backoffice-envoi';
-import { brancherAccesMcp } from './backoffice-acces';
-import { brancherAtelier } from './backoffice-atelier';
+import type { RubriqueAcces } from './backoffice-acces';
+import type { Atelier } from './backoffice-atelier';
+import type { RubriquesConsultation } from './backoffice-consultation';
 import { ErreurApi, messageDe, type Dire, type Etat } from './backoffice-commun';
 import { TITRES_RUBRIQUES, type Rubrique } from '../components/backoffice/rubriques';
 import { typo } from '../lib/typo';
 
-type Statut = 'new' | 'read' | 'archived';
-type Filtre = Statut | 'all';
-interface Demande {
-  id: number;
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-  status: Statut;
-  delivery_status: 'pending' | 'sent' | 'failed' | 'unconfigured';
-  created_at: string;
-}
-interface Outil { id: number; label: string; url: string; description: string }
-interface Boite { contacts: Demande[]; total: number; new_count: number }
 interface Session { authenticated: boolean; smtp_configured: boolean }
 interface Connexion extends Partial<Session> { two_factor_required?: boolean; enrollment_required?: boolean; recovery_codes?: string[] }
 interface ConfigurationDeuxFacteurs { secret: string; otpauth_url: string; qr_code_data_url: string }
@@ -66,8 +54,6 @@ function memoriserSession(ouverte: boolean): void {
     else window.localStorage.removeItem(CLE_SESSION);
   } catch { /* Stockage bloqué : le générique se jouera, rien de plus. */ }
 }
-
-const NBSP = ' ';
 
 export function brancherBackoffice(): void {
   if (!document.getElementById('bo-workspace')) return;
@@ -89,36 +75,26 @@ export function brancherBackoffice(): void {
   const twoFactorForm = element<HTMLFormElement>('bo-two-factor-form');
   const twoFactorCode = element<HTMLInputElement>('bo-two-factor-code');
   const recovery = element('bo-recovery');
-  const filter = element<HTMLSelectElement>('bo-filter');
   const notice = element('bo-notice');
   const liens = [...navigation.querySelectorAll<HTMLAnchorElement>('a[data-panel]')];
   const confirm = element<HTMLDialogElement>('bo-confirm');
   const dates = new Intl.DateTimeFormat('fr-FR', { dateStyle: 'medium', timeStyle: 'short' });
-  const statuts: Record<Statut, string> = { new: 'Nouvelle', read: 'Lue', archived: 'Archivée' };
-  const livraisons: Record<Demande['delivery_status'], string> = {
-    pending: 'En cours', sent: 'Envoyée', failed: 'Échec de l’envoi', unconfigured: 'Désactivée',
-  };
   let authenticated = false;
   let challenge = false;
   let enrollment = false;
   let authSequence = 0;
   let actionSequence = 0;
   let activePanel: Rubrique = 'contacts';
-  let contacts: Demande[] = [];
-  let selected: Demande | undefined;
-  let links: Outil[] = [];
-  let editingLink: number | undefined;
-  let offset = 0;
-  let total = 0;
-  let requestSequence = 0;
-  const limit = 50;
   let blog: BlogWorkspace | undefined;
-  const atelier = brancherAtelier();
+  let atelier: Atelier | undefined;
+  let consultation: RubriquesConsultation | undefined;
   let chargementBlog: Promise<void> | undefined;
   let stockage: RubriqueStockage | undefined;
   let chargementStockage: Promise<RubriqueStockage> | undefined;
   let envoi: RubriqueEnvoi | undefined;
   let chargementEnvoi: Promise<RubriqueEnvoi> | undefined;
+  let acces: RubriqueAcces | undefined;
+  let chargementAcces: Promise<RubriqueAcces | undefined> | undefined;
   let navigationQueue = Promise.resolve();
   let visibleURL = `${window.location.pathname}${window.location.search}`;
   let historyPosition = typeof history.state?.backofficeIndex === 'number' ? history.state.backofficeIndex : 0;
@@ -187,7 +163,7 @@ export function brancherBackoffice(): void {
     recovery.hidden = true;
   }
   function choisirRubrique(rubrique: Rubrique): void {
-    if (activePanel === 'tokens' && rubrique !== 'tokens') acces.cacherSecret();
+    if (activePanel === 'tokens' && rubrique !== 'tokens') acces?.cacherSecret();
     if (activePanel !== rubrique) effacerRetours();
     activePanel = rubrique;
     for (const lien of liens) {
@@ -254,13 +230,31 @@ export function brancherBackoffice(): void {
     }).finally(() => { chargementEnvoi = undefined; });
     return chargementEnvoi;
   }
+  /** Aucun code de gestion MCP n’est téléchargé pour une session anonyme. */
+  function chargerAcces(): Promise<RubriqueAcces | undefined> {
+    if (acces) return Promise.resolve(acces);
+    chargementAcces ??= import('./backoffice-acces').then(({ brancherAccesMcp }) => {
+      if (!authenticated) return;
+      acces = brancherAccesMcp({
+        api,
+        action: (cible, operation, attente) => action(cible, operation, attente),
+        afficher,
+        confirmer: demanderConfirmation,
+        estConnecte: () => authenticated,
+        estVisible: () => activePanel === 'tokens' && !workspace.hidden,
+        date,
+      });
+      return acces;
+    }).finally(() => { chargementAcces = undefined; });
+    return chargementAcces;
+  }
   function restaurerHistorique(targetPosition?: number): void {
     if (targetPosition !== undefined && targetPosition !== historyPosition) {
       restoringHistory = true;
       history.go(historyPosition - targetPosition);
     } else history.replaceState({ ...history.state, backofficeIndex: historyPosition }, '', visibleURL);
   }
-  async function appliquerRoute(value: string, replace = false, popPosition?: number, retourAvant = atelier.avantNavigation()): Promise<void> {
+  async function appliquerRoute(value: string, replace = false, popPosition?: number, retourAvant = atelier?.avantNavigation() ?? ''): Promise<void> {
     const url = new URL(value, window.location.origin);
     if (url.origin !== window.location.origin) return;
     let destination = `${url.pathname}${url.search}`;
@@ -280,10 +274,12 @@ export function brancherBackoffice(): void {
     const memeVue = rubrique === activePanel && destination === visibleURL;
     visibleURL = destination;
     const arrivee = rubrique !== activePanel;
-    if (rubrique === 'blog' && !memeVue) atelier.apresNavigation(retourAvant);
+    if (rubrique === 'blog' && !memeVue) atelier?.apresNavigation(retourAvant);
     choisirRubrique(rubrique);
     // La dernière utilisation des accès change sans nous : relue à chaque visite.
-    if (rubrique === 'tokens' && arrivee && authenticated) void acces.charger().catch((cause: unknown) => erreur(cause, element('bo-tokens-retour')));
+    if (rubrique === 'tokens' && arrivee && authenticated) {
+      void chargerAcces().then((rubriqueAcces) => rubriqueAcces?.charger()).catch((cause: unknown) => erreur(cause, element('bo-tokens-retour')));
+    }
     // L’état de l’envoi peut changer sans nous (variables du serveur) : relu à chaque visite.
     if (rubrique === 'settings' && arrivee && authenticated) {
       void chargerEnvoi().then((rubriqueEnvoi) => rubriqueEnvoi.charger()).catch((cause: unknown) => erreur(cause, element('bo-mail-retour')));
@@ -302,7 +298,7 @@ export function brancherBackoffice(): void {
     }
   }
   function naviguer(value: string, replace = false): Promise<void> {
-    const retourAvant = atelier.avantNavigation();
+    const retourAvant = atelier?.avantNavigation() ?? '';
     const operation = navigationQueue.then(() => appliquerRoute(value, replace, undefined, retourAvant));
     navigationQueue = operation.catch((cause: unknown) => erreur(cause));
     return navigationQueue;
@@ -311,17 +307,10 @@ export function brancherBackoffice(): void {
     if (restoringHistory) { restoringHistory = false; return; }
     const destination = `${window.location.pathname}${window.location.search}`;
     const position = typeof event.state?.backofficeIndex === 'number' ? event.state.backofficeIndex : historyPosition;
-    const retourAvant = atelier.avantNavigation();
+    const retourAvant = atelier?.avantNavigation() ?? '';
     const operation = navigationQueue.then(() => appliquerRoute(destination, false, position, retourAvant));
     navigationQueue = operation.catch((cause: unknown) => erreur(cause));
   });
-  function resetLinkForm(): void {
-    editingLink = undefined;
-    element<HTMLFormElement>('bo-link-form').reset();
-    texte('bo-link-form-title', 'Ajouter un outil');
-    texte('bo-link-submit', 'Ajouter l’outil');
-    element('bo-link-cancel').hidden = true;
-  }
   function retourConnexion(preserveBlogDraft = false): void {
     authSequence += 1;
     authenticated = false;
@@ -338,23 +327,8 @@ export function brancherBackoffice(): void {
       if (controle instanceof HTMLFormElement) controle.querySelector('fieldset')!.disabled = false;
       else if (controle instanceof HTMLButtonElement) controle.disabled = false;
     }
-    requestSequence += 1;
-    contacts = [];
-    links = [];
-    selected = undefined;
-    offset = 0;
-    total = 0;
-    filter.value = 'new';
-    for (const id of ['bo-contact-list', 'bo-link-list']) element(id).replaceChildren();
-    for (const id of ['bo-contact-name', 'bo-contact-email', 'bo-contact-date', 'bo-contact-state', 'bo-contact-delivery', 'bo-contact-message', 'bo-total']) texte(id, '');
-    element('bo-contact-email').removeAttribute('href');
-    element('bo-contact-detail').hidden = true;
-    element('bo-contact-article').classList.remove('foyer');
-    texte('bo-contact-title', 'Choisissez une demande');
-    element('bo-detail-placeholder').hidden = false;
-    element<HTMLFormElement>('bo-settings-form').reset();
-    resetLinkForm();
-    acces.reinitialiser();
+    consultation?.reinitialiser();
+    acces?.reinitialiser();
     envoi?.reinitialiser();
     stockage?.reinitialiser();
     effacerRetours();
@@ -458,170 +432,6 @@ export function brancherBackoffice(): void {
       confirm.addEventListener('close', () => resolve(confirm.returnValue === 'confirm'), { once: true });
     });
   }
-  /** Un bouton de ligne : le libellé visible, puis l’élément visé pour les lecteurs d’écran. */
-  function bouton(libelle: string, nomAccessible: string, operation: (bouton: HTMLButtonElement) => Promise<void> | void, classe = ''): HTMLButtonElement {
-    const noeud = creer('button', `bo-button bo-button--petit${classe ? ` ${classe}` : ''}`, libelle);
-    noeud.type = 'button';
-    noeud.append(creer('span', 'sr', ` ${nomAccessible}`));
-    noeud.addEventListener('click', () => { void operation(noeud); });
-    return noeud;
-  }
-
-  const acces = brancherAccesMcp({
-    api,
-    action: (cible, operation, attente) => action(cible, operation, attente),
-    afficher,
-    confirmer: demanderConfirmation,
-    estConnecte: () => authenticated,
-    estVisible: () => activePanel === 'tokens' && !workspace.hidden,
-    date,
-  });
-
-  function statutDe(statut: Statut): HTMLSpanElement {
-    const noeud = creer('span', 'bo-state', statuts[statut] ?? statut);
-    noeud.dataset.state = statut;
-    return noeud;
-  }
-  function afficherDemande(demande?: Demande, focus = false): void {
-    selected = demande;
-    for (const ligne of document.querySelectorAll<HTMLElement>('[data-contact-id]')) {
-      ligne.setAttribute('aria-pressed', String(Number(ligne.dataset.contactId) === demande?.id));
-    }
-    texte('bo-contact-title', demande?.subject ?? 'Choisissez une demande');
-    element('bo-detail-placeholder').hidden = Boolean(demande);
-    element('bo-contact-detail').hidden = !demande;
-    // La demande ouverte est la zone éclairée de l’écran.
-    element('bo-contact-article').classList.toggle('foyer', Boolean(demande));
-    if (!demande) return;
-    texte('bo-contact-name', demande.name);
-    const email = element<HTMLAnchorElement>('bo-contact-email');
-    email.textContent = demande.email;
-    email.href = `mailto:${encodeURIComponent(demande.email)}`;
-    texte('bo-contact-date', date(demande.created_at));
-    element('bo-contact-state').replaceChildren(statutDe(demande.status));
-    texte('bo-contact-delivery', livraisons[demande.delivery_status] ?? demande.delivery_status);
-    texte('bo-contact-message', demande.message);
-    element('bo-contact-read').hidden = demande.status === 'read';
-    element('bo-contact-new').hidden = demande.status === 'new';
-    element('bo-contact-archive').hidden = demande.status === 'archived';
-    if (focus) {
-      const titre = element('bo-contact-title');
-      titre.tabIndex = -1;
-      titre.focus({ preventScroll: true });
-      if (window.matchMedia('(max-width: 1100px)').matches) titre.scrollIntoView({ block: 'start', behavior: 'instant' });
-    }
-  }
-  function afficherBoite(boite: Boite): void {
-    contacts = boite.contacts;
-    total = boite.total;
-    const nouvelles = boite.new_count;
-    const compteur = element('bo-new-count');
-    compteur.textContent = String(nouvelles);
-    compteur.dataset.nombre = String(nouvelles);
-    texte('bo-new-count-label', nouvelles === 0 ? ' (aucune nouvelle demande)' : ` (${nouvelles} nouvelle${nouvelles > 1 ? 's' : ''} demande${nouvelles > 1 ? 's' : ''})`);
-    texte('bo-total', `${total} demande${total > 1 ? 's' : ''}`);
-    const liste = element('bo-contact-list');
-    liste.replaceChildren(...contacts.map((demande) => {
-      const item = creer('li');
-      const ligne = creer('button', 'bo-contact-row');
-      ligne.type = 'button';
-      ligne.dataset.contactId = String(demande.id);
-      ligne.setAttribute('aria-pressed', String(selected?.id === demande.id));
-      ligne.append(creer('strong', '', demande.subject), creer('span', 'bo-row-person', demande.name));
-      const metadonnees = creer('span', 'bo-row-meta');
-      const moment = creer('time', 'bo-row-date', date(demande.created_at));
-      moment.dateTime = demande.created_at;
-      metadonnees.append(statutDe(demande.status), moment);
-      ligne.append(metadonnees);
-      ligne.addEventListener('click', () => afficherDemande(demande, true));
-      item.append(ligne);
-      return item;
-    }));
-    element('bo-contact-empty').hidden = contacts.length > 0;
-    texte('bo-contact-empty', filter.value === 'new'
-      ? 'Aucune nouvelle demande. Les autres messages restent accessibles dans les filtres.'
-      : 'Aucune demande dans ce filtre.');
-    element('bo-pagination').hidden = total <= limit;
-    element<HTMLButtonElement>('bo-previous').disabled = offset === 0;
-    element<HTMLButtonElement>('bo-next').disabled = offset + limit >= total;
-    texte('bo-page', `${Math.floor(offset / limit) + 1} / ${Math.max(1, Math.ceil(total / limit))}`);
-    afficherDemande(contacts.find((demande) => demande.id === selected?.id));
-  }
-  async function chargerDemandes(): Promise<void> {
-    const sequence = ++requestSequence;
-    const rubrique = filter.value as Filtre;
-    const boite = await api<Boite>(`/contacts?status=${rubrique}&limit=${limit}&offset=${offset}`);
-    if (!authenticated || sequence !== requestSequence) return;
-    if (!boite.contacts.length && offset > 0) {
-      offset = Math.max(0, offset - limit);
-      await chargerDemandes();
-      return;
-    }
-    afficherBoite(boite);
-  }
-  async function changerStatut(cible: HTMLButtonElement, statut: Statut): Promise<void> {
-    if (!selected) return;
-    const id = selected.id;
-    await action(cible, async (dire) => {
-      await api(`/contacts/${id}`, 'PATCH', { status: statut });
-      await chargerDemandes();
-      dire(statut === 'read' ? 'La demande est marquée comme lue.' : statut === 'new' ? 'La demande est marquée comme nouvelle.' : 'La demande est archivée.');
-    }, 'Mise à jour de la demande…');
-  }
-
-  function adresseWeb(valeur: string): string | undefined {
-    try {
-      const url = new URL(valeur);
-      if (url.protocol === 'https:' || url.protocol === 'http:') return url.href;
-    } catch { /* Une adresse invalide n’est jamais rendue comme lien. */ }
-    return undefined;
-  }
-  async function chargerOutils(): Promise<void> {
-    const reponse = await api<{ links: Outil[] }>('/links');
-    if (!authenticated) return;
-    links = reponse.links;
-    element('bo-links-empty').hidden = links.length > 0;
-    element('bo-link-list').replaceChildren(...links.map((outil) => {
-      const item = creer('li', 'bo-tool');
-      const titre = creer('h3');
-      const url = adresseWeb(outil.url);
-      if (url) {
-        const lien = creer('a', '', outil.label);
-        lien.href = url;
-        lien.target = '_blank';
-        lien.rel = 'noopener noreferrer';
-        lien.setAttribute('aria-label', `${outil.label}, ouvrir dans un nouvel onglet`);
-        const fleche = creer('span', 'fleche', `${NBSP}↗`);
-        fleche.setAttribute('aria-hidden', 'true');
-        lien.append(fleche);
-        titre.append(lien);
-      } else titre.textContent = outil.label;
-      item.append(titre);
-      if (outil.description) item.append(creer('p', '', outil.description));
-      const actions = creer('div', 'bo-actions');
-      actions.append(bouton('Modifier', outil.label, () => {
-        editingLink = outil.id;
-        element<HTMLInputElement>('bo-link-label').value = outil.label;
-        element<HTMLInputElement>('bo-link-url').value = outil.url;
-        element<HTMLInputElement>('bo-link-description').value = outil.description;
-        texte('bo-link-form-title', 'Modifier l’outil');
-        texte('bo-link-submit', 'Enregistrer l’outil');
-        element('bo-link-cancel').hidden = false;
-        element('bo-link-label').focus();
-      }), bouton('Supprimer', outil.label, async (cible) => {
-        const accord = await demanderConfirmation('Supprimer ce raccourci ?', `Le lien vers ${outil.label} sera supprimé de la boîte à outils.`, 'Supprimer le raccourci');
-        if (!accord) return;
-        await action(cible, async (dire) => {
-          await api(`/links/${outil.id}`, 'DELETE');
-          if (editingLink === outil.id) resetLinkForm();
-          await chargerOutils();
-          dire(`Le raccourci vers ${outil.label} est supprimé.`);
-        }, 'Suppression du raccourci…');
-      }, 'bo-button--danger'));
-      item.append(actions);
-      return item;
-    }));
-  }
   /** L’atelier : après une connexion (`finale`), la lumière le découvre ; une session retrouvée l’ouvre d’un coup. */
   async function ouvrirWorkspace(finale = false): Promise<void> {
     const sequence = authSequence;
@@ -629,6 +439,19 @@ export function brancherBackoffice(): void {
     if (sequence !== authSequence) return;
     if (!session.authenticated) { retourConnexion(); memoriserSession(false); notice.hidden = true; return; }
     authenticated = true;
+    if (!atelier || !consultation) {
+      const [moduleAtelier, moduleConsultation] = await Promise.all([
+        atelier ? undefined : import('./backoffice-atelier'),
+        consultation ? undefined : import('./backoffice-consultation'),
+      ]);
+      if (!authenticated || sequence !== authSequence) return;
+      if (moduleAtelier) atelier ??= moduleAtelier.brancherAtelier();
+      if (moduleConsultation) consultation ??= moduleConsultation.brancherConsultation({
+        api, action, afficher, erreur, confirmer: demanderConfirmation,
+        estConnecte: () => authenticated, date,
+        destinataire: (email) => envoi?.destinataire(email),
+      });
+    }
     challenge = false;
     memoriserSession(true);
     const ouvrir = () => {
@@ -649,9 +472,11 @@ export function brancherBackoffice(): void {
     const reglages = await api<{ email: string }>('/settings');
     if (!authenticated || sequence !== authSequence) return;
     element<HTMLInputElement>('bo-email').value = reglages.email;
-    await Promise.all([chargerDemandes(), chargerOutils(), acces.charger()]);
+    await Promise.all([consultation!.charger(), chargerAcces().then((rubriqueAcces) => {
+      if (authenticated && sequence === authSequence) return rubriqueAcces?.charger();
+    })]);
     if (authenticated) {
-      if (blog?.restoreDraft()) atelier.conserver();
+      if (blog?.restoreDraft()) atelier?.conserver();
       await naviguer(`${window.location.pathname}${window.location.search}`, true);
     }
     if (authenticated) notice.hidden = true;
@@ -807,75 +632,6 @@ export function brancherBackoffice(): void {
       }, 'Déconnexion…', notice);
     })();
   });
-  filter.addEventListener('change', () => {
-    offset = 0;
-    void chargerDemandes().catch((cause: unknown) => erreur(cause, element('bo-inbox-retour')));
-  });
-  element<HTMLButtonElement>('bo-refresh').addEventListener('click', (event) => {
-    void action(event.currentTarget as HTMLButtonElement, async (dire) => {
-      await chargerDemandes();
-      dire('Les demandes sont à jour.');
-    }, 'Actualisation des demandes…');
-  });
-  for (const [id, sens] of [['bo-previous', -1], ['bo-next', 1]] as const) {
-    element(id).addEventListener('click', () => {
-      offset = Math.max(0, offset + sens * limit);
-      void chargerDemandes().catch((cause: unknown) => erreur(cause, element('bo-inbox-retour')));
-    });
-  }
-  for (const [id, statut] of [['bo-contact-read', 'read'], ['bo-contact-new', 'new'], ['bo-contact-archive', 'archived']] as const) {
-    element<HTMLButtonElement>(id).addEventListener('click', (event) => { void changerStatut(event.currentTarget as HTMLButtonElement, statut); });
-  }
-  element<HTMLButtonElement>('bo-contact-delete').addEventListener('click', async (event) => {
-    if (!selected) return;
-    const id = selected.id;
-    const cible = event.currentTarget as HTMLButtonElement;
-    const accord = await demanderConfirmation('Supprimer cette demande ?', `Le message «${NBSP}${selected.subject}${NBSP}» et ses coordonnées seront supprimés définitivement du backoffice.`, 'Supprimer définitivement');
-    if (!accord) return;
-    await action(cible, async (dire) => {
-      await api(`/contacts/${id}`, 'DELETE');
-      await chargerDemandes();
-      dire('La demande est supprimée.');
-      const titre = element('bo-contact-title');
-      titre.tabIndex = -1;
-      titre.focus();
-    }, 'Suppression de la demande…');
-  });
-  const settingsForm = element<HTMLFormElement>('bo-settings-form');
-  settingsForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const email = element<HTMLInputElement>('bo-email').value.trim();
-    void action(settingsForm, async (dire) => {
-      await api('/settings', 'PUT', { email });
-      envoi?.destinataire(email);
-      dire('L’adresse de contact est enregistrée.');
-    }, 'Enregistrement de l’adresse…');
-  });
-  const linkForm = element<HTMLFormElement>('bo-link-form');
-  linkForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const url = element<HTMLInputElement>('bo-link-url').value.trim();
-    if (!adresseWeb(url)) { afficher(element('bo-links-retour'), 'Saisissez une adresse commençant par https:// ou http://.', 'error'); element('bo-link-url').focus(); return; }
-    const corps = {
-      label: element<HTMLInputElement>('bo-link-label').value.trim(), url,
-      description: element<HTMLInputElement>('bo-link-description').value.trim(),
-    };
-    const id = editingLink;
-    void action(linkForm, async (dire) => {
-      await api(id === undefined ? '/links' : `/links/${id}`, id === undefined ? 'POST' : 'PUT', corps);
-      resetLinkForm();
-      await chargerOutils();
-      dire(id === undefined ? 'L’outil est ajouté.' : 'L’outil est enregistré.');
-    }, 'Enregistrement de l’outil…');
-  });
-  element('bo-link-cancel').addEventListener('click', resetLinkForm);
-  for (const suggestion of document.querySelectorAll<HTMLButtonElement>('[data-suggest]')) {
-    suggestion.addEventListener('click', () => {
-      resetLinkForm();
-      element<HTMLInputElement>('bo-link-label').value = suggestion.dataset.suggest ?? '';
-      element('bo-link-url').focus();
-    });
-  }
   function verifierSession(): void {
     const sequence = authSequence;
     void ouvrirWorkspace().catch((cause: unknown) => {
