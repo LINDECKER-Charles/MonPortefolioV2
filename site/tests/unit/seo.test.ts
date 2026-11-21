@@ -91,7 +91,8 @@ describe('JSON-LD', () => {
   });
 
   it('nomme l’employeur et la ville autorisés (questions.md, A2)', () => {
-    expect(noeudPersonne()).toMatchObject({ worksFor: { '@type': 'Organization', name: 'B-Hive', address: { addressLocality: 'Mulhouse' } } });
+    expect(noeudPersonne()).not.toHaveProperty('worksFor');
+    expect(noeudPersonne()).toMatchObject({ workLocation: { '@type': 'Place', address: { addressLocality: 'Mulhouse' } } });
   });
 
   it('échappe < pour qu’aucune chaîne ne referme la balise', () => {

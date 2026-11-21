@@ -8,7 +8,8 @@
  * (A2, B3, C5, C7) et, pour les rôles chez PvZ Fusion, le journal public du
  * pôle (config/pvz-fusion.ts, ROLES). Fins d’Elan Formation (mai 2026) et du
  * mentorat à la Mission Locale (juin 2026) : données par Charles le
- * 15/10/2026. Une date de fin inconnue n’est jamais extrapolée.
+ * 15/10/2026. Fin chez B-Hive (novembre 2026) : donnée par Charles le
+ * 21/11/2026. Une date de fin inconnue n’est jamais extrapolée.
  */
 
 /** Les trois pages du parcours, partagées par le hub, les onglets et la suite de lecture. */
@@ -109,9 +110,9 @@ export const EXPERIENCES: readonly Experience[] = [
     lieu: 'Mulhouse',
     nature: 'cdi',
     debut: '2026-08',
-    fin: null,
-    statut: { texte: 'En poste', etat: 'actif' },
-    mission: 'Je travaille sur le développement web et le DevOps.',
+    fin: '2026-11',
+    statut: { texte: 'Contrat terminé', etat: 'eteint' },
+    mission: 'J’ai travaillé sur le développement web et le DevOps.',
     liens: [
       { href: '/parcours/competences', libelle: 'Mes compétences' },
       { href: '/projets', libelle: 'Mes projets' },
