@@ -252,17 +252,22 @@ l'infrastructure partagée.
 
 Le VPS fait `docker compose pull` sur trois images : `ghcr.io/lindecker-charles/monportefoliov2`,
 `monportefoliov2-backend` et `monportfolio-archive` (l'archive de la V1). Nées d'un dépôt privé,
-elles sont privées. Deux options :
+elles sont privées à leur création. Deux options :
 
-**Option 1 — rendre les packages publics (recommandé).** Les images ne contiennent que le site
+**Option 1 — rendre les packages publics (retenue).** Les images ne contiennent que le site
 compilé, son serveur, l'API compilée et l'archive de la V1, dont le code est public. Aucun
-identifiant à gérer sur le serveur.
+identifiant à gérer sur le serveur. `monportefoliov2` et `monportefoliov2-backend` sont publics, et
+`scripts/deploy-remote.sh` les tire **sans identifiants**, avec une configuration Docker vide : un
+ancien `docker login ghcr.io` de l'hôte, périmé, faisait refuser (`denied`) même une image
+publique, comme dans `infra-vps`.
 
 > GitHub → profil → Packages → `monportefoliov2`, `monportefoliov2-backend`,
 > `monportfolio-archive` → Package settings → Change visibility → Public.
 > Un package n'apparaît qu'**après** sa première publication (`_build`, `archive-v1.yml`).
 
-**Option 2 — garder le package privé.** Une authentification persistante sur l'hôte, avec un PAT
+**Option 2 — garder le package privé.** Réservée à l'archive de la V1
+(`scripts/deploy-archive-v1.sh` tire encore avec la configuration de l'hôte) : le déploiement du
+site, anonyme, ne lit plus ce login. Une authentification persistante sur l'hôte, avec un PAT
 classique portant la seule portée `read:packages` :
 
 ```bash
