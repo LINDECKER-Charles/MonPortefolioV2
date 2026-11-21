@@ -21,7 +21,7 @@ import { fileURLToPath } from 'node:url';
 import { creerServeur } from '../site/server/server.mjs';
 
 const racine = fileURLToPath(new URL('../', import.meta.url));
-const executable = path.join(racine, 'backend/target/debug/portfolio-backend');
+const executable = path.join(racine, `backend/target/debug/portfolio-backend${process.platform === 'win32' ? '.exe' : ''}`);
 const dist = path.join(racine, 'site/dist');
 const motDePasse = 'integration-portfolio-factice';
 const emailConnexion = 'administration@example.test';
