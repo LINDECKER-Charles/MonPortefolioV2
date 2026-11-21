@@ -117,8 +117,6 @@ export function noeudPersonne(photo?: Image, { complet = false } = {}) {
     }),
     sameAs: [CONTACT.linkedin, CONTACT.github, FRONTEND_MENTOR.profil, PROFIL_FREECODECAMP],
     knowsLanguage: ['fr', 'en'],
-    // Employeur et ville affichés avec l’accord de Charles (questions.md, A2, 2026-10-09).
-    worksFor: { '@type': 'Organization', name: 'B-Hive', address: MULHOUSE },
     workLocation: { '@type': 'Place', address: MULHOUSE },
     ...(complet && {
       knowsAbout: ['Architecture logicielle', 'Développement web', 'DevOps', ...QUOTIDIEN.map((techno) => techno.nom)],

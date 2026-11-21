@@ -12,7 +12,7 @@
  * retouchée change de date, sinon les moteurs ne la relisent qu’à leur rythme.
  */
 export const PAGES_SITEMAP = [
-  { chemin: '/', maj: '2026-10-16' },
+  { chemin: '/', maj: '2026-11-21' },
   { chemin: '/projets', maj: '2026-10-26' },
   { chemin: '/projets/pvz-fusion', maj: '2026-10-16' },
   { chemin: '/projets/omnicard', maj: '2026-10-16' },
@@ -23,8 +23,8 @@ export const PAGES_SITEMAP = [
   { chemin: '/projets/autoticket', maj: '2026-10-26' },
   { chemin: '/projets/sillage', maj: '2026-10-26' },
   { chemin: '/projets/relais', maj: '2026-10-26' },
-  { chemin: '/parcours', maj: '2026-10-15' },
-  { chemin: '/parcours/professionnel', maj: '2026-10-15' },
+  { chemin: '/parcours', maj: '2026-11-21' },
+  { chemin: '/parcours/professionnel', maj: '2026-11-21' },
   { chemin: '/parcours/competences', maj: '2026-10-15' },
   { chemin: '/parcours/formation', maj: '2026-10-15' },
   { chemin: '/contact', maj: '2026-10-13' },
