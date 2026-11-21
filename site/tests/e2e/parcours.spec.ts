@@ -13,7 +13,7 @@ const rubriques = [
 ] as const;
 
 const EXPERIENCES = [
-  { id: 'architecture', poste: 'Architecte logiciel', repere: 'Architecte logiciel', dates: ['2026-08'], statut: 'En poste', nature: 'CDI' },
+  { id: 'architecture', poste: 'Architecte logiciel', repere: 'Architecte logiciel', dates: ['2026-08', '2026-11'], statut: 'Contrat terminé', nature: 'CDI' },
   { id: 'mission-locale', poste: 'Mentor et animateur d’ateliers', repere: 'Mission Locale', dates: ['2026-01', '2026-06'], statut: 'Terminé', nature: 'Bénévolat' },
   { id: 'elan', poste: 'Formateur en développement web', repere: 'Elan Formation', dates: ['2025-12', '2026-05'], statut: 'Mission terminée', nature: 'Freelance' },
   { id: 'devmates', poste: 'Développeur indépendant', repere: 'Dev-Mates', dates: ['2025-11'], statut: 'Société ouverte', nature: 'Freelance' },
@@ -30,7 +30,7 @@ test.describe('hub', () => {
     await expect(page.locator('[data-pli="titre"]')).toBeInViewport();
     const identite = page.locator('[data-pli="identite"]');
     await expect(identite).toBeInViewport();
-    await expect(identite).toContainText('Architecte logiciel chez B-Hive, à Mulhouse, depuis août 2026');
+    await expect(identite).toContainText('Architecte logiciel, à Mulhouse');
     await expect(identite).toContainText('Lead du pôle francophone de PvZ Fusion et mainteneur de sa traduction multilingue');
     const photo = page.getByRole('img', { name: /Charles Lindecker, en chemise bleu roi/ });
     await expect(photo).toBeVisible();
@@ -202,7 +202,7 @@ test.describe('page Professionnel', () => {
     const lignes = chronologie.getByRole('link');
     await expect(lignes).toHaveCount(EXPERIENCES.length);
     await expect(lignes.first()).toBeInViewport();
-    await expect(lignes.first()).toContainText('CDI, depuis août 2026');
+    await expect(lignes.first()).toContainText('CDI, août – novembre 2026');
     for (const [index, { id }] of EXPERIENCES.entries()) await expect(lignes.nth(index)).toHaveAttribute('href', `#${id}`);
     await expect(chronologie.getByRole('link', { name: 'Mentor, Mission Locale, Bénévolat, janvier à juin 2026', exact: true })).toHaveCount(1);
     await expect(chronologie.getByRole('link', { name: 'Développeur full stack, ATIS Solutions, Stage, août à septembre 2025', exact: true })).toHaveCount(1);
@@ -263,7 +263,7 @@ test.describe('page Professionnel', () => {
         await expect(fiche.locator('[data-visuel^="PRO-0"]')).toHaveCount(1);
       }
       await expect(page.locator('#architecture .fiche__structure')).toHaveText('B-Hive Mulhouse');
-      await expect(page.locator('#architecture')).toContainText('Je travaille sur le développement web et le DevOps.');
+      await expect(page.locator('#architecture')).toContainText('J’ai travaillé sur le développement web et le DevOps.');
       // Fins données par Charles le 15/10/2026 : plus aucune marque.
       await expect(page.locator('#elan .fiche__periode time').last()).toHaveText('mai 2026');
       await expect(page.locator('#mission-locale .fiche__periode time').first()).toHaveText('Janvier');
