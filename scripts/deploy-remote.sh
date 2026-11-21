@@ -213,14 +213,30 @@ log "Recuperation de l'image (${REFERENCE})"
 # peer). Sans ces reprises, le deploiement echouerait sur un incident passager.
 # Aucun repli sur une construction locale n'est possible : compose.yaml ne porte
 # deliberement pas de section build, donc l'hote ne sait pas compiler le site.
+#
+# Les images sont publiques (docs/secrets.md, d) : le pull se fait sans
+# identifiants. Un ancien login ghcr.io de l'hote, perime, ferait sinon refuser
+# ("denied") meme une image publique. Le endpoint Docker est retenu avant
+# l'isolation (un contexte nomme disparait avec la configuration) ; les
+# plugins de la CLI, compose compris, restent ceux de l'utilisateur.
+docker_endpoint="${DOCKER_HOST:-$(docker context inspect --format '{{.Endpoints.docker.Host}}')}"
+docker_config_vide="$(mktemp -d)"
+trap 'rm -rf -- "${docker_config_vide}"' EXIT
+plugins_cli="${DOCKER_CONFIG:-${HOME}/.docker}/cli-plugins"
+if [ -d "${plugins_cli}" ]; then
+  ln -s "${plugins_cli}" "${docker_config_vide}/cli-plugins"
+fi
+pull_anonyme() {
+  env -u DOCKER_CONTEXT DOCKER_HOST="${docker_endpoint}" DOCKER_CONFIG="${docker_config_vide}"     docker compose pull
+}
 for attempt in 1 2 3 4 5; do
-  if docker compose pull; then
+  if pull_anonyme; then
     break
   fi
   if [ "${attempt}" = 5 ]; then
     echo "docker compose pull : echec apres 5 tentatives." >&2
-    echo "Si l'erreur est un refus du registre, verifier l'acces GHCR de l'hote" >&2
-    echo "(package public, ou docker login ghcr.io) : voir docs/secrets.md." >&2
+    echo "Le pull est anonyme : sur un refus du registre, verifier que les packages" >&2
+    echo "GHCR sont publics (docs/secrets.md, d)." >&2
     exit 1
   fi
   echo "pull en echec (tentative ${attempt}), nouvel essai dans $((attempt * 10))s." >&2
